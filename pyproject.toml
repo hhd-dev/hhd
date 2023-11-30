@@ -1,0 +1,32 @@
+[project]
+name = "hhd"
+version = "0.3.1"
+authors = [
+  { name="Kapenekakis Antheas", email="git@antheas.dev" },
+]
+description = "Handheld Daemon, a tool for configuring handheld devices."
+readme = "README_PYPI.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+]
+
+[project.urls]
+"Homepage" = "https://github.com/antheas/hhd"
+"Bug Tracker" = "https://github.com/antheas/hhd/issues"
+
+[project.entry-points."console_scripts"]
+hhd = "hhd.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "numpy>=1.15"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["hhd*"]  # package names should match these glob patterns (["*"] by default)
