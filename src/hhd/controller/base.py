@@ -1,11 +1,10 @@
+from functools import partial
 from threading import Lock, Thread
-from typing import TypeVar
+from typing import TypeVar, cast
 from enum import Enum
 from typing import Generic, TypeVarTuple
 
-"""All axis values are signed 16 bit (-32768 to 32767).
-If a device does not support 16 bit (and most do not), it shall shift
-the values approprietly (v << (16 - A) where A is its bit width)."""
+"""All axis values are normalized floating point values from -1 to 1."""
 Axis = Enum(
     "Axis",
     [
@@ -97,32 +96,38 @@ Configuration = Enum(
 A = TypeVar("A")
 
 
-class Handler(A, Generic[A]):
-    def __init__(self) -> None:
-        self.callbacks: list[A] = []
+class _CallbackWrapper:
+    def __init__(self, fun):
+        self.fun = fun
 
-    def handle(self, fun: str, *args, **kwargs):
-        for cb in self.callbacks:
-            getattr(cb, fun)(*args, **kwargs)
-
-    def register(self, cb: A):
-        if cb not in self.callbacks:
-            self.callbacks.append(cb)
-
-    def unregister(self, cb: A):
-        self.callbacks.remove(cb)
+    def __getattr__(self, attr: str):
+        return partial(self.fun, attr)
 
 
 class ThreadedLoop(Generic[A]):
-    handler = Handler[A]()
-    _should_exit = False
+    def __init__(self) -> None:
+        self.callback: A
+        self._callbacks: list[A] = []
+        self._should_exit = False
+        self._thread = None
+        self._lock = None
 
-    _thread = None
-    _lock = None
+        # Setup fake callback object to call multiple listeners
+        self.callback = cast(A, _CallbackWrapper(self._callback))
+
+    def _callback(self, fun: str, *args, **kwargs):
+        if self._lock:
+            self._lock.acquire()
+
+        for cb in self._callbacks:
+            getattr(cb, fun)(*args, **kwargs)
+
+        if self._lock:
+            self._lock.release()
 
     def start(self):
         self._lock = Lock()
-        self._thread = Thread()
+        self._thread = Thread(target=self.run)
         self._thread.start()
 
     def stop(self):
@@ -143,17 +148,18 @@ class ThreadedLoop(Generic[A]):
         with self._lock:
             return self._should_exit
 
-    def register(self, callback: A):
-        self.handler.register(callback)
+    def register(self, cb: A):
+        if cb not in self._callbacks:
+            self._callbacks.append(cb)
 
-    def unregister(self, callback: A):
-        self.handler.unregister(callback)
+    def unregister(self, cb: A):
+        self._callbacks.remove(cb)
 
     def run(self):
         raise NotImplementedError()
 
 
-class PeripheralActuator:
+class PhysicalController:
     def rumble(self, key: Rumble, val: RumbleMode | int):
         pass
 
@@ -161,8 +167,8 @@ class PeripheralActuator:
         pass
 
 
-class VirtualController(ThreadedLoop[PeripheralActuator]):
-    def set_axis(self, key: Axis, val: int):
+class VirtualController:
+    def set_axis(self, key: Axis, val: float):
         pass
 
     def set_btn(self, key: Button, val: bool):
@@ -170,7 +176,3 @@ class VirtualController(ThreadedLoop[PeripheralActuator]):
 
     def flush(self):
         pass
-
-
-class PeripheralInterface(ThreadedLoop[VirtualController]):
-    pass
