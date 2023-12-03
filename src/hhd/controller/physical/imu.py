@@ -2,7 +2,7 @@ from time import sleep
 from typing import Any, Generator, Literal, NamedTuple, Sequence
 
 from anyio import open_process
-from ..base import ThreadedLoop, VirtualController, Button, Axis
+from ..base import ThreadedTransmitter, VirtualController, Button, Axis
 import os
 
 import logging
@@ -135,7 +135,7 @@ def scan_device(dev: DeviceInfo) -> Generator[tuple[Axis | None, float], None, N
             yield None, 0
 
 
-class AccelImu(ThreadedLoop[VirtualController]):
+class AccelImu(ThreadedTransmitter[VirtualController]):
     def run(self):
         sens_dir = find_sensor("accel_3d")
         if not sens_dir:
@@ -146,6 +146,8 @@ class AccelImu(ThreadedLoop[VirtualController]):
             return
 
         for ax, d in scan_device(dev):
+            self.pause()
+
             if self.should_exit:
                 return
             if ax is not None:
@@ -154,7 +156,7 @@ class AccelImu(ThreadedLoop[VirtualController]):
                 self.callback.commit()
 
 
-class GyroImu(ThreadedLoop[VirtualController]):
+class GyroImu(ThreadedTransmitter[VirtualController]):
     def run(self):
         sens_dir = find_sensor("gyro_3d")
         if not sens_dir:
@@ -165,6 +167,8 @@ class GyroImu(ThreadedLoop[VirtualController]):
             return
 
         for ax, d in scan_device(dev):
+            self.pause()
+
             if self.should_exit:
                 return
             if ax is not None:

@@ -1,5 +1,6 @@
+from concurrent.futures import thread
 from functools import partial
-from threading import Lock, Thread
+from threading import Condition, Lock, Thread
 from typing import TypeVar, cast
 from enum import Enum
 from typing import Generic, TypeVarTuple
@@ -93,7 +94,32 @@ Configuration = Enum(
     ],
 )
 
-A = TypeVar("A")
+
+CB_COND = Condition()
+
+
+class ThreadedReceiver:
+    """Implements the base functionality of a threaded callback, which can set when
+    it is available to receive data.
+
+    If it is, it should set `available()` equal to `True`."""
+
+    def __init__(self) -> None:
+        self._available = True
+
+    @property
+    def available(self):
+        with CB_COND:
+            return self._available
+
+    @available.setter
+    def available(self, val: bool):
+        with CB_COND:
+            self._available = val
+            CB_COND.notify_all()
+
+
+A = TypeVar("A", bound=ThreadedReceiver)
 
 
 class _CallbackWrapper:
@@ -104,29 +130,45 @@ class _CallbackWrapper:
         return partial(self.fun, attr)
 
 
-class ThreadedLoop(Generic[A]):
+class ThreadedTransmitter(Generic[A]):
+    """Implements the base functionality for a threaded component that can respont to
+    callbacks. Callbacks types are passed as a generic, `A`, and registered with
+    the `register` function.
+
+    Multiple callbacks are supported, and are all wrapped in the `.callback` attribute,
+    which may be used by the underlying procedure to respond to all of them.
+
+    The threaded component of this function is achieved through `start()`, `stop()`,
+    and `run()`.
+    By calling `start()`, the `run()` function is launched on a separate thread.
+    When `stop()` is called, the `should_exit` is set to True and the function
+    waits for `run()` to exit.
+    Therefore, the `run()` function should check it periodically, ideally once per loop
+    and always less than per 1s, to ensure the program can close successfully.
+    """
+
     def __init__(self) -> None:
         self.callback: A
         self._callbacks: list[A] = []
         self._should_exit = False
         self._thread = None
-        self._lock = None
 
         # Setup fake callback object to call multiple listeners
         self.callback = cast(A, _CallbackWrapper(self._callback))
 
     def _callback(self, fun: str, *args, **kwargs):
-        if self._lock:
-            self._lock.acquire()
+        with CB_COND:
+            for cb in self._callbacks:
+                getattr(cb, fun)(*args, **kwargs)
 
-        for cb in self._callbacks:
-            getattr(cb, fun)(*args, **kwargs)
-
-        if self._lock:
-            self._lock.release()
+    def pause(self):
+        with CB_COND:
+            CB_COND.wait_for(
+                lambda: self.should_exit
+                or (self._callbacks and any(c.available for c in self._callbacks))
+            )
 
     def start(self):
-        self._lock = Lock()
         self._thread = Thread(target=self.run)
         self._thread.start()
 
@@ -134,32 +176,36 @@ class ThreadedLoop(Generic[A]):
         if not self._thread:
             return
 
-        assert self._lock
-        with self._lock:
+        with CB_COND:
             self._should_exit = True
+            CB_COND.notify_all()
 
         self._thread.join()
-        self._lock = None
         self._thread = None
 
     @property
     def should_exit(self):
-        assert self._lock
-        with self._lock:
+        with CB_COND:
             return self._should_exit
 
     def register(self, cb: A):
-        if cb not in self._callbacks:
-            self._callbacks.append(cb)
+        with CB_COND:
+            if cb not in self._callbacks:
+                self._callbacks.append(cb)
 
     def unregister(self, cb: A):
-        self._callbacks.remove(cb)
+        with CB_COND:
+            self._callbacks.remove(cb)
 
     def run(self):
         raise NotImplementedError()
 
 
-class PhysicalController:
+class ThreadedTransceiver(ThreadedTransmitter[A], ThreadedReceiver, Generic[A]):
+    pass
+
+
+class PhysicalController(ThreadedReceiver):
     def rumble(self, key: Rumble, val: RumbleMode | int):
         pass
 
@@ -167,7 +213,7 @@ class PhysicalController:
         pass
 
 
-class VirtualController:
+class VirtualController(ThreadedReceiver):
     def set_axis(self, key: Axis, val: float):
         pass
 
