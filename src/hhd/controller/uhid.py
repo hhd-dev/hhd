@@ -13,7 +13,20 @@ import struct
 import sys
 import uuid
 
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Sequence, Type, Union
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    List,
+    Literal,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Type,
+    TypedDict,
+    Union,
+)
 
 __version__ = "0.0.1"
 
@@ -163,10 +176,30 @@ class ReportType(enum.Enum):
 #     ]
 
 
-class UHIDException(Exception):
-    """
-    Exception triggered when interfacing with UHID
-    """
+class EventStart(TypedDict):
+    dev_flags: int
+
+
+class EventOutput(TypedDict):
+    report: int
+    data: bytes
+
+
+class EventGetReport(TypedDict):
+    id: int
+    rnum: int
+    rtype: int
+
+
+class EventSetReport(TypedDict):
+    id: int
+    rnum: int
+    rtype: int
+    data: bytes
+
+
+class EventOther(TypedDict):
+    pass
 
 
 class UhidDevice:
@@ -199,6 +232,7 @@ class UhidDevice:
         self.report_descriptor = report_descriptor
 
         self.fd = 0
+        self.poll = None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(vid={self.vid}, pid={self.pid}, name={self.name}, uniq={self.unique_name})"
@@ -206,13 +240,47 @@ class UhidDevice:
     def send_event(self, event: bytes):
         if not self.fd:
             self.fd = os.open("/dev/uhid", os.O_RDWR)
+            self.poll = select.epoll()
+            self.poll.register(self.fd)
         os.write(self.fd, event)
 
-    def read_event(self):
-        type = os.read(self.fd, 4)
-        # match (type):
-        #     case EventType.UHID_START:
-        #         pass
+    def read_event(
+        self,
+    ) -> tuple[
+        Literal[
+            None, "open", "close", "start", "stop", "set_report", "get_report", "output"
+        ],
+        EventOther | EventStart | EventOutput | EventSetReport | EventGetReport,
+    ]:
+        if self.poll and not self.poll.poll():
+            return None, {}
+
+        d = os.read(self.fd, _UHID_DATA_MAX)
+        v = int.from_bytes(d[:4])
+        if v == UHID_START:
+            return "start", {"dev_flags": int.from_bytes(d[4:12])}
+        elif v == UHID_STOP:
+            return "stop", {}
+        elif v == UHID_OPEN:
+            return "open", {}
+        elif v == UHID_CLOSE:
+            return "close", {}
+        elif v == UHID_OUTPUT:
+            return "output", {"report": d[-1], "data": d[:-3]}
+        elif v == UHID_SET_REPORT:
+            return "set_report", {
+                "id": int.from_bytes(d[:8]),
+                "rnum": d[8],
+                "rtype": d[9],
+                "data": d[10:],
+            }
+        elif v == UHID_GET_REPORT:
+            return "get_report", {
+                "id": int.from_bytes(d[:8]),
+                "rnum": d[8],
+                "rtype": d[9],
+            }
+        assert False, f"Report type uknown"
 
     def send_create(self) -> None:
         ev = (
@@ -234,11 +302,12 @@ class UhidDevice:
         self.send_event(ev)
 
     def send_destroy(self) -> None:
-        self.send_event(Event.UHID_DESTROY, DestroyReq())
+        self.send_event(int.to_bytes(UHID_DESTROY, 4))
 
-    def dispatch(self, stop: Optional["threading.Event"] = None) -> None:
-        poller = select.epoll()
-        poller.register(self._uhid, select.EPOLLIN)
-        while not stop.is_set() if stop else True:
-            for _fd, _event_type in poller.poll():
-                self.single_dispatch()
+    def send_get_reply(self, id: int, err: int, data: bytes):
+        ev = struct.pack("< L H H", id, err, len(data)) + data
+        self.send_event(ev)
+
+    def send_set_reply(self, id: int, err: int):
+        ev = struct.pack("< L H", id, err)
+        self.send_event(ev)
