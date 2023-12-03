@@ -1,4 +1,7 @@
 from time import sleep
+from typing import Any, Generator, Literal, NamedTuple, Sequence
+
+from anyio import open_process
 from ..base import ThreadedLoop, VirtualController, Button, Axis
 import os
 
@@ -7,10 +10,39 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def prepare_sensors():
+class ScanElement(NamedTuple):
+    # Output Info
+    axis: Axis | None
+    # Buffer Info
+    endianness: Literal["little", "big"]
+    signed: bool
+    bits: int
+    storage_bits: int
+    shift: int
+    # Postprocess info
+    scale: float
+    offset: float
+
+
+class DeviceInfo(NamedTuple):
+    dev: str
+    axis: Sequence[ScanElement]
+
+
+ACCEL_MAPPINGS = [
+    (Axis.ACCEL_X, "accel_x", "accel"),
+    (Axis.ACCEL_Y, "accel_y", "accel"),
+    (Axis.ACCEL_Z, "accel_z", "accel"),
+]
+GYRO_MAPPINGS = [
+    (Axis.GYRO_X, "anglvel_x", "anglvel"),
+    (Axis.GYRO_Y, "anglvel_y", "anglvel"),
+    (Axis.GYRO_Z, "anglvel_z", "anglvel"),
+]
+
+
+def find_sensor(sensor: str):
     IIO_BASE_DIR = "/sys/bus/iio/devices/"
-    accel = None
-    gyro = None
 
     for d in os.listdir(IIO_BASE_DIR):
         if not "device" in d:
@@ -25,91 +57,117 @@ def prepare_sensors():
         with open(name_fn, "r") as f:
             name = f.read()
 
-        match (name.strip()):
-            case "accel_3d":
-                accel = sensor_dir
-            case "gyro_3d":
-                gyro = sensor_dir
+        if name.strip() == sensor:
+            logger.info(f"Found device '{sensor}' at\n{sensor_dir}")
+            return sensor_dir
 
-    logger.info(f"Found accelerometer at\n{accel}. Found Gyroscope at:\n{gyro}")
-
-    for name, sensor, freq in (
-        ("Accelerometer", accel, "in_accel_sampling_frequency"),
-        ("Gyroscope", gyro, "in_anglvel_sampling_frequency"),
-    ):
-        if sensor:
-            try:
-                fn = os.path.join(sensor, freq)
-                with open(fn, "w") as f:
-                    f.write("1000\n")
-                with open(fn, "r") as f:
-                    val = float(f.read().strip())
-                logger.info(f"Set {name} sampling rate to: {val:.3f}")
-            except Exception as e:
-                logger.error(f"Could not change {name} frequency, error:\n{e}")
-    return accel, gyro
+    return None
 
 
-def read_sysfs(path: str, name: str):
-    with open(os.path.join(path, name), "r") as f:
-        return float(f.read().strip())
+def write_sysfs(dir: str, fn: str, val: Any):
+    with open(os.path.join(dir, fn), "w") as f:
+        f.write(str(val))
 
 
-def open_sysfs(path: str, name: str):
-    return open(os.path.join(path, name), "r")
+def read_sysfs(dir: str, fn: str):
+    with open(os.path.join(dir, fn), "r") as f:
+        return f.read().strip()
 
 
-class Imu(ThreadedLoop[VirtualController]):
-    def run(self):
-        accel, gyro = prepare_sensors()
+def prepare_dev(
+    sensor_dir: str, mappings: Sequence[tuple[Axis, str, str]]
+) -> DeviceInfo | None:
+    # @TODO: Add boosting sampling frequency support
 
-        if not accel or not gyro:
+    # Prepare device buffer
+    dev = os.path.join("/dev", os.path.basename(sensor_dir))
+    axis = {}
+    write_sysfs(sensor_dir, "buffer/enable", 0)
+
+    # Disable all scan elements
+    for s in os.listdir(os.path.join(sensor_dir, "scan_elements")):
+        if s.endswith("_en"):
+            write_sysfs(sensor_dir, os.path.join("scan_elements", s), 0)
+
+    # Selectively enable required ones and fill up buffer
+    for ax, fn, meta_fn in mappings:
+        write_sysfs(sensor_dir, f"scan_elements/in_{fn}_en", 1)
+
+        # Prepare buffer metadata
+        idx = int(read_sysfs(sensor_dir, f"scan_elements/in_{fn}_index"))
+        if idx == -1:
             logger.error(
-                f"Did not find either accel or gyro, gyro emulation is disabled."
+                f"Device '{dev}' element '{fn}' does not support buffered capture."
             )
+            return None
+        se = read_sysfs(sensor_dir, f"scan_elements/in_{fn}_type")
+
+        endianness = "big" if se.startswith("be:") else "little"
+        signed = "e:u" in se
+
+        bits = int(se[se.index(":") + 2 : se.index(":") + 4])
+        storage_bits = int(se[se.index("/") + 1 : se.index("/") + 3])
+        shift = int(se[-1])
+
+        # Prepare scan metadata
+        offset = float(read_sysfs(sensor_dir, f"in_{meta_fn}_offset"))
+        scale = float(read_sysfs(sensor_dir, f"in_{meta_fn}_scale"))
+
+        axis[idx] = ScanElement(
+            ax, endianness, signed, bits, storage_bits, shift, scale, offset
+        )
+    write_sysfs(sensor_dir, "buffer/enable", 1)
+
+    axis_arr = tuple(axis[i] for i in sorted(axis))
+    return DeviceInfo(dev, axis_arr)
+
+
+def scan_device(dev: DeviceInfo) -> Generator[tuple[Axis | None, float], None, None]:
+    with open(dev.dev, "rb") as f:
+        while True:
+            for se in dev.axis:
+                d = f.read(se.storage_bits >> 3)
+                d = int.from_bytes(d, byteorder=se.endianness)
+                d = d >> se.shift
+                d &= (1 << se.bits) - 1
+                d = d * se.scale + se.offset
+                yield se.axis, d
+            yield None, 0
+
+
+class AccelImu(ThreadedLoop[VirtualController]):
+    def run(self):
+        sens_dir = find_sensor("accel_3d")
+        if not sens_dir:
             return
 
-        accel_ofs = read_sysfs(accel, "in_accel_offset")
-        accel_scale = read_sysfs(accel, "in_accel_scale")
-        gyro_ofs = read_sysfs(gyro, "in_anglvel_offset")
-        gyro_scale = read_sysfs(gyro, "in_anglvel_scale")
+        dev = prepare_dev(sens_dir, ACCEL_MAPPINGS)
+        if not dev:
+            return
 
-        with (
-            open_sysfs(gyro, "in_anglvel_x_raw") as fd_gx,
-            open_sysfs(gyro, "in_anglvel_y_raw") as fd_gy,
-            open_sysfs(gyro, "in_anglvel_z_raw") as fd_gz,
-            open_sysfs(accel, "in_accel_x_raw") as fd_ax,
-            open_sysfs(accel, "in_accel_y_raw") as fd_ay,
-            open_sysfs(accel, "in_accel_z_raw") as fd_az,
-        ):
-            while True:
-                if self.should_exit:
-                    return
+        for ax, d in scan_device(dev):
+            if self.should_exit:
+                return
+            if ax is not None:
+                self.callback.set_axis(ax, d)
+            else:
+                self.callback.commit()
 
-                try:
-                    gyro_x = float(fd_gx.read()) * gyro_scale + gyro_ofs
-                    fd_gx.seek(0)
-                    gyro_y = float(fd_gy.read()) * gyro_scale + gyro_ofs
-                    fd_gy.seek(0)
-                    gyro_z = float(fd_gz.read()) * gyro_scale + gyro_ofs
-                    fd_gz.seek(0)
 
-                    accel_x = float(fd_ax.read()) * accel_scale + accel_ofs
-                    fd_ax.seek(0)
-                    accel_y = float(fd_ay.read()) * accel_scale + accel_ofs
-                    fd_ay.seek(0)
-                    accel_z = float(fd_az.read()) * accel_scale + accel_ofs
-                    fd_az.seek(0)
+class GyroImu(ThreadedLoop[VirtualController]):
+    def run(self):
+        sens_dir = find_sensor("gyro_3d")
+        if not sens_dir:
+            return
 
-                    self.callback.set_axis(Axis.GYRO_X, gyro_x)
-                    self.callback.set_axis(Axis.GYRO_Y, gyro_y)
-                    self.callback.set_axis(Axis.GYRO_Z, gyro_z)
+        dev = prepare_dev(sens_dir, GYRO_MAPPINGS)
+        if not dev:
+            return
 
-                    self.callback.set_axis(Axis.ACCEL_X, accel_x)
-                    self.callback.set_axis(Axis.ACCEL_Y, accel_y)
-                    self.callback.set_axis(Axis.ACCEL_Z, accel_z)
-
-                    self.callback.flush()
-                except ValueError as e:
-                    print(e)
-                    sleep(0.2)
+        for ax, d in scan_device(dev):
+            if self.should_exit:
+                return
+            if ax is not None:
+                self.callback.set_axis(ax, d)
+            else:
+                self.callback.commit()

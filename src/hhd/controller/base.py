@@ -174,5 +174,5 @@ class VirtualController:
     def set_btn(self, key: Button, val: bool):
         pass
 
-    def flush(self):
+    def commit(self):
         pass
