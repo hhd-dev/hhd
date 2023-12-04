@@ -103,7 +103,7 @@ def prepare_dev(
         se = read_sysfs(sensor_dir, f"scan_elements/in_{fn}_type")
 
         endianness = "big" if se.startswith("be:") else "little"
-        signed = "e:u" in se
+        signed = "e:s" in se
 
         bits = int(se[se.index(":") + 2 : se.index(":") + 4])
         storage_bits = int(se[se.index("/") + 1 : se.index("/") + 3])
@@ -127,9 +127,10 @@ def scan_device(dev: DeviceInfo) -> Generator[tuple[Axis | None, float], None, N
         while True:
             for se in dev.axis:
                 d = f.read(se.storage_bits >> 3)
-                d = int.from_bytes(d, byteorder=se.endianness)
-                d = d >> se.shift
-                d &= (1 << se.bits) - 1
+                d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
+                # TODO: Implement parsing iio fully, by adding shifting and cutoff
+                # d = d >> se.shift
+                # d &= (1 << se.bits) - 1
                 d = d * se.scale + se.offset
                 yield se.axis, d
             yield None, 0
@@ -146,7 +147,7 @@ class AccelImu(ThreadedTransmitter[VirtualController]):
             return
 
         for ax, d in scan_device(dev):
-            self.pause()
+            self.wait()
 
             if self.should_exit:
                 return
@@ -167,7 +168,7 @@ class GyroImu(ThreadedTransmitter[VirtualController]):
             return
 
         for ax, d in scan_device(dev):
-            self.pause()
+            self.wait()
 
             if self.should_exit:
                 return

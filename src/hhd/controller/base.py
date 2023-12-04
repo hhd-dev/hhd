@@ -1,6 +1,6 @@
 from concurrent.futures import thread
 from functools import partial
-from threading import Condition, Lock, Thread
+from threading import Condition, Event, Lock, Thread
 from typing import TypeVar, cast
 from enum import Enum
 from typing import Generic, TypeVarTuple
@@ -95,7 +95,8 @@ Configuration = Enum(
 )
 
 
-CB_COND = Condition()
+CB_LOCK = Lock()
+CB_COND = Condition(CB_LOCK)
 
 
 class ThreadedReceiver:
@@ -105,17 +106,19 @@ class ThreadedReceiver:
     If it is, it should set `available()` equal to `True`."""
 
     def __init__(self) -> None:
-        self._available = True
+        self._available = Event()
 
     @property
     def available(self):
-        with CB_COND:
-            return self._available
+        return self._available.is_set()
 
     @available.setter
     def available(self, val: bool):
+        if val:
+            self._available.set()
+        else:
+            self._available.clear()
         with CB_COND:
-            self._available = val
             CB_COND.notify_all()
 
 
@@ -150,19 +153,20 @@ class ThreadedTransmitter(Generic[A]):
     def __init__(self) -> None:
         self.callback: A
         self._callbacks: list[A] = []
-        self._should_exit = False
+        self._should_exit = Event()
         self._thread = None
 
         # Setup fake callback object to call multiple listeners
         self.callback = cast(A, _CallbackWrapper(self._callback))
 
     def _callback(self, fun: str, *args, **kwargs):
-        with CB_COND:
-            for cb in self._callbacks:
-                getattr(cb, fun)(*args, **kwargs)
+        with CB_LOCK:
+            cbs = list(self._callbacks)
+        for cb in cbs:
+            getattr(cb, fun)(*args, **kwargs)
 
-    def pause(self):
-        with CB_COND:
+    def wait(self):
+        with CB_LOCK:
             CB_COND.wait_for(
                 lambda: self.should_exit
                 or (self._callbacks and any(c.available for c in self._callbacks))
@@ -176,8 +180,8 @@ class ThreadedTransmitter(Generic[A]):
         if not self._thread:
             return
 
+        self._should_exit.set()
         with CB_COND:
-            self._should_exit = True
             CB_COND.notify_all()
 
         self._thread.join()
@@ -185,24 +189,31 @@ class ThreadedTransmitter(Generic[A]):
 
     @property
     def should_exit(self):
-        with CB_COND:
-            return self._should_exit
+        return self._should_exit.is_set()
+
+    @property
+    def exit_event(self):
+        return self._should_exit
 
     def register(self, cb: A):
         with CB_COND:
             if cb not in self._callbacks:
                 self._callbacks.append(cb)
+            CB_COND.notify_all()
 
     def unregister(self, cb: A):
         with CB_COND:
             self._callbacks.remove(cb)
+            CB_COND.notify_all()
 
     def run(self):
         raise NotImplementedError()
 
 
 class ThreadedTransceiver(ThreadedTransmitter[A], ThreadedReceiver, Generic[A]):
-    pass
+    def __init__(self) -> None:
+        ThreadedTransmitter.__init__(self)
+        ThreadedReceiver.__init__(self)
 
 
 class PhysicalController(ThreadedReceiver):
