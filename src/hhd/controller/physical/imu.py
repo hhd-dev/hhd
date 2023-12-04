@@ -2,7 +2,9 @@ from time import sleep
 from typing import Any, Generator, Literal, NamedTuple, Sequence
 
 from anyio import open_process
-from ..base import ThreadedTransmitter, VirtualController, Button, Axis
+
+from hhd.controller.base import Event
+from ..base import Axis, Producer
 import os
 
 import logging
@@ -12,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class ScanElement(NamedTuple):
     # Output Info
-    axis: Axis | None
+    axis: Axis
     # Buffer Info
     endianness: Literal["little", "big"]
     signed: bool
@@ -30,14 +32,14 @@ class DeviceInfo(NamedTuple):
 
 
 ACCEL_MAPPINGS = [
-    (Axis.ACCEL_X, "accel_x", "accel"),
-    (Axis.ACCEL_Y, "accel_y", "accel"),
-    (Axis.ACCEL_Z, "accel_z", "accel"),
+    ("accel_x", "accel_x", "accel"),
+    ("accel_y", "accel_y", "accel"),
+    ("accel_z", "accel_z", "accel"),
 ]
 GYRO_MAPPINGS = [
-    (Axis.GYRO_X, "anglvel_x", "anglvel"),
-    (Axis.GYRO_Y, "anglvel_y", "anglvel"),
-    (Axis.GYRO_Z, "anglvel_z", "anglvel"),
+    ("gyro_x", "anglvel_x", "anglvel"),
+    ("gyro_y", "anglvel_y", "anglvel"),
+    ("gyro_z", "anglvel_z", "anglvel"),
 ]
 
 
@@ -122,57 +124,74 @@ def prepare_dev(
     return DeviceInfo(dev, axis_arr)
 
 
-def scan_device(dev: DeviceInfo) -> Generator[tuple[Axis | None, float], None, None]:
-    with open(dev.dev, "rb") as f:
-        while True:
-            for se in dev.axis:
-                d = f.read(se.storage_bits >> 3)
-                d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
-                # TODO: Implement parsing iio fully, by adding shifting and cutoff
-                # d = d >> se.shift
-                # d &= (1 << se.bits) - 1
-                d = d * se.scale + se.offset
-                yield se.axis, d
-            yield None, 0
+def process_scan_event(data: bytes, ofs: int, se: ScanElement):
+    # TODO: Implement parsing iio fully, by adding shifting and cutoff
+    d = data[ofs >> 3 : (ofs >> 3) + (se.storage_bits >> 3)]
+    d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
+    # d = d >> se.shift
+    # d &= (1 << se.bits) - 1
+    d = d * se.scale + se.offset
+    return d
 
 
-class AccelImu(ThreadedTransmitter[VirtualController]):
-    def run(self):
-        sens_dir = find_sensor("accel_3d")
+def get_size(dev: DeviceInfo):
+    out = 0
+    for s in dev.axis:
+        out += s.storage_bits
+    return out >> 3
+
+
+class Imu(Producer):
+    def __init__(self, name: str, mappings) -> None:
+        self.name = name
+        self.mappings = mappings
+        self.fd = 0
+
+    def open(self):
+        sens_dir = find_sensor(self.name)
         if not sens_dir:
-            return
+            return []
 
-        dev = prepare_dev(sens_dir, ACCEL_MAPPINGS)
+        dev = prepare_dev(sens_dir, self.mappings)
         if not dev:
-            return
+            return []
 
-        for ax, d in scan_device(dev):
-            self.wait()
+        self.dev = dev
+        self.fd = os.open(dev.dev, os.O_RDONLY)
+        self.size = get_size(dev)
 
-            if self.should_exit:
-                return
-            if ax is not None:
-                self.callback.set_axis(ax, d)
-            # else:
-            #     self.callback.commit()
+        return [self.fd]
+
+    def close(self, exit: bool):
+        if self.fd:
+            os.close(self.fd)
+        self.fd = 0
+        return True
+
+    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        if self.fd not in fds:
+            return []
+
+        data = os.read(self.fd, self.size)
+        out = []
+        ofs = 0
+        for se in self.dev.axis:
+            out.append(
+                {
+                    "type": "axis",
+                    "axis": se.axis,
+                    "val": process_scan_event(data, ofs, se),
+                }
+            )
+            ofs += se.storage_bits
+        return out
 
 
-class GyroImu(ThreadedTransmitter[VirtualController]):
-    def run(self):
-        sens_dir = find_sensor("gyro_3d")
-        if not sens_dir:
-            return
+class AccelImu(Imu):
+    def __init__(self) -> None:
+        super().__init__("accel_3d", ACCEL_MAPPINGS)
 
-        dev = prepare_dev(sens_dir, GYRO_MAPPINGS)
-        if not dev:
-            return
 
-        for ax, d in scan_device(dev):
-            self.wait()
-
-            if self.should_exit:
-                return
-            if ax is not None:
-                self.callback.set_axis(ax, d)
-            else:
-                self.callback.commit()
+class GyroImu(Imu):
+    def __init__(self) -> None:
+        super().__init__("gyro_3d", GYRO_MAPPINGS)

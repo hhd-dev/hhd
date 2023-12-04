@@ -1,4 +1,4 @@
-# Taken from the library hid
+# Taken from the library hid. TODO: Add proper attribution
 
 import os
 import ctypes

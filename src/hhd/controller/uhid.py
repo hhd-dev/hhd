@@ -1,11 +1,9 @@
 # SPDX-License-Identifier: MIT
-# Taken from unmaintained library python-uhid, mostly rewritten
+# Taken from unmaintained library python-uhid, mostly rewritten TODO: Add proper attribution
 
 from __future__ import annotations
 
-import ctypes
 import enum
-import inspect
 import os
 import os.path
 import select
@@ -18,8 +16,6 @@ from typing import (
     Optional,
     TypedDict,
 )
-
-__version__ = "0.0.1"
 
 _HID_MAX_DESCRIPTOR_SIZE = 4096
 _UHID_DATA_MAX = 4096
@@ -231,6 +227,15 @@ class UhidDevice:
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(vid={self.vid}, pid={self.pid}, name={self.name}, uniq={self.unique_name})"
+
+    def open(self):
+        self.send_create()
+        return self.fd
+    
+    def close(self):
+        if self.fd:
+            os.close(self.fd)
+            self.fd = 0
 
     def send_event(self, event: bytes):
         if not self.fd:

@@ -1,235 +1,181 @@
-from concurrent.futures import thread
-from functools import partial
-from threading import Condition, Event, Lock, Thread
-from typing import TypeVar, cast
-from enum import Enum
-from typing import Generic, TypeVarTuple
+from typing import Literal, Sequence, TypedDict
 
-"""All axis values are normalized floating point values from -1 to 1."""
-Axis = Enum(
-    "Axis",
-    [
-        # Sticks
-        "LEFT_STICK_X",
-        "LEFT_STICK_Y",
-        "RIGHT_STICK_X",
-        "RIGHT_STICK_Y",
-        # Triggers
-        "LEFT_TRIGGER",
-        "RIGHT_TRIGGER",
-        # Accelerometer
-        "ACCEL_X",
-        "ACCEL_Y",
-        "ACCEL_Z",
-        # Gyroscope
-        "GYRO_X",
-        "GYRO_Y",
-        "GYRO_Z",
-        # Touchpad
-        "TOUCHPAD_X",
-        "TOUCHPAD_Y",
-    ],
-)
-
-Button = Enum(
-    "Button",
-    [
-        # D-PAD
-        "DPAD_UP",
-        "DPAD_DOWN",
-        "DPAD_LEFT",
-        "DPAD_RIGHT",
-        # Thumbpad
-        "A",
-        "B",
-        "X",
-        "Y",
-        # Sticks
-        "LS",
-        "RS",
-        # Bumpers
-        "LB",
-        "RB",
-        # Back buttons
-        "EXTRA_L1",
-        "EXTRA_L2",
-        "EXTRA_L3",
-        "EXTRA_R1",
-        "EXTRA_R2",
-        "EXTRA_R3",
-        # Select
-        "START",
-        "SELECT",
-        # Misc
-        "GUIDE",
-        "SHARE",
-        "TOUCHPAD",
-    ],
-)
-
-"""Rumble may be reported for the controller as a whole, or the sides."""
-Rumble = Enum("Rumble", ["MODE", "INTENSITY", "INTENSITY_LEFT", "INTENSITY_RIGHT"])
-RumbleMode = Enum("RumbleMode", ["SQUARE", "CROSS", "CIRCLE", "TRIANGLE"])
-
-Configuration = Enum(
-    "Configuration",
-    [
-        # If the virtual controller has a single led, it shall use LED_#
-        # The actual controller should set all LEDS on the controller if it has multiple.
-        # Color is 3 bytes for RGB, given as an int.
-        "LED_COLOR",
-        # Brightness is 1 byte, for 256 levels
-        # If the response device does not support brightness control, it shall
-        # convert the rgb color to hue, assume saturation is 1, and derive a new
-        # RGB value from the brightness below
-        "LED_BRIGHTNESS",
-        # The controller might report colors individually.
-        "LED_RIGHT_COLOR",
-        "LED_RIGHT_BRIGHTNESS",
-        "LED_LEFT_COLOR",
-        "LED_LEFT_BRIGHTNESS",
-        # Misc
-        "LED_MUTE",  # Binary
-        "PLAYER",
-    ],
-)
+Axis = Literal[
+    # Sticks
+    # Values should range from -1 to 1
+    "left_stick_x",
+    "left_stick_y",
+    "right_stick_x",
+    "right_stick_y",
+    # Triggers
+    # Values should range from -1 to 1
+    "left_trigger",
+    "right_trigger",
+    # Accelerometer
+    # Values should be in m2/s
+    "accel_x",
+    "accel_y",
+    "accel_z",
+    # Gyroscope
+    # Values should be in deg/s
+    "gyro_x",
+    "gyro_y",
+    "gyro_z",
+    # Touchpad
+    # Height should be in [0, 1]. Width should be relative to height, e.g., for a
+    # 1080p touchpad, the max value of height will be 1920/1080
+    "touchpad_x",
+    "touchpad_y",
+]
 
 
-CB_LOCK = Lock()
-CB_COND = Condition(CB_LOCK)
+Button = Literal[
+    # D-pad
+    "dpad_up",
+    "dpad_down",
+    "dpad_left",
+    "dpad_right",
+    # Thumbpad
+    "a",
+    "b",
+    "x",
+    "y",
+    # Sticks
+    "ls",
+    "rs",
+    # Bumpers
+    "lb",
+    "rb",
+    # Back buttons
+    "extra_l1",
+    "extra_l2",
+    "extra_l3",
+    "extra_r1",
+    "extra_r2",
+    "extra_r3",
+    # Select
+    "start",
+    "select",
+    # Misc
+    "guide",
+    "share",
+    "touchpad",
+]
 
 
-class ThreadedReceiver:
-    """Implements the base functionality of a threaded callback, which can set when
-    it is available to receive data.
-
-    If it is, it should set `available()` equal to `True`."""
-
-    def __init__(self) -> None:
-        self._available = Event()
-
-    @property
-    def available(self):
-        return self._available.is_set()
-
-    @available.setter
-    def available(self, val: bool):
-        if val:
-            self._available.set()
-        else:
-            self._available.clear()
-        with CB_COND:
-            CB_COND.notify_all()
+Configuration = Literal[
+    # If the virtual controller has a single led, it shall use LED_#
+    # The actual controller should set all LEDS on the controller if it has multiple.
+    # Color is 3 bytes for RGB, given as an int.
+    "led_color",
+    # Brightness is 1 byte, for 256 levels
+    # If the response device does not support brightness control, it shall
+    # convert the rgb color to hue, assume saturation is 1, and derive a new
+    # RGB value from the brightness below
+    "led_brightness",
+    # The controller might report colors individually.
+    # Misc
+    "led_mute",  # binary
+    "player",
+    # Set the aspect ratio of the touchpad used
+    "touchpad_aspect_ratio",
+]
 
 
-A = TypeVar("A", bound=ThreadedReceiver)
+class RumbleEvent(TypedDict):
+    type: Literal["rumble"]
+    # Rumble side, if the controller has left/right rubmles.
+    # Producers that control rumble should either use `left`/`right` or `both`.
+    # But not both. Consumers that support 2 rumble and see `both` should set the
+    # color of both rumble. Consumers that have a single rumble and see 'left` or `right`
+    # shall use the last value or pick a random side (TODO: Determine if there
+    # are issues with either approach).
+    side: Literal["both", "left", "right"]
+    mode: Literal["disable", "square", "cross", "circle", "triangle"]
+    intensity: float
 
 
-class _CallbackWrapper:
-    def __init__(self, fun):
-        self.fun = fun
+class LedEvent(TypedDict):
+    type: Literal["led"]
 
-    def __getattr__(self, attr: str):
-        return partial(self.fun, attr)
+    # Led side, if the controller has left/right leds.
+    # Producers that control leds should either use `left`/`right` or `both`.
+    # But not both. Consumers that support 2 leds and see `both` should set the
+    # color of both leds. Consumers that support 1 LED and see 'left` or `right`
+    # shall use the last value or pick a random side (TODO: Determine if there
+    # are issues with either approach).
+    led: Literal["both", "left", "right"]
+
+    # Various lighting modes supported by the led.
+    mode: Literal["disable", "solid", "blinking", "rainbow", "spiral"]
+
+    # Brightness range is from 0 to 1
+    # If the response device does not support brightness control, it shall
+    # convert the rgb color to hue, assume saturation is 1, and derive a new
+    # RGB value from the brightness below
+    brightness: float
+
+    # The speed the led should blink if supported by the led
+    speed: float
+
+    # Color values for the led, may be ommited depending on the mode, by being
+    # set to 0
+    red: int
+    green: int
+    blue: int
 
 
-class ThreadedTransmitter(Generic[A]):
-    """Implements the base functionality for a threaded component that can respont to
-    callbacks. Callbacks types are passed as a generic, `A`, and registered with
-    the `register` function.
+class ButtonEvent(TypedDict):
+    type: Literal["button"]
+    button: Button
+    held: int
 
-    Multiple callbacks are supported, and are all wrapped in the `.callback` attribute,
-    which may be used by the underlying procedure to respond to all of them.
 
-    The threaded component of this function is achieved through `start()`, `stop()`,
-    and `run()`.
-    By calling `start()`, the `run()` function is launched on a separate thread.
-    When `stop()` is called, the `should_exit` is set to True and the function
-    waits for `run()` to exit.
-    Therefore, the `run()` function should check it periodically, ideally once per loop
-    and always less than per 1s, to ensure the program can close successfully.
-    """
+class AxisEvent(TypedDict):
+    type: Literal["axis"]
+    axis: Axis
+    val: float
 
-    def __init__(self) -> None:
-        self.callback: A
-        self._callbacks: list[A] = []
-        self._should_exit = Event()
-        self._thread = None
 
-        # Setup fake callback object to call multiple listeners
-        self.callback = cast(A, _CallbackWrapper(self._callback))
+class ConfigurationEvent(TypedDict):
+    type: Literal["configuration"]
+    conf: Configuration
+    val: str
 
-    def _callback(self, fun: str, *args, **kwargs):
-        with CB_LOCK:
-            cbs = list(self._callbacks)
-        for cb in cbs:
-            getattr(cb, fun)(*args, **kwargs)
 
-    def wait(self):
-        with CB_LOCK:
-            CB_COND.wait_for(
-                lambda: self.should_exit
-                or (self._callbacks and any(c.available for c in self._callbacks))
-            )
+Event = RumbleEvent | ButtonEvent | AxisEvent | ConfigurationEvent
 
-    def start(self):
-        self._thread = Thread(target=self.run)
-        self._thread.start()
 
-    def stop(self):
-        if not self._thread:
-            return
+class Producer:
+    def open(self) -> Sequence[int]:
+        """Opens and returns a list of file descriptors that should be listened to."""
+        raise NotImplementedError()
 
-        self._should_exit.set()
-        with CB_COND:
-            CB_COND.notify_all()
+    def close(self, exit: bool) -> bool:
+        """Called to close the device. 
+        
+        If `exit` is true, the program is about to
+        close. If it is false, the controller is entering power save mode because
+        it is unused. In this case, if this service is required, you may forgo
+        closing and return false. If true, it is assumed this producer is closed.
+        
+        `open()` will be called again once the consumers are ready. """
+        return False
 
-        self._thread.join()
-        self._thread = None
-
-    @property
-    def should_exit(self):
-        return self._should_exit.is_set()
-
-    @property
-    def exit_event(self):
-        return self._should_exit
-
-    def register(self, cb: A):
-        with CB_COND:
-            if cb not in self._callbacks:
-                self._callbacks.append(cb)
-            CB_COND.notify_all()
-
-    def unregister(self, cb: A):
-        with CB_COND:
-            self._callbacks.remove(cb)
-            CB_COND.notify_all()
-
-    def run(self):
+    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        """Called with the file descriptors that are ready to read."""
         raise NotImplementedError()
 
 
-class ThreadedTransceiver(ThreadedTransmitter[A], ThreadedReceiver, Generic[A]):
-    def __init__(self) -> None:
-        ThreadedTransmitter.__init__(self)
-        ThreadedReceiver.__init__(self)
+class Consumer:
+    available: bool
+    """Hint that states if the consumer can receive events. If it is false,
+    consumer will not be called. If all consumers are false, producers will
+    be closed to save CPU utilisation."""
 
-
-class PhysicalController(ThreadedReceiver):
-    def rumble(self, key: Rumble, val: RumbleMode | int):
+    def initialize(self):
+        """Optional method for initialization."""
         pass
 
-    def config(self, key: Configuration, val: int):
-        pass
-
-
-class VirtualController(ThreadedReceiver):
-    def set_axis(self, key: Axis, val: float):
-        pass
-
-    def set_btn(self, key: Button, val: bool):
-        pass
-
-    def commit(self):
+    def consume(self, events: Sequence[Event]):
         pass
