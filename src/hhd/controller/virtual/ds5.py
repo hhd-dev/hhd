@@ -114,6 +114,8 @@ class DualSense5Edge(Producer, Consumer):
                         continue
 
                     val = ev["val"]
+                    # TODO: Figure out the correct normalization values
+                    # For now, this does the inverse scaling of the legion go's imu data
                     if type == "gyro":
                         val = 5729.6 * val
                     elif type == "accel":
