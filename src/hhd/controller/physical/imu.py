@@ -1,3 +1,4 @@
+import select
 from time import sleep
 from typing import Any, Generator, Literal, NamedTuple, Sequence
 
@@ -32,14 +33,14 @@ class DeviceInfo(NamedTuple):
 
 
 ACCEL_MAPPINGS = [
-    ("accel_x", "accel_x", "accel"),
-    ("accel_y", "accel_y", "accel"),
-    ("accel_z", "accel_z", "accel"),
+    ("accel_z", "accel_x", "accel"),
+    ("accel_x", "accel_y", "accel"),
+    ("accel_y", "accel_z", "accel"),
 ]
 GYRO_MAPPINGS = [
-    ("gyro_x", "anglvel_x", "anglvel"),
-    ("gyro_y", "anglvel_y", "anglvel"),
-    ("gyro_z", "anglvel_z", "anglvel"),
+    ("gyro_z", "anglvel_x", "anglvel"),
+    ("gyro_x", "anglvel_y", "anglvel"),
+    ("gyro_y", "anglvel_z", "anglvel"),
 ]
 
 
@@ -173,6 +174,11 @@ class Imu(Producer):
             return []
 
         data = os.read(self.fd, self.size)
+
+        # Empty the buffer preventing repeated calls
+        while select.select([self.fd], [], [], 0)[0]:
+            data = os.read(self.fd, self.size)
+
         out = []
         ofs = 0
         for se in self.dev.axis:
