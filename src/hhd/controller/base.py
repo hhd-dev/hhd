@@ -26,7 +26,8 @@ Axis = Literal[
     "gyro_z",
     # Touchpad
     # Both width and height should go from [0, 1]. Aspect ratio is a setting.
-    # It is up to the device whether to stretch or accept the input.
+    # It is up to the device whether to stretch, crop and how to crop (either 
+    # crop part of the input or part of itself)
     "touchpad_x",
     "touchpad_y",
 ]
@@ -63,16 +64,6 @@ Button = Literal[
 
 
 Configuration = Literal[
-    # If the virtual controller has a single led, it shall use LED_#
-    # The actual controller should set all LEDS on the controller if it has multiple.
-    # Color is 3 bytes for RGB, given as an int.
-    "led_color",
-    # Brightness is 1 byte, for 256 levels
-    # If the response device does not support brightness control, it shall
-    # convert the rgb color to hue, assume saturation is 1, and derive a new
-    # RGB value from the brightness below
-    "led_brightness",
-    # The controller might report colors individually.
     # Misc
     "led_mute",  # binary
     "player",
