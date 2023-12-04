@@ -14,18 +14,9 @@ import sys
 import uuid
 
 from typing import (
-    Any,
-    Awaitable,
-    Callable,
-    Dict,
-    List,
     Literal,
-    NamedTuple,
     Optional,
-    Sequence,
-    Type,
     TypedDict,
-    Union,
 )
 
 __version__ = "0.0.1"
@@ -271,7 +262,7 @@ class UhidDevice:
         elif v == UHID_SET_REPORT:
             return {
                 "type": "set_report",
-                "id": int.from_bytes(d[:8], byteorder=sys.byteorder),
+                "id": int.from_bytes(d[4:8], byteorder=sys.byteorder),
                 "rnum": d[8],
                 "rtype": d[9],
                 "data": d[10:],
@@ -279,7 +270,7 @@ class UhidDevice:
         elif v == UHID_GET_REPORT:
             return {
                 "type": "get_report",
-                "id": int.from_bytes(d[:8], byteorder=sys.byteorder),
+                "id": int.from_bytes(d[4:8], byteorder=sys.byteorder),
                 "rnum": d[8],
                 "rtype": d[9],
             }
@@ -312,9 +303,9 @@ class UhidDevice:
         self.send_event(ev)
 
     def send_get_report_reply(self, id: int, err: int, data: bytes):
-        ev = struct.pack("< L H H", id, err, len(data)) + data
+        ev = struct.pack("< L L H H", UHID_GET_REPORT_REPLY, id, err, len(data)) + data
         self.send_event(ev)
 
     def send_set_report_reply(self, id: int, err: int):
-        ev = struct.pack("< L H", id, err)
+        ev = struct.pack("< L L H", UHID_GET_REPORT_REPLY, id, err)
         self.send_event(ev)

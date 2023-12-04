@@ -10,6 +10,23 @@ DS5_EDGE_NAME = b"Sony Interactive Entertainment DualSense Edge Wireless Control
 DS5_EDGE_MIN_REPORT_FREQ = 25
 DS5_EDGE_MAX_REPORT_FREQ = 1000
 
+
+def _prep_def_report():
+    d = bytearray(64)
+    d[0] = 0x01
+
+    d[62] = 0x80
+    d[57] = 0x80
+    d[53] = 0x80
+    d[48] = 0x80
+    d[35] = 0x80
+    d[44] = 0x80
+
+    return bytes(d)
+
+
+DS5_EDGE_REPORT_USB_BASE = _prep_def_report()
+
 DS5_EDGE_DESCRIPTOR = bytes(
     [
         0x05,
@@ -403,3 +420,145 @@ DS5_EDGE_DESCRIPTOR = bytes(
         0xC0,
     ]
 )
+
+
+DS5_EDGE_MAC_ADDR = [0x74, 0xE7, 0xD6, 0x3A, 0x47, 0xE8]
+DS5_EDGE_STOCK_REPORTS = {
+    0x09: bytes(  # Pairing
+        [
+            0x09,
+            DS5_EDGE_MAC_ADDR[0],
+            DS5_EDGE_MAC_ADDR[1],
+            DS5_EDGE_MAC_ADDR[2],
+            DS5_EDGE_MAC_ADDR[3],
+            DS5_EDGE_MAC_ADDR[4],
+            DS5_EDGE_MAC_ADDR[5],
+            0x08,
+            0x25,
+            0x00,
+            0x1E,
+            0x00,
+            0xEE,
+            0x74,
+            0xD0,
+            0xBC,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+        ]
+    ),
+    0x20: bytes(  # Firmware Info
+        [
+            0x20,
+            0x4A,
+            0x75,
+            0x6E,
+            0x20,
+            0x31,
+            0x39,
+            0x20,
+            0x32,
+            0x30,
+            0x32,
+            0x33,
+            0x31,
+            0x34,
+            0x3A,
+            0x34,
+            0x37,
+            0x3A,
+            0x33,
+            0x34,
+            0x03,
+            0x00,
+            0x44,
+            0x00,
+            0x08,
+            0x02,
+            0x00,
+            0x01,
+            0x36,
+            0x00,
+            0x00,
+            0x01,
+            0xC1,
+            0xC8,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x54,
+            0x01,
+            0x00,
+            0x00,
+            0x14,
+            0x00,
+            0x00,
+            0x00,
+            0x0B,
+            0x00,
+            0x01,
+            0x00,
+            0x06,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+        ]
+    ),
+    0x05: bytes(  # Calibration
+        [
+            0x05,
+            0xFE,
+            0xFF,
+            0xFC,
+            0xFF,
+            0xFE,
+            0xFF,
+            0x83,
+            0x22,
+            0x78,
+            0xDD,
+            0x92,
+            0x22,
+            0x5F,
+            0xDD,
+            0x95,
+            0x22,
+            0x6D,
+            0xDD,
+            0x1C,
+            0x02,
+            0x1C,
+            0x02,
+            0xF2,
+            0x1F,
+            0xED,
+            0xDF,
+            0xE3,
+            0x20,
+            0xDA,
+            0xE0,
+            0xEE,
+            0x1F,
+            0xDF,
+            0xDF,
+            0x0B,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+        ]
+    ),
+}

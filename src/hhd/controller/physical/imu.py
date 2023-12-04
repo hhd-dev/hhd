@@ -153,8 +153,8 @@ class AccelImu(ThreadedTransmitter[VirtualController]):
                 return
             if ax is not None:
                 self.callback.set_axis(ax, d)
-            else:
-                self.callback.commit()
+            # else:
+            #     self.callback.commit()
 
 
 class GyroImu(ThreadedTransmitter[VirtualController]):

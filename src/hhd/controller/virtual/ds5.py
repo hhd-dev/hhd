@@ -14,6 +14,8 @@ from .const import (
     DS5_EDGE_MIN_REPORT_FREQ,
     DS5_EDGE_NAME,
     DS5_EDGE_PRODUCT,
+    DS5_EDGE_REPORT_USB_BASE,
+    DS5_EDGE_STOCK_REPORTS,
     DS5_EDGE_VENDOR,
     DS5_EDGE_VERSION,
 )
@@ -21,13 +23,12 @@ from .const import (
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
 REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
 ANGL_RES = 1024
-HID_LEN = 124
 
 
 class DualSense5Edge(VirtualController, ThreadedTransceiver):
     def __init__(self) -> None:
         super().__init__()
-        self.report = bytearray(HID_LEN)
+        self.report = bytearray(DS5_EDGE_REPORT_USB_BASE)
         self.lock = Lock()
         self.cond = Condition(self.lock)
 
@@ -54,6 +55,11 @@ class DualSense5Edge(VirtualController, ThreadedTransceiver):
                         self.available = True
                     case "close":
                         self.available = False
+                    case "get_report":
+                        if ev["rnum"] in DS5_EDGE_STOCK_REPORTS:
+                            dev.send_get_report_reply(
+                                ev["id"], 0, DS5_EDGE_STOCK_REPORTS[ev["rnum"]]
+                            )
 
             # Sleep so that we have the minimum report rate, around 25hz
             # If we are woken by a commit, rerun the loop and sleep for the
@@ -71,9 +77,11 @@ class DualSense5Edge(VirtualController, ThreadedTransceiver):
                     continue
             last = curr
 
+            if not self.available:
+                continue
+
             with self.lock:
-                self.report[0] = 1
-                # self.report[28:32] = time.time_ns().to_bytes(4)
+                # self.report[28:32] = time.time_ns().to_bytes(4, byteorder=sys.byteorder)
                 dev.send_input_report(self.report)
 
             last = time.perf_counter()
@@ -106,15 +114,19 @@ class DualSense5Edge(VirtualController, ThreadedTransceiver):
             return
 
         if type == "gyro":
-            val = 1024 * val
+            val = 5729.6 * val
         elif type == "accel":
-            val = 8192 * val / 10
+            val = 10.19716 * val
         val = int(val)
 
         with self.lock:
-            self.report[ofs : ofs + 1] = int.to_bytes(
-                val, length=2, byteorder=sys.byteorder, signed=True
-            )
+            try:
+                self.report[ofs : ofs + 2] = int.to_bytes(
+                    val, length=2, byteorder=sys.byteorder, signed=True
+                )
+            except:
+                # TODO: Debug
+                pass
 
     def set_btn(self, key: Button, val: bool):
         pass
