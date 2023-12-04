@@ -1,16 +1,19 @@
-from typing import Literal, Sequence, TypedDict
+from typing import Any, Literal, Sequence, TypedDict
 
 Axis = Literal[
     # Sticks
     # Values should range from -1 to 1
-    "left_stick_x",
-    "left_stick_y",
-    "right_stick_x",
-    "right_stick_y",
+    "ls_x",
+    "ls_y",
+    "rs_x",
+    "rs_y",
     # Triggers
     # Values should range from -1 to 1
-    "left_trigger",
-    "right_trigger",
+    "lt",
+    "rt",
+    # Hat, implemented as axis. Either -1, 0, or 1
+    "hat_x",
+    "hat_y",
     # Accelerometer
     # Values should be in m2/s
     "accel_x",
@@ -22,19 +25,14 @@ Axis = Literal[
     "gyro_y",
     "gyro_z",
     # Touchpad
-    # Height should be in [0, 1]. Width should be relative to height, e.g., for a
-    # 1080p touchpad, the max value of height will be 1920/1080
+    # Both width and height should go from [0, 1]. Aspect ratio is a setting.
+    # It is up to the device whether to stretch or accept the input.
     "touchpad_x",
     "touchpad_y",
 ]
 
 
 Button = Literal[
-    # D-pad
-    "dpad_up",
-    "dpad_down",
-    "dpad_left",
-    "dpad_right",
     # Thumbpad
     "a",
     "b",
@@ -57,9 +55,10 @@ Button = Literal[
     "start",
     "select",
     # Misc
-    "guide",
+    "mode",
     "share",
-    "touchpad",
+    "touchpad_touch",
+    "touchpad_click",
 ]
 
 
@@ -140,7 +139,7 @@ class AxisEvent(TypedDict):
 class ConfigurationEvent(TypedDict):
     type: Literal["configuration"]
     conf: Configuration
-    val: str
+    val: Any
 
 
 Event = RumbleEvent | ButtonEvent | AxisEvent | ConfigurationEvent
@@ -152,14 +151,14 @@ class Producer:
         raise NotImplementedError()
 
     def close(self, exit: bool) -> bool:
-        """Called to close the device. 
-        
+        """Called to close the device.
+
         If `exit` is true, the program is about to
         close. If it is false, the controller is entering power save mode because
         it is unused. In this case, if this service is required, you may forgo
         closing and return false. If true, it is assumed this producer is closed.
-        
-        `open()` will be called again once the consumers are ready. """
+
+        `open()` will be called again once the consumers are ready."""
         return False
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
