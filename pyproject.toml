@@ -1,11 +1,11 @@
 [project]
 name = "hhd"
-version = "0.3.1"
+version = "0.0.1"
 authors = [
   { name="Kapenekakis Antheas", email="git@antheas.dev" },
 ]
 description = "Handheld Daemon, a tool for configuring handheld devices."
-readme = "README_PYPI.md"
+readme = "readme.md"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
