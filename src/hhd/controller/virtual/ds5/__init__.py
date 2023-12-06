@@ -1,15 +1,14 @@
 import sys
-from threading import Lock, Condition
 import time
 from typing import Sequence
 
-from hhd.controller.base import Axis, Button, Event
+from hhd.controller.base import Consumer, Event, Producer
+from hhd.controller.uhid import UhidDevice
 
-from ..base import Consumer, Producer
-from ..uhid import UhidDevice
 from .const import (
     DS5_EDGE_BUS,
     DS5_EDGE_COUNTRY,
+    DS5_EDGE_DELTA_TIME,
     DS5_EDGE_DESCRIPTOR,
     DS5_EDGE_MAX_REPORT_FREQ,
     DS5_EDGE_MIN_REPORT_FREQ,
@@ -19,7 +18,6 @@ from .const import (
     DS5_EDGE_STOCK_REPORTS,
     DS5_EDGE_VENDOR,
     DS5_EDGE_VERSION,
-    DS5_EDGE_DELTA_TIME,
 )
 
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ

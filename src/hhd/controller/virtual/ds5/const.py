@@ -1,4 +1,4 @@
-from ..uhid import BUS_USB
+from hhd.controller.uhid import BUS_USB
 
 DS5_EDGE_VENDOR = 0x054C
 DS5_EDGE_PRODUCT = 0x0DF2

@@ -142,8 +142,8 @@ def get_size(dev: DeviceInfo):
     return out >> 3
 
 
-class Imu(Producer):
-    def __init__(self, name: str, mappings) -> None:
+class IioReader(Producer):
+    def __init__(self, name: str, mappings: Sequence[tuple[Axis, str, str]]) -> None:
         self.name = name
         self.mappings = mappings
         self.fd = 0
@@ -193,11 +193,14 @@ class Imu(Producer):
         return out
 
 
-class AccelImu(Imu):
+class AccelImu(IioReader):
     def __init__(self) -> None:
         super().__init__("accel_3d", ACCEL_MAPPINGS)
 
 
-class GyroImu(Imu):
+class GyroImu(IioReader):
     def __init__(self) -> None:
         super().__init__("gyro_3d", GYRO_MAPPINGS)
+
+
+__all__ = ["IioReader", "AccelImu", "GyroImu"]
