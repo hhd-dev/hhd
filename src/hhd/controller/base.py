@@ -1,3 +1,4 @@
+import select
 from typing import Any, Literal, Sequence, TypedDict
 
 Axis = Literal[
@@ -58,12 +59,20 @@ Button = Literal[
     "b",
     "x",
     "y",
+    # D-PAD (avail as both axis and buttons)
+    "dpad_up",
+    "dpad_down",
+    "dpad_left",
+    "dpad_right",
     # Sticks
     "ls",
     "rs",
     # Bumpers
     "lb",
     "rb",
+    # Triggers
+    "lt",
+    "rt",
     # Back buttons
     "extra_l1",
     "extra_l2",
@@ -240,3 +249,7 @@ class Consumer:
 
     def consume(self, events: Sequence[Event]):
         pass
+
+
+def can_read(fd: int):
+    return select.select([fd], [], [], 0)[0]

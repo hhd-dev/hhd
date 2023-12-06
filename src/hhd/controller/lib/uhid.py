@@ -10,12 +10,9 @@ import select
 import struct
 import sys
 import uuid
+from typing import Literal, Optional, TypedDict
 
-from typing import (
-    Literal,
-    Optional,
-    TypedDict,
-)
+from hhd.controller import can_read
 
 _HID_MAX_DESCRIPTOR_SIZE = 4096
 _UHID_DATA_MAX = 4096
@@ -231,7 +228,7 @@ class UhidDevice:
     def open(self):
         self.send_create()
         return self.fd
-    
+
     def close(self):
         if self.fd:
             os.close(self.fd)
@@ -245,8 +242,7 @@ class UhidDevice:
     def read_event(
         self,
     ) -> None | EventOther | EventStart | EventOutput | EventSetReport | EventGetReport:
-        assert self.fd, "UHID, not open, call send_create!"
-        if not select.select([self.fd], [], [], 0)[0]:
+        if not self.fd or not can_read(self.fd):
             return None
 
         d = os.read(self.fd, _UHID_DATA_MAX)
