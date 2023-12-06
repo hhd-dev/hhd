@@ -1,8 +1,8 @@
 import logging
 from typing import Any, Literal, NamedTuple, Protocol, Sequence
 
-from ..hid import Device, enumerate_unique
-from ..base import Axis, Button, Consumer, Producer, Event
+from hhd.controller.lib.hid import Device, enumerate_unique
+from hhd.controller import Axis, Button, Consumer, Producer, Event
 
 logger = logging.getLogger(__name__)
 

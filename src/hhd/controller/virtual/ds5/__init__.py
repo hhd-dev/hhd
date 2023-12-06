@@ -2,8 +2,8 @@ import sys
 import time
 from typing import Sequence
 
-from hhd.controller.base import Consumer, Event, Producer
-from hhd.controller.uhid import UhidDevice
+from hhd.controller import Consumer, Event, Producer
+from hhd.controller.lib.uhid import UhidDevice
 
 from .const import (
     DS5_EDGE_BUS,
