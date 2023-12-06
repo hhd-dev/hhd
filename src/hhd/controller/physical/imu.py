@@ -179,14 +179,14 @@ class Imu(Producer):
         while select.select([self.fd], [], [], 0)[0]:
             data = os.read(self.fd, self.size)
 
-        out = []
+        out: list[Event] = []
         ofs = 0
         for se in self.dev.axis:
             out.append(
                 {
                     "type": "axis",
-                    "axis": se.axis,
-                    "val": process_scan_event(data, ofs, se),
+                    "code": se.axis,
+                    "value": process_scan_event(data, ofs, se),
                 }
             )
             ofs += se.storage_bits

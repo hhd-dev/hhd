@@ -2,3 +2,4 @@ venv
 *.pyc
 *.egg-info
 dist
+.vscode

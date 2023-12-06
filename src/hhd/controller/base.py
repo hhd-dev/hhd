@@ -26,10 +26,29 @@ Axis = Literal[
     "gyro_z",
     # Touchpad
     # Both width and height should go from [0, 1]. Aspect ratio is a setting.
-    # It is up to the device whether to stretch, crop and how to crop (either 
+    # It is up to the device whether to stretch, crop and how to crop (either
     # crop part of the input or part of itself)
     "touchpad_x",
     "touchpad_y",
+    # Sidedness
+    # Left
+    "left_accel_x",
+    "left_accel_y",
+    "left_accel_z",
+    "left_gyro_x",
+    "left_gyro_y",
+    "left_gyro_z",
+    "left_touchpad_x",
+    "left_touchpad_y",
+    # Right
+    "right_accel_x",
+    "right_accel_y",
+    "right_accel_z",
+    "right_gyro_x",
+    "right_gyro_y",
+    "right_gyro_z",
+    "right_touchpad_x",
+    "right_touchpad_y",
 ]
 
 
@@ -72,29 +91,81 @@ Configuration = Literal[
 ]
 
 
-class RumbleEvent(TypedDict):
+class EnvelopeEffect(TypedDict):
+    type: Literal["constant", "ramp"]
+    attack_length: int
+    attack_level: int
+    fade_length: int
+    fade_level: int
+
+
+class ConditionSide(TypedDict):
+    # TODO: replace with enums
+    right_saturation: int
+    left_saturation: int
+    right_coeff: int
+    left_coeff: int
+    deadband: int
+    center: int
+
+
+class RumbleEffect(TypedDict):
     type: Literal["rumble"]
-    # Rumble side, if the controller has left/right rubmles.
-    # Producers that control rumble should either use `left`/`right` or `both`.
-    # But not both. Consumers that support 2 rumble and see `both` should set the
-    # color of both rumble. Consumers that have a single rumble and see 'left` or `right`
-    # shall use the last value or pick a random side (TODO: Determine if there
-    # are issues with either approach).
-    side: Literal["both", "left", "right"]
-    mode: Literal["disable", "square", "cross", "circle", "triangle"]
-    intensity: float
+    strong_magnitude: float
+    weak_magnitude: float
 
 
-class LedEvent(TypedDict):
+class ConditionEffect(TypedDict):
+    type: Literal["condition"]
+    left: ConditionSide
+    right: ConditionSide
+
+
+class PeriodicEffect(TypedDict):
+    type: Literal["periodic"]
+    # Todo: replace with enums
+    waveform: int
+    period: int
+    magnitude: int
+    offset: int
+    phase: int
+
+    attack_length: int
+    attack_level: int
+    fade_length: int
+    fade_level: int
+
+    custom: bytes
+
+
+class EffectEvent(TypedDict):
+    # Always effect, better for filterring
+    type: Literal["effect"]
+    # Event target. Not part of the standard but required for e.g., DS5.
+    code: Literal["main", "left", "right"]
+
+    id: int
+    # TODO: Upgrade to literal
+    direction: int
+
+    trigger_button: str
+    trigger_interval: int
+
+    replay_length: int
+    replay_delay: int
+
+    effect: EnvelopeEffect | ConditionEffect | PeriodicEffect | RumbleEffect
+
+
+class RgbLedEvent(TypedDict):
+    """Inspired by new controllers with RGB leds, especially below the buttons.
+
+    Instead of code, this event type exposes multiple properties, including mode."""
+
     type: Literal["led"]
 
-    # Led side, if the controller has left/right leds.
-    # Producers that control leds should either use `left`/`right` or `both`.
-    # But not both. Consumers that support 2 leds and see `both` should set the
-    # color of both leds. Consumers that support 1 LED and see 'left` or `right`
-    # shall use the last value or pick a random side (TODO: Determine if there
-    # are issues with either approach).
-    led: Literal["both", "left", "right"]
+    # The led
+    code: Literal["main", "left", "right"]
 
     # Various lighting modes supported by the led.
     mode: Literal["disable", "solid", "blinking", "rainbow", "spiral"]
@@ -117,23 +188,23 @@ class LedEvent(TypedDict):
 
 class ButtonEvent(TypedDict):
     type: Literal["button"]
-    button: Button
-    held: int
+    code: Button
+    value: bool
 
 
 class AxisEvent(TypedDict):
     type: Literal["axis"]
-    axis: Axis
-    val: float
+    code: Axis
+    value: float
 
 
 class ConfigurationEvent(TypedDict):
     type: Literal["configuration"]
-    conf: Configuration
-    val: Any
+    code: Configuration
+    value: Any
 
 
-Event = RumbleEvent | ButtonEvent | AxisEvent | ConfigurationEvent
+Event = EffectEvent | ButtonEvent | AxisEvent | ConfigurationEvent
 
 
 class Producer:

@@ -141,8 +141,8 @@ class GenericGamepadEvdev(Producer):
             out.append(
                 {
                     "type": "configuration",
-                    "conf": "touchpad_aspect_ratio",
-                    "val": self.aspect_ratio,
+                    "code": "touchpad_aspect_ratio",
+                    "value": self.aspect_ratio,
                 }
             )
 
@@ -153,8 +153,8 @@ class GenericGamepadEvdev(Producer):
                         out.append(
                             {
                                 "type": "button",
-                                "button": self.btn_map[e.code],
-                                "held": bool(e.value),
+                                "code": self.btn_map[e.code],
+                                "value": bool(e.value),
                             }
                         )
                 elif e.type == B("EV_ABS"):
@@ -167,8 +167,8 @@ class GenericGamepadEvdev(Producer):
                         out.append(
                             {
                                 "type": "axis",
-                                "axis": self.axis_map[e.code],
-                                "val": val,
+                                "code": self.axis_map[e.code],
+                                "value": val,
                             }
                         )
         return out

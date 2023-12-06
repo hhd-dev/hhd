@@ -90,7 +90,7 @@ class DualSense5Edge(Producer, Consumer):
                 case "axis":
                     type = None
                     ofs = None
-                    match ev["axis"]:
+                    match ev["code"]:
                         case "gyro_x":
                             ofs = 16
                             type = "gyro"
@@ -113,7 +113,7 @@ class DualSense5Edge(Producer, Consumer):
                     if not type or not ofs:
                         continue
 
-                    val = ev["val"]
+                    val = ev["value"]
                     # TODO: Figure out the correct normalization values
                     # For now, this does the inverse scaling of the legion go's imu data
                     if type == "gyro":
