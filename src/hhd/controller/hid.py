@@ -11,13 +11,14 @@ __all__ = ["HIDException", "DeviceInfo", "Device", "enumerate"]
 library_paths = (
     "libhidapi-hidraw.so",
     "libhidapi-hidraw.so.0",
-    "libhidapi-libusb.so",
-    "libhidapi-libusb.so.0",
-    "libhidapi-iohidmanager.so",
-    "libhidapi-iohidmanager.so.0",
-    "libhidapi.dylib",
-    "hidapi.dll",
-    "libhidapi-0.dll",
+    # Only hidraw supported due to the fd requirement
+    # "libhidapi-libusb.so",
+    # "libhidapi-libusb.so.0",
+    # "libhidapi-iohidmanager.so",
+    # "libhidapi-iohidmanager.so.0",
+    # "libhidapi.dylib",
+    # "hidapi.dll",
+    # "libhidapi-0.dll",
 )
 
 for lib in library_paths:
@@ -66,6 +67,16 @@ DeviceInfo._fields_ = [
     ("next", ctypes.POINTER(DeviceInfo)),
 ]
 
+
+class LinuxHidDevice(ctypes.Structure):
+    _fields_ = [
+        ("device_handle", ctypes.c_int),
+        ("blocking", ctypes.c_int),
+        ("last_error_str", ctypes.c_wchar_p),
+        ("hid_device_info", ctypes.c_void_p),
+    ]
+
+
 hidapi.hid_init.argtypes = []
 hidapi.hid_init.restype = ctypes.c_int
 hidapi.hid_exit.argtypes = []
@@ -75,9 +86,9 @@ hidapi.hid_enumerate.restype = ctypes.POINTER(DeviceInfo)
 hidapi.hid_free_enumeration.argtypes = [ctypes.POINTER(DeviceInfo)]
 hidapi.hid_free_enumeration.restype = None
 hidapi.hid_open.argtypes = [ctypes.c_ushort, ctypes.c_ushort, ctypes.c_wchar_p]
-hidapi.hid_open.restype = ctypes.c_void_p
+hidapi.hid_open.restype = ctypes.POINTER(LinuxHidDevice)
 hidapi.hid_open_path.argtypes = [ctypes.c_char_p]
-hidapi.hid_open_path.restype = ctypes.c_void_p
+hidapi.hid_open_path.restype = ctypes.POINTER(LinuxHidDevice)
 hidapi.hid_write.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t]
 hidapi.hid_write.restype = ctypes.c_int
 hidapi.hid_read_timeout.argtypes = [
@@ -154,20 +165,34 @@ def enumerate(vid=0, pid=0):
     return ret
 
 
+def enumerate_unique():
+    """Returns the current connected devices,
+    sorted by path."""
+    return sorted(
+        list({v["path"]: v for v in enumerate()}.values()), key=lambda l: l["path"]
+    )
+
+
 class Device(object):
     def __init__(self, vid=None, pid=None, serial=None, path=None):
         if path:
-            self.__dev = hidapi.hid_open_path(path)
+            self._dev = hidapi.hid_open_path(path)
         elif serial:
             serial = ctypes.create_unicode_buffer(serial)
-            self.__dev = hidapi.hid_open(vid, pid, serial)
+            self._dev = hidapi.hid_open(vid, pid, serial)
         elif vid and pid:
-            self.__dev = hidapi.hid_open(vid, pid, None)
+            self._dev = hidapi.hid_open(vid, pid, None)
         else:
             raise ValueError("specify vid/pid or path")
 
-        if not self.__dev:
+        if not self._dev:
             raise HIDException("unable to open device")
+
+    @property
+    def fd(self):
+        if not self._dev:
+            return 0
+        return self._dev.contents.device_handle
 
     def __enter__(self):
         return self
@@ -176,32 +201,32 @@ class Device(object):
         self.close()
 
     def __hidcall(self, function, *args, **kwargs):
-        if not self.__dev:
+        if not self._dev:
             raise HIDException("device closed")
 
         ret = function(*args, **kwargs)
 
         if ret == -1:
-            err = hidapi.hid_error(self.__dev)
+            err = hidapi.hid_error(self._dev)
             raise HIDException(err)
         return ret
 
     def __readstring(self, function, max_length=255):
         buf = ctypes.create_unicode_buffer(max_length)
-        self.__hidcall(function, self.__dev, buf, max_length)
+        self.__hidcall(function, self._dev, buf, max_length)
         return buf.value
 
     def write(self, data):
-        return self.__hidcall(hidapi.hid_write, self.__dev, data, len(data))
+        return self.__hidcall(hidapi.hid_write, self._dev, data, len(data))
 
     def read(self, size, timeout=None):
         data = ctypes.create_string_buffer(size)
 
         if timeout is None:
-            size = self.__hidcall(hidapi.hid_read, self.__dev, data, size)
+            size = self.__hidcall(hidapi.hid_read, self._dev, data, size)
         else:
             size = self.__hidcall(
-                hidapi.hid_read_timeout, self.__dev, data, size, timeout
+                hidapi.hid_read_timeout, self._dev, data, size, timeout
             )
 
         return data.raw[:size]
@@ -212,12 +237,12 @@ class Device(object):
         # Pass the id of the report to be read.
         data[0] = bytearray((report_id,))
 
-        size = self.__hidcall(hidapi.hid_get_input_report, self.__dev, data, size)
+        size = self.__hidcall(hidapi.hid_get_input_report, self._dev, data, size)
         return data.raw[:size]
 
     def send_feature_report(self, data):
         return self.__hidcall(
-            hidapi.hid_send_feature_report, self.__dev, data, len(data)
+            hidapi.hid_send_feature_report, self._dev, data, len(data)
         )
 
     def get_feature_report(self, report_id, size):
@@ -226,13 +251,13 @@ class Device(object):
         # Pass the id of the report to be read.
         data[0] = bytearray((report_id,))
 
-        size = self.__hidcall(hidapi.hid_get_feature_report, self.__dev, data, size)
+        size = self.__hidcall(hidapi.hid_get_feature_report, self._dev, data, size)
         return data.raw[:size]
 
     def close(self):
-        if self.__dev:
-            hidapi.hid_close(self.__dev)
-            self.__dev = None
+        if self._dev:
+            hidapi.hid_close(self._dev)
+            self._dev = None
 
     @property
     def nonblocking(self):
@@ -240,7 +265,7 @@ class Device(object):
 
     @nonblocking.setter
     def nonblocking(self, value):
-        self.__hidcall(hidapi.hid_set_nonblocking, self.__dev, value)
+        self.__hidcall(hidapi.hid_set_nonblocking, self._dev, value)
         setattr(self, "_nonblocking", value)
 
     @property
@@ -257,7 +282,5 @@ class Device(object):
 
     def get_indexed_string(self, index, max_length=255):
         buf = ctypes.create_unicode_buffer(max_length)
-        self.__hidcall(
-            hidapi.hid_get_indexed_string, self.__dev, index, buf, max_length
-        )
+        self.__hidcall(hidapi.hid_get_indexed_string, self._dev, index, buf, max_length)
         return buf.value
