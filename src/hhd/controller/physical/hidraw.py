@@ -92,6 +92,7 @@ class GenericGamepadHidraw(Producer, Consumer):
                 f"Found device {hexify(d['vendor_id'])}:{hexify(d['product_id'])}:\n"
                 + f"'{d['manufacturer_string']}': '{d['product_string']}' at {d['path']}"
             )
+            self.report = None
             self.prev_btn = {}
             self.prev_axis = {}
             return [self.fd]
@@ -113,20 +114,30 @@ class GenericGamepadHidraw(Producer, Consumer):
         return []
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        # If we can not read return
         if not self.fd or not self.dev:
             return []
         rep = None
 
+        # Throw away stale events
         while can_read(self.fd):
             rep = self.dev.read(self.report_size)
+
+        # If we could not read (?) return
         if not rep:
+            return []
+
+        # If the report is the same as the previous one, return
+        if self.report and self.report == rep:
             return []
         self.report = rep
         rep_id = rep[0]
+
         # Allow for devices with NULL reports
         if None in self.btn_map or None in self.axis_map:
             rep_id = None
 
+        # Decode buttons
         out: list[Event] = []
         if rep_id in self.btn_map:
             for btn, map in self.btn_map[rep_id].items():
@@ -136,6 +147,7 @@ class GenericGamepadHidraw(Producer, Consumer):
                 self.prev_btn[btn] = val
                 out.append({"type": "button", "code": btn, "value": val})
 
+        # Decode Axis
         if rep_id in self.axis_map:
             for ax, map in self.axis_map[rep_id].items():
                 val = decode_axis(rep, map)
@@ -169,43 +181,49 @@ def pretty_print(dev: dict[str, str | int | bytes]):
 def decode_axis(buff: bytes, t: AM):
     match t.type:
         case "i32":
-            o = int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=True)
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=True
+            )
             s = (1 << 32) - 1
         case "u32":
-            o = int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False)
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False
+            )
             s = (1 << 31) - 1
         case "m32":
-            o = (
-                int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False)
-                - (1 << 31)
-                + 1
-            )
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False
+            ) - (1 << 31)
             s = (1 << 31) - 1
         case "i16":
-            o = int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=True)
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=True
+            )
             s = (1 << 16) - 1
         case "u16":
-            o = int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False)
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False
+            )
             s = (1 << 15) - 1
         case "m16":
-            o = (
-                int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False)
-                - (1 << 15)
-                + 1
-            )
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False
+            ) - (1 << 15)
             s = (1 << 15) - 1
         case "i8":
-            o = int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=True)
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=True
+            )
             s = (1 << 8) - 1
         case "u8":
-            o = int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False)
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
+            )
             s = (1 << 7) - 1
         case "m8":
-            o = (
-                int.from_bytes(buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False)
-                - (1 << 7)
-                + 1
-            )
+            o = int.from_bytes(
+                buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
+            ) - (1 << 7)
             s = (1 << 7) - 1
         case _:
             assert False, f"Invalid formatting {t.type}."
