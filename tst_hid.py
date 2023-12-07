@@ -61,7 +61,8 @@ try:
             out += f" {d[34:].hex()}"
             out += f"]"
             print(out)
-            print(ev)
+            if ev:
+                print(ev)
         # sleep a lil so stuff doesnt collapse
         ld = d
         sleep(0.01)

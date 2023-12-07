@@ -1,10 +1,17 @@
 import select
 import time
 
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge
-from hhd.device.legion_go import LGO_TOUCHPAD_AXIS_MAP, LGO_TOUCHPAD_BUTTON_MAP
+from hhd.device.legion_go import (
+    LGO_RAW_INTERFACE_AXIS_MAP,
+    LGO_RAW_INTERFACE_BTN_ESSENTIALS,
+    LGO_RAW_INTERFACE_BTN_MAP,
+    LGO_TOUCHPAD_AXIS_MAP,
+    LGO_TOUCHPAD_BUTTON_MAP,
+)
 
 
 def controller_loop():
@@ -20,6 +27,20 @@ def controller_loop():
         btn_map=LGO_TOUCHPAD_BUTTON_MAP,
         axis_map=LGO_TOUCHPAD_AXIS_MAP,
         aspect_ratio=1,
+    )
+    e = GenericGamepadHidraw(
+        vid=[0x17EF],
+        pid=[
+            0x6182,  # XINPUT
+            0x6183,  # DINPUT
+            0x6184,  # Dual DINPUT
+            0x6185,  # FPS
+        ],
+        usage_page=[0xFFA0],
+        usage=[0x0001],
+        report_size=64,
+        axis_map={},
+        btn_map=LGO_RAW_INTERFACE_BTN_ESSENTIALS,
     )
 
     REPORT_FREQ_MIN = 25
@@ -45,6 +66,7 @@ def controller_loop():
         prepare(c)
         prepare(d)
         prepare(p)
+        prepare(e)
 
         while True:
             start = time.perf_counter()
@@ -59,9 +81,9 @@ def controller_loop():
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
-            # if evs:
-            #     # TODO: Remove. For testing
-            #     print(evs)
+            if evs:
+                # TODO: Remove. For testing
+                print(evs)
             p.consume(evs)
 
             # If unbounded, the total number of events per second is the sum of all

@@ -279,4 +279,10 @@ Configuration = Literal[
     "player",
     # Set the aspect ratio of the touchpad used
     "touchpad_aspect_ratio",
+    "battery",
+    "is_connected",
+    "battery_left",
+    "is_connected_left",
+    "battery_right",
+    "is_connected_right",
 ]

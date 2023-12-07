@@ -2,36 +2,16 @@ import logging
 from typing import Any, Literal, NamedTuple, Protocol, Sequence
 
 from traitlets import default
-from ..base import can_read
 
+from hhd.controller import Axis, Button, Consumer, Event, Producer
+from hhd.controller.lib.common import AM, BM, decode_axis, get_button, hexify
 from hhd.controller.lib.hid import Device, enumerate_unique
-from hhd.controller import Axis, Button, Consumer, Producer, Event
+
+from ..base import can_read
 
 MAX_REPORT_SIZE = 4096
 
 logger = logging.getLogger(__name__)
-
-
-class BM(NamedTuple):
-    loc: int
-
-
-NumType = Literal["u32", "i32", "m32", "u16", "i16", "m16", "u8", "i8", "m8"]
-"""Numerical type for axis.
-
-Number is bit length. Letter signifies sign.
- - `u`: unsigned
- - 'i': signed
- - 'm': signed with middle point. Essentially, if `d` is bit width, `out = in - (1 << d)`
- """
-
-
-class AM(NamedTuple):
-    loc: int
-    type: NumType
-    order: Literal["little", "big"] = "little"
-    scale: float | None = None
-    offset: float = 0
 
 
 class EventCallback(Protocol):
@@ -141,7 +121,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         out: list[Event] = []
         if rep_id in self.btn_map:
             for btn, map in self.btn_map[rep_id].items():
-                val = bool(rep[map.loc // 8] & (1 << (7 - (map.loc % 8))))
+                val = get_button(rep, map)
                 if btn in self.prev_btn and self.prev_btn[btn] == val:
                     continue
                 self.prev_btn[btn] = val
@@ -157,81 +137,6 @@ class GenericGamepadHidraw(Producer, Consumer):
                 out.append({"type": "axis", "code": ax, "value": val})
 
         return out
-
-
-def hexify(d: int | Sequence[int]):
-    if isinstance(d, int):
-        return f"0x{d:04x}"
-    else:
-        return [hexify(v) for v in d]
-
-
-def pretty_print(dev: dict[str, str | int | bytes]):
-    out = ""
-    for n, v in dev.items():
-        if isinstance(v, int):
-            out += f"{n}: {hexify(v)}\n"
-        elif isinstance(v, str):
-            out += f"{n}: '{v}'\n"
-        else:
-            out += f"{n}: {v}\n"
-    return out
-
-
-def decode_axis(buff: bytes, t: AM):
-    match t.type:
-        case "i32":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=True
-            )
-            s = (1 << 31) - 1
-        case "u32":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False
-            )
-            s = (1 << 32) - 1
-        case "m32":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False
-            ) - (1 << 31)
-            s = (1 << 31) - 1
-        case "i16":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=True
-            )
-            s = (1 << 15) - 1
-        case "u16":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False
-            )
-            s = (1 << 16) - 1
-        case "m16":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False
-            ) - (1 << 15)
-            s = (1 << 15) - 1
-        case "i8":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=True
-            )
-            s = (1 << 7) - 1
-        case "u8":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
-            )
-            s = (1 << 8) - 1
-        case "m8":
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
-            ) - (1 << 7)
-            s = (1 << 7) - 1
-        case _:
-            assert False, f"Invalid formatting {t.type}."
-
-    if t.scale:
-        return t.scale * o + t.offset
-    else:
-        return o / s + t.offset
 
 
 __all__ = ["GenericGamepadHidraw", "BM", "AM"]

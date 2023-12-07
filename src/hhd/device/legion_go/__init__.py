@@ -16,6 +16,21 @@ LGO_TOUCHPAD_AXIS_MAP: dict[int, Axis] = to_map(
     }
 )
 
+LGO_RAW_INTERFACE_BTN_ESSENTIALS: dict[int | None, dict[Button, BM]] = {
+    0x04: {
+        # Misc
+        "mode": BM((18 << 3)),
+        "share": BM((18 << 3) + 1),
+        # Back buttons
+        "extra_l1": BM((20 << 3)),
+        "extra_l2": BM((20 << 3) + 1),
+        "extra_r1": BM((20 << 3) + 2),
+        "extra_r2": BM((20 << 3) + 5),
+        "extra_r3": BM((20 << 3) + 4),
+    }
+}
+
+
 LGO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
     0x04: {
         # Misc
