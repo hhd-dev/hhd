@@ -157,6 +157,8 @@ class IioReader(Producer):
         if not dev:
             return []
 
+        self.buf = None
+        self.prev = {}
         self.dev = dev
         self.fd = os.open(dev.dev, os.O_RDONLY)
         self.size = get_size(dev)
@@ -174,6 +176,9 @@ class IioReader(Producer):
             return []
 
         data = os.read(self.fd, self.size)
+        if self.buf == data:
+            return []
+        self.buf = data
 
         # Empty the buffer preventing repeated calls
         while select.select([self.fd], [], [], 0)[0]:
@@ -182,14 +187,17 @@ class IioReader(Producer):
         out: list[Event] = []
         ofs = 0
         for se in self.dev.axis:
-            out.append(
-                {
-                    "type": "axis",
-                    "code": se.axis,
-                    "value": process_scan_event(data, ofs, se),
-                }
-            )
-            ofs += se.storage_bits
+            new_val = process_scan_event(data, ofs, se)
+            if se.axis not in self.prev or self.prev[se.axis] != new_val:
+                out.append(
+                    {
+                        "type": "axis",
+                        "code": se.axis,
+                        "value": new_val,
+                    }
+                )
+                ofs += se.storage_bits
+                self.prev[se.axis] = new_val
         return out
 
 
