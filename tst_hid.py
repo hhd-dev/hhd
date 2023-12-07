@@ -11,10 +11,10 @@ from hhd.device.legion_go import LGO_RAW_INTERFACE_BTN_MAP, LGO_RAW_INTERFACE_AX
 v = GenericGamepadHidraw(
     vid=[0x17EF],
     pid=[
-        0x6181,
-        0x6182,
-        0x6183,
-        0x6184,
+        0x6182,  # XINPUT
+        0x6183,  # DINPUT
+        0x6184,  # Dual DINPUT
+        0x6185,  # FPS
     ],
     usage_page=[0xFFA0],
     usage=[0x0001],

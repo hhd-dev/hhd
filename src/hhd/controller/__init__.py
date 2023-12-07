@@ -1,4 +1,5 @@
-from .base import Axis, Button, Configuration, Event, Consumer, Producer, can_read
+from .base import Consumer, Event, Producer, can_read
+from .const import Axis, Button, Configuration
 
 __all__ = [
     "Axis",
