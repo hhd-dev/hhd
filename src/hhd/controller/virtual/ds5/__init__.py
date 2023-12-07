@@ -2,10 +2,13 @@ import sys
 import time
 from typing import Sequence
 
-from hhd.controller import Consumer, Event, Producer
+from hhd.controller import Axis, Button, Consumer, Event, Producer
+from hhd.controller.lib.common import AM, BM, decode_axis, encode_axis, set_button
 from hhd.controller.lib.uhid import UhidDevice
 
 from .const import (
+    DS5_AXIS_MAP,
+    DS5_BUTTON_MAP,
     DS5_EDGE_BUS,
     DS5_EDGE_COUNTRY,
     DS5_EDGE_DELTA_TIME,
@@ -22,7 +25,6 @@ from .const import (
 
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
 REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
-ANGL_RES = 1024
 
 
 class DualSense5Edge(Producer, Consumer):
@@ -83,53 +85,22 @@ class DualSense5Edge(Producer, Consumer):
 
     def consume(self, events: Sequence[Event]):
         assert self.dev and self.report
+
+        new_rep = bytearray(self.report)
         for ev in events:
             match ev["type"]:
                 case "axis":
-                    type = None
-                    ofs = None
-                    match ev["code"]:
-                        case "gyro_x":
-                            ofs = 16
-                            type = "gyro"
-                        case "gyro_y":
-                            ofs = 18
-                            type = "gyro"
-                        case "gyro_z":
-                            ofs = 20
-                            type = "gyro"
-                        case "accel_x":
-                            ofs = 22
-                            type = "accel"
-                        case "accel_y":
-                            ofs = 24
-                            type = "accel"
-                        case "accel_z":
-                            ofs = 26
-                            type = "accel"
-
-                    if not type or not ofs:
-                        continue
-
-                    val = ev["value"]
-                    # TODO: Figure out the correct normalization values
-                    # For now, this does the inverse scaling of the legion go's imu data
-                    if type == "gyro":
-                        val = 5729.6 * val
-                    elif type == "accel":
-                        val = 10.19716 * val
-                    val = int(val)
-
-                    try:
-                        self.report[ofs : ofs + 2] = int.to_bytes(
-                            val, length=2, byteorder=sys.byteorder, signed=True
-                        )
-                    except:
-                        # TODO: Debug
-                        pass
+                    if ev["code"] in DS5_AXIS_MAP:
+                        encode_axis(new_rep, DS5_AXIS_MAP[ev["code"]], ev["value"])
+                case "button":
+                    if ev["code"] in DS5_BUTTON_MAP:
+                        set_button(new_rep, DS5_BUTTON_MAP[ev["code"]], ev["value"])
+        if new_rep == self.report:
+            return
+        self.report = new_rep
 
         # Send report
-        self.report[28:32] = int(
-            (time.time() - self.start) * DS5_EDGE_DELTA_TIME
-        ).to_bytes(4, byteorder=sys.byteorder, signed=False)
+        new_rep[28:32] = int((time.time() - self.start) * DS5_EDGE_DELTA_TIME).to_bytes(
+            4, byteorder=sys.byteorder, signed=False
+        )
         self.dev.send_input_report(self.report)

@@ -1,3 +1,5 @@
+from hhd.controller import Axis, Button
+from hhd.controller.lib.common import AM, BM
 from hhd.controller.lib.uhid import BUS_USB
 
 DS5_EDGE_VENDOR = 0x054C
@@ -562,3 +564,14 @@ DS5_EDGE_STOCK_REPORTS = {
         ]
     ),
 }
+
+
+DS5_AXIS_MAP: dict[Axis, AM] = {
+    "gyro_x": AM((16 << 3), "i16", scale=5729.6),
+    "gyro_y": AM((18 << 3), "i16", scale=5729.6),
+    "gyro_z": AM((20 << 3), "i16", scale=5729.6),
+    "accel_x": AM((22 << 3), "i16", scale=10.19716),
+    "accel_y": AM((24 << 3), "i16", scale=10.19716),
+    "accel_z": AM((26 << 3), "i16", scale=10.19716),
+}
+DS5_BUTTON_MAP: dict[Button, BM] = {}
