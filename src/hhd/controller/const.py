@@ -270,8 +270,8 @@ KeyboardButton = Literal[
     "key_unknown",  # 240,
 ]
 
-Axis = AbsAxis
-Button = GamepadButton | KeyboardButton
+Axis = AbsAxis | RelAxis
+Button = GamepadButton | KeyboardButton | MouseButton
 
 Configuration = Literal[
     # Misc

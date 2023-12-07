@@ -48,6 +48,8 @@ LGO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
         # Select
         "start": BM((20 << 3) + 7),
         "select": BM((20 << 3) + 6),
+        # Mouse
+        "btn_middle": BM((21 << 3)),
     }
 }
 
@@ -60,6 +62,7 @@ LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
         "rs_y": AM(17 << 3, "m8"),
         "lt": AM(22 << 3, "u8"),
         "rt": AM(23 << 3, "u8"),
+        # "mouse_wheel": AM(25 << 3, "m8", scale=1), # TODO: Fix weird behavior
         "touchpad_x": AM(26 << 3, "u16"),
         "touchpad_y": AM(28 << 3, "u16"),
         "left_gyro_x": AM(30 << 3, "m8"),

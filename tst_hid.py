@@ -26,11 +26,12 @@ v.open()
 assert v.dev
 
 try:
+    ld = None
     while True:
         select.select([v.fd], [], [])
         ev = v.produce([v.fd])
         d = v.report
-        if d and ev:
+        if d and d != ld:
             out = f"[Ukn:"
             out += f" {d[:14].hex()}"
             out += f"][Sticks:"
@@ -42,13 +43,15 @@ try:
             out += f" {d[18]:08b}"
             out += f" {d[19]:08b}"
             out += f" {d[20]:08b}"
-            out += f"][Ukn:"
+            out += f"][Btn_mid:"
             out += f" {d[21]:02x}"
             out += f"][Trig:"
             out += f" {d[22]:02x}"
             out += f" {d[23]:02x}"
             out += f"][Ukn:"
-            out += f" {d[24:26].hex()}"
+            out += f" {d[24]:02x}"
+            out += f"][Scroll:"
+            out += f" {d[25]:02x}"
             out += f"][Touchpad:"
             out += f" {d[26:28].hex()}"
             out += f" {d[28:30].hex()}"
@@ -60,6 +63,7 @@ try:
             print(out)
             print(ev)
         # sleep a lil so stuff doesnt collapse
+        ld = d
         sleep(0.01)
 except KeyboardInterrupt:
     pass
