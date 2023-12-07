@@ -184,12 +184,12 @@ def decode_axis(buff: bytes, t: AM):
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=True
             )
-            s = (1 << 32) - 1
+            s = (1 << 31) - 1
         case "u32":
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False
             )
-            s = (1 << 31) - 1
+            s = (1 << 32) - 1
         case "m32":
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 4], t.order, signed=False
@@ -199,12 +199,12 @@ def decode_axis(buff: bytes, t: AM):
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=True
             )
-            s = (1 << 16) - 1
+            s = (1 << 15) - 1
         case "u16":
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False
             )
-            s = (1 << 15) - 1
+            s = (1 << 16) - 1
         case "m16":
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 2], t.order, signed=False
@@ -214,12 +214,12 @@ def decode_axis(buff: bytes, t: AM):
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=True
             )
-            s = (1 << 8) - 1
+            s = (1 << 7) - 1
         case "u8":
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
             )
-            s = (1 << 7) - 1
+            s = (1 << 8) - 1
         case "m8":
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
