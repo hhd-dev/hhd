@@ -282,7 +282,9 @@ Configuration = Literal[
     "battery",
     "is_connected",
     "battery_left",
-    "is_connected_left",
     "battery_right",
+    "is_connected_left",
     "is_connected_right",
+    "is_attached_left",
+    "is_attached_right",
 ]
