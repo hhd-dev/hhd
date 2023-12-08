@@ -9,7 +9,7 @@ AbsAxis = Literal[
     "rs_x",
     "rs_y",
     # Triggers
-    # Values should range from -1 to 1
+    # Values should range from 0 to 1
     "lt",
     "rt",
     # Hat, implemented as axis. Either -1, 0, or 1

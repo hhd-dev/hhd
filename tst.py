@@ -1,14 +1,14 @@
 import select
 import time
+from typing import Sequence
 
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
+from hhd.controller.base import Event
 from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge
 from hhd.device.legion_go import (
-    LGO_RAW_INTERFACE_AXIS_MAP,
     LGO_RAW_INTERFACE_BTN_ESSENTIALS,
-    LGO_RAW_INTERFACE_BTN_MAP,
     LGO_TOUCHPAD_AXIS_MAP,
     LGO_TOUCHPAD_BUTTON_MAP,
 )
@@ -81,9 +81,46 @@ def controller_loop():
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
-            if evs:
-                # TODO: Remove. For testing
-                print(evs)
+            # new_evs: Sequence[Event] = []
+            # for ev in evs:
+            #     if ev["type"] != "axis":
+            #         continue
+            #     match ev["code"]:
+            #         case "hat_y":
+            #             new_evs.append(
+            #                 {
+            #                     "type": "button",
+            #                     "code": "dpad_up",
+            #                     "value": ev["value"] > 0.5,
+            #                 }
+            #             )
+            #             new_evs.append(
+            #                 {
+            #                     "type": "button",
+            #                     "code": "dpad_down",
+            #                     "value": ev["value"] < -0.5,
+            #                 }
+            #             )
+            #         case "hat_x":
+            #             new_evs.append(
+            #                 {
+            #                     "type": "button",
+            #                     "code": "dpad_left",
+            #                     "value": ev["value"] > 0.5,
+            #                 }
+            #             )
+            #             new_evs.append(
+            #                 {
+            #                     "type": "button",
+            #                     "code": "dpad_right",
+            #                     "value": ev["value"] < -0.5,
+            #                 }
+            #             )
+            # evs.extend(new_evs)
+
+            # if evs:
+            #     # TODO: Remove. For testing
+            #     print(evs)
             p.consume(evs)
 
             # If unbounded, the total number of events per second is the sum of all
@@ -99,6 +136,8 @@ def controller_loop():
             elapsed = time.perf_counter() - start
             if elapsed < REPORT_DELAY_MIN:
                 time.sleep(REPORT_DELAY_MIN - elapsed)
+    except KeyboardInterrupt:
+        pass
     finally:
         for d in devs:
             d.close(True)

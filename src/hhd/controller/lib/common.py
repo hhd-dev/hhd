@@ -175,4 +175,4 @@ def set_button(rep: bytearray, map: BM, val: bool):
     if val:
         rep[map.loc // 8] |= 1 << (7 - (map.loc % 8))
     else:
-        rep[map.loc // 8] &= ~(1 << (7 - (map.loc % 8)))
+        rep[map.loc // 8] &= 255 - (1 << (7 - (map.loc % 8)))

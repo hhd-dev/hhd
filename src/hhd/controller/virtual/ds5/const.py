@@ -14,10 +14,34 @@ DS5_EDGE_MAX_REPORT_FREQ = 1000
 DS5_EDGE_DELTA_TIME = 4096.0
 
 
+def patch_dpad_val(buff: bytearray, hat_x: float, hat_y: float):
+    if hat_y < -0.5 and hat_x == 0:
+        v = 0  # North
+    elif hat_y < -0.5 and hat_x > 0.5:
+        v = 1  # North East
+    elif hat_y == 0 and hat_x > 0.5:
+        v = 2  # East
+    elif hat_y > 0.5 and hat_x > 0.5:
+        v = 3  # Southeast
+    elif hat_y > 0.5 and hat_x == 0:
+        v = 4  # South
+    elif hat_y > 0.5 and hat_x < -0.5:
+        v = 5  # Southwest
+    elif hat_y == 0 and hat_x < -0.5:
+        v = 6  # West
+    elif hat_y < -0.5 and hat_x < -0.5:
+        v = 7
+    else:
+        v = 8
+    buff[8] = (buff[8] & ~15) | v
+
+
 def _prep_def_report():
     d = bytearray(64)
     d[0] = 0x01
+    patch_dpad_val(d, 0, 0)
 
+    d[35] = 0x1B  # headset attachment?
     d[62] = 0x80
     d[57] = 0x80
     d[53] = 0x80
@@ -567,11 +591,39 @@ DS5_EDGE_STOCK_REPORTS = {
 
 
 DS5_AXIS_MAP: dict[Axis, AM] = {
-    "gyro_x": AM((16 << 3), "i16", scale=5729.6),
-    "gyro_y": AM((18 << 3), "i16", scale=5729.6),
-    "gyro_z": AM((20 << 3), "i16", scale=5729.6),
-    "accel_x": AM((22 << 3), "i16", scale=10.19716),
-    "accel_y": AM((24 << 3), "i16", scale=10.19716),
-    "accel_z": AM((26 << 3), "i16", scale=10.19716),
+    "gyro_x": AM((16 << 3), "i16", scale=10000),
+    "gyro_y": AM((18 << 3), "i16", scale=10000),
+    "gyro_z": AM((20 << 3), "i16", scale=10000),
+    "accel_x": AM((22 << 3), "i16", scale=10000),
+    "accel_y": AM((24 << 3), "i16", scale=10000),
+    "accel_z": AM((26 << 3), "i16", scale=10000),
+    "ls_x": AM((1 << 3), "m8"),
+    "ls_y": AM((2 << 3), "m8"),
+    "rs_x": AM((3 << 3), "m8"),
+    "rs_y": AM((4 << 3), "m8"),
+    "rt": AM((5 << 3), "u8"),
+    "lt": AM((6 << 3), "u8"),
 }
-DS5_BUTTON_MAP: dict[Button, BM] = {}
+
+DS5_BUTTON_MAP: dict[Button, BM] = {
+    "y": BM((8 << 3)),
+    "b": BM((8 << 3) + 1),
+    "a": BM((8 << 3) + 2),
+    "x": BM((8 << 3) + 3),
+    "lb": BM((9 << 3) + 7),
+    "rb": BM((9 << 3) + 6),
+    "lt": BM((9 << 3) + 5),
+    "rt": BM((9 << 3) + 4),
+    "select": BM((9 << 3) + 3),
+    "start": BM((9 << 3) + 2),
+    "ls": BM((9 << 3) + 1),
+    "rs": BM((9 << 3)),
+    "extra_r2": BM((10 << 3)),
+    "extra_l2": BM((10 << 3) + 1),
+    "extra_r1": BM((10 << 3) + 2),
+    "extra_l1": BM((10 << 3) + 3),
+    "extra_l3": BM((10 << 3) + 4),
+    "share": BM((10 << 3) + 5),
+    "touchpad_click": BM((10 << 3) + 6),
+    "mode": BM((10 << 3) + 7),
+}

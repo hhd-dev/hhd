@@ -1,3 +1,4 @@
+from collections import defaultdict
 import sys
 import time
 from typing import Sequence
@@ -21,6 +22,7 @@ from .const import (
     DS5_EDGE_STOCK_REPORTS,
     DS5_EDGE_VENDOR,
     DS5_EDGE_VERSION,
+    patch_dpad_val,
 )
 
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
@@ -46,6 +48,7 @@ class DualSense5Edge(Producer, Consumer):
             name=DS5_EDGE_NAME,
             report_descriptor=DS5_EDGE_DESCRIPTOR,
         )
+        self.state: dict = defaultdict(lambda: 0)
         self.start = time.time()
         self.fd = self.dev.open()
         return [self.fd]
@@ -92,14 +95,36 @@ class DualSense5Edge(Producer, Consumer):
                 case "axis":
                     if ev["code"] in DS5_AXIS_MAP:
                         encode_axis(new_rep, DS5_AXIS_MAP[ev["code"]], ev["value"])
+                    # DPAD is weird
+                    match ev["code"]:
+                        case "hat_x":
+                            self.state["hat_x"] = ev["value"]
+                            patch_dpad_val(
+                                new_rep, self.state["hat_x"], self.state["hat_y"]
+                            )
+                        case "hat_y":
+                            self.state["hat_y"] = ev["value"]
+                            patch_dpad_val(
+                                new_rep, self.state["hat_x"], self.state["hat_y"]
+                            )
                 case "button":
                     if ev["code"] in DS5_BUTTON_MAP:
                         set_button(new_rep, DS5_BUTTON_MAP[ev["code"]], ev["value"])
+
+        # Cache
         if new_rep == self.report:
             return
         self.report = new_rep
 
+        #
         # Send report
+        #
+        # Sequence number
+        if new_rep[7] < 255:
+            new_rep[7] += 1
+        else:
+            new_rep[7] = 0
+        # Timestamp
         new_rep[28:32] = int((time.time() - self.start) * DS5_EDGE_DELTA_TIME).to_bytes(
             4, byteorder=sys.byteorder, signed=False
         )
