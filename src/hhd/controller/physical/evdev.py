@@ -5,6 +5,8 @@ from typing import Mapping, Sequence, TypeVar, cast
 import evdev
 
 from hhd.controller import Axis, Button, Event, Producer
+from hhd.controller.lib.common import hexify
+
 from ..const import AbsAxis, GamepadButton, KeyboardButton
 
 logger = logging.getLogger(__name__)
@@ -68,9 +70,9 @@ XBOX_AXIS_MAP: dict[int, AbsAxis] = to_map(
 class GenericGamepadEvdev(Producer):
     def __init__(
         self,
-        vid: int | None,
-        pid: int | None,
-        name: str | None,
+        vid: Sequence[int],
+        pid: Sequence[int],
+        name: Sequence[str],
         btn_map: Mapping[int, Button] = XBOX_BUTTON_MAP,
         axis_map: Mapping[int, Axis] = XBOX_AXIS_MAP,
         aspect_ratio: float | None = None,
@@ -89,24 +91,29 @@ class GenericGamepadEvdev(Producer):
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
             dev = evdev.InputDevice(d)
-            if self.vid and dev.info.vendor != self.vid:
+            if self.vid and dev.info.vendor not in self.vid:
                 continue
-            if self.pid and dev.info.product != self.pid:
+            if self.pid and dev.info.product not in self.pid:
                 continue
-            if self.name and dev.name != self.name:
+            if self.name and dev.name not in self.name:
                 continue
             self.dev = dev
             self.dev.grab()
             self.ranges = {
-                a: (i.min, i.max) for a, i in self.dev.capabilities()[B("EV_ABS")]  # type: ignore
+                a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
             }
             self.fd = dev.fd
             self.started = True
             return [self.fd]
 
-        logger.error(
-            f"Device not found:\n{(self.pid if self.pid else 0):04X}:{(self.vid if self.vid else 0):04X} {self.name}"
-        )
+        err = f"Device with the following not found:\n"
+        if self.vid:
+            err += f"Vendor ID: {hexify(self.vid)}\n"
+        if self.pid:
+            err += f"Product ID: {hexify(self.pid)}\n"
+        if self.name:
+            err += f"Name: {self.name}\n"
+        logger.error(err)
         return []
 
     def close(self, exit: bool) -> bool:

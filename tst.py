@@ -9,8 +9,10 @@ from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge
 from hhd.device.legion_go import (
     LGO_RAW_INTERFACE_BTN_ESSENTIALS,
+    LGO_RAW_INTERFACE_BTN_MAP,
     LGO_TOUCHPAD_AXIS_MAP,
     LGO_TOUCHPAD_BUTTON_MAP,
+    SelectivePasshtrough,
 )
 
 
@@ -19,16 +21,33 @@ def controller_loop():
 
     a = AccelImu()
     b = GyroImu()
-    c = GenericGamepadEvdev(0x17EF, 0x6182, "Generic X-Box pad")
+    c = GenericGamepadEvdev([0x17EF], [0x6182], "Generic X-Box pad")
     d = GenericGamepadEvdev(
-        0x17EF,
-        0x6182,
-        "  Legion Controller for Windows  Touchpad",
+        [0x17EF],
+        [0x6182],
+        ["  Legion Controller for Windows  Touchpad"],
         btn_map=LGO_TOUCHPAD_BUTTON_MAP,
         axis_map=LGO_TOUCHPAD_AXIS_MAP,
         aspect_ratio=1,
     )
-    e = GenericGamepadHidraw(
+    e = SelectivePasshtrough(
+        GenericGamepadHidraw(
+            vid=[0x17EF],
+            pid=[
+                0x6182,  # XINPUT
+                0x6183,  # DINPUT
+                0x6184,  # Dual DINPUT
+                0x6185,  # FPS
+            ],
+            usage_page=[0xFFA0],
+            usage=[0x0001],
+            report_size=64,
+            axis_map={},
+            btn_map=LGO_RAW_INTERFACE_BTN_MAP,
+        )
+    )
+    # Mute keyboard shortcuts, mute
+    f = GenericGamepadEvdev(
         vid=[0x17EF],
         pid=[
             0x6182,  # XINPUT
@@ -36,11 +55,8 @@ def controller_loop():
             0x6184,  # Dual DINPUT
             0x6185,  # FPS
         ],
-        usage_page=[0xFFA0],
-        usage=[0x0001],
-        report_size=64,
-        axis_map={},
-        btn_map=LGO_RAW_INTERFACE_BTN_ESSENTIALS,
+        name=["  Legion Controller for Windows  Keyboard"]
+        # report_size=64,
     )
 
     REPORT_FREQ_MIN = 25
@@ -67,6 +83,7 @@ def controller_loop():
         prepare(d)
         prepare(p)
         prepare(e)
+        prepare(f)
 
         while True:
             start = time.perf_counter()

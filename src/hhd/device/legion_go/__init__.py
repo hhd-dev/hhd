@@ -1,5 +1,9 @@
-from hhd.controller import Button, Axis
-from hhd.controller.physical.evdev import to_map, B
+from collections import defaultdict
+from typing import Sequence
+
+from hhd.controller import Axis, Button, Consumer, Event, Producer
+from hhd.controller.physical.evdev import B, to_map
+
 from ...controller.physical.hidraw import AM, BM
 
 LGO_TOUCHPAD_BUTTON_MAP: dict[int, Button] = to_map(
@@ -86,3 +90,56 @@ LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
         "right_gyro_y": AM(33 << 3, "m8"),
     }
 }
+
+
+class SelectivePasshtrough(Producer, Consumer):
+    def __init__(
+        self,
+        parent,
+        forward_buttons: Sequence[Button] = ("share", "mode"),
+        passthrough: Sequence[Button] = list(LGO_RAW_INTERFACE_BTN_ESSENTIALS[0x04]),
+    ):
+        self.parent = parent
+        self.state = False
+
+        self.forward_buttons = forward_buttons
+        self.passthrough = passthrough
+
+        self.to_disable = []
+
+    def open(self) -> Sequence[int]:
+        return self.parent.open()
+
+    def close(self, exit: bool) -> bool:
+        return super().close(exit)
+
+    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        evs: Sequence[Event] = self.parent.produce(fds)
+
+        out = []
+        prev_state = self.state
+        for ev in evs:
+            if ev["type"] == "button" and ev["code"] in self.forward_buttons:
+                self.state = ev.get("value", False)
+
+            if ev["type"] == "button" and ev["code"] in self.passthrough:
+                out.append(ev)
+            elif ev["type"] == "button" and ev.get("value", False):
+                self.to_disable.append(ev["code"])
+
+        if self.state:
+            # If mode is pressed, forward all events
+            return evs
+        elif prev_state:
+            # If prev_state, meaning the user released the mode or share button
+            # turn off all buttons that were pressed during it
+            for btn in self.to_disable:
+                out.append({"type": "button", "code": btn, "value": False})
+            self.to_disable = []
+            return out
+        else:
+            # Otherwise, just return the standard buttons
+            return out
+
+    def consume(self, events: Sequence[Event]):
+        return self.parent.consume(events)

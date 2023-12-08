@@ -3,13 +3,10 @@ from typing import Any, Literal, NamedTuple, Protocol, Sequence
 
 from traitlets import default
 
-from hhd.controller import Axis, Button, Consumer, Event, Producer
+from hhd.controller import Axis, Button, Consumer, Event, Producer, can_read
 from hhd.controller.lib.common import AM, BM, decode_axis, get_button, hexify
-from hhd.controller.lib.hid import Device, enumerate_unique
+from hhd.controller.lib.hid import Device, enumerate_unique, MAX_REPORT_SIZE
 
-from ..base import can_read
-
-MAX_REPORT_SIZE = 4096
 
 logger = logging.getLogger(__name__)
 

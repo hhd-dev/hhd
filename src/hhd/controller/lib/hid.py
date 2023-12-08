@@ -38,6 +38,9 @@ hidapi.hid_init()
 atexit.register(hidapi.hid_exit)
 
 
+MAX_REPORT_SIZE = 4096
+
+
 class HIDException(Exception):
     pass
 
@@ -219,7 +222,7 @@ class Device(object):
     def write(self, data):
         return self.__hidcall(hidapi.hid_write, self._dev, data, len(data))
 
-    def read(self, size, timeout=None):
+    def read(self, size: int = MAX_REPORT_SIZE, timeout=None):
         data = ctypes.create_string_buffer(size)
 
         if timeout is None:
