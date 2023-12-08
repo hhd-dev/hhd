@@ -544,41 +544,41 @@ DS5_EDGE_STOCK_REPORTS = {
     ),
     0x05: bytes(  # Calibration
         [
-            0x05,
-            0xFE,
-            0xFF,
-            0xFC,
-            0xFF,
-            0xFE,
-            0xFF,
-            0x83,
-            0x22,
-            0x78,
-            0xDD,
-            0x92,
-            0x22,
-            0x5F,
-            0xDD,
-            0x95,
-            0x22,
-            0x6D,
-            0xDD,
-            0x1C,
-            0x02,
-            0x1C,
-            0x02,
-            0xF2,
-            0x1F,
-            0xED,
-            0xDF,
-            0xE3,
-            0x20,
-            0xDA,
-            0xE0,
-            0xEE,
-            0x1F,
-            0xDF,
-            0xDF,
+            0x05,  # Report ID
+            0x00,  # Gyro Pirch Bias
+            0x00,
+            0x00,  # Gyro Yaw Bias
+            0x00,
+            0x00,  # Gyro Roll Bias
+            0x00,
+            0x10,  # Gyro Pitch Plus
+            0x27,
+            0xF0,  # Gyro Pitch Minus
+            0xD8,
+            0x10,  # Gyro Yaw Plus
+            0x27,
+            0xF0,  # Gyro Yaw Minus
+            0xD8,
+            0x10,  # Gyro Roll Plus
+            0x27,
+            0xF0,  # Gyro Roll Minus
+            0xD8,
+            0xF4,  # Gyro Speed Plus
+            0x01,
+            0xF4,  # Gyro Speed Minus
+            0x01,
+            0x10,  # Accel X Plus
+            0x27,
+            0xF0,  # Accel X Minus
+            0xD8,
+            0x10,  # Accel Y Plus
+            0x27,
+            0xF0,  # Accel Y Minus
+            0xD8,
+            0x10,  # Accel Z Plus
+            0x27,
+            0xF0,  # Accel Z Minus
+            0xD8,
             0x0B,
             0x00,
             0x00,
@@ -589,11 +589,56 @@ DS5_EDGE_STOCK_REPORTS = {
     ),
 }
 
+# Real calibration data
+# Calibration
+# [
+#     0x05,  # Report ID
+#     0xFE,  # Gyro Pirch Bias
+#     0xFF,
+#     0xFC,  # Gyro Yaw Bias
+#     0xFF,
+#     0xFE,  # Gyro Roll Bias
+#     0xFF,
+#     0x83,  # Gyro Pitch Plus
+#     0x22,
+#     0x78,  # Gyro Pitch Minus
+#     0xDD,
+#     0x92,  # Gyro Yaw Plus
+#     0x22,
+#     0x5F,  # Gyro Yaw Minus
+#     0xDD,
+#     0x95,  # Gyro Roll Plus
+#     0x22,
+#     0x6D,  # Gyro Roll Minus
+#     0xDD,
+#     0x1C,  # Gyro Speed Plus
+#     0x02,
+#     0x1C,  # Gyro Speed Minus
+#     0x02,
+#     0xF2,  # Accel X Plus
+#     0x1F,
+#     0xED,  # Accel X Minus
+#     0xDF,
+#     0xE3,  # Accel Y Plus
+#     0x20,
+#     0xDA,  # Accel Y Minus
+#     0xE0,
+#     0xEE,  # Accel Z Plus
+#     0x1F,
+#     0xDF,  # Accel Z Minus
+#     0xDF,
+#     0x0B,
+#     0x00,
+#     0x00,
+#     0x00,
+#     0x00,
+#     0x00,
+# ]
 
 DS5_AXIS_MAP: dict[Axis, AM] = {
-    "gyro_x": AM((16 << 3), "i16", scale=10000),
-    "gyro_y": AM((18 << 3), "i16", scale=10000),
-    "gyro_z": AM((20 << 3), "i16", scale=10000),
+    "gyro_x": AM((16 << 3), "i16", scale=20), 
+    "gyro_y": AM((18 << 3), "i16", scale=20), 
+    "gyro_z": AM((20 << 3), "i16", scale=20),
     "accel_x": AM((22 << 3), "i16", scale=10000),
     "accel_y": AM((24 << 3), "i16", scale=10000),
     "accel_z": AM((26 << 3), "i16", scale=10000),
