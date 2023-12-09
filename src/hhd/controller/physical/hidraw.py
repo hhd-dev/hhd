@@ -12,6 +12,7 @@ from hhd.controller import (
     Producer,
     can_read,
 )
+from hhd.controller.base import Event
 from hhd.controller.lib.common import (
     AM,
     BM,
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class EventCallback(Protocol):
-    def __call__(self, dev: Device, ev: Event) -> Any:
+    def __call__(self, dev: Device, events: Sequence[Event]) -> Any:
         pass
 
 
@@ -160,6 +161,10 @@ class GenericGamepadHidraw(Producer, Consumer):
                 self.prev_config[cnf] = val
                 out.append({"type": "configuration", "code": cnf, "value": val})
         return out
+
+    def consume(self, events: Sequence[Event]):
+        if self.callback and self.dev:
+            self.callback(self.dev, events)
 
 
 __all__ = ["GenericGamepadHidraw", "BM", "AM"]

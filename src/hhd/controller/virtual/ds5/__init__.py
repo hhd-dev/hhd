@@ -177,8 +177,9 @@ class DualSense5Edge(Producer, Consumer):
                         continue
 
                     rep = ev["data"]
-                    if rep[2] & 4:
+                    if rep[2] & 4:  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
                         # Led data is being set
+                        led_brightness = rep[43]
                         player_leds = rep[44]
                         red = rep[45]
                         green = rep[46]
@@ -188,11 +189,27 @@ class DualSense5Edge(Producer, Consumer):
                                 "type": "led",
                                 "code": "main",
                                 "mode": "solid",
-                                "brightness": 1,
+                                "brightness": led_brightness / 63,
                                 "speed": 0,
                                 "red": red,
                                 "blue": blue,
                                 "green": green,
+                            }
+                        )
+                    elif (rep[39] & 2) and (rep[42] & 2):
+                        print('asdf')
+                        # flag2 is DS_OUTPUT_VALID_FLAG2_LIGHTBAR_SETUP_CONTROL_ENABLE
+                        # lightbar_setup is DS_OUTPUT_LIGHTBAR_SETUP_LIGHT_OUT
+                        out.append(
+                            {
+                                "type": "led",
+                                "code": "main",
+                                "mode": "disable",
+                                "brightness": 0,
+                                "speed": 0,
+                                "red": 0,
+                                "blue": 0,
+                                "green": 0,
                             }
                         )
 

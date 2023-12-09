@@ -1,10 +1,12 @@
 from collections import defaultdict
 from typing import Sequence
 
-from hhd.controller import Axis, Button, Consumer, Event, Producer, Configuration
+from hhd.controller import Axis, Button, Configuration, Consumer, Event, Producer
 from hhd.controller.physical.evdev import B, to_map
+from hhd.controller.lib.hid import Device
 
 from ...controller.physical.hidraw import AM, BM, CM
+from .hid import rgb_enable, rgb_multi_disable, rgb_multi_load_settings
 
 LGO_TOUCHPAD_BUTTON_MAP: dict[int, Button] = to_map(
     {
@@ -156,3 +158,34 @@ class SelectivePasshtrough(Producer, Consumer):
 
     def consume(self, events: Sequence[Event]):
         return self.parent.consume(events)
+
+
+def rgb_callback(dev: Device, events: Sequence[Event]):
+    for ev in events:
+        if ev["type"] == "led":
+            if ev["mode"] == "disable":
+                reps = rgb_multi_disable()
+            else:
+                match ev["mode"]:
+                    case "blinking":
+                        mode = "pulse"
+                    case "rainbow":
+                        mode = "dynamic"
+                    case "solid":
+                        mode = "solid"
+                    case "spiral":
+                        mode = "spiral"
+                    case _:
+                        assert False, f"Mode '{ev['mode']}' not supported."
+                reps = rgb_multi_load_settings(
+                    mode,
+                    0x03,
+                    ev["red"],
+                    ev["green"],
+                    ev["blue"],
+                    ev["brightness"],
+                    ev["speed"],
+                )
+
+            for r in reps:
+                dev.write(r)

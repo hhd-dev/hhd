@@ -7,14 +7,12 @@ from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge
-from hhd.device.legion_go import (
-    LGO_RAW_INTERFACE_BTN_ESSENTIALS,
-    LGO_RAW_INTERFACE_BTN_MAP,
-    LGO_RAW_INTERFACE_CONFIG_MAP,
-    LGO_TOUCHPAD_AXIS_MAP,
-    LGO_TOUCHPAD_BUTTON_MAP,
-    SelectivePasshtrough,
-)
+from hhd.device.legion_go import (LGO_RAW_INTERFACE_BTN_ESSENTIALS,
+                                  LGO_RAW_INTERFACE_BTN_MAP,
+                                  LGO_RAW_INTERFACE_CONFIG_MAP,
+                                  LGO_TOUCHPAD_AXIS_MAP,
+                                  LGO_TOUCHPAD_BUTTON_MAP,
+                                  SelectivePasshtrough, rgb_callback)
 
 
 def controller_loop():
@@ -46,6 +44,7 @@ def controller_loop():
             axis_map={},
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
+            callback=rgb_callback,
         )
     )
     # Mute keyboard shortcuts, mute
@@ -110,7 +109,8 @@ def controller_loop():
             if evs:
                 evs = m.process(evs)
                 # TODO: Remove. For testing
-                print(evs)
+                # print(evs)
+                e.consume(evs)
                 c.consume(evs)
                 p.consume(evs)
 
