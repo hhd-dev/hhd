@@ -24,6 +24,16 @@ class AM(NamedTuple):
     offset: float = 0
 
 
+class CM(NamedTuple):
+    loc: int
+    type: NumType | Literal["bit"]
+    order: Literal["little", "big"] = "little"
+    scale: float | None = None
+    offset: float = 0
+    bounds: tuple[int, int] | None = None
+    flipped: bool = False
+
+
 def decode_axis(buff: bytes, t: AM):
     match t.type:
         case "i32":
@@ -169,7 +179,10 @@ def pretty_print(dev: dict[str, str | int | bytes]):
 
 
 def get_button(rep: bytes, map: BM):
-    return bool(rep[map.loc // 8] & (1 << (7 - (map.loc % 8))))
+    v = bool(rep[map.loc // 8] & (1 << (7 - (map.loc % 8))))
+    if map.flipped:
+        return not v
+    return v
 
 
 def set_button(rep: bytearray, map: BM, val: bool):
@@ -177,3 +190,13 @@ def set_button(rep: bytearray, map: BM, val: bool):
         rep[map.loc // 8] |= 1 << (7 - (map.loc % 8))
     else:
         rep[map.loc // 8] &= 255 - (1 << (7 - (map.loc % 8)))
+
+def decode_config(rep: bytes, map: CM):
+    if map.type == "bit":
+        return get_button(rep, BM(map.loc, map.flipped))
+    
+    ax = decode_axis(rep, AM(map.loc, map.type, map.order, map.scale, map.offset))
+    if map.bounds:
+        return min(max(ax, map.bounds[0]), map.bounds[1])
+    else:
+        return ax

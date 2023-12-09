@@ -3,10 +3,25 @@ from typing import Any, Literal, NamedTuple, Protocol, Sequence
 
 from traitlets import default
 
-from hhd.controller import Axis, Button, Consumer, Event, Producer, can_read
-from hhd.controller.lib.common import AM, BM, decode_axis, get_button, hexify
-from hhd.controller.lib.hid import Device, enumerate_unique, MAX_REPORT_SIZE
-
+from hhd.controller import (
+    Axis,
+    Button,
+    Configuration,
+    Consumer,
+    Event,
+    Producer,
+    can_read,
+)
+from hhd.controller.lib.common import (
+    AM,
+    BM,
+    CM,
+    decode_axis,
+    decode_config,
+    get_button,
+    hexify,
+)
+from hhd.controller.lib.hid import MAX_REPORT_SIZE, Device, enumerate_unique
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +42,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         usage: Sequence[int] = [],
         btn_map: dict[int | None, dict[Button, BM]] = {},
         axis_map: dict[int | None, dict[Axis, AM]] = {},
+        config_map: dict[int | None, dict[Configuration, CM]] = {},
         callback: EventCallback | None = None,
         report_size: int = MAX_REPORT_SIZE,
     ) -> None:
@@ -40,6 +56,7 @@ class GenericGamepadHidraw(Producer, Consumer):
 
         self.btn_map = btn_map
         self.axis_map = axis_map
+        self.config_map = config_map
         self.callback = callback
 
         self.path = None
@@ -72,6 +89,7 @@ class GenericGamepadHidraw(Producer, Consumer):
             self.report = None
             self.prev_btn = {}
             self.prev_axis = {}
+            self.prev_config = {}
             return [self.fd]
 
         err = f"Device with the following not found:\n"
@@ -133,6 +151,14 @@ class GenericGamepadHidraw(Producer, Consumer):
                 self.prev_axis[ax] = val
                 out.append({"type": "axis", "code": ax, "value": val})
 
+        # Decode
+        if rep_id in self.config_map:
+            for cnf, map in self.config_map[rep_id].items():
+                val = decode_config(rep, map)
+                if cnf in self.prev_config and self.prev_config[cnf] == val:
+                    continue
+                self.prev_config[cnf] = val
+                out.append({"type": "configuration", "code": cnf, "value": val})
         return out
 
 

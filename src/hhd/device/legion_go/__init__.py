@@ -1,10 +1,10 @@
 from collections import defaultdict
 from typing import Sequence
 
-from hhd.controller import Axis, Button, Consumer, Event, Producer
+from hhd.controller import Axis, Button, Consumer, Event, Producer, Configuration
 from hhd.controller.physical.evdev import B, to_map
 
-from ...controller.physical.hidraw import AM, BM
+from ...controller.physical.hidraw import AM, BM, CM
 
 LGO_TOUCHPAD_BUTTON_MAP: dict[int, Button] = to_map(
     {
@@ -91,6 +91,17 @@ LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
     }
 }
 
+LGO_RAW_INTERFACE_CONFIG_MAP: dict[int | None, dict[Configuration, CM]] = {
+    0x04: {
+        "battery_left": CM(5 << 3, "u8", scale=1, bounds=(0, 100)),
+        "battery_right": CM(7 << 3, "u8", scale=1, bounds=(0, 100)),
+        "is_connected_left": CM((10 << 3) + 7, "bit"),
+        "is_connected_right": CM((11 << 3) + 7, "bit"),
+        "is_attached_left": CM((12 << 3) + 7, "bit", flipped=True),
+        "is_attached_right": CM((13 << 3) + 7, "bit", flipped=True),
+    }
+}
+
 
 class SelectivePasshtrough(Producer, Consumer):
     def __init__(
@@ -122,7 +133,9 @@ class SelectivePasshtrough(Producer, Consumer):
             if ev["type"] == "button" and ev["code"] in self.forward_buttons:
                 self.state = ev.get("value", False)
 
-            if ev["type"] == "button" and ev["code"] in self.passthrough:
+            if ev["type"] == "configuration":
+                out.append(ev)
+            elif ev["type"] == "button" and ev["code"] in self.passthrough:
                 out.append(ev)
             elif ev["type"] == "button" and ev.get("value", False):
                 self.to_disable.append(ev["code"])
