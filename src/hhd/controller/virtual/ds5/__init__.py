@@ -109,7 +109,7 @@ def correct_touchpad(
 class DualSense5Edge(Producer, Consumer):
     def __init__(
         self,
-        touchpad_method: TouchpadCorrectionType = "contain_end",
+        touchpad_method: TouchpadCorrectionType = "zoom",
     ) -> None:
         self.available = False
         self.report = None
@@ -223,7 +223,6 @@ class DualSense5Edge(Producer, Consumer):
                             self.aspect_ratio,
                             self.touchpad_method,
                         )
-                        print(self.touch_correction)
 
         # Cache
         if new_rep == self.report:
