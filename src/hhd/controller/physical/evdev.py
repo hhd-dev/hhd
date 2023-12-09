@@ -3,8 +3,10 @@ import select
 from typing import Mapping, Sequence, TypeVar, cast
 
 import evdev
+from evdev import ff, ecodes
 
-from hhd.controller import Axis, Button, Event, Producer
+from hhd.controller import Axis, Button, Event, Producer, Consumer
+from hhd.controller.base import Event
 from hhd.controller.lib.common import hexify
 
 from ..const import AbsAxis, GamepadButton, KeyboardButton
@@ -67,7 +69,7 @@ XBOX_AXIS_MAP: dict[int, AbsAxis] = to_map(
 )
 
 
-class GenericGamepadEvdev(Producer):
+class GenericGamepadEvdev(Producer, Consumer):
     def __init__(
         self,
         vid: Sequence[int],
@@ -104,6 +106,7 @@ class GenericGamepadEvdev(Producer):
             }
             self.fd = dev.fd
             self.started = True
+            self.effect_id = -1
             return [self.fd]
 
         err = f"Device with the following not found:\n"
@@ -121,6 +124,36 @@ class GenericGamepadEvdev(Producer):
             self.dev.close()
             self.fd = 0
         return True
+
+    def consume(self, events: Sequence[Event]):
+        if not self.dev:
+            return
+
+        for ev in events:
+            match ev["type"]:
+                case "rumble":
+                    # Erase old effect
+                    if self.effect_id != -1:
+                        self.dev.erase_effect(self.effect_id)
+                        self.effect_id = -1
+
+                    # Install new effect
+                    if ev["strong_magnitude"] > 0 or ev["weak_magnitude"] > 0:
+                        rumble = ff.Rumble(
+                            strong_magnitude=0x0000, weak_magnitude=0xFFFF
+                        )
+                        duration_ms = 10000
+
+                        effect = ff.Effect(
+                            getattr(ecodes, "FF_RUMBLE"),
+                            -1,
+                            0,
+                            ff.Trigger(0, 0),
+                            ff.Replay(duration_ms, 0),
+                            ff.EffectType(ff_rumble_effect=rumble),
+                        )
+                        self.effect_id = self.dev.upload_effect(effect)
+                        self.dev.write(getattr(ecodes, "EV_FF"), self.effect_id, 1)
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         if not self.dev or not self.fd in fds:

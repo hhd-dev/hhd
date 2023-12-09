@@ -2,6 +2,7 @@ from collections import defaultdict
 import sys
 import time
 from typing import Literal, NamedTuple, Sequence, cast
+
 from hhd.controller import Axis, Button, Consumer, Event, Producer
 from hhd.controller.lib.common import AM, BM, decode_axis, encode_axis, set_button
 from hhd.controller.lib.uhid import UhidDevice
@@ -135,6 +136,7 @@ class DualSense5Edge(Producer, Consumer):
         )
 
         self.state: dict = defaultdict(lambda: 0)
+        self.rumble = False
         self.start = time.time()
         self.fd = self.dev.open()
         return [self.fd]
@@ -157,6 +159,7 @@ class DualSense5Edge(Producer, Consumer):
             return []
 
         # Process queued events
+        out: Sequence[Event] = []
         assert self.dev
         while ev := self.dev.read_event():
             match ev["type"]:
@@ -169,8 +172,53 @@ class DualSense5Edge(Producer, Consumer):
                         self.dev.send_get_report_reply(
                             ev["id"], 0, DS5_EDGE_STOCK_REPORTS[ev["rnum"]]
                         )
+                case "output":
+                    if ev["report"] != 0x01 or ev["data"][0] != 0x02:
+                        continue
 
-        return []
+                    rep = ev["data"]
+                    if rep[2] & 4:
+                        # Led data is being set
+                        player_leds = rep[44]
+                        red = rep[45]
+                        green = rep[46]
+                        blue = rep[47]
+                        out.append(
+                            {
+                                "type": "led",
+                                "code": "main",
+                                "mode": "solid",
+                                "brightness": 1,
+                                "speed": 0,
+                                "red": red,
+                                "blue": blue,
+                                "green": green,
+                            }
+                        )
+
+                    if rep[1] & 0x03 == 0x03:
+                        right = rep[3]
+                        left = rep[4]
+                        out.append(
+                            {
+                                "type": "rumble",
+                                "code": "main",
+                                "strong_magnitude": left / 63,
+                                "weak_magnitude": right / 63,
+                            }
+                        )
+                        self.rumble = True
+                    elif self.rumble:
+                        self.rumble = False
+                        out.append(
+                            {
+                                "type": "rumble",
+                                "code": "main",
+                                "strong_magnitude": 0,
+                                "weak_magnitude": 0,
+                            }
+                        )
+        return out
 
     def consume(self, events: Sequence[Event]):
         assert self.dev and self.report
@@ -232,7 +280,6 @@ class DualSense5Edge(Producer, Consumer):
                             new_rep[53] = (new_rep[53] & 0xF0) | (
                                 max((ev["value"] - 5) // 10, 0)
                             )
-                            print(new_rep[53:54].hex())
 
         # Cache
         if new_rep == self.report:

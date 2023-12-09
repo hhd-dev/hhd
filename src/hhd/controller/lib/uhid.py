@@ -14,8 +14,8 @@ from typing import Literal, Optional, TypedDict
 
 from hhd.controller import can_read
 
-_HID_MAX_DESCRIPTOR_SIZE = 4096
-_UHID_DATA_MAX = 4096
+# _HID_MAX_DESCRIPTOR_SIZE = 4096
+UHID_DATA_MAX = 4096
 
 
 BUS_PCI = 0x01
@@ -245,7 +245,9 @@ class UhidDevice:
         if not self.fd or not can_read(self.fd):
             return None
 
-        d = os.read(self.fd, _UHID_DATA_MAX)
+        # + 4 for desc, + 3 for output report
+        d = os.read(self.fd, UHID_DATA_MAX + 4 + 3)
+
         v = int.from_bytes(d[:4], byteorder=sys.byteorder)
         if v == UHID_START:
             return {
@@ -259,7 +261,8 @@ class UhidDevice:
         elif v == UHID_CLOSE:
             return {"type": "close"}
         elif v == UHID_OUTPUT:
-            return {"type": "output", "report": d[-1], "data": d[:-3]}
+            l = int.from_bytes(d[-3:-1], byteorder=sys.byteorder)
+            return {"type": "output", "report": d[-1], "data": d[4 : 4 + l]}
         elif v == UHID_SET_REPORT:
             return {
                 "type": "set_report",

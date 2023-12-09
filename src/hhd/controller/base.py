@@ -70,6 +70,15 @@ class EffectEvent(TypedDict):
     effect: EnvelopeEffect | ConditionEffect | PeriodicEffect | RumbleEffect
 
 
+class RumbleEvent(TypedDict):
+    """In case ev effects is too complicated. If both magnitudes are 0, disable rumble."""
+
+    type: Literal["rumble"]
+    code: Literal["main", "left", "right"]
+    strong_magnitude: float
+    weak_magnitude: float
+
+
 class RgbLedEvent(TypedDict):
     """Inspired by new controllers with RGB leds, especially below the buttons.
 
@@ -117,7 +126,14 @@ class ConfigurationEvent(TypedDict):
     value: Any
 
 
-Event = EffectEvent | ButtonEvent | AxisEvent | ConfigurationEvent | RgbLedEvent
+Event = (
+    EffectEvent
+    | ButtonEvent
+    | AxisEvent
+    | ConfigurationEvent
+    | RgbLedEvent
+    | RumbleEvent
+)
 
 
 class Producer:

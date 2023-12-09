@@ -111,6 +111,7 @@ def controller_loop():
                 evs = m.process(evs)
                 # TODO: Remove. For testing
                 print(evs)
+                c.consume(evs)
                 p.consume(evs)
 
             # If unbounded, the total number of events per second is the sum of all
