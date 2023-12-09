@@ -215,14 +215,24 @@ class DualSense5Edge(Producer, Consumer):
                     if ev["code"] in DS5_BUTTON_MAP:
                         set_button(new_rep, DS5_BUTTON_MAP[ev["code"]], ev["value"])
                 case "configuration":
-                    if ev["code"] == "touchpad_aspect_ratio":
-                        self.aspect_ratio = cast(float, ev["value"])
-                        self.touch_correction = correct_touchpad(
-                            DS5_EDGE_TOUCH_WIDTH,
-                            DS5_EDGE_TOUCH_HEIGHT,
-                            self.aspect_ratio,
-                            self.touchpad_method,
-                        )
+                    match ev["code"]:
+                        case "touchpad_aspect_ratio":
+                            self.aspect_ratio = cast(float, ev["value"])
+                            self.touch_correction = correct_touchpad(
+                                DS5_EDGE_TOUCH_WIDTH,
+                                DS5_EDGE_TOUCH_HEIGHT,
+                                self.aspect_ratio,
+                                self.touchpad_method,
+                            )
+                        case "is_attached":
+                            new_rep[53] = (new_rep[53] & 0x0F) | (
+                                0x10 if ev["value"] else 0x00
+                            )
+                        case "battery":
+                            new_rep[53] = (new_rep[53] & 0xF0) | (
+                                max((ev["value"] - 5) // 10, 0)
+                            )
+                            print(new_rep[53:54].hex())
 
         # Cache
         if new_rep == self.report:

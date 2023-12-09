@@ -282,6 +282,7 @@ Configuration = Literal[
     "touchpad_aspect_ratio",
     "battery",
     "is_connected",
+    "is_attached",
     "battery_left",
     "battery_right",
     "is_connected_left",

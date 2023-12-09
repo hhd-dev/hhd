@@ -117,7 +117,7 @@ class ConfigurationEvent(TypedDict):
     value: Any
 
 
-Event = EffectEvent | ButtonEvent | AxisEvent | ConfigurationEvent
+Event = EffectEvent | ButtonEvent | AxisEvent | ConfigurationEvent | RgbLedEvent
 
 
 class Producer:
@@ -153,6 +153,138 @@ class Consumer:
 
     def consume(self, events: Sequence[Event]):
         pass
+
+
+class Multiplexer:
+    def __init__(
+        self,
+        trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
+        dpad: None | Literal["analog_to_discrete"] = None,
+        led: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
+        touchpad: None
+        | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
+        status: None | Literal["both_to_main"] = None,
+    ) -> None:
+        self.trigger = trigger
+        self.dpad = dpad
+        self.led = led
+        self.touchpad = touchpad
+        self.status = status
+
+        self.state = {}
+
+        assert touchpad is None, "touchpad rewiring not supported yet"
+
+    def process(self, events: Sequence[Event]):
+        out: Sequence[Event] = []
+        status_events = set()
+
+        for ev in events:
+            match ev["type"]:
+                case "axis":
+                    if self.trigger == "analog_to_discrete" and ev["code"] in (
+                        "lt",
+                        "rt",
+                    ):
+                        out.append(
+                            {
+                                "type": "button",
+                                "code": ev["code"],
+                                "value": ev["value"] > 0.8,
+                            }
+                        )
+
+                    if self.dpad == "analog_to_discrete" and ev["code"] in (
+                        "hat_x",
+                        "hat_y",
+                    ):
+                        out.append(
+                            {
+                                "type": "button",
+                                "code": "dpad_up"
+                                if ev["code"] == "hat_y"
+                                else "dpad_right",
+                                "value": ev["value"] > 0.5,
+                            }
+                        )
+                        out.append(
+                            {
+                                "type": "button",
+                                "code": "dpad_down"
+                                if ev["code"] == "hat_y"
+                                else "dpad_left",
+                                "value": ev["value"] < -0.5,
+                            }
+                        )
+                case "button":
+                    if self.trigger == "discrete_to_analog" and ev["code"] in (
+                        "lt",
+                        "rt",
+                    ):
+                        out.append(
+                            {
+                                "type": "axis",
+                                "code": ev["code"],
+                                "value": 1 if ev["value"] else 0,
+                            }
+                        )
+                case "led":
+                    if self.led == "left_to_main" and ev["code"] == "left":
+                        out.append({**ev, "code": "main"})
+                    elif self.led == "right_to_main" and ev["code"] == "right":
+                        out.append({**ev, "code": "main"})
+                    elif self.led == "main_to_both" and ev["code"] == "main":
+                        out.append({**ev, "code": "left"})
+                        out.append({**ev, "code": "right"})
+                case "configuration":
+                    if self.status == "both_to_main":
+                        self.state[ev["code"]] = ev["value"]
+                        match ev["code"]:
+                            case "battery_left" | "battery_right":
+                                status_events.add("battery")
+                            case "is_attached_left" | "is_attached_right":
+                                status_events.add("is_attached")
+                            case "is_connected_left" | "is_connected_right":
+                                status_events.add("is_connected")
+
+        for s in status_events:
+            match s:
+                case "battery":
+                    out.append(
+                        {
+                            "type": "configuration",
+                            "code": "battery",
+                            "value": min(
+                                self.state.get("battery_left", 0),
+                                self.state.get("battery_right", 0),
+                            ),
+                        }
+                    )
+                case "is_attached":
+                    out.append(
+                        {
+                            "type": "configuration",
+                            "code": "is_attached",
+                            "value": (
+                                self.state.get("is_attached_left", False)
+                                and self.state.get("is_attached_right", False)
+                            ),
+                        }
+                    )
+                case "is_connected":
+                    out.append(
+                        {
+                            "type": "configuration",
+                            "code": "is_connected",
+                            "value": (
+                                self.state.get("is_connected_left", False)
+                                and self.state.get("is_connected_right", False)
+                            ),
+                        }
+                    )
+
+        out.extend(events)
+        return out
 
 
 def can_read(fd: int):
