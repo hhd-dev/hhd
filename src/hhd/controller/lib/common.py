@@ -3,6 +3,7 @@ from typing import Literal, NamedTuple, Sequence
 
 class BM(NamedTuple):
     loc: int
+    flipped: bool = False
 
 
 NumType = Literal["u32", "i32", "m32", "u16", "i16", "m16", "u8", "i8", "m8"]
@@ -172,7 +173,7 @@ def get_button(rep: bytes, map: BM):
 
 
 def set_button(rep: bytearray, map: BM, val: bool):
-    if val:
+    if (val and not map.flipped) or (not val and map.flipped):
         rep[map.loc // 8] |= 1 << (7 - (map.loc % 8))
     else:
         rep[map.loc // 8] &= 255 - (1 << (7 - (map.loc % 8)))

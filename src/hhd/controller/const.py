@@ -278,6 +278,7 @@ Configuration = Literal[
     "led_mute",  # binary
     "player",
     # Set the aspect ratio of the touchpad used
+    # width / height
     "touchpad_aspect_ratio",
     "battery",
     "is_connected",

@@ -12,6 +12,8 @@ DS5_EDGE_NAME = b"Emulated Sony DS5 Edge Controller"
 DS5_EDGE_MIN_REPORT_FREQ = 25
 DS5_EDGE_MAX_REPORT_FREQ = 1000
 DS5_EDGE_DELTA_TIME = 4096.0
+DS5_EDGE_TOUCH_WIDTH = 1920
+DS5_EDGE_TOUCH_HEIGHT = 1080
 
 
 def patch_dpad_val(buff: bytearray, hat_x: float, hat_y: float):
@@ -48,6 +50,8 @@ def _prep_def_report():
 
     # 33-36: touchpoint 1
     # 37-40: touchpoint 2
+    d[33] = 1 << 7
+    d[37] = 1 << 7
 
     # 41-52: reserved
     # 53: battery status
@@ -110,6 +114,7 @@ DS5_BUTTON_MAP: dict[Button, BM] = {
     "extra_l1": BM((10 << 3) + 3),
     "extra_l3": BM((10 << 3) + 4),
     "share": BM((10 << 3) + 5),
+    "touchpad_touch": BM((33 << 3), flipped=True),
     "touchpad_click": BM((10 << 3) + 6),
     "mode": BM((10 << 3) + 7),
 }
