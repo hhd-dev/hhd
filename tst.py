@@ -7,12 +7,15 @@ from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge
-from hhd.device.legion_go import (LGO_RAW_INTERFACE_BTN_ESSENTIALS,
-                                  LGO_RAW_INTERFACE_BTN_MAP,
-                                  LGO_RAW_INTERFACE_CONFIG_MAP,
-                                  LGO_TOUCHPAD_AXIS_MAP,
-                                  LGO_TOUCHPAD_BUTTON_MAP,
-                                  SelectivePasshtrough, rgb_callback)
+from hhd.device.legion_go import (
+    LGO_RAW_INTERFACE_BTN_ESSENTIALS,
+    LGO_RAW_INTERFACE_BTN_MAP,
+    LGO_RAW_INTERFACE_CONFIG_MAP,
+    LGO_TOUCHPAD_AXIS_MAP,
+    LGO_TOUCHPAD_BUTTON_MAP,
+    SelectivePasshtrough,
+    rgb_callback,
+)
 
 
 def controller_loop():
@@ -68,7 +71,7 @@ def controller_loop():
     )
 
     REPORT_FREQ_MIN = 25
-    REPORT_FREQ_MAX = 450
+    REPORT_FREQ_MAX = 400
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
     REPORT_DELAY_MIN = 1 / REPORT_FREQ_MAX

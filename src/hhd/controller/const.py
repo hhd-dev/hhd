@@ -20,11 +20,13 @@ AbsAxis = Literal[
     "accel_x",
     "accel_y",
     "accel_z",
+    "accel_ts",
     # Gyroscope
     # Values should be in deg/s
     "gyro_x",
     "gyro_y",
     "gyro_z",
+    "gyro_ts",
     # Touchpad
     # Both width and height should go from [0, 1]. Aspect ratio is a setting.
     # It is up to the device whether to stretch, crop and how to crop (either

@@ -43,7 +43,7 @@ def rgb_set_profile(
         case _:
             assert False, f"Mode '{mode}' not supported. "
 
-    r_brightness = min(max(int(64 * (1 - brightness)), 0), 63)
+    r_brightness = min(max(int(64 * brightness), 0), 63)
     r_period = min(max(int(64 * (1 - speed)), 0), 63)
 
     return bytes(

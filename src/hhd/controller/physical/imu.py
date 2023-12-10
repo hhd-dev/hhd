@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class ScanElement(NamedTuple):
     # Output Info
-    axis: Axis
+    axis: Axis | None
     # Buffer Info
     endianness: Literal["little", "big"]
     signed: bool
@@ -32,16 +32,18 @@ class DeviceInfo(NamedTuple):
     axis: Sequence[ScanElement]
 
 
-ACCEL_MAPPINGS = [
-    ("accel_z", "accel_x", "accel"),
-    ("accel_x", "accel_y", "accel"),
-    ("accel_y", "accel_z", "accel"),
-]
-GYRO_MAPPINGS = [
-    ("gyro_z", "anglvel_x", "anglvel"),
-    ("gyro_x", "anglvel_y", "anglvel"),
-    ("gyro_y", "anglvel_z", "anglvel"),
-]
+ACCEL_MAPPINGS = {
+    "accel_x": ("accel_z", "accel"),
+    "accel_y": ("accel_x", "accel"),
+    "accel_z": ("accel_y", "accel"),
+    "timestamp": ("accel_ts", None),
+}
+GYRO_MAPPINGS = {
+    "anglvel_x": ("gyro_z", "anglvel"),
+    "anglvel_y": ("gyro_x", "anglvel"),
+    "anglvel_z": ("gyro_y", "anglvel"),
+    "timestamp": ("gyro_ts", None),
+}
 
 
 def find_sensor(sensor: str):
@@ -78,7 +80,7 @@ def read_sysfs(dir: str, fn: str):
 
 
 def prepare_dev(
-    sensor_dir: str, mappings: Sequence[tuple[Axis, str, str]]
+    sensor_dir: str, mappings: dict[str, tuple[Axis, str | None]]
 ) -> DeviceInfo | None:
     # @TODO: Add boosting sampling frequency support
 
@@ -93,8 +95,10 @@ def prepare_dev(
             write_sysfs(sensor_dir, os.path.join("scan_elements", s), 0)
 
     # Selectively enable required ones and fill up buffer
-    for ax, fn, meta_fn in mappings:
-        write_sysfs(sensor_dir, f"scan_elements/in_{fn}_en", 1)
+    for fn in os.listdir(os.path.join(sensor_dir, "scan_elements")):
+        if not fn.startswith("in_") or not fn.endswith("_en"):
+            continue
+        fn = fn[3:-3]
 
         # Prepare buffer metadata
         idx = int(read_sysfs(sensor_dir, f"scan_elements/in_{fn}_index"))
@@ -104,7 +108,6 @@ def prepare_dev(
             )
             return None
         se = read_sysfs(sensor_dir, f"scan_elements/in_{fn}_type")
-
         endianness = "big" if se.startswith("be:") else "little"
         signed = "e:s" in se
 
@@ -113,8 +116,18 @@ def prepare_dev(
         shift = int(se[-1])
 
         # Prepare scan metadata
-        offset = float(read_sysfs(sensor_dir, f"in_{meta_fn}_offset"))
-        scale = float(read_sysfs(sensor_dir, f"in_{meta_fn}_scale"))
+        if fn in mappings:
+            ax, meta_fn = mappings[fn]
+            write_sysfs(sensor_dir, f"scan_elements/in_{fn}_en", 1)
+        else:
+            ax = meta_fn = None
+
+        if meta_fn:
+            offset = float(read_sysfs(sensor_dir, f"in_{meta_fn}_offset"))
+            scale = float(read_sysfs(sensor_dir, f"in_{meta_fn}_scale"))
+        else:
+            offset = 0
+            scale = 1
 
         axis[idx] = ScanElement(
             ax, endianness, signed, bits, storage_bits, shift, scale, offset
@@ -138,12 +151,15 @@ def process_scan_event(data: bytes, ofs: int, se: ScanElement):
 def get_size(dev: DeviceInfo):
     out = 0
     for s in dev.axis:
+        if out % s.storage_bits:
+            # Align bytes
+            out = (out // s.storage_bits + 1) * s.storage_bits
         out += s.storage_bits
     return out >> 3
 
 
 class IioReader(Producer):
-    def __init__(self, name: str, mappings: Sequence[tuple[Axis, str, str]]) -> None:
+    def __init__(self, name: str, mappings: dict[str, tuple[Axis, str | None]]) -> None:
         self.name = name
         self.mappings = mappings
         self.fd = 0
@@ -187,17 +203,23 @@ class IioReader(Producer):
         out: list[Event] = []
         ofs = 0
         for se in self.dev.axis:
-            new_val = process_scan_event(data, ofs, se)
-            if se.axis not in self.prev or self.prev[se.axis] != new_val:
-                out.append(
-                    {
-                        "type": "axis",
-                        "code": se.axis,
-                        "value": new_val,
-                    }
-                )
-                ofs += se.storage_bits
-                self.prev[se.axis] = new_val
+            # Align bytes
+            if ofs % se.storage_bits:
+                ofs = (ofs // se.storage_bits + 1) * se.storage_bits
+
+            # Grab value if required
+            if se.axis:
+                new_val = process_scan_event(data, ofs, se)
+                if se.axis not in self.prev or self.prev[se.axis] != new_val:
+                    out.append(
+                        {
+                            "type": "axis",
+                            "code": se.axis,
+                            "value": new_val,
+                        }
+                    )
+                    self.prev[se.axis] = new_val
+            ofs += se.storage_bits
         return out
 
 

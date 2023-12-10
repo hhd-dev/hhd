@@ -29,6 +29,7 @@ from .const import (
 
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
 REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
+DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
 
 
 class TouchpadCorrection(NamedTuple):
@@ -205,10 +206,8 @@ class DualSense5Edge(Producer, Consumer):
             match ev["type"]:
                 case "open":
                     self.available = True
-                    print("open")
                 case "close":
                     self.available = False
-                    print("closed")
                 case "get_report":
                     if ev["rnum"] in DS5_EDGE_STOCK_REPORTS:
                         self.dev.send_get_report_reply(
@@ -231,7 +230,9 @@ class DualSense5Edge(Producer, Consumer):
                                 "type": "led",
                                 "code": "main",
                                 "mode": "solid",
-                                "brightness": led_brightness / 63,
+                                "brightness": led_brightness / 63
+                                if led_brightness
+                                else 1,
                                 "speed": 0,
                                 "red": red,
                                 "blue": blue,
@@ -317,6 +318,10 @@ class DualSense5Edge(Producer, Consumer):
                             )
                             new_rep[35] = (new_rep[35] & 0x0F) | ((y & 0x0F) << 4)
                             new_rep[36] = y >> 4
+                        case "gyro_ts":
+                            new_rep[28:32] = int(
+                                ev["value"] / DS5_EDGE_DELTA_TIME_NS
+                            ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
                     if ev["code"] in DS5_BUTTON_MAP:
                         set_button(new_rep, DS5_BUTTON_MAP[ev["code"]], ev["value"])
@@ -352,12 +357,4 @@ class DualSense5Edge(Producer, Consumer):
             new_rep[7] += 1
         else:
             new_rep[7] = 0
-
-        # Timestamp
-        new_rep[28:32] = int(
-            min(
-                (time.perf_counter_ns() - self.start) / DS5_EDGE_DELTA_TIME_NS,
-                (1 << 32) - 1,
-            )
-        ).to_bytes(4, byteorder="little", signed=False)
         self.dev.send_input_report(self.report)
