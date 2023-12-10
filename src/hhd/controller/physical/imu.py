@@ -255,9 +255,10 @@ class ForcedSampler:
             self.fds.append(os.open(p, os.O_RDONLY | os.O_NONBLOCK))
 
     def sample(self):
-        for fd in self.fds:
-            os.read(fd, 20)
+        for fd in select.select(self.fds, [], [], 0)[0]:
             os.lseek(fd, 0, os.SEEK_SET)
+        for fd in select.select(self.fds, [], [], 0)[0]:
+            os.read(fd, 20)
 
     def close(self):
         for fd in self.fds:
