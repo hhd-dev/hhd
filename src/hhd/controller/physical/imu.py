@@ -21,6 +21,7 @@ class ScanElement(NamedTuple):
     # Postprocess info
     scale: float
     offset: float
+    max_val: float | None
 
 
 class DeviceInfo(NamedTuple):
@@ -29,17 +30,17 @@ class DeviceInfo(NamedTuple):
     sysfs: str
 
 
-ACCEL_MAPPINGS: dict[str, Axis] = {
-    "accel_x": "accel_z",
-    "accel_y": "accel_x",
-    "accel_z": "accel_y",
-    "timestamp": "accel_ts",
+ACCEL_MAPPINGS: dict[str, tuple[Axis, float | None]] = {
+    "accel_x": ("accel_z", 3),
+    "accel_y": ("accel_x", 3),
+    "accel_z": ("accel_y", 3),
+    "timestamp": ("accel_ts", None),
 }
-GYRO_MAPPINGS: dict[str, Axis] = {
-    "anglvel_x": "gyro_z",
-    "anglvel_y": "gyro_x",
-    "anglvel_z": "gyro_y",
-    "timestamp": "gyro_ts",
+GYRO_MAPPINGS: dict[str, tuple[Axis, float | None]] = {
+    "anglvel_x": ("gyro_z", None),
+    "anglvel_y": ("gyro_x", None),
+    "anglvel_z": ("gyro_y", None),
+    "timestamp": ("gyro_ts", None),
 }
 
 
@@ -77,7 +78,11 @@ def read_sysfs(dir: str, fn: str):
 
 
 def prepare_dev(
-    sensor_dir: str, type: str, attr: str, freq: int, mappings: dict[str, Axis]
+    sensor_dir: str,
+    type: str,
+    attr: str,
+    freq: int,
+    mappings: dict[str, tuple[Axis, float | None]],
 ) -> DeviceInfo | None:
     # Prepare device buffer
     dev = os.path.join("/dev", os.path.basename(sensor_dir))
@@ -101,7 +106,6 @@ def prepare_dev(
                     trig = name
                     break
     if trig:
-        print(trig)
         write_sysfs(sensor_dir, "trigger/current_trigger", trig)
 
     # Disable all scan elements
@@ -132,10 +136,10 @@ def prepare_dev(
 
         # Prepare scan metadata
         if fn in mappings:
-            ax = mappings[fn]
+            ax, max_val = mappings[fn]
             write_sysfs(sensor_dir, f"scan_elements/in_{fn}_en", 1)
         else:
-            ax = None
+            ax = max_val = None
 
         if fn != "timestamp":
             offset = float(read_sysfs(sensor_dir, f"in_{attr}_offset"))
@@ -145,7 +149,7 @@ def prepare_dev(
             scale = 1
 
         axis[idx] = ScanElement(
-            ax, endianness, signed, bits, storage_bits, shift, scale, offset
+            ax, endianness, signed, bits, storage_bits, shift, scale, offset, max_val
         )
     write_sysfs(sensor_dir, "buffer/enable", 1)
 
@@ -164,6 +168,12 @@ def process_scan_event(data: bytes, ofs: int, se: ScanElement):
     # d = d >> se.shift
     # d &= (1 << se.bits) - 1
     d = d * se.scale + se.offset
+
+    if se.max_val is not None:
+        if d > 0:
+            d = min(d, se.max_val)
+        else:
+            d = max(d, -se.max_val)
     return d
 
 
@@ -183,7 +193,7 @@ class IioReader(Producer):
         type: str,
         attr: str,
         freq: int,
-        mappings: dict[str, Axis],
+        mappings: dict[str, tuple[Axis, float | None]],
     ) -> None:
         self.type = type
         self.attr = attr
