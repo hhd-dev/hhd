@@ -1,6 +1,6 @@
-from collections import defaultdict
 import sys
 import time
+from collections import defaultdict
 from typing import Literal, NamedTuple, Sequence, cast
 
 from hhd.controller import Axis, Button, Consumer, Event, Producer
@@ -12,7 +12,7 @@ from .const import (
     DS5_BUTTON_MAP,
     DS5_EDGE_BUS,
     DS5_EDGE_COUNTRY,
-    DS5_EDGE_DELTA_TIME,
+    DS5_EDGE_DELTA_TIME_NS,
     DS5_EDGE_DESCRIPTOR,
     DS5_EDGE_MAX_REPORT_FREQ,
     DS5_EDGE_MIN_REPORT_FREQ,
@@ -41,7 +41,13 @@ class TouchpadCorrection(NamedTuple):
 
 
 TouchpadCorrectionType = Literal[
-    "stretch", "zoom", "contain_start", "contain_end", "contain_center"
+    "stretch",
+    "crop_center",
+    "crop_start",
+    "crop_end",
+    "contain_start",
+    "contain_end",
+    "contain_center",
 ]
 
 
@@ -53,7 +59,7 @@ def correct_touchpad(
     ratio = dst / src
 
     match method:
-        case "zoom":
+        case "crop_center":
             if ratio > 1:
                 new_width = width / ratio
                 return TouchpadCorrection(
@@ -69,6 +75,40 @@ def correct_touchpad(
                     x_ofs=0,
                     y_mult=new_height,
                     y_ofs=(height - new_height) / 2,
+                )
+        case "crop_start":
+            if ratio > 1:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=0,
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio
+                return TouchpadCorrection(
+                    x_mult=width,
+                    x_ofs=0,
+                    y_mult=new_height,
+                    y_ofs=0,
+                )
+        case "crop_end":
+            if ratio > 1:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=(width - new_width),
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio
+                return TouchpadCorrection(
+                    x_mult=width,
+                    x_ofs=0,
+                    y_mult=new_height,
+                    y_ofs=(height - new_height),
                 )
         case "contain_center":
             if ratio > 1:
@@ -110,7 +150,7 @@ def correct_touchpad(
 class DualSense5Edge(Producer, Consumer):
     def __init__(
         self,
-        touchpad_method: TouchpadCorrectionType = "zoom",
+        touchpad_method: TouchpadCorrectionType = "crop_end",
     ) -> None:
         self.available = False
         self.report = None
@@ -137,7 +177,7 @@ class DualSense5Edge(Producer, Consumer):
 
         self.state: dict = defaultdict(lambda: 0)
         self.rumble = False
-        self.start = time.time()
+        self.start = time.perf_counter_ns()
         self.fd = self.dev.open()
         return [self.fd]
 
@@ -165,8 +205,10 @@ class DualSense5Edge(Producer, Consumer):
             match ev["type"]:
                 case "open":
                     self.available = True
+                    print("open")
                 case "close":
                     self.available = False
+                    print("closed")
                 case "get_report":
                     if ev["rnum"] in DS5_EDGE_STOCK_REPORTS:
                         self.dev.send_get_report_reply(
@@ -197,7 +239,6 @@ class DualSense5Edge(Producer, Consumer):
                             }
                         )
                     elif (rep[39] & 2) and (rep[42] & 2):
-                        print('asdf')
                         # flag2 is DS_OUTPUT_VALID_FLAG2_LIGHTBAR_SETUP_CONTROL_ENABLE
                         # lightbar_setup is DS_OUTPUT_LIGHTBAR_SETUP_LIGHT_OUT
                         out.append(
@@ -299,8 +340,8 @@ class DualSense5Edge(Producer, Consumer):
                             )
 
         # Cache
-        if new_rep == self.report:
-            return
+        # if new_rep == self.report:
+        #     return
         self.report = new_rep
 
         #
@@ -311,8 +352,12 @@ class DualSense5Edge(Producer, Consumer):
             new_rep[7] += 1
         else:
             new_rep[7] = 0
+
         # Timestamp
-        new_rep[28:32] = int((time.time() - self.start) * DS5_EDGE_DELTA_TIME).to_bytes(
-            4, byteorder=sys.byteorder, signed=False
-        )
+        new_rep[28:32] = int(
+            min(
+                (time.perf_counter_ns() - self.start) / DS5_EDGE_DELTA_TIME_NS,
+                (1 << 32) - 1,
+            )
+        ).to_bytes(4, byteorder="little", signed=False)
         self.dev.send_input_report(self.report)
