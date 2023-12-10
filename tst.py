@@ -62,7 +62,7 @@ def controller_loop():
         name=["  Legion Controller for Windows  Keyboard"]
         # report_size=64,
     )
-    g = ForcedSampler(["gyro_3d"])  # , "accel_3d"
+    g = ForcedSampler(["gyro_3d", "accel_3d"])
 
     m = Multiplexer(
         trigger="analog_to_discrete",
@@ -90,7 +90,7 @@ def controller_loop():
 
     try:
         g.open()
-        # prepare(a)
+        prepare(a)
         prepare(b)
         prepare(c)
         prepare(d)

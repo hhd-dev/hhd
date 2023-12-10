@@ -26,19 +26,20 @@ class ScanElement(NamedTuple):
 class DeviceInfo(NamedTuple):
     dev: str
     axis: Sequence[ScanElement]
+    sysfs: str
 
 
-ACCEL_MAPPINGS = {
-    "accel_x": ("accel_z", "accel"),
-    "accel_y": ("accel_x", "accel"),
-    "accel_z": ("accel_y", "accel"),
-    "timestamp": ("accel_ts", None),
+ACCEL_MAPPINGS: dict[str, Axis] = {
+    "accel_x": "accel_z",
+    "accel_y": "accel_x",
+    "accel_z": "accel_y",
+    "timestamp": "accel_ts",
 }
-GYRO_MAPPINGS = {
-    "anglvel_x": ("gyro_z", "anglvel"),
-    "anglvel_y": ("gyro_x", "anglvel"),
-    "anglvel_z": ("gyro_y", "anglvel"),
-    "timestamp": ("gyro_ts", None),
+GYRO_MAPPINGS: dict[str, Axis] = {
+    "anglvel_x": "gyro_z",
+    "anglvel_y": "gyro_x",
+    "anglvel_z": "gyro_y",
+    "timestamp": "gyro_ts",
 }
 
 
@@ -76,14 +77,32 @@ def read_sysfs(dir: str, fn: str):
 
 
 def prepare_dev(
-    sensor_dir: str, mappings: dict[str, tuple[Axis, str | None]]
+    sensor_dir: str, type: str, attr: str, freq: int, mappings: dict[str, Axis]
 ) -> DeviceInfo | None:
-    # @TODO: Add boosting sampling frequency support
-
     # Prepare device buffer
     dev = os.path.join("/dev", os.path.basename(sensor_dir))
     axis = {}
     write_sysfs(sensor_dir, "buffer/enable", 0)
+
+    # Set sampling frequency
+    sfn = os.path.join(sensor_dir, f"in_{attr}_sampling_frequency")
+    if os.path.isfile(sfn):
+        write_sysfs(sensor_dir, f"in_{attr}_sampling_frequency", freq)
+
+    # Set trigger
+    trig = None
+    for s in os.listdir("/sys/bus/iio/devices/"):
+        if s.startswith("trigger"):
+            name = read_sysfs(os.path.join("/sys/bus/iio/devices/", s), "name")
+            pref = f"{type}-dev"
+            if name.startswith(pref):
+                idx = name[len(pref) :]
+                if sensor_dir.endswith(idx):
+                    trig = name
+                    break
+    if trig:
+        print(trig)
+        write_sysfs(sensor_dir, "trigger/current_trigger", trig)
 
     # Disable all scan elements
     for s in os.listdir(os.path.join(sensor_dir, "scan_elements")):
@@ -113,14 +132,14 @@ def prepare_dev(
 
         # Prepare scan metadata
         if fn in mappings:
-            ax, meta_fn = mappings[fn]
+            ax = mappings[fn]
             write_sysfs(sensor_dir, f"scan_elements/in_{fn}_en", 1)
         else:
-            ax = meta_fn = None
+            ax = None
 
-        if meta_fn:
-            offset = float(read_sysfs(sensor_dir, f"in_{meta_fn}_offset"))
-            scale = float(read_sysfs(sensor_dir, f"in_{meta_fn}_scale"))
+        if fn != "timestamp":
+            offset = float(read_sysfs(sensor_dir, f"in_{attr}_offset"))
+            scale = float(read_sysfs(sensor_dir, f"in_{attr}_scale"))
         else:
             offset = 0
             scale = 1
@@ -131,7 +150,11 @@ def prepare_dev(
     write_sysfs(sensor_dir, "buffer/enable", 1)
 
     axis_arr = tuple(axis[i] for i in sorted(axis))
-    return DeviceInfo(dev, axis_arr)
+    return DeviceInfo(dev, axis_arr, sensor_dir)
+
+
+def close_dev(dev: DeviceInfo):
+    write_sysfs(dev.sysfs, "buffer/enable", 0)
 
 
 def process_scan_event(data: bytes, ofs: int, se: ScanElement):
@@ -155,17 +178,25 @@ def get_size(dev: DeviceInfo):
 
 
 class IioReader(Producer):
-    def __init__(self, name: str, mappings: dict[str, tuple[Axis, str | None]]) -> None:
-        self.name = name
+    def __init__(
+        self,
+        type: str,
+        attr: str,
+        freq: int,
+        mappings: dict[str, Axis],
+    ) -> None:
+        self.type = type
+        self.attr = attr
+        self.freq = freq
         self.mappings = mappings
         self.fd = 0
 
     def open(self):
-        sens_dir = find_sensor(self.name)
+        sens_dir = find_sensor(self.type)
         if not sens_dir:
             return []
 
-        dev = prepare_dev(sens_dir, self.mappings)
+        dev = prepare_dev(sens_dir, self.type, self.attr, self.freq, self.mappings)
         if not dev:
             return []
 
@@ -180,11 +211,14 @@ class IioReader(Producer):
     def close(self, exit: bool):
         if self.fd:
             os.close(self.fd)
-        self.fd = 0
+            self.fd = 0
+        if self.dev:
+            close_dev(self.dev)
+            self.dev = None
         return True
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
-        if self.fd not in fds:
+        if self.fd not in fds or not self.dev:
             return []
 
         data = os.read(self.fd, self.size)
@@ -225,13 +259,13 @@ class IioReader(Producer):
 
 
 class AccelImu(IioReader):
-    def __init__(self) -> None:
-        super().__init__("accel_3d", ACCEL_MAPPINGS)
+    def __init__(self, freq=1000) -> None:
+        super().__init__("accel_3d", "accel", freq, ACCEL_MAPPINGS)
 
 
 class GyroImu(IioReader):
-    def __init__(self) -> None:
-        super().__init__("gyro_3d", GYRO_MAPPINGS)
+    def __init__(self, freq=1000) -> None:
+        super().__init__("gyro_3d", "anglvel", freq, GYRO_MAPPINGS)
 
 
 class ForcedSampler:
