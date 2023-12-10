@@ -176,7 +176,7 @@ def controller_loop_xinput(
     )
 
     multiplexer = Multiplexer(
-        swap_guide=swap_legion,
+        swap_guide="guide_is_select" if swap_legion else None,
         trigger="analog_to_discrete",
         dpad="analog_to_discrete",
         led="main_to_sides",

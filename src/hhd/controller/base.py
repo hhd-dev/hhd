@@ -174,7 +174,7 @@ class Consumer:
 class Multiplexer:
     def __init__(
         self,
-        swap_guide: bool = False,
+        swap_guide: None | Literal["guide_is_start", "guide_is_select"],
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
         dpad: None | Literal["analog_to_discrete"] = None,
         led: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
@@ -261,9 +261,15 @@ class Multiplexer:
                             case "select":
                                 ev["code"] = "share"
                             case "mode":
-                                ev["code"] = "start"
+                                if self.swap_guide == "guide_is_start":
+                                    ev["code"] = "start"
+                                else:
+                                    ev["code"] = "select"
                             case "share":
-                                ev["code"] = "select"
+                                if self.swap_guide == "guide_is_start":
+                                    ev["code"] = "select"
+                                else:
+                                    ev["code"] = "start"
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})
