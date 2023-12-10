@@ -3,3 +3,4 @@ venv
 *.egg-info
 dist
 .vscode
+notebooks
