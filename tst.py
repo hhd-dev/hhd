@@ -71,7 +71,7 @@ def controller_loop():
         status="both_to_main",
     )
 
-    REPORT_FREQ_MIN = 100
+    REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
