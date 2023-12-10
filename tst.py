@@ -115,7 +115,7 @@ def controller_loop():
             if evs:
                 evs = m.process(evs)
                 # TODO: Remove. For testing
-                print(evs)
+                # print(evs)
                 e.consume(evs)
                 c.consume(evs)
 
