@@ -71,7 +71,7 @@ def controller_loop():
         status="both_to_main",
     )
 
-    REPORT_FREQ_MIN = 70
+    REPORT_FREQ_MIN = 100
     REPORT_FREQ_MAX = 400
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
@@ -115,7 +115,7 @@ def controller_loop():
             if evs:
                 evs = m.process(evs)
                 # TODO: Remove. For testing
-                print(evs)
+                # print(evs)
                 e.consume(evs)
                 c.consume(evs)
                 p.consume(evs)
@@ -132,11 +132,11 @@ def controller_loop():
             # to ensure there is always a report from that ready during refresh
             t = time.perf_counter()
             elapsed = t - start
-            if elapsed < REPORT_DELAY_MIN:
-                time.sleep(REPORT_DELAY_MIN - elapsed)
-            if t - sampled > REPORT_DELAY_MAX:
+            if t - sampled >= REPORT_DELAY_MAX:
                 g.sample()
                 sampled = t
+            if elapsed < REPORT_DELAY_MIN:
+                time.sleep(REPORT_DELAY_MIN - elapsed)
 
     except KeyboardInterrupt:
         pass

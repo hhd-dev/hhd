@@ -219,8 +219,8 @@ class IioReader(Producer):
 
         # TODO: Clean this up
         # Hide duplicate events
-        if (len(out) == 1 and out[0]['code'].endswith('_ts')):
-            return []
+        # if (len(out) == 1 and out[0]['code'].endswith('_ts')):
+        #     return []
         return out
 
 
