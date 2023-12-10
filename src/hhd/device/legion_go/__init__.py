@@ -1,108 +1,257 @@
-from collections import defaultdict
+import argparse
+import logging
+import select
+import sys
+import time
 from typing import Sequence
 
-from hhd.controller import Axis, Button, Configuration, Consumer, Event, Producer
-from hhd.controller.physical.evdev import B, to_map
-from hhd.controller.lib.hid import Device
+from hhd.controller import Button, Consumer, Event, Producer
+from hhd.controller.base import Multiplexer
+from hhd.controller.lib.hid import enumerate_unique
+from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
+from hhd.controller.physical.imu import AccelImu, GyroImu
+from hhd.controller.virtual.ds5 import DualSense5Edge
 
-from ...controller.physical.hidraw import AM, BM, CM
-from .hid import rgb_enable, rgb_multi_disable, rgb_multi_load_settings
-
-LGO_TOUCHPAD_BUTTON_MAP: dict[int, Button] = to_map(
-    {
-        "touchpad_touch": [B("BTN_TOOL_FINGER")],  # also BTN_TOUCH
-        "touchpad_click": [B("BTN_TOOL_DOUBLETAP")],
-    }
+from .const import (
+    LGO_RAW_INTERFACE_BTN_ESSENTIALS,
+    LGO_RAW_INTERFACE_BTN_MAP,
+    LGO_RAW_INTERFACE_CONFIG_MAP,
+    LGO_TOUCHPAD_AXIS_MAP,
+    LGO_TOUCHPAD_BUTTON_MAP,
 )
+from .hid import rgb_callback
 
-LGO_TOUCHPAD_AXIS_MAP: dict[int, Axis] = to_map(
-    {
-        "touchpad_x": [B("ABS_X")],  # also ABS_MT_POSITION_X
-        "touchpad_y": [B("ABS_Y")],  # also ABS_MT_POSITION_Y
-    }
-)
+ERROR_DELAY = 5
 
-LGO_RAW_INTERFACE_BTN_ESSENTIALS: dict[int | None, dict[Button, BM]] = {
-    0x04: {
-        # Misc
-        "mode": BM((18 << 3)),
-        "share": BM((18 << 3) + 1),
-        # Back buttons
-        "extra_l1": BM((20 << 3)),
-        "extra_l2": BM((20 << 3) + 1),
-        "extra_r1": BM((20 << 3) + 2),
-        "extra_r2": BM((20 << 3) + 5),
-        "extra_r3": BM((20 << 3) + 4),
-    }
+logger = logging.getLogger(__name__)
+
+LEN_PID = 0x17EF
+LEN_VIDS = {
+    0x6182: "xinput",
+    0x6183: "dinput",
+    0x6184: "ddinput",
+    0x6185: "fps",
 }
 
 
-LGO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
-    0x04: {
-        # Misc
-        "mode": BM((18 << 3)),
-        "share": BM((18 << 3) + 1),
-        # Sticks
-        "ls": BM((18 << 3) + 2),
-        "rs": BM((18 << 3) + 3),
-        # D-PAD
-        "dpad_up": BM((18 << 3) + 4),
-        "dpad_down": BM((18 << 3) + 5),
-        "dpad_left": BM((18 << 3) + 6),
-        "dpad_right": BM((18 << 3) + 7),
-        # Thumbpad
-        "a": BM((19 << 3) + 0),
-        "b": BM((19 << 3) + 1),
-        "x": BM((19 << 3) + 2),
-        "y": BM((19 << 3) + 3),
-        # Bumpers
-        "lb": BM((19 << 3) + 4),
-        "lt": BM((19 << 3) + 5),
-        "rb": BM((19 << 3) + 6),
-        "rt": BM((19 << 3) + 7),
-        # Back buttons
-        "extra_l1": BM((20 << 3)),
-        "extra_l2": BM((20 << 3) + 1),
-        "extra_r1": BM((20 << 3) + 2),
-        "extra_r2": BM((20 << 3) + 5),
-        "extra_r3": BM((20 << 3) + 4),
-        # Select
-        "start": BM((20 << 3) + 7),
-        "select": BM((20 << 3) + 6),
-        # Mouse
-        "btn_middle": BM((21 << 3)),
-    }
-}
+def main(as_plugin=True):
+    parser = argparse.ArgumentParser(
+        prog="HHD: LegionGo Controller Plugin",
+        description="This plugin remaps the legion go controllers to a DS5 controller and restores all functionality.",
+    )
+    parser.add_argument(
+        "-a",
+        "--d-accel",
+        action="store_false",
+        help="Dissable accelerometer (recommended since not used by steam, .5%% core utilisation).",
+        dest="accel",
+    )
+    parser.add_argument(
+        "-g",
+        "--d-gyro",
+        action="store_false",
+        help="Disable gyroscope (.5%% core utilisation).",
+        dest="gyro",
+    )
+    parser.add_argument(
+        "-l",
+        "--swap-legion",
+        action="store_true",
+        help="Swaps Legion buttons with start, select.",
+        dest="swap_legion",
+    )
+    if as_plugin:
+        args = parser.parse_args(sys.argv[2:])
+    else:
+        args = parser.parse_args()
+
+    accel = args.accel
+    gyro = args.gyro
+    swap_legion = args.swap_legion
+
+    while True:
+        try:
+            controller_mode = None
+            while not controller_mode:
+                devs = enumerate_unique(LEN_PID)
+                if not devs:
+                    logger.error(
+                        f"Legion go controllers not found, waiting {ERROR_DELAY}s."
+                    )
+                    time.sleep(ERROR_DELAY)
+                    continue
+
+                for d in devs:
+                    if d["product_id"] in LEN_VIDS:
+                        controller_mode = LEN_VIDS[d["product_id"]]
+                        break
+                else:
+                    logger.error(
+                        f"Legion go controllers not found, waiting {ERROR_DELAY}s."
+                    )
+                    time.sleep(ERROR_DELAY)
+                    continue
+
+            match controller_mode:
+                case "xinput":
+                    logger.info("Launching DS5 controller instance.")
+                    controller_loop_xinput(accel, gyro, swap_legion)
+                case _:
+                    logger.info(
+                        f"Controllers in non-supported (yet) mode: {controller_mode}. Waiting {ERROR_DELAY}s..."
+                    )
+                    time.sleep(ERROR_DELAY)
+                    # controller_loop_rest()
+        except Exception as e:
+            logger.error(f"Received the following error:\n{e}")
+            logger.error(
+                f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
+            )
+            time.sleep(ERROR_DELAY)
+        except KeyboardInterrupt:
+            logger.info("Received KeyboardInterrupt, exiting...")
+            return
 
 
-LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
-    0x04: {
-        "ls_x": AM(14 << 3, "m8"),
-        "ls_y": AM(15 << 3, "m8"),
-        "rs_x": AM(16 << 3, "m8"),
-        "rs_y": AM(17 << 3, "m8"),
-        "lt": AM(22 << 3, "u8"),
-        "rt": AM(23 << 3, "u8"),
-        # "mouse_wheel": AM(25 << 3, "m8", scale=1), # TODO: Fix weird behavior
-        "touchpad_x": AM(26 << 3, "u16"),
-        "touchpad_y": AM(28 << 3, "u16"),
-        "left_gyro_x": AM(30 << 3, "m8"),
-        "left_gyro_y": AM(31 << 3, "m8"),
-        "right_gyro_x": AM(32 << 3, "m8"),
-        "right_gyro_y": AM(33 << 3, "m8"),
-    }
-}
+if __name__ == "__main__":
+    main(False)
 
-LGO_RAW_INTERFACE_CONFIG_MAP: dict[int | None, dict[Configuration, CM]] = {
-    0x04: {
-        "battery_left": CM(5 << 3, "u8", scale=1, bounds=(0, 100)),
-        "battery_right": CM(7 << 3, "u8", scale=1, bounds=(0, 100)),
-        "is_connected_left": CM((10 << 3) + 7, "bit"),
-        "is_connected_right": CM((11 << 3) + 7, "bit"),
-        "is_attached_left": CM((12 << 3) + 7, "bit", flipped=True),
-        "is_attached_right": CM((13 << 3) + 7, "bit", flipped=True),
-    }
-}
+
+def controller_loop_rest():
+    pass
+
+
+def controller_loop_xinput(
+    accel: bool = True,
+    gyro: bool = True,
+    swap_legion: bool = False,
+):
+    # Output
+    d_ds5 = DualSense5Edge()
+
+    # Imu
+    d_accel = AccelImu()
+    d_gyro = GyroImu()
+
+    # Inputs
+    d_xinput = GenericGamepadEvdev([0x17EF], [0x6182], "Generic X-Box pad")
+    d_touch = GenericGamepadEvdev(
+        [0x17EF],
+        [0x6182],
+        ["  Legion Controller for Windows  Touchpad"],
+        btn_map=LGO_TOUCHPAD_BUTTON_MAP,
+        axis_map=LGO_TOUCHPAD_AXIS_MAP,
+        aspect_ratio=1,
+    )
+    d_raw = SelectivePasshtrough(
+        GenericGamepadHidraw(
+            vid=[0x17EF],
+            pid=[
+                0x6182,  # XINPUT
+                0x6183,  # DINPUT
+                0x6184,  # Dual DINPUT
+                0x6185,  # FPS
+            ],
+            usage_page=[0xFFA0],
+            usage=[0x0001],
+            report_size=64,
+            axis_map={},
+            btn_map=LGO_RAW_INTERFACE_BTN_MAP,
+            config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
+            callback=rgb_callback,
+        )
+    )
+    # Mute keyboard shortcuts, mute
+    d_shortcuts = GenericGamepadEvdev(
+        vid=[0x17EF],
+        pid=[
+            0x6182,  # XINPUT
+            0x6183,  # DINPUT
+            0x6184,  # Dual DINPUT
+            0x6185,  # FPS
+        ],
+        name=["  Legion Controller for Windows  Keyboard"]
+        # report_size=64,
+    )
+
+    multiplexer = Multiplexer(
+        swap_guide=swap_legion,
+        trigger="analog_to_discrete",
+        dpad="analog_to_discrete",
+        led="main_to_sides",
+        status="both_to_main",
+    )
+
+    REPORT_FREQ_MIN = 25
+    REPORT_FREQ_MAX = 400
+
+    REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
+    REPORT_DELAY_MIN = 1 / REPORT_FREQ_MAX
+
+    fds = []
+    devs = []
+    fd_to_dev = {}
+
+    def prepare(m):
+        fs = m.open()
+        devs.append(m)
+        fds.extend(fs)
+        for f in fs:
+            fd_to_dev[f] = m
+
+    try:
+        prepare(d_ds5)
+        if accel:
+            prepare(d_accel)
+        if gyro:
+            prepare(d_gyro)
+        prepare(d_xinput)
+        prepare(d_shortcuts)
+        prepare(d_touch)
+        prepare(d_raw)
+
+        logger.info("DS5 controller instance launched, have fun!")
+        while True:
+            start = time.perf_counter()
+            # Add timeout to call consumers a minimum amount of times per second
+            r, _, _ = select.select(fds, [], [], REPORT_DELAY_MAX)
+            evs = []
+            to_run = set()
+            for f in r:
+                to_run.add(id(fd_to_dev[f]))
+
+            for d in devs:
+                if id(d) in to_run:
+                    evs.extend(d.produce(r))
+
+            if evs:
+                evs = multiplexer.process(evs)
+
+                d_ds5.consume(evs)
+                d_xinput.consume(evs)
+                d_raw.consume(evs)
+
+            # If unbounded, the total number of events per second is the sum of all
+            # events generated by the producers.
+            # For Legion go, that would be 100 + 100 + 500 + 30 = 730
+            # Since the controllers of the legion go only update at 500hz, this is
+            # wasteful.
+            # By setting a target refresh rate for the report and sleeping at the
+            # end, we ensure that even if multiple fds become ready close to each other
+            # they are combined to the same report, limiting resource use.
+            # Ideally, this rate is smaller than the report rate of the hardware controller
+            # to ensure there is always a report from that ready during refresh
+            t = time.perf_counter()
+            elapsed = t - start
+            if elapsed < REPORT_DELAY_MIN:
+                time.sleep(REPORT_DELAY_MIN - elapsed)
+
+    except KeyboardInterrupt:
+        raise
+    finally:
+        for d in devs:
+            d.close(True)
 
 
 class SelectivePasshtrough(Producer, Consumer):
@@ -158,34 +307,3 @@ class SelectivePasshtrough(Producer, Consumer):
 
     def consume(self, events: Sequence[Event]):
         return self.parent.consume(events)
-
-
-def rgb_callback(dev: Device, events: Sequence[Event]):
-    for ev in events:
-        if ev["type"] == "led":
-            if ev["mode"] == "disable":
-                reps = rgb_multi_disable()
-            else:
-                match ev["mode"]:
-                    case "blinking":
-                        mode = "pulse"
-                    case "rainbow":
-                        mode = "dynamic"
-                    case "solid":
-                        mode = "solid"
-                    case "spiral":
-                        mode = "spiral"
-                    case _:
-                        assert False, f"Mode '{ev['mode']}' not supported."
-                reps = rgb_multi_load_settings(
-                    mode,
-                    0x03,
-                    ev["red"],
-                    ev["green"],
-                    ev["blue"],
-                    ev["brightness"],
-                    ev["speed"],
-                )
-
-            for r in reps:
-                dev.write(r)

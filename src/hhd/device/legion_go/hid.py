@@ -1,6 +1,8 @@
 from enum import Enum
-from typing import Literal
+from typing import Literal, Sequence
 
+from hhd.controller import Event
+from hhd.controller.lib.hid import Device
 
 Controller = Literal["left", "right"]
 RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
@@ -124,3 +126,34 @@ def rgb_multi_disable():
         rgb_enable("left", False),
         rgb_enable("right", False),
     ]
+
+
+def rgb_callback(dev: Device, events: Sequence[Event]):
+    for ev in events:
+        if ev["type"] == "led":
+            if ev["mode"] == "disable":
+                reps = rgb_multi_disable()
+            else:
+                match ev["mode"]:
+                    case "blinking":
+                        mode = "pulse"
+                    case "rainbow":
+                        mode = "dynamic"
+                    case "solid":
+                        mode = "solid"
+                    case "spiral":
+                        mode = "spiral"
+                    case _:
+                        assert False, f"Mode '{ev['mode']}' not supported."
+                reps = rgb_multi_load_settings(
+                    mode,
+                    0x03,
+                    ev["red"],
+                    ev["green"],
+                    ev["blue"],
+                    ev["brightness"],
+                    ev["speed"],
+                )
+
+            for r in reps:
+                dev.write(r)

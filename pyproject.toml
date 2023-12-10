@@ -23,6 +23,9 @@ dependencies = [
 [project.entry-points."console_scripts"]
 hhd = "hhd.__main__:main"
 
+[project.entry-points."hhd.plugins"]
+legion_go = "hhd.device.legion_go:main"
+
 [build-system]
 requires = ["setuptools>=61.0", "wheel", "numpy>=1.15"]
 build-backend = "setuptools.build_meta"

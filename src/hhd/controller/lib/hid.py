@@ -168,11 +168,12 @@ def enumerate(vid=0, pid=0):
     return ret
 
 
-def enumerate_unique():
+def enumerate_unique(vid=0, pid=0):
     """Returns the current connected devices,
     sorted by path."""
     return sorted(
-        list({v["path"]: v for v in enumerate()}.values()), key=lambda l: l["path"]
+        list({v["path"]: v for v in enumerate(vid, pid)}.values()),
+        key=lambda l: l["path"],
     )
 
 
