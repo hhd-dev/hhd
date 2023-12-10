@@ -132,9 +132,9 @@ def controller_loop():
             # to ensure there is always a report from that ready during refresh
             t = time.perf_counter()
             elapsed = t - start
-            if t - sampled >= REPORT_DELAY_MAX:
-                g.sample()
-                sampled = t
+            # if t - sampled >= REPORT_DELAY_MAX:
+            #     g.sample()
+            #     sampled = t
             if elapsed < REPORT_DELAY_MIN:
                 time.sleep(REPORT_DELAY_MIN - elapsed)
 

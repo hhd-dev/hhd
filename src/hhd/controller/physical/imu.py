@@ -81,8 +81,9 @@ def prepare_dev(
     sensor_dir: str,
     type: str,
     attr: str,
-    freq: int,
+    freq: int | None,
     mappings: dict[str, tuple[Axis, float | None]],
+    update_trigger: bool,
 ) -> DeviceInfo | None:
     # Prepare device buffer
     dev = os.path.join("/dev", os.path.basename(sensor_dir))
@@ -90,23 +91,25 @@ def prepare_dev(
     write_sysfs(sensor_dir, "buffer/enable", 0)
 
     # Set sampling frequency
-    sfn = os.path.join(sensor_dir, f"in_{attr}_sampling_frequency")
-    if os.path.isfile(sfn):
-        write_sysfs(sensor_dir, f"in_{attr}_sampling_frequency", freq)
+    if freq is not None:
+        sfn = os.path.join(sensor_dir, f"in_{attr}_sampling_frequency")
+        if os.path.isfile(sfn):
+            write_sysfs(sensor_dir, f"in_{attr}_sampling_frequency", freq)
 
     # Set trigger
-    trig = None
-    for s in os.listdir("/sys/bus/iio/devices/"):
-        if s.startswith("trigger"):
-            name = read_sysfs(os.path.join("/sys/bus/iio/devices/", s), "name")
-            pref = f"{type}-dev"
-            if name.startswith(pref):
-                idx = name[len(pref) :]
-                if sensor_dir.endswith(idx):
-                    trig = name
-                    break
-    if trig:
-        write_sysfs(sensor_dir, "trigger/current_trigger", trig)
+    if update_trigger:
+        trig = None
+        for s in os.listdir("/sys/bus/iio/devices/"):
+            if s.startswith("trigger"):
+                name = read_sysfs(os.path.join("/sys/bus/iio/devices/", s), "name")
+                pref = f"{type}-dev"
+                if name.startswith(pref):
+                    idx = name[len(pref) :]
+                    if sensor_dir.endswith(idx):
+                        trig = name
+                        break
+        if trig:
+            write_sysfs(sensor_dir, "trigger/current_trigger", trig)
 
     # Disable all scan elements
     for s in os.listdir(os.path.join(sensor_dir, "scan_elements")):
@@ -192,13 +195,15 @@ class IioReader(Producer):
         self,
         type: str,
         attr: str,
-        freq: int,
+        freq: int | None,
         mappings: dict[str, tuple[Axis, float | None]],
+        update_trigger: bool = False,
     ) -> None:
         self.type = type
         self.attr = attr
         self.freq = freq
         self.mappings = mappings
+        self.update_trigger = update_trigger
         self.fd = 0
 
     def open(self):
@@ -206,7 +211,14 @@ class IioReader(Producer):
         if not sens_dir:
             return []
 
-        dev = prepare_dev(sens_dir, self.type, self.attr, self.freq, self.mappings)
+        dev = prepare_dev(
+            sens_dir,
+            self.type,
+            self.attr,
+            self.freq,
+            self.mappings,
+            self.update_trigger,
+        )
         if not dev:
             return []
 
@@ -269,12 +281,12 @@ class IioReader(Producer):
 
 
 class AccelImu(IioReader):
-    def __init__(self, freq=1000) -> None:
+    def __init__(self, freq=None) -> None:
         super().__init__("accel_3d", "accel", freq, ACCEL_MAPPINGS)
 
 
 class GyroImu(IioReader):
-    def __init__(self, freq=1000) -> None:
+    def __init__(self, freq=None) -> None:
         super().__init__("gyro_3d", "anglvel", freq, GYRO_MAPPINGS)
 
 

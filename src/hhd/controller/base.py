@@ -180,12 +180,14 @@ class Multiplexer:
         touchpad: None
         | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
         status: None | Literal["both_to_main"] = None,
+        trigger_discrete_lvl: float = 0.99,
     ) -> None:
         self.trigger = trigger
         self.dpad = dpad
         self.led = led
         self.touchpad = touchpad
         self.status = status
+        self.trigger_discrete_lvl = trigger_discrete_lvl
 
         self.state = {}
 
@@ -206,7 +208,7 @@ class Multiplexer:
                             {
                                 "type": "button",
                                 "code": ev["code"],
-                                "value": ev["value"] > 0.8,
+                                "value": ev["value"] > self.trigger_discrete_lvl,
                             }
                         )
 
