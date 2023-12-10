@@ -1,11 +1,7 @@
 import select
-from time import sleep
 from typing import Any, Generator, Literal, NamedTuple, Sequence
 
-from anyio import open_process
-
-from hhd.controller.base import Event
-from ..base import Axis, Producer
+from hhd.controller import Axis, Event, Axis, Producer
 import os
 
 import logging
@@ -231,6 +227,92 @@ class AccelImu(IioReader):
 class GyroImu(IioReader):
     def __init__(self) -> None:
         super().__init__("gyro_3d", GYRO_MAPPINGS)
+
+
+class ForcedSampler:
+    def __init__(self, devices: Sequence[str]) -> None:
+        self.devices = devices
+
+    def open(self):
+        self.fds = []
+        self.paths = []
+        for d in self.devices:
+            f = find_sensor(d)
+            if not f:
+                continue
+            if "accel" in d:
+                p = os.path.join(f, "in_accel_x_raw")
+            elif "gyro" in d:
+                p = os.path.join(f, "in_anglvel_x_raw")
+            else:
+                continue
+
+            self.fds.append(os.open(p, os.O_RDONLY | os.O_NONBLOCK))
+
+    def sample(self):
+        for fd in self.fds:
+            os.read(fd, 20)
+            os.lseek(fd, 0, os.SEEK_SET)
+
+    def close(self):
+        for fd in self.fds:
+            os.close(fd)
+
+
+# class SoftwareTrigger(IioReader):
+#     BEGIN_ID: int = 72
+#     ATTEMPTS: int = 3
+
+#     def __init__(self, devices: Sequence[str]) -> None:
+#         self.devices = devices
+#         self.old_triggers = {}
+
+#     def open(self):
+#         for id in range(
+#             SoftwareTrigger.BEGIN_ID,
+#             SoftwareTrigger.BEGIN_ID + SoftwareTrigger.ATTEMPTS,
+#         ):
+#             try:
+#                 with open(
+#                     "/sys/bus/iio/devices/iio_sysfs_trigger/add_trigger", "w"
+#                 ) as f:
+#                     f.write(str(id))
+#                 break
+#             except Exception as e:
+#                 print(e)
+#         else:
+#             logger.error(f"Failed to create software trigger.")
+#             return
+#         self.id = id
+
+#         self.old_triggers = {}
+#         for d in self.devices:
+#             s = find_sensor(d)
+#             if not s:
+#                 continue
+#             with open(os.path.join(s, "buffer/enable"), "w") as f:
+#                 f.write("0")
+#             trig_fn = os.path.join(s, "trigger/current_trigger")
+#             with open(trig_fn, "r") as f:
+#                 self.old_triggers[trig_fn] = f.read()
+#             with open(trig_fn, "w") as f:
+#                 f.write(f"sysfstrig{self.id}")
+
+#     def close(self):
+#         for trig, name in self.old_triggers.items():
+#             try:
+#                 with open(trig, "w") as f:
+#                     f.write(name)
+#             except Exception:
+#                 logger.error(f"Could not restore original trigger:\n{trig} to {name}")
+
+#         try:
+#             with open(
+#                 "/sys/bus/iio/devices/iio_sysfs_trigger/remove_trigger", "w"
+#             ) as f:
+#                 f.write(str(self.id))
+#         except Exception:
+#             logger.error(f"Could not delete sysfs trigger with id {self.id}")
 
 
 __all__ = ["IioReader", "AccelImu", "GyroImu"]

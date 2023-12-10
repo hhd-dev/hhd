@@ -5,7 +5,7 @@ from typing import Sequence
 from hhd.controller.base import Event, Multiplexer
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
-from hhd.controller.physical.imu import AccelImu, GyroImu
+from hhd.controller.physical.imu import AccelImu, GyroImu, ForcedSampler
 from hhd.controller.virtual.ds5 import DualSense5Edge
 from hhd.device.legion_go import (
     LGO_RAW_INTERFACE_BTN_ESSENTIALS,
@@ -62,6 +62,7 @@ def controller_loop():
         name=["  Legion Controller for Windows  Keyboard"]
         # report_size=64,
     )
+    g = ForcedSampler(["gyro_3d", "accel_3d"])
 
     m = Multiplexer(
         trigger="analog_to_discrete",
@@ -70,7 +71,7 @@ def controller_loop():
         status="both_to_main",
     )
 
-    REPORT_FREQ_MIN = 25
+    REPORT_FREQ_MIN = 70
     REPORT_FREQ_MAX = 400
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
@@ -88,6 +89,7 @@ def controller_loop():
             fd_to_dev[f] = m
 
     try:
+        g.open()
         prepare(a)
         prepare(b)
         prepare(c)
@@ -95,6 +97,7 @@ def controller_loop():
         prepare(p)
         prepare(e)
         prepare(f)
+        sampled = time.perf_counter()
 
         while True:
             start = time.perf_counter()
@@ -112,7 +115,7 @@ def controller_loop():
             if evs:
                 evs = m.process(evs)
                 # TODO: Remove. For testing
-                # print(evs)
+                print(evs)
                 e.consume(evs)
                 c.consume(evs)
 
@@ -128,9 +131,14 @@ def controller_loop():
             # they are combined to the same report, limiting resource use.
             # Ideally, this rate is smaller than the report rate of the hardware controller
             # to ensure there is always a report from that ready during refresh
-            elapsed = time.perf_counter() - start
+            t = time.perf_counter()
+            elapsed = t - start
             if elapsed < REPORT_DELAY_MIN:
                 time.sleep(REPORT_DELAY_MIN - elapsed)
+            if t - sampled > REPORT_DELAY_MAX:
+                g.sample()
+                sampled = t
+
     except KeyboardInterrupt:
         pass
     finally:
