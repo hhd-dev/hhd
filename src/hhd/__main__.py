@@ -102,6 +102,7 @@ def main():
                 proc = launch_plugin(pkg_name, plugin)
                 if proc:
                     running_plugins[proc.sentinel] = (pkg_name, plugin, proc)
+            time.sleep(ERROR_DELAY)
     except KeyboardInterrupt:
         logger.info(
             f"HHD Daemon received KeyboardInterrupt, stopping plugins and exiting."
