@@ -70,6 +70,7 @@ class UInputShortcutDevice(Consumer, Producer):
         self.capabilities = capabilities
         self.btn_map = btn_map
         self.axis_map = axis_map
+        self.dev = None
 
     def open(self) -> Sequence[int]:
         self.dev = UInput(
@@ -87,6 +88,8 @@ class UInputShortcutDevice(Consumer, Producer):
         return True
 
     def consume(self, events: Sequence[Event]):
+        if not self.dev:
+            return
         for ev in events:
             match ev["type"]:
                 case "axis":
