@@ -6,12 +6,13 @@ import time
 from typing import Sequence
 
 from hhd.controller import Button, Consumer, Event, Producer
-from hhd.controller.base import Multiplexer
+from hhd.controller.base import Multiplexer, can_read
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge
+from hhd.controller.virtual.uinput import UInputShortcutDevice
 
 from .const import (
     LGO_RAW_INTERFACE_BTN_ESSENTIALS,
@@ -26,8 +27,8 @@ ERROR_DELAY = 5
 
 logger = logging.getLogger(__name__)
 
-LEN_PID = 0x17EF
-LEN_VIDS = {
+LEN_VID = 0x17EF
+LEN_PIDS = {
     0x6182: "xinput",
     0x6183: "dinput",
     0x6184: "ddinput",
@@ -82,7 +83,7 @@ def main(as_plugin=True):
         try:
             controller_mode = None
             while not controller_mode:
-                devs = enumerate_unique(LEN_PID)
+                devs = enumerate_unique(LEN_VID)
                 if not devs:
                     logger.error(
                         f"Legion go controllers not found, waiting {ERROR_DELAY}s."
@@ -91,8 +92,8 @@ def main(as_plugin=True):
                     continue
 
                 for d in devs:
-                    if d["product_id"] in LEN_VIDS:
-                        controller_mode = LEN_VIDS[d["product_id"]]
+                    if d["product_id"] in LEN_PIDS:
+                        controller_mode = LEN_PIDS[d["product_id"]]
                         break
                 else:
                     logger.error(
@@ -107,10 +108,9 @@ def main(as_plugin=True):
                     controller_loop_xinput(accel, gyro, swap_legion, debug)
                 case _:
                     logger.info(
-                        f"Controllers in non-supported (yet) mode: {controller_mode}. Waiting {ERROR_DELAY}s..."
+                        f"Controllers in non-supported (yet) mode: {controller_mode}. Launching a shortcuts device."
                     )
-                    time.sleep(ERROR_DELAY)
-                    # controller_loop_rest()
+                    controller_loop_rest(debug)
         except Exception as e:
             logger.error(f"Received the following error:\n{e}")
             logger.error(
@@ -126,8 +126,48 @@ if __name__ == "__main__":
     main(False)
 
 
-def controller_loop_rest():
-    pass
+def controller_loop_rest(debug: bool = False):
+    d_raw = SelectivePassthrough(
+        GenericGamepadHidraw(
+            vid=[LEN_VID],
+            pid=list(LEN_PIDS),
+            usage_page=[0xFFA0],
+            usage=[0x0001],
+            report_size=64,
+            axis_map={},
+            btn_map=LGO_RAW_INTERFACE_BTN_MAP,
+        )
+    )
+
+    multiplexer = Multiplexer(
+        dpad="analog_to_discrete",
+    )
+    d_uinput = UInputShortcutDevice()
+
+    d_shortcuts = GenericGamepadEvdev(
+        vid=[LEN_VID],
+        pid=list(LEN_PIDS),
+        name=["Legion-Controller 1-23 Keyboard"],
+    )
+
+    try:
+        fds = []
+        fds.extend(d_raw.open())
+        fds.extend(d_shortcuts.open())
+        fds.extend(d_uinput.open())
+
+        while True:
+            select.select(fds, [], [])
+            d_shortcuts.produce(fds)
+            d_uinput.produce(fds)
+            evs = multiplexer.process(d_raw.produce(fds))
+            if debug and evs:
+                logger.info(evs)
+            d_uinput.consume(evs)
+    finally:
+        d_shortcuts.close(True)
+        d_raw.close(True)
+        d_uinput.close(True)
 
 
 def controller_loop_xinput(
@@ -153,15 +193,10 @@ def controller_loop_xinput(
         axis_map=LGO_TOUCHPAD_AXIS_MAP,
         aspect_ratio=1,
     )
-    d_raw = SelectivePasshtrough(
+    d_raw = SelectivePassthrough(
         GenericGamepadHidraw(
-            vid=[0x17EF],
-            pid=[
-                0x6182,  # XINPUT
-                0x6183,  # DINPUT
-                0x6184,  # Dual DINPUT
-                0x6185,  # FPS
-            ],
+            vid=[LEN_VID],
+            pid=list(LEN_PIDS),
             usage_page=[0xFFA0],
             usage=[0x0001],
             report_size=64,
@@ -173,13 +208,8 @@ def controller_loop_xinput(
     )
     # Mute keyboard shortcuts, mute
     d_shortcuts = GenericGamepadEvdev(
-        vid=[0x17EF],
-        pid=[
-            0x6182,  # XINPUT
-            0x6183,  # DINPUT
-            0x6184,  # Dual DINPUT
-            0x6185,  # FPS
-        ],
+        vid=[LEN_VID],
+        pid=list(LEN_PIDS),
         name=["  Legion Controller for Windows  Keyboard"]
         # report_size=64,
     )
@@ -266,7 +296,7 @@ def controller_loop_xinput(
             d.close(True)
 
 
-class SelectivePasshtrough(Producer, Consumer):
+class SelectivePassthrough(Producer, Consumer):
     def __init__(
         self,
         parent,
@@ -279,7 +309,7 @@ class SelectivePasshtrough(Producer, Consumer):
         self.forward_buttons = forward_buttons
         self.passthrough = passthrough
 
-        self.to_disable = []
+        self.to_disable = set()
 
     def open(self) -> Sequence[int]:
         return self.parent.open()
@@ -300,8 +330,11 @@ class SelectivePasshtrough(Producer, Consumer):
                 out.append(ev)
             elif ev["type"] == "button" and ev["code"] in self.passthrough:
                 out.append(ev)
-            elif ev["type"] == "button" and ev.get("value", False):
-                self.to_disable.append(ev["code"])
+            elif ev["type"] == "button":
+                if ev.get("value", False):
+                    self.to_disable.add(ev["code"])
+                elif ev["code"] in self.to_disable:
+                    self.to_disable.remove(ev["code"])
 
         if self.state:
             # If mode is pressed, forward all events
@@ -311,7 +344,7 @@ class SelectivePasshtrough(Producer, Consumer):
             # turn off all buttons that were pressed during it
             for btn in self.to_disable:
                 out.append({"type": "button", "code": btn, "value": False})
-            self.to_disable = []
+            self.to_disable = set()
             return out
         else:
             # Otherwise, just return the standard buttons

@@ -154,7 +154,7 @@ class Producer:
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         """Called with the file descriptors that are ready to read."""
-        raise NotImplementedError()
+        return []
 
 
 class Consumer:
@@ -174,7 +174,7 @@ class Consumer:
 class Multiplexer:
     def __init__(
         self,
-        swap_guide: None | Literal["guide_is_start", "guide_is_select"],
+        swap_guide: None | Literal["guide_is_start", "guide_is_select"] = None,
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
         dpad: None | Literal["analog_to_discrete"] = None,
         led: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
