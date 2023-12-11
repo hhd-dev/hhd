@@ -10,6 +10,7 @@ def controllers_run(**config: Any):
 
 
 def controllers_autodetect():
+    # Match just product number, should be enough for now
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         return f.read().strip() == "83E1"
 

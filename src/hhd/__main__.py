@@ -68,10 +68,10 @@ def main():
             plugins[plugin.name] = plugin.resolve()
 
         logger.info(f"Found plugin providers: {','.join(list(plugins))}")
-        plugin_str = "With the following plugins:\n"
+        plugin_str = "With the following plugins:"
         for pkg_name, sub_plugins in plugins.items():
             plugin_str += (
-                f"  - {pkg_name:10s}: {', '.join(p['name'] for p in sub_plugins)}"
+                f"\n  - {pkg_name:10s}: {', '.join(p['name'] for p in sub_plugins)}"
             )
         logger.info(plugin_str)
 
@@ -80,6 +80,10 @@ def main():
                 proc = launch_plugin(pkg_name, plugin)
                 if proc:
                     running_plugins[proc.sentinel] = (pkg_name, plugin, proc)
+
+        if not running_plugins:
+            logger.error(f"No plugins started, exiting...")
+            return
 
         logger.info(f"Monitoring plugin status, and restarting if necessary.")
         while True:

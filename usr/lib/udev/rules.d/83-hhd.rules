@@ -13,6 +13,9 @@ KERNEL=="iio:device[0-9]*", SUBSYSTEM=="iio", ATTR{name}=="gyro_3d", MODE="0666"
 # overrides /lib/udev/rules.d/80-iio-sensor-proxy.rules to disable using the accelerometer for orientation
 KERNELS=="0020:1022:*", SUBSYSTEM=="iio", TEST=="in_accel_x_raw", TEST=="in_accel_y_raw", TEST=="in_accel_z_raw", ENV{IIO_SENSOR_PROXY_TYPE}=""
 
+# Allow power button access
+SUBSYSTEMS=="acpi", DRIVERS=="button", ATTRS{hid}=="PNP0C0C", MODE="0666", TAG+="uaccess"
+
 # Enable access to uhid and uinput
 KERNEL=="uinput", MODE="0666", TAG+="uaccess"
 KERNEL=="uhid", MODE="0666", TAG+="uaccess"
