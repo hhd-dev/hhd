@@ -37,7 +37,7 @@ LEN_PIDS = {
 }
 
 
-def main(as_plugin=True):
+def main(as_plugin=False):
     parser = argparse.ArgumentParser(
         prog="HHD: LegionGo Controller Plugin",
         description="This plugin remaps the legion go controllers to a DS5 controller and restores all functionality.",
@@ -152,6 +152,8 @@ def main(as_plugin=True):
             logger.info("Received KeyboardInterrupt, exiting...")
             return
 
+def plugin():
+    main(True)
 
 if __name__ == "__main__":
     main(False)
