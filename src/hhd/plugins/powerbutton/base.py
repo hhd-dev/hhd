@@ -12,10 +12,10 @@ from typing import Sequence, cast
 import evdev
 from evdev import ecodes as e
 
+from .const import SUPPORTED_DEVICES, PowerButtonConfig
+
 logger = logging.getLogger(__name__)
 
-POWER_BUTTON_NAMES = ["Power Button"]
-POWER_BUTTON_PHYS = ["LNXPWRBN/button/input0", "PNP0C0C/button/input0"]
 STEAM_PID = os.path.expanduser("~/.steam/steam.pid")
 STEAM_EXE = os.path.expanduser("~/.steam/root/ubuntu12_32/steam")
 STEAM_WAIT_DELAY = 2
@@ -57,12 +57,39 @@ def run_steam_command(command: str):
     return False
 
 
-def register_power_button() -> evdev.InputDevice | None:
+def register_power_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
     for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
-        if device.name in POWER_BUTTON_NAMES and device.phys in POWER_BUTTON_PHYS:
+        if str(device.phys).startswith(b.phys):
             device.grab()
             logger.info(f"Captured power button '{device.name}': '{device.phys}'")
             return device
+    return None
+
+
+def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
+    if not b.hold_phys or not b.hold_events or b.hold_grab is None:
+        logger.error(
+            f"Device configuration tuple does not contain required parameters:\n{b}"
+        )
+        return None
+
+    for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
+        if str(device.phys).startswith(b.hold_phys):
+            if b.hold_grab:
+                device.grab()
+            logger.info(f"Captured hold keyboard '{device.name}': '{device.phys}'")
+            return device
+    return None
+
+
+def get_config() -> PowerButtonConfig | None:
+    with open("/sys/devices/virtual/dmi/id/product_name") as f:
+        prod = f.read().strip()
+
+    for d in SUPPORTED_DEVICES:
+        if d.prod_name == prod:
+            return d
+
     return None
 
 
@@ -75,10 +102,100 @@ def run_steam_longpress():
 
 
 def power_button_run(**conf):
-    power_button_timer()
+    cfg = get_config()
+    if not cfg:
+        logger.error(f"Passed autodetect but no config (?????). Exiting.")
+        return
+
+    match cfg.type:
+        case "hold_emitted":
+            logger.info(
+                f"Starting timer based powerbutton handler for device '{cfg.device}'."
+            )
+            power_button_timer(cfg)
+        case "hold_isa":
+            logger.info(
+                f"Starting isa keyboard powerbutton handler for device '{cfg.device}'."
+            )
+            power_button_isa(cfg)
+        case _:
+            logger.error(f"Invalid type in config '{cfg.type}'. Exiting.")
 
 
-def power_button_timer():
+def power_button_isa(cfg: PowerButtonConfig):
+    if not cfg.hold_events:
+        logger.error(f"Invalid hold events in config. Exiting.\n:{cfg.hold_events}")
+        return
+
+    press_dev = None
+    hold_dev = None
+    try:
+        hold_state = 0
+        while True:
+            # Initial check for steam
+            if not is_steam_gamescope_running():
+                # Close devices
+                if press_dev:
+                    press_dev.close()
+                    press_dev = None
+                if hold_dev:
+                    hold_dev.close()
+                    hold_dev = None
+                logger.info(f"Waiting for steam to launch.")
+                while not is_steam_gamescope_running():
+                    sleep(STEAM_WAIT_DELAY)
+
+            if not press_dev or not hold_dev:
+                logger.info(f"Steam is running, hooking power button.")
+                press_dev = register_power_button(cfg)
+                hold_dev = register_hold_button(cfg)
+            if not press_dev or not hold_dev:
+                logger.error(f"Power button interfaces not found, disabling plugin.")
+                return
+
+            # Add timeout to release the button if steam exits.
+            delay = STEAM_WAIT_DELAY
+            r = select.select([press_dev.fd, hold_dev.fd], [], [], delay)[0]
+            if not r:
+                continue
+            fd = r[0]  # handle one button at a time
+
+            # Handle button event
+            issue_systemctl = False
+            if fd == press_dev.fd:
+                ev = press_dev.read_one()
+                if ev.type == B("EV_KEY") and ev.code == B("KEY_POWER") and ev.value:
+                    logger.info("Executing short press.")
+                    issue_systemctl = not run_steam_shortpress()
+            elif fd == hold_dev.fd:
+                ev = hold_dev.read_one()
+                chk = (ev.type, ev.code, ev.value)
+
+                if hold_state >= len(cfg.hold_events):
+                    hold_state = 0
+
+                if chk == cfg.hold_events[hold_state]:
+                    hold_state += 1
+                else:
+                    hold_state = 0
+
+                if hold_state == len(cfg.hold_events):
+                    hold_state = 0
+                    logger.info("Executing long press.")
+                    issue_systemctl = not run_steam_longpress()
+
+            if issue_systemctl:
+                logger.error(
+                    "Power button action did not work. Calling `systemctl suspend`"
+                )
+                os.system("systemctl suspend")
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        logger.error(f"Received exception, exitting:\n{e}")
+
+
+def power_button_timer(cfg: PowerButtonConfig):
     dev = None
     try:
         pressed_time = None
@@ -95,7 +212,7 @@ def power_button_timer():
 
             if not dev:
                 logger.info(f"Steam is running, hooking power button.")
-                dev = register_power_button()
+                dev = register_power_button(cfg)
             if not dev:
                 logger.error(f"Power button not found, disabling plugin.")
                 return
@@ -108,9 +225,6 @@ def power_button_timer():
             if r:
                 # Handle button event
                 ev = dev.read_one()
-                logger.info(ev)
-                if ev.type == B("EV_KEY"):
-                    logger.info(ev)
                 if ev.type == B("EV_KEY") and ev.code == B("KEY_POWER"):
                     curr_time = perf_counter()
                     if ev.value:

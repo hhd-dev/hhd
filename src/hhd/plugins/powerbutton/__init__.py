@@ -1,6 +1,7 @@
 from typing import Any, Sequence
 
 from hhd.plugins import HHDPluginV1, get_relative_fn
+from .const import SUPPORTED_DEVICES
 
 
 def run(**config: Any):
@@ -10,10 +11,14 @@ def run(**config: Any):
 
 
 def autodetect():
-    # Limit to legion go for now, as its the only device
-    # Supported by hhd
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        return f.read().strip() == "83E1"
+        prod = f.read().strip()
+
+    for d in SUPPORTED_DEVICES:
+        if d.prod_name == prod:
+            return True
+
+    return False
 
 
 plugins: Sequence[HHDPluginV1] = [
