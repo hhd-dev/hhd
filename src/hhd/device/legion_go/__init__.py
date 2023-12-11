@@ -12,7 +12,7 @@ from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
-from hhd.controller.virtual.uinput import UInputShortcutDevice
+from hhd.controller.virtual.uinput import UInputDevice
 
 from .const import (
     LGO_RAW_INTERFACE_BTN_ESSENTIALS,
@@ -32,7 +32,7 @@ LEN_VID = 0x17EF
 LEN_PIDS = {
     0x6182: "xinput",
     0x6183: "dinput",
-    0x6184: "ddinput",
+    0x6184: "dual_dinput",
     0x6185: "fps",
 }
 
@@ -103,6 +103,7 @@ def main(as_plugin=True):
     while True:
         try:
             controller_mode = None
+            pid = None
             while not controller_mode:
                 devs = enumerate_unique(LEN_VID)
                 if not devs:
@@ -114,7 +115,8 @@ def main(as_plugin=True):
 
                 for d in devs:
                     if d["product_id"] in LEN_PIDS:
-                        controller_mode = LEN_PIDS[d["product_id"]]
+                        pid = d["product_id"]
+                        controller_mode = LEN_PIDS[pid]
                         break
                 else:
                     logger.error(
@@ -135,7 +137,7 @@ def main(as_plugin=True):
                     logger.info(
                         f"Controllers in non-supported (yet) mode: {controller_mode}. Launching a shortcuts device."
                     )
-                    controller_loop_rest(debug)
+                    controller_loop_rest(controller_mode, pid if pid else 2, debug)
         except Exception as e:
             logger.error(f"Received the following error:\n{e}")
             logger.error(
@@ -155,7 +157,7 @@ if __name__ == "__main__":
     main(False)
 
 
-def controller_loop_rest(debug: bool = False):
+def controller_loop_rest(mode: str, pid: int, debug: bool = False):
     d_raw = SelectivePassthrough(
         GenericGamepadHidraw(
             vid=[LEN_VID],
@@ -171,7 +173,7 @@ def controller_loop_rest(debug: bool = False):
     multiplexer = Multiplexer(
         dpad="analog_to_discrete",
     )
-    d_uinput = UInputShortcutDevice()
+    d_uinput = UInputDevice(name=f"HHD Shortcuts Device (Legion Mode: {mode})", pid=pid)
 
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
