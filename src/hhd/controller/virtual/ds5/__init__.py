@@ -1,3 +1,4 @@
+import logging
 import sys
 import time
 from collections import defaultdict
@@ -30,6 +31,8 @@ from .const import (
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
 REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
 DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
+
+logger = logging.getLogger(__name__)
 
 
 class TouchpadCorrection(NamedTuple):
@@ -144,7 +147,10 @@ def correct_touchpad(
                 return TouchpadCorrection(
                     x_mult=width, y_mult=height, x_clamp=(bound, 1)
                 )
+        case "stretch":
+            return TouchpadCorrection(x_mult=width, y_mult=height)
 
+    logger.error(f"Touchpad correction method '{method}' not found.")
     return TouchpadCorrection(x_mult=width, y_mult=height)
 
 

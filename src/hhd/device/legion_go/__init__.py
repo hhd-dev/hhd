@@ -3,7 +3,7 @@ import logging
 import select
 import sys
 import time
-from typing import Sequence
+from typing import Sequence, cast
 
 from hhd.controller import Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer, can_read
@@ -11,7 +11,7 @@ from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
-from hhd.controller.virtual.ds5 import DualSense5Edge
+from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
 from hhd.controller.virtual.uinput import UInputShortcutDevice
 
 from .const import (
@@ -69,6 +69,12 @@ def main(as_plugin=True):
         help="Prints events as they happen.",
         dest="debug",
     )
+    parser.add_argument(
+        "-t",
+        "--touchpad",
+        help='How to fit the legion go touchpad into the DS5 ("stretch", "crop_center", "crop_start", "crop_end", "contain_start", "contain_end", "contain_center")',
+        default=None,
+    )
     if as_plugin:
         args = parser.parse_args(sys.argv[2:])
     else:
@@ -78,6 +84,7 @@ def main(as_plugin=True):
     gyro = args.gyro
     swap_legion = args.swap_legion
     debug = args.debug
+    touchpad_mode = cast(TouchpadCorrectionType | None, args.touchpad)
 
     while True:
         try:
@@ -105,7 +112,9 @@ def main(as_plugin=True):
             match controller_mode:
                 case "xinput":
                     logger.info("Launching DS5 controller instance.")
-                    controller_loop_xinput(accel, gyro, swap_legion, debug)
+                    controller_loop_xinput(
+                        accel, gyro, swap_legion, touchpad_mode, debug
+                    )
                 case _:
                     logger.info(
                         f"Controllers in non-supported (yet) mode: {controller_mode}. Launching a shortcuts device."
@@ -174,10 +183,13 @@ def controller_loop_xinput(
     accel: bool = True,
     gyro: bool = True,
     swap_legion: bool = False,
+    touchpad_mode: TouchpadCorrectionType | None = None,
     debug: bool = False,
 ):
     # Output
-    d_ds5 = DualSense5Edge()
+    d_ds5 = DualSense5Edge(
+        touchpad_method=touchpad_mode if touchpad_mode else "crop_end"
+    )
 
     # Imu
     d_accel = AccelImu()
