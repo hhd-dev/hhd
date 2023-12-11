@@ -76,6 +76,13 @@ def main(as_plugin=False):
         dest="swap_legion",
     )
     parser.add_argument(
+        "-s",
+        "--share-to-qam",
+        action="store_true",
+        help="Maps the share button (Legion R) to Guide + A",
+        dest="share_to_qam",
+    )
+    parser.add_argument(
         "-d",
         "--debug",
         action="store_true",
@@ -99,6 +106,7 @@ def main(as_plugin=False):
     debug = args.debug
     touchpad_mode = cast(TouchpadCorrectionType | None, args.touchpad)
     gyro_fix = args.gyro_fix
+    share_to_qam = args.share_to_qam
 
     if gyro_fix:
         gyro_fixer = GyroFixer()
@@ -136,13 +144,15 @@ def main(as_plugin=False):
                     if gyro_fixer:
                         gyro_fixer.open()
                     controller_loop_xinput(
-                        accel, gyro, swap_legion, touchpad_mode, debug
+                        accel, gyro, swap_legion, share_to_qam, touchpad_mode, debug
                     )
                 case _:
                     logger.info(
                         f"Controllers in non-supported (yet) mode: {controller_mode}. Launching a shortcuts device."
                     )
-                    controller_loop_rest(controller_mode, pid if pid else 2, debug)
+                    controller_loop_rest(
+                        controller_mode, pid if pid else 2, share_to_qam, debug
+                    )
         except Exception as e:
             logger.error(f"Received the following error:\n{e}")
             logger.error(
@@ -166,7 +176,7 @@ if __name__ == "__main__":
     main(False)
 
 
-def controller_loop_rest(mode: str, pid: int, debug: bool = False):
+def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = False):
     d_raw = SelectivePassthrough(
         GenericGamepadHidraw(
             vid=[LEN_VID],
@@ -180,9 +190,7 @@ def controller_loop_rest(mode: str, pid: int, debug: bool = False):
         )
     )
 
-    multiplexer = Multiplexer(
-        dpad="analog_to_discrete",
-    )
+    multiplexer = Multiplexer(dpad="analog_to_discrete", share_to_qam=share_to_qam)
     d_uinput = UInputDevice(name=f"HHD Shortcuts Device (Legion Mode: {mode})", pid=pid)
 
     d_shortcuts = GenericGamepadEvdev(
@@ -216,6 +224,7 @@ def controller_loop_xinput(
     accel: bool = True,
     gyro: bool = True,
     swap_legion: bool = False,
+    share_to_qam: bool = False,
     touchpad_mode: TouchpadCorrectionType | None = None,
     debug: bool = False,
 ):
@@ -273,6 +282,7 @@ def controller_loop_xinput(
         dpad="analog_to_discrete",
         led="main_to_sides",
         status="both_to_main",
+        share_to_qam=share_to_qam,
     )
 
     REPORT_FREQ_MIN = 25
@@ -354,7 +364,9 @@ class SelectivePassthrough(Producer, Consumer):
         self,
         parent,
         forward_buttons: Sequence[Button] = ("share", "mode"),
-        passthrough: Sequence[Button] = list(LGO_RAW_INTERFACE_BTN_ESSENTIALS[0x04]),
+        passthrough: Sequence[Button] = list(
+            next(iter(LGO_RAW_INTERFACE_BTN_ESSENTIALS.values()))
+        ),
     ):
         self.parent = parent
         self.state = False

@@ -181,6 +181,7 @@ class Multiplexer:
         touchpad: None
         | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
         status: None | Literal["both_to_main"] = None,
+        share_to_qam: bool = False,
         trigger_discrete_lvl: float = 0.99,
     ) -> None:
         self.swap_guide = swap_guide
@@ -190,6 +191,7 @@ class Multiplexer:
         self.touchpad = touchpad
         self.status = status
         self.trigger_discrete_lvl = trigger_discrete_lvl
+        self.share_to_qam = share_to_qam
 
         self.state = {}
 
@@ -270,6 +272,12 @@ class Multiplexer:
                                     ev["code"] = "select"
                                 else:
                                     ev["code"] = "start"
+
+                    if self.share_to_qam and ev["code"] == "share":
+                        ev["code"] = "mode"
+                        out.append(
+                            {"type": "button", "code": "a", "value": ev["value"]}
+                        )
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})

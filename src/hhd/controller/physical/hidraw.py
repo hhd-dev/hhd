@@ -60,13 +60,13 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.axis_map = axis_map
         self.config_map = config_map
         self.callback = callback
+        self.required = required
 
         self.path = None
         self.dev: Device | None = None
         self.fd = 0
 
         self.report = None
-        self.required = True
 
     def open(self) -> Sequence[int]:
         for d in enumerate_unique():
@@ -115,7 +115,7 @@ class GenericGamepadHidraw(Producer, Consumer):
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         # If we can not read return
-        if not self.fd or not self.dev:
+        if not self.fd or self.fd not in fds or not self.dev:
             return []
         rep = None
 
@@ -131,7 +131,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         if self.report and self.report == rep:
             return []
         self.report = rep
-        rep_id = rep[0]
+        rep_id = rep[2] if len(rep) > 2 else None
 
         # Allow for devices with NULL reports
         if None in self.btn_map or None in self.axis_map:

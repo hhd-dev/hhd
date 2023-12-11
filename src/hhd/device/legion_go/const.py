@@ -17,7 +17,7 @@ LGO_TOUCHPAD_AXIS_MAP: dict[int, Axis] = to_map(
 )
 
 LGO_RAW_INTERFACE_BTN_ESSENTIALS: dict[int | None, dict[Button, BM]] = {
-    0x04: {
+    0x74: {
         # Misc
         "mode": BM((18 << 3)),
         "share": BM((18 << 3) + 1),
@@ -32,7 +32,7 @@ LGO_RAW_INTERFACE_BTN_ESSENTIALS: dict[int | None, dict[Button, BM]] = {
 
 
 LGO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
-    0x04: {
+    0x74: {
         # Misc
         "mode": BM((18 << 3)),
         "share": BM((18 << 3) + 1),
@@ -70,7 +70,7 @@ LGO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
 
 
 LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
-    0x04: {
+    0x74: {
         "ls_x": AM(14 << 3, "m8"),
         "ls_y": AM(15 << 3, "m8"),
         "rs_x": AM(16 << 3, "m8"),
@@ -88,7 +88,7 @@ LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
 }
 
 LGO_RAW_INTERFACE_CONFIG_MAP: dict[int | None, dict[Configuration, CM]] = {
-    0x04: {
+    0x74: {
         "battery_left": CM(5 << 3, "u8", scale=1, bounds=(0, 100)),
         "battery_right": CM(7 << 3, "u8", scale=1, bounds=(0, 100)),
         "is_connected_left": CM((10 << 3) + 7, "bit"),
