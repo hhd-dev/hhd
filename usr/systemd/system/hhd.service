@@ -1,0 +1,11 @@
+[Unit]
+Description=Handheld Daemon Service
+# TODO: Switch to default.target to allow for beyond session control,
+# such as switching ttys and launching gamescope instances
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/nice --15 /usr/bin/hhd
+
+[Install]
+WantedBy=multi-user.target
