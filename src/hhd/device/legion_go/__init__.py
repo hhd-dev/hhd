@@ -188,7 +188,7 @@ def controller_loop_rest(mode: str, pid: int, debug: bool = False):
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
-        name=["Legion-Controller 1-23 Keyboard"],
+        name=["Legion-Controller 1-23 Keyboard", "Legion-Controller 1-C2 Keyboard"],
         required=True,
     )
 
