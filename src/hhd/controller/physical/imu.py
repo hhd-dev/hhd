@@ -291,8 +291,10 @@ class GyroImu(IioReader):
 
 
 class ForcedSampler:
-    def __init__(self, devices: Sequence[str]) -> None:
+    def __init__(self, devices: Sequence[str], keep_fds: bool = False) -> None:
         self.devices = devices
+        self.fds = []
+        self.keep_fds = keep_fds
 
     def open(self):
         self.fds = []
@@ -308,13 +310,20 @@ class ForcedSampler:
             else:
                 continue
 
-            self.fds.append(os.open(p, os.O_RDONLY | os.O_NONBLOCK))
+            self.paths.append(p)
+            if self.keep_fds:
+                self.fds.append(os.open(p, os.O_RDONLY | os.O_NONBLOCK))
 
     def sample(self):
-        for fd in select.select(self.fds, [], [], 0)[0]:
-            os.lseek(fd, 0, os.SEEK_SET)
-        for fd in select.select(self.fds, [], [], 0)[0]:
-            os.read(fd, 20)
+        if self.keep_fds:
+            for fd in select.select(self.fds, [], [], 0)[0]:
+                os.read(fd, 20)
+            for fd in select.select(self.fds, [], [], 0)[0]:
+                os.lseek(fd, 0, os.SEEK_SET)
+        else:
+            for p in self.paths:
+                with open(p, "rb") as f:
+                    f.read()
 
     def close(self):
         for fd in self.fds:

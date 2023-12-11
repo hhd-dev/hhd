@@ -22,8 +22,9 @@ from .const import (
     LGO_TOUCHPAD_BUTTON_MAP,
 )
 from .hid import rgb_callback
+from .gyro_fix import GyroFixer
 
-ERROR_DELAY = 5
+ERROR_DELAY = 1
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,13 @@ def main(as_plugin=True):
         dest="gyro",
     )
     parser.add_argument(
+        "-gf",
+        "--gyro-fix",
+        action="store_true",
+        help="Samples the gyro to avoid needing a custom driver.",
+        dest="gyro_fix",
+    )
+    parser.add_argument(
         "-l",
         "--swap-legion",
         action="store_true",
@@ -85,6 +93,12 @@ def main(as_plugin=True):
     swap_legion = args.swap_legion
     debug = args.debug
     touchpad_mode = cast(TouchpadCorrectionType | None, args.touchpad)
+    gyro_fix = args.gyro_fix
+
+    if gyro_fix:
+        gyro_fixer = GyroFixer()
+    else:
+        gyro_fixer = None
 
     while True:
         try:
@@ -112,6 +126,8 @@ def main(as_plugin=True):
             match controller_mode:
                 case "xinput":
                     logger.info("Launching DS5 controller instance.")
+                    if gyro_fixer:
+                        gyro_fixer.open()
                     controller_loop_xinput(
                         accel, gyro, swap_legion, touchpad_mode, debug
                     )
@@ -125,8 +141,12 @@ def main(as_plugin=True):
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )
+            if gyro_fixer:
+                gyro_fixer.close()
             time.sleep(ERROR_DELAY)
         except KeyboardInterrupt:
+            if gyro_fixer:
+                gyro_fixer.close()
             logger.info("Received KeyboardInterrupt, exiting...")
             return
 
