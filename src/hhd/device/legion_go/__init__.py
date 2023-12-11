@@ -167,6 +167,7 @@ def controller_loop_rest(mode: str, pid: int, debug: bool = False):
             report_size=64,
             axis_map={},
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
+            required=True,
         )
     )
 
@@ -179,6 +180,7 @@ def controller_loop_rest(mode: str, pid: int, debug: bool = False):
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
         name=["Legion-Controller 1-23 Keyboard"],
+        required=True,
     )
 
     try:

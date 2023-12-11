@@ -161,7 +161,7 @@ def encode_axis(buff: bytearray, t: AM, val: float):
 
 def hexify(d: int | Sequence[int]):
     if isinstance(d, int):
-        return f"0x{d:04x}"
+        return f"{d:04x}"
     else:
         return [hexify(v) for v in d]
 
