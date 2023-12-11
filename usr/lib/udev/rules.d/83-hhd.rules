@@ -15,6 +15,7 @@ KERNELS=="0020:1022:*", SUBSYSTEM=="iio", TEST=="in_accel_x_raw", TEST=="in_acce
 
 # Allow power button access
 SUBSYSTEMS=="acpi", DRIVERS=="button", ATTRS{hid}=="PNP0C0C", MODE="0666", TAG+="uaccess"
+KERNELS=="input[0-9]*", SUBSYSTEMS=="input", ATTRS{phys}=="isa0060*", MODE="0666", TAG+="uaccess"
 
 # Enable access to uhid and uinput
 KERNEL=="uinput", MODE="0666", TAG+="uaccess"
