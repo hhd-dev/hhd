@@ -46,6 +46,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         config_map: dict[int | None, dict[Configuration, CM]] = {},
         callback: EventCallback | None = None,
         report_size: int = MAX_REPORT_SIZE,
+        required: bool = True,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -65,6 +66,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.fd = 0
 
         self.report = None
+        self.required = True
 
     def open(self) -> Sequence[int]:
         for d in enumerate_unique():
@@ -107,6 +109,8 @@ class GenericGamepadHidraw(Producer, Consumer):
         if self.usage:
             err += f"Usage: {hexify(self.usage)}\n"
         logger.error(err)
+        if self.required:
+            raise RuntimeError()
         return []
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:

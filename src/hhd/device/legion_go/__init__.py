@@ -216,7 +216,12 @@ def controller_loop_xinput(
     d_gyro = GyroImu()
 
     # Inputs
-    d_xinput = GenericGamepadEvdev([0x17EF], [0x6182], "Generic X-Box pad")
+    d_xinput = GenericGamepadEvdev(
+        [0x17EF],
+        [0x6182],
+        "Generic X-Box pad",
+        required=True,
+    )
     d_touch = GenericGamepadEvdev(
         [0x17EF],
         [0x6182],
@@ -224,6 +229,7 @@ def controller_loop_xinput(
         btn_map=LGO_TOUCHPAD_BUTTON_MAP,
         axis_map=LGO_TOUCHPAD_AXIS_MAP,
         aspect_ratio=1,
+        required=True,
     )
     d_raw = SelectivePassthrough(
         GenericGamepadHidraw(
@@ -236,14 +242,16 @@ def controller_loop_xinput(
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=rgb_callback,
+            required=True,
         )
     )
     # Mute keyboard shortcuts, mute
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
-        name=["  Legion Controller for Windows  Keyboard"]
+        name=["  Legion Controller for Windows  Keyboard"],
         # report_size=64,
+        required=True,
     )
 
     multiplexer = Multiplexer(

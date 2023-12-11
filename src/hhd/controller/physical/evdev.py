@@ -78,6 +78,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         btn_map: Mapping[int, Button] = XBOX_BUTTON_MAP,
         axis_map: Mapping[int, Axis] = XBOX_AXIS_MAP,
         aspect_ratio: float | None = None,
+        required: bool = True
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -89,6 +90,7 @@ class GenericGamepadEvdev(Producer, Consumer):
 
         self.dev: evdev.InputDevice | None = None
         self.fd = 0
+        self.required = required
 
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
@@ -117,6 +119,8 @@ class GenericGamepadEvdev(Producer, Consumer):
         if self.name:
             err += f"Name: {self.name}\n"
         logger.error(err)
+        if self.required:
+            raise RuntimeError()
         return []
 
     def close(self, exit: bool) -> bool:
