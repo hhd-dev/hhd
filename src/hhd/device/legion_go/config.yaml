@@ -24,7 +24,7 @@ share_to_qam: True
 # Not recommended for controls, it causes distortion.
 # "crop_center", "crop_start", "crop_end" make the legion go touchpad appear in
 # the left, middle, and right of the DS5 touchpad. Remap the touchpad corresponding
-# to the option you use in steam. With `crop_end` that would be the Right touchpad.
+# to the option you use in steam. With `crop_end` that would be the right touchpad.
 # When you need access to the whole DS5 touchpad, e.g., for a PS5 native game,
 # you can use "contain_start", "contain_center", "contain_end".
 # These will place the whole touchpad of the DS5 in the top, middle, or bottom part
@@ -38,5 +38,5 @@ touchpad_mode: crop_end
 led_support: True
 
 # Prints events to the console,
-# consumes a lot of CPU and causes, do not leave enabled.
+# consumes a lot of CPU and causes latency, do not leave enabled.
 debug: False
