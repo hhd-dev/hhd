@@ -1,0 +1,37 @@
+version: 1
+
+# Controller type, only Dualsense Edge for now
+controller: ds5e
+
+# Acceleration and Gyroscope
+# They increase CPU utilisation, so only
+# enable them if you need them
+gyro: True
+accel: False
+
+# Adds a separate thread that polls a iio file
+# to generate gyro events. Required by the default driver for now.
+# Increases CPU utilisation, so disable if not needed.
+gyro_fix: True
+
+# Button placement tweaks
+swap_legion: False
+share_to_qam: True
+
+# Touchpad modes
+# The DS5 touchpad is too long, so it needs to be cropped.
+# `stretch` resizes the square of the legion go to look like the DS5 touchpad
+# Not recommended for controls, it causes distortion.
+# "crop_center", "crop_start", "crop_end" make the legion go touchpad appear in
+# the left, middle, and right of the DS5 touchpad. Remap the touchpad corresponding
+# to the option you use in steam. With `crop_end` that would be the Right touchpad.
+# When you need access to the whole DS5 touchpad, e.g., for a PS5 native game,
+# you can use "contain_start", "contain_center", "contain_end".
+# These will place the whole touchpad of the DS5 in the top, middle, or bottom part
+# of the legion go. `contain_start` feels best as it provides a boundary for your finger.
+# ["stretch", "crop_center", "crop_start", "crop_end", "contain_start", "contain_end", "contain_center"]
+touchpad_mode: crop_end
+
+# Prints events to the console,
+# consumes a lot of CPU and causes, do not leave enabled.
+debug: False
