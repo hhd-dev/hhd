@@ -194,11 +194,13 @@ class Multiplexer:
         self.share_to_qam = share_to_qam
 
         self.state = {}
+        self.queue: list[Event] = []
 
         assert touchpad is None, "touchpad rewiring not supported yet"
 
     def process(self, events: Sequence[Event]):
-        out: Sequence[Event] = []
+        out: list[Event] = self.queue
+        self.queue = out
         status_events = set()
 
         for ev in events:
@@ -275,7 +277,8 @@ class Multiplexer:
 
                     if self.share_to_qam and ev["code"] == "share":
                         ev["code"] = "mode"
-                        out.append(
+                        # append A on next update
+                        self.queue.append(
                             {"type": "button", "code": "a", "value": ev["value"]}
                         )
                 case "led":

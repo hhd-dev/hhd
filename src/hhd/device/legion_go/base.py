@@ -347,9 +347,8 @@ def controller_loop_xinput(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
+            evs = multiplexer.process(evs)
             if evs:
-                evs = multiplexer.process(evs)
-
                 if debug:
                     logger.info(evs)
 
