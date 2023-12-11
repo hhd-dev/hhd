@@ -38,6 +38,18 @@ def launch_plugin(pkg_name: str, plugin: HHDPluginV1):
 
         with open(cfg_fn, "r") as f:
             cfg = yaml.safe_load(f)
+
+        if "config_version" in plugin and plugin["config_version"] != cfg.get(
+            "version", 0
+        ):
+            logger.warn(
+                f"Config file for plugin '{plugin['name']}' is outdated, replacing with default:\n{cfg_fn}"
+            )
+            os.makedirs(CONFIG_DIR, exist_ok=True)
+            shutil.copy(plugin["config"], cfg_fn)
+
+            with open(cfg_fn, "r") as f:
+                cfg = yaml.safe_load(f)
     else:
         cfg = {}
 

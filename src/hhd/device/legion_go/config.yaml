@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 # Controller type, only Dualsense Edge for now
 controller: ds5e
@@ -31,6 +31,11 @@ share_to_qam: True
 # of the legion go. `contain_start` feels best as it provides a boundary for your finger.
 # ["stretch", "crop_center", "crop_start", "crop_end", "contain_start", "contain_end", "contain_center"]
 touchpad_mode: crop_end
+
+# Enables led support through the DS5 controller.
+# The configuration overrides profile 3 in the controlelrs.
+# This is not the best fit for the controllers, so you can disable it here.
+led_support: True
 
 # Prints events to the console,
 # consumes a lot of CPU and causes, do not leave enabled.

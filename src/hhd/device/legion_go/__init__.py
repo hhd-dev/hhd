@@ -20,6 +20,7 @@ plugins: Sequence[HHDPluginV1] = [
         "autodetect": controllers_autodetect,
         "run": controllers_run,
         "config": get_relative_fn("config.yaml"),
+        "config_version": 2,
     }
 ]
 

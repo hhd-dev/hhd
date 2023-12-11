@@ -107,17 +107,26 @@ def main(as_plugin=False):
     touchpad_mode = cast(TouchpadCorrectionType | None, args.touchpad)
     gyro_fix = args.gyro_fix
     share_to_qam = args.share_to_qam
-    plugin_run(accel, gyro, swap_legion, touchpad_mode, gyro_fix, share_to_qam, debug)
+    plugin_run(
+        accel=accel,
+        gyro=gyro,
+        swap_legion=swap_legion,
+        touchpad_mode=touchpad_mode,
+        gyro_fix=gyro_fix,
+        share_to_qam=share_to_qam,
+        debug=debug,
+    )
 
 
 def plugin_run(
-    accel: bool,
-    gyro: bool,
-    swap_legion: bool,
-    touchpad_mode: TouchpadCorrectionType | None,
-    gyro_fix: bool,
-    share_to_qam: bool,
-    debug: bool,
+    accel: bool = False,
+    gyro: bool = True,
+    swap_legion: bool = False,
+    touchpad_mode: TouchpadCorrectionType | None = "crop_end",
+    gyro_fix: bool = True,
+    share_to_qam: bool = True,
+    led_support: bool = True,
+    debug: bool = False,
     **_,
 ):
     if gyro_fix:
@@ -156,7 +165,13 @@ def plugin_run(
                     if gyro_fixer:
                         gyro_fixer.open()
                     controller_loop_xinput(
-                        accel, gyro, swap_legion, share_to_qam, touchpad_mode, debug
+                        accel=accel,
+                        gyro=gyro,
+                        swap_legion=swap_legion,
+                        share_to_qam=share_to_qam,
+                        touchpad_mode=touchpad_mode,
+                        led_support=led_support,
+                        debug=debug,
                     )
                 case _:
                     logger.info(
@@ -230,6 +245,7 @@ def controller_loop_xinput(
     swap_legion: bool = False,
     share_to_qam: bool = False,
     touchpad_mode: TouchpadCorrectionType | None = None,
+    led_support: bool = True,
     debug: bool = False,
 ):
     # Output
@@ -267,7 +283,7 @@ def controller_loop_xinput(
             axis_map={},
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
-            callback=rgb_callback,
+            callback=rgb_callback if led_support else None,
             required=True,
         )
     )
