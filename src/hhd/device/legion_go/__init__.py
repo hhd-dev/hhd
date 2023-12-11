@@ -61,6 +61,13 @@ def main(as_plugin=True):
         help="Swaps Legion buttons with start, select.",
         dest="swap_legion",
     )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Prints events as they happen.",
+        dest="debug",
+    )
     if as_plugin:
         args = parser.parse_args(sys.argv[2:])
     else:
@@ -69,6 +76,7 @@ def main(as_plugin=True):
     accel = args.accel
     gyro = args.gyro
     swap_legion = args.swap_legion
+    debug = args.debug
 
     while True:
         try:
@@ -96,7 +104,7 @@ def main(as_plugin=True):
             match controller_mode:
                 case "xinput":
                     logger.info("Launching DS5 controller instance.")
-                    controller_loop_xinput(accel, gyro, swap_legion)
+                    controller_loop_xinput(accel, gyro, swap_legion, debug)
                 case _:
                     logger.info(
                         f"Controllers in non-supported (yet) mode: {controller_mode}. Waiting {ERROR_DELAY}s..."
@@ -126,6 +134,7 @@ def controller_loop_xinput(
     accel: bool = True,
     gyro: bool = True,
     swap_legion: bool = False,
+    debug: bool = False,
 ):
     # Output
     d_ds5 = DualSense5Edge()
@@ -227,6 +236,9 @@ def controller_loop_xinput(
 
             if evs:
                 evs = multiplexer.process(evs)
+
+                if debug:
+                    logger.info(evs)
 
                 d_ds5.consume(evs)
                 d_xinput.consume(evs)
