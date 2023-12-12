@@ -24,7 +24,7 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         "83E1",
         "PNP0C0C",
         "isa0060",
-        True,
+        False,
         [(4, 4, 219), (1, 125, 1), (0, 0, 0)],
     )
 ]
