@@ -200,7 +200,7 @@ class Multiplexer:
 
     def process(self, events: Sequence[Event]):
         out: list[Event] = self.queue
-        self.queue = out
+        self.queue = []
         status_events = set()
 
         for ev in events:

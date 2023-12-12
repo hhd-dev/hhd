@@ -154,8 +154,7 @@ def power_button_isa(cfg: PowerButtonConfig):
                 return
 
             # Add timeout to release the button if steam exits.
-            delay = STEAM_WAIT_DELAY
-            r = select.select([press_dev.fd, hold_dev.fd], [], [], delay)[0]
+            r = select.select([press_dev.fd, hold_dev.fd], [], [], STEAM_WAIT_DELAY)[0]
             if not r:
                 continue
             fd = r[0]  # handle one button at a time
