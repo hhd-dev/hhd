@@ -123,14 +123,14 @@ def plugin_run(
     gyro: bool = True,
     swap_legion: bool = False,
     touchpad_mode: TouchpadCorrectionType | None = "crop_end",
-    gyro_fix: bool = True,
+    gyro_fix: bool | int = True,
     share_to_qam: bool = True,
     led_support: bool = True,
     debug: bool = False,
     **_,
 ):
     if gyro_fix:
-        gyro_fixer = GyroFixer()
+        gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 65)
     else:
         gyro_fixer = None
 
