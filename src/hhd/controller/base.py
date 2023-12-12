@@ -278,9 +278,8 @@ class Multiplexer:
                     if self.share_to_qam and ev["code"] == "share":
                         ev["code"] = "mode"
                         # append A on next update
-                        self.queue.append(
-                            {"type": "button", "code": "a", "value": ev["value"]}
-                        )
+                        # a = self.queue if ev["value"] else out
+                        out.append({"type": "button", "code": "a", "value": ev["value"]})
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})
