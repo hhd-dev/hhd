@@ -1,0 +1,10 @@
+[Unit]
+Description=Handheld Daemon Service
+After=default.target
+
+[Service]
+ExecStart=/home/%i/.local/share/hhd/venv/bin/hhd --user %i
+Nice=-12
+
+[Install]
+WantedBy=multi-user.target
