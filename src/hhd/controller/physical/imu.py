@@ -164,14 +164,15 @@ def close_dev(dev: DeviceInfo):
     write_sysfs(dev.sysfs, "buffer/enable", 0)
 
 
-def process_scan_event(data: bytes, ofs: int, se: ScanElement):
+def process_scan_event(data: bytes, ofs: int, se: ScanElement, invert: bool = False):
     # TODO: Implement parsing iio fully, by adding shifting and cutoff
     d = data[ofs >> 3 : (ofs >> 3) + (se.storage_bits >> 3)]
     d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
     # d = d >> se.shift
     # d &= (1 << se.bits) - 1
     d = d * se.scale + se.offset
-
+    if invert:
+        d = -d; # Invert the axis
     if se.max_val is not None:
         if d > 0:
             d = min(d, se.max_val)
@@ -258,10 +259,12 @@ class IioReader(Producer):
             # Align bytes
             if ofs % se.storage_bits:
                 ofs = (ofs // se.storage_bits + 1) * se.storage_bits
-
             # Grab value if required
             if se.axis:
-                new_val = process_scan_event(data, ofs, se)
+                invert = False
+                if se.axis == "gyro_z":
+                    invert = True
+                new_val = process_scan_event(data, ofs, se, invert)
                 if se.axis not in self.prev or self.prev[se.axis] != new_val:
                     out.append(
                         {
