@@ -1,0 +1,3 @@
+recursive-include src/hhd *.yml
+recursive-include src/hhd *.yaml
+graft usr/
