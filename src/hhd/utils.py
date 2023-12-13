@@ -20,9 +20,11 @@ def get_perms(user: str | None) -> Perms | None:
 
         if not user:
             if not uid or not gid:
-                logger.error(
-                    f"Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
+                print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print(
+                    "Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
                 )
+                print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return Perms(uid, gid, uid, gid)
 
         euid = int(
@@ -37,29 +39,45 @@ def get_perms(user: str | None) -> Perms | None:
         )
 
         if (uid or gid) and (uid != euid or gid != egid):
-            logger.error(
+            print(
                 f"The user specified with --user is not the user this process was started with."
             )
             return None
 
         return Perms(euid, egid, uid, gid)
     except subprocess.CalledProcessError as e:
-        logger.error(
-            f"Getting the user uid/gid returned an error:\n{e.stderr.decode()}"
-        )
+        print(f"Getting the user uid/gid returned an error:\n{e.stderr.decode()}")
         return None
     except Exception as e:
-        logger.error(f"Failed getting permissions with error:\n{e}")
+        print(f"Failed getting permissions with error:\n{e}")
         return None
 
 
 def switch_priviledge(p: Perms, escalate=False):
+    uid = os.geteuid()
+    gid = os.getegid()
+
     if escalate:
         os.seteuid(p.uid)
         os.setegid(p.gid)
     else:
         os.setegid(p.egid)
         os.seteuid(p.euid)
+
+    return uid, gid
+
+
+def restore_priviledge(old: tuple[int, int]):
+    uid, gid = old
+    # Try writing group first in case of root
+    # and fail silently
+    try:
+        os.setegid(gid)
+    except Exception:
+        pass
+    os.seteuid(uid)
+    os.setegid(gid)
+    pass
 
 
 def expanduser(path: str, user: int | str | Perms | None = None):

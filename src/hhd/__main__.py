@@ -88,17 +88,18 @@ def main():
     user = args.user
 
     # Setup temporary logger for permission retreival
-    setup_logger()
     perms = get_perms(user)
     if not perms:
-        logger.error(f"Could not get user information. Exiting...")
+        print(f"Could not get user information. Exiting...")
         return
 
     running_plugins: dict[int, tuple[str, HHDPluginV1, Process]] = {}
     try:
         # Drop privileges for initial set-up
         switch_priviledge(perms, False)
-        setup_logger(expanduser(join(CONFIG_DIR, "log"), perms), init=False)
+        setup_logger(
+            join(CONFIG_DIR, "log"), perms=perms
+        )
 
         plugins = {}
         for plugin in pkg_resources.iter_entry_points("hhd.plugins"):
