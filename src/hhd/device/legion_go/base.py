@@ -243,7 +243,7 @@ def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = 
 def controller_loop_xinput(
     accel: bool = True,
     gyro: bool = True,
-    swap_legion: bool = False,
+    swap_legion: str | bool = False,
     share_to_qam: bool = False,
     touchpad_mode: TouchpadCorrectionType | None = None,
     led_support: bool = True,
@@ -297,8 +297,20 @@ def controller_loop_xinput(
         required=True,
     )
 
+    match swap_legion:
+        case True:
+            swap_guide = "guide_is_select"
+        case False:
+            swap_guide = None
+        case "l_is_start":
+            swap_guide = "guide_is_start"
+        case "l_is_select":
+            swap_guide = "guide_is_select"
+        case _:
+            assert False, "Invalid value for `swap_legion`."
+
     multiplexer = Multiplexer(
-        swap_guide="guide_is_select" if swap_legion else None,
+        swap_guide=swap_guide,
         trigger="analog_to_discrete",
         dpad="analog_to_discrete",
         led="main_to_sides",

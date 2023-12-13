@@ -15,6 +15,10 @@ accel: False
 gyro_fix: True
 
 # Button placement tweaks
+# Swap legion places start and select on the legion keys
+# True and l_is_select use the canonical order, like you would find on PS portal
+# l_is_start considers Legion L to be the primary button
+# [False, True, 'l_is_start', 'l_is_select']
 swap_legion: False
 share_to_qam: True
 
