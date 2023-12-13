@@ -266,14 +266,14 @@ class Multiplexer:
                                 ev["code"] = "share"
                             case "mode":
                                 if self.swap_guide == "guide_is_start":
-                                    ev["code"] = "start"
-                                else:
                                     ev["code"] = "select"
+                                else:
+                                    ev["code"] = "start"
                             case "share":
                                 if self.swap_guide == "guide_is_start":
-                                    ev["code"] = "select"
-                                else:
                                     ev["code"] = "start"
+                                else:
+                                    ev["code"] = "select"
 
                     if self.share_to_qam and ev["code"] == "share":
                         ev["code"] = "mode"
