@@ -16,6 +16,7 @@ classifiers = [
 dependencies = [
   "evdev>=1.6.1",
   "PyYAML>=6.0.1",
+  "rich>=13.7.0",
 ]
 
 [project.urls]

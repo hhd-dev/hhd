@@ -1,0 +1,119 @@
+import logging
+import os
+import subprocess
+from typing import NamedTuple
+
+logger = logging.getLogger(__name__)
+
+
+class Perms(NamedTuple):
+    euid: int = 0
+    egid: int = 0
+    uid: int = 0
+    gid: int = 0
+
+
+def get_perms(user: str | None) -> Perms | None:
+    try:
+        uid = os.getuid()
+        gid = os.getgid()
+
+        if not user:
+            if not uid or not gid:
+                logger.error(
+                    f"Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
+                )
+            return Perms(uid, gid, uid, gid)
+
+        euid = int(
+            subprocess.run(
+                ["id", "-u", user], capture_output=True, check=True
+            ).stdout.decode()
+        )
+        egid = int(
+            subprocess.run(
+                ["id", "-g", user], capture_output=True, check=True
+            ).stdout.decode()
+        )
+
+        if (uid or gid) and (uid != euid or gid != egid):
+            logger.error(
+                f"The user specified with --user is not the user this process was started with."
+            )
+            return None
+
+        return Perms(euid, egid, uid, gid)
+    except subprocess.CalledProcessError as e:
+        logger.error(
+            f"Getting the user uid/gid returned an error:\n{e.stderr.decode()}"
+        )
+        return None
+    except Exception as e:
+        logger.error(f"Failed getting permissions with error:\n{e}")
+        return None
+
+
+def switch_priviledge(p: Perms, escalate=False):
+    if escalate:
+        os.seteuid(p.uid)
+        os.setegid(p.gid)
+    else:
+        os.setegid(p.egid)
+        os.seteuid(p.euid)
+
+
+def expanduser(path: str, user: int | str | Perms | None = None):
+    """Expand ~ and ~user constructions.  If user or $HOME is unknown,
+    do nothing.
+
+    Modified from the python implementation to support using the target userid/user."""
+
+    path = os.fspath(path)
+
+    if not path.startswith("~"):
+        return path
+
+    i = path.find("/", 1)
+    if i < 0:
+        i = len(path)
+    if i == 1:
+        if "HOME" in os.environ and not user:
+            # Fallback to environ only if user not set
+            userhome = os.environ["HOME"]
+        else:
+            try:
+                import pwd
+            except ImportError:
+                # pwd module unavailable, return path unchanged
+                return path
+            try:
+                if not user:
+                    userhome = pwd.getpwuid(os.getuid()).pw_dir
+                elif isinstance(user, int):
+                    userhome = pwd.getpwuid(user).pw_dir
+                elif isinstance(user, Perms):
+                    userhome = pwd.getpwuid(user.euid).pw_dir
+                else:
+                    userhome = pwd.getpwnam(user).pw_dir
+            except KeyError:
+                # bpo-10496: if the current user identifier doesn't exist in the
+                # password database, return the path unchanged
+                return path
+    else:
+        try:
+            import pwd
+        except ImportError:
+            # pwd module unavailable, return path unchanged
+            return path
+        name = path[1:i]
+        try:
+            pwent = pwd.getpwnam(name)
+        except KeyError:
+            # bpo-10496: if the user name from the path doesn't exist in the
+            # password database, return the path unchanged
+            return path
+        userhome = pwent.pw_dir
+
+    root = "/"
+    userhome = userhome.rstrip(root)
+    return (userhome + path[i:]) or root

@@ -12,12 +12,14 @@ from typing import Sequence, cast
 import evdev
 from evdev import ecodes as e
 
+from hhd.utils import Perms, expanduser
+
 from .const import SUPPORTED_DEVICES, PowerButtonConfig
 
 logger = logging.getLogger(__name__)
 
-STEAM_PID = os.path.expanduser("~/.steam/steam.pid")
-STEAM_EXE = os.path.expanduser("~/.steam/root/ubuntu12_32/steam")
+STEAM_PID = "~/.steam/steam.pid"
+STEAM_EXE = "~/.steam/root/ubuntu12_32/steam"
 STEAM_WAIT_DELAY = 2
 LONG_PRESS_DELAY = 2.5
 
@@ -26,10 +28,10 @@ def B(b: str):
     return cast(int, getattr(evdev.ecodes, b))
 
 
-def is_steam_gamescope_running():
+def is_steam_gamescope_running(perms: Perms):
     pid = None
     try:
-        with open(STEAM_PID) as f:
+        with open(expanduser(STEAM_PID, perms)) as f:
             pid = f.read().strip()
 
         steam_cmd_path = f"/proc/{pid}/cmdline"
@@ -47,10 +49,14 @@ def is_steam_gamescope_running():
     return True
 
 
-def run_steam_command(command: str):
+def run_steam_command(command: str, perms: Perms):
     global home_path
     try:
-        result = subprocess.run([STEAM_EXE, "-ifrunning", command])
+        result = subprocess.run(
+            [expanduser(STEAM_EXE, perms), "-ifrunning", command],
+            user=perms.euid,
+            group=perms.egid,
+        )
         return result.returncode == 0
     except Exception as e:
         logger.error(f"Received error when running steam command `{command}`\n{e}")
@@ -93,15 +99,16 @@ def get_config() -> PowerButtonConfig | None:
     return None
 
 
-def run_steam_shortpress():
-    return run_steam_command("steam://shortpowerpress")
+def run_steam_shortpress(perms: Perms):
+    return run_steam_command("steam://shortpowerpress", perms)
 
 
-def run_steam_longpress():
-    return run_steam_command("steam://longpowerpress")
+def run_steam_longpress(perms: Perms):
+    return run_steam_command("steam://longpowerpress", perms)
 
 
 def power_button_run(**conf):
+    perms = cast(Perms, conf.get("perms", Perms()))
     cfg = get_config()
     if not cfg:
         logger.error(f"Passed autodetect but no config (?????). Exiting.")
@@ -112,17 +119,17 @@ def power_button_run(**conf):
             logger.info(
                 f"Starting timer based powerbutton handler for device '{cfg.device}'."
             )
-            power_button_timer(cfg)
+            power_button_timer(cfg, perms)
         case "hold_isa":
             logger.info(
                 f"Starting isa keyboard powerbutton handler for device '{cfg.device}'."
             )
-            power_button_isa(cfg)
+            power_button_isa(cfg, perms)
         case _:
             logger.error(f"Invalid type in config '{cfg.type}'. Exiting.")
 
 
-def power_button_isa(cfg: PowerButtonConfig):
+def power_button_isa(cfg: PowerButtonConfig, perms: Perms):
     if not cfg.hold_events:
         logger.error(f"Invalid hold events in config. Exiting.\n:{cfg.hold_events}")
         return
@@ -133,7 +140,7 @@ def power_button_isa(cfg: PowerButtonConfig):
         hold_state = 0
         while True:
             # Initial check for steam
-            if not is_steam_gamescope_running():
+            if not is_steam_gamescope_running(perms):
                 # Close devices
                 if press_dev:
                     press_dev.close()
@@ -142,7 +149,7 @@ def power_button_isa(cfg: PowerButtonConfig):
                     hold_dev.close()
                     hold_dev = None
                 logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamescope_running():
+                while not is_steam_gamescope_running(perms):
                     sleep(STEAM_WAIT_DELAY)
 
             if not press_dev or not hold_dev:
@@ -165,7 +172,7 @@ def power_button_isa(cfg: PowerButtonConfig):
                 ev = press_dev.read_one()
                 if ev.type == B("EV_KEY") and ev.code == B("KEY_POWER") and ev.value:
                     logger.info("Executing short press.")
-                    issue_systemctl = not run_steam_shortpress()
+                    issue_systemctl = not run_steam_shortpress(perms)
             elif fd == hold_dev.fd:
                 ev = hold_dev.read_one()
                 chk = (ev.type, ev.code, ev.value)
@@ -181,7 +188,7 @@ def power_button_isa(cfg: PowerButtonConfig):
                 if hold_state == len(cfg.hold_events):
                     hold_state = 0
                     logger.info("Executing long press.")
-                    issue_systemctl = not run_steam_longpress()
+                    issue_systemctl = not run_steam_longpress(perms)
 
             if issue_systemctl:
                 logger.error(
@@ -194,19 +201,19 @@ def power_button_isa(cfg: PowerButtonConfig):
         logger.error(f"Received exception, exitting:\n{e}")
 
 
-def power_button_timer(cfg: PowerButtonConfig):
+def power_button_timer(cfg: PowerButtonConfig, perms: Perms):
     dev = None
     try:
         pressed_time = None
         while True:
             # Initial check for steam
-            if not is_steam_gamescope_running():
+            if not is_steam_gamescope_running(perms):
                 # Close devices
                 if dev:
                     dev.close()
                     dev = None
                 logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamescope_running():
+                while not is_steam_gamescope_running(perms):
                     sleep(STEAM_WAIT_DELAY)
 
             if not dev:
@@ -251,10 +258,10 @@ def power_button_timer(cfg: PowerButtonConfig):
             match press_type:
                 case "long_press":
                     logger.info("Executing long press.")
-                    issue_systemctl = not run_steam_longpress()
+                    issue_systemctl = not run_steam_longpress(perms)
                 case "short_press":
                     logger.info("Executing short press.")
-                    issue_systemctl = not run_steam_shortpress()
+                    issue_systemctl = not run_steam_shortpress(perms)
                 case "initial_press":
                     logger.info("Power button pressed down.")
                 case "release_without_press":

@@ -221,6 +221,9 @@ class DualSense5Edge(Producer, Consumer):
                         )
                 case "output":
                     if ev["report"] != 0x01 or ev["data"][0] != 0x02:
+                        logger.warn(
+                            f"Received uknown report with the following data:\n{ev['report']}: {ev['data'].hex()}"
+                        )
                         continue
 
                     rep = ev["data"]

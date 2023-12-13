@@ -20,6 +20,8 @@ gyro_fix: True
 # l_is_start considers Legion L to be the primary button
 # [False, True, 'l_is_start', 'l_is_select']
 swap_legion: False
+
+# Share button (mute button on DS5, Legion R, etc) to QAM (Guide + A)
 share_to_qam: True
 
 # Touchpad modes
