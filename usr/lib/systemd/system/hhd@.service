@@ -3,7 +3,8 @@ Description=Handheld Daemon Service
 After=default.target
 
 [Service]
-ExecStart=/usr/bin/nice --15 /usr/bin/hhd --user %i
+ExecStart=/usr/bin/hhd --user %i
+Nice=-12
 
 [Install]
 WantedBy=multi-user.target
