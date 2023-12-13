@@ -53,9 +53,12 @@ def run_steam_command(command: str, perms: Perms):
     global home_path
     try:
         result = subprocess.run(
-            [expanduser(STEAM_EXE, perms), "-ifrunning", command],
-            user=perms.euid,
-            group=perms.egid,
+            [
+                "su",
+                perms.name,
+                "-c",
+                f"{expanduser(STEAM_EXE, perms)} -ifrunning {command}",
+            ]
         )
         return result.returncode == 0
     except Exception as e:
@@ -194,7 +197,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Perms):
                 logger.error(
                     "Power button action did not work. Calling `systemctl suspend`"
                 )
-                os.system("systemctl suspend")
+                # os.system("systemctl suspend")
     except KeyboardInterrupt:
         pass
     except Exception as e:

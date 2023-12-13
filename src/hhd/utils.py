@@ -11,6 +11,7 @@ class Perms(NamedTuple):
     egid: int = 0
     uid: int = 0
     gid: int = 0
+    name: str = "root"
 
 
 def get_perms(user: str | None) -> Perms | None:
@@ -25,7 +26,7 @@ def get_perms(user: str | None) -> Perms | None:
                     "Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
                 )
                 print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            return Perms(uid, gid, uid, gid)
+            return Perms(uid, gid, uid, gid, "root")
 
         euid = int(
             subprocess.run(
@@ -44,7 +45,7 @@ def get_perms(user: str | None) -> Perms | None:
             )
             return None
 
-        return Perms(euid, egid, uid, gid)
+        return Perms(euid, egid, uid, gid, user)
     except subprocess.CalledProcessError as e:
         print(f"Getting the user uid/gid returned an error:\n{e.stderr.decode()}")
         return None
