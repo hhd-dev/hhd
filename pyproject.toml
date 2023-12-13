@@ -1,8 +1,8 @@
 [project]
 name = "hhd"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
-  { name="Kapenekakis Antheas", email="git@antheas.dev" },
+  { name="Kapenekakis Antheas", email="pypi@antheas.dev" },
 ]
 description = "Handheld Daemon, a tool for configuring handheld devices."
 readme = "readme.md"
@@ -32,7 +32,7 @@ legion_go = "hhd.device.legion_go:plugins"
 powerbuttond = "hhd.plugins.powerbutton:plugins"
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel", "numpy>=1.15"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
