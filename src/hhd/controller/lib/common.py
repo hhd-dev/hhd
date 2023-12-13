@@ -22,6 +22,7 @@ class AM(NamedTuple):
     order: Literal["little", "big"] = "little"
     scale: float | None = None
     offset: float = 0
+    flipped: bool = False
 
 
 class CM(NamedTuple):
@@ -85,12 +86,20 @@ def decode_axis(buff: bytes, t: AM):
             assert False, f"Invalid formatting {t.type}."
 
     if t.scale:
-        return t.scale * o + t.offset
+        v = t.scale * o + t.offset
     else:
-        return o / s + t.offset
+        v = o / s + t.offset
+
+    if t.flipped:
+        return -v
+    else:
+        return v
 
 
 def encode_axis(buff: bytearray, t: AM, val: float):
+    if t.flipped:
+        val = -val
+
     if t.scale:
         new_val = int(t.scale * val + t.offset)
     else:
@@ -151,10 +160,6 @@ def encode_axis(buff: bytearray, t: AM, val: float):
             buff[t.loc >> 3 : (t.loc >> 3) + 1] = int.to_bytes(
                 new_val, 1, t.order, signed=False
             )
-            o = int.from_bytes(
-                buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
-            ) - (1 << 7)
-            s = (1 << 7) - 1
         case _:
             assert False, f"Invalid formatting {t.type}."
 
@@ -191,10 +196,11 @@ def set_button(rep: bytearray, map: BM, val: bool):
     else:
         rep[map.loc // 8] &= 255 - (1 << (7 - (map.loc % 8)))
 
+
 def decode_config(rep: bytes, map: CM):
     if map.type == "bit":
         return get_button(rep, BM(map.loc, map.flipped))
-    
+
     ax = decode_axis(rep, AM(map.loc, map.type, map.order, map.scale, map.offset))
     if map.bounds:
         return min(max(ax, map.bounds[0]), map.bounds[1])

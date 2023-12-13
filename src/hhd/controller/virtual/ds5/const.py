@@ -89,7 +89,7 @@ DS5_AXIS_MAP: dict[Axis, AM] = {
     "lt": AM((6 << 3), "u8"),
     "gyro_x": AM((16 << 3), "i16", scale=20),
     "gyro_y": AM((18 << 3), "i16", scale=20),
-    "gyro_z": AM((20 << 3), "i16", scale=20),
+    "gyro_z": AM((20 << 3), "i16", scale=20, flipped=True),
     "accel_x": AM((22 << 3), "i16", scale=10000),
     "accel_y": AM((24 << 3), "i16", scale=10000),
     "accel_z": AM((26 << 3), "i16", scale=10000),
