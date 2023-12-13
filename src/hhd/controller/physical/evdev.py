@@ -1,4 +1,5 @@
 import logging
+import re
 import select
 from typing import Mapping, Sequence, TypeVar, cast
 
@@ -7,7 +8,7 @@ from evdev import ff, ecodes
 
 from hhd.controller import Axis, Button, Event, Producer, Consumer
 from hhd.controller.base import Event
-from hhd.controller.lib.common import hexify
+from hhd.controller.lib.common import hexify, matches_patterns
 
 from ..const import AbsAxis, GamepadButton, KeyboardButton
 
@@ -74,11 +75,11 @@ class GenericGamepadEvdev(Producer, Consumer):
         self,
         vid: Sequence[int],
         pid: Sequence[int],
-        name: Sequence[str],
+        name: Sequence[str | re.Pattern],
         btn_map: Mapping[int, Button] = XBOX_BUTTON_MAP,
         axis_map: Mapping[int, Axis] = XBOX_AXIS_MAP,
         aspect_ratio: float | None = None,
-        required: bool = True
+        required: bool = True,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -95,11 +96,11 @@ class GenericGamepadEvdev(Producer, Consumer):
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
             dev = evdev.InputDevice(d)
-            if self.vid and dev.info.vendor not in self.vid:
+            if not matches_patterns(dev.info.vendor, self.vid):
                 continue
-            if self.pid and dev.info.product not in self.pid:
+            if not matches_patterns(dev.info.product, self.pid):
                 continue
-            if self.name and dev.name not in self.name:
+            if not matches_patterns(dev.name, self.name):
                 continue
             self.dev = dev
             self.dev.grab()

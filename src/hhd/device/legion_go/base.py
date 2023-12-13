@@ -1,5 +1,6 @@
 import argparse
 import logging
+import re
 import select
 import sys
 import time
@@ -215,7 +216,7 @@ def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = 
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
-        name=["Legion-Controller 1-23 Keyboard", "Legion-Controller 1-C2 Keyboard"],
+        name=[re.compile(r"Legion-Controller \d-.. Keyboard")],
         required=True,
     )
 
@@ -261,7 +262,7 @@ def controller_loop_xinput(
     d_xinput = GenericGamepadEvdev(
         [0x17EF],
         [0x6182],
-        "Generic X-Box pad",
+        ["Generic X-Box pad"],
         required=True,
     )
     d_touch = GenericGamepadEvdev(

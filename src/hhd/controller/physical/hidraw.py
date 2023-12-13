@@ -1,7 +1,6 @@
 import logging
+import re
 from typing import Any, Literal, NamedTuple, Protocol, Sequence
-
-from traitlets import default
 
 from hhd.controller import (
     Axis,
@@ -21,6 +20,7 @@ from hhd.controller.lib.common import (
     decode_config,
     get_button,
     hexify,
+    matches_patterns,
 )
 from hhd.controller.lib.hid import MAX_REPORT_SIZE, Device, enumerate_unique
 
@@ -37,8 +37,8 @@ class GenericGamepadHidraw(Producer, Consumer):
         self,
         vid: Sequence[int] = [],
         pid: Sequence[int] = [],
-        manufacturer: Sequence[str] = [],
-        product: Sequence[str] = [],
+        manufacturer: Sequence[str | re.Pattern] = [],
+        product: Sequence[str | re.Pattern] = [],
         usage_page: Sequence[int] = [],
         usage: Sequence[int] = [],
         btn_map: dict[int | None, dict[Button, BM]] = {},
@@ -70,17 +70,17 @@ class GenericGamepadHidraw(Producer, Consumer):
 
     def open(self) -> Sequence[int]:
         for d in enumerate_unique():
-            if self.vid and d["vendor_id"] not in self.vid:
+            if not matches_patterns(d["vendor_id"], self.vid):
                 continue
-            if self.pid and d["product_id"] not in self.pid:
+            if not matches_patterns(d["product_id"], self.pid):
                 continue
-            if self.manufacturer and d["manufacturer_string"] not in self.manufacturer:
+            if not matches_patterns(d["manufacturer_string"], self.manufacturer):
                 continue
-            if self.product and d["product_string"] not in self.product:
+            if not matches_patterns(d["product_string"], self.product):
                 continue
-            if self.usage_page and d["usage_page"] not in self.usage_page:
+            if not matches_patterns(d["usage_page"], self.usage_page):
                 continue
-            if self.usage and d["usage"] not in self.usage:
+            if not matches_patterns(d["usage"], self.usage):
                 continue
             self.path = d["path"]
             self.dev = Device(path=self.path)

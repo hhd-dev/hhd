@@ -1,3 +1,4 @@
+import re
 from typing import Literal, NamedTuple, Sequence
 
 
@@ -206,3 +207,18 @@ def decode_config(rep: bytes, map: CM):
         return min(max(ax, map.bounds[0]), map.bounds[1])
     else:
         return ax
+
+
+def matches_patterns(val: str | int, pats: Sequence[int | str | re.Pattern]):
+    if not pats:
+        return True
+
+    for p in pats:
+        if isinstance(p, re.Pattern):
+            assert isinstance(val, str), f"Attempted regex pattern match on val {p}."
+            if p.match(val):
+                return True
+        else:
+            if p == val:
+                return True
+    return False
