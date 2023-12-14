@@ -162,6 +162,17 @@ If you do not need gyro support, you should disable it for a .2% cpu utilisation
 reduction.
 By default, the accelerometer is disabled for this reason.
 
+### HandyGCCS
+HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
+required. In addition, it will break HHD by hiding the controller.
+You should uninstall it with `sudo pacman -R handygccs-git`.
+```
+              ERROR    Device with the following not found:                                                                                                                          evdev.py:122
+                       Vendor ID: ['17ef']
+                       Product ID: ['6182']
+                       Name: ['Generic X-Box pad']
+```
+
 ## Contributing
 You should install from source if you aim to contribute or want to pull from master.
 ```bash
