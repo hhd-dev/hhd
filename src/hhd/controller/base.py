@@ -1,6 +1,6 @@
 import select
 from typing import Any, Literal, Sequence, TypedDict
-
+import time
 from .const import Axis, Button, Configuration
 
 
@@ -172,6 +172,8 @@ class Consumer:
 
 
 class Multiplexer:
+    QAM_DELAY = 0.2
+
     def __init__(
         self,
         swap_guide: None | Literal["guide_is_start", "guide_is_select"] = None,
@@ -194,14 +196,17 @@ class Multiplexer:
         self.share_to_qam = share_to_qam
 
         self.state = {}
-        self.queue: list[Event] = []
+        self.queue: list[tuple[Event, int]] = []
 
         assert touchpad is None, "touchpad rewiring not supported yet"
 
     def process(self, events: Sequence[Event]):
-        out: list[Event] = self.queue
-        self.queue = []
+        out: list[Event] = []
         status_events = set()
+
+        curr = time.perf_counter()
+        while len(self.queue) and self.queue[0][1] < curr:
+            out.append(self.queue.pop(0)[0])
 
         for ev in events:
             match ev["type"]:
@@ -276,10 +281,43 @@ class Multiplexer:
                                     ev["code"] = "start"
 
                     if self.share_to_qam and ev["code"] == "share":
-                        ev["code"] = "mode"
-                        # append A on next update
-                        # a = self.queue if ev["value"] else out
-                        out.append({"type": "button", "code": "a", "value": ev["value"]})
+                        if ev["value"]:
+                            ev["code"] = "mode"
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "a",
+                                        "value": True,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                )
+                            )
+                        else:
+                            # TODO: Clean this up
+                            ev["code"] = ""  # type: ignore
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "mode",
+                                        "value": False,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                ),
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "a",
+                                        "value": False,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                ),
+                            )
+
+                        # append A after QAM_DELAY s
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})
