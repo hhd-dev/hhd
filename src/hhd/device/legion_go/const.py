@@ -75,15 +75,15 @@ LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
         "ls_y": AM(15 << 3, "m8"),
         "rs_x": AM(16 << 3, "m8"),
         "rs_y": AM(17 << 3, "m8"),
-        "lt": AM(22 << 3, "u8"),
-        "rt": AM(23 << 3, "u8"),
+        "rt": AM(22 << 3, "u8"),
+        "lt": AM(23 << 3, "u8"),
         # "mouse_wheel": AM(25 << 3, "m8", scale=1), # TODO: Fix weird behavior
-        "touchpad_x": AM(26 << 3, "u16"),
-        "touchpad_y": AM(28 << 3, "u16"),
-        "left_gyro_x": AM(30 << 3, "m8"),
-        "left_gyro_y": AM(31 << 3, "m8"),
-        "right_gyro_x": AM(32 << 3, "m8"),
-        "right_gyro_y": AM(33 << 3, "m8"),
+        # "touchpad_x": AM(26 << 3, "u16"),
+        # "touchpad_y": AM(28 << 3, "u16"),
+        # "left_gyro_x": AM(30 << 3, "m8"),
+        # "left_gyro_y": AM(31 << 3, "m8"),
+        # "right_gyro_x": AM(32 << 3, "m8"),
+        # "right_gyro_y": AM(33 << 3, "m8"),
     }
 }
 
