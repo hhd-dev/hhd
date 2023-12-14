@@ -16,6 +16,7 @@ from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
 from hhd.controller.virtual.uinput import UInputDevice
 
 from .const import (
+    LGO_RAW_INTERFACE_AXIS_MAP,
     LGO_RAW_INTERFACE_BTN_ESSENTIALS,
     LGO_RAW_INTERFACE_BTN_MAP,
     LGO_RAW_INTERFACE_CONFIG_MAP,
@@ -204,7 +205,7 @@ def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = 
             usage_page=[0xFFA0],
             usage=[0x0001],
             report_size=64,
-            axis_map={},
+            axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             required=True,
         )
@@ -281,7 +282,7 @@ def controller_loop_xinput(
             usage_page=[0xFFA0],
             usage=[0x0001],
             report_size=64,
-            axis_map={},
+            axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=rgb_callback if led_support else None,
@@ -406,7 +407,8 @@ class SelectivePassthrough(Producer, Consumer):
         self.forward_buttons = forward_buttons
         self.passthrough = passthrough
 
-        self.to_disable = set()
+        self.to_disable_btn = set()
+        self.to_disable_axis = set()
 
     def open(self) -> Sequence[int]:
         return self.parent.open()
@@ -428,10 +430,9 @@ class SelectivePassthrough(Producer, Consumer):
             elif ev["type"] == "button" and ev["code"] in self.passthrough:
                 out.append(ev)
             elif ev["type"] == "button":
-                if ev.get("value", False):
-                    self.to_disable.add(ev["code"])
-                elif ev["code"] in self.to_disable:
-                    self.to_disable.remove(ev["code"])
+                self.to_disable_btn.add(ev["code"])
+            elif ev["type"] == "axis":
+                self.to_disable_axis.add(ev["code"])
 
         if self.state:
             # If mode is pressed, forward all events
@@ -439,9 +440,12 @@ class SelectivePassthrough(Producer, Consumer):
         elif prev_state:
             # If prev_state, meaning the user released the mode or share button
             # turn off all buttons that were pressed during it
-            for btn in self.to_disable:
+            for btn in self.to_disable_btn:
                 out.append({"type": "button", "code": btn, "value": False})
-            self.to_disable = set()
+            self.to_disable_btn = set()
+            for axis in self.to_disable_axis:
+                out.append({"type": "axis", "code": axis, "value": 0})
+            self.to_disable_axis = set()
             return out
         else:
             # Otherwise, just return the standard buttons
