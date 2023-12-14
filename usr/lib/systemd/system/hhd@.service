@@ -1,6 +1,5 @@
 [Unit]
 Description=Handheld Daemon Service
-After=default.target
 
 [Service]
 ExecStart=/usr/bin/hhd --user %i
