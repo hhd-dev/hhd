@@ -219,10 +219,18 @@ class DualSense5Edge(Producer, Consumer):
                         self.dev.send_get_report_reply(
                             ev["id"], 0, DS5_EDGE_STOCK_REPORTS[ev["rnum"]]
                         )
+                    else:
+                        logger.warn(
+                            f"DS5: Received get_report with the id (uknown): {ev['rnum']}"
+                        )
+                case "set_report":
+                    logger.warn(
+                        f"DS5: Received set_report with the id (uknown): {ev['rnum']}"
+                    )
                 case "output":
                     if ev["report"] != 0x01 or ev["data"][0] != 0x02:
                         logger.warn(
-                            f"Received uknown report with the following data:\n{ev['report']}: {ev['data'].hex()}"
+                            f"DS5: Received uknown output report with the following data:\n{ev['report']}: {ev['data'].hex()}"
                         )
                         continue
 
