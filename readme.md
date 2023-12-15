@@ -49,10 +49,10 @@ depending on the game.
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PiPy.
 
-### Arch-based Installation
+### Arch-based Installation (AUR)
 ```bash
 # For arch
-yay -S hhd
+sudo pacman -S hhd # or yay -S, you need AUR
 sudo systemctl enable hhd@$(whoami)
 sudo reboot
 ```
@@ -74,10 +74,14 @@ sudo systemctl start hhd@$(whoami)
 > This limitation will be lifted in the future, if a new driver is written for
 > amd-sfh.
 
-### PyPi Based installation
+### PyPi Based installation (Nobara/Read only fs)
 If you have a read only fs or are on a fedora based system, you may opt to install
 a local version of hhd.
 ```bash
+# (nobara) Install Python Headers since evdev has no wheels
+# and nobara does not ship them (but arch does)
+sudo dnf install python-devel
+
 # Install hhd to ~/.local/share/hhd
 mkdir -p ~/.local/share/hhd
 cd ~/.local/share/hhd
