@@ -63,6 +63,16 @@ sudo frzr-unlock
 sudo pikaur -S hhd
 sudo pacman -R handygccs-git
 
+# Disable the playstation driver
+# as it causes issues with steam
+# (even with real dualsense controllers)
+# (dual input, etc; optional)
+# This will disable support for the controller
+# in apps that do not support the Dual Sense 5
+# if Steam input is not used
+# Use Dinput mode for those games, as that will work fine.
+echo "blacklist hid_playstation" | sudo tee /usr/lib/modprobe.d/hhd.conf
+
 # Enable and reboot
 sudo systemctl enable hhd@$(whoami)
 sudo reboot
