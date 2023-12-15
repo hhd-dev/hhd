@@ -60,6 +60,7 @@ handygccs.
 sudo frzr-unlock
 
 # Run installer
+sudo pacman -S base-devel
 sudo pikaur -S hhd
 sudo pacman -R handygccs-git
 
