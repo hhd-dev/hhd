@@ -71,6 +71,18 @@ sudo reboot
 Then, repeat every time you update Chimera. As a bonus, you will get new HHD
 features as well 😊.
 
+#### Uninstall
+Just run the steps in reverse or reset your chimera install.
+```bash
+sudo systemctl disable hhd@$(whoami)
+
+sudo pikaur -S handygccs-git
+sudo pacman -R hhd
+
+sudo systemctl enable handygccs
+sudo reboot
+```
+
 ### PyPi Based installation (Nobara/Read only fs)
 If you have a read only fs or are on a fedora based system, you may opt to install
 a local version of hhd.
