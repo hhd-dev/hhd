@@ -72,7 +72,7 @@ Then, repeat every time you update Chimera. As a bonus, you will get new HHD
 features as well 😊.
 
 #### Uninstall
-Just run the steps in reverse or reset your chimera install.
+Just run the steps in reverse or switch to a locked Chimera version.
 ```bash
 sudo systemctl disable hhd@$(whoami)
 
