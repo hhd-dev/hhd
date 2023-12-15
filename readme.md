@@ -49,30 +49,27 @@ depending on the game.
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PiPy.
 
-### Arch-based Installation (AUR)
+### ChimeraOS
+ChimeraOS does not ship with `gcc` to compile hhd dependencies and the functionality
+of `handygccs` which fixes the QAM button by default conflicts with hhd.
+The easiest way to install is to unlock the filesystem, install hhd, and remove
+handygccs.
+
 ```bash
-# For arch
-sudo pacman -S hhd # or yay -S, you need AUR
+# Unlock filesystem
+sudo frzr-unlock
+
+# Run installer
+sudo pikaur -S hhd
+sudo pacman -R handygccs-git
+
+# Enable and reboot
 sudo systemctl enable hhd@$(whoami)
 sudo reboot
 ```
 
-But I dont want to reboot...
-```bash
-# Reload hhd's udev rules
-sudo udevadm control --reload-rules && sudo udevadm trigger
-# Restart iio-proxy-service to stop it
-# from polling the accelerometer
-sudo systemctl restart iio-sensor-proxy
-# Start the service for your user
-sudo systemctl start hhd@$(whoami)
-```
-
-> To ensure the gyro of the Legion Go and other devices with AMD SFH runs smoothly, 
-> a udev rule is included that disables the use of the accelerometer by the 
-> system (e.g., iio-sensor-proxy).
-> This limitation will be lifted in the future, if a new driver is written for
-> amd-sfh.
+Then, repeat every time you update Chimera. As a bonus, you will get new HHD
+features as well 😊.
 
 ### PyPi Based installation (Nobara/Read only fs)
 If you have a read only fs or are on a fedora based system, you may opt to install
@@ -99,6 +96,35 @@ sudo systemctl enable hhd_local@$(whoami)
 sudo reboot
 ```
 
+### Arch-based Installation (AUR)
+```bash
+# Install using your AUR package manager
+sudo pikaur -S hhd
+sudo yay -S hhd
+sudo pacman -S hhd # manjaro only
+
+# Enable and reboot
+sudo systemctl enable hhd@$(whoami)
+sudo reboot
+```
+
+But I dont want to reboot...
+```bash
+# Reload hhd's udev rules
+sudo udevadm control --reload-rules && sudo udevadm trigger
+# Restart iio-proxy-service to stop it
+# from polling the accelerometer
+sudo systemctl restart iio-sensor-proxy
+# Start the service for your user
+sudo systemctl start hhd@$(whoami)
+```
+
+> To ensure the gyro of the Legion Go and other devices with AMD SFH runs smoothly, 
+> a udev rule is included that disables the use of the accelerometer by the 
+> system (e.g., iio-sensor-proxy).
+> This limitation will be lifted in the future, if a new driver is written for
+> amd-sfh.
+
 #### Update Instructions
 Of course, you will want to update HHD to catch up to latest features
 ```bash
@@ -110,6 +136,7 @@ sudo systemctl start hhd_local@$(whoami)
 #### Uninstall instructions
 To uninstall, simply stop the service and remove the added files.
 ```bash
+sudo systemctl disable hhd_local@$(whoami)
 sudo systemctl stop hhd_local@$(whoami)
 rm -rf ~/.local/share/hhd
 sudo rm /etc/udev/rules.d/83-hhd.rules
