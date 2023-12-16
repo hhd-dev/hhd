@@ -211,7 +211,11 @@ def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = 
         )
     )
 
-    multiplexer = Multiplexer(dpad="analog_to_discrete", share_to_qam=share_to_qam)
+    multiplexer = Multiplexer(
+        dpad="analog_to_discrete",
+        trigger="analog_to_discrete",
+        share_to_qam=share_to_qam,
+    )
     d_uinput = UInputDevice(name=f"HHD Shortcuts Device (Legion Mode: {mode})", pid=pid)
 
     d_shortcuts = GenericGamepadEvdev(

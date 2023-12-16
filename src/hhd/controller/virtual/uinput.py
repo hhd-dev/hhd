@@ -105,7 +105,8 @@ class UInputDevice(Consumer, Producer):
                     # if ev["code"] in self.axis_map:
                     #     self.dev.write(B("EV_ABS"), self.axis_map[ev["code"]], ev['value'])
                     # TODO: figure out normalization
-                    assert False, f"Outputing axis not supported yet."
+                    if ev['value']:
+                        logger.error(f"Outputing axis not supported yet. Event:\n{ev}")
                 case "button":
                     if ev["code"] in self.btn_map:
                         self.dev.write(
