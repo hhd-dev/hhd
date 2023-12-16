@@ -242,6 +242,9 @@ class DualSense5Edge(Producer, Consumer):
                         red = rep[45]
                         green = rep[46]
                         blue = rep[47]
+                        if red == 0 and green == 0 and blue == 128:
+                            # Skip playstation driver initialization
+                            continue
                         out.append(
                             {
                                 "type": "led",
@@ -259,18 +262,21 @@ class DualSense5Edge(Producer, Consumer):
                     elif (rep[39] & 2) and (rep[42] & 2):
                         # flag2 is DS_OUTPUT_VALID_FLAG2_LIGHTBAR_SETUP_CONTROL_ENABLE
                         # lightbar_setup is DS_OUTPUT_LIGHTBAR_SETUP_LIGHT_OUT
-                        out.append(
-                            {
-                                "type": "led",
-                                "code": "main",
-                                "mode": "disable",
-                                "brightness": 0,
-                                "speed": 0,
-                                "red": 0,
-                                "blue": 0,
-                                "green": 0,
-                            }
-                        )
+                        # FIXME: Disable for now to avoid hid_playstation messing
+                        # with the leds
+                        # out.append(
+                        #     {
+                        #         "type": "led",
+                        #         "code": "main",
+                        #         "mode": "disable",
+                        #         "brightness": 0,
+                        #         "speed": 0,
+                        #         "red": 0,
+                        #         "blue": 0,
+                        #         "green": 0,
+                        #     }
+                        # )
+                        pass
 
                     if rep[1] & 0x03 == 0x03:
                         right = rep[3]
