@@ -64,16 +64,6 @@ sudo pacman -S base-devel
 sudo pikaur -S hhd
 sudo pacman -R handygccs-git
 
-# Disable the playstation driver
-# as it causes issues with steam
-# (even with real dualsense controllers)
-# (dual input, etc; optional)
-# This will disable support for the controller
-# in apps that do not support the Dual Sense 5
-# if Steam input is not used
-# Use Dinput mode for those games, as that will work fine.
-echo "blacklist hid_playstation" | sudo tee /usr/lib/modprobe.d/hhd.conf
-
 # Enable and reboot
 sudo systemctl enable hhd@$(whoami)
 sudo reboot
@@ -186,6 +176,8 @@ Right now, steam is broken with the playstation driver. You should blacklist the
 driver and use steam input instead with DS5.
 If not, you will notice issues with the touchpad, and the driver will override
 the led configuration.
+However, apps that do not load the hid version of the playstation driver will have
+issues.
 ```bash
 sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/modprobe.d/hhd.conf -o /etc/udev/modprobe.d/hhd.conf
 ```
