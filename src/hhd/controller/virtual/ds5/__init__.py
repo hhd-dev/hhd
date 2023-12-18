@@ -283,6 +283,10 @@ class DualSense5Edge(Producer, Consumer):
                         if red == 64 and green == 0 and blue == 0:
                             # Skip playstation driver bt initialization
                             continue
+                        if red == 0 and green == 0 and blue == 64:
+                            # Skip SDL led initialization
+                            continue
+                        logger.info(f"Changing leds to RGB: {red} {green} {blue}")
                         out.append(
                             {
                                 "type": "led",
