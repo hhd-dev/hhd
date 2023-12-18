@@ -132,7 +132,7 @@ def plugin_run(
     **_,
 ):
     if gyro_fix:
-        gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 65)
+        gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 150)
     else:
         gyro_fixer = None
 
