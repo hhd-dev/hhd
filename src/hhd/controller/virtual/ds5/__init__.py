@@ -278,7 +278,10 @@ class DualSense5Edge(Producer, Consumer):
                         green = rep[46]
                         blue = rep[47]
                         if red == 0 and green == 0 and blue == 128:
-                            # Skip playstation driver initialization
+                            # Skip playstation driver usb initialization
+                            continue
+                        if red == 64 and green == 0 and blue == 0:
+                            # Skip playstation driver bt initialization
                             continue
                         out.append(
                             {
