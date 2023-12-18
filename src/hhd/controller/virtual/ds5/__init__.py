@@ -268,7 +268,7 @@ class DualSense5Edge(Producer, Consumer):
                     if self.use_bluetooth:
                         # skip seq_tag, tag sent by bluetooth report
                         # rest is the same
-                        rep = rep[0:1] + rep[3:]
+                        rep = rep[0:1] + rep[2:]
 
                     if rep[2] & 4:  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
                         # Led data is being set
