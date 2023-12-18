@@ -1,27 +1,34 @@
 import logging
-import sys
 import time
 from collections import defaultdict
 from typing import Literal, NamedTuple, Sequence, cast
 
-from hhd.controller import Axis, Button, Consumer, Event, Producer
-from hhd.controller.lib.common import AM, BM, decode_axis, encode_axis, set_button
-from hhd.controller.lib.uhid import UhidDevice
+from hhd.controller import Consumer, Event, Producer
+from hhd.controller.lib.common import encode_axis, set_button
+from hhd.controller.lib.uhid import UhidDevice, BUS_USB, BUS_BLUETOOTH
 
 from .const import (
-    DS5_AXIS_MAP,
-    DS5_BUTTON_MAP,
-    DS5_EDGE_BUS,
+    DS5_USB_AXIS_MAP,
+    DS5_USB_BTN_MAP,
+    DS5_BT_AXIS_MAP,
+    DS5_BT_BTN_MAP,
+    DS5_INPUT_REPORT_BT_OFS,
+    DS5_INPUT_REPORT_USB_OFS,
     DS5_EDGE_COUNTRY,
     DS5_EDGE_DELTA_TIME_NS,
-    DS5_EDGE_DESCRIPTOR,
+    DS5_EDGE_DESCRIPTOR_BT,
+    DS5_EDGE_DESCRIPTOR_USB,
     DS5_EDGE_MAX_REPORT_FREQ,
     DS5_EDGE_MIN_REPORT_FREQ,
     DS5_EDGE_NAME,
     DS5_EDGE_PRODUCT,
-    DS5_EDGE_REPORT_USB_BASE,
+    prefill_ds5_report,
     DS5_EDGE_STOCK_REPORTS,
     DS5_EDGE_TOUCH_HEIGHT,
+    sign_crc32_append,
+    DS5_FEATURE_CRC32_SEED,
+    DS5_INPUT_CRC32_SEED,
+    sign_crc32_inplace,
     DS5_EDGE_TOUCH_WIDTH,
     DS5_EDGE_VENDOR,
     DS5_EDGE_VERSION,
@@ -158,24 +165,34 @@ class DualSense5Edge(Producer, Consumer):
     def __init__(
         self,
         touchpad_method: TouchpadCorrectionType = "crop_end",
+        use_bluetooth: bool = True,
     ) -> None:
         self.available = False
         self.report = None
         self.dev = None
         self.start = 0
+        self.use_bluetooth = use_bluetooth
         self.touchpad_method: TouchpadCorrectionType = touchpad_method
+
+        self.ofs = (
+            DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
+        )
+        self.axis_map = DS5_BT_AXIS_MAP if use_bluetooth else DS5_USB_AXIS_MAP
+        self.btn_map = DS5_BT_BTN_MAP if use_bluetooth else DS5_USB_BTN_MAP
 
     def open(self) -> Sequence[int]:
         self.available = False
-        self.report = bytearray(DS5_EDGE_REPORT_USB_BASE)
+        self.report = bytearray(prefill_ds5_report(self.use_bluetooth))
         self.dev = UhidDevice(
             vid=DS5_EDGE_VENDOR,
             pid=DS5_EDGE_PRODUCT,
-            bus=DS5_EDGE_BUS,
+            bus=BUS_BLUETOOTH if self.use_bluetooth else BUS_USB,
             version=DS5_EDGE_VERSION,
             country=DS5_EDGE_COUNTRY,
             name=DS5_EDGE_NAME,
-            report_descriptor=DS5_EDGE_DESCRIPTOR,
+            report_descriptor=DS5_EDGE_DESCRIPTOR_BT
+            if self.use_bluetooth
+            else DS5_EDGE_DESCRIPTOR_USB,
         )
 
         self.touch_correction = correct_touchpad(
@@ -216,9 +233,10 @@ class DualSense5Edge(Producer, Consumer):
                     self.available = False
                 case "get_report":
                     if ev["rnum"] in DS5_EDGE_STOCK_REPORTS:
-                        self.dev.send_get_report_reply(
-                            ev["id"], 0, DS5_EDGE_STOCK_REPORTS[ev["rnum"]]
-                        )
+                        rep = DS5_EDGE_STOCK_REPORTS[ev["rnum"]]
+                        if self.use_bluetooth:
+                            rep = sign_crc32_append(rep, DS5_FEATURE_CRC32_SEED)
+                        self.dev.send_get_report_reply(ev["id"], 0, rep)
                     else:
                         logger.warn(
                             f"DS5: Received get_report with the id (uknown): {ev['rnum']}"
@@ -228,13 +246,30 @@ class DualSense5Edge(Producer, Consumer):
                         f"DS5: Received set_report with the id (uknown): {ev['rnum']}"
                     )
                 case "output":
-                    if ev["report"] != 0x01 or ev["data"][0] != 0x02:
+                    invalid = False
+                    # Check report num
+                    if ev["report"] != 0x01:
+                        invalid = True
+
+                    # Check report ids depending on modes
+                    if not self.use_bluetooth and ev["data"][0] != 0x02:
+                        invalid = True
+                    if self.use_bluetooth and ev["data"][0] != 0x31:
+                        invalid = True
+
+                    if invalid:
                         logger.warn(
                             f"DS5: Received uknown output report with the following data:\n{ev['report']}: {ev['data'].hex()}"
                         )
                         continue
 
                     rep = ev["data"]
+
+                    if self.use_bluetooth:
+                        # skip seq_tag, tag sent by bluetooth report
+                        # rest is the same
+                        rep = rep[0:1] + rep[3:]
+
                     if rep[2] & 4:  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
                         # Led data is being set
                         led_brightness = rep[43]
@@ -300,6 +335,8 @@ class DualSense5Edge(Producer, Consumer):
                                 "weak_magnitude": 0,
                             }
                         )
+                case _:
+                    logger.info(f"Received unhandled report:\n{ev}")
         return out
 
     def consume(self, events: Sequence[Event]):
@@ -309,19 +346,25 @@ class DualSense5Edge(Producer, Consumer):
         for ev in events:
             match ev["type"]:
                 case "axis":
-                    if ev["code"] in DS5_AXIS_MAP:
-                        encode_axis(new_rep, DS5_AXIS_MAP[ev["code"]], ev["value"])
+                    if ev["code"] in self.axis_map:
+                        encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])
                     # DPAD is weird
                     match ev["code"]:
                         case "hat_x":
                             self.state["hat_x"] = ev["value"]
                             patch_dpad_val(
-                                new_rep, self.state["hat_x"], self.state["hat_y"]
+                                new_rep,
+                                self.ofs,
+                                self.state["hat_x"],
+                                self.state["hat_y"],
                             )
                         case "hat_y":
                             self.state["hat_y"] = ev["value"]
                             patch_dpad_val(
-                                new_rep, self.state["hat_x"], self.state["hat_y"]
+                                new_rep,
+                                self.ofs,
+                                self.state["hat_x"],
+                                self.state["hat_y"],
                             )
                         case "touchpad_x":
                             tc = self.touch_correction
@@ -330,8 +373,10 @@ class DualSense5Edge(Producer, Consumer):
                                 * tc.x_mult
                                 + tc.x_ofs
                             )
-                            new_rep[34] = x & 0xFF
-                            new_rep[35] = (new_rep[35] & 0xF0) | (x >> 8)
+                            new_rep[self.ofs + 33] = x & 0xFF
+                            new_rep[self.ofs + 34] = (new_rep[self.ofs + 34] & 0xF0) | (
+                                x >> 8
+                            )
                         case "touchpad_y":
                             tc = self.touch_correction
                             y = int(
@@ -339,15 +384,17 @@ class DualSense5Edge(Producer, Consumer):
                                 * tc.y_mult
                                 + tc.y_ofs
                             )
-                            new_rep[35] = (new_rep[35] & 0x0F) | ((y & 0x0F) << 4)
-                            new_rep[36] = y >> 4
+                            new_rep[self.ofs + 34] = (new_rep[self.ofs + 34] & 0x0F) | (
+                                (y & 0x0F) << 4
+                            )
+                            new_rep[self.ofs + 35] = y >> 4
                         case "gyro_ts":
-                            new_rep[28:32] = int(
+                            new_rep[self.ofs + 27 : self.ofs + 31] = int(
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
-                    if ev["code"] in DS5_BUTTON_MAP:
-                        set_button(new_rep, DS5_BUTTON_MAP[ev["code"]], ev["value"])
+                    if ev["code"] in self.btn_map:
+                        set_button(new_rep, self.btn_map[ev["code"]], ev["value"])
                 case "configuration":
                     match ev["code"]:
                         case "touchpad_aspect_ratio":
@@ -359,11 +406,11 @@ class DualSense5Edge(Producer, Consumer):
                                 self.touchpad_method,
                             )
                         case "is_attached":
-                            new_rep[53] = (new_rep[53] & 0x0F) | (
+                            new_rep[self.ofs + 52] = (new_rep[self.ofs + 52] & 0x0F) | (
                                 0x10 if ev["value"] else 0x00
                             )
                         case "battery":
-                            new_rep[53] = (new_rep[53] & 0xF0) | (
+                            new_rep[self.ofs + 52] = (new_rep[self.ofs + 52] & 0xF0) | (
                                 max((ev["value"] - 5) // 10, 0)
                             )
 
@@ -376,8 +423,11 @@ class DualSense5Edge(Producer, Consumer):
         # Send report
         #
         # Sequence number
-        if new_rep[7] < 255:
-            new_rep[7] += 1
+        if new_rep[self.ofs + 6] < 255:
+            new_rep[self.ofs + 6] += 1
         else:
-            new_rep[7] = 0
+            new_rep[self.ofs + 6] = 0
+
+        if self.use_bluetooth:
+            sign_crc32_inplace(self.report, DS5_INPUT_CRC32_SEED)
         self.dev.send_input_report(self.report)

@@ -1,12 +1,10 @@
 from hhd.controller import Axis, Button
 from hhd.controller.lib.common import AM, BM
-from hhd.controller.lib.uhid import BUS_USB
 
 DS5_EDGE_VENDOR = 0x054C
 DS5_EDGE_PRODUCT = 0x0DF2
-DS5_EDGE_VERSION = 0
+DS5_EDGE_VERSION = 256
 DS5_EDGE_COUNTRY = 0
-DS5_EDGE_BUS = BUS_USB
 DS5_EDGE_NAME = b"Emulated Sony DS5 Edge Controller"
 
 DS5_EDGE_MIN_REPORT_FREQ = 25
@@ -15,8 +13,38 @@ DS5_EDGE_DELTA_TIME_NS = 333
 DS5_EDGE_TOUCH_WIDTH = 1920
 DS5_EDGE_TOUCH_HEIGHT = 1080
 
+DS5_INPUT_CRC32_SEED = bytes([0xA1])
+DS5_OUTPUT_CRC32_SEED = bytes([0xA2])
+DS5_FEATURE_CRC32_SEED = bytes([0xA3])
 
-def patch_dpad_val(buff: bytearray, hat_x: float, hat_y: float):
+DS5_INPUT_REPORT_USB = 0x01
+DS5_INPUT_REPORT_USB_SIZE = 64
+DS5_INPUT_REPORT_BT = 0x31
+DS5_INPUT_REPORT_BT_SIZE = 78
+
+DS5_INPUT_REPORT_BT_OFS = 2
+DS5_INPUT_REPORT_USB_OFS = 1
+
+
+def sign_crc32_append(buf: bytes, seed: bytes):
+    from binascii import crc32
+
+    data = buf[:-4]
+    crc = crc32(seed)
+    crc = crc32(data, crc)
+    return data + crc.to_bytes(4, byteorder="little")
+
+
+def sign_crc32_inplace(buf: bytearray, seed: bytes):
+    from binascii import crc32
+
+    data = buf[:-4]
+    crc = crc32(seed)
+    crc = crc32(data, crc)
+    buf[-4:] = crc.to_bytes(4, byteorder="little")
+
+
+def patch_dpad_val(buff: bytearray, ofs: int, hat_x: float, hat_y: float):
     if hat_y < -0.5 and hat_x == 0:
         v = 0  # North
     elif hat_y < -0.5 and hat_x > 0.5:
@@ -35,12 +63,18 @@ def patch_dpad_val(buff: bytearray, hat_x: float, hat_y: float):
         v = 7
     else:
         v = 8
-    buff[8] = (buff[8] & ~15) | v
+    buff[ofs + 7] = (buff[ofs + 7] & ~15) | v
 
 
-def _prep_def_report():
-    d = bytearray(64)
-    d[0] = 0x01  # report number
+def prefill_ds5_report(bluetooth: bool):
+    d = bytearray(DS5_INPUT_REPORT_BT_SIZE if bluetooth else DS5_INPUT_REPORT_USB_SIZE)
+    # report number
+    if bluetooth:
+        ofs = DS5_INPUT_REPORT_BT_OFS
+        d[0] = DS5_INPUT_REPORT_BT
+    else:
+        ofs = DS5_INPUT_REPORT_USB_OFS
+        d[0] = DS5_INPUT_REPORT_USB
     # 1: x, 2: y, 3: rx, 4: ry, 5: rt, 6: lt,
     # 7: seq, 8,9,10,11: buttons
     # 12,13,14,15: reserved
@@ -48,17 +82,23 @@ def _prep_def_report():
     # 28-31: timestamp
     # 32: reserved
 
+    # Zero axis initially
+    d[ofs + 0] = 0x80
+    d[ofs + 1] = 0x80
+    d[ofs + 2] = 0x80
+    d[ofs + 3] = 0x80
+
     # 33-36: touchpoint 1
     # 37-40: touchpoint 2
-    d[33] = 1 << 7
-    d[37] = 1 << 7
+    d[ofs + 32] = 1 << 7
+    d[ofs + 36] = 1 << 7
 
     # 41-52: reserved
     # 53: battery status
     # 54-63: reserved
 
     # Init dpad bc issues
-    patch_dpad_val(d, 0, 0)
+    patch_dpad_val(d, ofs, 0, 0)
 
     # Touchpoints
     # 0: contact
@@ -75,54 +115,57 @@ def _prep_def_report():
     # 0xf: overtemp error
     # level: 4 low bits
     # bat = 10*lvl + 5
-    d[53] = (0x0 << 4) + 8
+    d[ofs + 52] = (0x0 << 4) + 8
 
     return bytes(d)
 
 
-DS5_AXIS_MAP: dict[Axis, AM] = {
-    "ls_x": AM((1 << 3), "m8"),
-    "ls_y": AM((2 << 3), "m8"),
-    "rs_x": AM((3 << 3), "m8"),
-    "rs_y": AM((4 << 3), "m8"),
-    "rt": AM((5 << 3), "u8"),
-    "lt": AM((6 << 3), "u8"),
-    "gyro_x": AM((16 << 3), "i16", scale=20),
-    "gyro_y": AM((18 << 3), "i16", scale=20),
-    "gyro_z": AM((20 << 3), "i16", scale=20, flipped=True),
-    "accel_x": AM((22 << 3), "i16", scale=10000),
-    "accel_y": AM((24 << 3), "i16", scale=10000),
-    "accel_z": AM((26 << 3), "i16", scale=10000),
+get_axis_map = lambda ofs: {
+    "ls_x": AM((ofs << 3), "m8"),
+    "ls_y": AM(((ofs + 1) << 3), "m8"),
+    "rs_x": AM(((ofs + 2) << 3), "m8"),
+    "rs_y": AM(((ofs + 3) << 3), "m8"),
+    "rt": AM(((ofs + 4) << 3), "u8"),
+    "lt": AM(((ofs + 5) << 3), "u8"),
+    "gyro_x": AM(((ofs + 15) << 3), "i16", scale=20),
+    "gyro_y": AM(((ofs + 17) << 3), "i16", scale=20),
+    "gyro_z": AM(((ofs + 19) << 3), "i16", scale=20, flipped=True),
+    "accel_x": AM(((ofs + 21) << 3), "i16", scale=10000),
+    "accel_y": AM(((ofs + 23) << 3), "i16", scale=10000),
+    "accel_z": AM(((ofs + 25) << 3), "i16", scale=10000),
 }
 
-DS5_BUTTON_MAP: dict[Button, BM] = {
-    "y": BM((8 << 3)),
-    "b": BM((8 << 3) + 1),
-    "a": BM((8 << 3) + 2),
-    "x": BM((8 << 3) + 3),
-    "lb": BM((9 << 3) + 7),
-    "rb": BM((9 << 3) + 6),
-    "lt": BM((9 << 3) + 4),
-    "rt": BM((9 << 3) + 5),
-    "select": BM((9 << 3) + 3),
-    "start": BM((9 << 3) + 2),
-    "ls": BM((9 << 3) + 1),
-    "rs": BM((9 << 3)),
-    "extra_r2": BM((10 << 3)),
-    "extra_l2": BM((10 << 3) + 1),
-    "extra_r1": BM((10 << 3) + 2),
-    "extra_l1": BM((10 << 3) + 3),
-    "extra_l3": BM((10 << 3) + 4),
-    "share": BM((10 << 3) + 5),
-    "touchpad_touch": BM((33 << 3), flipped=True),
-    "touchpad_click": BM((10 << 3) + 6),
-    "mode": BM((10 << 3) + 7),
+DS5_BT_AXIS_MAP = get_axis_map(DS5_INPUT_REPORT_BT_OFS)
+DS5_USB_AXIS_MAP = get_axis_map(DS5_INPUT_REPORT_USB_OFS)
+
+get_btn_map = lambda ofs: {
+    "y": BM(((ofs + 7) << 3)),
+    "b": BM(((ofs + 7) << 3) + 1),
+    "a": BM(((ofs + 7) << 3) + 2),
+    "x": BM(((ofs + 7) << 3) + 3),
+    "lb": BM(((ofs + 8) << 3) + 7),
+    "rb": BM(((ofs + 8) << 3) + 6),
+    "lt": BM(((ofs + 8) << 3) + 4),
+    "rt": BM(((ofs + 8) << 3) + 5),
+    "select": BM(((ofs + 8) << 3) + 3),
+    "start": BM(((ofs + 8) << 3) + 2),
+    "ls": BM(((ofs + 8) << 3) + 1),
+    "rs": BM(((ofs + 8) << 3)),
+    "extra_r2": BM(((ofs + 9) << 3)),
+    "extra_l2": BM(((ofs + 9) << 3) + 1),
+    "extra_r1": BM(((ofs + 9) << 3) + 2),
+    "extra_l1": BM(((ofs + 9) << 3) + 3),
+    "extra_l3": BM(((ofs + 9) << 3) + 4),
+    "share": BM(((ofs + 9) << 3) + 5),
+    "touchpad_touch": BM(((ofs + 32) << 3), flipped=True),
+    "touchpad_click": BM(((ofs + 9) << 3) + 6),
+    "mode": BM(((ofs + 9) << 3) + 7),
 }
 
+DS5_BT_BTN_MAP = get_btn_map(DS5_INPUT_REPORT_BT_OFS)
+DS5_USB_BTN_MAP = get_btn_map(DS5_INPUT_REPORT_USB_OFS)
 
-DS5_EDGE_REPORT_USB_BASE = _prep_def_report()
-
-DS5_EDGE_DESCRIPTOR = bytes(
+DS5_EDGE_DESCRIPTOR_USB = bytes(
     [
         0x05,
         0x01,  # Usage Page (Generic Desktop)        0
@@ -513,6 +556,439 @@ DS5_EDGE_DESCRIPTOR = bytes(
         0xB1,
         0x02,  #  Feature (Data,Var,Abs)             386
         0xC0,  # End Collection                      388
+    ]
+)
+DS5_EDGE_DESCRIPTOR_BT = bytes(
+    [
+        0x05,
+        0x01,
+        0x09,
+        0x05,
+        0xA1,
+        0x01,
+        0x85,
+        0x01,
+        0x09,
+        0x30,
+        0x09,
+        0x31,
+        0x09,
+        0x32,
+        0x09,
+        0x35,
+        0x15,
+        0x00,
+        0x26,
+        0xFF,
+        0x00,
+        0x75,
+        0x08,
+        0x95,
+        0x04,
+        0x81,
+        0x02,
+        0x09,
+        0x39,
+        0x15,
+        0x00,
+        0x25,
+        0x07,
+        0x35,
+        0x00,
+        0x46,
+        0x3B,
+        0x01,
+        0x65,
+        0x14,
+        0x75,
+        0x04,
+        0x95,
+        0x01,
+        0x81,
+        0x42,
+        0x65,
+        0x00,
+        0x05,
+        0x09,
+        0x19,
+        0x01,
+        0x29,
+        0x0E,
+        0x15,
+        0x00,
+        0x25,
+        0x01,
+        0x75,
+        0x01,
+        0x95,
+        0x0E,
+        0x81,
+        0x02,
+        0x75,
+        0x06,
+        0x95,
+        0x01,
+        0x81,
+        0x01,
+        0x05,
+        0x01,
+        0x09,
+        0x33,
+        0x09,
+        0x34,
+        0x15,
+        0x00,
+        0x26,
+        0xFF,
+        0x00,
+        0x75,
+        0x08,
+        0x95,
+        0x02,
+        0x81,
+        0x02,
+        0x06,
+        0x00,
+        0xFF,
+        0x15,
+        0x00,
+        0x26,
+        0xFF,
+        0x00,
+        0x75,
+        0x08,
+        0x95,
+        0x4D,
+        0x85,
+        0x31,
+        0x09,
+        0x31,
+        0x91,
+        0x02,
+        0x09,
+        0x3B,
+        0x81,
+        0x02,
+        0x85,
+        0x32,
+        0x09,
+        0x32,
+        0x95,
+        0x8D,
+        0x91,
+        0x02,
+        0x85,
+        0x33,
+        0x09,
+        0x33,
+        0x95,
+        0xCD,
+        0x91,
+        0x02,
+        0x85,
+        0x34,
+        0x09,
+        0x34,
+        0x96,
+        0x0D,
+        0x01,
+        0x91,
+        0x02,
+        0x85,
+        0x35,
+        0x09,
+        0x35,
+        0x96,
+        0x4D,
+        0x01,
+        0x91,
+        0x02,
+        0x85,
+        0x36,
+        0x09,
+        0x36,
+        0x96,
+        0x8D,
+        0x01,
+        0x91,
+        0x02,
+        0x85,
+        0x37,
+        0x09,
+        0x37,
+        0x96,
+        0xCD,
+        0x01,
+        0x91,
+        0x02,
+        0x85,
+        0x38,
+        0x09,
+        0x38,
+        0x96,
+        0x0D,
+        0x02,
+        0x91,
+        0x02,
+        0x85,
+        0x39,
+        0x09,
+        0x39,
+        0x96,
+        0x22,
+        0x02,
+        0x91,
+        0x02,
+        0x06,
+        0x80,
+        0xFF,
+        0x85,
+        0x05,
+        0x09,
+        0x33,
+        0x95,
+        0x28,
+        0xB1,
+        0x02,
+        0x85,
+        0x08,
+        0x09,
+        0x34,
+        0x95,
+        0x2F,
+        0xB1,
+        0x02,
+        0x85,
+        0x09,
+        0x09,
+        0x24,
+        0x95,
+        0x13,
+        0xB1,
+        0x02,
+        0x85,
+        0x20,
+        0x09,
+        0x26,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0x22,
+        0x09,
+        0x40,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0x80,
+        0x09,
+        0x28,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0x81,
+        0x09,
+        0x29,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0x82,
+        0x09,
+        0x2A,
+        0x95,
+        0x09,
+        0xB1,
+        0x02,
+        0x85,
+        0x83,
+        0x09,
+        0x2B,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0xF1,
+        0x09,
+        0x31,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0xF2,
+        0x09,
+        0x32,
+        0x95,
+        0x34,
+        0xB1,
+        0x02,
+        0x85,
+        0xF0,
+        0x09,
+        0x30,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0x60,
+        0x09,
+        0x41,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0x61,
+        0x09,
+        0x42,
+        0xB1,
+        0x02,
+        0x85,
+        0x62,
+        0x09,
+        0x43,
+        0xB1,
+        0x02,
+        0x85,
+        0x63,
+        0x09,
+        0x44,
+        0xB1,
+        0x02,
+        0x85,
+        0x64,
+        0x09,
+        0x45,
+        0xB1,
+        0x02,
+        0x85,
+        0x65,
+        0x09,
+        0x46,
+        0xB1,
+        0x02,
+        0x85,
+        0x68,
+        0x09,
+        0x47,
+        0xB1,
+        0x02,
+        0x85,
+        0x70,
+        0x09,
+        0x48,
+        0xB1,
+        0x02,
+        0x85,
+        0x71,
+        0x09,
+        0x49,
+        0xB1,
+        0x02,
+        0x85,
+        0x72,
+        0x09,
+        0x4A,
+        0xB1,
+        0x02,
+        0x85,
+        0x73,
+        0x09,
+        0x4B,
+        0xB1,
+        0x02,
+        0x85,
+        0x74,
+        0x09,
+        0x4C,
+        0xB1,
+        0x02,
+        0x85,
+        0x75,
+        0x09,
+        0x4D,
+        0xB1,
+        0x02,
+        0x85,
+        0x76,
+        0x09,
+        0x4E,
+        0xB1,
+        0x02,
+        0x85,
+        0x77,
+        0x09,
+        0x4F,
+        0xB1,
+        0x02,
+        0x85,
+        0x78,
+        0x09,
+        0x50,
+        0xB1,
+        0x02,
+        0x85,
+        0x79,
+        0x09,
+        0x51,
+        0xB1,
+        0x02,
+        0x85,
+        0x7A,
+        0x09,
+        0x52,
+        0xB1,
+        0x02,
+        0x85,
+        0x7B,
+        0x09,
+        0x53,
+        0xB1,
+        0x02,
+        0x85,
+        0xF4,
+        0x09,
+        0x2C,
+        0x95,
+        0x3F,
+        0xB1,
+        0x02,
+        0x85,
+        0xF5,
+        0x09,
+        0x2D,
+        0x95,
+        0x07,
+        0xB1,
+        0x02,
+        0x85,
+        0xF6,
+        0x09,
+        0x2E,
+        0x96,
+        0x22,
+        0x02,
+        0xB1,
+        0x02,
+        0x85,
+        0xF7,
+        0x09,
+        0x2F,
+        0x95,
+        0x07,
+        0xB1,
+        0x02,
+        0xC0,
+        0x00,
     ]
 )
 
