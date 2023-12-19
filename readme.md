@@ -109,6 +109,29 @@ sudo systemctl enable hhd_local@$(whoami)
 sudo reboot
 ```
 
+#### Update Instructions
+Of course, you will want to update HHD to catch up to latest features
+```bash
+sudo systemctl stop hhd_local@$(whoami)
+~/.local/share/hhd/venv/bin/pip install --upgrade hhd
+sudo systemctl start hhd_local@$(whoami)
+```
+
+#### Uninstall instructions
+To uninstall, simply stop the service and remove the added files.
+```bash
+sudo systemctl disable hhd_local@$(whoami)
+sudo systemctl stop hhd_local@$(whoami)
+rm -rf ~/.local/share/hhd
+sudo rm /etc/udev/rules.d/83-hhd.rules
+sudo rm /etc/systemd/system/hhd_local@.service
+# Delete your configuration
+rm -r ~/.config/hhd
+```
+
+> The above should work on read only fs, provided the /etc directory is not read
+> only.
+
 ### Arch-based Installation (AUR)
 ```bash
 # Install using your AUR package manager
@@ -138,28 +161,21 @@ sudo systemctl start hhd@$(whoami)
 > This limitation will be lifted in the future, if a new driver is written for
 > amd-sfh.
 
-#### Update Instructions
-Of course, you will want to update HHD to catch up to latest features
-```bash
-sudo systemctl stop hhd_local@$(whoami)
-~/.local/share/hhd/venv/bin/pip install --upgrade hhd
-sudo systemctl start hhd_local@$(whoami)
-```
+#### Updating/Uninstalling in Arch
+HHD will update automatically with your system from then on, or you can update it
+manually with your AUR package manager.
+To uninstall, just uninstall the package and reboot.
 
-#### Uninstall instructions
-To uninstall, simply stop the service and remove the added files.
 ```bash
-sudo systemctl disable hhd_local@$(whoami)
-sudo systemctl stop hhd_local@$(whoami)
-rm -rf ~/.local/share/hhd
-sudo rm /etc/udev/rules.d/83-hhd.rules
-sudo rm /etc/systemd/system/hhd_local@.service
-# Delete your configuration
-rm -r ~/.config/hhd
-```
+# Update using your AUR package manager
+sudo pikaur -S hhd
+sudo yay -S hhd
+sudo pacman -S hhd # manjaro only
 
-> The above should work on read only fs, provided the /etc directory is not read
-> only.
+# Remove to uninstall
+sudo pacman -R hhd
+sudo reboot
+```
 
 ## Configuring HHD
 The reason you added your username to the hhd service was to bind the hhd daemon
@@ -168,6 +184,20 @@ This allows HHD to add configuration files with appropriate permissions to your
 user dir, which is the following:
 ```bash
 ~/.config/hhd
+```
+
+Configuration for plugins will appear in the plugins directory.
+Only the legion controller plugin has configuration options for now.
+```bash
+~/.config/hhd/plugins
+```
+
+Restart `hhd` to reload the configurations afterwards.
+```bash
+# Arch
+sudo systemctl restart hhd@$(whoami)
+# Local install
+sudo systemctl restart hhd_local@$(whoami)
 ```
 
 ## Quirks
@@ -186,11 +216,6 @@ a correct gamepad profile and will not work either.
 sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/modprobe.d/hhd.conf -o /etc/udev/modprobe.d/hhd.conf
 ```
 
-This will mean that outside steam and linux native games, the controller will not
-work.
-However, when running in any of the other modes legion go supports (dinput, dual dinput,
-fps mode), HHD adds a shortcuts device, so they are fully usable.
-
 ### Other gamepad modes
 HHD remaps the xinput mode of the Legion Go controllers into a DS5 controller.
 All other modes function as normal.
@@ -199,18 +224,21 @@ and all Legion L, R + button combinations into shortcuts that will work accross
 all modes.
 
 ### Freezing Gyro
-The gyro used for the DS5 controller is found in the display .
+The gyro used for the DS5 controller is found in the display.
 It may freeze occasionally. This is due to the accelerometer driver being
 designed to be polled at 5hz, not 100hz.
-If that is the case, you should reboot.
+If that is the case, you need to reboot.
 
-The gyro may also freeze when being polled by `iio-sensor-proxy` to determine
+The gyro may exhibit stutters when being polled by `iio-sensor-proxy` to determine
 screen orientation.
 However, a udev rule that is installed by default disables this.
 
 If you do not need gyro support, you should disable it for a .2% cpu utilisation
 reduction.
 By default, the accelerometer is disabled for this reason.
+
+You need to set both `gyro` and `gyro-fix` to `False` in the config to disable
+gyro support.
 
 ### HandyGCCS
 HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
@@ -250,7 +278,7 @@ sudo reboot
 # You can now run hhd in userspace!
 hhd
 # Add user when running with sudo
-sudo --user $(whoami)
+sudo hhd --user $(whoami)
 ```
 
 ## License
