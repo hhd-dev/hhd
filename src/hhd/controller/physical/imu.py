@@ -34,13 +34,13 @@ ACCEL_MAPPINGS: dict[str, tuple[Axis, float | None]] = {
     "accel_x": ("accel_z", 3),
     "accel_y": ("accel_x", 3),
     "accel_z": ("accel_y", 3),
-    "timestamp": ("accel_ts", None),
+    # "timestamp": ("accel_ts", None),
 }
 GYRO_MAPPINGS: dict[str, tuple[Axis, float | None]] = {
     "anglvel_x": ("gyro_z", None),
     "anglvel_y": ("gyro_x", None),
     "anglvel_z": ("gyro_y", None),
-    "timestamp": ("gyro_ts", None),
+    # "timestamp": ("gyro_ts", None),
 }
 
 
