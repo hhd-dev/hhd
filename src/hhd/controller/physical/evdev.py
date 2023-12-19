@@ -145,7 +145,12 @@ class GenericGamepadEvdev(Producer, Consumer):
                     # Install new effect
                     if ev["strong_magnitude"] > 0 or ev["weak_magnitude"] > 0:
                         rumble = ff.Rumble(
-                            strong_magnitude=0x0000, weak_magnitude=0xFFFF
+                            strong_magnitude=min(
+                                int(ev["strong_magnitude"] * 0xFFFF), 0xFFFF
+                            ),
+                            weak_magnitude=min(
+                                int(ev["weak_magnitude"] * 0xFFFF), 0xFFFF
+                            ),
                         )
                         duration_ms = 10000
 
