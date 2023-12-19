@@ -172,12 +172,16 @@ user dir, which is the following:
 
 ## Quirks
 ### Playstation Driver
-Right now, steam is broken with the playstation driver. You should blacklist the
-driver and use steam input instead with DS5.
-If not, you will notice issues with the touchpad, and the driver will override
-the led configuration.
-However, apps that do not load the hid version of the playstation driver will have
-issues.
+There is a small touchpad issue with the playstation driver loaded.
+Where a cursor might appear when using the touchpad in steam input.
+This should be fixed in the latest version.
+If not, you can fix it by blacklisting the playstation driver.
+However, you will get a lot of issues if you dont exclusively use steam input 
+afterwards so do not do it otherwise.
+You will not be able to use the touchpad as a touchpad anymore and that is the
+only way to wake up the screen in desktop mode.
+Games that do not support Dual Sense natively (e.g., wine games) will not have
+a correct gamepad profile and will not work either.
 ```bash
 sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/modprobe.d/hhd.conf -o /etc/udev/modprobe.d/hhd.conf
 ```
