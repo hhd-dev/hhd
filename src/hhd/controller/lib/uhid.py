@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-# Taken from unmaintained library python-uhid, mostly rewritten TODO: Add proper attribution
+# Sourced from library python-uhid
 
 from __future__ import annotations
 

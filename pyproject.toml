@@ -1,6 +1,6 @@
 [project]
 name = "hhd"
-version = "0.1.7"
+version = "0.1.8"
 authors = [
   { name="Kapenekakis Antheas", email="pypi@antheas.dev" },
 ]
@@ -9,7 +9,7 @@ readme = "readme.md"
 requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache Software License",
+    "License :: OSI Approved :: MIT",
     "Operating System :: OS Independent",
 ]
 

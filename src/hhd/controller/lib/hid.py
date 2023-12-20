@@ -1,5 +1,4 @@
-# Taken from the library hid. TODO: Add proper attribution
-
+# Sourced from the library hid, modified.
 import os
 import ctypes
 import atexit
