@@ -166,7 +166,7 @@ class DualSense5Edge(Producer, Consumer):
         self,
         touchpad_method: TouchpadCorrectionType = "crop_end",
         use_bluetooth: bool = True,
-        fake_timestamps: bool = True,
+        fake_timestamps: bool = False,
     ) -> None:
         self.available = False
         self.report = None
@@ -424,8 +424,8 @@ class DualSense5Edge(Producer, Consumer):
                             )
 
         # Cache
-        # if new_rep == self.report:
-        #     return
+        if new_rep == self.report and not self.fake_timestamps:
+            return
         self.report = new_rep
 
         if self.fake_timestamps:
