@@ -268,7 +268,7 @@ sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rule
 sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
 # Install udev rules to allow running in userspace (optional; great for debugging)
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rules.d/83-hhd-user.rules -o /etc/rules.d/83-hhd-user.rules 
+sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rules.d/83-hhd-user.rules -o /etc/udev/rules.d/83-hhd-user.rules 
 # Modprobe uhid to avoid rw errors
 sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/modules-load.d/hhd-user.conf -o /etc/modules-load.d/hhd-user.conf
 
