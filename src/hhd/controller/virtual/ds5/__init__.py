@@ -203,6 +203,7 @@ class DualSense5Edge(Producer, Consumer):
 
         self.state: dict = defaultdict(lambda: 0)
         self.rumble = False
+        self.touchpad_touch = False
         self.start = time.perf_counter_ns()
         self.fd = self.dev.open()
         return [self.fd]
@@ -410,6 +411,24 @@ class DualSense5Edge(Producer, Consumer):
                 case "button":
                     if ev["code"] in self.btn_map:
                         set_button(new_rep, self.btn_map[ev["code"]], ev["value"])
+
+                    # Fix touchpad click requiring touch, and also activate second
+                    # button for right click
+                    if ev["code"] == "touchpad_touch":
+                        self.touchpad_touch = ev["value"]
+                    if ev["code"] == "touchpad_click":
+                        set_button(
+                            new_rep,
+                            self.btn_map["touchpad_touch"],
+                            ev["value"] or self.touchpad_touch,
+                        )
+                        set_button(
+                            new_rep,
+                            self.btn_map["touchpad_touch2"],
+                            ev["value"],
+                        )
+                        print(self.touchpad_touch)
+
                 case "configuration":
                     match ev["code"]:
                         case "touchpad_aspect_ratio":
