@@ -350,8 +350,8 @@ class Multiplexer:
                             "type": "configuration",
                             "code": "battery",
                             "value": min(
-                                self.state.get("battery_left", 0),
-                                self.state.get("battery_right", 0),
+                                self.state.get("battery_left", 100),
+                                self.state.get("battery_right", 100),
                             ),
                         }
                     )
