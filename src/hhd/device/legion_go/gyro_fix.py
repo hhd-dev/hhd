@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def gyro_fix(ev: Event, rate: int = 65):
     g = None
     try:
-        g = ForcedSampler(["gyro_3d"], False)
+        g = ForcedSampler(["gyro_3d"], True)
         g.open()
         while not ev.is_set():
             g.sample()
