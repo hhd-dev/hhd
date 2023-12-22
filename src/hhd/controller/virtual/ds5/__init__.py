@@ -270,7 +270,16 @@ class DualSense5Edge(Producer, Consumer):
                     if self.use_bluetooth:
                         # skip seq_tag, tag sent by bluetooth report
                         # rest is the same
-                        rep = rep[0:1] + rep[2:]
+
+                        # If the first byte is the sequence byte, it will be
+                        # from 0x00 to 0xF0. Otherwise, for sdl that does not
+                        # have it it will be 0x02.
+                        # Only the kernel appends the sequence byte
+                        # SDL does not
+                        if rep[1] == 0x02:
+                            rep = rep[0:1] + rep[2:]
+                        else:
+                            rep = rep[0:1] + rep[3:]
 
                     if rep[2] & 4:  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
                         # Led data is being set
@@ -322,7 +331,7 @@ class DualSense5Edge(Producer, Consumer):
                         # )
                         pass
 
-                    if rep[1] & 0x03 == 0x03:
+                    if rep[1] & 0x02:
                         right = rep[3]
                         left = rep[4]
                         out.append(
