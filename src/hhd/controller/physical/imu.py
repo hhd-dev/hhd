@@ -164,22 +164,6 @@ def close_dev(dev: DeviceInfo):
     write_sysfs(dev.sysfs, "buffer/enable", 0)
 
 
-def process_scan_event(data: bytes, ofs: int, se: ScanElement):
-    # TODO: Implement parsing iio fully, by adding shifting and cutoff
-    d = data[ofs >> 3 : (ofs >> 3) + (se.storage_bits >> 3)]
-    d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
-    # d = d >> se.shift
-    # d &= (1 << se.bits) - 1
-    d = d * se.scale + se.offset
-
-    if se.max_val is not None:
-        if d > 0:
-            d = min(d, se.max_val)
-        else:
-            d = max(d, -se.max_val)
-    return d
-
-
 def get_size(dev: DeviceInfo):
     out = 0
     for s in dev.axis:
@@ -261,16 +245,28 @@ class IioReader(Producer):
 
             # Grab value if required
             if se.axis:
-                new_val = process_scan_event(data, ofs, se)
-                if se.axis not in self.prev or self.prev[se.axis] != new_val:
+                # TODO: Implement parsing iio fully, by adding shifting and cutoff
+                d = data[ofs >> 3 : (ofs >> 3) + (se.storage_bits >> 3)]
+                d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
+                # d = d >> se.shift
+                # d &= (1 << se.bits) - 1
+                d = d * se.scale + se.offset
+
+                if se.max_val is not None:
+                    if d > 0:
+                        d = min(d, se.max_val)
+                    else:
+                        d = max(d, -se.max_val)
+
+                if se.axis not in self.prev or self.prev[se.axis] != d:
                     out.append(
                         {
                             "type": "axis",
                             "code": se.axis,
-                            "value": new_val,
+                            "value": d,
                         }
                     )
-                    self.prev[se.axis] = new_val
+                    self.prev[se.axis] = d
             ofs += se.storage_bits
 
         # TODO: Clean this up

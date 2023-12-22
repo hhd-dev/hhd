@@ -1,3 +1,5 @@
+from binascii import crc32
+
 from hhd.controller import Axis, Button
 from hhd.controller.lib.common import AM, BM
 
@@ -27,8 +29,6 @@ DS5_INPUT_REPORT_USB_OFS = 1
 
 
 def sign_crc32_append(buf: bytes, seed: bytes):
-    from binascii import crc32
-
     data = buf[:-4]
     crc = crc32(seed)
     crc = crc32(data, crc)
@@ -36,8 +36,6 @@ def sign_crc32_append(buf: bytes, seed: bytes):
 
 
 def sign_crc32_inplace(buf: bytearray, seed: bytes):
-    from binascii import crc32
-
     data = buf[:-4]
     crc = crc32(seed)
     crc = crc32(data, crc)

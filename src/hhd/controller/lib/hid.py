@@ -191,6 +191,11 @@ class Device(object):
         if not self._dev:
             raise HIDException("unable to open device")
 
+        # Reuse buffer as creating it every time is expensive
+        # This means this process is no longer parallelizable, but you
+        # should not be parallelizing it anyway
+        self.buf = ctypes.create_string_buffer(MAX_REPORT_SIZE)
+
     @property
     def fd(self):
         if not self._dev:
@@ -223,39 +228,33 @@ class Device(object):
         return self.__hidcall(hidapi.hid_write, self._dev, data, len(data))
 
     def read(self, size: int = MAX_REPORT_SIZE, timeout=None):
-        data = ctypes.create_string_buffer(size)
-
         if timeout is None:
-            size = self.__hidcall(hidapi.hid_read, self._dev, data, size)
+            size = self.__hidcall(hidapi.hid_read, self._dev, self.buf, size)
         else:
             size = self.__hidcall(
-                hidapi.hid_read_timeout, self._dev, data, size, timeout
+                hidapi.hid_read_timeout, self._dev, self.buf, size, timeout
             )
 
-        return data.raw[:size]
+        return self.buf.raw[:size]
 
-    def get_input_report(self, report_id, size):
-        data = ctypes.create_string_buffer(size)
-
+    def get_input_report(self, report_id, size: int = MAX_REPORT_SIZE):
         # Pass the id of the report to be read.
-        data[0] = bytearray((report_id,))
+        self.buf[0] = bytearray((report_id,))
 
-        size = self.__hidcall(hidapi.hid_get_input_report, self._dev, data, size)
-        return data.raw[:size]
+        size = self.__hidcall(hidapi.hid_get_input_report, self._dev, self.buf, size)
+        return self.buf.raw[:size]
 
     def send_feature_report(self, data):
         return self.__hidcall(
             hidapi.hid_send_feature_report, self._dev, data, len(data)
         )
 
-    def get_feature_report(self, report_id, size):
-        data = ctypes.create_string_buffer(size)
-
+    def get_feature_report(self, report_id, size: int = MAX_REPORT_SIZE):
         # Pass the id of the report to be read.
-        data[0] = bytearray((report_id,))
+        self.buf[0] = bytearray((report_id,))
 
-        size = self.__hidcall(hidapi.hid_get_feature_report, self._dev, data, size)
-        return data.raw[:size]
+        size = self.__hidcall(hidapi.hid_get_feature_report, self._dev, self.buf, size)
+        return self.buf.raw[:size]
 
     def close(self):
         if self._dev:
