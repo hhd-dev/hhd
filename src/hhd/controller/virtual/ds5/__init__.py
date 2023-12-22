@@ -427,7 +427,6 @@ class DualSense5Edge(Producer, Consumer):
                             self.btn_map["touchpad_touch2"],
                             ev["value"],
                         )
-                        print(self.touchpad_touch)
 
                 case "configuration":
                     match ev["code"]:
