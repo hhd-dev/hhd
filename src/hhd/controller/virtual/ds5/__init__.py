@@ -444,7 +444,7 @@ class DualSense5Edge(Producer, Consumer):
                             )
                         case "battery":
                             new_rep[self.ofs + 52] = (new_rep[self.ofs + 52] & 0xF0) | (
-                                max((ev["value"] - 5) // 10, 0)
+                                max(ev["value"] // 10, 0)
                             )
 
         # Cache
