@@ -37,8 +37,8 @@ class UserRotatingFileHandler(RotatingFileHandler):
         errors: str | None = None,
         ctx: Context | None = None,
     ) -> None:
-        super().__init__(filename, mode, maxBytes, backupCount, encoding, delay, errors)
         self.ctx = ctx
+        super().__init__(filename, mode, maxBytes, backupCount, encoding, delay, errors)
 
     def _open(self):
         d = super()._open()

@@ -17,10 +17,12 @@ def run(**config: Any):
 
 
 class PowerbuttondPlugin(HHDPlugin):
-    def __init__(self, cfg: PowerButtonConfig) -> None:
-        self.name = f"powerbuttond@{cfg.device}"
+    def __init__(self, cfg: "PowerButtonConfig") -> None:
+        self.name = f"powerbuttond@'{cfg.device}'"
         self.priority = 20
         self.cfg = cfg
+        self.t = None
+        self.event = None
 
     def open(
         self,
@@ -34,13 +36,17 @@ class PowerbuttondPlugin(HHDPlugin):
         self.t.start()
 
     def close(self):
+        if not self.event or not self.t:
+            return
         self.event.set()
         self.t.join()
+        self.event = None
+        self.t = None
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
-        return []
+        return existing
 
     from .base import get_config
 

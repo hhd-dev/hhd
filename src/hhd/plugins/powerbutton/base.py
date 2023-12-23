@@ -148,6 +148,8 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
                     hold_dev = None
                 logger.info(f"Waiting for steam to launch.")
                 while not is_steam_gamescope_running(perms):
+                    if should_exit.is_set():
+                        return
                     sleep(STEAM_WAIT_DELAY)
 
             if not press_dev or not hold_dev:

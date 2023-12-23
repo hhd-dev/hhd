@@ -1,5 +1,5 @@
 from .conf import Config
-from .plugin import HHDAutodetect, HHDPlugin, HHDPluginInfo, Context, Emitter
+from .plugin import HHDAutodetect, HHDPlugin, Context, Emitter, Event
 from .settings import HHDSettings
 
 
@@ -30,8 +30,9 @@ __all__ = [
     "HHDSettings",
     "HHDAutodetect",
     "HHDPlugin",
-    "HHDPluginInfo",
     "get_relative_fn",
+    "load_relative_yaml",
     "Emitter",
+    "Event",
     "Context",
 ]

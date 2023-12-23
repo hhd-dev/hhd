@@ -7,13 +7,14 @@ import subprocess
 import time
 from multiprocessing import Process
 from os.path import join
+from threading import Lock, Condition
 from typing import NamedTuple, Sequence
 
 import pkg_resources
 import yaml
 
 from .logging import setup_logger
-from .plugins import HHDPlugin
+from .plugins import Emitter, Event, HHDAutodetect, HHDPlugin
 from .utils import Context, expanduser, get_context
 
 logger = logging.getLogger(__name__)
@@ -23,46 +24,27 @@ CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
 ERROR_DELAY = 5
 
 
-def launch_plugin(pkg_name: str, plugin: HHDPluginInfo, ctx: Context):
-    plugin_dir = expanduser(join(CONFIG_DIR, "plugins"), ctx)
+class EmitHolder(Emitter):
+    def __init__(self) -> None:
+        self._events = []
+        self._lock = Lock()
+        self._condition = Condition(self._lock)
 
-    if plugin.get("config", None):
-        cfg_fn = join(plugin_dir, plugin["name"] + ".yaml")
+    def __call__(self, event: Event | Sequence[Event]) -> None:
+        with self._lock:
+            if isinstance(event, Sequence):
+                self._events.extend(event)
+            else:
+                self._events.append(event)
+            self._condition.notify_all()
 
-        if not plugin["autodetect"]():
-            logger.debug(f"Plugin '{plugin['name']}' determined it should not run.")
-            return None
-
-        if not os.path.isfile(cfg_fn):
-            logger.warn(
-                f"Config file for plugin '{plugin['name']}' not found below, using default:\n{cfg_fn}"
-            )
-            os.makedirs(plugin_dir, exist_ok=True)
-            shutil.copy(plugin["config"], cfg_fn)
-
-        with open(cfg_fn, "r") as f:
-            cfg = yaml.safe_load(f)
-
-        if "config_version" in plugin and plugin["config_version"] != cfg.get(
-            "version", 0
-        ):
-            logger.warn(
-                f"Config file for plugin '{plugin['name']}' is outdated, replacing with default:\n{cfg_fn}"
-            )
-            os.makedirs(plugin_dir, exist_ok=True)
-            shutil.copy(plugin["config"], cfg_fn)
-
-            with open(cfg_fn, "r") as f:
-                cfg = yaml.safe_load(f)
-    else:
-        cfg = {}
-
-    # Add perms in case a plugin needs them
-    cfg = {**cfg, "perms": ctx}
-
-    logger.info(f"Launching plugin {pkg_name}.{plugin['name']}")
-
-    return proc
+    def get_events(self, timeout: int = -1):
+        with self._lock:
+            if not self._events and timeout != -1:
+                self._condition.wait()
+            ev = self._events
+            self._events = []
+            return ev
 
 
 def main():
@@ -87,58 +69,70 @@ def main():
         print(f"Could not get user information. Exiting...")
         return
 
-    running_plugins: Sequence[HHDPlugin] = {}
+    detectors: dict[str, HHDAutodetect] = {}
+    plugins: dict[str, Sequence[HHDPlugin]] = {}
     try:
-        setup_logger(join(CONFIG_DIR, "log"), context=ctx)
+        setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
 
-        plugins = {}
-        for plugin in pkg_resources.iter_entry_points("hhd.plugins"):
-            plugins[plugin.name] = plugin.resolve()
+        for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
+            detectors[autodetect.name] = autodetect.resolve()
 
-        logger.info(f"Found plugin providers: {', '.join(list(plugins))}")
-        plugin_str = "With the following plugins:"
+        logger.info(f"Found plugin providers: {', '.join(list(detectors))}")
+
+        logger.info(f"Running autodetection...")
+        for name, autodetect in detectors.items():
+            plugins[name] = autodetect([])
+
+        plugin_str = "Loaded the following plugins:"
         for pkg_name, sub_plugins in plugins.items():
             plugin_str += (
-                f"\n  - {pkg_name:>15s}: {', '.join(p['name'] for p in sub_plugins)}"
+                f"\n  - {pkg_name:>15s}: {', '.join(p.name for p in sub_plugins)}"
             )
         logger.info(plugin_str)
 
-        for pkg_name, sub_plugins in plugins.items():
-            for plugin in sub_plugins:
-                proc = launch_plugin(pkg_name, plugin, perms)
-                if proc:
-                    running_plugins[proc.sentinel] = (pkg_name, plugin, proc)
+        sorted_plugins: Sequence[HHDPlugin] = []
+        for plugs in plugins.values():
+            sorted_plugins.extend(plugs)
+        sorted_plugins.sort(key=lambda x: x.priority)
 
-        if not running_plugins:
+        if not sorted_plugins:
             logger.error(f"No plugins started, exiting...")
             return
 
-        logger.info(f"Monitoring plugin status, and restarting if necessary.")
-        while True:
-            exited = select.select(list(running_plugins), [], [])[0]
-            for fd in exited:
-                pkg_name, plugin, proc = running_plugins.pop(fd)
-                if not proc.exitcode:
-                    # Plugin exited normally, not restarting
-                    logger.info(f"Plugin '{plugin['name']}' exited normally.")
-                    continue
+        # Open plugins
+        emit = EmitHolder()
+        for p in sorted_plugins:
+            p.open(emit, ctx)
 
-                logger.error(
-                    f"Plugin '{plugin['name']}' crashed. Restarting in {ERROR_DELAY}s."
-                )
-                time.sleep(ERROR_DELAY)
-                proc = launch_plugin(pkg_name, plugin, perms)
-                if proc:
-                    running_plugins[proc.sentinel] = (pkg_name, plugin, proc)
-            time.sleep(ERROR_DELAY)
+        for p in sorted_plugins:
+            print(p.settings())
+
+        # logger.info(f"Monitoring plugin status, and restarting if necessary.")
+        # while True:
+        #     exited = select.select(list(running_plugins), [], [])[0]
+        #     for fd in exited:
+        #         pkg_name, plugin, proc = running_plugins.pop(fd)
+        #         if not proc.exitcode:
+        #             # Plugin exited normally, not restarting
+        #             logger.info(f"Plugin '{plugin['name']}' exited normally.")
+        #             continue
+
+        #         logger.error(
+        #             f"Plugin '{plugin['name']}' crashed. Restarting in {ERROR_DELAY}s."
+        #         )
+        #         time.sleep(ERROR_DELAY)
+        #         proc = launch_plugin(pkg_name, plugin, perms)
+        #         if proc:
+        #             running_plugins[proc.sentinel] = (pkg_name, plugin, proc)
+        #     time.sleep(ERROR_DELAY)
     except KeyboardInterrupt:
         logger.info(
             f"HHD Daemon received KeyboardInterrupt, stopping plugins and exiting."
         )
     finally:
-        for _, _, process in running_plugins.values():
-            process.terminate()
-            process.join()
+        for plugs in plugins.values():
+            for plug in plugs:
+                plug.close()
 
 
 if __name__ == "__main__":

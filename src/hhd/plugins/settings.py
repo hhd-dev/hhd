@@ -110,7 +110,7 @@ class Container(TypedDict):
     title: str
     hint: str
 
-    children: MutableMapping[str, Setting | "Container" | "Mode"]
+    children: MutableMapping[str, "Setting | Container | Mode"]
 
 
 class Mode(TypedDict):
@@ -126,12 +126,12 @@ class Mode(TypedDict):
     default: str | None
 
 
-Section = Container
+Section = MutableMapping[str, "Container | Mode"]
 
 HHDSettings = Mapping[str, Section]
 
 
-def parse(d: Setting | "Container" | "Mode", prev: Sequence[str], out: MutableMapping):
+def parse(d: "Setting | Container | Mode", prev: Sequence[str], out: MutableMapping):
     new_prev = list(prev)
     match d["type"]:
         case "container":
@@ -148,5 +148,6 @@ def parse(d: Setting | "Container" | "Mode", prev: Sequence[str], out: MutableMa
 def parse_settings(sets: HHDSettings):
     out = {}
     for name, sec in sets.items():
-        parse(sec, [name], out)
+        for cname, cont in sec.items():
+            parse(cont, [name, cname], out)
     return out
