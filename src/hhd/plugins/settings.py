@@ -17,12 +17,11 @@ from typing import (
 class ButtonSetting(TypedDict):
     """Just a button, emits an event. Used for resets, etc."""
 
-    type: Literal["button"]
-    canonical: Sequence[str]
-    id: str
-
+    type: Literal["event"]
+    family: Sequence[str]
     title: str
     hint: str
+
     default: bool | None
 
 
@@ -30,11 +29,10 @@ class BooleanSetting(TypedDict):
     """Checkbox container."""
 
     type: Literal["bool"]
-    canonical: Sequence[str]
-    id: str
-
+    family: Sequence[str]
     title: str
     hint: str
+
     default: bool | None
 
 
@@ -42,9 +40,7 @@ class MultipleSetting(TypedDict):
     """Select one container."""
 
     type: Literal["multiple"]
-    canonical: Sequence[str]
-    id: str
-
+    family: Sequence[str]
     title: str
     hint: str
 
@@ -56,9 +52,7 @@ class DiscreteSetting(TypedDict):
     """Ordered and fixed numerical options (etc. tdp)."""
 
     type: Literal["discrete"]
-    canonical: Sequence[str]
-    id: str
-
+    family: Sequence[str]
     title: str
     hint: str
 
@@ -70,9 +64,7 @@ class NumericalSetting(TypedDict):
     """Floating numerical option."""
 
     type: Literal["number"]
-    canonical: Sequence[str]
-    id: str
-
+    family: Sequence[str]
     title: str
     hint: str
 
@@ -85,9 +77,7 @@ class ColorSetting(TypedDict):
     """RGB color setting."""
 
     type: Literal["color"]
-    canonical: Sequence[str]
-    id: str
-
+    family: Sequence[str]
     title: str
     hint: str
 
@@ -114,26 +104,22 @@ class Container(TypedDict):
     """Holds a variety of settings."""
 
     type: Literal["container"]
-    canonical: Sequence[str]
-    id: str
-
+    family: Sequence[str]
     title: str
     hint: str
 
-    children: Sequence[Setting | "Container" | "Mode"]
+    children: MutableMapping[str, Setting | "Container" | "Mode"]
 
 
 class Mode(TypedDict):
     """Holds a number of containers, only one of whih can be active at a time."""
 
     type: Literal["mode"]
-    canonical: Sequence[str]
-    id: str
-
+    family: Sequence[str]
     title: str
     hint: str
 
-    modes: Sequence[Container]
+    modes: MutableMapping[str, Container]
     default: str | None
 
 
@@ -143,15 +129,15 @@ HHDSettings = Mapping[str, Section]
 
 
 def parse(d: Setting | "Container" | "Mode", prev: Sequence[str], out: MutableMapping):
-    new_prev = list(prev) + [d["id"]]
+    new_prev = list(prev)
     match d["type"]:
         case "container":
-            for m in d["children"]:
-                parse(m, new_prev, out)
+            for k, v in d["children"].items():
+                parse(v, new_prev + [k], out)
         case "mode":
             out[".".join(new_prev)] = "mode"
-            for m in d["modes"]:
-                parse(m, new_prev, out)
+            for k, v in d["modes"].items():
+                parse(v, new_prev + [k], out)
         case other:
             out[".".join(new_prev)] = other
 

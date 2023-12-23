@@ -13,8 +13,8 @@ import pkg_resources
 import yaml
 
 from .logging import setup_logger
-from .plugins import HHDPluginV1
-from .utils import Perms, expanduser, get_perms, switch_priviledge
+from .plugins import HHDPluginInfo
+from .utils import Context, expanduser, get_context
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +23,10 @@ CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
 ERROR_DELAY = 5
 
 
-def launch_plugin(pkg_name: str, plugin: HHDPluginV1, perms: Perms):
-    plugin_dir = expanduser(join(CONFIG_DIR, "plugins"), perms)
+def launch_plugin(pkg_name: str, plugin: HHDPluginInfo, ctx: Context):
+    plugin_dir = expanduser(join(CONFIG_DIR, "plugins"), ctx)
 
-    if plugin["config"]:
+    if plugin.get("config", None):
         cfg_fn = join(plugin_dir, plugin["name"] + ".yaml")
 
         if not plugin["autodetect"]():
@@ -58,15 +58,9 @@ def launch_plugin(pkg_name: str, plugin: HHDPluginV1, perms: Perms):
         cfg = {}
 
     # Add perms in case a plugin needs them
-    cfg = {**cfg, "perms": perms}
+    cfg = {**cfg, "perms": ctx}
 
     logger.info(f"Launching plugin {pkg_name}.{plugin['name']}")
-
-    # Run plugin priviledged, in case it does not deal with the user
-    switch_priviledge(perms, True)
-    proc = Process(target=plugin["run"], kwargs=cfg)
-    proc.start()
-    switch_priviledge(perms, False)
 
     return proc
 
@@ -88,18 +82,14 @@ def main():
     user = args.user
 
     # Setup temporary logger for permission retreival
-    perms = get_perms(user)
-    if not perms:
+    ctx = get_context(user)
+    if not ctx:
         print(f"Could not get user information. Exiting...")
         return
 
     running_plugins: dict[int, tuple[str, HHDPluginV1, Process]] = {}
     try:
-        # Drop privileges for initial set-up
-        switch_priviledge(perms, False)
-        setup_logger(
-            join(CONFIG_DIR, "log"), perms=perms
-        )
+        setup_logger(join(CONFIG_DIR, "log"), context=ctx)
 
         plugins = {}
         for plugin in pkg_resources.iter_entry_points("hhd.plugins"):

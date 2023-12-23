@@ -21,7 +21,7 @@ class LegionControllersPlugin(HHDPlugin):
         from .base import plugin_run
 
         self.event = Event()
-        self.t = Thread(target=plugin_run, args=(self.cfg, context, self.event))
+        self.t = Thread(target=plugin_run, args=(conf, emit, context, self.event))
         self.t.start()
 
     def close(self):
@@ -47,13 +47,3 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPluginInfo]:
             "version": 3,
         }
     ]
-
-
-def main():
-    from .base import main
-
-    main(False)
-
-
-if __name__ == "__main__":
-    main()

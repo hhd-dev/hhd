@@ -1,9 +1,8 @@
 import logging
 import os
-from logging import LogRecord
 from logging.handlers import RotatingFileHandler
 
-from .utils import Perms, expanduser, restore_priviledge, switch_priviledge
+from .utils import Context, expanduser
 
 logger = logging.getLogger(__name__)
 
@@ -36,34 +35,27 @@ class UserRotatingFileHandler(RotatingFileHandler):
         encoding: str | None = None,
         delay: bool = False,
         errors: str | None = None,
-        perms: Perms | None = None,
+        ctx: Context | None = None,
     ) -> None:
         super().__init__(filename, mode, maxBytes, backupCount, encoding, delay, errors)
-        self.perms = perms
+        self.ctx = ctx
 
-    def emit(self, record: LogRecord) -> None:
-        try:
-            # Set permissions to log as user
-            if self.perms:
-                old = switch_priviledge(self.perms, False)
-            else:
-                old = None
-            RotatingFileHandler.emit(self, record)
-            if old:
-                restore_priviledge(old)
-        except Exception:
-            self.handleError(record)
+    def _open(self):
+        d = super()._open()
+        if self.ctx:
+            os.chown(self.baseFilename, self.ctx.euid, self.ctx.egid)
+        return d
 
 
 def setup_logger(
-    log_dir: str | None = None, init: bool = True, perms: Perms | None = None
+    log_dir: str | None = None, init: bool = True, ctx: Context | None = None
 ):
     from rich import get_console
     from rich.logging import RichHandler
     from rich.traceback import install
 
     if log_dir:
-        log_dir = expanduser(log_dir, perms)
+        log_dir = expanduser(log_dir, ctx)
 
     install()
     handlers = []
@@ -74,7 +66,7 @@ def setup_logger(
             os.path.join(log_dir, "hhd.log"),
             maxBytes=10_000_000,
             backupCount=10,
-            perms=perms,
+            ctx=ctx,
         )
         handler.setFormatter(
             NewLineFormatter("%(asctime)s %(module)-15s %(levelname)-8s|||%(message)s")
