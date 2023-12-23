@@ -1,12 +1,13 @@
 import logging
+import os
 import re
 import select
 from typing import Mapping, Sequence, TypeVar, cast
 
 import evdev
-from evdev import ff, ecodes
+from evdev import ecodes, ff
 
-from hhd.controller import Axis, Button, Event, Producer, Consumer
+from hhd.controller import Axis, Button, Consumer, Event, Producer
 from hhd.controller.base import Event
 from hhd.controller.lib.common import hexify, matches_patterns
 
@@ -80,6 +81,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         axis_map: Mapping[int, Axis] = XBOX_AXIS_MAP,
         aspect_ratio: float | None = None,
         required: bool = True,
+        hide: bool = False,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -92,6 +94,8 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.dev: evdev.InputDevice | None = None
         self.fd = 0
         self.required = required
+        self.hide = False # TODO: fix once finalized
+        self.hide_pair = None
 
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
@@ -102,6 +106,38 @@ class GenericGamepadEvdev(Producer, Consumer):
                 continue
             if not matches_patterns(dev.name, self.name):
                 continue
+
+            if self.hide:
+                # Check we are root
+                if not os.getuid():
+                    # Hide controller
+                    try:
+                        # Use the same filesystem to avoid surprises
+                        self.hide_pair = (
+                            dev.path,
+                            os.path.join(
+                                os.path.dirname(dev.path),
+                                ".hhd",
+                                os.path.basename(dev.path),
+                            ),
+                        )
+                        os.makedirs(
+                            os.path.join(
+                                os.path.dirname(dev.path),
+                                ".hhd",
+                            ),
+                            exist_ok=True,
+                        )
+                        logger.info(self.hide_pair)
+                        dev.close()
+                        os.rename(self.hide_pair[0], self.hide_pair[1])
+                        dev = evdev.InputDevice(self.hide_pair[1])
+                    except Exception as e:
+                        logger.warn(f"Could not hide device:\n{dev}\nError:{e}")
+                        dev = evdev.InputDevice(d)
+                else:
+                    logger.warn(f"Not running as root, device `{dev.name}` not hid.")
+
             self.dev = dev
             self.dev.grab()
             self.ranges = {
@@ -128,6 +164,12 @@ class GenericGamepadEvdev(Producer, Consumer):
         if self.dev:
             self.dev.close()
             self.fd = 0
+        if self.hide_pair:
+            try:
+                os.rename(self.hide_pair[1], self.hide_pair[0])
+            except Exception as e:
+                logger.warn(f"Failed unhiding device with error:\n{e}")
+            self.hide_pair = None
         return True
 
     def consume(self, events: Sequence[Event]):
