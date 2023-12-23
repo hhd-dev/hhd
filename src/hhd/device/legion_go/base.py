@@ -4,16 +4,18 @@ import re
 import select
 import sys
 import time
+from threading import Event as TEvent
 from typing import Sequence, cast
 
 from hhd.controller import Button, Consumer, Event, Producer
-from hhd.controller.base import Multiplexer, can_read
+from hhd.controller.base import Multiplexer
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
-from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
+from hhd.controller.virtual.ds5 import DualSense5Edge
 from hhd.controller.virtual.uinput import UInputDevice
+from hhd.plugins import Config, Context, Emitter
 
 from .const import (
     LGO_RAW_INTERFACE_AXIS_MAP,
@@ -23,8 +25,8 @@ from .const import (
     LGO_TOUCHPAD_AXIS_MAP,
     LGO_TOUCHPAD_BUTTON_MAP,
 )
-from .hid import rgb_callback
 from .gyro_fix import GyroFixer
+from .hid import rgb_callback
 
 ERROR_DELAY = 1
 
@@ -39,99 +41,8 @@ LEN_PIDS = {
 }
 
 
-def main(as_plugin=False):
-    if not as_plugin:
-        from hhd import setup_logger
-
-        setup_logger()
-
-    parser = argparse.ArgumentParser(
-        prog="HHD: LegionGo Controller Plugin",
-        description="This plugin remaps the legion go controllers to a DS5 controller and restores all functionality.",
-    )
-    parser.add_argument(
-        "-a",
-        "--d-accel",
-        action="store_false",
-        help="Dissable accelerometer (recommended since not used by steam, .5%% core utilisation).",
-        dest="accel",
-    )
-    parser.add_argument(
-        "-g",
-        "--d-gyro",
-        action="store_false",
-        help="Disable gyroscope (.5%% core utilisation).",
-        dest="gyro",
-    )
-    parser.add_argument(
-        "-gf",
-        "--gyro-fix",
-        action="store_true",
-        help="Samples the gyro to avoid needing a custom driver.",
-        dest="gyro_fix",
-    )
-    parser.add_argument(
-        "-l",
-        "--swap-legion",
-        action="store_true",
-        help="Swaps Legion buttons with start, select.",
-        dest="swap_legion",
-    )
-    parser.add_argument(
-        "-s",
-        "--share-to-qam",
-        action="store_true",
-        help="Maps the share button (Legion R) to Guide + A",
-        dest="share_to_qam",
-    )
-    parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        help="Prints events as they happen.",
-        dest="debug",
-    )
-    parser.add_argument(
-        "-t",
-        "--touchpad",
-        help='How to fit the legion go touchpad into the DS5 ("stretch", "crop_center", "crop_start", "crop_end", "contain_start", "contain_end", "contain_center")',
-        default=None,
-    )
-    if as_plugin:
-        args = parser.parse_args(sys.argv[2:])
-    else:
-        args = parser.parse_args()
-
-    accel = args.accel
-    gyro = args.gyro
-    swap_legion = args.swap_legion
-    debug = args.debug
-    touchpad_mode = cast(TouchpadCorrectionType | None, args.touchpad)
-    gyro_fix = args.gyro_fix
-    share_to_qam = args.share_to_qam
-    plugin_run(
-        accel=accel,
-        gyro=gyro,
-        swap_legion=swap_legion,
-        touchpad_mode=touchpad_mode,
-        gyro_fix=gyro_fix,
-        share_to_qam=share_to_qam,
-        debug=debug,
-    )
-
-
-def plugin_run(
-    accel: bool = False,
-    gyro: bool = True,
-    swap_legion: bool = False,
-    touchpad_mode: TouchpadCorrectionType | None = "crop_end",
-    gyro_fix: bool | int = True,
-    share_to_qam: bool = True,
-    led_support: bool = True,
-    debug: bool = False,
-    **_,
-):
-    if gyro_fix:
+def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
+    if gyro_fix := conf.get("gyro_fix", False):
         gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
     else:
         gyro_fixer = None
@@ -166,21 +77,13 @@ def plugin_run(
                     logger.info("Launching DS5 controller instance.")
                     if gyro_fixer:
                         gyro_fixer.open()
-                    controller_loop_xinput(
-                        accel=accel,
-                        gyro=gyro,
-                        swap_legion=swap_legion,
-                        share_to_qam=share_to_qam,
-                        touchpad_mode=touchpad_mode,
-                        led_support=led_support,
-                        debug=debug,
-                    )
+                    controller_loop_xinput(conf, should_exit)
                 case _:
                     logger.info(
                         f"Controllers in non-supported (yet) mode: {controller_mode}. Launching a shortcuts device."
                     )
                     controller_loop_rest(
-                        controller_mode, pid if pid else 2, share_to_qam, debug
+                        controller_mode, pid if pid else 2, conf, should_exit
                     )
         except Exception as e:
             logger.error(f"Received the following error:\n{e}")
@@ -197,7 +100,9 @@ def plugin_run(
             return
 
 
-def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = False):
+def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent):
+    debug = conf.get("debug", False)
+
     d_raw = SelectivePassthrough(
         GenericGamepadHidraw(
             vid=[LEN_VID],
@@ -214,7 +119,7 @@ def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = 
     multiplexer = Multiplexer(
         dpad="analog_to_discrete",
         trigger="analog_to_discrete",
-        share_to_qam=share_to_qam,
+        share_to_qam=conf.get("share_to_qam", True),
     )
     d_uinput = UInputDevice(name=f"HHD Shortcuts Device (Legion Mode: {mode})", pid=pid)
 
@@ -231,7 +136,7 @@ def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = 
         fds.extend(d_shortcuts.open())
         fds.extend(d_uinput.open())
 
-        while True:
+        while not should_exit.is_set():
             select.select(fds, [], [])
             d_shortcuts.produce(fds)
             d_uinput.produce(fds)
@@ -245,19 +150,11 @@ def controller_loop_rest(mode: str, pid: int, share_to_qam: bool, debug: bool = 
         d_uinput.close(True)
 
 
-def controller_loop_xinput(
-    accel: bool = True,
-    gyro: bool = True,
-    swap_legion: str | bool = False,
-    share_to_qam: bool = False,
-    touchpad_mode: TouchpadCorrectionType | None = None,
-    led_support: bool = True,
-    debug: bool = False,
-):
+def controller_loop_xinput(conf: Config, should_exit: TEvent):
+    debug = conf.get("debug", False)
+
     # Output
-    d_ds5 = DualSense5Edge(
-        touchpad_method=touchpad_mode if touchpad_mode else "crop_end"
-    )
+    d_ds5 = DualSense5Edge(touchpad_method=conf.get("touchpad_mode", "crop_end"))
 
     # Imu
     d_accel = AccelImu()
@@ -289,7 +186,7 @@ def controller_loop_xinput(
             axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
-            callback=rgb_callback if led_support else None,
+            callback=rgb_callback if conf.get("led_support", False) else None,
             required=True,
         )
     )
@@ -302,7 +199,7 @@ def controller_loop_xinput(
         required=True,
     )
 
-    match swap_legion:
+    match conf.get("swap_legion", False):
         case True:
             swap_guide = "guide_is_select"
         case False:
@@ -320,7 +217,7 @@ def controller_loop_xinput(
         dpad="analog_to_discrete",
         led="main_to_sides",
         status="both_to_main",
-        share_to_qam=share_to_qam,
+        share_to_qam=conf.get("share_to_qam", True),
     )
 
     REPORT_FREQ_MIN = 25
@@ -341,9 +238,9 @@ def controller_loop_xinput(
             fd_to_dev[f] = m
 
     try:
-        if accel:
+        if conf.get("accel", False):
             prepare(d_accel)
-        if gyro:
+        if conf.get("gyro", False):
             prepare(d_gyro)
         prepare(d_xinput)
         prepare(d_shortcuts)
@@ -352,7 +249,7 @@ def controller_loop_xinput(
         prepare(d_ds5)
 
         logger.info("DS5 controller instance launched, have fun!")
-        while True:
+        while not should_exit.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second
             r, _, _ = select.select(fds, [], [], REPORT_DELAY_MAX)

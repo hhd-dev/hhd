@@ -1,7 +1,15 @@
-from typing import Any, Sequence
+from typing import Any, Sequence, TYPE_CHECKING
 
-from hhd.plugins import HHDPluginV1, get_relative_fn
-from .const import SUPPORTED_DEVICES
+from hhd.plugins import (
+    HHDPlugin,
+    HHDPluginInfo,
+    Config,
+    Context,
+)
+
+if TYPE_CHECKING:
+    from .const import PowerButtonConfig
+from threading import Event, Thread
 
 
 def run(**config: Any):
@@ -10,22 +18,35 @@ def run(**config: Any):
     power_button_run(**config)
 
 
-def autodetect():
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        prod = f.read().strip()
+class PowerbuttondPlugin(HHDPlugin):
+    def __init__(self, cfg: PowerButtonConfig) -> None:
+        self.cfg = cfg
 
-    for d in SUPPORTED_DEVICES:
-        if d.prod_name == prod:
-            return True
+    def open(
+        self,
+        conf: Config,
+        emit,
+        context: Context,
+    ):
+        from .base import power_button_run
 
-    return False
+        self.event = Event()
+        self.t = Thread(target=power_button_run, args=(self.cfg, context, self.event))
+        self.t.start()
+
+    def close(self):
+        self.event.set()
+        self.t.join()
 
 
-plugins: Sequence[HHDPluginV1] = [
-    {
-        "name": "powerbuttond",
-        "autodetect": autodetect,
-        "run": run,
-        "config": None,
-    }
-]
+def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPluginInfo]:
+    if len(existing):
+        return []
+
+    from .base import get_config
+
+    cfg = get_config()
+    if not cfg:
+        return []
+
+    return [{"name": "powerbuttond", "plugin": PowerbuttondPlugin(cfg), "priority": 20}]

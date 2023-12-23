@@ -3,18 +3,12 @@ import os
 import subprocess
 from typing import NamedTuple
 
+from hhd.plugins import Context
+
 logger = logging.getLogger(__name__)
 
 
-class Perms(NamedTuple):
-    euid: int = 0
-    egid: int = 0
-    uid: int = 0
-    gid: int = 0
-    name: str = "root"
-
-
-def get_perms(user: str | None) -> Perms | None:
+def get_context(user: str | None) -> Context | None:
     try:
         uid = os.getuid()
         gid = os.getgid()
@@ -26,7 +20,7 @@ def get_perms(user: str | None) -> Perms | None:
                     "Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
                 )
                 print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            return Perms(uid, gid, uid, gid, "root")
+            return Context(uid, gid, uid, gid, "root")
 
         euid = int(
             subprocess.run(
@@ -45,7 +39,7 @@ def get_perms(user: str | None) -> Perms | None:
             )
             return None
 
-        return Perms(euid, egid, uid, gid, user)
+        return Context(euid, egid, uid, gid, user)
     except subprocess.CalledProcessError as e:
         print(f"Getting the user uid/gid returned an error:\n{e.stderr.decode()}")
         return None
@@ -54,7 +48,7 @@ def get_perms(user: str | None) -> Perms | None:
         return None
 
 
-def switch_priviledge(p: Perms, escalate=False):
+def switch_priviledge(p: Context, escalate=False):
     uid = os.geteuid()
     gid = os.getegid()
 
@@ -81,7 +75,7 @@ def restore_priviledge(old: tuple[int, int]):
     pass
 
 
-def expanduser(path: str, user: int | str | Perms | None = None):
+def expanduser(path: str, user: int | str | Context | None = None):
     """Expand ~ and ~user constructions.  If user or $HOME is unknown,
     do nothing.
 
@@ -110,7 +104,7 @@ def expanduser(path: str, user: int | str | Perms | None = None):
                     userhome = pwd.getpwuid(os.getuid()).pw_dir
                 elif isinstance(user, int):
                     userhome = pwd.getpwuid(user).pw_dir
-                elif isinstance(user, Perms):
+                elif isinstance(user, Context):
                     userhome = pwd.getpwuid(user.euid).pw_dir
                 else:
                     userhome = pwd.getpwnam(user).pw_dir

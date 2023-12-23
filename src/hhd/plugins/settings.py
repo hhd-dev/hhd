@@ -126,7 +126,7 @@ class Container(TypedDict):
 class Mode(TypedDict):
     """Holds a number of containers, only one of whih can be active at a time."""
 
-    type: Literal["container"]
+    type: Literal["mode"]
     canonical: Sequence[str]
     id: str
 
@@ -135,3 +135,29 @@ class Mode(TypedDict):
 
     modes: Sequence[Container]
     default: str | None
+
+
+Section = Container
+
+HHDSettings = Mapping[str, Section]
+
+
+def parse(d: Setting | "Container" | "Mode", prev: Sequence[str], out: MutableMapping):
+    new_prev = list(prev) + [d["id"]]
+    match d["type"]:
+        case "container":
+            for m in d["children"]:
+                parse(m, new_prev, out)
+        case "mode":
+            out[".".join(new_prev)] = "mode"
+            for m in d["modes"]:
+                parse(m, new_prev, out)
+        case other:
+            out[".".join(new_prev)] = other
+
+
+def parse_settings(sets: HHDSettings):
+    out = {}
+    for name, sec in sets.items():
+        parse(sec, [name], out)
+    return out

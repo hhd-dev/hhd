@@ -6,13 +6,14 @@ import logging
 import os
 import select
 import subprocess
+from threading import Event
 from time import perf_counter, sleep
 from typing import Sequence, cast
 
 import evdev
 from evdev import ecodes as e
 
-from hhd.utils import Perms, expanduser
+from hhd.utils import Context, expanduser
 
 from .const import SUPPORTED_DEVICES, PowerButtonConfig
 
@@ -28,10 +29,10 @@ def B(b: str):
     return cast(int, getattr(evdev.ecodes, b))
 
 
-def is_steam_gamescope_running(perms: Perms):
+def is_steam_gamescope_running(ctx: Context):
     pid = None
     try:
-        with open(expanduser(STEAM_PID, perms)) as f:
+        with open(expanduser(STEAM_PID, ctx)) as f:
             pid = f.read().strip()
 
         steam_cmd_path = f"/proc/{pid}/cmdline"
@@ -49,15 +50,15 @@ def is_steam_gamescope_running(perms: Perms):
     return True
 
 
-def run_steam_command(command: str, perms: Perms):
+def run_steam_command(command: str, ctx: Context):
     global home_path
     try:
         result = subprocess.run(
             [
                 "su",
-                perms.name,
+                ctx.name,
                 "-c",
-                f"{expanduser(STEAM_EXE, perms)} -ifrunning {command}",
+                f"{expanduser(STEAM_EXE, ctx)} -ifrunning {command}",
             ]
         )
         return result.returncode == 0
@@ -102,37 +103,31 @@ def get_config() -> PowerButtonConfig | None:
     return None
 
 
-def run_steam_shortpress(perms: Perms):
+def run_steam_shortpress(perms: Context):
     return run_steam_command("steam://shortpowerpress", perms)
 
 
-def run_steam_longpress(perms: Perms):
+def run_steam_longpress(perms: Context):
     return run_steam_command("steam://longpowerpress", perms)
 
 
-def power_button_run(**conf):
-    perms = cast(Perms, conf.get("perms", Perms()))
-    cfg = get_config()
-    if not cfg:
-        logger.error(f"Passed autodetect but no config (?????). Exiting.")
-        return
-
+def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event):
     match cfg.type:
         case "hold_emitted":
             logger.info(
                 f"Starting timer based powerbutton handler for device '{cfg.device}'."
             )
-            power_button_timer(cfg, perms)
+            power_button_timer(cfg, ctx, should_exit)
         case "hold_isa":
             logger.info(
                 f"Starting isa keyboard powerbutton handler for device '{cfg.device}'."
             )
-            power_button_isa(cfg, perms)
+            power_button_isa(cfg, ctx, should_exit)
         case _:
             logger.error(f"Invalid type in config '{cfg.type}'. Exiting.")
 
 
-def power_button_isa(cfg: PowerButtonConfig, perms: Perms):
+def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event):
     if not cfg.hold_events:
         logger.error(f"Invalid hold events in config. Exiting.\n:{cfg.hold_events}")
         return
@@ -141,7 +136,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Perms):
     hold_dev = None
     try:
         hold_state = 0
-        while True:
+        while not should_exit.is_set():
             # Initial check for steam
             if not is_steam_gamescope_running(perms):
                 # Close devices
@@ -204,11 +199,11 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Perms):
         logger.error(f"Received exception, exitting:\n{e}")
 
 
-def power_button_timer(cfg: PowerButtonConfig, perms: Perms):
+def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Event):
     dev = None
     try:
         pressed_time = None
-        while True:
+        while not should_exit.is_set():
             # Initial check for steam
             if not is_steam_gamescope_running(perms):
                 # Close devices

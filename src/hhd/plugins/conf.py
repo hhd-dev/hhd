@@ -1,7 +1,9 @@
 from copy import deepcopy
-from typing import Any, Mapping, MutableMapping, MutableSequence, Sequence
+from threading import Lock
+from typing import Any, Mapping, MutableMapping, MutableSequence, Sequence, TypeVar
 
 Pytree = int | float | str | Sequence["Pytree"] | Mapping[str, "Pytree"]
+A = TypeVar("A")
 
 
 def parse_conf(c: Pytree, out: MutableMapping | None = None):
@@ -56,40 +58,56 @@ class Config:
     ) -> None:
         self.conf = {}
         self.update(conf)
-        self.updated = False
+        self._lock = Lock()
+        self._updated = False
         self.readonly = readonly
 
     def update(self, conf: Pytree | Sequence[Pytree]):
-        conf = deepcopy(conf)
-        if isinstance(conf, Sequence):
-            parse_confs(conf, self.conf)
-        else:
-            parse_conf(conf, self.conf)
-        self.updated = True
+        with self._lock:
+            conf = deepcopy(conf)
+            if isinstance(conf, Sequence):
+                parse_confs(conf, self.conf)
+            else:
+                parse_conf(conf, self.conf)
+            self.updated = True
 
     def __setitem__(self, key: str | tuple[str, ...], val):
-        val = deepcopy(val)
-        seq = to_seq(key)
+        with self._lock:
+            val = deepcopy(val)
+            seq = to_seq(key)
 
-        cont = {}
-        d = cont
-        for s in seq[:-1]:
-            d[s] = {}
-            d = d[s]
+            cont = {}
+            d = cont
+            for s in seq[:-1]:
+                d[s] = {}
+                d = d[s]
 
-        d[seq[-1]] = val
-        parse_conf(cont, self.conf)
-        self.updated = True
+            d[seq[-1]] = val
+            parse_conf(cont, self.conf)
+            self.updated = True
 
-    def __getitem__(self, key: str | tuple[str, ...]):
-        seq = to_seq(key)
-        d = self.conf
-        for s in seq:
-            d = d[s]
-        return d
+    def __getitem__(self, key: str | tuple[str, ...]) -> Pytree:
+        with self._lock:
+            seq = to_seq(key)
+            d = self.conf
+            for s in seq:
+                d = d[s]
+            return d
 
-    def get(self, key, default):
+    def get(self, key, *args: A) -> A:
         try:
-            return self.__getitem__(key)
+            return self.__getitem__(key)  # type: ignore
         except KeyError as e:
-            return default
+            if args:
+                return args[0]
+            raise e
+
+    @property
+    def updated(self):
+        with self._lock:
+            return self._updated
+
+    @updated.setter
+    def updated(self, v: bool):
+        with self._lock:
+            self._updated = v
