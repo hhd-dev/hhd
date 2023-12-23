@@ -1,5 +1,12 @@
-from typing import (Any, Literal, Mapping, MutableMapping, MutableSequence,
-                    NamedTuple, Protocol, Sequence, TypedDict)
+from typing import (
+    Any,
+    Literal,
+    Mapping,
+    NamedTuple,
+    Protocol,
+    Sequence,
+    TypedDict,
+)
 
 from hhd.controller import Axis, Button, Configuration
 from hhd.controller import Event as ControllerEvent
@@ -46,9 +53,11 @@ class Emitter(Protocol):
 
 
 class HHDPlugin:
+    name: str
+    priority: int
+
     def open(
         self,
-        conf: Config,
         emit: Emitter,
         context: Context,
     ):
@@ -57,33 +66,16 @@ class HHDPlugin:
     def settings(self) -> HHDSettings:
         return {}
 
-    def prepare(self, state: Config):
+    def prepare(self, conf: Config):
         pass
 
-    def update(self, state: Config):
+    def update(self, conf: Config):
         pass
 
     def close(self):
         pass
 
 
-class HHDPluginNonversioned(TypedDict):
-    name: str
-    plugin: HHDPlugin
-    priority: int
-
-
-class HHDPluginersioned(TypedDict):
-    name: str
-    plugin: HHDPlugin
-    priority: int
-    config: str
-    version: int
-
-
-HHDPluginInfo = HHDPluginNonversioned | HHDPluginersioned
-
-
 class HHDAutodetect(Protocol):
-    def __call__(self, existing: Sequence[HHDPlugin]) -> Sequence[HHDPluginInfo]:
+    def __call__(self, existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         raise NotImplementedError()

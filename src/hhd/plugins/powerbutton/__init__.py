@@ -2,8 +2,6 @@ from typing import Any, Sequence, TYPE_CHECKING
 
 from hhd.plugins import (
     HHDPlugin,
-    HHDPluginInfo,
-    Config,
     Context,
 )
 
@@ -20,11 +18,12 @@ def run(**config: Any):
 
 class PowerbuttondPlugin(HHDPlugin):
     def __init__(self, cfg: PowerButtonConfig) -> None:
+        self.name = f"powerbuttond@{cfg.device}"
+        self.priority = 20
         self.cfg = cfg
 
     def open(
         self,
-        conf: Config,
         emit,
         context: Context,
     ):
@@ -39,7 +38,7 @@ class PowerbuttondPlugin(HHDPlugin):
         self.t.join()
 
 
-def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPluginInfo]:
+def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return []
 
@@ -49,4 +48,4 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPluginInfo]:
     if not cfg:
         return []
 
-    return [{"name": "powerbuttond", "plugin": PowerbuttondPlugin(cfg), "priority": 20}]
+    return [PowerbuttondPlugin(cfg)]

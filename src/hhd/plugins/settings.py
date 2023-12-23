@@ -21,6 +21,7 @@ class ButtonSetting(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
+    persistent: bool
 
     default: bool | None
 
@@ -32,6 +33,7 @@ class BooleanSetting(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
+    persistent: bool
 
     default: bool | None
 
@@ -43,6 +45,7 @@ class MultipleSetting(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
+    persistent: bool
 
     options: Sequence[str]
     default: str | None
@@ -55,6 +58,7 @@ class DiscreteSetting(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
+    persistent: bool
 
     options: Sequence[int | float]
     default: int | float | None
@@ -67,6 +71,7 @@ class NumericalSetting(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
+    persistent: bool
 
     min: float | int | None
     max: float | int | None
@@ -80,10 +85,7 @@ class ColorSetting(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
-
-    red: int
-    green: int
-    blue: int
+    persistent: bool
 
 
 Setting = (
@@ -118,6 +120,7 @@ class Mode(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
+    persistent: bool
 
     modes: MutableMapping[str, Container]
     default: str | None

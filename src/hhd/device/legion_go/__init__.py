@@ -5,13 +5,15 @@ from hhd.plugins import (
     Config,
     Context,
     HHDPlugin,
-    HHDPluginInfo,
     get_relative_fn,
     Emitter,
 )
 
 
 class LegionControllersPlugin(HHDPlugin):
+    name = "legion_go_controllers"
+    priority = 18
+
     def open(
         self,
         conf: Config,
@@ -29,7 +31,7 @@ class LegionControllersPlugin(HHDPlugin):
         self.t.join()
 
 
-def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPluginInfo]:
+def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return []
 
@@ -38,12 +40,4 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPluginInfo]:
         if not f.read().strip() == "83E1":
             return []
 
-    return [
-        {
-            "name": "legion_go_controllers",
-            "plugin": LegionControllersPlugin(),
-            "priority": 18,
-            "config": get_relative_fn("config.yaml"),
-            "version": 3,
-        }
-    ]
+    return [LegionControllersPlugin()]

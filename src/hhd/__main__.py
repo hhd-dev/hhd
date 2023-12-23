@@ -7,13 +7,13 @@ import subprocess
 import time
 from multiprocessing import Process
 from os.path import join
-from typing import NamedTuple
+from typing import NamedTuple, Sequence
 
 import pkg_resources
 import yaml
 
 from .logging import setup_logger
-from .plugins import HHDPluginInfo
+from .plugins import HHDPlugin
 from .utils import Context, expanduser, get_context
 
 logger = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ def main():
         print(f"Could not get user information. Exiting...")
         return
 
-    running_plugins: dict[int, tuple[str, HHDPluginV1, Process]] = {}
+    running_plugins: Sequence[HHDPlugin] = {}
     try:
         setup_logger(join(CONFIG_DIR, "log"), context=ctx)
 
