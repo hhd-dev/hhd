@@ -1,55 +1,54 @@
-from typing import Any, Protocol, TypedDict
+from .initial import get_relative_fn, HHDPluginV1
+
+from typing import (
+    MutableMapping,
+    MutableSequence,
+    TypedDict,
+    Literal,
+    Mapping,
+    Sequence,
+    Any,
+    Protocol,
+)
+
+from hhd.controller import Axis, Button, Configuration, Event as ControllerEvent
+
+from .conf import Config
 
 
-def get_relative_fn(fn: str):
-    """Returns the directory of a file relative to the script calling this function."""
-    import inspect
-    import os
-
-    script_fn = inspect.currentframe().f_back.f_globals["__file__"]  # type: ignore
-    dirname = os.path.dirname(script_fn)
-    return os.path.join(dirname, fn)
+class ConfigEvent(TypedDict):
+    type: Literal["config"]
+    config: Config
 
 
-class HHDPluginV1Autodetect(Protocol):
-    def __call__(self) -> bool:
-        return True
+class InputEvent(TypedDict):
+    type: Literal["input"]
+    controller_id: int
+
+    btn_state: Mapping[Button, bool]
+    axis_state: Mapping[Axis, bool]
+    conf_state: Mapping[Configuration, Any]
+
+    events: Sequence[ControllerEvent]
 
 
-class HHDPluginV1Run(Protocol):
-    def __call__(self, **config: Any) -> None:
+Event = ConfigEvent | InputEvent
+
+
+class Emitter(Protocol):
+    def __call__(self, event: Event | Sequence[Event]) -> Any:
         pass
 
 
-class HHDPluginV1Nonversioned(TypedDict):
-    name: str
-    autodetect: HHDPluginV1Autodetect
-    run: HHDPluginV1Run
-    config: str | None
+class HHDPlugin:
+    def open(self, conf: Config, emitter: Emitter):
+        pass
 
+    def prepare(self, state: Config):
+        pass
 
-class HHDPluginV1Versioned(TypedDict):
-    name: str
-    autodetect: HHDPluginV1Autodetect
-    run: HHDPluginV1Run
-    config: str | None
-    config_version: int
+    def update(self, state: Config):
+        pass
 
-
-HHDPluginV1 = HHDPluginV1Nonversioned | HHDPluginV1Versioned
-"""Initial version of HHD plugins. These plugins use static configuration,
-and it is not possible for them to share configuration with each other
-of communicate through d-bus. Restarting hhd is required for reloading
-configuration.
-
-The plugins specify a name, a run function, and the location of a template
-config file. Use the function `get_relative_fn()` to retrieve the directory
-of the script executing it, and place the config file relative to it.
-
-To stop the plugin, a KeyboardInterrupt is raised.
-
-Provide `config_version` to replace your config file on startup when a version
-changes.
-
-@warning: `run()` needs to be a global function, e.g., it can not
-be a lambda and decorators are tricky."""
+    def close(self):
+        pass
