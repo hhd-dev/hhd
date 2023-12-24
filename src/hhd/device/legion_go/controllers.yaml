@@ -1,7 +1,7 @@
 type: container
 family: [lgc]
 title: Legion Controllers Configuration
-hint: >
+hint: >-
   Allows for configuring the legion controllers using the built in firmware
   commands and enabling emulation modes for various controller types.
 
@@ -9,7 +9,7 @@ children:
   shortcuts:
     type: bool
     title: Enable Shortcuts Controller
-    hint: >
+    hint: >-
       When emulation is not active, enable a shortcuts controller to restore
       Guide, QAM, and shortcut functionality.
     default: True
@@ -18,8 +18,8 @@ children:
     type: mode
     family: [lgc_xinput]
     title: X-input Emulation Mode
-    hint: >
-      Use emulation modes to simulate a popular controller type.
+    hint: >-
+      Emulate different controller types when the Legion Controllers are in X-Input mode.
 
     default: ds5e
     modes:
@@ -30,14 +30,14 @@ children:
         type: container
         family: [lgc_emulation_disabled]
         title: Disabled
-        hint: >
+        hint: >-
           Does not modify the default controller.
 
         children:
           shortcuts:
             type: bool
             title: Enable Shortcuts Device
-            hint: >
+            hint: >-
               Enables the shortcuts device which will re-enable QAM, Xbox
               button, and their combinations.
       #
@@ -47,7 +47,7 @@ children:
         type: container
         family: [lgc_emulation_ds5e, ds5e]
         title: Dual Sense 5 Edge
-        hint: >
+        hint: >-
           Emulates the expensive DS5 Edge sony controller that maps 1-1 to
           the legion go.
 
@@ -55,26 +55,26 @@ children:
           led_support:
             type: bool
             title: LED Support
-            hint: >
+            hint: >-
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
           gyro:
             type: bool
             title: Gyroscope
-            hint: >
+            hint: >-
               Enables gyroscope support (.3% background CPU use)
             default: True
           accel:
             type: bool
             title: Accelerometer
-            hint: >
+            hint: >-
               Enables accelerometer support (not currently supported properly).
             default: True
           gyro_fix:
             type: number
             title: Gyro Fix (hz)
-            hint: >
+            hint: >-
               Adds polling to the legion go gyroscope, to fix the low polling rate
               (required for gyroscope support). Set to 0 to disable.
               Due to hardware limitations, there is a marginal difference above
@@ -84,7 +84,7 @@ children:
           swap_legion:
             type: multiple
             title: Swap Legion Buttons with Start/Select
-            hint: >
+            hint: >-
               Swaps the legion buttons with start select.
             options: ["disabled", "l_is_start", "l_is_select"]
           share_to_qam:
@@ -94,12 +94,12 @@ children:
           touchpad_mode:
             type: multiple
             title: Touchpad correction type
-            hint: >
+            hint: >-
               The legion touchpad is square, whereas the DS5 one is rectangular.
               Therefore, it needs to be corrected.
-              Contain maintain the whole DS5 touchpad and part of the Legion
-              one is unused. Crop uses the full legion touchpad, and limits
-              the area of the DS5. Stretch uses both (distorted).
+              "Contain" maintain the whole DS5 touchpad and part of the Legion
+              one is unused. "Crop" uses the full legion touchpad, and limits
+              the area of the DS5. "Stretch" uses both fully (distorted).
               "Crop End" enables use in steam input as the right touchpad.
               Set to "Disabled" to not remap.
             options:

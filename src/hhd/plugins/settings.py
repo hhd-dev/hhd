@@ -1,12 +1,11 @@
+from functools import reduce
 from typing import (
-    MutableMapping,
-    MutableSequence,
-    TypedDict,
     Literal,
     Mapping,
+    MutableMapping,
     Sequence,
-    Any,
-    Protocol,
+    TypedDict,
+    cast,
 )
 
 #
@@ -126,23 +125,24 @@ class Mode(TypedDict):
     default: str | None
 
 
-Section = MutableMapping[str, "Container | Mode"]
+Section = MutableMapping[str, Container]
 
 HHDSettings = Mapping[str, Section]
 
 
-def parse(d: "Setting | Container | Mode", prev: Sequence[str], out: MutableMapping):
+def parse(d: Setting | Container | Mode, prev: Sequence[str], out: MutableMapping):
     new_prev = list(prev)
     match d["type"]:
         case "container":
             for k, v in d["children"].items():
                 parse(v, new_prev + [k], out)
         case "mode":
-            out[".".join(new_prev)] = "mode"
+            out[".".join(new_prev) + ".mode"] = d.get("default", None)
+
             for k, v in d["modes"].items():
                 parse(v, new_prev + [k], out)
         case other:
-            out[".".join(new_prev)] = other
+            out[".".join(new_prev)] = d.get("default", None)
 
 
 def parse_settings(sets: HHDSettings):
@@ -151,3 +151,60 @@ def parse_settings(sets: HHDSettings):
         for cname, cont in sec.items():
             parse(cont, [name, cname], out)
     return out
+
+
+def merge_reduce(
+    a: Setting | Container | Mode, b: Setting | Container | Mode
+) -> Setting | Container | Mode:
+    if a["type"] != b["type"]:
+        return b
+
+    match a["type"]:
+        case "container":
+            out = cast(Container, dict(b))
+            new_children = dict(a["children"])
+            for k, v in b.items():
+                if k in out:
+                    out[k] = merge_reduce(out[k], b[k])
+                else:
+                    out[k] = v
+            out["children"] = new_children
+            return out
+        case "mode":
+            out = cast(Mode, dict(b))
+            new_children = dict(a["modes"])
+            for k, v in b.items():
+                if k in out:
+                    out[k] = merge_reduce(out[k], b[k])
+                else:
+                    out[k] = v
+            out["modes"] = new_children
+            return out
+        case _:
+            return b
+
+
+def merge_reduce_sec(a: Section, b: Section):
+    out = dict(a)
+    for k, v in b.items():
+        if k in out:
+            out[k] = cast(Container, merge_reduce(out[k], b[k]))
+        else:
+            out[k] = v
+
+    return out
+
+
+def merge_reduce_secs(a: HHDSettings, b: HHDSettings):
+    out = dict(a)
+    for k, v in b.items():
+        if k in out:
+            out[k] = merge_reduce_sec(out[k], b[k])
+        else:
+            out[k] = v
+
+    return out
+
+
+def merge_settings(sets: Sequence[HHDSettings]):
+    return reduce(merge_reduce_secs, sets)

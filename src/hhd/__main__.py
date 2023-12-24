@@ -1,20 +1,17 @@
 import argparse
 import logging
 import os
-import select
-import shutil
-import subprocess
-import time
 from multiprocessing import Process
 from os.path import join
-from threading import Lock, Condition
+from threading import Condition, Lock
 from typing import NamedTuple, Sequence
 
 import pkg_resources
 import yaml
 
 from .logging import setup_logger
-from .plugins import Emitter, Event, HHDAutodetect, HHDPlugin
+from .plugins import Config, Emitter, Event, HHDAutodetect, HHDPlugin
+from .plugins.settings import parse_settings, merge_settings
 from .utils import Context, expanduser, get_context
 
 logger = logging.getLogger(__name__)
@@ -47,22 +44,24 @@ class EmitHolder(Emitter):
             return ev
 
 
-def main():
-    # Set up permissions
-    parser = argparse.ArgumentParser(
-        prog="HHD: Handheld Daemon main interface.",
-        description="Handheld Daemon is a daemon for managing the quirks inherent in handheld devices.",
-    )
-    parser.add_argument(
-        "-u",
-        "--user",
-        default=None,
-        help="The user whose home directory will be used to store the files (~/.config/hhd).",
-        dest="user",
-    )
-    args = parser.parse_args()
-    user = args.user
+def write_state(conf: Config, ctx: Context):
+    state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
+    with open(state_fn, "w") as f:
+        yaml.safe_dump(conf.state, f)
+    os.chown(state_fn, ctx.euid, ctx.egid)
 
+
+def read_state(ctx: Context):
+    state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
+    try:
+        with open(state_fn, "r") as f:
+            return Config(yaml.safe_load(f))
+    except FileNotFoundError:
+        logger.info("State file not found, default settings will be used.")
+        return Config({})
+
+
+def main(user: str | None = None):
     # Setup temporary logger for permission retreival
     ctx = get_context(user)
     if not ctx:
@@ -90,6 +89,7 @@ def main():
             )
         logger.info(plugin_str)
 
+        # Get sorted plugins
         sorted_plugins: Sequence[HHDPlugin] = []
         for plugs in plugins.values():
             sorted_plugins.extend(plugs)
@@ -104,8 +104,23 @@ def main():
         for p in sorted_plugins:
             p.open(emit, ctx)
 
-        for p in sorted_plugins:
-            print(p.settings())
+        # Compile initial configuration
+        settings = merge_settings([p.settings() for p in sorted_plugins])
+        defaults = parse_settings(settings)
+
+        # FIll in default values
+        conf = read_state(ctx)
+        for k, v in defaults.items():
+            if v is not None and k not in conf:
+                conf[k] = v
+
+        from rich import get_console
+
+        get_console().print(conf.conf)
+        get_console().print(defaults)
+        get_console().print(settings)
+
+        return settings, defaults, conf.conf
 
         # logger.info(f"Monitoring plugin status, and restarting if necessary.")
         # while True:
@@ -136,4 +151,17 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        prog="HHD: Handheld Daemon main interface.",
+        description="Handheld Daemon is a daemon for managing the quirks inherent in handheld devices.",
+    )
+    parser.add_argument(
+        "-u",
+        "--user",
+        default=None,
+        help="The user whose home directory will be used to store the files (~/.config/hhd).",
+        dest="user",
+    )
+    args = parser.parse_args()
+    user = args.user
+    main(user)

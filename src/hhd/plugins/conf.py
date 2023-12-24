@@ -52,15 +52,33 @@ def to_seq(key: str | tuple[str, ...]):
     return seq
 
 
+def compare_dicts(a, b):
+    if len(a) != len(b):
+        return False
+
+    for k in a:
+        if not k in b:
+            return False
+
+        if isinstance(a[k], Mapping) and isinstance(b[k], Mapping):
+            if not compare_dicts(a[k], b[k]):
+                return False
+        else:
+            if not a[k] == b[k]:
+                return False
+
+    return True
+
+
 class Config:
     def __init__(
         self, conf: Pytree | Sequence[Pytree] = [], readonly: bool = False
     ) -> None:
         self.conf = {}
-        self.update(conf)
         self._lock = Lock()
         self._updated = False
         self.readonly = readonly
+        self.update(conf)
 
     def update(self, conf: Pytree | Sequence[Pytree]):
         with self._lock:
@@ -69,7 +87,17 @@ class Config:
                 parse_confs(conf, self.conf)
             else:
                 parse_conf(conf, self.conf)
-            self.updated = True
+        self.updated = True
+
+    def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, Config):
+            return False
+
+        if __value is self:
+            return True
+
+        with __value._lock, self._lock:
+            return compare_dicts(__value.conf, self.conf)
 
     def __setitem__(self, key: str | tuple[str, ...], val):
         with self._lock:
@@ -84,14 +112,26 @@ class Config:
 
             d[seq[-1]] = val
             parse_conf(cont, self.conf)
-            self.updated = True
+        self.updated = True
 
-    def __getitem__(self, key: str | tuple[str, ...]) -> Pytree:
+    def __contains__(self, key: str | tuple[str, ...]):
+        with self._lock:
+            seq = to_seq(key)
+            d = self.conf
+            for s in seq:
+                if s not in d:
+                    return False
+                d = d[s]
+        return True
+
+    def __getitem__(self, key: str | tuple[str, ...]) -> "int | float | str | Config":
         with self._lock:
             seq = to_seq(key)
             d = self.conf
             for s in seq:
                 d = d[s]
+            if isinstance(d, Mapping):
+                return Config(deepcopy(d))
             return d
 
     def get(self, key, *args: A) -> A:
@@ -101,6 +141,11 @@ class Config:
             if args:
                 return args[0]
             raise e
+
+    @property
+    def state(self):
+        with self._lock:
+            return deepcopy(self.conf)
 
     @property
     def updated(self):
