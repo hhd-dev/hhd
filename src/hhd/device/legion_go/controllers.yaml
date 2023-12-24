@@ -87,6 +87,7 @@ children:
             hint: >-
               Swaps the legion buttons with start select.
             options: ["disabled", "l_is_start", "l_is_select"]
+            default: disabled
           share_to_qam:
             type: bool
             title: Map the Legion L button to QAM (instead of Mute)
@@ -113,3 +114,4 @@ children:
                 "contain_end",
                 "contain_center",
               ]
+            default: crop_end

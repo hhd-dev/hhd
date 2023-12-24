@@ -9,9 +9,12 @@ from typing import NamedTuple, Sequence
 import pkg_resources
 import yaml
 
+from hhd.plugins import Config
+from hhd.plugins.settings import Container, HHDSettings, Mode, Setting
+
 from .logging import setup_logger
 from .plugins import Config, Emitter, Event, HHDAutodetect, HHDPlugin
-from .plugins.settings import parse_settings, merge_settings
+from .plugins.settings import merge_settings, parse_settings
 from .utils import Context, expanduser, get_context
 
 logger = logging.getLogger(__name__)
@@ -19,6 +22,60 @@ logger = logging.getLogger(__name__)
 CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
 
 ERROR_DELAY = 5
+
+
+def generate_desc(s: Setting | Container | Mode):
+    desc = f"# {s['title']}"
+    if h := s.get("hint", None):
+        desc += f"\n{h}"
+
+    match s["type"]:
+        case "mode":
+            desc += f"\nmodes: [{', '.join(map(str, s['modes']))}]"
+        case "number":
+            desc += f"\nnumerical: ["
+            desc += f"{s['min'] if s.get('min', None) is not None else '-inf'}, "
+            desc += f"{s['max'] if s.get('max', None) is not None else '+inf'}]"
+        case "multiple" | "discrete":
+            desc += f"\noptions: [{', '.join(map(str, s['options']))}]"
+
+    if (d := s.get("default", None)) is not None:
+        desc += f"\ndefault: {d}"
+    return desc
+
+
+def dump_setting(set: Setting | Container | Mode, prev: Sequence[str], conf: Config):
+    out: dict = {"_": generate_desc(set)}
+
+    match set["type"]:
+        case "container":
+            for child_name, child in set["children"].items():
+                out[child_name] = dump_setting(child, [*prev, child_name], conf)
+        case "mode":
+            m = conf.get([*prev, "mode"], None)
+            # Skip writing default values
+            if set.get("default", None) == m:
+                m = "default"
+            out["mode"] = m
+            for mode_name, mode in set["modes"].items():
+                out[mode_name] = dump_setting(mode, [*prev, mode_name], conf)
+        case _:
+            m = conf.get(prev, None)
+            # Skip writing default values
+            if set.get("default", None) == m:
+                m = "default"
+            out["value"] = m
+
+    return out
+
+
+def dump_settings(set: HHDSettings, conf: Config):
+    out: dict = {"version": 1}
+    for sec_name, sec in set.items():
+        out[sec_name] = {}
+        for cont_name, cnt in sec.items():
+            out[sec_name][cont_name] = dump_setting(cnt, [sec_name, cont_name], conf)
+    return out
 
 
 class EmitHolder(Emitter):
