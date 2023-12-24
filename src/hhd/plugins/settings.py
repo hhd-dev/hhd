@@ -52,7 +52,7 @@ class MultipleSetting(TypedDict):
     title: str
     hint: str
 
-    options: Sequence[str]
+    options: Mapping[str, str]
     default: str | None
 
 

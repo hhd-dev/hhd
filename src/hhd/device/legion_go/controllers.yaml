@@ -87,7 +87,10 @@ children:
             title: Swap Legion Buttons with Start/Select
             hint: >-
               Swaps the legion buttons with start select.
-            options: ["disabled", "l_is_start", "l_is_select"]
+            options:
+              disabled: "Disabled"
+              l_is_start: "Left is Start"
+              l_is_select: "Left is Select"
             default: disabled
           share_to_qam:
             type: bool
@@ -105,14 +108,12 @@ children:
               "Crop End" enables use in steam input as the right touchpad.
               Set to "Disabled" to not remap.
             options:
-              [
-                "disabled",
-                "stretch",
-                "crop_center",
-                "crop_start",
-                "crop_end",
-                "contain_start",
-                "contain_end",
-                "contain_center",
-              ]
+              disabled: "Disabled"
+              stretch: "Stretch"
+              crop_center: "Crop Center"
+              crop_start: "Crop Start"
+              crop_end: "Crop End"
+              contain_start: "Contain Start"
+              contain_end: "Contain End"
+              contain_center: "Contain Center"
             default: crop_end
