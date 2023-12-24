@@ -4,7 +4,7 @@ import os
 from multiprocessing import Process
 from os.path import join
 from threading import Condition, Lock
-from typing import NamedTuple, Sequence
+from typing import NamedTuple, Sequence, Mapping, Any
 
 import pkg_resources
 import yaml
@@ -124,14 +124,27 @@ def dump_comment(set: HHDSettings):
     return out
 
 
-def dump_setting(set: Setting | Container | Mode, prev: Sequence[str], conf: Config):
+def dump_setting(set: Container | Mode, prev: Sequence[str], conf: Config):
+    """Finds the current settings that are set to a default value and swaps them
+    for the value `default`. For settings without a default value (temporary),
+    it sets them to None to avoid setting them."""
     match set["type"]:
         case "container":
             out = {}
             for child_name, child in set["children"].items():
-                s = dump_setting(child, [*prev, child_name], conf)
-                if s is not None:
-                    out[child_name] = s
+                match child["type"]:
+                    case "container" | "mode":
+                        s = dump_setting(child, [*prev, child_name], conf)
+                        if s:
+                            out[child_name] = s
+                    case _:
+                        m = conf.get([*prev, child_name], None)
+                        # Skip writing default values
+                        default = child.get("default", None)
+                        if default is None:
+                            out[child_name] = None
+                        elif m is None or default == m:
+                            out[child_name] = "default"
             return out
         case "mode":
             out = {}
@@ -139,38 +152,51 @@ def dump_setting(set: Setting | Container | Mode, prev: Sequence[str], conf: Con
             # Skip writing default values
             default = set.get("default", None)
             if default is None:
-                m = None
-            elif default == m:
-                m = "default"
-            if m is not None:
-                out["mode"] = m
+                out["mode"] = None
+            elif m is None or default == m:
+                out["mode"] = "default"
+
             for mode_name, mode in set["modes"].items():
                 s = dump_setting(mode, [*prev, mode_name], conf)
                 if s:
                     out[mode_name] = s
             return out
-        case _:
-            m = conf.get(prev, None)
-            # Skip writing default values
-            default = set.get("default", None)
-            if default is None:
-                m = None
-            elif default == m:
-                m = "default"
-            return m
+
+
+def merge_dicts(a: Mapping | Any, b: Mapping | Any):
+    if isinstance(a, Mapping) and isinstance(b, Mapping):
+        out = dict(a)
+        for k, v in b.items():
+            out[k] = merge_dicts(out.get(k, None), v)
+    elif isinstance(b, Mapping):
+        out = {}
+        for k, v in b.items():
+            out[k] = merge_dicts(None, v)
+    else:
+        return b
+
+    for k in list(out.keys()):
+        if out[k] is None:
+            del out[k]
+    if not out:
+        return None
+    return out
 
 
 def dump_settings(set: HHDSettings, conf: Config):
+    """Fixes default values for settings in set, drops settings without a default value,
+    and retains the rest of the configuration, to not mess with plugins that
+    were not loaded."""
     out: dict = {"version": 1}
     for sec_name, sec in set.items():
         out[sec_name] = {}
         for cont_name, cnt in sec.items():
-            out[sec_name][cont_name] = dump_setting(cnt, [sec_name, cont_name], conf)
-    return out
+            s = dump_setting(cnt, [sec_name, cont_name], conf)
+            if s:
+                out[sec_name][cont_name] = s
 
-
-def dump_to_yaml(set: HHDSettings, conf: Config):
-    out = ""
+    # Merge dicts to maintain settings for plugins that did not run
+    return merge_dicts({"version": 1, **conf.conf}, out)
 
 
 class EmitHolder(Emitter):
@@ -199,7 +225,7 @@ class EmitHolder(Emitter):
 def write_state(conf: Config, ctx: Context):
     state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
     with open(state_fn, "w") as f:
-        yaml.safe_dump(conf.state, f)
+        yaml.safe_dump(conf.conf, f)
     os.chown(state_fn, ctx.euid, ctx.egid)
 
 

@@ -74,7 +74,7 @@ class Config:
     def __init__(
         self, conf: Pytree | Sequence[Pytree] = [], readonly: bool = False
     ) -> None:
-        self.conf = {}
+        self._conf = {}
         self._lock = Lock()
         self._updated = False
         self.readonly = readonly
@@ -84,9 +84,9 @@ class Config:
         with self._lock:
             conf = deepcopy(conf)
             if isinstance(conf, Sequence):
-                parse_confs(conf, self.conf)
+                parse_confs(conf, self._conf)
             else:
-                parse_conf(conf, self.conf)
+                parse_conf(conf, self._conf)
         self.updated = True
 
     def __eq__(self, __value: object) -> bool:
@@ -97,7 +97,7 @@ class Config:
             return True
 
         with __value._lock, self._lock:
-            return compare_dicts(__value.conf, self.conf)
+            return compare_dicts(__value._conf, self._conf)
 
     def __setitem__(self, key: str | tuple[str, ...], val):
         with self._lock:
@@ -111,13 +111,13 @@ class Config:
                 d = d[s]
 
             d[seq[-1]] = val
-            parse_conf(cont, self.conf)
+            parse_conf(cont, self._conf)
         self.updated = True
 
     def __contains__(self, key: str | tuple[str, ...]):
         with self._lock:
             seq = to_seq(key)
-            d = self.conf
+            d = self._conf
             for s in seq:
                 if s not in d:
                     return False
@@ -127,7 +127,7 @@ class Config:
     def __getitem__(self, key: str | tuple[str, ...]) -> "int | float | str | Config":
         with self._lock:
             seq = to_seq(key)
-            d = self.conf
+            d = self._conf
             for s in seq:
                 d = d[s]
             if isinstance(d, Mapping):
@@ -143,9 +143,9 @@ class Config:
             raise e
 
     @property
-    def state(self):
+    def conf(self):
         with self._lock:
-            return deepcopy(self.conf)
+            return deepcopy(self._conf)
 
     @property
     def updated(self):
