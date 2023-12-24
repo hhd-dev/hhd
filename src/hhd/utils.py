@@ -130,3 +130,7 @@ def expanduser(path: str, user: int | str | Context | None = None):
     root = "/"
     userhome = userhome.rstrip(root)
     return (userhome + path[i:]) or root
+
+
+def fix_perms(fn: str, ctx: Context):
+    os.chown(fn, ctx.euid, ctx.gid)
