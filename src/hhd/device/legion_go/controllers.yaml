@@ -40,6 +40,7 @@ children:
             hint: >-
               Enables the shortcuts device which will re-enable QAM, Xbox
               button, and their combinations.
+            default: True
       #
       # Dual Sense 5
       #
@@ -72,7 +73,7 @@ children:
               Enables accelerometer support (not currently supported properly).
             default: True
           gyro_fix:
-            type: number
+            type: discrete
             title: Gyro Fix (hz)
             hint: >-
               Adds polling to the legion go gyroscope, to fix the low polling rate
