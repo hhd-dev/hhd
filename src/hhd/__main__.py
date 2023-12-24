@@ -12,6 +12,8 @@ from .logging import setup_logger
 from .plugins import Emitter, Event, HHDAutodetect, HHDPlugin
 from .plugins.settings import (
     load_state_yaml,
+    load_profile_yaml,
+    save_profile_yaml,
     save_state_yaml,
     merge_settings,
 )
@@ -92,17 +94,35 @@ def main(user: str | None = None):
 
         # Compile initial configuration
         settings = merge_settings([p.settings() for p in sorted_plugins])
-
         state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
         conf = load_state_yaml(state_fn, settings)
-        save_state_yaml(state_fn, settings, conf)
 
-        from rich import get_console
+        # Load profiles
+        profiles = {}
+        profile_dir = expanduser(join(CONFIG_DIR, "profiles"), ctx)
+        os.makedirs(profile_dir, exist_ok=True)
+        fix_perms(profile_dir, ctx)
+        for fn in os.listdir(profile_dir):
+            if not fn.endswith(".yml"):
+                continue
+            name = fn.replace(".yml", "")
+            profiles[name] = load_profile_yaml(join(profile_dir, fn))
+        if profiles:
+            logger.info(f"Loaded the following profiles:\n[{', '.join(profiles)}]")
+        else:
+            logger.info(f"No profiles found.")
 
-        get_console().print(conf.conf)
-        get_console().print(settings)
+        if save_state_yaml(state_fn, settings, conf):
+            fix_perms(state_fn, ctx)
+        for name, prof in profiles.items():
+            fn = join(profile_dir, name + ".yml")
+            if save_profile_yaml(fn, settings, prof):
+                fix_perms(fn, ctx)
 
-        return settings, conf.conf
+        # from rich import get_console
+
+        # get_console().print(conf.conf)
+        # get_console().print(settings)
 
         # logger.info(f"Monitoring plugin status, and restarting if necessary.")
         # while True:

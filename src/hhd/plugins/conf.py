@@ -79,6 +79,7 @@ class Config:
         self._updated = False
         self.readonly = readonly
         self.update(conf)
+        self.updated = False
 
     def update(self, conf: Pytree | Sequence[Pytree]):
         with self._lock:
