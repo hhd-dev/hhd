@@ -442,10 +442,12 @@ def save_state_yaml(fn: str, set: HHDSettings, conf: Config):
     return True
 
 
-def save_profile_yaml(fn: str, set: HHDSettings, conf: Config):
+def save_profile_yaml(fn: str, set: HHDSettings, conf: Config | None = None):
     import yaml
 
-    if conf.get("version", None) == get_settings_hash(set) and not conf.updated:
+    if conf is None:
+        conf = Config({})
+    elif conf.get("version", None) == get_settings_hash(set) and not conf.updated:
         return False
 
     with open(fn, "w") as f:
@@ -491,7 +493,7 @@ def load_profile_yaml(fn: str):
             state = cast(Mapping, strip_defaults(yaml.safe_load(f)) or {})
     except FileNotFoundError:
         logger.warn(f"Profile file not found, using defaults. Searched location:\n{fn}")
-        return None
+        return Config({})
 
     return Config([state])
 
