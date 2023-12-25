@@ -5,7 +5,7 @@ import re
 import select
 import stat
 import subprocess
-from typing import Mapping, Sequence, TypeVar, cast
+from typing import Mapping, Sequence, TypeVar, cast, Collection
 
 import evdev
 from evdev import ecodes, ff
@@ -33,6 +33,8 @@ def to_map(b: dict[A, Sequence[int]]) -> dict[int, A]:
             out[s] = btn
     return out
 
+
+CapabilityMatch = Mapping[int, Collection[int]]
 
 XBOX_BUTTON_MAP: dict[int, GamepadButton] = to_map(
     {
@@ -101,7 +103,8 @@ class GenericGamepadEvdev(Producer, Consumer):
         self,
         vid: Sequence[int],
         pid: Sequence[int],
-        name: Sequence[str | re.Pattern],
+        name: Sequence[str | re.Pattern] = "",
+        capabilities: CapabilityMatch = {},
         btn_map: Mapping[int, Button] = XBOX_BUTTON_MAP,
         axis_map: Mapping[int, Axis] = XBOX_AXIS_MAP,
         aspect_ratio: float | None = None,
@@ -111,6 +114,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.vid = vid
         self.pid = pid
         self.name = name
+        self.capabilities = capabilities
 
         self.btn_map = btn_map
         self.axis_map = axis_map
@@ -131,6 +135,19 @@ class GenericGamepadEvdev(Producer, Consumer):
                 continue
             if not matches_patterns(dev.name, self.name):
                 continue
+            if self.capabilities:
+                matches = True
+                dev_cap = cast(dict[int, Sequence[int]], dev.capabilities())
+                for cap_id, caps in self.capabilities.items():
+                    if cap_id not in dev_cap:
+                        matches = False
+                        break
+                    for cap in caps:
+                        if cap not in dev_cap[cap_id]:
+                            matches = False
+                        break
+                if not matches:
+                    continue
 
             if self.hide:
                 # Check we are root
@@ -178,6 +195,8 @@ class GenericGamepadEvdev(Producer, Consumer):
             err += f"Product ID: {hexify(self.pid)}\n"
         if self.name:
             err += f"Name: {self.name}\n"
+        if self.capabilities:
+            err += f"Capabilities: {self.capabilities}\n"
         logger.error(err)
         if self.required:
             raise RuntimeError()

@@ -10,7 +10,7 @@ from typing import Sequence, cast
 from hhd.controller import Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer
 from hhd.controller.lib.hid import enumerate_unique
-from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.evdev import GenericGamepadEvdev, B as EC
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge
@@ -122,7 +122,8 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
-        name=[re.compile(r"Legion-Controller \d-.. Keyboard")],
+        # name=[re.compile(r"Legion-Controller \d-.. Keyboard")],
+        capabilities={EC("EV_KEY"): [EC("KEY_1")]},
         required=True,
     )
 
@@ -158,12 +159,18 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        [0x17EF], [0x6182], ["Generic X-Box pad"], required=True, hide=True
+        vid=[0x17EF],
+        pid=[0x6182],
+        # name=["Generic X-Box pad"],
+        capabilities={EC("EV_KEY"): [EC("BTN_A")]},
+        required=True,
+        # hide=True,
     )
     d_touch = GenericGamepadEvdev(
-        [0x17EF],
-        [0x6182],
-        ["  Legion Controller for Windows  Touchpad"],
+        vid=[0x17EF],
+        pid=[0x6182],
+        # name=["  Legion Controller for Windows  Touchpad"],
+        capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
         btn_map=LGO_TOUCHPAD_BUTTON_MAP,
         axis_map=LGO_TOUCHPAD_AXIS_MAP,
         aspect_ratio=1,
@@ -187,7 +194,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
-        name=["  Legion Controller for Windows  Keyboard"],
+        # name=["  Legion Controller for Windows  Keyboard"],
+        capabilities={EC("EV_KEY"): [EC("KEY_1")]},
         # report_size=64,
         required=True,
     )
