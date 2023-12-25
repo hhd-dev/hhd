@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 from typing import Sequence, Any
 
 from rich.logging import RichHandler
-
+from threading import local, Lock, get_ident, enumerate
 from .utils import Context, expanduser
 
 logger = logging.getLogger(__name__)
@@ -30,12 +30,27 @@ class NewLineFormatter(logging.Formatter):
         return msg
 
 
-_plugins = []
+_lock = Lock()
+_main = "main"
+_plugins = {}
 
 
-def set_log_alias(plugins: Sequence[tuple[str, str]]):
-    global _plugins
-    _plugins = plugins
+def set_log_plugin(plugin: str = "main"):
+    global _main
+    with _lock:
+        _plugins[get_ident()] = plugin
+        _main = plugin
+
+
+def get_log_plugin():
+    with _lock:
+        return _plugins.get(get_ident(), _main)
+
+
+def update_log_plugins():
+    for t in enumerate():
+        if t.ident and t.ident not in _plugins:
+            _plugins[t.ident] = _main
 
 
 class PluginLogRender:
@@ -44,7 +59,7 @@ class PluginLogRender:
         time_format="[%x %X]",
         omit_repeated_times: bool = True,
         level_width=8,
-        plugin_width=8,
+        plugin_width=5,
     ) -> None:
         from rich.style import Style
 
@@ -73,10 +88,15 @@ class PluginLogRender:
         output = Table.grid(padding=(0, 1))
         output.expand = True
         output.add_column(style="log.time")
+        match plugin:
+            case "main":
+                color = "magenta"
+            case "ukwn":
+                color = "red"
+            case _:
+                color = "cyan"
+        output.add_column(style=color, width=self.plugin_width)
         output.add_column(style="log.level", width=self.level_width)
-        output.add_column(
-            style="magenta" if plugin == "main" else "cyan", width=self.plugin_width
-        )
 
         output.add_column(ratio=1, style="log.message", overflow="fold")
         # output.add_column(style="log.path")
@@ -93,8 +113,8 @@ class PluginLogRender:
         else:
             row.append(log_time_display)
             self._last_time = log_time_display
-        row.append(level)
         row.append(plugin.upper() if plugin else "")
+        row.append(level)
 
         # Find plugin
         row.append(Renderables(renderables))
@@ -132,20 +152,13 @@ class PluginRichHandler(RichHandler):
         time_format = None if self.formatter is None else self.formatter.datefmt
         log_time = datetime.datetime.fromtimestamp(record.created)
 
-        plugin = None
-        module = record.name
-        for p, name in _plugins:
-            if module.startswith(p):
-                plugin = name
-                break
-
         log_renderable = self.renderer(
             self.console,
             [message_renderable] if not traceback else [message_renderable, traceback],
             log_time=log_time,
             time_format=time_format,
             level=level,
-            plugin=plugin,
+            plugin=get_log_plugin(),
             path=path,
             line_no=record.lineno,
             link_path=record.pathname if self.enable_link_path else None,

@@ -28,8 +28,8 @@ hhd = "hhd.__main__:main"
 "hhd.legion_go" = "hhd.device.legion_go:main"
 
 [project.entry-points."hhd.plugins"]
-llgo = "hhd.device.legion_go:autodetect"
-pbtnd = "hhd.plugins.powerbutton:autodetect"
+legion_go = "hhd.device.legion_go:autodetect"
+powerbuttond = "hhd.plugins.powerbutton:autodetect"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

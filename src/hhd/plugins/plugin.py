@@ -55,6 +55,7 @@ class Emitter(Protocol):
 class HHDPlugin:
     name: str
     priority: int
+    log: str
 
     def open(
         self,

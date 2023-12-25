@@ -10,7 +10,7 @@ from typing import Sequence
 import signal
 import pkg_resources
 
-from .logging import setup_logger, set_log_alias
+from .logging import setup_logger, set_log_plugin, update_log_plugins
 from .plugins import Emitter, Event, HHDAutodetect, HHDPlugin
 from .plugins.settings import (
     load_profile_yaml,
@@ -78,13 +78,12 @@ def main():
     log_plugins.append(("hhd", "main"))
     cfg_fds = []
     try:
-        set_log_alias(log_plugins)
+        set_log_plugin("main")
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
 
         for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
             log_plugins.append((autodetect.module_name, autodetect.name))
             detectors[autodetect.name] = autodetect.resolve()
-        set_log_alias(list(reversed(log_plugins)))
 
         logger.info(f"Found plugin providers: {', '.join(list(detectors))}")
 
@@ -112,7 +111,10 @@ def main():
         # Open plugins
         emit = EmitHolder()
         for p in sorted_plugins:
+            set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
             p.open(emit, ctx)
+            update_log_plugins()
+        set_log_plugin("main")
 
         # Compile initial configuration
         settings = merge_settings([p.settings() for p in sorted_plugins])
@@ -140,6 +142,7 @@ def main():
 
             # Initialize if files changed
             if not initialized.is_set():
+                set_log_plugin("main")
                 logger.info(f"Reloading configuration.")
                 conf = load_state_yaml(state_fn, settings)
                 profiles = {}
@@ -188,10 +191,15 @@ def main():
             #
 
             for p in reversed(sorted_plugins):
+                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
                 p.prepare(conf)
+                update_log_plugins()
 
             for p in sorted_plugins:
+                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
                 p.update(conf)
+                update_log_plugins()
+            set_log_plugin("ukwn")
 
             # Save existing profiles if open
             if save_state_yaml(state_fn, settings, conf):

@@ -8,6 +8,7 @@ from hhd.plugins.settings import HHDSettings
 class LegionControllersPlugin(HHDPlugin):
     name = "legion_go_controllers"
     priority = 18
+    log = "llgo"
 
     def __init__(self) -> None:
         self.t = None
