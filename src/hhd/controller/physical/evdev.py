@@ -1,7 +1,11 @@
+import fcntl
+import glob
 import logging
 import os
 import re
 import select
+import stat
+import subprocess
 from typing import Mapping, Sequence, TypeVar, cast
 
 import evdev
@@ -71,6 +75,28 @@ XBOX_AXIS_MAP: dict[int, AbsAxis] = to_map(
 )
 
 
+def list_joysticks(input_device_dir="/dev/input"):
+    return glob.glob(f"{input_device_dir}/js*")
+
+
+def get_path(ev: str):
+    path = None
+    for line in subprocess.run(
+        ["udevadm", "info", "-n", ev], capture_output=True
+    ).stdout.splitlines():
+        if line.startswith(b"P: "):
+            path = line[3 : -len(ev[ev.rindex("/") :])]
+            break
+    return path
+
+
+def find_joystick(ev: str):
+    path = get_path(ev)
+    for other in list_joysticks():
+        if path == get_path(other):
+            return other
+
+
 class GenericGamepadEvdev(Producer, Consumer):
     def __init__(
         self,
@@ -95,7 +121,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.fd = 0
         self.required = required
         self.hide = hide
-        self.hide_pair = None
+        self.hide_perms = None
 
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
@@ -112,30 +138,29 @@ class GenericGamepadEvdev(Producer, Consumer):
                 if not os.getuid():
                     # Hide controller
                     try:
-                        # Use the same filesystem to avoid surprises
-                        self.hide_pair = (
-                            dev.path,
-                            os.path.join(
-                                os.path.dirname(dev.path),
-                                ".hhd",
-                                os.path.basename(dev.path),
+                        # Hide by setting perms to 000
+                        self.hide_perms = [
+                            (
+                                dev.path,
+                                stat.S_IMODE(os.lstat(dev.path).st_mode),
                             ),
-                        )
-                        os.makedirs(
-                            os.path.join(
-                                os.path.dirname(dev.path),
-                                ".hhd",
-                            ),
-                            exist_ok=True,
-                        )
-                        dev.close()
-                        os.rename(self.hide_pair[0], self.hide_pair[1])
-                        dev = evdev.InputDevice(self.hide_pair[1])
+                        ]
+                        os.chmod(dev.path, 0)
+                        js = find_joystick(dev.path)
+                        if js:
+                            self.hide_perms.append(
+                                (js, stat.S_IMODE(os.lstat(js).st_mode))
+                            )
+                            os.chmod(js, 0)
+                        else:
+                            logger.warn(f"Could not find joystick for device:\n{dev}")
                     except Exception as e:
                         logger.warn(f"Could not hide device:\n{dev}\nError:{e}")
                         dev = evdev.InputDevice(d)
                 else:
-                    logger.warn(f"Not running as root, device `{dev.name}` could not be hid.")
+                    logger.warn(
+                        f"Not running as root, device `{dev.name}` could not be hid."
+                    )
 
             self.dev = dev
             self.dev.grab()
@@ -163,18 +188,13 @@ class GenericGamepadEvdev(Producer, Consumer):
         if self.dev:
             self.dev.close()
             self.fd = 0
-        if self.hide_pair:
-            if os.path.isfile(self.hide_pair[0]):
-                logger.warn(
-                    f"Can not unhide device. There is a new event node in its place."
-                )
-                os.remove(self.hide_pair[1])
-            else:
-                try:
-                    os.rename(self.hide_pair[1], self.hide_pair[0])
-                except Exception as e:
-                    logger.warn(f"Failed unhiding device with error:\n{e}")
-            self.hide_pair = None
+        if self.hide_perms:
+            try:
+                for fn, perms in self.hide_perms:
+                    os.chmod(fn, perms)
+            except Exception:
+                # The device probably disconnected
+                pass
         return True
 
     def consume(self, events: Sequence[Event]):
