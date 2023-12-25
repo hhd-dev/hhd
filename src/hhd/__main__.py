@@ -219,13 +219,9 @@ def main():
 
             if not should_exit.is_set():
                 sleep(1)
-        # from rich import get_console
 
-        # get_console().print(conf.conf)
-        # get_console().print(settings)
-        logger.info(
-            f"HHD Daemon received KeyboardInterrupt, stopping plugins and exiting."
-        )
+        set_log_plugin("main")
+        logger.info(f"HHD Daemon received interrupt, stopping plugins and exiting.")
     finally:
         for fd in cfg_fds:
             try:
@@ -233,9 +229,11 @@ def main():
             except Exception:
                 pass
         for plugs in plugins.values():
-            for plug in plugs:
-                logger.info(f"Stopping plugin `{plug.name}`.")
-                plug.close()
+            for p in plugs:
+                set_log_plugin("main")
+                logger.info(f"Stopping plugin `{p.name}`.")
+                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                p.close()
 
 
 if __name__ == "__main__":

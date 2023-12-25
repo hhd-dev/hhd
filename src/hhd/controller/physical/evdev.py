@@ -158,7 +158,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                         logger.warn(f"Could not hide device:\n{dev}")
                 else:
                     logger.warn(
-                        f"Not running as root, device `{dev.name}` could not be hid."
+                        f"Not running as root, device '{dev.name}' could not be hid."
                     )
 
             self.dev = dev
