@@ -288,7 +288,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     except KeyboardInterrupt:
         raise
     finally:
-        for d in devs:
+        for d in reversed(devs):
             d.close(True)
 
 
