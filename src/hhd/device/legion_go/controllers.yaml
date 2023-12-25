@@ -71,7 +71,7 @@ children:
             title: Accelerometer
             hint: >-
               Enables accelerometer support (not currently supported properly).
-            default: True
+            default: False
           gyro_fix:
             type: discrete
             title: Gyro Fix (hz)
@@ -117,3 +117,9 @@ children:
               contain_end: "Contain End"
               contain_center: "Contain Center"
             default: crop_end
+          debug:
+            type: bool
+            title: Debug
+            hint: >-
+              Output controller events to the console
+            default: False

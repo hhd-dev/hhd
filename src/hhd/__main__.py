@@ -81,7 +81,7 @@ def main(user: str | None = None):
         plugin_str = "Loaded the following plugins:"
         for pkg_name, sub_plugins in plugins.items():
             plugin_str += (
-                f"\n  - {pkg_name:>15s}: {', '.join(p.name for p in sub_plugins)}"
+                f"\n  - {pkg_name:>8s}: {', '.join(p.name for p in sub_plugins)}"
             )
         logger.info(plugin_str)
 
@@ -124,7 +124,7 @@ def main(user: str | None = None):
             #
 
             # Initialize if files changed
-            if not initialized.isSet():
+            if not initialized.is_set():
                 logger.info(f"Reloading configuration.")
                 conf = load_state_yaml(state_fn, settings)
                 profiles = {}
@@ -211,6 +211,7 @@ def main(user: str | None = None):
                 pass
         for plugs in plugins.values():
             for plug in plugs:
+                logger.info(f"Stopping plugin `{plug.name}`.")
                 plug.close()
 
 

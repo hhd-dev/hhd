@@ -457,14 +457,16 @@ def save_profile_yaml(fn: str, set: HHDSettings, conf: Config | None = None):
 
 
 def strip_defaults(c):
+    if c == "default" or c == "unset":
+        return None
     if not isinstance(c, Mapping):
         return c
 
     out = {}
     for k, v in c.items():
-        if v is None or v == "default" or v == "unset":
-            continue
-        out[k] = v
+        l = strip_defaults(v)
+        if l is not None:
+            out[k] = l
 
     if not out:
         return None

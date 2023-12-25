@@ -194,7 +194,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
                 logger.error(
                     "Power button action did not work. Calling `systemctl suspend`"
                 )
-                # os.system("systemctl suspend")
+                os.system("systemctl suspend")
     except KeyboardInterrupt:
         pass
     except Exception as e:

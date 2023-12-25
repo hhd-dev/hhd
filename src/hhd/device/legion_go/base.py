@@ -47,7 +47,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
     else:
         gyro_fixer = None
 
-    while True:
+    while not should_exit.is_set():
         try:
             controller_mode = None
             pid = None
@@ -90,13 +90,10 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )
-            if gyro_fixer:
-                gyro_fixer.close()
             time.sleep(ERROR_DELAY)
-        except KeyboardInterrupt:
+        finally:
             if gyro_fixer:
                 gyro_fixer.close()
-            logger.info("Received KeyboardInterrupt, exiting...")
             return
 
 
@@ -200,9 +197,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     )
 
     match conf.get("swap_legion", False):
-        case True:
-            swap_guide = "guide_is_select"
-        case False:
+        case "disabled":
             swap_guide = None
         case "l_is_start":
             swap_guide = "guide_is_start"

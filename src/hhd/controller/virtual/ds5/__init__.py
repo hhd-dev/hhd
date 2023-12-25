@@ -352,7 +352,7 @@ class DualSense5Edge(Producer, Consumer):
                             }
                         )
                 case _:
-                    logger.info(f"Received unhandled report:\n{ev}")
+                    logger.debug(f"Received unhandled report:\n{ev}")
         return out
 
     def consume(self, events: Sequence[Event]):

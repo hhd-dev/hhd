@@ -20,16 +20,26 @@ class LegionControllersPlugin(HHDPlugin):
     ):
         self.emit = emit
         self.context = context
+        self.prev = None
 
     def settings(self) -> HHDSettings:
         return {"controllers": {"legion_go": load_relative_yaml("controllers.yaml")}}
 
+    def update(self, conf: Config):
+        if conf["controllers.legion_go"] == self.prev:
+            return
+        self.prev = conf["controllers.legion_go"]
+
+        self.start(self.prev)
+
     def start(self, conf):
         from .base import plugin_run
 
+        self.close()
         self.event = Event()
         self.t = Thread(
-            target=plugin_run, args=(conf, self.emit, self.context, self.event)
+            target=plugin_run,
+            args=(conf["xinput.ds5e"], self.emit, self.context, self.event),
         )
         self.t.start()
 
