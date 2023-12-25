@@ -10,7 +10,7 @@ from typing import Sequence
 import signal
 import pkg_resources
 
-from .logging import setup_logger
+from .logging import setup_logger, set_log_alias
 from .plugins import Emitter, Event, HHDAutodetect, HHDPlugin
 from .plugins.settings import (
     load_profile_yaml,
@@ -60,12 +60,17 @@ def main(user: str | None = None):
 
     detectors: dict[str, HHDAutodetect] = {}
     plugins: dict[str, Sequence[HHDPlugin]] = {}
+    log_plugins: Sequence[tuple[str, str]] = []
+    log_plugins.append(("hhd", "main"))
     cfg_fds = []
     try:
+        set_log_alias(log_plugins)
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
 
         for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
+            log_plugins.append((autodetect.module_name, autodetect.name))
             detectors[autodetect.name] = autodetect.resolve()
+        set_log_alias(list(reversed(log_plugins)))
 
         logger.info(f"Found plugin providers: {', '.join(list(detectors))}")
 
@@ -109,28 +114,14 @@ def main(user: str | None = None):
 
         # Monitor config files for changes
         initialized = TEvent()
+        should_exit = TEvent()
         signal.signal(signal.SIGPOLL, lambda sig, frame: initialized.clear())
+        signal.signal(signal.SIGINT, lambda sig, frame: should_exit.set())
 
-        while True:
+        while not should_exit.is_set():
             #
             # Configuration
             #
-
-            # Save existing profiles if open
-            if save_state_yaml(state_fn, settings, conf):
-                fix_perms(state_fn, ctx)
-            for name, prof in profiles.items():
-                fn = join(profile_dir, name + ".yml")
-                if save_profile_yaml(fn, settings, prof):
-                    fix_perms(fn, ctx)
-
-            # Add template config
-            if save_profile_yaml(
-                join(profile_dir, "_template.yml"),
-                settings,
-                templates.get("_template", None),
-            ):
-                fix_perms(join(profile_dir, "_template.yml"), ctx)
 
             # Initialize if files changed
             if not initialized.isSet():
@@ -175,7 +166,7 @@ def main(user: str | None = None):
                     )
                     cfg_fds.append(fd)
                 initialized.set()
-                sleep(1)
+                logger.info(f"Initialization Complete!")
 
             #
             # Plugin loop
@@ -186,12 +177,29 @@ def main(user: str | None = None):
 
             for p in sorted_plugins:
                 p.update(conf)
-            sleep(2)
+
+            # Save existing profiles if open
+            if save_state_yaml(state_fn, settings, conf):
+                fix_perms(state_fn, ctx)
+            for name, prof in profiles.items():
+                fn = join(profile_dir, name + ".yml")
+                if save_profile_yaml(fn, settings, prof):
+                    fix_perms(fn, ctx)
+
+            # Add template config
+            if save_profile_yaml(
+                join(profile_dir, "_template.yml"),
+                settings,
+                templates.get("_template", None),
+            ):
+                fix_perms(join(profile_dir, "_template.yml"), ctx)
+
+            if not should_exit.is_set():
+                sleep(1)
         # from rich import get_console
 
         # get_console().print(conf.conf)
         # get_console().print(settings)
-    except KeyboardInterrupt:
         logger.info(
             f"HHD Daemon received KeyboardInterrupt, stopping plugins and exiting."
         )
