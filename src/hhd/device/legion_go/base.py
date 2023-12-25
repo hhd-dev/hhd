@@ -28,7 +28,7 @@ from .const import (
 from .gyro_fix import GyroFixer
 from .hid import rgb_callback
 
-ERROR_DELAY = 0.15
+ERROR_DELAY = 1
 
 logger = logging.getLogger(__name__)
 
@@ -164,7 +164,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
-        # hide=True,
+        hide=True,
     )
     d_touch = GenericGamepadEvdev(
         vid=[0x17EF],

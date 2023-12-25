@@ -13,6 +13,7 @@ from evdev import ecodes, ff
 from hhd.controller import Axis, Button, Consumer, Event, Producer
 from hhd.controller.base import Event
 from hhd.controller.lib.common import hexify, matches_patterns
+from hhd.controller.lib.hide import hide_gamepad, unhide_gamepad
 
 from ..const import AbsAxis, GamepadButton, KeyboardButton
 
@@ -124,7 +125,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.fd = 0
         self.required = required
         self.hide = hide
-        self.hide_perms = None
+        self.hidden = False
 
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
@@ -152,27 +153,9 @@ class GenericGamepadEvdev(Producer, Consumer):
             if self.hide:
                 # Check we are root
                 if not os.getuid():
-                    # Hide controller
-                    try:
-                        # Hide by setting perms to 000
-                        self.hide_perms = [
-                            (
-                                dev.path,
-                                stat.S_IMODE(os.lstat(dev.path).st_mode),
-                            ),
-                        ]
-                        os.chmod(dev.path, 0)
-                        js = find_joystick(dev.path)
-                        if js:
-                            self.hide_perms.append(
-                                (js, stat.S_IMODE(os.lstat(js).st_mode))
-                            )
-                            os.chmod(js, 0)
-                        else:
-                            logger.warn(f"Could not find joystick for device:\n{dev}")
-                    except Exception as e:
-                        logger.warn(f"Could not hide device:\n{dev}\nError:{e}")
-                        dev = evdev.InputDevice(d)
+                    self.hidden = hide_gamepad(dev.path)
+                    if not self.hidden:
+                        logger.warn(f"Could not hide device:\n{dev}")
                 else:
                     logger.warn(
                         f"Not running as root, device `{dev.name}` could not be hid."
@@ -204,15 +187,11 @@ class GenericGamepadEvdev(Producer, Consumer):
 
     def close(self, exit: bool) -> bool:
         if self.dev:
+            if self.hidden:
+                unhide_gamepad(self.dev.path)
             self.dev.close()
+            self.dev = None
             self.fd = 0
-        if self.hide_perms:
-            try:
-                for fn, perms in self.hide_perms:
-                    os.chmod(fn, perms)
-            except Exception:
-                # The device probably disconnected
-                pass
         return True
 
     def consume(self, events: Sequence[Event]):
