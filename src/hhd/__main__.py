@@ -2,17 +2,27 @@ import argparse
 import fcntl
 import logging
 import os
-from os.path import join
-from select import select
-from threading import Condition, Lock, Event as TEvent
-from time import sleep
-from typing import Sequence
 import signal
+from os.path import join
+from threading import Condition
+from threading import Event as TEvent
+from threading import Lock
+from time import sleep
+from typing import Sequence, cast
+
 import pkg_resources
 
-from .logging import setup_logger, set_log_plugin, update_log_plugins
-from .plugins import Emitter, Event, HHDAutodetect, HHDPlugin
+from .logging import set_log_plugin, setup_logger, update_log_plugins
+from .plugins import (
+    Config,
+    Emitter,
+    Event,
+    HHDAutodetect,
+    HHDPlugin,
+    load_relative_yaml,
+)
 from .plugins.settings import (
+    get_default_state,
     load_profile_yaml,
     load_state_yaml,
     merge_settings,
@@ -117,13 +127,20 @@ def main():
         set_log_plugin("main")
 
         # Compile initial configuration
-        settings = merge_settings([p.settings() for p in sorted_plugins])
+        hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
+        settings = merge_settings(
+            [*[p.settings() for p in sorted_plugins], hhd_settings]
+        )
         state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
+
+        # HTTP data
+        https = None
+        prev_http_cfg = None
 
         # Load profiles
         profiles = {}
         templates = {}
-        conf = load_state_yaml(state_fn, settings)
+        conf = get_default_state(settings)
         profile_dir = expanduser(join(CONFIG_DIR, "profiles"), ctx)
         os.makedirs(profile_dir, exist_ok=True)
         fix_perms(profile_dir, ctx)
@@ -144,7 +161,11 @@ def main():
             if not initialized.is_set():
                 set_log_plugin("main")
                 logger.info(f"Reloading configuration.")
-                conf = load_state_yaml(state_fn, settings)
+                new_conf = load_state_yaml(state_fn, settings)
+                if not new_conf:
+                    logger.warning(f"Using previous configuration.")
+                else:
+                    conf = new_conf
                 profiles = {}
                 templates = {}
 
@@ -184,6 +205,20 @@ def main():
                     )
                     cfg_fds.append(fd)
                 initialized.set()
+
+                # Initialize flask
+                http_cfg = cast(Config, conf["hhd.http"])
+                if http_cfg != prev_http_cfg:
+                    prev_http_cfg = http_cfg
+                    if https:
+                        pass
+                    if http_cfg["enable"]:
+                        from .http import start_http_api
+
+                        port = http_cfg["port"].to(int)
+                        localhost = http_cfg["localhost"].to(bool)
+                        https = start_http_api(localhost, port)
+
                 logger.info(f"Initialization Complete!")
 
             #
@@ -201,6 +236,11 @@ def main():
                 update_log_plugins()
             set_log_plugin("ukwn")
 
+            #
+            # Save loop
+            #
+
+            has_new = initialized.is_set()
             # Save existing profiles if open
             if save_state_yaml(state_fn, settings, conf):
                 fix_perms(state_fn, ctx)
@@ -219,6 +259,8 @@ def main():
 
             if not should_exit.is_set():
                 sleep(1)
+            if not has_new:
+                initialized.clear()
 
         set_log_plugin("main")
         logger.info(f"HHD Daemon received interrupt, stopping plugins and exiting.")

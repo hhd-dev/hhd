@@ -76,9 +76,22 @@ class NumericalSetting(TypedDict):
     title: str
     hint: str
 
-    min: float | int | None
-    max: float | int | None
-    default: float | int | None
+    min: float | None
+    max: float | None
+    default: float | None
+
+
+class IntegerSetting(TypedDict):
+    """Floating numerical option."""
+
+    type: Literal["integer"]
+    family: Sequence[str]
+    title: str
+    hint: str
+
+    min: int | None
+    max: int | None
+    default: int | None
 
 
 class ColorSetting(TypedDict):
@@ -96,6 +109,7 @@ Setting = (
     | MultipleSetting
     | DiscreteSetting
     | NumericalSetting
+    | IntegerSetting
     | ColorSetting
 )
 
@@ -473,6 +487,10 @@ def strip_defaults(c):
     return out
 
 
+def get_default_state(set: HHDSettings):
+    return Config(parse_defaults(set))
+
+
 def load_state_yaml(fn: str, set: HHDSettings):
     import yaml
 
@@ -481,8 +499,11 @@ def load_state_yaml(fn: str, set: HHDSettings):
         with open(fn, "r") as f:
             state = cast(Mapping, strip_defaults(yaml.safe_load(f)) or {})
     except FileNotFoundError:
-        logger.warn(f"State file not found, using defaults. Searched location:\n{fn}")
-        state = {}
+        logger.warning(f"State file not found. Searched location:\n{fn}")
+        return None
+    except yaml.YAMLError:
+        logger.warning(f"State file is invalid. Searched location:\n{fn}")
+        return None
 
     return Config([defaults, state])
 
@@ -494,8 +515,15 @@ def load_profile_yaml(fn: str):
         with open(fn, "r") as f:
             state = cast(Mapping, strip_defaults(yaml.safe_load(f)) or {})
     except FileNotFoundError:
-        logger.warn(f"Profile file not found, using defaults. Searched location:\n{fn}")
-        return Config({})
+        logger.warning(
+            f"Profile file not found, using defaults. Searched location:\n{fn}"
+        )
+        return None
+    except yaml.YAMLError:
+        logger.warning(
+            f"Profile file is invalid, skipping loading. Searched location:\n{fn}"
+        )
+        return None
 
     return Config([state])
 

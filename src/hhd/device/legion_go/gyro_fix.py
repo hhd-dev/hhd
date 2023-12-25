@@ -18,10 +18,11 @@ def gyro_fix(ev: Event, rate: int = 65):
     except KeyboardInterrupt:
         raise
     except Exception as e:
-        logger.warn(f"Gyro fix failed with error:{e}\n")
+        logger.warning(f"Gyro fix failed with error:{e}\n")
     finally:
         if g:
             g.close()
+
 
 class GyroFixer:
     def __init__(self, rate: int = 65) -> None:

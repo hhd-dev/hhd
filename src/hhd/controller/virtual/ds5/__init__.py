@@ -241,11 +241,11 @@ class DualSense5Edge(Producer, Consumer):
                             rep = sign_crc32_append(rep, DS5_FEATURE_CRC32_SEED)
                         self.dev.send_get_report_reply(ev["id"], 0, rep)
                     else:
-                        logger.warn(
+                        logger.warning(
                             f"DS5: Received get_report with the id (uknown): {ev['rnum']}"
                         )
                 case "set_report":
-                    logger.warn(
+                    logger.warning(
                         f"DS5: Received set_report with the id (uknown): {ev['rnum']}"
                     )
                 case "output":
@@ -261,7 +261,7 @@ class DualSense5Edge(Producer, Consumer):
                         invalid = True
 
                     if invalid:
-                        logger.warn(
+                        logger.warning(
                             f"DS5: Received uknown output report with the following data:\n{ev['report']}: {ev['data'].hex()}"
                         )
                         continue

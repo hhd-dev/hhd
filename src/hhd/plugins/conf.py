@@ -1,6 +1,14 @@
 from copy import deepcopy
 from threading import Lock
-from typing import Any, Mapping, MutableMapping, MutableSequence, Sequence, TypeVar
+from typing import (
+    Any,
+    Mapping,
+    MutableMapping,
+    MutableSequence,
+    Sequence,
+    TypeVar,
+    cast,
+)
 
 Pytree = int | float | str | Sequence["Pytree"] | Mapping[str, "Pytree"]
 A = TypeVar("A")
@@ -33,11 +41,18 @@ def parse_conf(c: Pytree, out: MutableMapping | None = None):
     return out
 
 
-def parse_confs(confs: Sequence[Pytree], out: MutableMapping | None = None):
-    if out is None:
+def parse_confs(
+    confs: Sequence[Pytree], out: MutableMapping | Pytree | None = None
+) -> MutableMapping | Pytree:
+    if not isinstance(out, MutableMapping):
         out = {}
     for c in confs:
-        parse_conf(c, out)
+        if not isinstance(out, MutableMapping):
+            out = {}
+        if isinstance(c, Mapping):
+            parse_conf(c, out)
+        else:
+            out = c
     return out
 
 
@@ -74,7 +89,7 @@ class Config:
     def __init__(
         self, conf: Pytree | Sequence[Pytree] = [], readonly: bool = False
     ) -> None:
-        self._conf = {}
+        self._conf: Pytree | MutableMapping = {}
         self._lock = Lock()
         self._updated = False
         self.readonly = readonly
@@ -85,9 +100,12 @@ class Config:
         with self._lock:
             conf = deepcopy(conf)
             if isinstance(conf, Sequence):
-                parse_confs(conf, self._conf)
+                self._conf = parse_confs(conf, self._conf)
             else:
-                parse_conf(conf, self._conf)
+                if isinstance(self._conf, MutableMapping):
+                    parse_conf(conf, self._conf)
+                else:
+                    self._conf = conf
         self.updated = True
 
     def __eq__(self, __value: object) -> bool:
@@ -112,7 +130,10 @@ class Config:
                 d = d[s]
 
             d[seq[-1]] = val
-            parse_conf(cont, self._conf)
+            if isinstance(self._conf, MutableMapping):
+                parse_conf(cont, self._conf)
+            else:
+                self._conf = cont
         self.updated = True
 
     def __contains__(self, key: str | tuple[str, ...]):
@@ -122,26 +143,26 @@ class Config:
             for s in seq:
                 if s not in d:
                     return False
-                d = d[s]
+                d = cast(Mapping, d)[s]
         return True
 
-    def __getitem__(self, key: str | tuple[str, ...]) -> "int | float | str | Config":
+    def __getitem__(self, key: str | tuple[str, ...]) -> "Config":
         with self._lock:
+            assert isinstance(self._conf, MutableMapping)
             seq = to_seq(key)
             d = self._conf
             for s in seq:
-                d = d[s]
-            if isinstance(d, Mapping):
-                return Config(deepcopy(d))
-            return d
+                d = cast(Mapping, d)[s]
+            return Config([deepcopy(d)])
 
-    def get(self, key, *args: A) -> A:
+    def get(self, key, default: A) -> A:
         try:
-            return self.__getitem__(key)  # type: ignore
-        except KeyError as e:
-            if args:
-                return args[0]
-            raise e
+            return self[key].to(type(default))
+        except KeyError:
+            return default
+
+    def to(self, t: type[A]) -> A:
+        return cast(t, self.conf)
 
     @property
     def conf(self):

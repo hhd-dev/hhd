@@ -10,10 +10,11 @@ from typing import Sequence, cast
 from hhd.controller import Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer
 from hhd.controller.lib.hid import enumerate_unique
-from hhd.controller.physical.evdev import GenericGamepadEvdev, B as EC
+from hhd.controller.physical.evdev import B as EC
+from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
-from hhd.controller.virtual.ds5 import DualSense5Edge
+from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter
 
@@ -115,7 +116,7 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
     multiplexer = Multiplexer(
         dpad="analog_to_discrete",
         trigger="analog_to_discrete",
-        share_to_qam=conf.get("share_to_qam", True),
+        share_to_qam=conf["share_to_qam"].to(bool),
     )
     d_uinput = UInputDevice(name=f"HHD Shortcuts Device (Legion Mode: {mode})", pid=pid)
 
@@ -151,7 +152,9 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
 
     # Output
-    d_ds5 = DualSense5Edge(touchpad_method=conf.get("touchpad_mode", "crop_end"))
+    d_ds5 = DualSense5Edge(
+        touchpad_method=conf["touchpad_mode"].to(TouchpadCorrectionType)
+    )
 
     # Imu
     d_accel = AccelImu()
@@ -200,15 +203,15 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         required=True,
     )
 
-    match conf.get("swap_legion", False):
+    match conf["swap_legion"].to(str):
         case "disabled":
             swap_guide = None
         case "l_is_start":
             swap_guide = "guide_is_start"
         case "l_is_select":
             swap_guide = "guide_is_select"
-        case _:
-            assert False, "Invalid value for `swap_legion`."
+        case val:
+            assert False, f"Invalid value for `swap_legion`: {val}"
 
     multiplexer = Multiplexer(
         swap_guide=swap_guide,
@@ -216,7 +219,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         dpad="analog_to_discrete",
         led="main_to_sides",
         status="both_to_main",
-        share_to_qam=conf.get("share_to_qam", True),
+        share_to_qam=conf["share_to_qam"].to(bool),
     )
 
     REPORT_FREQ_MIN = 25

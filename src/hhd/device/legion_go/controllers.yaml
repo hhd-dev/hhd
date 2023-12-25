@@ -1,5 +1,5 @@
 type: container
-family: [lgc]
+tags: [lgc]
 title: Legion Controllers Configuration
 hint: >-
   Allows for configuring the legion controllers using the built in firmware
@@ -16,7 +16,7 @@ children:
 
   xinput:
     type: mode
-    family: [lgc_xinput]
+    tags: [lgc_xinput]
     title: X-input Emulation Mode
     hint: >-
       Emulate different controller types when the Legion Controllers are in X-Input mode.
@@ -28,7 +28,7 @@ children:
       #
       disabled:
         type: container
-        family: [lgc_emulation_disabled]
+        tags: [lgc_emulation_disabled]
         title: Disabled
         hint: >-
           Does not modify the default controller.
@@ -46,7 +46,7 @@ children:
       #
       ds5e:
         type: container
-        family: [lgc_emulation_ds5e, ds5e]
+        tags: [lgc_emulation_ds5e, ds5e]
         title: Dual Sense 5 Edge
         hint: >-
           Emulates the expensive DS5 Edge sony controller that maps 1-1 to

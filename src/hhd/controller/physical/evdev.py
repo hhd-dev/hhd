@@ -155,9 +155,9 @@ class GenericGamepadEvdev(Producer, Consumer):
                 if not os.getuid():
                     self.hidden = hide_gamepad(dev.path)
                     if not self.hidden:
-                        logger.warn(f"Could not hide device:\n{dev}")
+                        logger.warning(f"Could not hide device:\n{dev}")
                 else:
-                    logger.warn(
+                    logger.warning(
                         f"Not running as root, device '{dev.name}' could not be hid."
                     )
 
