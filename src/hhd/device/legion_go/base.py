@@ -28,7 +28,7 @@ from .const import (
 from .gyro_fix import GyroFixer
 from .hid import rgb_callback
 
-ERROR_DELAY = 1
+ERROR_DELAY = 0.15
 
 logger = logging.getLogger(__name__)
 
@@ -229,11 +229,11 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             fd_to_dev[f] = m
 
     try:
+        prepare(d_xinput)
         if conf.get("accel", False):
             prepare(d_accel)
         if conf.get("gyro", False):
             prepare(d_gyro)
-        prepare(d_xinput)
         prepare(d_shortcuts)
         prepare(d_touch)
         prepare(d_raw)

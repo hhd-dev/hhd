@@ -1,4 +1,3 @@
-import fcntl
 import glob
 import logging
 import os
