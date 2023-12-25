@@ -204,7 +204,7 @@ def setup_logger(
     FORMAT = "%(message)s"
     logging.basicConfig(
         level=logging.INFO,
-        datefmt="[%d/%m %H:%M]",
+        datefmt="[%H:%M]",
         format=FORMAT,
         handlers=handlers,
     )

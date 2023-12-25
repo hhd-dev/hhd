@@ -51,7 +51,21 @@ class EmitHolder(Emitter):
             return ev
 
 
-def main(user: str | None = None):
+def main():
+    parser = argparse.ArgumentParser(
+        prog="HHD: Handheld Daemon main interface.",
+        description="Handheld Daemon is a daemon for managing the quirks inherent in handheld devices.",
+    )
+    parser.add_argument(
+        "-u",
+        "--user",
+        default=None,
+        help="The user whose home directory will be used to store the files (~/.config/hhd).",
+        dest="user",
+    )
+    args = parser.parse_args()
+    user = args.user
+
     # Setup temporary logger for permission retrieval
     ctx = get_context(user)
     if not ctx:
@@ -217,17 +231,4 @@ def main(user: str | None = None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog="HHD: Handheld Daemon main interface.",
-        description="Handheld Daemon is a daemon for managing the quirks inherent in handheld devices.",
-    )
-    parser.add_argument(
-        "-u",
-        "--user",
-        default=None,
-        help="The user whose home directory will be used to store the files (~/.config/hhd).",
-        dest="user",
-    )
-    args = parser.parse_args()
-    user = args.user
-    main(user)
+    main()
