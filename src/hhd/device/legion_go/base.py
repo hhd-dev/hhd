@@ -94,7 +94,6 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
         finally:
             if gyro_fixer:
                 gyro_fixer.close()
-            return
 
 
 def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent):
@@ -159,10 +158,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        [0x17EF],
-        [0x6182],
-        ["Generic X-Box pad"],
-        required=True,
+        [0x17EF], [0x6182], ["Generic X-Box pad"], required=True, hide=True
     )
     d_touch = GenericGamepadEvdev(
         [0x17EF],

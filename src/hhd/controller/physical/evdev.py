@@ -94,7 +94,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.dev: evdev.InputDevice | None = None
         self.fd = 0
         self.required = required
-        self.hide = False # TODO: fix once finalized
+        self.hide = hide
         self.hide_pair = None
 
     def open(self) -> Sequence[int]:
@@ -128,7 +128,6 @@ class GenericGamepadEvdev(Producer, Consumer):
                             ),
                             exist_ok=True,
                         )
-                        logger.info(self.hide_pair)
                         dev.close()
                         os.rename(self.hide_pair[0], self.hide_pair[1])
                         dev = evdev.InputDevice(self.hide_pair[1])
@@ -136,7 +135,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                         logger.warn(f"Could not hide device:\n{dev}\nError:{e}")
                         dev = evdev.InputDevice(d)
                 else:
-                    logger.warn(f"Not running as root, device `{dev.name}` not hid.")
+                    logger.warn(f"Not running as root, device `{dev.name}` could not be hid.")
 
             self.dev = dev
             self.dev.grab()
@@ -165,10 +164,16 @@ class GenericGamepadEvdev(Producer, Consumer):
             self.dev.close()
             self.fd = 0
         if self.hide_pair:
-            try:
-                os.rename(self.hide_pair[1], self.hide_pair[0])
-            except Exception as e:
-                logger.warn(f"Failed unhiding device with error:\n{e}")
+            if os.path.isfile(self.hide_pair[0]):
+                logger.warn(
+                    f"Can not unhide device. There is a new event node in its place."
+                )
+                os.remove(self.hide_pair[1])
+            else:
+                try:
+                    os.rename(self.hide_pair[1], self.hide_pair[0])
+                except Exception as e:
+                    logger.warn(f"Failed unhiding device with error:\n{e}")
             self.hide_pair = None
         return True
 

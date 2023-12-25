@@ -117,6 +117,7 @@ def main(user: str | None = None):
         should_exit = TEvent()
         signal.signal(signal.SIGPOLL, lambda sig, frame: initialized.clear())
         signal.signal(signal.SIGINT, lambda sig, frame: should_exit.set())
+        signal.signal(signal.SIGTERM, lambda sig, frame: should_exit.set())
 
         while not should_exit.is_set():
             #
