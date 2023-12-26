@@ -1,7 +1,7 @@
 http:
   type: container
   tags: [hhd-http]
-  title: REST API Configuration
+  title: REST API Configuration (BETA)
   hint: >-
     Settings for configuring the http endpoint of HHD.
 
