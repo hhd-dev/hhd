@@ -6,14 +6,6 @@ hint: >-
   commands and enabling emulation modes for various controller types.
 
 children:
-  shortcuts:
-    type: bool
-    title: Enable Shortcuts Controller
-    hint: >-
-      When emulation is not active, enable a shortcuts controller to restore
-      Guide, QAM, and shortcut functionality.
-    default: True
-
   xinput:
     type: mode
     tags: [lgc_xinput]
@@ -60,66 +52,78 @@ children:
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
-          gyro:
-            type: bool
-            title: Gyroscope
-            hint: >-
-              Enables gyroscope support (.3% background CPU use)
-            default: True
-          accel:
-            type: bool
-            title: Accelerometer
-            hint: >-
-              Enables accelerometer support (not currently supported properly).
-            default: False
-          gyro_fix:
-            type: discrete
-            title: Gyro Fix (hz)
-            hint: >-
-              Adds polling to the legion go gyroscope, to fix the low polling rate
-              (required for gyroscope support). Set to 0 to disable.
-              Due to hardware limitations, there is a marginal difference above
-              100hz.
-            options: [0, 40, 60, 75, 100, 125, 200, 300]
-            default: 100
-          swap_legion:
-            type: multiple
-            title: Swap Legion Buttons with Start/Select
-            hint: >-
-              Swaps the legion buttons with start select.
-            options:
-              disabled: "Disabled"
-              l_is_start: "Left is Start"
-              l_is_select: "Left is Select"
-            default: disabled
-          share_to_qam:
-            type: bool
-            title: Map the Legion L button to QAM (instead of Mute)
-            default: True
-          touchpad_mode:
-            type: multiple
-            title: Touchpad correction type
-            hint: >-
-              The legion touchpad is square, whereas the DS5 one is rectangular.
-              Therefore, it needs to be corrected.
-              "Contain" maintain the whole DS5 touchpad and part of the Legion
-              one is unused. "Crop" uses the full legion touchpad, and limits
-              the area of the DS5. "Stretch" uses both fully (distorted).
-              "Crop End" enables use in steam input as the right touchpad.
-              Set to "Disabled" to not remap.
-            options:
-              disabled: "Disabled"
-              stretch: "Stretch"
-              crop_center: "Crop Center"
-              crop_start: "Crop Start"
-              crop_end: "Crop End"
-              contain_start: "Contain Start"
-              contain_end: "Contain End"
-              contain_center: "Contain Center"
-            default: crop_end
-          debug:
-            type: bool
-            title: Debug
-            hint: >-
-              Output controller events to the console
-            default: False
+
+  #
+  # Common settings
+  #
+  gyro:
+    type: bool
+    title: Gyroscope
+    hint: >-
+      Enables gyroscope support (.3% background CPU use)
+    default: True
+  accel:
+    type: bool
+    title: Accelerometer
+    hint: >-
+      Enables accelerometer support (not currently supported properly).
+    default: False
+  gyro_fix:
+    type: discrete
+    title: Gyro Fix (hz)
+    hint: >-
+      Adds polling to the legion go gyroscope, to fix the low polling rate
+      (required for gyroscope support). Set to 0 to disable.
+      Due to hardware limitations, there is a marginal difference above
+      100hz.
+    options: [0, 40, 60, 75, 100, 125, 200, 300]
+    default: 100
+  swap_legion:
+    type: multiple
+    title: Swap Legion Buttons with Start/Select
+    hint: >-
+      Swaps the legion buttons with start select.
+    options:
+      disabled: "Disabled"
+      l_is_start: "Left is Start"
+      l_is_select: "Left is Select"
+    default: disabled
+  share_to_qam:
+    type: bool
+    title: Map the Legion L button to QAM (instead of Mute)
+    default: True
+  touchpad_mode:
+    type: multiple
+    title: Touchpad correction type
+    hint: >-
+      The legion touchpad is square, whereas the DS5 one is rectangular.
+      Therefore, it needs to be corrected.
+      "Contain" maintain the whole DS5 touchpad and part of the Legion
+      one is unused. "Crop" uses the full legion touchpad, and limits
+      the area of the DS5. "Stretch" uses both fully (distorted).
+      "Crop End" enables use in steam input as the right touchpad.
+      Set to "Disabled" to not remap.
+    options:
+      disabled: "Disabled"
+      stretch: "Stretch"
+      crop_center: "Crop Center"
+      crop_start: "Crop Start"
+      crop_end: "Crop End"
+      contain_start: "Contain Start"
+      contain_end: "Contain End"
+      contain_center: "Contain Center"
+    default: crop_end
+  debug:
+    type: bool
+    title: Debug
+    hint: >-
+      Output controller events to the console
+    default: False
+
+  shortcuts:
+    type: bool
+    title: Enable Shortcuts Controller
+    hint: >-
+      When in other modes (dinput, dual dinput, and fps), enable a shortcuts 
+      controller to restore Guide, QAM, and shortcut functionality.
+    default: True

@@ -155,6 +155,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     d_ds5 = DualSense5Edge(
         touchpad_method=conf["touchpad_mode"].to(TouchpadCorrectionType)
     )
+    # from hhd.controller.virtual.sd import SteamdeckOLEDController
+    # d_ds5 = SteamdeckOLEDController()
 
     # Imu
     d_accel = AccelImu()
@@ -189,7 +191,9 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
-            callback=rgb_callback if conf.get("led_support", False) else None,
+            callback=rgb_callback
+            if conf["xinput.ds5e.led_support"]
+            else None,
             required=True,
         )
     )

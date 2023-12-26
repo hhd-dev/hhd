@@ -40,7 +40,7 @@ class LegionControllersPlugin(HHDPlugin):
         self.event = Event()
         self.t = Thread(
             target=plugin_run,
-            args=(conf["xinput.ds5e"], self.emit, self.context, self.event),
+            args=(conf, self.emit, self.context, self.event),
         )
         self.t.start()
 
