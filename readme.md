@@ -25,16 +25,23 @@ depending on the game.
     - Short press makes steam deck sleep
     - Long press opens steam power menu
 
+*Upcoming v0.2 Features*
+- Hiding the original xbox controller!
+- HTTP based Configuration
+  - Right now, functionality can be tweaked through config files
+    - Not ideal for a portable device
+  - An HTTP daemon and a plugin system will allow safe, polkit based
+    access to hardware configuration.
+  - Profiles will allow swapping configuration per game.
+
 *Planned Features (in that order)*:
+- Evdev device emulation
+  - No weird glyphs
+  - But partial gyro and back button support
 - Steam Deck controller emulation
   - No weird glyphs
 - TDP Plugin (Legion Go)
   - Will provide parity with Legion Space, hardware is already reverse engineered
-- d-Bus based Configuration
-  - Right now, functionality can be tweaked through config files
-    - Not ideal for a portable device
-  - A d-Bus daemon and a plugin system will allow safe, polkit based
-    access to hardware configuration.
 - High-end Over/Downclocking Utility for Ryzen processors
   - By hooking into the manufacturer ACPI API of the Ryzen platform,
     it will expose all TDP related parameters manufacturers have access to
@@ -45,6 +52,57 @@ depending on the game.
         (provided you stay within limits).
   - May require DSDT patch on boot, TBD.
 
+## Frequently Asked Questions (FAQ)
+### What does the current version of HHD do?
+The current version of HHD maps the x-input mode of the legion go controllers to
+a Dualsense 5 Edge controller, which allows using all of the controller functions.
+In addition, it adds support for the steam powerbutton action, so you get a wink
+when going to sleep mode.
+When the controllers are not in x-input mode, HHD adds a shortcuts device so
+that combos such as Steam and QAM keep working.
+
+### I'm seeing three X-BOX controllers, regardless of whether HHD is running
+Currently, there is a bug with the Nobara kernels that adds 2 extra random
+Steam Controllers, that appear in the system as x-box controllers.
+this is unrelated to HHD.
+
+### Steam reports a Legion Controller and a Shortcuts controller instead of a DS5
+The Legion controllers have multiple modes (namely x-input, d-input, dual d-input,
+and FPS).
+HHD only remaps the x-input mode of the controllers.
+You can cycle through the modes with Legion L + RB.
+
+X-input and d-input refer to the protocol the controllers operate in.
+X-input is a USB controller protocol introduced with the xbox 360 controller and 
+is widely supported.
+Direct input is a competing protocol that works based on USB HID.
+Both work the same.
+However, d-input has discrete triggers for some reason.
+
+X-input requires a special udev rule to work, see below.
+
+### I can not see any controllers before or after installing HHD
+You are in a distro that does not officially support Legion Go.
+One of the fixes that is included in those distros is a udev rule that binds
+the xpad driver to the controllers.
+This is expected to be included in a future linux kernel so it is not included
+by default by HHD.
+
+Under `/etc/udev/rules.d/95-hhd.rules` add the following:
+```bash
+# Enable XPAD for the legion go controllers
+ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6182", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 17ef 6182 > /sys/bus/usb/drivers/xpad/new_id'"
+```
+
+### I can see the original controller and that is causing issues in X
+Hiding the original controller is a complex process, so it was skipped for the
+v0.1.* versions of HHD.
+However, it is implemented properly in v0.2 which will be released soon.
+Some emulators select the original controller as controller 1.
+
+### Yuzu does not work with the new controller
+See above, use yuzu controller settings to select the dual sense controller
+and disable steam input.
 
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PiPy.
