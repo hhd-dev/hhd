@@ -55,7 +55,7 @@ class EmitHolder(Emitter):
                 self._events.append(event)
             self._condition.notify_all()
 
-    def get_events(self, timeout: int = -1):
+    def get_events(self, timeout: int = -1) -> Sequence[Event]:
         with self._condition:
             if not self._events and timeout != -1:
                 self._condition.wait()
@@ -281,19 +281,54 @@ def main():
             # Plugin loop
             #
 
+            # Process events
+            settings_changed = False
+            for ev in emit.get_events():
+                match ev["type"]:
+                    case "settings":
+                        settings_changed = True
+                    case "profile":
+                        if ev["name"] in profiles:
+                            profiles[ev["name"]].update(ev["config"].conf)
+                        else:
+                            with lock:
+                                profiles[ev["name"]] = ev["config"]
+                        validate_config(
+                            profiles[ev["name"]], settings, use_defaults=False
+                        )
+                    case "apply":
+                        if ev["name"] in profiles:
+                            conf.update(profiles[ev["name"]].conf)
+                    case "state":
+                        conf.update(ev["config"].conf)
+                    case other:
+                        logger.error(f"Invalid event type submitted: '{other}'")
+
             # Validate config
             validate_config(conf, settings)
 
-            for p in reversed(sorted_plugins):
-                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                p.prepare(conf)
-                update_log_plugins()
+            # If settings changed, the configuration needs to reload
+            # but it needs to be saved first
+            if settings_changed:
+                should_initialize.set()
 
-            for p in sorted_plugins:
-                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                p.update(conf)
-                update_log_plugins()
-            set_log_plugin("ukwn")
+            # Plugins are promised that once they emit a
+            # settings change they are not called with the old settings
+            if not settings_changed:
+                #
+                # Plugin event loop
+                #
+
+                for p in reversed(sorted_plugins):
+                    set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                    p.prepare(conf)
+                    update_log_plugins()
+
+                for p in sorted_plugins:
+                    set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                    p.update(conf)
+                    update_log_plugins()
+                set_log_plugin("ukwn")
 
             #
             # Save loop
@@ -333,6 +368,7 @@ def main():
             with lock:
                 if (
                     not should_exit.is_set()
+                    and not settings_changed
                     and not should_initialize.is_set()
                     and not emit.has_events()
                 ):

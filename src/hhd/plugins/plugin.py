@@ -39,7 +39,7 @@ class ApplyEvent(TypedDict):
 
 
 class ConfigEvent(TypedDict):
-    type: Literal["config"]
+    type: Literal["state"]
     config: Config
 
 

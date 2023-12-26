@@ -132,17 +132,19 @@ class RestHandler(BaseHTTPRequestHandler):
                 case "apply":
                     if "profile" not in params:
                         return self.send_error(f"Profile not specified")
-                    if not content:
-                        return self.send_error(f"Data for the profile not sent.")
 
                     profiles = params["profile"]
+                    for p in profiles:
+                        if p not in self.profiles:
+                            return self.send_error(f"Profile '{p}' not found.")
+
                     self.emit([{"type": "apply", "name": p} for p in profiles])
                     # Wait for the profile to be processed
                     self.cond.wait()
                     # Return the profile
                     self.send_json(self.conf.conf)
 
-    def v1_endpoint(self, content: str | None):
+    def v1_endpoint(self, content: Any | None):
         segments, params = parse_path(self.path)
         if not segments:
             return self.send_not_found(f"Empty path.")
@@ -166,6 +168,9 @@ class RestHandler(BaseHTTPRequestHandler):
             case "state":
                 self.set_response_ok()
                 with self.cond:
+                    if content:
+                        self.emit({"type": "state", "config": Config(content)})
+                        self.cond.wait()
                     self.wfile.write(json.dumps(self.conf.conf).encode())
             case other:
                 self.send_not_found(f"Command '{other}' not supported.")
