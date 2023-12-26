@@ -260,6 +260,15 @@ Under `/etc/udev/rules.d/95-hhd.rules` add the following:
 ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6182", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 17ef 6182 > /sys/bus/usb/drivers/xpad/new_id'"
 ```
 
+You will see the following in the HHD logs (`sudo systemctl status hhd@$(whoami)`)
+if you are missing the xpad rule.
+```
+              ERROR    Device with the following not found:                                                                                                                          evdev.py:122
+                       Vendor ID: ['17ef']
+                       Product ID: ['6182']
+                       Name: ['Generic X-Box pad']
+```
+
 ### I can see the original controller and that is causing issues in X
 Hiding the original controller is a complex process, so it was skipped for the
 v0.1.* versions of HHD.
@@ -324,7 +333,8 @@ HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
 required. In addition, it will break HHD by hiding the controller.
 You should uninstall it with `sudo pacman -R handygccs-git`.
 
-You will see the following in the HHD logs if handygccs is enabled.
+You will see the following in the HHD logs (`sudo systemctl status hhd@$(whoami)`) 
+if handygccs is enabled.
 ```
               ERROR    Device with the following not found:                                                                                                                          evdev.py:122
                        Vendor ID: ['17ef']
