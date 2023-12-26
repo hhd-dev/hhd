@@ -313,6 +313,12 @@ If you do not need gyro, you can do the local install and modify
 `83-hhd.rules` to remove that rule.
 The gyro will freeze and will be unusable after that.
 
+### Touchpad right click does not work in desktop
+HHD remaps the touchpad of the legion go to the DS5 touchpad.
+The playstation driver does not support right clicking.
+Switch to d-input to enable the touchpad when you're in the desktop.
+Next HHD version includes an option for disabling touchpad emulation.
+
 ### HandyGCCS
 HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
 required. In addition, it will break HHD by hiding the controller.
