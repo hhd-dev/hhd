@@ -19,6 +19,7 @@ from .plugins import (
     Event,
     HHDAutodetect,
     HHDPlugin,
+    HHDSettings,
     load_relative_yaml,
 )
 from .plugins.settings import (
@@ -138,7 +139,6 @@ def main():
         # Open plugins
         lock = RLock()
         cond = Condition(lock)
-        apply_cond = Condition(lock)
         emit = EmitHolder(cond)
         for p in sorted_plugins:
             set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
@@ -147,17 +147,14 @@ def main():
         set_log_plugin("main")
 
         # Compile initial configuration
-        hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
-        settings = merge_settings(
-            [*[p.settings() for p in sorted_plugins], hhd_settings]
-        )
         state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
         token_fn = expanduser(join(CONFIG_DIR, "token"), ctx)
+        settings: HHDSettings = {}
 
         # Load profiles
         profiles = {}
         templates = {}
-        conf = get_default_state(settings)
+        conf = Config({})
         profile_dir = expanduser(join(CONFIG_DIR, "profiles"), ctx)
         os.makedirs(profile_dir, exist_ok=True)
         fix_perms(profile_dir, ctx)
@@ -179,14 +176,27 @@ def main():
             if should_initialize.is_set():
                 set_log_plugin("main")
                 logger.info(f"Reloading configuration.")
+
+                # Settings
+                hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
+                settings = merge_settings(
+                    [*[p.settings() for p in sorted_plugins], hhd_settings]
+                )
+
+                # State
                 new_conf = load_state_yaml(state_fn, settings)
                 if not new_conf:
-                    logger.warning(f"Using previous configuration.")
+                    if conf.conf:
+                        logger.warning(f"Using previous configuration.")
+                    else:
+                        logger.info(f"Using default configuration.")
+                        conf = get_default_state(settings)
                 else:
                     conf = new_conf
+
+                # Profiles
                 profiles = {}
                 templates = {}
-
                 for fn in os.listdir(profile_dir):
                     if not fn.endswith(".yml"):
                         continue
@@ -234,9 +244,9 @@ def main():
                 if http_cfg != prev_http_cfg:
                     prev_http_cfg = http_cfg
                     if https:
-                        https.shutdown()
+                        https.close()
                     if http_cfg["enable"]:
-                        from .http import start_http_api
+                        from .http import HHDHTTPServer
 
                         port = http_cfg["port"].to(int)
                         localhost = http_cfg["localhost"].to(bool)
@@ -259,9 +269,9 @@ def main():
                             token = None
 
                         set_log_plugin("rest")
-                        https = start_http_api(
-                            apply_cond, conf, profiles, emit, localhost, port, token
-                        )
+                        https = HHDHTTPServer(localhost, port, token)
+                        https.update(settings, conf, profiles, emit)
+                        https.open()
                         update_log_plugins()
                         set_log_plugin("main")
 
@@ -315,11 +325,12 @@ def main():
                 sleep(MODIFY_DELAY)
                 should_initialize.clear()
 
+            # Notify that events were applied
+            if https:
+                https.update(settings, conf, profiles, emit)
+
             # Wait for events
             with lock:
-                # Notify that events were applied
-                apply_cond.notify_all()
-
                 if (
                     not should_exit.is_set()
                     and not should_initialize.is_set()
@@ -338,7 +349,7 @@ def main():
         if https:
             set_log_plugin("main")
             logger.info("Shutting down the REST API.")
-            https.shutdown()
+            https.close()
         for plugs in plugins.values():
             for p in plugs:
                 set_log_plugin("main")
