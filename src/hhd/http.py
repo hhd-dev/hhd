@@ -1,12 +1,18 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from threading import Thread
 import logging
-from typing import Any
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from threading import Thread
+from typing import Any, Mapping
+
+from .plugins import Config, Emitter
 
 logger = logging.getLogger(__name__)
 
 
 class RestHandler(BaseHTTPRequestHandler):
+    conf: Config
+    profiles: Mapping[str, Config]
+    emit: Emitter
+
     def _set_response(self):
         self.send_response(200)
         self.send_header("Content-type", "text / html")
@@ -32,8 +38,22 @@ class RestHandler(BaseHTTPRequestHandler):
         pass
 
 
-def start_http_api(localhost: bool, port: int):
-    https = HTTPServer(("127.0.0.1" if localhost else "", port), RestHandler)
+def start_http_api(
+    conf: Config,
+    profiles: Mapping[str, Config],
+    emit: Emitter,
+    localhost: bool,
+    port: int,
+    token: str | None,
+):
+    class NewRestHandler(RestHandler):
+        pass
+
+    NewRestHandler.conf = conf
+    NewRestHandler.profiles = profiles
+    NewRestHandler.emit = emit
+
+    https = HTTPServer(("127.0.0.1" if localhost else "", port), NewRestHandler)
 
     t = Thread(target=https.serve_forever)
     t.start()

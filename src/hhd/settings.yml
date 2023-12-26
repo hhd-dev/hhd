@@ -22,7 +22,14 @@ http:
       default: 5335
     localhost:
       type: bool
-      title: Limit Access
+      title: Limit Access to localhost
       hint: >-
         Sets the API target to '127.0.0.1' instead '0.0.0.0'.
+      default: True
+    token:
+      type: bool
+      title: Use Security token
+      hint: >-
+        Generates a security token in `~/.config/hhd/token` that is required for
+        authentication.
       default: True

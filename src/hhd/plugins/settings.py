@@ -1,18 +1,15 @@
 import logging
 from functools import reduce
-from multiprocessing import Process
-from os.path import join
-from threading import Condition, Lock
 from typing import (
     Any,
     Literal,
     Mapping,
     MutableMapping,
-    NamedTuple,
     Sequence,
     TypedDict,
     cast,
 )
+from copy import copy
 
 from .conf import Config
 
@@ -71,7 +68,7 @@ class DiscreteSetting(TypedDict):
 class NumericalSetting(TypedDict):
     """Floating numerical option."""
 
-    type: Literal["number"]
+    type: Literal["float"]
     family: Sequence[str]
     title: str
     hint: str
@@ -101,6 +98,8 @@ class ColorSetting(TypedDict):
     family: Sequence[str]
     title: str
     hint: str
+
+    default: Mapping | None
 
 
 Setting = (
@@ -220,11 +219,34 @@ def parse_defaults(sets: HHDSettings):
     return out
 
 
+def fill_in_defaults(s: Setting | Container | Mode):
+    s = copy(s)
+    s["family"] = s.get("family", [])
+    s["title"] = s.get("title", "")
+    s["hint"] = s.get("hint", "")
+    if s["type"] != "container":
+        s["default"] = s.get("default", None)
+
+    match s["type"]:
+        case "container":
+            s["children"] = s.get("children", [])
+        case "mode":
+            s["modes"] = s.get("modes", {})
+        case "multiple":
+            s["options"] = s.get("options", {})
+        case "discrete":
+            s["options"] = s.get("options", [])
+        case "integer" | "float":
+            s["min"] = s.get("min", None)
+            s["max"] = s.get("max", None)
+    return s
+
+
 def merge_reduce(
     a: Setting | Container | Mode, b: Setting | Container | Mode
 ) -> Setting | Container | Mode:
     if a["type"] != b["type"]:
-        return b
+        return fill_in_defaults(b)
 
     match a["type"]:
         case "container":
@@ -236,7 +258,7 @@ def merge_reduce(
                 else:
                     out[k] = v
             out["children"] = new_children
-            return out
+            return fill_in_defaults(out)
         case "mode":
             out = cast(Mode, dict(b))
             new_children = dict(a["modes"])
@@ -246,9 +268,9 @@ def merge_reduce(
                 else:
                     out[k] = v
             out["modes"] = new_children
-            return out
+            return fill_in_defaults(out)
         case _:
-            return b
+            return fill_in_defaults(b)
 
 
 def merge_reduce_sec(a: Section, b: Section):
@@ -532,3 +554,67 @@ def get_settings_hash(set: HHDSettings):
     import hashlib
 
     return hashlib.md5(dump_comment(set).encode()).hexdigest()[:8]
+
+
+def unravel(d: Setting | Container | Mode, prev: Sequence[str], out: MutableMapping):
+    new_prev = list(prev)
+    match d["type"]:
+        case "container":
+            for k, v in d["children"].items():
+                unravel(v, new_prev + [k], out)
+        case "mode":
+            out[".".join(new_prev) + ".mode"] = d
+
+            for k, v in d["modes"].items():
+                unravel(v, new_prev + [k], out)
+        case _:
+            out[".".join(new_prev)] = d
+
+
+def unravel_options(settings: HHDSettings):
+    options: Mapping[str, Setting | Mode] = {}
+    for name, sec in settings.items():
+        for cname, cont in sec.items():
+            unravel(cont, [name, cname], options)
+
+    return options
+
+
+def validate_config(conf: Config, settings: HHDSettings):
+    options = unravel_options(settings)
+
+    for k, d in options.items():
+        v = conf.get(k, None)
+        default = d["default"]
+        if v is None:
+            if default is not None:
+                conf[k] = v
+            continue
+
+        match d["type"]:
+            case "mode":
+                if v not in d["modes"]:
+                    conf[k] = default
+            case "bool" | "event":
+                if v not in (False, True):
+                    conf[k] = bool(v)
+            case "multiple" | "discrete":
+                if v not in d["options"]:
+                    conf[k] = default
+            case "integer":
+                if not isinstance(v, int):
+                    conf[k] = int(v)
+                if v < d["min"]:
+                    conf[k] = d["min"]
+                if v > d["max"]:
+                    conf[k] = d["max"]
+            case "float":
+                if not isinstance(v, float):
+                    conf[k] = float(v)
+                if v < d["min"]:
+                    conf[k] = d["min"]
+                if v > d["max"]:
+                    conf[k] = d["max"]
+            case "color":
+                # TODO
+                pass

@@ -28,6 +28,7 @@ from .plugins.settings import (
     merge_settings,
     save_profile_yaml,
     save_state_yaml,
+    validate_config,
 )
 from .utils import expanduser, fix_perms, get_context
 
@@ -137,6 +138,7 @@ def main():
             [*[p.settings() for p in sorted_plugins], hhd_settings]
         )
         state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
+        token_fn = expanduser(join(CONFIG_DIR, "token"), ctx)
 
         # Load profiles
         profiles = {}
@@ -207,8 +209,8 @@ def main():
                     cfg_fds.append(fd)
                 initialized.set()
 
-                # Initialize flask
-                http_cfg = cast(Config, conf["hhd.http"])
+                # Initialize http server
+                http_cfg = conf["hhd.http"]
                 if http_cfg != prev_http_cfg:
                     prev_http_cfg = http_cfg
                     if https:
@@ -218,16 +220,37 @@ def main():
 
                         port = http_cfg["port"].to(int)
                         localhost = http_cfg["localhost"].to(bool)
-                        set_log_plugin('rest')
-                        https = start_http_api(localhost, port)
+                        use_token = http_cfg["token"].to(bool)
+
+                        # Generate security token
+                        if use_token:
+                            import hashlib
+                            import random
+
+                            token = hashlib.sha256(
+                                str(random.random()).encode()
+                            ).hexdigest()
+                            with open(token_fn, "w") as f:
+                                f.write(token)
+                            initialized.clear()
+                        else:
+                            token = None
+
+                        set_log_plugin("rest")
+                        https = start_http_api(
+                            conf, profiles, emit, localhost, port, token
+                        )
                         update_log_plugins()
-                        set_log_plugin('main')
+                        set_log_plugin("main")
 
                 logger.info(f"Initialization Complete!")
 
             #
             # Plugin loop
             #
+
+            # Validate config
+            validate_config(conf, settings)
 
             for p in reversed(sorted_plugins):
                 set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
@@ -276,7 +299,7 @@ def main():
                 pass
         if https:
             set_log_plugin("main")
-            logger.info('Shutting down the REST API.')
+            logger.info("Shutting down the REST API.")
             https.shutdown()
         for plugs in plugins.values():
             for p in plugs:

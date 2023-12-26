@@ -9,7 +9,6 @@ from typing import (
 )
 
 from hhd.controller import Axis, Button, Configuration
-from hhd.controller import Event as ControllerEvent
 
 from .conf import Config
 from .settings import HHDSettings
@@ -28,6 +27,17 @@ class SettingsEvent(TypedDict):
     type: Literal["settings"]
 
 
+class ProfileEvent(TypedDict):
+    type: Literal["profile"]
+    name: str
+    config: Config
+
+
+class ApplyEvent(TypedDict):
+    type: Literal["apply"]
+    name: str
+
+
 class ConfigEvent(TypedDict):
     type: Literal["config"]
     config: Config
@@ -41,10 +51,8 @@ class InputEvent(TypedDict):
     axis_state: Mapping[Axis, bool]
     conf_state: Mapping[Configuration, Any]
 
-    events: Sequence[ControllerEvent]
 
-
-Event = ConfigEvent | InputEvent
+Event = ConfigEvent | InputEvent | ProfileEvent | ApplyEvent
 
 
 class Emitter(Protocol):
