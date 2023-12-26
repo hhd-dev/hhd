@@ -63,8 +63,9 @@ that combos such as Steam and QAM keep working.
 
 ### I'm seeing three X-BOX controllers, regardless of whether HHD is running
 Currently, there is a bug with the Nobara kernels that adds 2 extra random
-Steam Controllers, that appear in the system as x-box controllers.
-this is unrelated to HHD.
+Steam Controllers.
+These controllers appear in the system as X-BOX/Xpad controllers.
+This is unrelated to HHD.
 
 ### Steam reports a Legion Controller and a Shortcuts controller instead of a DS5
 The Legion controllers have multiple modes (namely x-input, d-input, dual d-input,
@@ -73,11 +74,15 @@ HHD only remaps the x-input mode of the controllers.
 You can cycle through the modes with Legion L + RB.
 
 X-input and d-input refer to the protocol the controllers operate in.
+Both are legacy protocols introduced in the mid-2000s and are included for hardware
+support reasons.
+
 X-input is a USB controller protocol introduced with the xbox 360 controller and 
 is widely supported.
 Direct input is a competing protocol that works based on USB HID.
 Both work the same.
-However, d-input has discrete triggers for some reason.
+The only difference between them is that d-input has discrete triggers for some
+reason, and some games read the button order wrong.
 
 X-input requires a special udev rule to work, see below.
 
@@ -98,11 +103,14 @@ ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6182", RUN+="/sbin/modprobe xpad" RU
 Hiding the original controller is a complex process, so it was skipped for the
 v0.1.* versions of HHD.
 However, it is implemented properly in v0.2 which will be released soon.
-Some emulators select the original controller as controller 1.
+Some emulators select the original controller as controller 1, which might
+cause issues.
+If this is the case, wait for version 2.
 
-### Yuzu does not work with the new controller
-See above, use yuzu controller settings to select the dual sense controller
-and disable steam input.
+### Yuzu does not work with the DS5 controller
+See above.
+Use yuzu controller settings to select the dual sense controller and disable 
+steam input.
 
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PiPy.
