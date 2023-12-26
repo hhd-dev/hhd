@@ -155,6 +155,16 @@ class Config:
                 d = cast(Mapping, d)[s]
             return Config([deepcopy(d)])
 
+    def __delitem__(self, key: str | tuple[str, ...]):
+        with self._lock:
+            assert isinstance(self._conf, MutableMapping)
+            seq = to_seq(key)
+            d = self._conf
+            for s in seq[:-1]:
+                d = cast(Mapping, d)[s]
+            del d[seq[-1]]
+        self.updated = True
+
     def get(self, key, default: A) -> A:
         try:
             return self[key].to(type(default))

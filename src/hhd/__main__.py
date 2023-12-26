@@ -177,10 +177,12 @@ def main():
                         continue
                     name = fn.replace(".yml", "")
                     s = load_profile_yaml(join(profile_dir, fn))
-                    if name.startswith("_"):
-                        templates[name] = s
-                    else:
-                        profiles[name] = s
+                    if s:
+                        validate_config(s, settings, use_defaults=False)
+                        if name.startswith("_"):
+                            templates[name] = s
+                        else:
+                            profiles[name] = s
                 if profiles:
                     logger.info(
                         f"Loaded the following profiles (and state):\n[{', '.join(profiles)}]"

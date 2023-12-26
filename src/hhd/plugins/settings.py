@@ -580,27 +580,33 @@ def unravel_options(settings: HHDSettings):
     return options
 
 
-def validate_config(conf: Config, settings: HHDSettings):
+def validate_config(conf: Config, settings: HHDSettings, use_defaults: bool = True):
     options = unravel_options(settings)
 
     for k, d in options.items():
         v = conf.get(k, None)
         default = d["default"]
         if v is None:
-            if default is not None:
+            if use_defaults and default is not None:
                 conf[k] = v
             continue
 
         match d["type"]:
             case "mode":
                 if v not in d["modes"]:
-                    conf[k] = default
+                    if use_defaults:
+                        conf[k] = default
+                    else:
+                        del conf[k]
             case "bool" | "event":
                 if v not in (False, True):
                     conf[k] = bool(v)
             case "multiple" | "discrete":
                 if v not in d["options"]:
-                    conf[k] = default
+                    if use_defaults:
+                        conf[k] = default
+                    else:
+                        del conf[k]
             case "integer":
                 if not isinstance(v, int):
                     conf[k] = int(v)
