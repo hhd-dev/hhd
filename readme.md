@@ -305,6 +305,14 @@ By default, the accelerometer is disabled for this reason.
 You need to set both `gyro` and `gyro-fix` to `False` in the config to disable
 gyro support.
 
+### No screen autorotation after install
+HHD includes a udev rule that disables screen autorotation, because it interferes
+with gyro support.
+This is only done specifically to the accelerometer of the legion go.
+If you do not need gyro, you can do the local install and modify
+`83-hhd.rules` to remove that rule.
+The gyro will freeze and will be unusable after that.
+
 ### HandyGCCS
 HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
 required. In addition, it will break HHD by hiding the controller.
