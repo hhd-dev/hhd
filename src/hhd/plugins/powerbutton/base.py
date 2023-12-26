@@ -1,14 +1,10 @@
-# TODO: Add attribution and license
-# created based on implementation from HandyGCCS
-# https://github.com/ShadowBlip/HandyGCCS/blob/10bf0da2bbe06b4e6c608e157f26628b6d848042/src/handycon/utilities.py
-
 import logging
 import os
 import select
 import subprocess
 from threading import Event
 from time import perf_counter, sleep
-from typing import Sequence, cast
+from typing import cast
 
 import evdev
 from evdev import ecodes as e
@@ -21,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 STEAM_PID = "~/.steam/steam.pid"
 STEAM_EXE = "~/.steam/root/ubuntu12_32/steam"
-STEAM_WAIT_DELAY = 2
+STEAM_WAIT_DELAY = 0.5
 LONG_PRESS_DELAY = 2.5
 
 
@@ -162,6 +158,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
 
             # Add timeout to release the button if steam exits.
             r = select.select([press_dev.fd, hold_dev.fd], [], [], STEAM_WAIT_DELAY)[0]
+            
             if not r:
                 continue
             fd = r[0]  # handle one button at a time
