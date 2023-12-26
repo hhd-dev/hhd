@@ -4,7 +4,7 @@ import logging
 import os
 import signal
 from os.path import join
-from threading import Condition
+from threading import Condition, RLock
 from threading import Event as TEvent
 from threading import Lock
 from time import sleep
@@ -37,16 +37,17 @@ logger = logging.getLogger(__name__)
 CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
 
 ERROR_DELAY = 5
+POLL_DELAY = 2
+MODIFY_DELAY = 0.1
 
 
 class EmitHolder(Emitter):
-    def __init__(self) -> None:
+    def __init__(self, condition: Condition) -> None:
         self._events = []
-        self._lock = Lock()
-        self._condition = Condition(self._lock)
+        self._condition = condition
 
     def __call__(self, event: Event | Sequence[Event]) -> None:
-        with self._lock:
+        with self._condition:
             if isinstance(event, Sequence):
                 self._events.extend(event)
             else:
@@ -54,12 +55,25 @@ class EmitHolder(Emitter):
             self._condition.notify_all()
 
     def get_events(self, timeout: int = -1):
-        with self._lock:
+        with self._condition:
             if not self._events and timeout != -1:
                 self._condition.wait()
             ev = self._events
             self._events = []
             return ev
+
+    def has_events(self):
+        with self._condition:
+            return bool(self._events)
+
+
+def notifier(ev: TEvent, cond: Condition):
+    def _inner(sig, frame):
+        with cond:
+            ev.set()
+            cond.notify_all()
+
+    return _inner
 
 
 def main():
@@ -85,8 +99,6 @@ def main():
 
     detectors: dict[str, HHDAutodetect] = {}
     plugins: dict[str, Sequence[HHDPlugin]] = {}
-    log_plugins: Sequence[tuple[str, str]] = []
-    log_plugins.append(("hhd", "main"))
     cfg_fds = []
 
     # HTTP data
@@ -98,7 +110,6 @@ def main():
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
 
         for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
-            log_plugins.append((autodetect.module_name, autodetect.name))
             detectors[autodetect.name] = autodetect.resolve()
 
         logger.info(f"Found plugin providers: {', '.join(list(detectors))}")
@@ -125,7 +136,10 @@ def main():
             return
 
         # Open plugins
-        emit = EmitHolder()
+        lock = RLock()
+        cond = Condition(lock)
+        apply_cond = Condition(lock)
+        emit = EmitHolder(cond)
         for p in sorted_plugins:
             set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
             p.open(emit, ctx)
@@ -149,11 +163,12 @@ def main():
         fix_perms(profile_dir, ctx)
 
         # Monitor config files for changes
-        initialized = TEvent()
+        should_initialize = TEvent()
+        should_initialize.set()
         should_exit = TEvent()
-        signal.signal(signal.SIGPOLL, lambda sig, frame: initialized.clear())
-        signal.signal(signal.SIGINT, lambda sig, frame: should_exit.set())
-        signal.signal(signal.SIGTERM, lambda sig, frame: should_exit.set())
+        signal.signal(signal.SIGPOLL, notifier(should_initialize, cond))
+        signal.signal(signal.SIGINT, notifier(should_exit, cond))
+        signal.signal(signal.SIGTERM, notifier(should_exit, cond))
 
         while not should_exit.is_set():
             #
@@ -161,7 +176,7 @@ def main():
             #
 
             # Initialize if files changed
-            if not initialized.is_set():
+            if should_initialize.is_set():
                 set_log_plugin("main")
                 logger.info(f"Reloading configuration.")
                 new_conf = load_state_yaml(state_fn, settings)
@@ -182,7 +197,10 @@ def main():
                         if name.startswith("_"):
                             templates[name] = s
                         else:
-                            profiles[name] = s
+                            # Profiles are shared so lock when accessing
+                            # Configs have their own locks and are safe
+                            with lock:
+                                profiles[name] = s
                 if profiles:
                     logger.info(
                         f"Loaded the following profiles (and state):\n[{', '.join(profiles)}]"
@@ -209,7 +227,7 @@ def main():
                         fcntl.DN_CREATE | fcntl.DN_DELETE | fcntl.DN_MODIFY,
                     )
                     cfg_fds.append(fd)
-                initialized.set()
+                should_initialize.clear()
 
                 # Initialize http server
                 http_cfg = conf["hhd.http"]
@@ -234,13 +252,15 @@ def main():
                             ).hexdigest()
                             with open(token_fn, "w") as f:
                                 f.write(token)
-                            initialized.clear()
+
+                            sleep(MODIFY_DELAY)
+                            should_initialize.clear()
                         else:
                             token = None
 
                         set_log_plugin("rest")
                         https = start_http_api(
-                            conf, profiles, emit, localhost, port, token
+                            apply_cond, conf, profiles, emit, localhost, port, token
                         )
                         update_log_plugins()
                         set_log_plugin("main")
@@ -269,14 +289,17 @@ def main():
             # Save loop
             #
 
-            has_new = initialized.is_set()
+            has_new = should_initialize.is_set()
+            saved = False
             # Save existing profiles if open
             if save_state_yaml(state_fn, settings, conf):
                 fix_perms(state_fn, ctx)
+                saved = True
             for name, prof in profiles.items():
                 fn = join(profile_dir, name + ".yml")
                 if save_profile_yaml(fn, settings, prof):
                     fix_perms(fn, ctx)
+                    saved = True
 
             # Add template config
             if save_profile_yaml(
@@ -285,11 +308,24 @@ def main():
                 templates.get("_template", None),
             ):
                 fix_perms(join(profile_dir, "_template.yml"), ctx)
+                saved = True
 
-            if not should_exit.is_set():
-                sleep(1)
-            if not has_new:
-                initialized.clear()
+            if not has_new and saved:
+                # We triggered the interrupt, clear
+                sleep(MODIFY_DELAY)
+                should_initialize.clear()
+
+            # Wait for events
+            with lock:
+                # Notify that events were applied
+                apply_cond.notify_all()
+
+                if (
+                    not should_exit.is_set()
+                    and not should_initialize.is_set()
+                    and not emit.has_events()
+                ):
+                    cond.wait(timeout=POLL_DELAY)
 
         set_log_plugin("main")
         logger.info(f"HHD Daemon received interrupt, stopping plugins and exiting.")
