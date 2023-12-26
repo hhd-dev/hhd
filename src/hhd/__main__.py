@@ -261,6 +261,7 @@ def main():
                                 str(random.random()).encode()
                             ).hexdigest()
                             with open(token_fn, "w") as f:
+                                os.chmod(token_fn, 0o600)
                                 f.write(token)
 
                             sleep(MODIFY_DELAY)
