@@ -104,7 +104,7 @@ cd ~/.local/share/hhd
 
 python -m venv venv
 source venv/bin/activate
-pip install hhd
+pip install hhd setuptools
 
 # Install udev rules and create a service file
 sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules 
