@@ -87,6 +87,11 @@ def main():
     log_plugins: Sequence[tuple[str, str]] = []
     log_plugins.append(("hhd", "main"))
     cfg_fds = []
+
+    # HTTP data
+    https = None
+    prev_http_cfg = None
+
     try:
         set_log_plugin("main")
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
@@ -132,10 +137,6 @@ def main():
             [*[p.settings() for p in sorted_plugins], hhd_settings]
         )
         state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
-
-        # HTTP data
-        https = None
-        prev_http_cfg = None
 
         # Load profiles
         profiles = {}
@@ -211,13 +212,16 @@ def main():
                 if http_cfg != prev_http_cfg:
                     prev_http_cfg = http_cfg
                     if https:
-                        pass
+                        https.shutdown()
                     if http_cfg["enable"]:
                         from .http import start_http_api
 
                         port = http_cfg["port"].to(int)
                         localhost = http_cfg["localhost"].to(bool)
+                        set_log_plugin('rest')
                         https = start_http_api(localhost, port)
+                        update_log_plugins()
+                        set_log_plugin('main')
 
                 logger.info(f"Initialization Complete!")
 
@@ -270,6 +274,10 @@ def main():
                 os.close(fd)
             except Exception:
                 pass
+        if https:
+            set_log_plugin("main")
+            logger.info('Shutting down the REST API.')
+            https.shutdown()
         for plugs in plugins.values():
             for p in plugs:
                 set_log_plugin("main")

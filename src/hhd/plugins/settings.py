@@ -439,7 +439,7 @@ def dump_settings(
                 out[sec_name][cont_name] = s
 
     # Merge dicts to maintain settings for plugins that did not run
-    return merge_dicts({"version": None, **conf.conf}, out)
+    return merge_dicts({"version": None, **cast(Mapping, conf.conf)}, out)
 
 
 def save_state_yaml(fn: str, set: HHDSettings, conf: Config):
