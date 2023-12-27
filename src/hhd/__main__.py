@@ -255,7 +255,7 @@ def main():
                     prev_http_cfg = http_cfg
                     if https:
                         https.close()
-                    if http_cfg["enable"]:
+                    if http_cfg["enable"].to(bool):
                         from .http import HHDHTTPServer
 
                         port = http_cfg["port"].to(int)
