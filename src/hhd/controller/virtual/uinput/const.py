@@ -7,6 +7,15 @@ from evdev import AbsInfo
 from hhd.controller import Axis, Button, Consumer, Producer
 
 
+HHD_VID = 0x5335
+HHD_PID_GAMEPAD = 0x01
+HHD_PID_KEYBOARD = 0x02
+HHD_PID_MOUSE = 0x03
+HHD_PID_TOUCHPAD = 0x04
+HHD_PID_MOTION = 0x11
+HHD_PID_VENDOR = 0x7000
+
+
 def B(b: str | Sequence[str], num: int | None = None):
     if num is not None:
         return num
@@ -18,7 +27,7 @@ def B(b: str | Sequence[str], num: int | None = None):
 
 class AX(NamedTuple):
     id: int
-    scale: float | None = None
+    scale: float = 1
     offset: float = 0
 
 
@@ -47,12 +56,12 @@ GAMEPAD_BTN_CAPABILITIES = {
 }
 
 GAMEPAD_CAPABILITIES = {
-    B("EV_SYN", 0): [
-        B("SYN_REPORT", 0),
-        B("SYN_CONFIG", 1),
-        B("SYN_DROPPED", 3),
-        B("?", 21),
-    ],
+    # B("EV_SYN", 0): [
+    #     B("SYN_REPORT", 0),
+    #     B("SYN_CONFIG", 1),
+    #     B("SYN_DROPPED", 3),
+    #     B("?", 21),
+    # ],
     B("EV_KEY", 1): [
         B(["BTN_A", "BTN_GAMEPAD", "BTN_SOUTH"], 304),
         B(["BTN_B", "BTN_EAST"], 305),
@@ -81,7 +90,7 @@ GAMEPAD_CAPABILITIES = {
             B("ABS_Y", 1),
             AbsInfo(value=0, min=-32768, max=32767, fuzz=16, flat=128, resolution=0),
         ),
-        (("ABS_Z", 2), AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)),
+        (B("ABS_Z", 2), AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)),
         (
             B("ABS_RX", 3),
             AbsInfo(value=0, min=-32768, max=32767, fuzz=16, flat=128, resolution=0),
@@ -90,7 +99,10 @@ GAMEPAD_CAPABILITIES = {
             B("ABS_RY", 4),
             AbsInfo(value=0, min=-32768, max=32767, fuzz=16, flat=128, resolution=0),
         ),
-        (("ABS_RZ", 5), AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0)),
+        (
+            B("ABS_RZ", 5),
+            AbsInfo(value=0, min=0, max=255, fuzz=0, flat=0, resolution=0),
+        ),
         (
             B("ABS_HAT0X", 16),
             AbsInfo(value=0, min=-1, max=1, fuzz=0, flat=0, resolution=0),
@@ -111,7 +123,7 @@ GAMEPAD_CAPABILITIES = {
 }
 
 MOTION_CAPABILITIES = {
-    B("EV_SYN", 0): [B("SYN_REPORT", 0), B("SYN_DROPPED", 3), B("?", 4)],
+    # B("EV_SYN", 0): [B("SYN_REPORT", 0), B("SYN_DROPPED", 3), B("?", 4)],
     B("EV_ABS", 3): [
         (
             B("ABS_X", 0),
@@ -148,13 +160,13 @@ MOTION_CAPABILITIES = {
 }
 
 KEYBOARD_CAPABILITIES = {
-    B("EV_SYN", 0): [
-        B("SYN_REPORT", 0),
-        B("SYN_CONFIG", 1),
-        B("?", 4),
-        B("?", 17),
-        B("?", 20),
-    ],
+    # B("EV_SYN", 0): [
+    #     B("SYN_REPORT", 0),
+    #     B("SYN_CONFIG", 1),
+    #     B("?", 4),
+    #     B("?", 17),
+    #     B("?", 20),
+    # ],
     B("EV_KEY", 1): [
         B("KEY_ESC", 1),
         B("KEY_1", 2),
@@ -325,12 +337,12 @@ KEYBOARD_CAPABILITIES = {
 }
 
 MOUSE_CAPABILITIES = {
-    B("EV_SYN", 0): [
-        B("SYN_REPORT", 0),
-        B("SYN_CONFIG", 1),
-        B("SYN_MT_REPORT", 2),
-        B("?", 4),
-    ],
+    # B("EV_SYN", 0): [
+    #     B("SYN_REPORT", 0),
+    #     B("SYN_CONFIG", 1),
+    #     B("SYN_MT_REPORT", 2),
+    #     B("?", 4),
+    # ],
     B("EV_KEY", 1): [
         B(["BTN_LEFT", "BTN_MOUSE"], 272),
         B("BTN_RIGHT", 273),
@@ -373,6 +385,15 @@ GAMEPAD_BUTTON_MAP: dict[Button, int] = {
     "extra_r3": B("BTN_TRIGGER_HAPPY6"),
 }
 
-GAMEPAD_AXIS_MAP: dict[Axis, int] = {
-
+GAMEPAD_AXIS_MAP: dict[Axis, AX] = {
+    "ls_x": AX(B("ABS_X"), 2**15 - 1),
+    "ls_y": AX(B("ABS_Y"), 2**15 - 1),
+    "rs_x": AX(B("ABS_RX"), 2**15 - 1),
+    "rs_y": AX(B("ABS_RY"), 2**15 - 1),
+    "lt": AX(B("ABS_Z"), 2**8 - 1),
+    "rt": AX(B("ABS_RZ"), 2**8 - 1),
+    "hat_x": AX(B("ABS_HAT0X")),
+    "hat_y": AX(B("ABS_HAT0Y")),
 }
+
+MOTION_AXIS_MAP: dict[Axis, AX] = {}

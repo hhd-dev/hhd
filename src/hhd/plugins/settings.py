@@ -229,9 +229,14 @@ def fill_in_defaults(s: Setting | Container | Mode):
 
     match s["type"]:
         case "container":
-            s["children"] = s.get("children", [])
+            s["children"] = {
+                k: fill_in_defaults(v) for k, v in s.get("children", {}).items()
+            }
         case "mode":
-            s["modes"] = s.get("modes", {})
+            s["modes"] = {
+                k: cast(Container, fill_in_defaults(v))
+                for k, v in s.get("modes", {}).items()
+            }
         case "multiple":
             s["options"] = s.get("options", {})
         case "discrete":
@@ -251,7 +256,7 @@ def merge_reduce(
     match a["type"]:
         case "container":
             out = cast(Container, dict(b))
-            new_children = dict(a["children"])
+            new_children = dict(a.get("children", {}))
             for k, v in b.items():
                 if k in out:
                     out[k] = merge_reduce(out[k], b[k])
@@ -261,7 +266,7 @@ def merge_reduce(
             return fill_in_defaults(out)
         case "mode":
             out = cast(Mode, dict(b))
-            new_children = dict(a["modes"])
+            new_children = dict(a.get("modes", {}))
             for k, v in b.items():
                 if k in out:
                     out[k] = merge_reduce(out[k], b[k])
@@ -274,29 +279,30 @@ def merge_reduce(
 
 
 def merge_reduce_sec(a: Section, b: Section):
-    out = dict(a)
+    out = {k: cast(Container, fill_in_defaults(v)) for k, v in a.items()}
     for k, v in b.items():
         if k in out:
-            out[k] = cast(Container, merge_reduce(out[k], b[k]))
+            out[k] = cast(Container, merge_reduce(out[k], v))
         else:
-            out[k] = v
+            out[k] = cast(Container, fill_in_defaults(v))
 
     return out
 
 
 def merge_reduce_secs(a: HHDSettings, b: HHDSettings):
-    out = dict(a)
+    out = {k: merge_reduce_sec({}, v) for k, v in a.items()}
     for k, v in b.items():
-        if k in out:
-            out[k] = merge_reduce_sec(out[k], b[k])
-        else:
-            out[k] = v
+        out[k] = merge_reduce_sec(out.get(k, {}), v)
 
     return out
 
 
 def merge_settings(sets: Sequence[HHDSettings]):
-    return reduce(merge_reduce_secs, sets)
+    if not sets:
+        return {}
+    if len(sets) > 1:
+        return reduce(merge_reduce_secs, sets)
+    return merge_reduce_secs({}, sets[0])
 
 
 def generate_desc(s: Setting | Container | Mode):

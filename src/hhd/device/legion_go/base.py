@@ -15,7 +15,12 @@ from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
-from hhd.controller.virtual.uinput import UInputDevice
+from hhd.controller.virtual.uinput import (
+    UInputDevice,
+    HHD_PID_VENDOR,
+    HHD_PID_GAMEPAD,
+    HHD_PID_MOTION,
+)
 from hhd.plugins import Config, Context, Emitter
 
 from .const import (
@@ -30,6 +35,7 @@ from .gyro_fix import GyroFixer
 from .hid import rgb_callback
 
 ERROR_DELAY = 1
+SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
 
@@ -73,24 +79,29 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
                     time.sleep(ERROR_DELAY)
                     continue
 
-            match controller_mode:
-                case "xinput":
-                    logger.info("Launching DS5 controller instance.")
-                    if gyro_fixer:
-                        gyro_fixer.open()
-                    controller_loop_xinput(conf, should_exit)
-                case _:
+            if controller_mode == "xinput" and conf["xinput"].to(str) != "disabled":
+                logger.info("Launching DS5 controller instance.")
+                if gyro_fixer:
+                    gyro_fixer.open()
+                controller_loop_xinput(conf, should_exit)
+            else:
+                if controller_mode == "xinput":
                     logger.info(
-                        f"Controllers in non-supported (yet) mode: {controller_mode}. Launching a shortcuts device."
+                        f"Controllers in non-supported (yet) mode: {controller_mode}."
                     )
-                    controller_loop_rest(
-                        controller_mode, pid if pid else 2, conf, should_exit
+                else:
+                    logger.info(
+                        f"Controllers in xinput mode but emulation is disabled."
                     )
+                controller_loop_rest(
+                    controller_mode, pid if pid else 2, conf, should_exit
+                )
         except Exception as e:
             logger.error(f"Received the following error:\n{e}")
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )
+            raise e
             time.sleep(ERROR_DELAY)
         finally:
             if gyro_fixer:
@@ -99,6 +110,11 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
 
 def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
+    shortcuts_enabled = conf["shortcuts"].to(bool)
+    if shortcuts_enabled:
+        logger.info(f"Launching a shortcuts device.")
+    else:
+        logger.info(f"Shortcuts disabled. Waiting for controllers to change modes.")
 
     d_raw = SelectivePassthrough(
         GenericGamepadHidraw(
@@ -118,7 +134,11 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
         trigger="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
     )
-    d_uinput = UInputDevice(name=f"HHD Shortcuts Device (Legion Mode: {mode})", pid=pid)
+    d_uinput = UInputDevice(
+        name=f"HHD Shortcuts (Legion Mode: {mode})",
+        pid=HHD_PID_VENDOR | 0x0200 | (pid & 0xF),
+        phys=f"phys-hhd-shortcuts-legion-{mode}",
+    )
 
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
@@ -131,17 +151,20 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
     try:
         fds = []
         fds.extend(d_raw.open())
-        fds.extend(d_shortcuts.open())
-        fds.extend(d_uinput.open())
+        if shortcuts_enabled:
+            fds.extend(d_shortcuts.open())
+            fds.extend(d_uinput.open())
 
         while not should_exit.is_set():
-            select.select(fds, [], [])
-            d_shortcuts.produce(fds)
-            d_uinput.produce(fds)
+            select.select(fds, [], [], SELECT_TIMEOUT)
             evs = multiplexer.process(d_raw.produce(fds))
-            if debug and evs:
-                logger.info(evs)
-            d_uinput.consume(evs)
+
+            if shortcuts_enabled:
+                d_shortcuts.produce(fds)
+                d_uinput.produce(fds)
+                if debug and evs:
+                    logger.info(evs)
+                d_uinput.consume(evs)
     finally:
         d_shortcuts.close(True)
         d_raw.close(True)
@@ -152,9 +175,13 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
 
     # Output
-    d_ds5 = DualSense5Edge(
-        touchpad_method=conf["touchpad_mode"].to(TouchpadCorrectionType)
-    )
+    match conf["xinput.mode"].to(str):
+        case "ds5e":
+            d_out = DualSense5Edge(
+                touchpad_method=conf["touchpad_mode"].to(TouchpadCorrectionType)
+            )
+        case _:
+            d_out = UInputDevice(phys="phys-hhd-legion")
     # from hhd.controller.virtual.sd import SteamdeckOLEDController
     # d_ds5 = SteamdeckOLEDController()
 
@@ -191,9 +218,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
-            callback=rgb_callback
-            if conf["xinput.ds5e.led_support"].to(bool)
-            else None,
+            callback=rgb_callback if conf["xinput.ds5e.led_support"].to(bool) else None,
             required=True,
         )
     )
@@ -253,7 +278,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         if conf["touchpad_mode"].to(str) != "disabled":
             prepare(d_touch)
         prepare(d_raw)
-        prepare(d_ds5)
+        prepare(d_out)
 
         logger.info("DS5 controller instance launched, have fun!")
         while not should_exit.is_set():
@@ -276,7 +301,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
 
                 d_xinput.consume(evs)
                 d_raw.consume(evs)
-                d_ds5.consume(evs)
+                d_out.consume(evs)
 
             # If unbounded, the total number of events per second is the sum of all
             # events generated by the producers.

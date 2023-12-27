@@ -24,15 +24,6 @@ children:
         title: Disabled
         hint: >-
           Does not modify the default controller.
-
-        children:
-          shortcuts:
-            type: bool
-            title: Enable Shortcuts Device
-            hint: >-
-              Enables the shortcuts device which will re-enable QAM, Xbox
-              button, and their combinations.
-            default: True
       #
       # Dual Sense 5
       #
@@ -52,6 +43,18 @@ children:
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
+      #
+      # evdev through uinput
+      #
+      uinput:
+        type: container
+        tags: [lgc_emulation_uinput, uinput]
+        title: Events Device
+        hint: >-
+          Creates a virtual `Handheld Daemon Controller` that can be used normally
+          in apps. Back buttons are supported but steam will not detect them.
+          If Gyroscope or Accelerometer are enabled, a Motion device will be
+          created as well (experimental).
 
   #
   # Common settings
