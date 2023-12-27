@@ -133,4 +133,4 @@ def expanduser(path: str, user: int | str | Context | None = None):
 
 
 def fix_perms(fn: str, ctx: Context):
-    os.chown(fn, ctx.euid, ctx.gid)
+    os.chown(fn, ctx.euid, ctx.egid)

@@ -7,7 +7,7 @@ from typing import Sequence, Any
 
 from rich.logging import RichHandler
 from threading import local, Lock, get_ident, enumerate
-from .utils import Context, expanduser
+from .utils import Context, expanduser, fix_perms
 
 logger = logging.getLogger(__name__)
 
@@ -202,6 +202,8 @@ def setup_logger(
     handlers.append(PluginRichHandler(PluginLogRender()))
     if log_dir:
         os.makedirs(log_dir, exist_ok=True)
+        if ctx:
+            fix_perms(log_dir, ctx)
         handler = UserRotatingFileHandler(
             os.path.join(log_dir, "hhd.log"),
             maxBytes=10_000_000,

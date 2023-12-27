@@ -31,7 +31,7 @@ from .plugins.settings import (
     save_state_yaml,
     validate_config,
 )
-from .utils import expanduser, fix_perms, get_context
+from .utils import expanduser, fix_perms, get_context, switch_priviledge
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +130,18 @@ def main():
     prev_http_cfg = None
 
     try:
+        # Create nested hhd dir
+        # This might mess up permissions in upward directories
+        # So try to deescalate
+        hhd_dir = expanduser(CONFIG_DIR, ctx)
+        try:
+            switch_priviledge(ctx, False)
+            os.makedirs(hhd_dir, exist_ok=True)
+            switch_priviledge(ctx, True)
+            fix_perms(hhd_dir, ctx)
+        except Exception:
+            pass
+
         set_log_plugin("main")
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
 
