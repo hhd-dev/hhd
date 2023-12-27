@@ -1,12 +1,12 @@
 import json
 import logging
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Condition, Thread
 from typing import Any, Mapping
-
 from urllib.parse import parse_qs, urlparse
 
-from hhd.plugins import Config, Emitter, HHDSettings
+from hhd.plugins import Config, Emitter, HHDSettings, get_relative_fn
 
 logger = logging.getLogger(__name__)
 
@@ -17,15 +17,21 @@ def sanitize_name(n: str):
     return re.sub(r"[^ a-zA-Z0-9]+", "", n)
 
 
+def sanitize_fn(n: str):
+    import re
+
+    return re.sub(r"[^ a-zA-Z0-9\._/]+", "", n)
+
+
 STANDARD_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": "true",
     "WWW-Authenticate": "Bearer",
 }
 
-ERROR_HEADERS = {**STANDARD_HEADERS, "Content-type": "text / plain"}
+ERROR_HEADERS = {**STANDARD_HEADERS, "Content-type": "text/plain"}
 AUTH_HEADERS = ERROR_HEADERS
-OK_HEADERS = {**STANDARD_HEADERS, "Content-type": "text / json"}
+OK_HEADERS = {**STANDARD_HEADERS, "Content-type": "text/json"}
 
 
 def parse_path(path: str) -> tuple[list, dict[str, list[str]]]:
@@ -76,7 +82,7 @@ class RestHandler(BaseHTTPRequestHandler):
         if self.is_authenticated():
             return True
 
-        self.set_response(401, {"Content-type": "text / plain"})
+        self.set_response(401, {"Content-type": "text/plain"})
         self.wfile.write(
             f"Handheld Daemon Error: Authentication is on and you did not supply the proper bearer token.".encode()
         )
@@ -99,6 +105,22 @@ class RestHandler(BaseHTTPRequestHandler):
         self.set_response(400, ERROR_HEADERS)
         self.wfile.write(b"Handheld Daemon Error:\n")
         self.wfile.write(error.encode())
+
+    def send_file(self, fn: str):
+        if not "." in fn:
+            return self.send_error(f"Invalid file: {fn}")
+        match fn[fn.rindex(".") :]:
+            case ".css":
+                ctype = "text/css"
+            case ".js":
+                ctype = "text/javascript"
+            case ".html" | ".htm" | ".php":
+                ctype = "text/html"
+            case other:
+                return self.send_error(f"File type '{other} of '{fn}' not supported.")
+        self.set_response(200, {**STANDARD_HEADERS, "Content-type": ctype})
+        with open(get_relative_fn(fn), "rb") as f:
+            self.wfile.write(f.read())
 
     def handle_profile(
         self, segments: list[str], params: dict[str, list[str]], content: Any | None
@@ -212,10 +234,26 @@ class RestHandler(BaseHTTPRequestHandler):
                 self.send_not_found(f"Command '{other}' not supported.")
 
     def do_GET(self):
-        if not self.send_authenticate():
-            return
-
-        self.v1_endpoint(None)
+        # Danger zone unauthenticated
+        # Be very careful
+        try:
+            path = sanitize_fn(urlparse(self.path).path)
+            if path.startswith("/"):
+                path = path[1:]
+            match path.split("/"):
+                case ["" | "index.html" | "index.php"]:
+                    return self.send_file("./index.html")
+                case ["static", *other]:
+                    return self.send_file(os.path.join("static", *other))
+                case ["api", *other]:
+                    if not self.send_authenticate():
+                        return
+                    self.v1_endpoint(None)
+                case other:
+                    return self.send_not_found(f"File not found:\n{path}")
+        except Exception as e:
+            logger.error(f"Encountered error while serving unauthenticated request.")
+            return self.send_error(f"Encountered error while serving request:\n{e}")
 
     def do_POST(self):
         if not self.send_authenticate():

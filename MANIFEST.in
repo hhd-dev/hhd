@@ -1,3 +1,5 @@
 recursive-include src/hhd *.yml
 recursive-include src/hhd *.yaml
 graft usr/
+graft src/hhd/http/static
+include src/hhd/http/index.html
