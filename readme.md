@@ -24,15 +24,11 @@ depending on the game.
 - Power Button plugin
     - Short press makes steam deck sleep
     - Long press opens steam power menu
-
-*Upcoming v0.2 Features*
 - Hiding the original xbox controller!
 - HTTP based Configuration
-  - Right now, functionality can be tweaked through config files
-    - Not ideal for a portable device
-  - An HTTP daemon and a plugin system will allow safe, polkit based
-    access to hardware configuration.
-  - Profiles will allow swapping configuration per game.
+  - Allows configuring HHD over Electron/React apps.
+  - Token based authentication and limited to localhost.
+  - With will allow swapping configuration per game.
 
 *Planned Features (in that order)*:
 - Evdev device emulation
@@ -330,7 +326,7 @@ The gyro will freeze and will be unusable after that.
 HHD remaps the touchpad of the legion go to the DS5 touchpad.
 The playstation driver does not support right clicking.
 Switch to d-input to enable the touchpad when you're in the desktop.
-Next HHD version includes an option for disabling touchpad emulation.
+You can also disable touchpad emulation in the config.
 
 ### HandyGCCS
 HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
