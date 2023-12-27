@@ -25,7 +25,7 @@ class ButtonSetting(TypedDict):
     type: Literal["event"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     default: bool | None
 
@@ -36,7 +36,7 @@ class BooleanSetting(TypedDict):
     type: Literal["bool"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     default: bool | None
 
@@ -47,7 +47,7 @@ class MultipleSetting(TypedDict):
     type: Literal["multiple"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     options: Mapping[str, str]
     default: str | None
@@ -59,7 +59,7 @@ class DiscreteSetting(TypedDict):
     type: Literal["discrete"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     options: Sequence[int | float]
     default: int | float | None
@@ -71,7 +71,7 @@ class NumericalSetting(TypedDict):
     type: Literal["float"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     min: float | None
     max: float | None
@@ -81,10 +81,10 @@ class NumericalSetting(TypedDict):
 class IntegerSetting(TypedDict):
     """Floating numerical option."""
 
-    type: Literal["integer"]
+    type: Literal["int"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     min: int | None
     max: int | None
@@ -97,7 +97,7 @@ class ColorSetting(TypedDict):
     type: Literal["color"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     default: Mapping | None
 
@@ -123,7 +123,7 @@ class Container(TypedDict):
     type: Literal["container"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     children: MutableMapping[str, "Setting | Container | Mode"]
 
@@ -134,7 +134,7 @@ class Mode(TypedDict):
     type: Literal["mode"]
     family: Sequence[str]
     title: str
-    hint: str
+    hint: str | None
 
     modes: MutableMapping[str, Container]
     default: str | None
@@ -223,7 +223,7 @@ def fill_in_defaults(s: Setting | Container | Mode):
     s = copy(s)
     s["family"] = s.get("family", [])
     s["title"] = s.get("title", "")
-    s["hint"] = s.get("hint", "")
+    s["hint"] = s.get("hint", None)
     if s["type"] != "container":
         s["default"] = s.get("default", None)
 

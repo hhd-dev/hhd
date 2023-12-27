@@ -13,7 +13,7 @@ http:
         Enables the rest API of Handheld Daemon
       default: False
     port:
-      type: integer
+      type: int
       title: REST API Port
       hint: >-
         Which port should the REST API be on?

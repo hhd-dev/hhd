@@ -83,12 +83,12 @@ class RestHandler(BaseHTTPRequestHandler):
         self.set_response(200, STANDARD_HEADERS)
 
     def send_not_found(self, error: str):
-        self.set_response(400, ERROR_HEADERS)
+        self.set_response(404, ERROR_HEADERS)
         self.wfile.write(b"Handheld Daemon Error (404, invalid endpoint):\n")
         self.wfile.write(error.encode())
 
     def send_error(self, error: str):
-        self.set_response(404, ERROR_HEADERS)
+        self.set_response(400, ERROR_HEADERS)
         self.wfile.write(b"Handheld Daemon Error:\n")
         self.wfile.write(error.encode())
 
@@ -174,9 +174,15 @@ class RestHandler(BaseHTTPRequestHandler):
                 self.set_response_ok()
                 with self.cond:
                     if content:
+                        if not isinstance(content, Mapping):
+                            return self.send_error(
+                                f"State content should be a dictionary."
+                            )
                         self.emit({"type": "state", "config": Config(content)})
                         self.cond.wait()
                     self.wfile.write(json.dumps(self.conf.conf).encode())
+            case "version":
+                self.send_json({"version": 1})
             case other:
                 self.send_not_found(f"Command '{other}' not supported.")
 

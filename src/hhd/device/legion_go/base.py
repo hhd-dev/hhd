@@ -192,7 +192,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=rgb_callback
-            if conf["xinput.ds5e.led_support"]
+            if conf["xinput.ds5e.led_support"].to(bool)
             else None,
             required=True,
         )
