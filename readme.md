@@ -104,7 +104,7 @@ cd ~/.local/share/hhd
 
 python -m venv venv
 source venv/bin/activate
-pip install hhd setuptools
+pip install hhd
 
 # Install udev rules and create a service file
 sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules 
@@ -192,19 +192,23 @@ user dir, which is the following:
 ~/.config/hhd
 ```
 
-Configuration for plugins will appear in the plugins directory.
-Only the legion controller plugin has configuration options for now.
+The global configuration for hhd is found in:
 ```bash
-~/.config/hhd/plugins
+~/.config/hhd/state.yml
+```
+This will allow you to set sticky hhd configuration options, such as emulation
+mode.
+Once set, hhd will hot-reload the configurations.
+
+HHD allows you to create profiles, that set multiple configurations together,
+through the profile directory:
+```bash
+~/.config/hhd/profiles
 ```
 
-Restart `hhd` to reload the configurations afterwards.
-```bash
-# Arch
-sudo systemctl restart hhd@$(whoami)
-# Local install
-sudo systemctl restart hhd_local@$(whoami)
-```
+Right now, these profiles can only be set with the experimental HTTP API,
+which will be called through a GUI.
+This API is disabled by default in the current version of HHD.
 
 ## Frequently Asked Questions (FAQ)
 ### What does the current version of HHD do?
@@ -342,6 +346,19 @@ if handygccs is enabled.
                        Name: ['Generic X-Box pad']
 ```
 
+### Buttons are mapped incorrectly
+Buttons mapped in legion space will carry over to linux.
+This includes both back buttons and legion swap.
+You can reset each controller by holding Legion R + RT + RB, Legion L + LT + LB.
+However, we do not know how to reset the legion space legion button swap at
+this point, so you need to use Legion Space for that.
+
+Another set of obscure issues occur depending on how apps hook to the DS5 controller.
+If the playstation driver is not active, the linux kernel creates an evdev node
+with incorrect mappings (right trigger becomes a stick, etc).
+If the app hooks directly into the hidraw of the controller, it works properly.
+If it uses the evdev device its incorrect.
+
 ## Contributing
 You should install from source if you aim to contribute or want to pull from master.
 ```bash
@@ -373,6 +390,4 @@ sudo hhd --user $(whoami)
 ```
 
 ## License
-An open source license will be chosen in the following days.
-It will probably be the Apache license, so if that affects your use case reach
-out for feedback.
+This codebase is MIT licensed and will always have a copy-left license.
