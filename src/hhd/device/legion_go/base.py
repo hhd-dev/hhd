@@ -79,13 +79,13 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
                     time.sleep(ERROR_DELAY)
                     continue
 
-            if controller_mode == "xinput" and conf["xinput"].to(str) != "disabled":
-                logger.info("Launching DS5 controller instance.")
+            if controller_mode == "xinput" and conf["xinput.mode"].to(str) != "disabled":
+                logger.info("Launching emulated controller.")
                 if gyro_fixer:
                     gyro_fixer.open()
                 controller_loop_xinput(conf, should_exit)
             else:
-                if controller_mode == "xinput":
+                if controller_mode != "xinput":
                     logger.info(
                         f"Controllers in non-supported (yet) mode: {controller_mode}."
                     )
@@ -101,7 +101,6 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )
-            raise e
             time.sleep(ERROR_DELAY)
         finally:
             if gyro_fixer:
@@ -182,8 +181,6 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             )
         case _:
             d_out = UInputDevice(phys="phys-hhd-legion")
-    # from hhd.controller.virtual.sd import SteamdeckOLEDController
-    # d_ds5 = SteamdeckOLEDController()
 
     # Imu
     d_accel = AccelImu()
@@ -280,7 +277,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         prepare(d_raw)
         prepare(d_out)
 
-        logger.info("DS5 controller instance launched, have fun!")
+        logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second

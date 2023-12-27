@@ -390,8 +390,8 @@ GAMEPAD_AXIS_MAP: dict[Axis, AX] = {
     "ls_y": AX(B("ABS_Y"), 2**15 - 1),
     "rs_x": AX(B("ABS_RX"), 2**15 - 1),
     "rs_y": AX(B("ABS_RY"), 2**15 - 1),
-    "lt": AX(B("ABS_Z"), 2**8 - 1),
-    "rt": AX(B("ABS_RZ"), 2**8 - 1),
+    "rt": AX(B("ABS_Z"), 2**8 - 1),
+    "lt": AX(B("ABS_RZ"), 2**8 - 1),
     "hat_x": AX(B("ABS_HAT0X")),
     "hat_y": AX(B("ABS_HAT0Y")),
 }

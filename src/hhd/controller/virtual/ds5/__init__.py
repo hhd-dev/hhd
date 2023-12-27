@@ -207,6 +207,8 @@ class DualSense5Edge(Producer, Consumer):
         self.touchpad_touch = False
         self.start = time.perf_counter_ns()
         self.fd = self.dev.open()
+
+        logger.info(f"Starting '{DS5_EDGE_NAME.decode()}'.")
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
