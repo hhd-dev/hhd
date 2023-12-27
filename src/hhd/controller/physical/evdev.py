@@ -10,12 +10,11 @@ from typing import Mapping, Sequence, TypeVar, cast, Collection
 import evdev
 from evdev import ecodes, ff
 
-from hhd.controller import Axis, Button, Consumer, Event, Producer
+from hhd.controller import Axis, Button, Consumer, Event, Producer, can_read
 from hhd.controller.base import Event
 from hhd.controller.lib.common import hexify, matches_patterns
 from hhd.controller.lib.hide import hide_gamepad, unhide_gamepad
-
-from ..const import AbsAxis, GamepadButton, KeyboardButton
+from hhd.controller.const import AbsAxis, GamepadButton, KeyboardButton
 
 logger = logging.getLogger(__name__)
 
@@ -244,7 +243,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                 }
             )
 
-        while select.select([self.fd], [], [], 0)[0]:
+        while can_read(self.fd):
             for e in self.dev.read():
                 if e.type == B("EV_KEY"):
                     if e.code in self.btn_map:

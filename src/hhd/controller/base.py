@@ -4,72 +4,6 @@ import time
 from .const import Axis, Button, Configuration
 
 
-class EnvelopeEffect(TypedDict):
-    type: Literal["constant", "ramp"]
-    attack_length: int
-    attack_level: int
-    fade_length: int
-    fade_level: int
-
-
-class ConditionSide(TypedDict):
-    # TODO: replace with enums
-    right_saturation: int
-    left_saturation: int
-    right_coeff: int
-    left_coeff: int
-    deadband: int
-    center: int
-
-
-class RumbleEffect(TypedDict):
-    type: Literal["rumble"]
-    strong_magnitude: float
-    weak_magnitude: float
-
-
-class ConditionEffect(TypedDict):
-    type: Literal["condition"]
-    left: ConditionSide
-    right: ConditionSide
-
-
-class PeriodicEffect(TypedDict):
-    type: Literal["periodic"]
-    # Todo: replace with enums
-    waveform: int
-    period: int
-    magnitude: int
-    offset: int
-    phase: int
-
-    attack_length: int
-    attack_level: int
-    fade_length: int
-    fade_level: int
-
-    custom: bytes
-
-
-class EffectEvent(TypedDict):
-    # Always effect, better for filterring
-    type: Literal["effect"]
-    # Event target. Not part of the standard but required for e.g., DS5.
-    code: Literal["main", "left", "right"]
-
-    id: int
-    # TODO: Upgrade to literal
-    direction: int
-
-    trigger_button: str
-    trigger_interval: int
-
-    replay_length: int
-    replay_delay: int
-
-    effect: EnvelopeEffect | ConditionEffect | PeriodicEffect | RumbleEffect
-
-
 class RumbleEvent(TypedDict):
     """In case ev effects is too complicated. If both magnitudes are 0, disable rumble."""
 
@@ -127,8 +61,7 @@ class ConfigurationEvent(TypedDict):
 
 
 Event = (
-    EffectEvent
-    | ButtonEvent
+    ButtonEvent
     | AxisEvent
     | ConfigurationEvent
     | RgbLedEvent

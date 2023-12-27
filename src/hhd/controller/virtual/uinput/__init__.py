@@ -31,6 +31,7 @@ class UInputDevice(Consumer, Producer):
         self.vid = vid
         self.pid = pid
         self.phys = phys
+        self.rumble: Event | None = None
 
     def open(self) -> Sequence[int]:
         logger.info(f"Opening virtual device '{self.name}'")
@@ -69,3 +70,51 @@ class UInputDevice(Consumer, Producer):
                             1 if ev["value"] else 0,
                         )
         self.dev.syn()
+
+    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        if not self.fd or not self.fd in fds or not self.dev:
+            return []
+
+        out: Sequence[Event] = []
+
+        while can_read(self.fd):
+            for ev in self.dev.read():
+                if ev.type == B("EV_UINPUT"):
+                    if ev.code == B("UI_FF_UPLOAD"):
+                        # Keep uploaded effect to apply on input
+                        upload = self.dev.begin_upload(ev.value)
+                        if upload.effect.type == B("FF_RUMBLE"):
+                            data = upload.effect.u.ff_rumble_effect
+
+                            self.rumble = {
+                                "type": "rumble",
+                                "code": "main",
+                                "weak_magnitude": data.weak_magnitude / 0xFFFF,
+                                "strong_magnitude": data.strong_magnitude / 0xFFFF,
+                            }
+                        self.dev.end_upload(upload)
+                    elif ev.code == B("UI_FF_ERASE"):
+                        # Ignore erase events
+                        erase = self.dev.begin_erase(ev.value)
+                        erase.retval = 0
+                        ev.end_erase(erase)
+                elif ev.type == B("EV_FF") and ev.value:
+                    if self.rumble:
+                        out.append(self.rumble)
+                    else:
+                        logger.warn(
+                            f"Rumble requested but a rumble effect has not been uploaded."
+                        )
+                elif ev.type == B("EV_FF") and not ev.value:
+                    out.append(
+                        {
+                            "type": "rumble",
+                            "code": "main",
+                            "weak_magnitude": 0,
+                            "strong_magnitude": 0,
+                        }
+                    )
+                else:
+                    logger.info(f"Controller ev received unhandled event:\n{ev}")
+
+        return out
