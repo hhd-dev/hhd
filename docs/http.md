@@ -160,7 +160,7 @@ The above will create the following default state:
 ```yaml
 controllers.legion_go.xinput.mode: ds5e
 controllers.legion_go.xinput.disabled.shortcuts: disabled
-controllers.legion_go.xinput.disabled.led_support: True
+controllers.legion_go.xinput.ds5e.led_support: True
 ```
 
 Example call (token disabled):
@@ -201,7 +201,7 @@ the updated state.
 
 > Warning: the post endpoint may lock for up to 5+ seconds. 
 > Use a separate fetch thread/promise!
-> Typically it will be much less than 1s
+> Typically, it will be much less than 1 second.
 
 Example call (token disabled):
 ```bash
@@ -324,7 +324,7 @@ The content of the response will be a human readable explanation in text form.
 You may choose to display that to the user, through a modal or portal.
 
 ## Version endpoint
-You can query the version of the HHD V1 Api to determine which features are available
+You can query the version of the HHD V1 API to determine which features are available
 and whether the user should update either your app or HHD.
 The version is 1 now and this endpoint requires authentication.
 It might not require authentication in the future.
