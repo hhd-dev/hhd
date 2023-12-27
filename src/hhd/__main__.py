@@ -264,15 +264,19 @@ def main():
 
                         # Generate security token
                         if use_token:
-                            import hashlib
-                            import random
+                            if not os.path.isfile(token_fn):
+                                import hashlib
+                                import random
 
-                            token = hashlib.sha256(
-                                str(random.random()).encode()
-                            ).hexdigest()
-                            with open(token_fn, "w") as f:
-                                os.chmod(token_fn, 0o600)
-                                f.write(token)
+                                token = hashlib.sha256(
+                                    str(random.random()).encode()
+                                ).hexdigest()[:12]
+                                with open(token_fn, "w") as f:
+                                    os.chmod(token_fn, 0o600)
+                                    f.write(token)
+                            else:
+                                with open(token_fn, "r") as f:
+                                    token = f.read().strip()
                         else:
                             token = None
 

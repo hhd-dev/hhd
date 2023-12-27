@@ -5,7 +5,7 @@ from threading import Condition, Thread
 from typing import Any, Mapping
 from urllib.parse import parse_qs, urlparse
 
-from .plugins import Config, Emitter, HHDSettings
+from hhd.plugins import Config, Emitter, HHDSettings
 
 logger = logging.getLogger(__name__)
 
@@ -149,15 +149,20 @@ class RestHandler(BaseHTTPRequestHandler):
         if not segments:
             return self.send_not_found(f"Empty path.")
 
-        if segments[0] != "v1":
+        if segments[0] != "api":
             return self.send_not_found(
-                f"Only v1 endpoint is supported by this version of hhd (requested '{segments[0]}')."
+                f"Only the API endpoint ('/api/v1') is supported for now."
             )
 
-        if len(segments) == 1:
+        if len(segments) < 2 or segments[1] != "v1":
+            return self.send_not_found(
+                f"Only v1 endpoint is supported by this version of hhd ('/api/v1')."
+            )
+
+        if len(segments) == 2:
             return self.send_not_found(f"No command provided")
 
-        command = segments[1].lower()
+        command = segments[2].lower()
         match command:
             case "profile":
                 self.handle_profile(segments[2:], params, content)
