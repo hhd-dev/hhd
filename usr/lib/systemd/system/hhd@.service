@@ -4,6 +4,8 @@ Description=Handheld Daemon Service
 [Service]
 ExecStart=/usr/bin/hhd --user %i
 Nice=-12
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
