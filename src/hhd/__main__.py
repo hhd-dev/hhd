@@ -77,6 +77,23 @@ def notifier(ev: TEvent, cond: Condition):
     return _inner
 
 
+def print_token(ctx):
+    token_fn = expanduser(join(CONFIG_DIR, "token"), ctx)
+
+    try:
+        with open(token_fn, "r") as f:
+            token = f.read().strip()
+
+        logger.info(f'Current HHD token (for user "{ctx.name}") is: "{token}"')
+    except Exception as e:
+        logger.error(f"Token not found or could not be read, error:\n{e}")
+        logger.info(
+            "Enable the http endpoint to generate a token automatically.\n"
+            + "Or place it under '~/.config/hhd/token' manually.\n"
+            + "'chown 600 ~/.config/hhd/token' for security reasons!"
+        )
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="HHD: Handheld Daemon main interface.",
@@ -88,6 +105,12 @@ def main():
         default=None,
         help="The user whose home directory will be used to store the files (~/.config/hhd).",
         dest="user",
+    )
+    parser.add_argument(
+        "command",
+        nargs='*',
+        default=[],
+        help="The command to run. If empty, run as daemon. Right now, only the command token is supported.",
     )
     args = parser.parse_args()
     user = args.user
@@ -109,6 +132,13 @@ def main():
     try:
         set_log_plugin("main")
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
+
+        if args.command:
+            if args.command[0] == "token":
+                print_token(ctx)
+                return
+            else:
+                logger.error(f"Command '{args.command[0]}' is unknown. Ignoring...")
 
         for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
             detectors[autodetect.name] = autodetect.resolve()
