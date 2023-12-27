@@ -115,6 +115,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
 def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
     shortcuts_enabled = conf["shortcuts"].to(bool)
+    # FIXME: Sleep when shortcuts are disabled instead of polling raw interface
     if shortcuts_enabled:
         logger.info(f"Launching a shortcuts device.")
     else:
