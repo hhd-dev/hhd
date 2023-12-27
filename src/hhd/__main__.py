@@ -108,7 +108,7 @@ def main():
     )
     parser.add_argument(
         "command",
-        nargs='*',
+        nargs="*",
         default=[],
         help="The command to run. If empty, run as daemon. Right now, only the command token is supported.",
     )
@@ -331,14 +331,17 @@ def main():
                     case "settings":
                         settings_changed = True
                     case "profile":
-                        if ev["name"] in profiles:
-                            profiles[ev["name"]].update(ev["config"].conf)
-                        else:
+                        new_conf = ev["config"]
+                        if new_conf:
                             with lock:
                                 profiles[ev["name"]] = ev["config"]
-                        validate_config(
-                            profiles[ev["name"]], settings, use_defaults=False
-                        )
+                            validate_config(
+                                profiles[ev["name"]], settings, use_defaults=False
+                            )
+                        else:
+                            with lock:
+                                if ev["name"] in profiles:
+                                    del profiles[ev["name"]]
                     case "apply":
                         if ev["name"] in profiles:
                             conf.update(profiles[ev["name"]].conf)
@@ -388,6 +391,20 @@ def main():
                 if save_profile_yaml(fn, settings, prof):
                     fix_perms(fn, ctx)
                     saved = True
+            for prof in os.listdir(profile_dir):
+                if prof.startswith("_") or not prof.endswith(".yml"):
+                    continue
+                name = prof[:-4]
+                if name not in profiles:
+                    fn = join(profile_dir, prof)
+                    try:
+                        new_fn = fn + ".bak"
+                        os.rename(fn, new_fn)
+                        saved = True
+                    except Exception as e:
+                        logger.error(
+                            f"Failed removing profile {name} at:\n{fn}\nWith error:\n{e}"
+                        )
 
             # Add template config
             if save_profile_yaml(

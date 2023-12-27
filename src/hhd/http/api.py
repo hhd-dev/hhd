@@ -114,7 +114,7 @@ class RestHandler(BaseHTTPRequestHandler):
                 case "set":
                     if "profile" not in params:
                         return self.send_error(f"Profile not specified")
-                    if not content:
+                    if not content or not isinstance(content, Mapping):
                         return self.send_error(f"Data for the profile not sent.")
 
                     profile = params["profile"][0]
@@ -129,6 +129,21 @@ class RestHandler(BaseHTTPRequestHandler):
                         self.send_json(self.profiles[profile].conf)
                     else:
                         self.send_error(f"Applied profile not found (race condition?).")
+                case "del":
+                    if "profile" not in params:
+                        return self.send_error(f"Profile not specified")
+
+                    profile = params["profile"][0]
+                    if profile not in self.profiles:
+                        return self.send_error(f"Profile '{profile}' not found.")
+                    self.emit({"type": "profile", "name": profile, "config": None})
+                    # Wait for the profile to be processed
+                    self.cond.wait()
+
+                    if profile in self.profiles:
+                        self.send_error(f"Applied profile not found (race condition?).")
+                    else:
+                        self.set_response_ok()
                 case "apply":
                     if "profile" not in params:
                         return self.send_error(f"Profile not specified")
@@ -143,6 +158,8 @@ class RestHandler(BaseHTTPRequestHandler):
                     self.cond.wait()
                     # Return the profile
                     self.send_json(self.conf.conf)
+                case other:
+                    self.send_not_found(f"Command 'profile/{other}' not supported.")
 
     def v1_endpoint(self, content: Any | None):
         segments, params = parse_path(self.path)
@@ -165,7 +182,7 @@ class RestHandler(BaseHTTPRequestHandler):
         command = segments[2].lower()
         match command:
             case "profile":
-                self.handle_profile(segments[2:], params, content)
+                self.handle_profile(segments[3:], params, content)
             case "settings":
                 self.set_response_ok()
                 with self.cond:

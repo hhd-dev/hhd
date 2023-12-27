@@ -30,7 +30,7 @@ class SettingsEvent(TypedDict):
 class ProfileEvent(TypedDict):
     type: Literal["profile"]
     name: str
-    config: Config
+    config: Config | None
 
 
 class ApplyEvent(TypedDict):

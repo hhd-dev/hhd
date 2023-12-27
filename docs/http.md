@@ -163,6 +163,19 @@ controllers.legion_go.xinput.disabled.shortcuts: disabled
 controllers.legion_go.xinput.disabled.led_support: True
 ```
 
+Example call (token disabled):
+```bash
+curl -i http://localhost:5335/api/v1/settings
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+{"controllers": {"legion_go": ...
+```
+
 ## State endpoint (`./api/v1/state`)
 The state endpoint with `GET` returns the current app state in JSON form.
 Currently, only the nested dictionary form is returned, e.g.:
@@ -190,8 +203,114 @@ the updated state.
 > Use a separate fetch thread/promise!
 > Typically it will be much less than 1s
 
+Example call (token disabled):
+```bash
+curl -i http://localhost:5335/api/v1/state
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+{"controllers": {"legion_go": {"xinput": {"mode": "ds5e", "disabled": {"shortcuts": true}, "ds5e": {"led_support": true}}, "gyro": true, "accel": true, "gyro_fix": 100, "swap_legion": "disabled", "share_to_qam": true, "touchpad_mode": "crop_end", "debug": false, "shortcuts": true}}, "hhd": {"http": {"enable": true, "port": 5335, "localhost": true, "token": false}}, "version": "af6eb199"}%
+```
+
 ## Profile endpoint
-TBD
+HHD contains a profile system for changing multiple settings at a time.
+This can be done per game, when switching windows, etc.
+
+The `profile` endpoint has 4 sub-endpoints: `list`, `apply`, `get`, `set`, `del`.
+
+### `profile/list` Endpoint
+The `list` `GET` endpoint returns a list of the available profiles.
+
+```bash
+curl -i http://localhost:5335/api/v1/profile/list
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+["test"]%  
+```
+
+### `profile/apply` Endpoint
+The `apply` `GET` endpoint applies the selected profiles in the specified order
+and returns the new HHD state.
+The applied profiles are supplied as query arguments.
+You may apply multiple profiles at a time, by nesting them as query parameters.
+```bash
+curl -i http://localhost:5335/api/v1/profile/apply\?profile\=\&profile\=test2
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+{"controllers": {"legion_go": {"xinput": {"mode": "ds5e", "disabled": {"shortcuts": true}, "ds5e": {"led_support": true}}, "gyro": true, "accel": true, "gyro_fix": 100, "swap_legion": "disabled", "share_to_qam": true, "touchpad_mode": "crop_end", "debug": false, "shortcuts": true}}, "hhd": {"http": {"enable": true, "port": 5335, "localhost": true, "token": false}}, "version": "af6eb199"}% 
+```
+
+### `profile/set` Endpoint
+The set endpoint allows you to update the contents of a profile.
+The response contains the updated profile.
+The `set` endpoint replaces the whole profile and validates it, unlike the state
+endpoint which merges it to the current state.
+```bash
+curl -i -X POST -d '{"controllers.legion_go.shortcuts": false}' http://localhost:5335/api/v1/profile/set\?profile\=test
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+{"controllers": {"legion_go": {"shortcuts": false}}, "version": "af6eb199"}% 
+```
+
+### `profile/get` Endpoint
+The `get` `GET` endpoint allows you to retrieve the contents of a profile.
+```bash
+curl -i http://localhost:5335/api/v1/profile/get\?profile\=test
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+{"controllers": {"legion_go": {"shortcuts": false}}, "version": "af6eb199"}%   
+```
+
+### `profile/del` Endpoint
+The `del` `GET` endpoint deletes the provided profile.
+
+```bash
+# Profile exists
+curl -i http://localhost:5335/api/v1/profile/del\?profile\=test
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+# Profile does not exist
+curl -i http://localhost:5335/api/v1/profile/del\?profile\=test
+HTTP/1.0 400 Bad Request
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+Content-type: text / plain
+
+Handheld Daemon Error:
+Profile 'test' not found.% 
+```
 
 ## Handling Errors
 The `v1` API will always return a `JSON` object with status code 200 if called properly.
