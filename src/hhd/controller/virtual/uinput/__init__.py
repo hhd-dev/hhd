@@ -39,7 +39,7 @@ class UInputDevice(Consumer, Producer):
         self.rumble: Event | None = None
 
     def open(self) -> Sequence[int]:
-        logger.info(f"Opening virtual device '{self.name}'")
+        logger.info(f"Opening virtual device '{self.name}'.")
         self.dev = UInput(
             events=self.capabilities,
             name=self.name,

@@ -51,7 +51,7 @@ LEN_PIDS = {
 
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
-    if gyro_fix := conf.get("gyro_fix", False):
+    if (gyro_fix := conf.get("gyro_fix", False)) and conf["gyro"].to(bool):
         gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
     else:
         gyro_fixer = None
