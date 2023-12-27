@@ -3,11 +3,9 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 devices.
 With features ranging from TDP controls, to controller remappings, and gamescope 
 session management.
-This is done through a plugin system, and a dbus daemon, which will expose the
-settings of the plugins in a UI agnostic way.
+This will be done through a plugin system and an HTTP(/d-bus?) daemon, which will
+expose the settings of the plugins in a UI agnostic way.
 
-For the time being, the daemon is not d-bus based, and relies on static configuration
-stored on `~/.config/hhd`.
 The current version contains a fully functional Dual Sense 5 Edge emulator for
 the Legion Go (including touchpad, gyro, and LED support).
 It is the aim of this project to provide generic hid-based emulators for most
@@ -46,7 +44,6 @@ depending on the game.
     - No memory-relaxed requirement
     - Safer, as it is the method used by manufacturers
         (provided you stay within limits).
-  - May require DSDT patch on boot, TBD.
 
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PiPy.

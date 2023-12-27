@@ -27,6 +27,6 @@ jobs:
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: Update to '${{ github.event.release.name }}'
+          commit_message: update to '${{ github.event.release.name }}'
           allow_empty_commits: false
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
