@@ -161,7 +161,7 @@ def main():
 
         # Monitor config files for changes
         should_initialize = TEvent()
-        should_initialize.set()
+        initial_run = True
         should_exit = TEvent()
         signal.signal(signal.SIGPOLL, notifier(should_initialize, cond))
         signal.signal(signal.SIGINT, notifier(should_exit, cond))
@@ -173,7 +173,11 @@ def main():
             #
 
             # Initialize if files changed
-            if should_initialize.is_set():
+            if should_initialize.is_set() or initial_run:
+                # wait a bit to allow other processes to save files
+                if not initial_run:
+                    sleep(POLL_DELAY)
+                initial_run = False
                 set_log_plugin("main")
                 logger.info(f"Reloading configuration.")
 
@@ -197,6 +201,8 @@ def main():
                 # Profiles
                 profiles = {}
                 templates = {}
+                os.makedirs(profile_dir, exist_ok=True)
+                fix_perms(profile_dir, ctx)
                 for fn in os.listdir(profile_dir):
                     if not fn.endswith(".yml"):
                         continue
@@ -221,6 +227,7 @@ def main():
                 # Monitor files for changes
                 for fd in cfg_fds:
                     try:
+                        fcntl.fcntl(fd, fcntl.F_NOTIFY, 0)
                         os.close(fd)
                     except Exception:
                         pass
@@ -234,10 +241,13 @@ def main():
                     fcntl.fcntl(
                         fd,
                         fcntl.F_NOTIFY,
-                        fcntl.DN_CREATE | fcntl.DN_DELETE | fcntl.DN_MODIFY,
+                        fcntl.DN_CREATE
+                        | fcntl.DN_DELETE
+                        | fcntl.DN_MODIFY
+                        | fcntl.DN_RENAME
+                        | fcntl.DN_MULTISHOT,
                     )
                     cfg_fds.append(fd)
-                should_initialize.clear()
 
                 # Initialize http server
                 http_cfg = conf["hhd.http"]
@@ -263,9 +273,6 @@ def main():
                             with open(token_fn, "w") as f:
                                 os.chmod(token_fn, 0o600)
                                 f.write(token)
-
-                            sleep(MODIFY_DELAY)
-                            should_initialize.clear()
                         else:
                             token = None
 
@@ -276,6 +283,7 @@ def main():
                         update_log_plugins()
                         set_log_plugin("main")
 
+                should_initialize.clear()
                 logger.info(f"Initialization Complete!")
 
             #

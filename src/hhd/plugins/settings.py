@@ -467,25 +467,30 @@ def dump_settings(
 def save_state_yaml(fn: str, set: HHDSettings, conf: Config):
     import yaml
 
-    if conf.get("version", None) == get_settings_hash(set) and not conf.updated:
+    shash = get_settings_hash(set)
+    if conf.get("version", None) == shash and not conf.updated:
         return False
 
+    conf["version"] = shash
     with open(fn, "w") as f:
         f.write(dump_comment(set, STATE_HEADER))
         yaml.safe_dump(
             dump_settings(set, conf, "default"), f, width=85, sort_keys=False
         )
+
     return True
 
 
 def save_profile_yaml(fn: str, set: HHDSettings, conf: Config | None = None):
     import yaml
 
+    shash = get_settings_hash(set)
     if conf is None:
         conf = Config({})
-    elif conf.get("version", None) == get_settings_hash(set) and not conf.updated:
+    elif conf.get("version", None) == shash and not conf.updated:
         return False
 
+    conf["version"] = shash
     with open(fn, "w") as f:
         f.write(dump_comment(set, PROFILE_HEADER))
         yaml.safe_dump(dump_settings(set, conf, "unset"), f, width=85, sort_keys=False)
