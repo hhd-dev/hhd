@@ -222,6 +222,9 @@ This can be done per game, when switching windows, etc.
 
 The `profile` endpoint has 4 sub-endpoints: `list`, `apply`, `get`, `set`, `del`.
 
+Only characters and spaces are supported for the profile name.
+HHD will silently strip other characters from the name.
+
 ### `profile/list` Endpoint
 The `list` `GET` endpoint returns a list of the available profiles.
 

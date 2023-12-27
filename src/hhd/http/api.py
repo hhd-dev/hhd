@@ -3,11 +3,19 @@ import logging
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Condition, Thread
 from typing import Any, Mapping
+
 from urllib.parse import parse_qs, urlparse
 
 from hhd.plugins import Config, Emitter, HHDSettings
 
 logger = logging.getLogger(__name__)
+
+
+def sanitize_name(n: str):
+    import re
+
+    return re.sub(r"[^ a-zA-Z0-9]+", "", n)
+
 
 STANDARD_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -107,7 +115,7 @@ class RestHandler(BaseHTTPRequestHandler):
                 case "get":
                     if "profile" not in params:
                         return self.send_error(f"Profile not specified")
-                    profile = params["profile"][0]
+                    profile = sanitize_name(params["profile"][0])
                     if profile not in self.profiles:
                         return self.send_error(f"Profile '{profile}' not found.")
                     self.send_json(self.profiles[profile].conf)
@@ -117,7 +125,7 @@ class RestHandler(BaseHTTPRequestHandler):
                     if not content or not isinstance(content, Mapping):
                         return self.send_error(f"Data for the profile not sent.")
 
-                    profile = params["profile"][0]
+                    profile = sanitize_name(params["profile"][0])
                     self.emit(
                         {"type": "profile", "name": profile, "config": Config(content)}
                     )
@@ -133,7 +141,7 @@ class RestHandler(BaseHTTPRequestHandler):
                     if "profile" not in params:
                         return self.send_error(f"Profile not specified")
 
-                    profile = params["profile"][0]
+                    profile = sanitize_name(params["profile"][0])
                     if profile not in self.profiles:
                         return self.send_error(f"Profile '{profile}' not found.")
                     self.emit({"type": "profile", "name": profile, "config": None})
@@ -148,7 +156,7 @@ class RestHandler(BaseHTTPRequestHandler):
                     if "profile" not in params:
                         return self.send_error(f"Profile not specified")
 
-                    profiles = params["profile"]
+                    profiles = [sanitize_name(p) for p in params["profile"]]
                     for p in profiles:
                         if p not in self.profiles:
                             return self.send_error(f"Profile '{p}' not found.")
