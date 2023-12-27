@@ -11,7 +11,7 @@ def B(b: str | Sequence[str], num: int | None = None):
     if num is not None:
         return num
     assert b, f"No value provided."
-    if isinstance(b, Sequence):
+    if not isinstance(b, str):
         b = b[0]
     return cast(int, getattr(evdev.ecodes, b))
 
@@ -374,5 +374,5 @@ GAMEPAD_BUTTON_MAP: dict[Button, int] = {
 }
 
 GAMEPAD_AXIS_MAP: dict[Axis, int] = {
-    
+
 }
