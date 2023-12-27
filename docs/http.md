@@ -322,3 +322,20 @@ When called improperly, it will return the following status codes:
 
 The content of the response will be a human readable explanation in text form.
 You may choose to display that to the user, through a modal or portal.
+
+## Version endpoint
+You can query the version of the HHD V1 Api to determine which features are available
+and whether the user should update either your app or HHD.
+The version is 1 now and this endpoint requires authentication.
+It might not require authentication in the future.
+```bash
+curl -i http://localhost:5335/api/v1/version
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.11.6
+Date: ...
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+WWW-Authenticate: Bearer
+
+{"version": 1}% 
+```
