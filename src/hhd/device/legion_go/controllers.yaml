@@ -69,7 +69,8 @@ children:
     type: bool
     title: Accelerometer
     hint: >-
-      Enables accelerometer support (not currently supported properly).
+      Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro; 
+      if someone asks it will be fixed).
     default: False
   gyro_fix:
     type: discrete

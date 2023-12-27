@@ -22,6 +22,7 @@ class UInputDevice(Consumer, Producer):
         pid: int = HHD_PID_GAMEPAD,
         name: str = "Handheld Daemon Controller",
         phys: str = "phys-hhd-gamepad",
+        output_timestamps: bool = False,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -31,6 +32,10 @@ class UInputDevice(Consumer, Producer):
         self.vid = vid
         self.pid = pid
         self.phys = phys
+        self.output_timestamps = output_timestamps
+        self.ofs = 0
+        self.sys_ofs = 0
+
         self.rumble: Event | None = None
 
     def open(self) -> Sequence[int]:
@@ -61,7 +66,22 @@ class UInputDevice(Consumer, Producer):
                     if ev["code"] in self.axis_map:
                         ax = self.axis_map[ev["code"]]
                         val = int(ax.scale * ev["value"] + ax.offset)
+                        if ax.bounds:
+                            val = min(max(val, ax.bounds[0]), ax.bounds[1])
                         self.dev.write(B("EV_ABS"), ax.id, val)
+                    elif self.output_timestamps and ev["code"] in (
+                        "accel_ts",
+                        "gyro_ts",
+                    ):
+                        # We have timestamps with ns accuracy.
+                        # Evdev expects us accuracy
+                        ts = ev["value"] // 1000
+                        # Use an ofs to avoid overflowing
+                        if ts > self.ofs + 2**30:
+                            self.ofs = ts
+                        ts -= self.ofs
+                        self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
+                        pass
                 case "button":
                     if ev["code"] in self.btn_map:
                         self.dev.write(
@@ -79,7 +99,11 @@ class UInputDevice(Consumer, Producer):
 
         while can_read(self.fd):
             for ev in self.dev.read():
-                if ev.type == B("EV_UINPUT"):
+                if ev.type == B("EV_MSC") and ev.code == B("MSC_TIMESTAMP"):
+                    # Skip timestamp feedback
+                    # TODO: Figure out why it feedbacks
+                    pass
+                elif ev.type == B("EV_UINPUT"):
                     if ev.code == B("UI_FF_UPLOAD"):
                         # Keep uploaded effect to apply on input
                         upload = self.dev.begin_upload(ev.value)

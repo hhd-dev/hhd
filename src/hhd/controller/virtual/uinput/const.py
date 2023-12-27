@@ -29,6 +29,7 @@ class AX(NamedTuple):
     id: int
     scale: float = 1
     offset: float = 0
+    bounds: tuple[int, int] | None = None
 
 
 logger = logging.getLogger(__name__)
@@ -396,4 +397,11 @@ GAMEPAD_AXIS_MAP: dict[Axis, AX] = {
     "hat_y": AX(B("ABS_HAT0Y")),
 }
 
-MOTION_AXIS_MAP: dict[Axis, AX] = {}
+MOTION_AXIS_MAP: dict[Axis, AX] = {
+    "accel_x": AX(B("ABS_X"), 8192, bounds=(-32768, 32768)),
+    "accel_y": AX(B("ABS_Y"), 8192, bounds=(-32768, 32768)),
+    "accel_z": AX(B("ABS_Z"), 8192, bounds=(-32768, 32768)),
+    "gyro_x": AX(B("ABS_RX"), 1024, bounds=(-2097152, 2097152)),
+    "gyro_y": AX(B("ABS_RY"), 1024, bounds=(-2097152, 2097152)),
+    "gyro_z": AX(B("ABS_RZ"), 1024, bounds=(-2097152, 2097152)),
+}
