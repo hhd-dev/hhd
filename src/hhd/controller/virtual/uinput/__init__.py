@@ -2,72 +2,21 @@ import logging
 from typing import Sequence, cast
 
 import evdev
-from evdev import UInput
+from evdev import UInput, AbsInfo
 
 from hhd.controller import Axis, Button, Consumer, Producer
 from hhd.controller.base import Event, can_read
 
-
-def B(b: str):
-    return cast(int, getattr(evdev.ecodes, b))
-
+from .const import GAMEPAD_BTN_CAPABILITIES, GAMEPAD_BUTTON_MAP, B, MOTION_CAPABILITIES
 
 logger = logging.getLogger(__name__)
-
-GAMEPAD_BTN_CAPABILITIES = {
-    B("EV_KEY"): [
-        B("BTN_TL"),
-        B("BTN_TR"),
-        B("BTN_SELECT"),
-        B("BTN_START"),
-        B("BTN_MODE"),
-        B("BTN_THUMBL"),
-        B("BTN_THUMBR"),
-        B("BTN_A"),
-        B("BTN_B"),
-        B("BTN_X"),
-        B("BTN_Y"),
-        B("BTN_MODE"),
-        B("BTN_TRIGGER_HAPPY1"),
-        B("BTN_TRIGGER_HAPPY2"),
-        B("BTN_TRIGGER_HAPPY3"),
-        B("BTN_TRIGGER_HAPPY4"),
-        B("BTN_TRIGGER_HAPPY5"),
-        B("BTN_TRIGGER_HAPPY6"),
-    ]
-}
-STANDARD_BUTTON_MAP: dict[Button, int] = {
-    # Gamepad
-    "a": B("BTN_A"),
-    "b": B("BTN_B"),
-    "x": B("BTN_X"),
-    "y": B("BTN_Y"),
-    # Sticks
-    "ls": B("BTN_THUMBL"),
-    "rs": B("BTN_THUMBR"),
-    # Bumpers
-    "lb": B("BTN_TL"),
-    "rb": B("BTN_TR"),
-    # Select
-    "start": B("BTN_START"),
-    "select": B("BTN_SELECT"),
-    # Misc
-    "mode": B("BTN_MODE"),
-    # Back buttons
-    "extra_l1": B("BTN_TRIGGER_HAPPY1"),
-    "extra_l2": B("BTN_TRIGGER_HAPPY2"),
-    "extra_l3": B("BTN_TRIGGER_HAPPY5"),
-    "extra_r1": B("BTN_TRIGGER_HAPPY3"),
-    "extra_r2": B("BTN_TRIGGER_HAPPY4"),
-    "extra_r3": B("BTN_TRIGGER_HAPPY6"),
-}
 
 
 class UInputDevice(Consumer, Producer):
     def __init__(
         self,
         capabilities=GAMEPAD_BTN_CAPABILITIES,
-        btn_map: dict[Button, int] = STANDARD_BUTTON_MAP,
+        btn_map: dict[Button, int] = GAMEPAD_BUTTON_MAP,
         axis_map: dict[Axis, int] = {},
         vid: int = 2,
         pid: int = 2,
@@ -105,7 +54,7 @@ class UInputDevice(Consumer, Producer):
                     # if ev["code"] in self.axis_map:
                     #     self.dev.write(B("EV_ABS"), self.axis_map[ev["code"]], ev['value'])
                     # TODO: figure out normalization
-                    if ev['value']:
+                    if ev["value"]:
                         logger.error(f"Outputing axis not supported yet. Event:\n{ev}")
                 case "button":
                     if ev["code"] in self.btn_map:
