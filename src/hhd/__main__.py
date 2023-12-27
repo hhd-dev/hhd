@@ -304,6 +304,7 @@ def main():
                                 with open(token_fn, "w") as f:
                                     os.chmod(token_fn, 0o600)
                                     f.write(token)
+                                fix_perms(token_fn, ctx)
                             else:
                                 with open(token_fn, "r") as f:
                                     token = f.read().strip()
