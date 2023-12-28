@@ -31,7 +31,7 @@ STANDARD_HEADERS = {
 
 ERROR_HEADERS = {**STANDARD_HEADERS, "Content-type": "text/plain"}
 AUTH_HEADERS = ERROR_HEADERS
-OK_HEADERS = {**STANDARD_HEADERS, "Content-type": "text/json"}
+OK_HEADERS = {**STANDARD_HEADERS, "Content-type": "application/json"}
 
 
 def parse_path(path: str) -> tuple[list, dict[str, list[str]]]:
@@ -113,7 +113,7 @@ class RestHandler(BaseHTTPRequestHandler):
             case ".css":
                 ctype = "text/css"
             case ".js":
-                ctype = "text/javascript"
+                ctype = "application/javascript"
             case ".html" | ".htm" | ".php":
                 ctype = "text/html"
             case other:
