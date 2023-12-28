@@ -8,6 +8,7 @@ from typing import (
     Sequence,
     TypedDict,
     cast,
+    Protocol,
 )
 from copy import copy
 
@@ -91,6 +92,12 @@ class IntegerSetting(TypedDict):
     default: int | None
 
 
+class Color(TypedDict):
+    red: int
+    green: int
+    blue: int
+
+
 class ColorSetting(TypedDict):
     """RGB color setting."""
 
@@ -99,7 +106,29 @@ class ColorSetting(TypedDict):
     title: str
     hint: str | None
 
-    default: Mapping | None
+    default: Color | None
+
+
+class CustomSetting(TypedDict):
+    """Custom plugin setting.
+
+    Can be used for any required custom setting that is not covered by the
+    default ones (e.g., fan curves, deadzones).
+
+    The setting type is defined by family.
+    Then, the config variable can be used to supply option specific information
+    (e.g., for fan curves how many temperature points are available).
+
+    To validate this setting, each loaded plugin's validate function is called,
+    with the family, config data, and the supplied value."""
+
+    type: Literal["custom"]
+    family: Sequence[str]
+    title: str
+    hint: str | None
+
+    config: Any | None
+    default: Any | None
 
 
 Setting = (
@@ -110,6 +139,7 @@ Setting = (
     | NumericalSetting
     | IntegerSetting
     | ColorSetting
+    | CustomSetting
 )
 
 #
@@ -244,6 +274,8 @@ def fill_in_defaults(s: Setting | Container | Mode):
         case "integer" | "float":
             s["min"] = s.get("min", None)
             s["max"] = s.get("max", None)
+        case "custom":
+            s["config"] = s.get("config", None)
     return s
 
 
@@ -625,7 +657,14 @@ def unravel_options(settings: HHDSettings):
     return options
 
 
-def validate_config(conf: Config, settings: HHDSettings, use_defaults: bool = True):
+class Validator(Protocol):
+    def __call__(self, family: Sequence[str], config: Any, value: Any) -> bool:
+        return False
+
+
+def validate_config(
+    conf: Config, settings: HHDSettings, validator: Validator, use_defaults: bool = True
+):
     options = unravel_options(settings)
 
     for k, d in options.items():
@@ -667,5 +706,25 @@ def validate_config(conf: Config, settings: HHDSettings, use_defaults: bool = Tr
                 if v > d["max"]:
                     conf[k] = d["max"]
             case "color":
-                # TODO
-                pass
+                invalid = False
+
+                if not isinstance(v, Mapping):
+                    invalid = True
+                else:
+                    for c in ("red", "green", "blue"):
+                        if c not in v:
+                            invalid = True
+                        elif not (0 <= v[c] < 256):
+                            invalid = True
+
+                if invalid:
+                    if use_defaults:
+                        conf[k] = default
+                    else:
+                        del conf[k]
+            case "custom":
+                if not validator(d["family"], d["config"], v):
+                    if use_defaults:
+                        conf[k] = default
+                    else:
+                        del conf[k]

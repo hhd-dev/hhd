@@ -4,9 +4,9 @@ import logging
 import os
 import signal
 from os.path import join
-from threading import Condition, RLock
+from threading import Condition
 from threading import Event as TEvent
-from threading import Lock
+from threading import Lock, RLock
 from time import sleep
 from typing import Sequence, cast
 
@@ -23,15 +23,16 @@ from .plugins import (
     load_relative_yaml,
 )
 from .plugins.settings import (
+    Validator,
     get_default_state,
+    load_blacklist_yaml,
     load_profile_yaml,
     load_state_yaml,
     merge_settings,
+    save_blacklist_yaml,
     save_profile_yaml,
     save_state_yaml,
     validate_config,
-    load_blacklist_yaml,
-    save_blacklist_yaml,
 )
 from .utils import expanduser, fix_perms, get_context, switch_priviledge
 
@@ -198,6 +199,9 @@ def main():
         for plugs in plugins.values():
             sorted_plugins.extend(plugs)
         sorted_plugins.sort(key=lambda x: x.priority)
+        validator: Validator = lambda family, config, value: any(
+            p.validate(family, config, value) for p in sorted_plugins
+        )
 
         if not sorted_plugins:
             logger.error(f"No plugins started, exiting...")
@@ -276,7 +280,7 @@ def main():
                     name = fn.replace(".yml", "")
                     s = load_profile_yaml(join(profile_dir, fn))
                     if s:
-                        validate_config(s, settings, use_defaults=False)
+                        validate_config(s, settings, validator, use_defaults=False)
                         if name.startswith("_"):
                             templates[name] = s
                         else:
@@ -374,7 +378,10 @@ def main():
                             with lock:
                                 profiles[ev["name"]] = ev["config"]
                             validate_config(
-                                profiles[ev["name"]], settings, use_defaults=False
+                                profiles[ev["name"]],
+                                settings,
+                                validator,
+                                use_defaults=False,
                             )
                         else:
                             with lock:
@@ -389,7 +396,7 @@ def main():
                         logger.error(f"Invalid event type submitted: '{other}'")
 
             # Validate config
-            validate_config(conf, settings)
+            validate_config(conf, settings, validator)
 
             # If settings changed, the configuration needs to reload
             # but it needs to be saved first

@@ -75,6 +75,9 @@ class HHDPlugin:
     def settings(self) -> HHDSettings:
         return {}
 
+    def validate(self, family: Sequence[str], config: Any, value: Any):
+        return False
+
     def prepare(self, conf: Config):
         pass
 
