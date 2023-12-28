@@ -28,7 +28,7 @@ may not check if they exist.
 Each setting has a title which is meant to be shown in the UI and an optional 
 hint meant to be shown under a hover hint or `?` button.
 
-Each setting may include a family, which has a number of tags that work like classes. 
+Each setting may include a set of tags, that work like classes. 
 For example, a keyboard mapping setting may have the tags 
 `[razer_lycosa_123, razer_kbd, keyboard, advanced]`, which would allow the UI
 to customize the presentation based on the specific device make, manufacturer,

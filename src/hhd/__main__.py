@@ -199,8 +199,8 @@ def main():
         for plugs in plugins.values():
             sorted_plugins.extend(plugs)
         sorted_plugins.sort(key=lambda x: x.priority)
-        validator: Validator = lambda family, config, value: any(
-            p.validate(family, config, value) for p in sorted_plugins
+        validator: Validator = lambda tags, config, value: any(
+            p.validate(tags, config, value) for p in sorted_plugins
         )
 
         if not sorted_plugins:

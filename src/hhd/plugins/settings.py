@@ -24,7 +24,7 @@ class ButtonSetting(TypedDict):
     """Just a button, emits an event. Used for resets, etc."""
 
     type: Literal["event"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -35,7 +35,7 @@ class BooleanSetting(TypedDict):
     """Checkbox container."""
 
     type: Literal["bool"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -46,7 +46,7 @@ class MultipleSetting(TypedDict):
     """Select one container."""
 
     type: Literal["multiple"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -58,7 +58,7 @@ class DiscreteSetting(TypedDict):
     """Ordered and fixed numerical options (etc. tdp)."""
 
     type: Literal["discrete"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -70,7 +70,7 @@ class NumericalSetting(TypedDict):
     """Floating numerical option."""
 
     type: Literal["float"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -83,7 +83,7 @@ class IntegerSetting(TypedDict):
     """Floating numerical option."""
 
     type: Literal["int"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -102,7 +102,7 @@ class ColorSetting(TypedDict):
     """RGB color setting."""
 
     type: Literal["color"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -115,15 +115,15 @@ class CustomSetting(TypedDict):
     Can be used for any required custom setting that is not covered by the
     default ones (e.g., fan curves, deadzones).
 
-    The setting type is defined by family.
+    The setting type is defined by tags.
     Then, the config variable can be used to supply option specific information
     (e.g., for fan curves how many temperature points are available).
 
     To validate this setting, each loaded plugin's validate function is called,
-    with the family, config data, and the supplied value."""
+    with the tags, config data, and the supplied value."""
 
     type: Literal["custom"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -151,7 +151,7 @@ class Container(TypedDict):
     """Holds a variety of settings."""
 
     type: Literal["container"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -162,7 +162,7 @@ class Mode(TypedDict):
     """Holds a number of containers, only one of whih can be active at a time."""
 
     type: Literal["mode"]
-    family: Sequence[str]
+    tags: Sequence[str]
     title: str
     hint: str | None
 
@@ -221,7 +221,7 @@ PROFILE_HEADER = (
 )
 
 
-Section = MutableMapping[str, Container]
+Section = Mapping[str, Container]
 
 HHDSettings = Mapping[str, Section]
 
@@ -251,7 +251,7 @@ def parse_defaults(sets: HHDSettings):
 
 def fill_in_defaults(s: Setting | Container | Mode):
     s = copy(s)
-    s["family"] = s.get("family", [])
+    s["tags"] = s.get("tags", [])
     s["title"] = s.get("title", "")
     s["hint"] = s.get("hint", None)
     if s["type"] != "container":
@@ -658,7 +658,7 @@ def unravel_options(settings: HHDSettings):
 
 
 class Validator(Protocol):
-    def __call__(self, family: Sequence[str], config: Any, value: Any) -> bool:
+    def __call__(self, tags: Sequence[str], config: Any, value: Any) -> bool:
         return False
 
 
@@ -723,7 +723,7 @@ def validate_config(
                     else:
                         del conf[k]
             case "custom":
-                if not validator(d["family"], d["config"], v):
+                if not validator(d["tags"], d["config"], v):
                     if use_defaults:
                         conf[k] = default
                     else:

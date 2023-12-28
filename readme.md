@@ -218,6 +218,7 @@ Currently, there is a bug with the Nobara kernels that adds 2 extra random
 Steam Controllers.
 These controllers appear in the system as X-BOX/Xpad controllers.
 This is unrelated to HHD.
+You can verify by running ``
 
 ### Steam reports a Legion Controller and a Shortcuts controller instead of a DS5
 The Legion controllers have multiple modes (namely x-input, d-input, dual d-input,
@@ -270,10 +271,10 @@ if you are missing the xpad rule.
 ### I can see the original controller and that is causing issues in X
 Hiding the original controller is a complex process, so it was skipped for the
 v0.1.* versions of HHD.
-However, it is implemented properly in v0.2 which will be released soon.
-Some emulators select the original controller as controller 1, which might
-cause issues.
-If this is the case, wait for version 2.
+However, it is implemented properly in v0.2.
+Some emulators select the original controller as controller 1, which caused 
+issues.
+This is not the case anymore.
 
 ### Yuzu does not work with the DS5 controller
 See above.
@@ -324,7 +325,8 @@ The gyro will freeze and will be unusable after that.
 HHD remaps the touchpad of the legion go to the DS5 touchpad.
 The playstation driver does not support right clicking.
 Switch to d-input to enable the touchpad when you're in the desktop.
-You can also disable touchpad emulation in the config.
+You can also disable touchpad emulation in the config or use evdev emulation
+which does not use the touchpad.
 
 ### HandyGCCS
 HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
