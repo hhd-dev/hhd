@@ -94,7 +94,7 @@ class RestHandler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(data).encode())
 
     def set_response_ok(self):
-        self.set_response(200, STANDARD_HEADERS)
+        self.set_response(200, OK_HEADERS)
 
     def send_not_found(self, error: str):
         self.set_response(404, ERROR_HEADERS)
