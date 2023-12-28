@@ -62,7 +62,7 @@ def hide_gamepad(devpath: str):
 SUBSYSTEMS=="input", KERNELS=="{input_dev}", GOTO="hhd_valid"
 GOTO="hhd_end"
 LABEL="hhd_valid"
-KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", TAG="", RUN+="/bin/chmod 000 /dev/input/%k"
+KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", RUN+="/bin/chmod 000 /dev/input/%k"
 LABEL="hhd_end"
 """  # , RUN+="/bin/chmod 000 /sys/%p"
     try:
