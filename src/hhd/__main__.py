@@ -30,6 +30,8 @@ from .plugins.settings import (
     save_profile_yaml,
     save_state_yaml,
     validate_config,
+    load_blacklist_yaml,
+    save_blacklist_yaml,
 )
 from .utils import expanduser, fix_perms, get_context, switch_priviledge
 
@@ -142,6 +144,14 @@ def main():
         except Exception:
             pass
 
+        # Remove old dir
+        try:
+            os.rename(
+                join(hhd_dir, "plugins"), join(hhd_dir, "plugins_old_USE_STATEYML")
+            )
+        except Exception:
+            pass
+
         set_log_plugin("main")
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
 
@@ -152,12 +162,27 @@ def main():
             else:
                 logger.error(f"Command '{args.command[0]}' is unknown. Ignoring...")
 
+        # Use blacklist
+        blacklist_fn = join(hhd_dir, "plugins.yml")
+        blacklist = load_blacklist_yaml(blacklist_fn)
+
+        logger.info(f"Running autodetection...")
+
+        detector_names = []
         for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
-            detectors[autodetect.name] = autodetect.resolve()
+            name = autodetect.name
+            detector_names.append(name)
+            if name in blacklist:
+                logger.info(f"Skipping blacklisted provider '{name}'.")
+            else:
+                detectors[autodetect.name] = autodetect.resolve()
+
+        # Save new blacklist file
+        save_blacklist_yaml(blacklist_fn, detector_names, blacklist)
+        fix_perms(blacklist_fn, ctx)
 
         logger.info(f"Found plugin providers: {', '.join(list(detectors))}")
 
-        logger.info(f"Running autodetection...")
         for name, autodetect in detectors.items():
             plugins[name] = autodetect([])
 

@@ -487,6 +487,40 @@ def save_state_yaml(fn: str, set: HHDSettings, conf: Config):
     return True
 
 
+def save_blacklist_yaml(fn: str, avail: Sequence[str], blacklist: Sequence[str]):
+    import yaml
+
+    with open(fn, "w") as f:
+        f.write(
+            (
+                ""
+                + "# \n"
+                + "# Plugin blacklist\n"
+                + "# The plugin providers under blacklist will not run.\n"
+                + "# \n"
+                + "# Warning: this file is read only on startup.\n"
+                + "# `sudo systemctl restart hhd@$(whoami)`\n"
+                + "# \n"
+                + "# Available providers:\n"
+                + f"# [{', '.join(avail)}]\n\n"
+            )
+        )
+        yaml.safe_dump({"blacklist": blacklist}, f, width=85, sort_keys=False)
+
+    return True
+
+
+def load_blacklist_yaml(fn: str):
+    import yaml
+
+    try:
+        with open(fn, "r") as f:
+            return yaml.safe_load(f)["blacklist"]
+    except Exception as e:
+        logger.warning(f"Plugin blacklist not found, using default (empty).")
+        return ["myplugin1"]
+
+
 def save_profile_yaml(fn: str, set: HHDSettings, conf: Config | None = None):
     import yaml
 
