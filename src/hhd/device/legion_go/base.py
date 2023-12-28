@@ -290,7 +290,10 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         if conf.get("gyro", False):
             prepare(d_gyro)
         prepare(d_shortcuts)
-        if conf["touchpad_mode"].to(str) != "disabled":
+        if (
+            conf["touchpad_mode"].to(str) != "disabled"
+            and conf["xinput.mode"].to(str) == "ds5e"
+        ):
             prepare(d_touch)
         prepare(d_raw)
         prepare(d_out)

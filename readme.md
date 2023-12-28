@@ -14,11 +14,15 @@ can pick the best target for their device and its controls, which may change
 depending on the game.
 
 *Current Features*:
-- Fully functional Dual Sense 5 Emulator (Legion Go)
+- Fully functional Dual Sense Emulator (Legion Go)
     - All buttons supported
     - Rumble feedback
     - Touchpad support (steam input as well)
     - LED remapping
+- Evdev device emulation
+  - No weird glyphs
+  - Partial gyro and back button support (only outside steam)
+  - Touchpad has right click (unlike DSE)
 - Power Button plugin
     - Short press makes steam deck sleep
     - Long press opens steam power menu
@@ -29,9 +33,6 @@ depending on the game.
   - With will allow swapping configuration per game.
 
 *Planned Features (in that order)*:
-- Evdev device emulation
-  - No weird glyphs
-  - But partial gyro and back button support
 - Steam Deck controller emulation
   - No weird glyphs
 - TDP Plugin (Legion Go)

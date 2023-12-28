@@ -42,7 +42,7 @@ def reload_children(parent: str):
         return False
     for action in ["remove", "add"]:
         stat = subprocess.run(
-            ["udevadm", "trigger", "--action", action, f"-b", parent],
+            ["udevadm", "trigger", "--action", action, "-b", parent],
             capture_output=True,
         )
         if stat.returncode:
