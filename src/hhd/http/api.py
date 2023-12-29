@@ -1,10 +1,11 @@
+import itertools
 import json
 import logging
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Condition, Thread
 from typing import Any, Mapping
-from urllib.parse import parse_qs, urlparse, quote
+from urllib.parse import parse_qs, urlparse
 
 from hhd.plugins import Config, Emitter, HHDSettings, get_relative_fn
 
@@ -33,6 +34,10 @@ ERROR_HEADERS = {**STANDARD_HEADERS, "Content-type": "text/plain"}
 AUTH_HEADERS = ERROR_HEADERS
 OK_HEADERS = {**STANDARD_HEADERS, "Content-type": "application/json"}
 
+# https://en.wikipedia.org/wiki/List_of_Unicode_characters#Control_codes
+_control_char_table = str.maketrans(
+        {c: fr'\x{c:02x}' for c in itertools.chain(range(0x20), range(0x7f,0xa0))})
+_control_char_table[ord('\\')] = r'\\'
 
 def parse_path(path: str) -> tuple[list, dict[str, list[str]]]:
     try:
@@ -280,7 +285,7 @@ class RestHandler(BaseHTTPRequestHandler):
     def log_message(self, format: str, *args: Any) -> None:
         message = format % args
         logger.error(
-            f"Received invalid request from '{self.address_string()}':\n{quote(message)}"
+            f"Received invalid request from '{self.address_string()}':\n{message.translate(_control_char_table)}"
         )
 
 
