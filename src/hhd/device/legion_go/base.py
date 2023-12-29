@@ -52,7 +52,7 @@ LEN_PIDS = {
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
     # Remove leftover udev rules
-    unhide_all()
+    # unhide_all()
     if (gyro_fix := conf.get("gyro_fix", False)) and conf["gyro"].to(bool):
         gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
     else:
@@ -113,7 +113,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
             if gyro_fixer:
                 gyro_fixer.close()
             # Remove leftover udev rules
-            unhide_all()
+            # unhide_all()
 
 
 def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent):
