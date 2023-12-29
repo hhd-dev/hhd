@@ -50,7 +50,7 @@ def reload_children(parent: str):
     return True
 
 
-def hide_gamepad(devpath: str):
+def hide_gamepad(devpath: str, vid: int, pid: int):
     input_dev = get_gamepad_name(devpath)
     parent = get_parent_sysfs(devpath)
     if not input_dev or not parent:
@@ -59,7 +59,7 @@ def hide_gamepad(devpath: str):
     rule = f"""\
 # Hides device gamepad devices stemming from {input_dev}
 # Managed by HHD, this file will be autoremoved during configuration changes.
-SUBSYSTEMS=="input", KERNELS=="{input_dev}", GOTO="hhd_valid"
+SUBSYSTEMS=="input", KERNELS=="{input_dev}", ATTRS{{id/vendor}}=="{vid:04x}", ATTRS{{id/product}}=="{pid:04x}", GOTO="hhd_valid"
 GOTO="hhd_end"
 LABEL="hhd_valid"
 KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", RUN+="/bin/chmod 000 /dev/input/%k"
