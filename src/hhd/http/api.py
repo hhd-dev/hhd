@@ -4,7 +4,7 @@ import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Condition, Thread
 from typing import Any, Mapping
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse, quote
 
 from hhd.plugins import Config, Emitter, HHDSettings, get_relative_fn
 
@@ -101,10 +101,18 @@ class RestHandler(BaseHTTPRequestHandler):
         self.wfile.write(b"Handheld Daemon Error (404, invalid endpoint):\n")
         self.wfile.write(error.encode())
 
-    def send_error(self, error: str):
+    def send_error_str(self, error: str):
         self.set_response(400, ERROR_HEADERS)
         self.wfile.write(b"Handheld Daemon Error:\n")
         self.wfile.write(error.encode())
+
+    def send_error(self, *args, **kwargs):
+        if len(args) == 1:
+            return self.send_error_str(args[0])
+        else:
+            for title, head in STANDARD_HEADERS.items():
+                self.send_header(title, head)
+            return super().send_error(*args, **kwargs)
 
     def send_file(self, fn: str):
         if not "." in fn:
@@ -270,7 +278,10 @@ class RestHandler(BaseHTTPRequestHandler):
         self.v1_endpoint(content_json)
 
     def log_message(self, format: str, *args: Any) -> None:
-        pass
+        message = format % args
+        logger.error(
+            f"Received invalid request from '{self.address_string()}':\n{quote(message)}"
+        )
 
 
 class HHDHTTPServer:
