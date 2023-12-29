@@ -1,0 +1,34 @@
+type: container
+tags: [adj]
+title: Adjustor
+hint: >-
+  Configuration of the Performance Envelope of the selected system.
+
+children:
+  tdp_mode:
+    type: mode
+    tags: [adj_plat]
+    title: TDP Driver
+    hint: >-
+      How to control the overall TDP of the provided device.
+      Which modes are available will depend on the device and available drivers.
+
+  cpu:
+    type: container
+    tags: [adj_cpu]
+    title: CPU Options
+    hint: >-
+      Stardard options provided by the CPU linux driver.
+    children:
+      # /sys/devices/system/cpu/smt/control
+
+
+  amd_gpu:
+    type: container
+    tags: [adj_gpu]
+    title: GPU Options
+    hint: >-
+      Standard options provided by the AMD GPU linux driver.
+  
+    children:
+      # power_dpm_force_performance_level
