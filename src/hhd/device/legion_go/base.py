@@ -11,7 +11,7 @@ from hhd.controller import Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.evdev import GenericGamepadEvdev, unhide_all
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
@@ -51,6 +51,8 @@ LEN_PIDS = {
 
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
+    # Remove leftover udev rules
+    unhide_all()
     if (gyro_fix := conf.get("gyro_fix", False)) and conf["gyro"].to(bool):
         gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
     else:
@@ -110,6 +112,8 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
         finally:
             if gyro_fixer:
                 gyro_fixer.close()
+            # Remove leftover udev rules
+            unhide_all()
 
 
 def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent):

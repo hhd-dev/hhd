@@ -2,8 +2,6 @@ import glob
 import logging
 import os
 import re
-import select
-import stat
 import subprocess
 from typing import Mapping, Sequence, TypeVar, cast, Collection
 
@@ -13,7 +11,7 @@ from evdev import ecodes, ff
 from hhd.controller import Axis, Button, Consumer, Event, Producer, can_read
 from hhd.controller.base import Event
 from hhd.controller.lib.common import hexify, matches_patterns
-from hhd.controller.lib.hide import hide_gamepad, unhide_gamepad
+from hhd.controller.lib.hide import hide_gamepad, unhide_gamepad, unhide_all
 from hhd.controller.const import AbsAxis, GamepadButton, KeyboardButton
 
 logger = logging.getLogger(__name__)

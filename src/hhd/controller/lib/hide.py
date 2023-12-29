@@ -85,3 +85,12 @@ def unhide_gamepad(devpath: str):
         return reload_children(parent)
     except Exception:
         return False
+
+
+def unhide_all():
+    for rule in os.listdir("/run/udev/rules.d/"):
+        if rule.startswith("95-hhd-devhide"):
+            try:
+                os.remove(os.path.join("/run/udev/rules.d/", rule))
+            except Exception:
+                pass
