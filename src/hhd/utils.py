@@ -14,13 +14,13 @@ def get_context(user: str | None) -> Context | None:
         gid = os.getgid()
 
         if not user:
-            if not uid or not gid:
+            if not uid:
                 print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 print(
                     "Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
                 )
                 print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            return Context(uid, gid, uid, gid, "root")
+            return Context(uid, gid, uid, gid, os.getlogin())
 
         euid = int(
             subprocess.run(
