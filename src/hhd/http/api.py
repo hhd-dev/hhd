@@ -27,6 +27,9 @@ def sanitize_fn(n: str):
 STANDARD_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Max-Age": "86400",
     "WWW-Authenticate": "Bearer",
 }
 
@@ -64,10 +67,19 @@ class RestHandler(BaseHTTPRequestHandler):
     token: str | None
 
     def set_response(self, code: int, headers: dict[str, str] = {}):
+        # Allow skipping CORS by responding with specific origin
+        if og := self.headers.get("Origin", None):
+            headers = {**headers, "Access-Control-Allow-Origin": og}
         self.send_response(code)
         for title, head in headers.items():
             self.send_header(title, head)
         self.end_headers()
+
+    def do_OPTIONS(self):
+        self.set_response(
+            204,
+            STANDARD_HEADERS,
+        )
 
     def is_authenticated(self):
         if not self.token:
