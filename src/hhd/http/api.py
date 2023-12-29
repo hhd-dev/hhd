@@ -36,8 +36,10 @@ OK_HEADERS = {**STANDARD_HEADERS, "Content-type": "application/json"}
 
 # https://en.wikipedia.org/wiki/List_of_Unicode_characters#Control_codes
 _control_char_table = str.maketrans(
-        {c: fr'\x{c:02x}' for c in itertools.chain(range(0x20), range(0x7f,0xa0))})
-_control_char_table[ord('\\')] = r'\\'
+    {c: rf"\x{c:02x}" for c in itertools.chain(range(0x20), range(0x7F, 0xA0))}
+)
+_control_char_table[ord("\\")] = r"\\"
+
 
 def parse_path(path: str) -> tuple[list, dict[str, list[str]]]:
     try:
@@ -287,6 +289,18 @@ class RestHandler(BaseHTTPRequestHandler):
         logger.error(
             f"Received invalid request from '{self.address_string()}':\n{message.translate(_control_char_table)}"
         )
+
+    def log_request(self, code="-", size="-"):
+        pass
+
+    def __getattr__(self, val: str):
+        if not val.startswith("do_"):
+            raise AttributeError()
+
+        logger.warning(
+            f"Received request type '{val[3:].translate(_control_char_table)}' from '{self.address_string()}'. Handling as GET."
+        )
+        return self.do_GET
 
 
 class HHDHTTPServer:
