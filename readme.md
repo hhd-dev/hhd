@@ -84,6 +84,19 @@ sudo systemctl enable handygccs
 sudo reboot
 ```
 
+### ❄️ NixOS
+Update the `nixpkgs.url` input in your flake to point at [the PR](https://github.com/NixOS/nixpkgs/pull/277661/) branch:
+
+```nix
+  inputs = {
+    nixpkgs.url = "github:appsforartists/nixpkgs/handheld-daemon";
+```
+
+and add this line to your `configuration.nix`:
+```nix
+  services.handheldDaemon.enable = true;
+```
+
 ### PyPi Based installation (Nobara/Read only fs)
 If you have a read only fs or are on a fedora based system, you may opt to install
 a local version of hhd.
