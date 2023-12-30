@@ -1,4 +1,4 @@
-# Sourced from the library hid, modified.
+# Forked from https://github.com/apmorton/pyhidapi/blob/master/hid/__init__.py
 import os
 import ctypes
 import atexit
