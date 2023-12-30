@@ -101,8 +101,8 @@ source venv/bin/activate
 pip install hhd
 
 # Install udev rules and create a service file
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules 
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
 # Start service and reboot
 sudo systemctl enable hhd_local@$(whoami)
@@ -293,7 +293,7 @@ only way to wake up the screen in desktop mode.
 Games that do not support Dual Sense natively (e.g., wine games) will not have
 a correct gamepad profile and will not work either.
 ```bash
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/modprobe.d/hhd.conf -o /etc/udev/modprobe.d/hhd.conf
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/modprobe.d/hhd.conf -o /etc/udev/modprobe.d/hhd.conf
 ```
 
 ### Freezing Gyro
@@ -360,7 +360,7 @@ You should install from source if you aim to contribute or want to pull from mas
 ```bash
 # Install hhd to ~/.local/share/hhd
 mkdir -p ~/.local/share/
-git clone https://github.com/antheas/hhd ~/.local/share/hhd
+git clone https://github.com/hhd-dev/hhd ~/.local/share/hhd
 
 cd ~/.local/share/hhd
 python -m venv venv
@@ -368,13 +368,13 @@ source venv/bin/activate
 pip install -e .
 
 # Install udev rules and create a service file
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules 
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
 # Install udev rules to allow running in userspace (optional; great for debugging)
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/udev/rules.d/83-hhd-user.rules -o /etc/udev/rules.d/83-hhd-user.rules 
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd-user.rules -o /etc/udev/rules.d/83-hhd-user.rules
 # Modprobe uhid to avoid rw errors
-sudo curl https://raw.githubusercontent.com/antheas/hhd/master/usr/lib/modules-load.d/hhd-user.conf -o /etc/modules-load.d/hhd-user.conf
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/modules-load.d/hhd-user.conf -o /etc/modules-load.d/hhd-user.conf
 
 # Reboot
 sudo reboot

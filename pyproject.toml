@@ -21,8 +21,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/antheas/hhd"
-"Bug Tracker" = "https://github.com/antheas/hhd/issues"
+"Homepage" = "https://github.com/hhd-dev/hhd"
+"Bug Tracker" = "https://github.com/hhd-dev/hhd/issues"
 
 [project.entry-points."console_scripts"]
 hhd = "hhd.__main__:main"
