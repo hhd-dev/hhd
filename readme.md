@@ -272,14 +272,16 @@ and all Legion L, R + button combinations into shortcuts that will work accross
 all modes.
 
 ### I can not see any controllers before or after installing HHD
-You are in a distro that does not officially support Legion Go.
-One of the fixes that is included in those distros is a `udev` rule that binds
-the `xpad` driver to the controllers.
-This is expected to be included in a future Linux kernel so it is not included
+Your kernel needs to know to use the `xpad` driver for the Legion Go's
+controllers.
+
+This is expected to be included in a future Linux kernel, so it is not included
 by default by HHD.
 
-Under `/etc/udev/rules.d/95-hhd.rules` add the following:
+In the mean time, [apply the patch](https://github.com/torvalds/linux/compare/master...appsforartists:linux:legion-go-controllers.patch), or add a `udev`
+rule:
 
+#### `/etc/udev/rules.d/95-hhd.rules`
 ```bash
 # Enable xpad for the Legion Go controllers
 ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6182", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 17ef 6182 > /sys/bus/usb/drivers/xpad/new_id'"
