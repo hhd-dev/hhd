@@ -50,6 +50,11 @@ depending on the game.
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PyPi.
 
+>  On boot you might see an xbox controller. There is a bug with hiding the controller
+> during the boot process.
+> Flicking the fps switch on off fixes it and the controller is hidden until the next
+> reboot.
+
 ### ChimeraOS
 
 ChimeraOS does not ship with `gcc` to compile `hhd` dependencies and the
@@ -85,7 +90,7 @@ sudo systemctl disable hhd@$(whoami)
 sudo pikaur -S handygccs-git
 sudo pacman -R hhd
 
-sudo systemctl enable handygccs
+sudo systemctl enable handycon
 sudo reboot
 ```
 
@@ -238,13 +243,6 @@ get a wink when going to sleep mode.
 When the controllers are not in x-input mode, HHD adds a shortcuts device so
 that combos such as Steam and QAM keep working.
 
-### I'm seeing three X-BOX controllers, regardless of whether HHD is running
-Currently, there is a bug with the Nobara kernels that adds 2 extra random
-Steam Controllers.
-These controllers appear in the system as X-BOX/Xpad controllers.
-This is unrelated to HHD.
-You can verify by running ``
-
 ### Steam reports a Legion Controller and a Shortcuts controller instead of a PS5
 The Legion controllers have multiple modes (namely x-input, d-input, dual d-input,
 and FPS).
@@ -304,6 +302,10 @@ However, it is implemented properly in v0.2.
 Some emulators select the original controller as controller 1, which caused 
 issues.
 This is not the case anymore.
+On boot you might see an xbox controller. There is a bug with hiding the controller
+during the boot process.
+Flicking the fps switch on off fixes it and the controller is hidden until the next
+reboot.
 
 ### Yuzu does not work with the PS5 controller
 See above.
