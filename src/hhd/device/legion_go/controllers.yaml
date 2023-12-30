@@ -2,7 +2,7 @@ type: container
 tags: [lgc]
 title: Legion Controllers Configuration
 hint: >-
-  Allows for configuring the legion controllers using the built in firmware
+  Allows for configuring the Legion controllers using the built in firmware
   commands and enabling emulation modes for various controller types.
 
 children:
@@ -102,7 +102,7 @@ children:
     default: disabled
   share_to_qam:
     type: bool
-    title: Map the Legion L button to QAM (instead of Mute)
+    title: Map the Legion R button to QAM (instead of Mute).
     default: True
   touchpad_mode:
     type: multiple
@@ -129,7 +129,7 @@ children:
     type: bool
     title: Debug
     hint: >-
-      Output controller events to the console
+      Output controller events to the console (high CPU use).
     default: False
 
   shortcuts:
