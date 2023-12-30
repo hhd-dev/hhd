@@ -187,7 +187,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     match conf["xinput.mode"].to(str):
         case "ds5e":
             d_out = DualSense5Edge(
-                touchpad_method=conf["touchpad_mode"].to(TouchpadCorrectionType)
+                touchpad_method=conf["touchpad_mode"].to(TouchpadCorrectionType),
+                disable_click=conf["xinput.ds5e.disable_click"].to(bool),
             )
             d_out2 = None
         case _:

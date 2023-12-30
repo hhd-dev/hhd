@@ -43,6 +43,14 @@ children:
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
+          disable_click:
+            type: bool
+            title: Disable Touchpad Click
+            hint: >-
+              Disables the touchpad click when the legion go touchpad is held.
+              Might be useful in nested-desktop, if you tend to hold down the touchpad.
+              Consider disabling touchpad emulation altogether, to fix the right click.
+            default: False
       #
       # evdev through uinput
       #

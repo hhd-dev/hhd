@@ -168,6 +168,7 @@ class DualSense5Edge(Producer, Consumer):
         touchpad_method: TouchpadCorrectionType = "crop_end",
         use_bluetooth: bool = True,
         fake_timestamps: bool = False,
+        disable_click: bool = False,
     ) -> None:
         self.available = False
         self.report = None
@@ -175,6 +176,7 @@ class DualSense5Edge(Producer, Consumer):
         self.start = 0
         self.use_bluetooth = use_bluetooth
         self.fake_timestamps = fake_timestamps
+        self.disable_click = disable_click
         self.touchpad_method: TouchpadCorrectionType = touchpad_method
 
         self.ofs = (
@@ -415,6 +417,8 @@ class DualSense5Edge(Producer, Consumer):
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
+                    if self.disable_click and ev["code"] == "touchpad_click":
+                        continue
                     if ev["code"] in self.btn_map:
                         set_button(new_rep, self.btn_map[ev["code"]], ev["value"])
 
