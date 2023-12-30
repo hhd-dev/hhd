@@ -152,7 +152,7 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
-        # name=[re.compile(r"Legion-Controller \d-.. Keyboard")],
+        name=[re.compile(r"Legion-Controller \d-.. Keyboard")],
         capabilities={EC("EV_KEY"): [EC("KEY_1")]},
         required=True,
     )
