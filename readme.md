@@ -24,8 +24,8 @@ depending on the game.
   - No weird glyphs
   - Partial gyro and back button support (only outside Steam)
   - Touchpad has right click (unlike DualSense Edge)
-- Power Button plugin
-    - Short press makes Steam deck sleep
+- Power Button plugin for Big Picture/Steam Deck Mode
+    - Short press makes Steam backup saves and wink before suspend.
     - Long press opens Steam power menu
 - Hiding the original Xbox controller
 - HTTP based Configuration
@@ -367,7 +367,7 @@ You should uninstall it with `sudo pacman -R handygccs-git`.
 You will see the following in the HHD logs (`sudo systemctl status hhd@$(whoami)`) 
 if HandyGCCS is enabled.
 ```
-              ERROR    Device with the following not found:                                                                                                                          evdev.py:122
+              ERROR    Device with the following not found: 
                        Vendor ID: ['17ef']
                        Product ID: ['6182']
                        Name: ['Generic X-Box pad']
@@ -415,6 +415,3 @@ hhd
 # Add user when running with sudo
 sudo hhd --user $(whoami)
 ```
-
-## License
-This codebase is MIT licensed and will always have a copy-left license.
