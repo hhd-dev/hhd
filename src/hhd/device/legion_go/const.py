@@ -5,7 +5,7 @@ from hhd.controller.physical.hidraw import AM, BM, CM
 LGO_TOUCHPAD_BUTTON_MAP: dict[int, Button] = to_map(
     {
         "touchpad_touch": [B("BTN_TOOL_FINGER")],  # also BTN_TOUCH
-        "touchpad_click": [B("BTN_TOOL_DOUBLETAP")],
+        "touchpad_right": [B("BTN_TOOL_DOUBLETAP")],
     }
 )
 

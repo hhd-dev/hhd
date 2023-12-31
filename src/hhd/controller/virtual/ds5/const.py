@@ -157,7 +157,7 @@ get_btn_map = lambda ofs: {
     "share": BM(((ofs + 9) << 3) + 5),
     "touchpad_touch": BM(((ofs + 32) << 3), flipped=True),
     "touchpad_touch2": BM(((ofs + 36) << 3), flipped=True),
-    "touchpad_click": BM(((ofs + 9) << 3) + 6),
+    "touchpad_left": BM(((ofs + 9) << 3) + 6),
     "mode": BM(((ofs + 9) << 3) + 7),
 }
 

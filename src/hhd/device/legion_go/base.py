@@ -5,10 +5,10 @@ import select
 import sys
 import time
 from threading import Event as TEvent
-from typing import Sequence, cast
+from typing import Sequence, Literal
 
 from hhd.controller import Button, Consumer, Event, Producer
-from hhd.controller.base import Multiplexer
+from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, unhide_all
@@ -108,6 +108,9 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )
+            # Raise exception
+            if conf.get("debug", False):
+                raise e
             time.sleep(ERROR_DELAY)
         finally:
             if gyro_fixer:
@@ -187,8 +190,9 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     match conf["xinput.mode"].to(str):
         case "ds5e":
             d_out = DualSense5Edge(
-                touchpad_method=conf["touchpad_mode"].to(TouchpadCorrectionType),
-                disable_click=conf["xinput.ds5e.disable_click"].to(bool),
+                touchpad_method=conf["touchpad.emulation.correction"].to(
+                    TouchpadCorrectionType
+                ),
             )
             d_out2 = None
         case _:
@@ -269,6 +273,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         led="main_to_sides",
         status="both_to_main",
         share_to_qam=conf["share_to_qam"].to(bool),
+        touchpad_short=conf["touchpad.emulation.short"].to(TouchpadAction),
+        touchpad_right=conf["touchpad.emulation.hold"].to(TouchpadAction),
     )
 
     REPORT_FREQ_MIN = 25
@@ -296,7 +302,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             prepare(d_gyro)
         prepare(d_shortcuts)
         if (
-            conf["touchpad_mode"].to(str) != "disabled"
+            conf["touchpad.mode"].to(str) != "disabled"
             and conf["xinput.mode"].to(str) == "ds5e"
         ):
             prepare(d_touch)

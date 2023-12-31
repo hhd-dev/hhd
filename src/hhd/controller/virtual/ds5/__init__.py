@@ -168,7 +168,10 @@ class DualSense5Edge(Producer, Consumer):
         touchpad_method: TouchpadCorrectionType = "crop_end",
         use_bluetooth: bool = True,
         fake_timestamps: bool = False,
-        disable_click: bool = False,
+        short_touch_is_click: bool = False,
+        long_press_mode: Literal[
+            "disabled", "left_click", "right_click"
+        ] = "left_click",
     ) -> None:
         self.available = False
         self.report = None
@@ -176,8 +179,9 @@ class DualSense5Edge(Producer, Consumer):
         self.start = 0
         self.use_bluetooth = use_bluetooth
         self.fake_timestamps = fake_timestamps
-        self.disable_click = disable_click
         self.touchpad_method: TouchpadCorrectionType = touchpad_method
+        self.short_touch_is_click = short_touch_is_click
+        self.long_press_mode = long_press_mode
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -207,6 +211,7 @@ class DualSense5Edge(Producer, Consumer):
         self.state: dict = defaultdict(lambda: 0)
         self.rumble = False
         self.touchpad_touch = False
+        self.touchpad_down = time.perf_counter()
         self.start = time.perf_counter_ns()
         self.fd = self.dev.open()
 
@@ -417,16 +422,20 @@ class DualSense5Edge(Producer, Consumer):
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
-                    if self.disable_click and ev["code"] == "touchpad_click":
-                        continue
                     if ev["code"] in self.btn_map:
                         set_button(new_rep, self.btn_map[ev["code"]], ev["value"])
 
-                    # Fix touchpad click requiring touch, and also activate second
-                    # button for right click
+                    # Fix touchpad click requiring touch
                     if ev["code"] == "touchpad_touch":
                         self.touchpad_touch = ev["value"]
-                    if ev["code"] == "touchpad_click":
+                    if ev["code"] == "touchpad_left":
+                        set_button(
+                            new_rep,
+                            self.btn_map["touchpad_touch"],
+                            ev["value"] or self.touchpad_touch,
+                        )
+                    # Also add right click
+                    if ev["code"] == "touchpad_right":
                         set_button(
                             new_rep,
                             self.btn_map["touchpad_touch"],

@@ -93,8 +93,10 @@ GamepadButton = Literal[
     # Misc
     "mode",
     "share",
+    # Touchpad
     "touchpad_touch",
-    "touchpad_click",
+    "touchpad_left",
+    "touchpad_right",
 ]
 
 MouseButton = Literal["btn_left", "btn_right", "btn_middle", "btn_side", "btn_extra"]

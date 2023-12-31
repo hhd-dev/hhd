@@ -60,13 +60,7 @@ class ConfigurationEvent(TypedDict):
     value: Any
 
 
-Event = (
-    ButtonEvent
-    | AxisEvent
-    | ConfigurationEvent
-    | RgbLedEvent
-    | RumbleEvent
-)
+Event = ButtonEvent | AxisEvent | ConfigurationEvent | RgbLedEvent | RumbleEvent
 
 
 class Producer:
@@ -104,6 +98,9 @@ class Consumer:
         pass
 
 
+TouchpadAction = Literal["disabled", "left_click", "right_click"]
+
+
 class Multiplexer:
     QAM_DELAY = 0.2
 
@@ -118,6 +115,8 @@ class Multiplexer:
         status: None | Literal["both_to_main"] = None,
         share_to_qam: bool = False,
         trigger_discrete_lvl: float = 0.99,
+        touchpad_short: TouchpadAction = "disabled",
+        touchpad_right: TouchpadAction = "left_click",
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -127,8 +126,11 @@ class Multiplexer:
         self.status = status
         self.trigger_discrete_lvl = trigger_discrete_lvl
         self.share_to_qam = share_to_qam
+        self.touchpad_short = touchpad_short
+        self.touchpad_right = touchpad_right
 
         self.state = {}
+        self.touchpad_down = time.perf_counter()
         self.queue: list[tuple[Event, float]] = []
 
         assert touchpad is None, "touchpad rewiring not supported yet"
@@ -250,6 +252,45 @@ class Multiplexer:
                                 ),
                             )
 
+                    if ev["code"] == "touchpad_right":
+                        match self.touchpad_right:
+                            case "disabled":
+                                # TODO: Cleanup
+                                ev["code"] = ""  # type: ignore
+                            case "left_click":
+                                ev["code"] = "touchpad_left"
+                            case "right_click":
+                                pass
+
+                    if ev["code"] == "touchpad_touch":
+                        if ev["value"]:
+                            self.touchpad_down = curr
+                        elif self.touchpad_short != "disabled" and curr - self.touchpad_down < 0.14:
+                            action = (
+                                "touchpad_left"
+                                if self.touchpad_short == "left_click"
+                                else "touchpad_right"
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": action,
+                                        "value": True,
+                                    },
+                                    curr,
+                                )
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": action,
+                                        "value": False,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                )
+                            )
                         # append A after QAM_DELAY s
 
                     # TODO: Make it a proper config option

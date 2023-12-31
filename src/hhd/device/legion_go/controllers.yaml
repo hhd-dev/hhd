@@ -43,14 +43,6 @@ children:
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
-          disable_click:
-            type: bool
-            title: Disable Touchpad Click
-            hint: >-
-              Disables the touchpad click when the legion go touchpad is held.
-              Might be useful in nested-desktop, if you tend to hold down the touchpad.
-              Consider disabling touchpad emulation altogether, to fix the right click.
-            default: False
       #
       # evdev through uinput
       #
@@ -104,33 +96,79 @@ children:
     type: bool
     title: Map the Legion R button to QAM (instead of Mute).
     default: True
-  touchpad_mode:
-    type: multiple
-    title: Touchpad correction type
+
+  touchpad:
+    type: mode
+    tags: [touchpad]
+    title: Touchpad Emulation
     hint: >-
-      The legion touchpad is square, whereas the DS5 one is rectangular.
-      Therefore, it needs to be corrected.
-      "Contain" maintain the whole DS5 touchpad and part of the Legion
-      one is unused. "Crop" uses the full legion touchpad, and limits
-      the area of the DS5. "Stretch" uses both fully (distorted).
-      "Crop End" enables use in steam input as the right touchpad.
-      Set to "Disabled" to not remap.
-    options:
-      disabled: "Disabled"
-      stretch: "Stretch"
-      crop_center: "Crop Center"
-      crop_start: "Crop Start"
-      crop_end: "Crop End"
-      contain_start: "Contain Start"
-      contain_end: "Contain End"
-      contain_center: "Contain Center"
-    default: crop_end
-  debug:
-    type: bool
-    title: Debug
-    hint: >-
-      Output controller events to the console (high CPU use).
-    default: False
+      Use an emulated touchpad (currently only on Dualsense controller).
+
+    default: emulation
+    modes:
+      #
+      # No emulation
+      #
+      disabled:
+        type: container
+        title: Disabled
+        hint: >-
+          Does not modify the touchpad.
+      emulation:
+        type: container
+        title: Enabled
+        hint: >-
+          Emulates the touchpad.
+        children:
+          correction:
+            type: multiple
+            title: Correction Type
+            hint: >-
+              The legion touchpad is square, whereas the DS5 one is rectangular.
+              Therefore, it needs to be corrected.
+              "Contain" maintain the whole DS5 touchpad and part of the Legion
+              one is unused. "Crop" uses the full legion touchpad, and limits
+              the area of the DS5. "Stretch" uses both fully (distorted).
+              "Crop End" enables use in steam input as the right touchpad.
+              Set to "Disabled" to not remap.
+              (Dualsense only).
+            options:
+              stretch: "Stretch"
+              crop_center: "Crop Center"
+              crop_start: "Crop Start"
+              crop_end: "Crop End"
+              contain_start: "Contain Start"
+              contain_end: "Contain End"
+              contain_center: "Contain Center"
+            default: crop_end
+
+          short:
+            type: multiple
+            title: Short Action
+            hint: >-
+              Maps short touches (less than 0.2s) to a touchpad action.
+              Left click is sent as a physical press of the touchpad.
+              Right click is sent as a double tap (support varies).
+              (Dualsense only).
+            options:
+              disabled: Disabled
+              left_click: Left Click
+              right_click: Right Click
+            default: "disabled"
+
+          hold:
+            type: multiple
+            title: Hold Action
+            hint: >-
+              What action should be triggered when the legion touchpad is held.
+              Left click is sent as a physical press of the touchpad.
+              Right click is sent as a double tap (support varies).
+              (Dualsense only).
+            options:
+              disabled: Disabled
+              left_click: Left Click
+              right_click: Right Click
+            default: "left_click"
 
   shortcuts:
     type: bool
@@ -139,3 +177,10 @@ children:
       When in other modes (dinput, dual dinput, and fps), enable a shortcuts 
       controller to restore Guide, QAM, and shortcut functionality.
     default: True
+  debug:
+    type: bool
+    title: Debug
+    hint: >-
+      Output controller events to the console (high CPU use) and raises exceptions
+      (HHD will crash on errors).
+    default: False
