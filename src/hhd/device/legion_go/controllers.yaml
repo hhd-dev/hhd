@@ -48,7 +48,7 @@ children:
             type: bool
             title: Remap touchpad
             hint: >-
-              Remaps the DS5 touchpad when touchpad emulation is enabled. 
+              Remaps to the DS5 touchpad when touchpad emulation is enabled. 
               Right click will not work under gamescope.
             default: True
       #
@@ -110,7 +110,9 @@ children:
     tags: [touchpad]
     title: Touchpad Emulation
     hint: >-
-      Use an emulated touchpad (currently only on Dualsense controller).
+      Use an emulated touchpad.
+      Part of the controller if it is supported (e.g., Dualsense) or a virtual
+      one if not.
 
     default: emulation
     modes:
