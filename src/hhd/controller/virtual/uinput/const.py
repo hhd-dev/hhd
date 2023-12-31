@@ -360,6 +360,49 @@ MOUSE_CAPABILITIES = {
     B("EV_MSC", 4): [B("MSC_SCAN", 4)],
 }
 
+TOUCHPAD_CAPABILITIES = {
+    B("EV_KEY", 1): [
+        B(["BTN_LEFT", "BTN_MOUSE"], 272),
+        B("BTN_RIGHT"),
+        B("BTN_TOOL_FINGER", 325),
+        B("BTN_TOUCH", 330),
+        B("BTN_TOOL_DOUBLETAP", 333),
+        B("BTN_TOOL_TRIPLETAP", 334),
+    ],
+    B("EV_ABS", 3): [
+        (
+            B("ABS_X", 0),
+            AbsInfo(value=172, min=0, max=2048, fuzz=0, flat=0, resolution=36),
+        ),
+        (
+            B("ABS_Y", 1),
+            AbsInfo(value=472, min=0, max=2048, fuzz=0, flat=0, resolution=36),
+        ),
+        (
+            B("ABS_MT_SLOT", 47),
+            AbsInfo(value=0, min=0, max=2, fuzz=0, flat=0, resolution=0),
+        ),
+        (
+            B("ABS_MT_POSITION_X", 53),
+            AbsInfo(value=0, min=0, max=2048, fuzz=0, flat=0, resolution=36),
+        ),
+        (
+            B("ABS_MT_POSITION_Y", 54),
+            AbsInfo(value=0, min=0, max=2048, fuzz=0, flat=0, resolution=36),
+        ),
+        (
+            B("ABS_MT_TOOL_TYPE", 55),
+            AbsInfo(value=0, min=0, max=2, fuzz=0, flat=0, resolution=0),
+        ),
+        (
+            B("ABS_MT_TRACKING_ID", 57),
+            AbsInfo(value=0, min=0, max=65535, fuzz=0, flat=0, resolution=0),
+        ),
+    ],
+    B("EV_MSC", 4): [B("MSC_TIMESTAMP", 5)],
+}
+
+
 GAMEPAD_BUTTON_MAP: dict[Button, int] = {
     # Gamepad
     "a": B("BTN_A"),
@@ -404,4 +447,15 @@ MOTION_AXIS_MAP: dict[Axis, AX] = {
     "gyro_x": AX(B("ABS_RX"), 1024, bounds=(-2097152, 2097152)),
     "gyro_y": AX(B("ABS_RY"), 1024, bounds=(-2097152, 2097152)),
     "gyro_z": AX(B("ABS_RZ"), 1024, bounds=(-2097152, 2097152)),
+}
+
+TOUCHPAD_AXIS_MAP: dict[Axis, AX] = {
+    "touchpad_x": AX(B("ABS_X"), 1023, bounds=(0, 2048)),
+    "touchpad_y": AX(B("ABS_Y"), 1023, bounds=(0, 2048)),
+}
+
+TOUCHPAD_BUTTON_MAP: dict[Button, int] = {
+    "touchpad_touch": B("BTN_TOUCH"),
+    "touchpad_right": B("BTN_RIGHT"),
+    "touchpad_left": B("BTN_LEFT"),
 }

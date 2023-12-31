@@ -168,10 +168,7 @@ class DualSense5Edge(Producer, Consumer):
         touchpad_method: TouchpadCorrectionType = "crop_end",
         use_bluetooth: bool = True,
         fake_timestamps: bool = False,
-        short_touch_is_click: bool = False,
-        long_press_mode: Literal[
-            "disabled", "left_click", "right_click"
-        ] = "left_click",
+        enable_touchpad: bool = True,
     ) -> None:
         self.available = False
         self.report = None
@@ -180,8 +177,7 @@ class DualSense5Edge(Producer, Consumer):
         self.use_bluetooth = use_bluetooth
         self.fake_timestamps = fake_timestamps
         self.touchpad_method: TouchpadCorrectionType = touchpad_method
-        self.short_touch_is_click = short_touch_is_click
-        self.long_press_mode = long_press_mode
+        self.enable_touchpad = enable_touchpad
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -375,6 +371,8 @@ class DualSense5Edge(Producer, Consumer):
         for ev in events:
             match ev["type"]:
                 case "axis":
+                    if not self.enable_touchpad and ev["code"].startswith("touchpad"):
+                        continue
                     if ev["code"] in self.axis_map:
                         encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])
                     # DPAD is weird
@@ -422,6 +420,8 @@ class DualSense5Edge(Producer, Consumer):
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
+                    if not self.enable_touchpad and ev["code"].startswith("touchpad"):
+                        continue
                     if ev["code"] in self.btn_map:
                         set_button(new_rep, self.btn_map[ev["code"]], ev["value"])
 

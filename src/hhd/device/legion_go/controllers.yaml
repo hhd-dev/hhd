@@ -43,6 +43,14 @@ children:
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
+
+          touchpad:
+            type: bool
+            title: Remap touchpad
+            hint: >-
+              Remaps the DS5 touchpad when touchpad emulation is enabled. 
+              Right click will not work under gamescope.
+            default: True
       #
       # evdev through uinput
       #
@@ -118,7 +126,7 @@ children:
         type: container
         title: Enabled
         hint: >-
-          Emulates the touchpad.
+          Adds an emulated touchpad.
         children:
           correction:
             type: multiple
@@ -130,8 +138,6 @@ children:
               one is unused. "Crop" uses the full legion touchpad, and limits
               the area of the DS5. "Stretch" uses both fully (distorted).
               "Crop End" enables use in steam input as the right touchpad.
-              Set to "Disabled" to not remap.
-              (Dualsense only).
             options:
               stretch: "Stretch"
               crop_center: "Crop Center"
@@ -147,9 +153,9 @@ children:
             title: Short Action
             hint: >-
               Maps short touches (less than 0.2s) to a touchpad action.
-              Left click is sent as a physical press of the touchpad.
-              Right click is sent as a double tap (support varies).
-              (Dualsense only).
+              Emulated touchpad uses virtual buttons.
+              Dualsense uses a physical press for left and a double tap for
+              right click.
             options:
               disabled: Disabled
               left_click: Left Click
@@ -160,10 +166,10 @@ children:
             type: multiple
             title: Hold Action
             hint: >-
-              What action should be triggered when the legion touchpad is held.
-              Left click is sent as a physical press of the touchpad.
-              Right click is sent as a double tap (support varies).
-              (Dualsense only).
+              Maps long touches (more than 2s) to a touchpad action.
+              Emulated touchpad uses virtual buttons.
+              Dualsense uses a physical press for left and a double tap for
+              right click.
             options:
               disabled: Disabled
               left_click: Left Click

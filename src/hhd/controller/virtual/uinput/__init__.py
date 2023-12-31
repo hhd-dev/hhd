@@ -1,8 +1,9 @@
 import logging
+import time
 from typing import Sequence, cast
 
 import evdev
-from evdev import UInput, AbsInfo
+from evdev import AbsInfo, UInput
 
 from hhd.controller import Axis, Button, Consumer, Producer
 from hhd.controller.base import Event, can_read
@@ -22,6 +23,7 @@ class UInputDevice(Consumer, Producer):
         pid: int = HHD_PID_GAMEPAD,
         name: str = "Handheld Daemon Controller",
         phys: str = "phys-hhd-gamepad",
+        output_imu_timestamps: bool = False,
         output_timestamps: bool = False,
     ) -> None:
         self.capabilities = capabilities
@@ -32,6 +34,7 @@ class UInputDevice(Consumer, Producer):
         self.vid = vid
         self.pid = pid
         self.phys = phys
+        self.output_imu_timestamps = output_imu_timestamps
         self.output_timestamps = output_timestamps
         self.ofs = 0
         self.sys_ofs = 0
@@ -47,6 +50,8 @@ class UInputDevice(Consumer, Producer):
             product=self.pid,
             phys=self.phys,
         )
+        self.touchpad_aspect = 1
+        self.touch_id = 1
         self.fd = self.dev.fd
         return [self.fd]
 
@@ -65,11 +70,23 @@ class UInputDevice(Consumer, Producer):
                 case "axis":
                     if ev["code"] in self.axis_map:
                         ax = self.axis_map[ev["code"]]
-                        val = int(ax.scale * ev["value"] + ax.offset)
+                        if ev["code"] == "touchpad_x":
+                            val = int(
+                                self.touchpad_aspect
+                                * (ax.scale * ev["value"] + ax.offset)
+                            )
+                        else:
+                            val = int(ax.scale * ev["value"] + ax.offset)
                         if ax.bounds:
                             val = min(max(val, ax.bounds[0]), ax.bounds[1])
                         self.dev.write(B("EV_ABS"), ax.id, val)
-                    elif self.output_timestamps and ev["code"] in (
+
+                        if ev["code"] == "touchpad_x":
+                            self.dev.write(B("EV_ABS"), B("ABS_MT_POSITION_X"), val)
+                        elif ev["code"] == "touchpad_y":
+                            self.dev.write(B("EV_ABS"), B("ABS_MT_POSITION_Y"), val)
+
+                    elif self.output_imu_timestamps and ev["code"] in (
                         "accel_ts",
                         "gyro_ts",
                     ):
@@ -81,14 +98,42 @@ class UInputDevice(Consumer, Producer):
                             self.ofs = ts
                         ts -= self.ofs
                         self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
-                        pass
                 case "button":
                     if ev["code"] in self.btn_map:
+                        if ev["code"] == "touchpad_touch":
+                            self.dev.write(
+                                B("EV_ABS"),
+                                B("ABS_MT_TRACKING_ID"),
+                                self.touch_id if ev["value"] else -1,
+                            )
+                            self.dev.write(
+                                B("EV_KEY"),
+                                B("BTN_TOOL_FINGER"),
+                                1 if ev["value"] else 0,
+                            )
+                            self.touch_id += 1
+                            if self.touch_id > 500:
+                                self.touch_id = 1
                         self.dev.write(
                             B("EV_KEY"),
                             self.btn_map[ev["code"]],
                             1 if ev["value"] else 0,
                         )
+
+                case "configuration":
+                    if ev["code"] == "touchpad_aspect_ratio":
+                        self.touchpad_aspect = float(ev["value"])
+
+        if self.output_timestamps:
+            # We have timestamps with ns accuracy.
+            # Evdev expects us accuracy
+            ts = time.perf_counter_ns() // 1000
+            # Use an ofs to avoid overflowing
+            if ts > self.ofs + 2**30:
+                self.ofs = ts
+            ts -= self.ofs
+            self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
+
         self.dev.syn()
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
