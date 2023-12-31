@@ -49,14 +49,18 @@ def is_steam_gamescope_running(ctx: Context):
 def run_steam_command(command: str, ctx: Context):
     global home_path
     try:
-        result = subprocess.run(
-            [
-                "su",
-                ctx.name,
-                "-c",
-                f"{expanduser(STEAM_EXE, ctx)} -ifrunning {command}",
-            ]
-        )
+        if ctx.euid != ctx.uid:
+            result = subprocess.run(
+                [
+                    "su",
+                    ctx.name,
+                    "-c",
+                    f"{expanduser(STEAM_EXE, ctx)} -ifrunning {command}",
+                ]
+            )
+        else:
+            result = subprocess.run([expanduser(STEAM_EXE, ctx), "-ifrunning", command])
+
         return result.returncode == 0
     except Exception as e:
         logger.error(f"Received error when running steam command `{command}`\n{e}")
@@ -158,7 +162,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
 
             # Add timeout to release the button if steam exits.
             r = select.select([press_dev.fd, hold_dev.fd], [], [], STEAM_WAIT_DELAY)[0]
-            
+
             if not r:
                 continue
             fd = r[0]  # handle one button at a time
