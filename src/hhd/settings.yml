@@ -11,7 +11,7 @@ http:
       title: Enable REST API.
       hint: >-
         Enables the rest API of Handheld Daemon
-      default: False
+      default: True
     port:
       type: int
       title: REST API Port
