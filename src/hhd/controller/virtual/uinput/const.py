@@ -81,6 +81,20 @@ GAMEPAD_CAPABILITIES = {
         B("BTN_TRIGGER_HAPPY4"),
         B("BTN_TRIGGER_HAPPY5"),
         B("BTN_TRIGGER_HAPPY6"),
+        B("BTN_TRIGGER_HAPPY7"),
+        B("BTN_TRIGGER_HAPPY8"),
+        B("BTN_TRIGGER_HAPPY9"),
+        B("BTN_TRIGGER_HAPPY10"),
+        B("BTN_TRIGGER_HAPPY11"),
+        B("BTN_TRIGGER_HAPPY12"),
+        B("BTN_TRIGGER_HAPPY13"),
+        B("BTN_TRIGGER_HAPPY14"),
+        B("BTN_TRIGGER_HAPPY15"),
+        B("BTN_TRIGGER_HAPPY16"),
+        B("BTN_TRIGGER_HAPPY17"),
+        B("BTN_TRIGGER_HAPPY18"),
+        B("BTN_TRIGGER_HAPPY19"),
+        B("BTN_TRIGGER_HAPPY20"),
     ],
     B("EV_ABS", 3): [
         (
@@ -420,12 +434,13 @@ GAMEPAD_BUTTON_MAP: dict[Button, int] = {
     "select": B("BTN_SELECT"),
     # Misc
     "mode": B("BTN_MODE"),
+    "share": B("BTN_TRIGGER_HAPPY20"),
     # Back buttons
     "extra_l1": B("BTN_TRIGGER_HAPPY1"),
-    "extra_l2": B("BTN_TRIGGER_HAPPY2"),
-    "extra_l3": B("BTN_TRIGGER_HAPPY5"),
-    "extra_r1": B("BTN_TRIGGER_HAPPY3"),
+    "extra_r1": B("BTN_TRIGGER_HAPPY2"),
+    "extra_l2": B("BTN_TRIGGER_HAPPY3"),
     "extra_r2": B("BTN_TRIGGER_HAPPY4"),
+    "extra_l3": B("BTN_TRIGGER_HAPPY5"),
     "extra_r3": B("BTN_TRIGGER_HAPPY6"),
 }
 
