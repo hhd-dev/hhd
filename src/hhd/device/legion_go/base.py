@@ -182,9 +182,9 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
                     logger.info(evs)
                 d_uinput.consume(evs)
     finally:
+        d_uinput.close(True)
         d_shortcuts.close(True)
         d_raw.close(True)
-        d_uinput.close(True)
 
 
 def controller_loop_xinput(conf: Config, should_exit: TEvent):
@@ -311,8 +311,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     fd_to_dev = {}
 
     def prepare(m):
-        fs = m.open()
         devs.append(m)
+        fs = m.open()
         fds.extend(fs)
         for f in fs:
             fd_to_dev[f] = m

@@ -13,6 +13,16 @@ from .const import *
 logger = logging.getLogger(__name__)
 
 
+# Monkey patch Uinput device to avoid issues
+# _find_device() may crash when controllers
+# disconnect. We dont use the produced device anyway.
+def _patch(*args, **kwargs):
+    pass
+
+
+UInput._find_device = _patch
+
+
 class UInputDevice(Consumer, Producer):
     def __init__(
         self,
@@ -58,6 +68,7 @@ class UInputDevice(Consumer, Producer):
     def close(self, exit: bool) -> bool:
         if self.dev:
             self.dev.close()
+        self.dev = None
         self.input = None
         self.fd = None
         return True
