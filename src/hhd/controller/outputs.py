@@ -31,7 +31,7 @@ def get_outputs(
                     TouchpadCorrectionType
                 ),
                 enable_touchpad=uses_touch,
-                enable_rgb=conf["dualsense.led_support"],
+                enable_rgb=conf["dualsense.led_support"].to(bool),
             )
             producers.append(d)
             consumers.append(d)
