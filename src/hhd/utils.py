@@ -2,6 +2,7 @@ import logging
 import os
 import subprocess
 from typing import NamedTuple
+import getpass
 
 from hhd.plugins import Context
 
@@ -20,7 +21,7 @@ def get_context(user: str | None) -> Context | None:
                     "Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
                 )
                 print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            return Context(uid, gid, uid, gid, os.getlogin())
+            return Context(uid, gid, uid, gid, getpass.getuser())
 
         euid = int(
             subprocess.run(
