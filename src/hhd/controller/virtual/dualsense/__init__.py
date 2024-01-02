@@ -147,7 +147,6 @@ class DualsenseEdge(Producer, Consumer):
                     # Check report num
                     if ev["report"] != 0x01:
                         invalid = True
-
                     # Check report ids depending on modes
                     if not self.use_bluetooth and ev["data"][0] != 0x02:
                         invalid = True
@@ -161,7 +160,6 @@ class DualsenseEdge(Producer, Consumer):
                         continue
 
                     rep = ev["data"]
-
                     if self.use_bluetooth:
                         # skip seq_tag, tag sent by bluetooth report
                         # rest is the same
@@ -176,8 +174,8 @@ class DualsenseEdge(Producer, Consumer):
                         else:
                             rep = rep[0:1] + rep[3:]
 
-                    if (
-                        rep[2] & 4 and self.enable_rgb
+                    if self.enable_rgb and (
+                        rep[2] & 4
                     ):  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
                         # Led data is being set
                         led_brightness = rep[43]
