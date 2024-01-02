@@ -373,9 +373,9 @@ class SelectivePassthrough(Producer, Consumer):
                 out.append(ev)
             elif ev["type"] == "button" and ev["code"] in self.passthrough:
                 out.append(ev)
-            elif ev["type"] == "button":
+            elif ev["type"] == "button" and self.state:
                 self.to_disable_btn.add(ev["code"])
-            elif ev["type"] == "axis":
+            elif ev["type"] == "axis" and self.state:
                 self.to_disable_axis.add(ev["code"])
 
         if self.state:
