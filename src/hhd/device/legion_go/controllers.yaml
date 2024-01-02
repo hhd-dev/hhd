@@ -157,7 +157,8 @@ children:
               Maps short touches (less than 0.2s) to a touchpad action.
               Emulated touchpad uses virtual buttons.
               Dualsense uses a physical press for left and a double tap for
-              right click.
+              right click (support for double tap varies; enable tap to click
+              in touchpad settings).
             options:
               disabled: Disabled
               left_click: Left Click
@@ -171,7 +172,8 @@ children:
               Maps long touches (more than 2s) to a touchpad action.
               Emulated touchpad uses virtual buttons.
               Dualsense uses a physical press for left and a double tap for
-              right click.
+              right click (support for double tap varies; enable tap to click
+              in touchpad settings).
             options:
               disabled: Disabled
               left_click: Left Click
