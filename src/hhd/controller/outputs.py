@@ -32,6 +32,7 @@ def get_outputs(
                 ),
                 enable_touchpad=uses_touch,
                 enable_rgb=conf["dualsense.led_support"].to(bool),
+                fake_timestamps=not motion
             )
             producers.append(d)
             consumers.append(d)
