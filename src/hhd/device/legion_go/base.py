@@ -7,25 +7,16 @@ import time
 from threading import Event as TEvent
 from typing import Sequence, Literal
 
-from hhd.controller import Button, Consumer, Event, Producer
+from hhd.controller import Button, Consumer, Event, Producer, get_outputs
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import GenericGamepadEvdev, unhide_all
+from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
-from hhd.controller.virtual.ds5 import DualSense5Edge, TouchpadCorrectionType
 from hhd.controller.virtual.uinput import (
     UInputDevice,
     HHD_PID_VENDOR,
-    HHD_PID_GAMEPAD,
-    MOTION_AXIS_MAP,
-    MOTION_CAPABILITIES,
-    HHD_PID_MOTION,
-    HHD_PID_TOUCHPAD,
-    TOUCHPAD_CAPABILITIES,
-    TOUCHPAD_AXIS_MAP,
-    TOUCHPAD_BUTTON_MAP,
 )
 from hhd.plugins import Config, Context, Emitter
 
@@ -191,46 +182,10 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
 
     # Output
-    ds5_touch = conf["xinput.ds5e.touchpad"].to(bool)
-    xmode = conf["xinput.mode"].to(str)
-    match xmode:
-        case "ds5e":
-            d_out = DualSense5Edge(
-                touchpad_method=conf["touchpad.emulation.correction"].to(
-                    TouchpadCorrectionType
-                ),
-                enable_touchpad=ds5_touch,
-            )
-            d_out2 = None
-        case _:
-            d_out = UInputDevice(phys="phys-hhd-legion")
-            if conf["accel"].to(bool) | conf["gyro"].to(bool):
-                d_out2 = UInputDevice(
-                    name="Handheld Daemon Controller Motion Sensors",
-                    phys="phys-hhd-legion",
-                    capabilities=MOTION_CAPABILITIES,
-                    pid=HHD_PID_MOTION,
-                    btn_map={},
-                    axis_map=MOTION_AXIS_MAP,
-                    output_imu_timestamps=True,
-                )
-            else:
-                d_out2 = None
-
-    if conf["touchpad.mode"].to(str) == "emulation" and (
-        xmode != "ds5e" or not ds5_touch
-    ):
-        d_out_touch = UInputDevice(
-            name="Handheld Daemon Touchpad",
-            phys="phys-hhd-legion",
-            capabilities=TOUCHPAD_CAPABILITIES,
-            pid=HHD_PID_TOUCHPAD,
-            btn_map=TOUCHPAD_BUTTON_MAP,
-            axis_map=TOUCHPAD_AXIS_MAP,
-            output_timestamps=True,
-        )
-    else:
-        d_out_touch = None
+    motion = conf["accel"].to(bool) or conf["gyro"].to(bool)
+    d_producers, d_outs, d_params = get_outputs(
+        conf["xinput"], conf["touchpad"], motion
+    )
 
     # Imu
     d_accel = AccelImu()
@@ -265,7 +220,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
-            callback=rgb_callback if conf["xinput.ds5e.led_support"].to(bool) else None,
+            callback=rgb_callback,
             required=True,
         )
     )
@@ -289,6 +244,12 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         case val:
             assert False, f"Invalid value for `swap_legion`: {val}"
 
+    touch_actions = (
+        conf["touchpad.controller"]
+        if conf["touchpad.mode"].to(TouchpadAction) == "controller"
+        else conf["touchpad.emulation"]
+    )
+
     multiplexer = Multiplexer(
         swap_guide=swap_guide,
         trigger="analog_to_discrete",
@@ -296,8 +257,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         led="main_to_sides",
         status="both_to_main",
         share_to_qam=conf["share_to_qam"].to(bool),
-        touchpad_short=conf["touchpad.emulation.short"].to(TouchpadAction),
-        touchpad_right=conf["touchpad.emulation.hold"].to(TouchpadAction),
+        touchpad_short=touch_actions["short"].to(TouchpadAction),
+        touchpad_right=touch_actions["hold"].to(TouchpadAction),
     )
 
     REPORT_FREQ_MIN = 25
@@ -324,14 +285,11 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         if conf.get("gyro", False):
             prepare(d_gyro)
         prepare(d_shortcuts)
-        if conf["touchpad.mode"].to(str) == "emulation":
+        if d_params["uses_touch"]:
             prepare(d_touch)
         prepare(d_raw)
-        if d_out_touch:
-            prepare(d_out_touch)
-        prepare(d_out)
-        if d_out2:
-            prepare(d_out2)
+        for d in d_producers:
+            prepare(d)
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set():
@@ -354,12 +312,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
 
                 d_xinput.consume(evs)
                 d_raw.consume(evs)
-                d_out.consume(evs)
-                if d_out2:
-                    d_out2.consume(evs)
-                if d_out_touch:
-                    d_out_touch.consume(evs)
-
+                for d in d_outs:
+                    d.consume(evs)
             # If unbounded, the total number of events per second is the sum of all
             # events generated by the producers.
             # For Legion go, that would be 100 + 100 + 500 + 30 = 730

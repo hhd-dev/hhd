@@ -13,7 +13,7 @@ children:
     hint: >-
       Emulate different controller types when the Legion Controllers are in X-Input mode.
 
-    default: ds5e
+    default: dualsense
     modes:
       #
       # No emulation
@@ -25,14 +25,26 @@ children:
         hint: >-
           Does not modify the default controller.
       #
+      # evdev through uinput
+      #
+      uinput:
+        type: container
+        tags: [lgc_emulation_uinput, uinput]
+        title: Virtual Controller
+        hint: >-
+          Creates a virtual `Handheld Daemon Controller` that can be used normally
+          in apps. Back buttons are supported but steam will not detect them.
+          If Gyroscope or Accelerometer are enabled, a Motion device will be
+          created as well (experimental; works in Dolphin).
+      #
       # Dual Sense 5
       #
-      ds5e:
+      dualsense:
         type: container
-        tags: [lgc_emulation_ds5e, ds5e]
-        title: Dual Sense 5 Edge
+        tags: [lgc_emulation_dualsense, dualsense]
+        title: Dualsense Edge
         hint: >-
-          Emulates the expensive DS5 Edge sony controller that maps 1-1 to
+          Emulates the expensive Dualsense Edge Sony controller that maps 1-1 to
           the legion go.
 
         children:
@@ -43,26 +55,6 @@ children:
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
-
-          touchpad:
-            type: bool
-            title: Remap touchpad
-            hint: >-
-              Remaps to the DS5 touchpad when touchpad emulation is enabled. 
-              Right click will not work under gamescope.
-            default: True
-      #
-      # evdev through uinput
-      #
-      uinput:
-        type: container
-        tags: [lgc_emulation_uinput, uinput]
-        title: Events Device
-        hint: >-
-          Creates a virtual `Handheld Daemon Controller` that can be used normally
-          in apps. Back buttons are supported but steam will not detect them.
-          If Gyroscope or Accelerometer are enabled, a Motion device will be
-          created as well (experimental).
 
   #
   # Common settings
@@ -123,12 +115,50 @@ children:
         type: container
         title: Disabled
         hint: >-
-          Does not modify the touchpad.
+          Does not modify the touchpad. Short + holding presses will not work
+          within gamescope.
+      #
+      # Virtual emulation
+      #
       emulation:
         type: container
         title: Enabled
         hint: >-
-          Adds an emulated touchpad.
+          Adds an emulated touchpad. This touchpad is meant to be for desktop
+          use and has left, right click support by default, within gamescope and
+          outside of it, regardless of the "Tap to Click" setting.
+        children:
+          short:
+            type: multiple
+            title: Short Action
+            hint: >-
+              Maps short touches (less than 0.2s) to a virtual touchpad button.
+            options:
+              disabled: Disabled
+              left_click: Left Click
+              right_click: Right Click
+            default: "left_click"
+          hold:
+            type: multiple
+            title: Hold Action
+            hint: >-
+              Maps long touches (more than 2s) to a virtual touchpad button.
+            options:
+              disabled: Disabled
+              left_click: Left Click
+              right_click: Right Click
+            default: "right_click"
+      #
+      # Controller emulation
+      #
+      controller:
+        type: container
+        title: Controller
+        hint: >-
+          Uses the touchpad of the emulated controller (if it exists).
+          Otherwise, the touchpad remains unmapped.
+          Meant to be used as steam input, so short press is unassigned by
+          default and long press simulates trackpad click.
         children:
           correction:
             type: multiple
@@ -155,10 +185,9 @@ children:
             title: Short Action
             hint: >-
               Maps short touches (less than 0.2s) to a touchpad action.
-              Emulated touchpad uses virtual buttons.
               Dualsense uses a physical press for left and a double tap for
-              right click (support for double tap varies; enable tap to click
-              in touchpad settings).
+              right click (support for double tap varies; enable "Tap to Click"
+              in your desktop's touchpad settings).
             options:
               disabled: Disabled
               left_click: Left Click
@@ -170,10 +199,9 @@ children:
             title: Hold Action
             hint: >-
               Maps long touches (more than 2s) to a touchpad action.
-              Emulated touchpad uses virtual buttons.
               Dualsense uses a physical press for left and a double tap for
-              right click (support for double tap varies; enable tap to click
-              in touchpad settings).
+              right click (support for double tap varies; enable "Tap to Click"
+              in your desktop's touchpad settings).
             options:
               disabled: Disabled
               left_click: Left Click

@@ -2,11 +2,10 @@ import logging
 import time
 from typing import Sequence, cast
 
-import evdev
-from evdev import AbsInfo, UInput
+from evdev import UInput
 
-from hhd.controller import Axis, Button, Consumer, Producer
-from hhd.controller.base import Event, can_read
+from hhd.controller.base import Consumer, Event, Producer, can_read
+from hhd.controller.const import Axis, Button
 
 from .const import *
 

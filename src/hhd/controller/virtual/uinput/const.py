@@ -4,7 +4,7 @@ from typing import cast, Sequence, NamedTuple
 import evdev
 from evdev import AbsInfo
 
-from hhd.controller import Axis, Button, Consumer, Producer
+from hhd.controller.const import Axis, Button
 
 
 HHD_VID = 0x5335

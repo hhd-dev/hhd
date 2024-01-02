@@ -1,7 +1,11 @@
+import logging
 import select
-from typing import Any, Literal, Sequence, TypedDict
 import time
+from typing import Any, Literal, NamedTuple, Sequence, TypedDict
+
 from .const import Axis, Button, Configuration
+
+logger = logging.getLogger(__name__)
 
 
 class RumbleEvent(TypedDict):
@@ -61,6 +65,126 @@ class ConfigurationEvent(TypedDict):
 
 
 Event = ButtonEvent | AxisEvent | ConfigurationEvent | RgbLedEvent | RumbleEvent
+
+
+class TouchpadCorrection(NamedTuple):
+    x_mult: float = 1
+    x_ofs: float = 0
+    x_clamp: tuple[float, float] = (0, 1)
+    y_mult: float = 1
+    y_ofs: float = 0
+    y_clamp: tuple[float, float] = (0, 1)
+
+
+TouchpadCorrectionType = Literal[
+    "stretch",
+    "crop_center",
+    "crop_start",
+    "crop_end",
+    "contain_start",
+    "contain_end",
+    "contain_center",
+    "disabled",
+]
+
+
+def correct_touchpad(
+    width: int, height: int, aspect: float, method: TouchpadCorrectionType
+):
+    dst = width / height
+    src = aspect
+    ratio = dst / src
+
+    match method:
+        case "crop_center":
+            if ratio > 1:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=(width - new_width) / 2,
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio
+                return TouchpadCorrection(
+                    x_mult=width,
+                    x_ofs=0,
+                    y_mult=new_height,
+                    y_ofs=(height - new_height) / 2,
+                )
+        case "crop_start":
+            if ratio > 1:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=0,
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio
+                return TouchpadCorrection(
+                    x_mult=width,
+                    x_ofs=0,
+                    y_mult=new_height,
+                    y_ofs=0,
+                )
+        case "crop_end":
+            if ratio > 1:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=(width - new_width),
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio
+                return TouchpadCorrection(
+                    x_mult=width,
+                    x_ofs=0,
+                    y_mult=new_height,
+                    y_ofs=(height - new_height),
+                )
+        case "contain_center":
+            if ratio > 1:
+                bound = (ratio - 1) / ratio / 2
+                return TouchpadCorrection(
+                    x_mult=width, y_mult=height, y_clamp=(bound, 1 - bound)
+                )
+            else:
+                bound = (1 - ratio) / 2
+                return TouchpadCorrection(
+                    x_mult=width, y_mult=height, x_clamp=(bound, 1 - bound)
+                )
+        case "contain_start":
+            if ratio > 1:
+                bound = (ratio - 1) / ratio
+                return TouchpadCorrection(
+                    x_mult=width, y_mult=height, y_clamp=(0, 1 - bound)
+                )
+            else:
+                bound = (1 - ratio) / 2
+                return TouchpadCorrection(
+                    x_mult=width, y_mult=height, x_clamp=(0, 1 - bound)
+                )
+        case "contain_end":
+            if ratio > 1:
+                bound = (ratio - 1) / ratio
+                return TouchpadCorrection(
+                    x_mult=width, y_mult=height, y_clamp=(bound, 1)
+                )
+            else:
+                bound = (1 - ratio) / 2
+                return TouchpadCorrection(
+                    x_mult=width, y_mult=height, x_clamp=(bound, 1)
+                )
+        case "stretch" | "disabled":
+            return TouchpadCorrection(x_mult=width, y_mult=height)
+
+    logger.error(f"Touchpad correction method '{method}' not found.")
+    return TouchpadCorrection(x_mult=width, y_mult=height)
 
 
 class Producer:
@@ -265,7 +389,10 @@ class Multiplexer:
                     if ev["code"] == "touchpad_touch":
                         if ev["value"]:
                             self.touchpad_down = curr
-                        elif self.touchpad_short != "disabled" and curr - self.touchpad_down < 0.14:
+                        elif (
+                            self.touchpad_short != "disabled"
+                            and curr - self.touchpad_down < 0.14
+                        ):
                             action = (
                                 "touchpad_left"
                                 if self.touchpad_short == "left_click"

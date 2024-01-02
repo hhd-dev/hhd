@@ -1,6 +1,5 @@
 from binascii import crc32
 
-from hhd.controller import Axis, Button
 from hhd.controller.lib.common import AM, BM
 
 DS5_EDGE_VENDOR = 0x054C

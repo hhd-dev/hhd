@@ -3,17 +3,19 @@ import time
 from collections import defaultdict
 from typing import Literal, NamedTuple, Sequence, cast
 
-from hhd.controller import Consumer, Event, Producer
+from hhd.controller import (
+    Consumer,
+    Event,
+    Producer,
+    TouchpadCorrectionType,
+    correct_touchpad,
+)
 from hhd.controller.lib.common import encode_axis, set_button
-from hhd.controller.lib.uhid import UhidDevice, BUS_USB, BUS_BLUETOOTH
+from hhd.controller.lib.uhid import BUS_BLUETOOTH, BUS_USB, UhidDevice
 
 from .const import (
-    DS5_USB_AXIS_MAP,
-    DS5_USB_BTN_MAP,
     DS5_BT_AXIS_MAP,
     DS5_BT_BTN_MAP,
-    DS5_INPUT_REPORT_BT_OFS,
-    DS5_INPUT_REPORT_USB_OFS,
     DS5_EDGE_COUNTRY,
     DS5_EDGE_DELTA_TIME_NS,
     DS5_EDGE_DESCRIPTOR_BT,
@@ -22,17 +24,21 @@ from .const import (
     DS5_EDGE_MIN_REPORT_FREQ,
     DS5_EDGE_NAME,
     DS5_EDGE_PRODUCT,
-    prefill_ds5_report,
     DS5_EDGE_STOCK_REPORTS,
     DS5_EDGE_TOUCH_HEIGHT,
-    sign_crc32_append,
-    DS5_FEATURE_CRC32_SEED,
-    DS5_INPUT_CRC32_SEED,
-    sign_crc32_inplace,
     DS5_EDGE_TOUCH_WIDTH,
     DS5_EDGE_VENDOR,
     DS5_EDGE_VERSION,
+    DS5_FEATURE_CRC32_SEED,
+    DS5_INPUT_CRC32_SEED,
+    DS5_INPUT_REPORT_BT_OFS,
+    DS5_INPUT_REPORT_USB_OFS,
+    DS5_USB_AXIS_MAP,
+    DS5_USB_BTN_MAP,
     patch_dpad_val,
+    prefill_ds5_report,
+    sign_crc32_append,
+    sign_crc32_inplace,
 )
 
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
@@ -42,133 +48,14 @@ DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
 logger = logging.getLogger(__name__)
 
 
-class TouchpadCorrection(NamedTuple):
-    x_mult: float = 1
-    x_ofs: float = 0
-    x_clamp: tuple[float, float] = (0, 1)
-    y_mult: float = 1
-    y_ofs: float = 0
-    y_clamp: tuple[float, float] = (0, 1)
-
-
-TouchpadCorrectionType = Literal[
-    "stretch",
-    "crop_center",
-    "crop_start",
-    "crop_end",
-    "contain_start",
-    "contain_end",
-    "contain_center",
-    "disabled",
-]
-
-
-def correct_touchpad(
-    width: int, height: int, aspect: float, method: TouchpadCorrectionType
-):
-    dst = width / height
-    src = aspect
-    ratio = dst / src
-
-    match method:
-        case "crop_center":
-            if ratio > 1:
-                new_width = width / ratio
-                return TouchpadCorrection(
-                    x_mult=new_width,
-                    x_ofs=(width - new_width) / 2,
-                    y_mult=height,
-                    y_ofs=0,
-                )
-            else:
-                new_height = height * ratio
-                return TouchpadCorrection(
-                    x_mult=width,
-                    x_ofs=0,
-                    y_mult=new_height,
-                    y_ofs=(height - new_height) / 2,
-                )
-        case "crop_start":
-            if ratio > 1:
-                new_width = width / ratio
-                return TouchpadCorrection(
-                    x_mult=new_width,
-                    x_ofs=0,
-                    y_mult=height,
-                    y_ofs=0,
-                )
-            else:
-                new_height = height * ratio
-                return TouchpadCorrection(
-                    x_mult=width,
-                    x_ofs=0,
-                    y_mult=new_height,
-                    y_ofs=0,
-                )
-        case "crop_end":
-            if ratio > 1:
-                new_width = width / ratio
-                return TouchpadCorrection(
-                    x_mult=new_width,
-                    x_ofs=(width - new_width),
-                    y_mult=height,
-                    y_ofs=0,
-                )
-            else:
-                new_height = height * ratio
-                return TouchpadCorrection(
-                    x_mult=width,
-                    x_ofs=0,
-                    y_mult=new_height,
-                    y_ofs=(height - new_height),
-                )
-        case "contain_center":
-            if ratio > 1:
-                bound = (ratio - 1) / ratio / 2
-                return TouchpadCorrection(
-                    x_mult=width, y_mult=height, y_clamp=(bound, 1 - bound)
-                )
-            else:
-                bound = (1 - ratio) / 2
-                return TouchpadCorrection(
-                    x_mult=width, y_mult=height, x_clamp=(bound, 1 - bound)
-                )
-        case "contain_start":
-            if ratio > 1:
-                bound = (ratio - 1) / ratio
-                return TouchpadCorrection(
-                    x_mult=width, y_mult=height, y_clamp=(0, 1 - bound)
-                )
-            else:
-                bound = (1 - ratio) / 2
-                return TouchpadCorrection(
-                    x_mult=width, y_mult=height, x_clamp=(0, 1 - bound)
-                )
-        case "contain_end":
-            if ratio > 1:
-                bound = (ratio - 1) / ratio
-                return TouchpadCorrection(
-                    x_mult=width, y_mult=height, y_clamp=(bound, 1)
-                )
-            else:
-                bound = (1 - ratio) / 2
-                return TouchpadCorrection(
-                    x_mult=width, y_mult=height, x_clamp=(bound, 1)
-                )
-        case "stretch" | "disabled":
-            return TouchpadCorrection(x_mult=width, y_mult=height)
-
-    logger.error(f"Touchpad correction method '{method}' not found.")
-    return TouchpadCorrection(x_mult=width, y_mult=height)
-
-
-class DualSense5Edge(Producer, Consumer):
+class DualsenseEdge(Producer, Consumer):
     def __init__(
         self,
         touchpad_method: TouchpadCorrectionType = "crop_end",
         use_bluetooth: bool = True,
         fake_timestamps: bool = False,
         enable_touchpad: bool = True,
+        enable_rgb: bool = True,
     ) -> None:
         self.available = False
         self.report = None
@@ -178,6 +65,7 @@ class DualSense5Edge(Producer, Consumer):
         self.fake_timestamps = fake_timestamps
         self.touchpad_method: TouchpadCorrectionType = touchpad_method
         self.enable_touchpad = enable_touchpad
+        self.enable_rgb = enable_rgb
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -288,7 +176,9 @@ class DualSense5Edge(Producer, Consumer):
                         else:
                             rep = rep[0:1] + rep[3:]
 
-                    if rep[2] & 4:  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
+                    if (
+                        rep[2] & 4 and self.enable_rgb
+                    ):  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
                         # Led data is being set
                         led_brightness = rep[43]
                         player_leds = rep[44]
@@ -319,24 +209,24 @@ class DualSense5Edge(Producer, Consumer):
                                 "green": green,
                             }
                         )
-                    elif (rep[39] & 2) and (rep[42] & 2):
-                        # flag2 is DS_OUTPUT_VALID_FLAG2_LIGHTBAR_SETUP_CONTROL_ENABLE
-                        # lightbar_setup is DS_OUTPUT_LIGHTBAR_SETUP_LIGHT_OUT
-                        # FIXME: Disable for now to avoid hid_playstation messing
-                        # with the leds
-                        # out.append(
-                        #     {
-                        #         "type": "led",
-                        #         "code": "main",
-                        #         "mode": "disable",
-                        #         "brightness": 0,
-                        #         "speed": 0,
-                        #         "red": 0,
-                        #         "blue": 0,
-                        #         "green": 0,
-                        #     }
-                        # )
-                        pass
+                    # elif (rep[39] & 2) and (rep[42] & 2):
+                    #     # flag2 is DS_OUTPUT_VALID_FLAG2_LIGHTBAR_SETUP_CONTROL_ENABLE
+                    #     # lightbar_setup is DS_OUTPUT_LIGHTBAR_SETUP_LIGHT_OUT
+                    #     # FIXME: Disable for now to avoid hid_playstation messing
+                    #     # with the leds
+                    #     out.append(
+                    #         {
+                    #             "type": "led",
+                    #             "code": "main",
+                    #             "mode": "disable",
+                    #             "brightness": 0,
+                    #             "speed": 0,
+                    #             "red": 0,
+                    #             "blue": 0,
+                    #             "green": 0,
+                    #         }
+                    #     )
+                    #     pass
 
                     if rep[1] & 0x02:
                         right = rep[3]
