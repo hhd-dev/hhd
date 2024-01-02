@@ -233,8 +233,8 @@ class DualsenseEdge(Producer, Consumer):
                             {
                                 "type": "rumble",
                                 "code": "main",
-                                "strong_magnitude": left / 63,
-                                "weak_magnitude": right / 63,
+                                "strong_magnitude": left / 255,
+                                "weak_magnitude": right / 255,
                             }
                         )
                         self.rumble = True
