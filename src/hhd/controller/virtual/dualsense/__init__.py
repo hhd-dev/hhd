@@ -160,6 +160,7 @@ class DualsenseEdge(Producer, Consumer):
                         continue
 
                     rep = ev["data"]
+                    # flag2 = rep...
                     if self.use_bluetooth:
                         # skip seq_tag, tag sent by bluetooth report
                         # rest is the same
@@ -174,8 +175,10 @@ class DualsenseEdge(Producer, Consumer):
                         else:
                             rep = rep[0:1] + rep[3:]
 
+                    flag0 = rep[1]
+                    flag1 = rep[2]
                     if self.enable_rgb and (
-                        rep[2] & 4
+                        flag1 & 4
                     ):  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
                         # Led data is being set
                         led_brightness = rep[43]
@@ -226,16 +229,20 @@ class DualsenseEdge(Producer, Consumer):
                     #     )
                     #     pass
 
-                    if rep[1] & 0x02:
+                    if flag0 & 0x02:
                         right = rep[3]
                         left = rep[4]
+
+                        # If vibration mode is in flag0 use different scale
+                        scale = 2 if flag0 & 0x01 else 1
+
                         out.append(
                             {
                                 "type": "rumble",
                                 "code": "main",
                                 # For some reason goes to 127
-                                "strong_magnitude": left / 127, 
-                                "weak_magnitude": right / 127, 
+                                "strong_magnitude": left / 255 * scale,
+                                "weak_magnitude": right / 255 * scale,
                             }
                         )
                         self.rumble = True
