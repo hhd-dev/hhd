@@ -11,7 +11,7 @@ from evdev import ecodes as e
 
 from hhd.utils import Context, expanduser
 
-from .const import SUPPORTED_DEVICES, PowerButtonConfig
+from .const import DEFAULT_DEVICE, SUPPORTED_DEVICES, PowerButtonConfig
 
 logger = logging.getLogger(__name__)
 
@@ -69,26 +69,28 @@ def run_steam_command(command: str, ctx: Context):
 
 def register_power_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
     for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
-        if str(device.phys).startswith(b.phys):
-            device.grab()
-            logger.info(f"Captured power button '{device.name}': '{device.phys}'")
-            return device
+        for phys in b.phys:
+            if str(device.phys).startswith(phys):
+                device.grab()
+                logger.info(f"Captured power button '{device.name}': '{device.phys}'")
+                return device
     return None
 
 
 def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
-    if not b.hold_phys or not b.hold_events or b.hold_grab is None:
+    if not b.hold_phys or not b.hold_code:
         logger.error(
             f"Device configuration tuple does not contain required parameters:\n{b}"
         )
         return None
 
     for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
-        if str(device.phys).startswith(b.hold_phys):
-            if b.hold_grab:
-                device.grab()
-            logger.info(f"Captured hold keyboard '{device.name}': '{device.phys}'")
-            return device
+        for phys in b.hold_phys:
+            if str(device.phys).startswith(phys):
+                if b.hold_grab:
+                    device.grab()
+                logger.info(f"Captured hold keyboard '{device.name}': '{device.phys}'")
+                return device
     return None
 
 
@@ -100,7 +102,7 @@ def get_config() -> PowerButtonConfig | None:
         if d.prod_name == prod:
             return d
 
-    return None
+    return DEFAULT_DEVICE
 
 
 def run_steam_shortpress(perms: Context):
@@ -128,14 +130,9 @@ def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event):
 
 
 def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event):
-    if not cfg.hold_events:
-        logger.error(f"Invalid hold events in config. Exiting.\n:{cfg.hold_events}")
-        return
-
     press_dev = None
     hold_dev = None
     try:
-        hold_state = 0
         while not should_exit.is_set():
             # Initial check for steam
             if not is_steam_gamescope_running(perms):
@@ -176,18 +173,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
                     issue_systemctl = not run_steam_shortpress(perms)
             elif fd == hold_dev.fd:
                 ev = hold_dev.read_one()
-                chk = (ev.type, ev.code, ev.value)
-
-                if hold_state >= len(cfg.hold_events):
-                    hold_state = 0
-
-                if chk == cfg.hold_events[hold_state]:
-                    hold_state += 1
-                else:
-                    hold_state = 0
-
-                if hold_state == len(cfg.hold_events):
-                    hold_state = 0
+                if ev.type == B("EV_KEY") and ev.code == cfg.hold_code and ev.value:
                     logger.info("Executing long press.")
                     issue_systemctl = not run_steam_longpress(perms)
 

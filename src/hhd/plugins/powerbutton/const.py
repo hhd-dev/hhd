@@ -3,13 +3,12 @@ from typing import Literal, NamedTuple, Sequence, TypedDict
 
 class PowerButtonConfig(NamedTuple):
     device: str
-    type: Literal["hold_emitted", "hold_isa"]
     prod_name: str
-    phys: str
-    hold_phys: str | None = None
-    hold_grab: bool | None = None
-    # ev.type, ev.code, ev.value pairs
-    hold_events: Sequence[tuple[int, int, int]] | None = None
+    type: Literal["hold_emitted", "hold_isa"] = "hold_isa"
+    phys: Sequence[str] = ["LNXPWRBN", "PNP0C0C"]
+    hold_phys: Sequence[str] = ["phys-hhd-powerbutton", "isa0060"]
+    hold_grab: bool = False
+    hold_code: int = 125  # left meta
 
 
 # POWER_BUTTON_NAMES = ["Power Button"]
@@ -20,14 +19,15 @@ PBC = PowerButtonConfig
 SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC(
         "Legion Go",
-        "hold_isa",
         "83E1",
-        "PNP0C0C",
-        "isa0060",
-        False,
-        [(4, 4, 219), (1, 125, 1), (0, 0, 0)],
     )
 ]
+
+DEFAULT_DEVICE: PowerButtonConfig = PBC(
+    "uknown",
+    "NA",
+)
+
 
 # Legion go
 # At device with phys=isa0060/serio0/input0
