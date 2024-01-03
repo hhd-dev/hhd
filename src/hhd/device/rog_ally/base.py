@@ -46,9 +46,8 @@ def controller_loop(conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
 
     # Output
-    motion = conf["accel"].to(bool) or conf["gyro"].to(bool)
     d_producers, d_outs, d_params = get_outputs(
-        conf["xinput"], conf["touchpad"], motion
+        conf["controller_mode"], None, conf["imu"].to(bool)
     )
 
     # Imu

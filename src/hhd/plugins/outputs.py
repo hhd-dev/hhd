@@ -22,15 +22,19 @@ def get_outputs(
     consumers = []
 
     controller = conf["mode"].to(str)
-    touchpad = touch_conf["mode"].to(str)
+    if touch_conf is not None:
+        touchpad = touch_conf["mode"].to(str)
+        correction = touch_conf["controller.correction"].to(TouchpadCorrectionType)
+    else:
+        touchpad = "disabled"
+        correction = "disabled"
+
     uses_touch = False
     match controller:
         case "dualsense":
             uses_touch = touchpad == "controller"
             d = Dualsense(
-                touchpad_method=touch_conf["controller.correction"].to(
-                    TouchpadCorrectionType
-                ),
+                touchpad_method=correction,
                 edge_mode=conf["dualsense.edge_mode"].to(bool),
                 use_bluetooth=conf["dualsense.bluetooth_mode"].to(bool),
                 enable_touchpad=uses_touch,
