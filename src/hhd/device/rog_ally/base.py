@@ -8,8 +8,7 @@ from hhd.controller import Multiplexer, KeyboardWrapper
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
-from hhd.controller.physical.imu import CombinedImu
-from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
+from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 ERROR_DELAY = 1
@@ -52,6 +51,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
 
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int))
+    d_timer = HrtimerTrigger(conf["imu_hz"].to(int))
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
@@ -118,6 +118,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
+        d_timer.open()
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set():
@@ -161,5 +162,6 @@ def controller_loop(conf: Config, should_exit: TEvent):
     except KeyboardInterrupt:
         raise
     finally:
+        d_timer.close()
         for d in reversed(devs):
             d.close(True)

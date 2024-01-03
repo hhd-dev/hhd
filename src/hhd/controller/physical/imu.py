@@ -356,7 +356,99 @@ class ForcedSampler:
             os.close(fd)
 
 
+class HrtimerTrigger(IioReader):
+    def __init__(
+        self,
+        freq: int,
+        devices: Sequence[Sequence[str]] = [IMU_NAMES, GYRO_NAMES, ACCEL_NAMES],
+    ) -> None:
+        self.freq = freq
+        self.devices = devices
+        self.old_triggers = {}
+
+    def open(self):
+        import subprocess
+
+        # Initialize modules
+        try:
+            subprocess.run(["modprobe", "industrialio-sw-trigger"], capture_output=True)
+            subprocess.run(["modprobe", "iio-trig-sysfs"], capture_output=True)
+            subprocess.run(["modprobe", "iio-trig-hrtimer"], capture_output=True)
+            os.makedirs("/config", exist_ok=True)
+            subprocess.run(
+                ["mount", "-t", "configfs", "none", "/config"], capture_output=True
+            )
+        except Exception as e:
+            logger.warning(
+                f"Could not initialize software hrtimer. It may be initialized. Error:\n{e}"
+            )
+
+        # Create trigger
+        try:
+            os.makedirs("/config/iio/triggers/hrtimer/hhd", exist_ok=True)
+        except Exception as e:
+            logger.error(
+                f"Could not create 'hhd' trigger. IMU will not work. Error:\n{e}"
+            )
+            return
+
+        # Find trigger
+        trig = None
+        for fn in os.listdir("/sys/bus/iio/devices"):
+            if not fn.startswith("trigger"):
+                continue
+            with open(os.path.join("/sys/bus/iio/devices", fn, "name"), "r") as f:
+                if f.read().strip() == "hhd":
+                    trig = fn
+                    break
+        if not trig:
+            logger.warning("Imu timer trigger not found, IMU will not work.")
+            return
+
+        # Set frequency
+        try:
+            with open(
+                os.path.join("/sys/bus/iio/devices", trig, "sampling_frequency"), "w"
+            ) as f:
+                f.write(str(self.freq))
+        except Exception as e:
+            logger.warning("Could not set sampling frequency, IMU will not work.")
+            return
+
+        self.old_triggers = {}
+        for d in self.devices:
+            s, _ = find_sensor(d)
+            if not s:
+                continue
+
+            buff_fn = os.path.join(s, "buffer/enable")
+            trig_fn = os.path.join(s, "trigger/current_trigger")
+            with open(buff_fn, "w") as f:
+                f.write("0")
+            with open(trig_fn, "r") as f:
+                self.old_triggers[trig_fn] = (f.read(), buff_fn)
+            with open(trig_fn, "w") as f:
+                f.write(f"hhd")
+
+    def close(self):
+        for trig, (name, buff) in self.old_triggers.items():
+            try:
+                with open(buff, "w") as f:
+                    f.write("0")
+                with open(trig, "w") as f:
+                    f.write(name)
+            except Exception:
+                logger.error(f"Could not restore original trigger:\n{trig} to {name}")
+
+        try:
+            os.rmdir("/config/iio/triggers/hrtimer/hhd")
+        except Exception as e:
+            logger.error(f"Could not delete hrtimer trigger. Error:\n{e}")
+
+
 class SoftwareTrigger(IioReader):
+    """Unfinished"""
+
     BEGIN_ID: int = 72
     ATTEMPTS: int = 3
 
@@ -420,4 +512,4 @@ class SoftwareTrigger(IioReader):
             logger.error(f"Could not delete sysfs trigger with id {self.id}")
 
 
-__all__ = ["IioReader", "AccelImu", "GyroImu"]
+__all__ = ["IioReader", "AccelImu", "GyroImu", "HrtimerTrigger"]
