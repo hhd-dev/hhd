@@ -159,7 +159,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         GenericGamepadEvdev(
             vid=[ASUS_VID],
             pid=[ASUS_KBD_PID],
-            capabilities={EC("EV_KEY"): [EC("KEY_DELETE")]},
+            capabilities={EC("EV_KEY"): [EC("KEY_MEDIA")]},
             required=False,
         ),
         ASUS_KBD_MAP,
