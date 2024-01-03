@@ -114,8 +114,8 @@ def controller_loop(conf: Config, should_exit: TEvent):
         prepare(d_xinput)
         if conf.get("imu", False):
             prepare(d_imu)
-        prepare(d_kbd_1)
-        prepare(d_kbd_2)
+        # prepare(d_kbd_1)
+        # prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
         d_timer.open()
