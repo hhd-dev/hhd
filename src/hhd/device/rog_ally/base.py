@@ -4,12 +4,14 @@ import time
 from threading import Event as TEvent
 from typing import Sequence
 
-from hhd.controller import Multiplexer, KeyboardWrapper, Button
+from hhd.controller import Button, KeyboardWrapper, Multiplexer
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
+
+from .hid import rgb_callback
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -64,6 +66,17 @@ def controller_loop(conf: Config, should_exit: TEvent):
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
         hide=True,
+    )
+
+    # Vendor
+    d_vend = GenericGamepadHidraw(
+        vid=[ASUS_VID],
+        pid=[ASUS_KBD_PID],
+        # usage_page=[0xFFA0],
+        # usage=[0x0001],
+        report_size=167,
+        required=True,
+        callback=rgb_callback,
     )
 
     # Grab shortcut keyboards
@@ -122,6 +135,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         for d in d_producers:
             prepare(d)
         d_timer.open()
+        # d_vend.open() # Open once hid validation is complete
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set():
@@ -166,5 +180,6 @@ def controller_loop(conf: Config, should_exit: TEvent):
         raise
     finally:
         d_timer.close()
+        d_vend.close(True)
         for d in reversed(devs):
             d.close(True)
