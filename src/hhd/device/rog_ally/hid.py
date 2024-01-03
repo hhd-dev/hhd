@@ -2,9 +2,11 @@ from typing import Literal, Sequence
 
 from hhd.controller import Event
 from hhd.controller.lib.hid import Device
+from .const import MODE_DEFAULT, MODE_MACRO, MODE_MOUSE
 
 Side = Literal["left", "right"]
 RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
+GamepadMode = Literal["default", "mouse", "macro"]
 
 
 def rgb_brightness():
@@ -217,3 +219,18 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
 
             for r in reps:
                 dev.write(r)
+
+
+def switch_mode(dev: Device, mode: GamepadMode):
+    match mode:
+        case "default":
+            cmds = MODE_DEFAULT
+        case "macro":
+            cmds = MODE_MACRO
+        case "mouse":
+            cmds = MODE_MOUSE
+        case _:
+            assert False, f"Mode '{mode}' not supported."
+
+    for cmd in cmds:
+        dev.write(cmd)

@@ -7,7 +7,6 @@ from typing import Literal, Sequence
 from hhd.controller import (
     Axis,
     Button,
-    Configuration,
     Event,
     KeyboardWrapper,
     Multiplexer,
@@ -22,7 +21,7 @@ from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .hid import rgb_callback
+from .hid import rgb_callback, switch_mode
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -35,8 +34,8 @@ GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
 ASUS_KBD_MAP: Sequence[tuple[set[Button], Button]] = [
-    ({"key_prog1"}, "share"),  # Armory button
-    ({"key_f16"}, "mode"),  # Control center
+    ({"key_f16"}, "extra_l1"),
+    ({"key_f18"}, "extra_r1"),
 ]
 
 
@@ -56,7 +55,11 @@ MODE_DELAY = 0.3
 class AllyHidraw(GenericGamepadHidraw):
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
-        return super().open()
+        a = super().open()
+        if self.dev:
+            switch_mode(self.dev, "default")
+        self.mouse_mode = False
+        return a
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         # If we can not read return
@@ -97,11 +100,17 @@ class AllyHidraw(GenericGamepadHidraw):
                         ({"type": "button", "code": "share", "value": False}, curr)
                     )
                 case 0xA7:
-                    # action = "right_hold"
-                    pass  # TODO: mode switch
+                    # right hold
+                    # Mode switch
+                    if self.mouse_mode:
+                        switch_mode(self.dev, "default")
+                        self.mouse_mode = False
+                    else:
+                        switch_mode(self.dev, "mouse")
+                        self.mouse_mode = True
                 case 0xA8:
                     # action = "right_hold_release"
-                    pass  # TODO: mode switch
+                    pass  # kind of useless
 
         return out
 
