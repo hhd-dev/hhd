@@ -126,6 +126,8 @@ def controller_loop(conf: Config, should_exit: TEvent):
             fd_to_dev[f] = m
 
     try:
+        d_timer.open()
+        d_vend.open()  # Open once hid validation is complete
         prepare(d_xinput)
         if conf.get("imu", False):
             prepare(d_imu)
@@ -133,8 +135,6 @@ def controller_loop(conf: Config, should_exit: TEvent):
         # prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
-        d_timer.open()
-        d_vend.open() # Open once hid validation is complete
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set():
