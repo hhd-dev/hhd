@@ -232,12 +232,12 @@ class IioReader(Producer):
         return [self.fd]
 
     def close(self, exit: bool):
-        if self.fd:
-            os.close(self.fd)
-            self.fd = 0
         if self.dev:
             close_dev(self.dev)
             self.dev = None
+        if self.fd:
+            os.close(self.fd)
+            self.fd = 0
         return True
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:

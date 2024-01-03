@@ -72,9 +72,8 @@ def controller_loop(conf: Config, should_exit: TEvent):
     d_vend = GenericGamepadHidraw(
         vid=[ASUS_VID],
         pid=[ASUS_KBD_PID],
-        # usage_page=[0xFFA0],
-        # usage=[0x0001],
-        report_size=167,
+        usage_page=[0xFF31],
+        usage=[0x0080],
         required=True,
         callback=rgb_callback,
     )
@@ -135,7 +134,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         for d in d_producers:
             prepare(d)
         d_timer.open()
-        # d_vend.open() # Open once hid validation is complete
+        d_vend.open() # Open once hid validation is complete
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set():
