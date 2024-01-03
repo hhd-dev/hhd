@@ -12,10 +12,10 @@ from hhd.plugins import (
 from hhd.plugins.settings import HHDSettings
 
 
-class LegionControllersPlugin(HHDPlugin):
-    name = "legion_go_controllers"
+class RogAllyControllersPlugin(HHDPlugin):
+    name = "rog_ally_controllers"
     priority = 18
-    log = "llgo"
+    log = "ally"
 
     def __init__(self) -> None:
         self.t = None
@@ -31,16 +31,16 @@ class LegionControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
-        base = {"controllers": {"legion_go": load_relative_yaml("controllers.yml")}}
-        base["controllers"]["legion_go"]["children"]["xinput"].update(
+        base = {"controllers": {"rog_ally": load_relative_yaml("controllers.yml")}}
+        base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
             get_outputs_config()
         )
         return base
 
     def update(self, conf: Config):
-        if conf["controllers.legion_go"] == self.prev:
+        if conf["controllers.rog_ally"] == self.prev:
             return
-        self.prev = conf["controllers.legion_go"]
+        self.prev = conf["controllers.rog_ally"]
 
         self.start(self.prev)
 
@@ -70,7 +70,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match just product number, should be enough for now
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        if not f.read().strip() == "83E1":
+        if not f.read().strip() == "ROG Ally RC71L_RC71L":
             return []
 
-    return [LegionControllersPlugin()]
+    return [RogAllyControllersPlugin()]

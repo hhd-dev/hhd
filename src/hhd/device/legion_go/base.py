@@ -356,7 +356,7 @@ class SelectivePassthrough(Producer, Consumer):
         return self.parent.open()
 
     def close(self, exit: bool) -> bool:
-        return super().close(exit)
+        return self.parent.close(exit)
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         evs: Sequence[Event] = self.parent.produce(fds)

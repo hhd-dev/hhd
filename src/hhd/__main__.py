@@ -189,6 +189,8 @@ def main():
 
         plugin_str = "Loaded the following plugins:"
         for pkg_name, sub_plugins in plugins.items():
+            if not sub_plugins:
+                continue
             plugin_str += (
                 f"\n  - {pkg_name:>8s}: {', '.join(p.name for p in sub_plugins)}"
             )

@@ -483,5 +483,52 @@ class Multiplexer:
         return out
 
 
+class KeyboardWrapper(Producer, Consumer):
+    def __init__(
+        self, parent: Producer, button_map: Sequence[tuple[set[Button], Button]]
+    ) -> None:
+        self.parent = parent
+        self.button_map = button_map
+
+        self.active_in: set[Button] = set()
+        self.active_out: set[Button] = set()
+
+    def open(self) -> Sequence[int]:
+        self.active_in: set[Button] = set()
+        self.active_out: set[Button] = set()
+        return self.parent.open()
+
+    def close(self, exit: bool) -> bool:
+        return self.parent.close(exit)
+
+    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        evs: Sequence[Event] = self.parent.produce(fds)
+        # Update in map
+        for ev in evs:
+            if ev["type"] == "button":
+                if ev["value"]:
+                    self.active_in.add(ev["code"])
+                elif ev["code"] in self.active_in:
+                    self.active_in.remove(ev["code"])
+
+        # Debounce and output
+        out: Sequence[Event] = []
+        for bset, action in self.button_map:
+            is_sub = bset.issubset(self.active_in)
+            is_active = action in self.active_out
+            if is_sub and not is_active:
+                self.active_out.add(action)
+                out.append({"type": "button", "code": action, "value": True})
+            elif not is_sub and is_active:
+                self.active_out.remove(action)
+                out.append({"type": "button", "code": action, "value": False})
+
+        return out
+
+    def consume(self, events: Sequence[Event]):
+        if isinstance(self.parent, Consumer):
+            return self.parent.consume(events)
+
+
 def can_read(fd: int):
     return select.select([fd], [], [], 0)[0]
