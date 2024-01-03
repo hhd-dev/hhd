@@ -103,7 +103,7 @@ class AllyHidraw(GenericGamepadHidraw):
                     # action = "right_hold_release"
                     pass  # TODO: mode switch
 
-        return []
+        return out
 
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
