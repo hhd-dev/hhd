@@ -4,7 +4,7 @@ import time
 from threading import Event as TEvent
 from typing import Sequence
 
-from hhd.controller import Button, KeyboardWrapper, Multiplexer
+from hhd.controller import Axis, Button, KeyboardWrapper, Multiplexer
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
@@ -28,6 +28,17 @@ ASUS_KBD_1_MAP: Sequence[tuple[set[Button], Button]] = [
     ({"key_f16"}, "mode"),  # Control center
 ]
 ASUS_KBD_2_MAP: Sequence[tuple[set[Button], Button]] = []
+
+
+ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float | None]] = {
+    "accel_x": ("accel_z", "accel", 3),
+    "accel_y": ("accel_x", "accel", 3),
+    "accel_z": ("accel_y", "accel", 3),
+    "anglvel_x": ("gyro_z", "anglvel", None),
+    "anglvel_y": ("gyro_x", "anglvel", None),
+    "anglvel_z": ("gyro_y", "anglvel", None),
+    "timestamp": ("gyro_ts", "anglvel", None),
+}
 
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
@@ -126,10 +137,10 @@ def controller_loop(conf: Config, should_exit: TEvent):
             fd_to_dev[f] = m
 
     try:
-        d_timer.open()
         d_vend.open()  # Open once hid validation is complete
         prepare(d_xinput)
         if conf.get("imu", False):
+            d_timer.open()
             prepare(d_imu)
         prepare(d_kbd_1)
         # prepare(d_kbd_2)

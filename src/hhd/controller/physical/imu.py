@@ -22,6 +22,7 @@ class ScanElement(NamedTuple):
     scale: float
     offset: float
     max_val: float | None
+    flip: bool
 
 
 class DeviceInfo(NamedTuple):
@@ -34,27 +35,27 @@ ACCEL_NAMES = ["accel_3d"]
 GYRO_NAMES = ["gyro_3d"]
 IMU_NAMES = ["bmi323-imu"]
 
-ACCEL_MAPPINGS: dict[str, tuple[Axis, str | None, float | None]] = {
-    "accel_x": ("accel_z", "accel", 3),
-    "accel_y": ("accel_x", "accel", 3),
-    "accel_z": ("accel_y", "accel", 3),
-    "timestamp": ("accel_ts", "accel", None),
+ACCEL_MAPPINGS: dict[str, tuple[Axis, str | None, float | None, bool]] = {
+    "accel_x": ("accel_z", "accel", 3, False),
+    "accel_y": ("accel_x", "accel", 3, False),
+    "accel_z": ("accel_y", "accel", 3, False),
+    "timestamp": ("accel_ts", "accel", None, False),
 }
-GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float | None]] = {
-    "anglvel_x": ("gyro_z", "anglvel", None),
-    "anglvel_y": ("gyro_x", "anglvel", None),
-    "anglvel_z": ("gyro_y", "anglvel", None),
-    "timestamp": ("gyro_ts", "anglvel", None),
+GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float | None, bool]] = {
+    "anglvel_x": ("gyro_z", "anglvel", None, False),
+    "anglvel_y": ("gyro_x", "anglvel", None, False),
+    "anglvel_z": ("gyro_y", "anglvel", None, False),
+    "timestamp": ("gyro_ts", "anglvel", None, False),
 }
 
-BMI_MAPPINGS: dict[str, tuple[Axis, str | None, float | None]] = {
-    "accel_x": ("accel_z", "accel", 3),
-    "accel_y": ("accel_x", "accel", 3),
-    "accel_z": ("accel_y", "accel", 3),
-    "anglvel_x": ("gyro_z", "anglvel", None),
-    "anglvel_y": ("gyro_x", "anglvel", None),
-    "anglvel_z": ("gyro_y", "anglvel", None),
-    "timestamp": ("gyro_ts", "anglvel", None),
+BMI_MAPPINGS: dict[str, tuple[Axis, str | None, float | None, bool]] = {
+    "accel_x": ("accel_z", "accel", 3, False),
+    "accel_y": ("accel_x", "accel", 3, False),
+    "accel_z": ("accel_y", "accel", 3, False),
+    "anglvel_x": ("gyro_z", "anglvel", None, False),
+    "anglvel_y": ("gyro_x", "anglvel", None, False),
+    "anglvel_z": ("gyro_y", "anglvel", None, False),
+    "timestamp": ("gyro_ts", "anglvel", None, False),
 }
 
 
@@ -86,7 +87,7 @@ def write_sysfs(dir: str, fn: str, val: Any):
         f.write(str(val))
 
 
-def read_sysfs(dir: str, fn: str, default: int | None = None):
+def read_sysfs(dir: str, fn: str, default: str | None = None):
     try:
         with open(os.path.join(dir, fn), "r") as f:
             return f.read().strip()
@@ -95,12 +96,13 @@ def read_sysfs(dir: str, fn: str, default: int | None = None):
             return default
         raise e
 
+
 def prepare_dev(
     sensor_dir: str,
     type: str,
     attr: Sequence[str],
     freq: Sequence[int] | None,
-    mappings: dict[str, tuple[Axis, str | None, float | None]],
+    mappings: dict[str, tuple[Axis, str | None, float | None, bool]],
     update_trigger: bool,
 ) -> DeviceInfo | None:
     # Prepare device buffer
@@ -158,21 +160,31 @@ def prepare_dev(
 
         # Prepare scan metadata
         if fn in mappings:
-            ax, atr, max_val = mappings[fn]
+            ax, atr, max_val, flip = mappings[fn]
             if atr:
-                offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset", 0))
-                scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale", 1))
+                offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset"))
+                scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale"))
             else:
                 offset = 0
                 scale = 1
             write_sysfs(sensor_dir, f"scan_elements/in_{fn}_en", 1)
         else:
             ax = max_val = None
+            flip = False
             offset = 0
             scale = 1
 
         axis[idx] = ScanElement(
-            ax, endianness, signed, bits, storage_bits, shift, scale, offset, max_val
+            ax,
+            endianness,
+            signed,
+            bits,
+            storage_bits,
+            shift,
+            scale,
+            offset,
+            max_val,
+            flip,
         )
     write_sysfs(sensor_dir, "buffer/enable", 1)
 
@@ -200,7 +212,7 @@ class IioReader(Producer):
         types: Sequence[str],
         attr: Sequence[str],
         freq: Sequence[int] | None,
-        mappings: dict[str, tuple[Axis, str | None, float | None]],
+        mappings: dict[str, tuple[Axis, str | None, float | None, bool]],
         update_trigger: bool = False,
     ) -> None:
         self.types = types
@@ -279,6 +291,9 @@ class IioReader(Producer):
                     else:
                         d = max(d, -se.max_val)
 
+                if se.flip:
+                    d = -d
+
                 if se.axis not in self.prev or self.prev[se.axis] != d:
                     out.append(
                         {
@@ -312,12 +327,16 @@ class GyroImu(IioReader):
 
 
 class CombinedImu(IioReader):
-    def __init__(self, freq: int = 400) -> None:
+    def __init__(
+        self,
+        freq: int = 400,
+        map: dict[str, tuple[Axis, str | None, float | None, bool]] | None = None,
+    ) -> None:
         super().__init__(
             IMU_NAMES,
             ["anglvel", "accel"],
             [freq, freq] if freq else None,
-            BMI_MAPPINGS,
+            map if map is not None else BMI_MAPPINGS,
         )
 
 
