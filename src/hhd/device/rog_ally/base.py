@@ -79,25 +79,28 @@ class AllyHidraw(GenericGamepadHidraw):
         # Read new events
         while can_read(self.fd):
             rep = self.dev.read(self.report_size)
-            logger.warning(f"Received the following report from ALLY:\n{rep.hex()}")
-            if rep[0] != 0x33:
+            logger.warning(f"Received the following report (debug):\n{rep.hex()}")
+            if rep[0] != 0x58:
                 continue
 
             match rep[2]:
-                case 0x38:
+                case 0xA6:
                     # action = "left"
                     out.append({"type": "button", "code": "mode", "value": True})
                     self.queue.append(
                         ({"type": "button", "code": "mode", "value": False}, curr)
                     )
-                case 0x56:
+                case 0x38:
                     # action = "right"
                     out.append({"type": "button", "code": "share", "value": True})
                     self.queue.append(
                         ({"type": "button", "code": "share", "value": False}, curr)
                     )
-                case 0x57:
+                case 0xA7:
                     # action = "right_hold"
+                    pass  # TODO: mode switch
+                case 0xA8:
+                    # action = "right_hold_release"
                     pass  # TODO: mode switch
 
         return []
