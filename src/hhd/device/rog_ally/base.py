@@ -80,10 +80,10 @@ class AllyHidraw(GenericGamepadHidraw):
         while can_read(self.fd):
             rep = self.dev.read(self.report_size)
             logger.warning(f"Received the following report (debug):\n{rep.hex()}")
-            if rep[0] != 0x58:
+            if rep[0] != 0x5a:
                 continue
 
-            match rep[2]:
+            match rep[1]:
                 case 0xA6:
                     # action = "left"
                     out.append({"type": "button", "code": "mode", "value": True})
