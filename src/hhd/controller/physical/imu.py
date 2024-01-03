@@ -205,6 +205,7 @@ class IioReader(Producer):
         self.mappings = mappings
         self.update_trigger = update_trigger
         self.fd = 0
+        self.dev = None
 
     def open(self):
         sens_dir, type = find_sensor(self.types)

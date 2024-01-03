@@ -156,6 +156,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
                 if debug:
                     logger.info(evs)
 
+                d_vend.consume(evs)
                 d_xinput.consume(evs)
 
             for d in d_outs:
