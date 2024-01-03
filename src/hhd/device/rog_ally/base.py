@@ -1,10 +1,10 @@
-import argparse
 import logging
 import select
 import time
 from threading import Event as TEvent
+from typing import Sequence
 
-from hhd.controller import Multiplexer, KeyboardWrapper
+from hhd.controller import Multiplexer, KeyboardWrapper, Button
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
@@ -21,8 +21,11 @@ ASUS_KBD_PID = 0x1ABE
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
-ASUS_KBD_1_MAP = []
-ASUS_KBD_2_MAP = []
+ASUS_KBD_1_MAP: Sequence[tuple[set[Button], Button]] = [
+    ({"key_prog1"}, "share"),  # Armory button
+    ({"key_f16"}, "mode"),  # Control center
+]
+ASUS_KBD_2_MAP: Sequence[tuple[set[Button], Button]] = []
 
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
@@ -68,7 +71,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         GenericGamepadEvdev(
             vid=[ASUS_VID],
             pid=[ASUS_KBD_PID],
-            capabilities={EC("EV_KEY"): [EC("KEY_1")]},
+            capabilities={EC("EV_KEY"): [EC("KEY_PROG1")]},
             required=True,
         ),
         ASUS_KBD_1_MAP,
@@ -114,7 +117,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         prepare(d_xinput)
         if conf.get("imu", False):
             prepare(d_imu)
-        # prepare(d_kbd_1)
+        prepare(d_kbd_1)
         # prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)

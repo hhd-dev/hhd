@@ -435,6 +435,8 @@ _kbd_raw: dict[KeyboardButton, Sequence[int]] = {
     "key_hanja": [B("KEY_HANJA")],  # 123
     "key_yen": [B("KEY_YEN")],  # 124
     "key_unknown": [B("KEY_UNKNOWN")],  # 240,
+    "key_prog1": [B("KEY_PROG1")],  # 148
+    "key_prog2": [B("KEY_PROG2")],  # 149,
 }
 
 KEYBOARD_MAP_REV: dict[KeyboardButton, int] = {k: v[0] for k, v in _kbd_raw.items()}

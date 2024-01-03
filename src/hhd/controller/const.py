@@ -276,6 +276,9 @@ KeyboardButton = Literal[
     "key_yen",  # 124
     # ?
     "key_unknown",  # 240,
+    # Prog for the ally
+    "key_prog1",
+    "key_prog2",
 ]
 
 Axis = AbsAxis | RelAxis
