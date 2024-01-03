@@ -1,7 +1,14 @@
 from threading import Event, Thread
 from typing import Any, Sequence
 
-from hhd.plugins import Config, Context, Emitter, HHDPlugin, load_relative_yaml
+from hhd.plugins import (
+    Config,
+    Context,
+    Emitter,
+    HHDPlugin,
+    load_relative_yaml,
+    get_outputs_config,
+)
 from hhd.plugins.settings import HHDSettings
 
 
@@ -24,7 +31,11 @@ class LegionControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
-        return {"controllers": {"legion_go": load_relative_yaml("controllers.yaml")}}
+        base = {"controllers": {"legion_go": load_relative_yaml("controllers.yaml")}}
+        base["controllers"]["legion_go"]["children"]["xinput"].update(
+            get_outputs_config()
+        )
+        return base
 
     def update(self, conf: Config):
         if conf["controllers.legion_go"] == self.prev:

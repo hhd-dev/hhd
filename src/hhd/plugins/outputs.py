@@ -1,8 +1,9 @@
 from typing import Any, Mapping, Sequence
 
-from .base import Consumer, Producer
-from .virtual.dualsense import DualsenseEdge, TouchpadCorrectionType
-from .virtual.uinput import (
+from .utils import load_relative_yaml
+from ..controller.base import Consumer, Producer
+from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
+from ..controller.virtual.uinput import (
     HHD_PID_MOTION,
     HHD_PID_TOUCHPAD,
     MOTION_AXIS_MAP,
@@ -26,10 +27,11 @@ def get_outputs(
     match controller:
         case "dualsense":
             uses_touch = touchpad == "controller"
-            d = DualsenseEdge(
+            d = Dualsense(
                 touchpad_method=touch_conf["controller.correction"].to(
                     TouchpadCorrectionType
                 ),
+                edge_mode=conf["dualsense.edge_mode"].to(bool),
                 use_bluetooth=conf["dualsense.bluetooth_mode"].to(bool),
                 enable_touchpad=uses_touch,
                 enable_rgb=conf["dualsense.led_support"].to(bool),
@@ -71,3 +73,7 @@ def get_outputs(
         uses_touch = True
 
     return producers, consumers, {"uses_touch": uses_touch, "is_dual": False}
+
+
+def get_outputs_config():
+    return load_relative_yaml("outputs.yml")

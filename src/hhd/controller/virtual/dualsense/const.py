@@ -2,11 +2,13 @@ from binascii import crc32
 
 from hhd.controller.lib.common import AM, BM
 
-DS5_EDGE_VENDOR = 0x054C
+DS5_VENDOR = 0x054C
+DS5_PRODUCT = 0x0CE6
 DS5_EDGE_PRODUCT = 0x0DF2
 DS5_EDGE_VERSION = 256
 DS5_EDGE_COUNTRY = 0
-DS5_EDGE_NAME = b"Emulated Sony DS5 Edge Controller"
+DS5_NAME = b"Sony Interactive Entertainment DualSense Wireless Controller"
+DS5_EDGE_NAME = b"Sony Interactive Entertainment DualSense Edge Wireless Controller"
 
 DS5_EDGE_MIN_REPORT_FREQ = 25
 DS5_EDGE_MAX_REPORT_FREQ = 1000

@@ -23,18 +23,20 @@ from .const import (
     DS5_EDGE_MAX_REPORT_FREQ,
     DS5_EDGE_MIN_REPORT_FREQ,
     DS5_EDGE_NAME,
+    DS5_NAME,
     DS5_EDGE_PRODUCT,
     DS5_EDGE_STOCK_REPORTS,
     DS5_EDGE_TOUCH_HEIGHT,
     DS5_EDGE_TOUCH_WIDTH,
-    DS5_EDGE_VENDOR,
     DS5_EDGE_VERSION,
     DS5_FEATURE_CRC32_SEED,
     DS5_INPUT_CRC32_SEED,
     DS5_INPUT_REPORT_BT_OFS,
     DS5_INPUT_REPORT_USB_OFS,
+    DS5_PRODUCT,
     DS5_USB_AXIS_MAP,
     DS5_USB_BTN_MAP,
+    DS5_VENDOR,
     patch_dpad_val,
     prefill_ds5_report,
     sign_crc32_append,
@@ -48,10 +50,11 @@ DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
 logger = logging.getLogger(__name__)
 
 
-class DualsenseEdge(Producer, Consumer):
+class Dualsense(Producer, Consumer):
     def __init__(
         self,
         touchpad_method: TouchpadCorrectionType = "crop_end",
+        edge_mode: bool = True,
         use_bluetooth: bool = True,
         fake_timestamps: bool = False,
         enable_touchpad: bool = True,
@@ -62,6 +65,7 @@ class DualsenseEdge(Producer, Consumer):
         self.dev = None
         self.start = 0
         self.use_bluetooth = use_bluetooth
+        self.edge_mode = edge_mode
         self.fake_timestamps = fake_timestamps
         self.touchpad_method: TouchpadCorrectionType = touchpad_method
         self.enable_touchpad = enable_touchpad
@@ -77,12 +81,12 @@ class DualsenseEdge(Producer, Consumer):
         self.available = False
         self.report = bytearray(prefill_ds5_report(self.use_bluetooth))
         self.dev = UhidDevice(
-            vid=DS5_EDGE_VENDOR,
-            pid=DS5_EDGE_PRODUCT,
+            vid=DS5_VENDOR,
+            pid=DS5_EDGE_PRODUCT if self.edge_mode else DS5_PRODUCT,
             bus=BUS_BLUETOOTH if self.use_bluetooth else BUS_USB,
             version=DS5_EDGE_VERSION,
             country=DS5_EDGE_COUNTRY,
-            name=DS5_EDGE_NAME,
+            name=DS5_EDGE_NAME if self.edge_mode else DS5_NAME,
             report_descriptor=DS5_EDGE_DESCRIPTOR_BT
             if self.use_bluetooth
             else DS5_EDGE_DESCRIPTOR_USB,
@@ -99,7 +103,9 @@ class DualsenseEdge(Producer, Consumer):
         self.start = time.perf_counter_ns()
         self.fd = self.dev.open()
 
-        logger.info(f"Starting '{DS5_EDGE_NAME.decode()}'.")
+        logger.info(
+            f"Starting '{(DS5_EDGE_NAME if self.edge_mode else DS5_NAME).decode()}'."
+        )
         return [self.fd]
 
     def close(self, exit: bool) -> bool:

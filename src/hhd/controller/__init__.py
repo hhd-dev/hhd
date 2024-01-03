@@ -7,7 +7,6 @@ from .base import (
     TouchpadCorrection,
     correct_touchpad,
 )
-from .outputs import get_outputs
 from .const import Axis, Button, Configuration
 
 __all__ = [
@@ -21,5 +20,4 @@ __all__ = [
     "TouchpadCorrectionType",
     "TouchpadCorrection",
     "correct_touchpad",
-    "get_outputs",
 ]

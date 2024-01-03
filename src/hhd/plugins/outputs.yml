@@ -1,0 +1,63 @@
+default: dualsense
+modes:
+  #
+  # No emulation
+  #
+  disabled:
+    type: container
+    tags: [lgc_emulation_disabled]
+    title: Disabled
+    hint: >-
+      Does not modify the default controller.
+  #
+  # evdev through uinput
+  #
+  uinput:
+    type: container
+    tags: [lgc_emulation_uinput, uinput]
+    title: Virtual Controller
+    hint: >-
+      Creates a virtual `Handheld Daemon Controller` that can be used normally
+      in apps. Back buttons are supported but steam will not detect them.
+      If Gyroscope or Accelerometer are enabled, a Motion device will be
+      created as well (experimental; works in Dolphin).
+  #
+  # Dual Sense 5
+  #
+  dualsense:
+    type: container
+    tags: [lgc_emulation_dualsense, dualsense]
+    title: Dualsense
+    hint: >-
+      Emulates the expensive Dualsense Sony controller, both Edge and non-edge
+      variants.
+
+    children:
+      led_support:
+        type: bool
+        title: LED Support
+        hint: >-
+          Passes through the LEDs to the controller, which allows games
+          to control them.
+        default: True
+
+      bluetooth_mode:
+        type: bool
+        title: Bluetooth Mode
+        hint: >-
+          Emulates the controller in bluetooth mode instead of USB mode.
+          This is the default as it causes less issues with how apps
+          interact with the controller.
+          However, using USB mode can improve LED support (?) in some games.
+          Test and report back!
+        default: True
+
+      edge_mode:
+        type: bool
+        title: Edge Mode
+        hint: >-
+          Uses the edge product ID which enables paddle support.
+          The edge controller is a bit obscure, so some games might not
+          support it correctly.
+          You can disable this to use normal Dualsense (no paddle support).
+        default: True

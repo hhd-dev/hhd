@@ -5,20 +5,17 @@ import select
 import sys
 import time
 from threading import Event as TEvent
-from typing import Sequence, Literal
+from typing import Literal, Sequence
 
-from hhd.controller import Button, Consumer, Event, Producer, get_outputs
+from hhd.controller import Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
-from hhd.controller.virtual.uinput import (
-    UInputDevice,
-    HHD_PID_VENDOR,
-)
-from hhd.plugins import Config, Context, Emitter
+from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
+from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .const import (
     LGO_RAW_INTERFACE_AXIS_MAP,
