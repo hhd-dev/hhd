@@ -30,9 +30,10 @@ def get_outputs(
                 touchpad_method=touch_conf["controller.correction"].to(
                     TouchpadCorrectionType
                 ),
+                use_bluetooth=conf["dualsense.bluetooth_mode"].to(bool),
                 enable_touchpad=uses_touch,
                 enable_rgb=conf["dualsense.led_support"].to(bool),
-                fake_timestamps=not motion
+                fake_timestamps=not motion,
             )
             producers.append(d)
             consumers.append(d)

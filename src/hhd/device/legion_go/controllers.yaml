@@ -55,6 +55,17 @@ children:
               Passes through the LEDs to the controller, which allows games
               to control them.
             default: True
+          
+          bluetooth_mode:
+            type: bool
+            title: Use 
+            hint: >-
+              Emulates the controller in bluetooth mode instead of USB mode.
+              This is the default as it causes less issues with how apps
+              interact with the controller.
+              However, using USB mode can improve LED support (?) in some games.
+              Test and report back!
+            default: True
 
   #
   # Common settings
