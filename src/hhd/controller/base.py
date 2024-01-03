@@ -505,6 +505,7 @@ class KeyboardWrapper(Producer, Consumer):
         evs: Sequence[Event] = self.parent.produce(fds)
         # Update in map
         for ev in evs:
+            logger.info(ev)
             if ev["type"] == "button":
                 if ev["value"]:
                     self.active_in.add(ev["code"])

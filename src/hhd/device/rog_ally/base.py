@@ -72,7 +72,7 @@ class AllyHidraw(GenericGamepadHidraw):
             ev, ofs = self.queue[0]
             if ofs + MODE_DELAY < curr:
                 out.append(ev)
-                out.pop(0)
+                self.queue.pop(0)
             else:
                 break
 
@@ -80,7 +80,7 @@ class AllyHidraw(GenericGamepadHidraw):
         while can_read(self.fd):
             rep = self.dev.read(self.report_size)
             logger.warning(f"Received the following report (debug):\n{rep.hex()}")
-            if rep[0] != 0x5a:
+            if rep[0] != 0x5A:
                 continue
 
             match rep[1]:
@@ -159,8 +159,8 @@ def controller_loop(conf: Config, should_exit: TEvent):
         GenericGamepadEvdev(
             vid=[ASUS_VID],
             pid=[ASUS_KBD_PID],
-            capabilities={EC("EV_KEY"): [EC("KEY_PROG1")]},
-            required=True,
+            capabilities={EC("EV_KEY"): [EC("KEY_DELETE")]},
+            required=False,
         ),
         ASUS_KBD_MAP,
     )
@@ -197,7 +197,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         if conf.get("imu", False):
             d_timer.open()
             prepare(d_imu)
-        # prepare(d_kbd_1)
+        prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
 
