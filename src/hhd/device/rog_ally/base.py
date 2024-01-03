@@ -2,12 +2,23 @@ import logging
 import select
 import time
 from threading import Event as TEvent
-from typing import Sequence
+from typing import Literal, Sequence
 
-from hhd.controller import Axis, Button, KeyboardWrapper, Multiplexer
+from hhd.controller import (
+    Axis,
+    Button,
+    Configuration,
+    Event,
+    KeyboardWrapper,
+    Multiplexer,
+    can_read,
+)
+from hhd.controller.base import Event
+from hhd.controller.lib.common import AM, BM, CM
+from hhd.controller.lib.hid import MAX_REPORT_SIZE
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
+from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
@@ -23,11 +34,10 @@ ASUS_KBD_PID = 0x1ABE
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
-ASUS_KBD_1_MAP: Sequence[tuple[set[Button], Button]] = [
+ASUS_KBD_MAP: Sequence[tuple[set[Button], Button]] = [
     ({"key_prog1"}, "share"),  # Armory button
     ({"key_f16"}, "mode"),  # Control center
 ]
-ASUS_KBD_2_MAP: Sequence[tuple[set[Button], Button]] = []
 
 
 ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float | None]] = {
@@ -39,6 +49,58 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float | None]] = {
     "anglvel_z": ("gyro_y", "anglvel", None),
     "timestamp": ("gyro_ts", "anglvel", None),
 }
+
+MODE_DELAY = 0.3
+
+
+class AllyHidraw(GenericGamepadHidraw):
+    def open(self) -> Sequence[int]:
+        self.queue: list[tuple[Event, float]] = []
+        return super().open()
+
+    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        # If we can not read return
+        if not self.fd or self.fd not in fds or not self.dev:
+            return []
+
+        # Process events
+        curr = time.perf_counter()
+        out: Sequence[Event] = []
+
+        # Remove events that have been queued
+        while len(self.queue):
+            ev, ofs = self.queue[0]
+            if ofs + MODE_DELAY < curr:
+                out.append(ev)
+                out.pop(0)
+            else:
+                break
+
+        # Read new events
+        while can_read(self.fd):
+            rep = self.dev.read(self.report_size)
+            logger.warning(f"Received the following report from ALLY:\n{rep.hex()}")
+            if rep[0] != 0x33:
+                continue
+
+            match rep[2]:
+                case 0x38:
+                    # action = "left"
+                    out.append({"type": "button", "code": "mode", "value": True})
+                    self.queue.append(
+                        ({"type": "button", "code": "mode", "value": False}, curr)
+                    )
+                case 0x56:
+                    # action = "right"
+                    out.append({"type": "button", "code": "share", "value": True})
+                    self.queue.append(
+                        ({"type": "button", "code": "share", "value": False}, curr)
+                    )
+                case 0x57:
+                    # action = "right_hold"
+                    pass  # TODO: mode switch
+
+        return []
 
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
@@ -80,7 +142,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
     )
 
     # Vendor
-    d_vend = GenericGamepadHidraw(
+    d_vend = AllyHidraw(
         vid=[ASUS_VID],
         pid=[ASUS_KBD_PID],
         usage_page=[0xFF31],
@@ -97,17 +159,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
             capabilities={EC("EV_KEY"): [EC("KEY_PROG1")]},
             required=True,
         ),
-        ASUS_KBD_1_MAP,
-    )
-    d_kbd_2 = KeyboardWrapper(
-        GenericGamepadEvdev(
-            vid=[ASUS_VID],
-            pid=[ASUS_KBD_PID],
-            capabilities={EC("EV_KEY"): [EC("KEY_1")]},
-            # report_size=64,
-            required=True,
-        ),
-        ASUS_KBD_2_MAP,
+        ASUS_KBD_MAP,
     )
 
     multiplexer = Multiplexer(
@@ -137,13 +189,12 @@ def controller_loop(conf: Config, should_exit: TEvent):
             fd_to_dev[f] = m
 
     try:
-        d_vend.open()  # Open once hid validation is complete
+        d_vend.open()
         prepare(d_xinput)
         if conf.get("imu", False):
             d_timer.open()
             prepare(d_imu)
-        prepare(d_kbd_1)
-        # prepare(d_kbd_2)
+        # prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
 
@@ -160,6 +211,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
             for d in devs:
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
+            evs.extend(d_vend.produce(r))
 
             evs = multiplexer.process(evs)
             if evs:
@@ -190,7 +242,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
     except KeyboardInterrupt:
         raise
     finally:
-        d_timer.close()
         d_vend.close(True)
+        d_timer.close()
         for d in reversed(devs):
             d.close(True)
