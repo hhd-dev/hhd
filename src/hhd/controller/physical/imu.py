@@ -162,7 +162,7 @@ def prepare_dev(
         if fn in mappings:
             ax, atr, max_val, flip = mappings[fn]
             if atr:
-                offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset"))
+                offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset", "0"))
                 scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale"))
             else:
                 offset = 0
