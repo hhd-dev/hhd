@@ -86,10 +86,14 @@ def write_sysfs(dir: str, fn: str, val: Any):
         f.write(str(val))
 
 
-def read_sysfs(dir: str, fn: str):
-    with open(os.path.join(dir, fn), "r") as f:
-        return f.read().strip()
-
+def read_sysfs(dir: str, fn: str, default: int | None = None):
+    try:
+        with open(os.path.join(dir, fn), "r") as f:
+            return f.read().strip()
+    except Exception as e:
+        if default is not None:
+            return default
+        raise e
 
 def prepare_dev(
     sensor_dir: str,
@@ -156,8 +160,8 @@ def prepare_dev(
         if fn in mappings:
             ax, atr, max_val = mappings[fn]
             if atr:
-                offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset"))
-                scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale"))
+                offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset", 0))
+                scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale", 1))
             else:
                 offset = 0
                 scale = 1
