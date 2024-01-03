@@ -60,7 +60,7 @@ class AllyHidraw(GenericGamepadHidraw):
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         # If we can not read return
-        if not self.fd or self.fd not in fds or not self.dev:
+        if not self.fd or not self.dev:
             return []
 
         # Process events
