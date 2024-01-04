@@ -108,6 +108,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         aspect_ratio: float | None = None,
         required: bool = True,
         hide: bool = False,
+        grab: bool = True,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -122,6 +123,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.fd = 0
         self.required = required
         self.hide = hide
+        self.grab = grab
         self.hidden = False
 
     def open(self) -> Sequence[int]:
@@ -161,7 +163,8 @@ class GenericGamepadEvdev(Producer, Consumer):
                     )
 
             self.dev = dev
-            self.dev.grab()
+            if self.grab:
+                self.dev.grab()
             self.ranges = {
                 a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
             }

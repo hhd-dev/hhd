@@ -96,7 +96,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
                     controller_mode, pid if pid else 2, conf, should_exit
                 )
         except Exception as e:
-            logger.error(f"Received the following error:\n{e}")
+            logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )

@@ -6,18 +6,14 @@ from typing import Literal, Sequence
 
 from hhd.controller import (
     Axis,
-    Button,
     Event,
-    KeyboardWrapper,
     Multiplexer,
     can_read,
 )
 from hhd.controller.base import Event
-from hhd.controller.lib.common import AM, BM, CM
-from hhd.controller.lib.hid import MAX_REPORT_SIZE
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
-from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
@@ -44,6 +40,19 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
 }
 
 MODE_DELAY = 0.3
+VIBRATION_DELAY = 0.1
+VIBRATION_ON: Event = {
+    "type": "rumble",
+    "code": "main",
+    "strong_magnitude": 0.5,
+    "weak_magnitude": 0.5,
+}
+VIBRATION_OFF: Event = {
+    "type": "rumble",
+    "code": "main",
+    "strong_magnitude": 0,
+    "weak_magnitude": 0,
+}
 
 
 class AllyHidraw(GenericGamepadHidraw):
@@ -65,19 +74,17 @@ class AllyHidraw(GenericGamepadHidraw):
         curr = time.perf_counter()
         out: Sequence[Event] = []
 
-        # Remove events that have been queued
-        while len(self.queue):
+        # Remove up to one queued event
+        if len(self.queue):
             ev, ofs = self.queue[0]
-            if ofs + MODE_DELAY < curr:
+            if ofs < curr:
                 out.append(ev)
                 self.queue.pop(0)
-            else:
-                break
 
         # Read new events
         while can_read(self.fd):
             rep = self.dev.read(self.report_size)
-            logger.warning(f"Received the following report (debug):\n{rep.hex()}")
+            # logger.warning(f"Received the following report (debug):\n{rep.hex()}")
             if rep[0] != 0x5A:
                 continue
 
@@ -86,13 +93,19 @@ class AllyHidraw(GenericGamepadHidraw):
                     # action = "left"
                     out.append({"type": "button", "code": "mode", "value": True})
                     self.queue.append(
-                        ({"type": "button", "code": "mode", "value": False}, curr)
+                        (
+                            {"type": "button", "code": "mode", "value": False},
+                            curr + MODE_DELAY,
+                        )
                     )
                 case 0x38:
                     # action = "right"
                     out.append({"type": "button", "code": "share", "value": True})
                     self.queue.append(
-                        ({"type": "button", "code": "share", "value": False}, curr)
+                        (
+                            {"type": "button", "code": "share", "value": False},
+                            curr + MODE_DELAY,
+                        )
                     )
                 case 0xA7:
                     # right hold
@@ -100,9 +113,15 @@ class AllyHidraw(GenericGamepadHidraw):
                     if self.mouse_mode:
                         switch_mode(self.dev, "default")
                         self.mouse_mode = False
+                        out.append(VIBRATION_ON)
+                        self.queue.append((VIBRATION_OFF, curr + VIBRATION_DELAY))
                     else:
                         switch_mode(self.dev, "mouse")
                         self.mouse_mode = True
+                        out.append(VIBRATION_ON)
+                        self.queue.append((VIBRATION_OFF, curr + VIBRATION_DELAY))
+                        self.queue.append((VIBRATION_ON, curr + 2 * VIBRATION_DELAY))
+                        self.queue.append((VIBRATION_OFF, curr + 3 * VIBRATION_DELAY))
                 case 0xA8:
                     # action = "right_hold_release"
                     pass  # kind of useless
@@ -116,7 +135,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
             logger.info("Launching emulated controller.")
             controller_loop(conf, should_exit)
         except Exception as e:
-            logger.error(f"Received the following error:\n{e}")
+            logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )
@@ -136,7 +155,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
 
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS, gyro_scale="0.000266")
-    d_timer = HrtimerTrigger(conf["imu_hz"].to(int))
+    d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
@@ -164,6 +183,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         pid=[ASUS_KBD_PID],
         capabilities={EC("EV_KEY"): [EC("KEY_F23")]},
         required=False,
+        grab=False,
         btn_map={EC("KEY_F17"): "extra_l1", EC("KEY_F18"): "extra_r1"},
     )
 

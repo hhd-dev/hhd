@@ -392,6 +392,10 @@ class ForcedSampler:
 
 
 class HrtimerTrigger(IioReader):
+    ACCEL_NAMES = ACCEL_NAMES
+    GYRO_NAMES = GYRO_NAMES
+    IMU_NAMES = IMU_NAMES
+
     def __init__(
         self,
         freq: int,
