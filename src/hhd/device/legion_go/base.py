@@ -256,6 +256,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
         share_to_qam=conf["share_to_qam"].to(bool),
         touchpad_short=touch_actions["short"].to(TouchpadAction),
         touchpad_right=touch_actions["hold"].to(TouchpadAction),
+        paddles_to_touchpad=conf["paddles_to_touchpad"].to(bool),
     )
 
     REPORT_FREQ_MIN = 25

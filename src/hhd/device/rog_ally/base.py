@@ -178,6 +178,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
         trigger="analog_to_discrete",
         dpad="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
+        paddles_to_touchpad=conf["paddles_to_touchpad"].to(bool),
     )
 
     REPORT_FREQ_MIN = 25

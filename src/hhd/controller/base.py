@@ -241,6 +241,7 @@ class Multiplexer:
         trigger_discrete_lvl: float = 0.99,
         touchpad_short: TouchpadAction = "disabled",
         touchpad_right: TouchpadAction = "left_click",
+        paddles_to_touchpad: bool = False,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -252,6 +253,7 @@ class Multiplexer:
         self.share_to_qam = share_to_qam
         self.touchpad_short = touchpad_short
         self.touchpad_right = touchpad_right
+        self.paddles_to_touchpad = paddles_to_touchpad
 
         self.state = {}
         self.touchpad_down = time.perf_counter()
@@ -305,6 +307,25 @@ class Multiplexer:
                             }
                         )
                 case "button":
+                    if self.paddles_to_touchpad and ev["code"] in (
+                        "extra_l1",
+                        "extra_r1",
+                    ):
+                        # Position fingers
+                        if ev["value"]:
+                            out.append(
+                                {"type": "axis", "code": "touchpad_y", "value": 0.5}
+                            )
+                            out.append(
+                                {
+                                    "type": "axis",
+                                    "code": "touchpad_x",
+                                    "value": 0.25 if ev["code"] == "extra_l1" else 0.75,
+                                }
+                            )
+                        # Stub current event to click
+                        ev["code"] = "touchpad_left"
+
                     if self.trigger == "discrete_to_analog" and ev["code"] in (
                         "lt",
                         "rt",

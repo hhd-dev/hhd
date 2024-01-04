@@ -35,6 +35,15 @@ children:
     title: Map Armory to QAM.
     default: True
 
+  paddles_to_touchpad:
+    type: bool
+    title: Paddles as Touchpad Clicks
+    hint: >-
+      Makes the left paddle click the left side of the touchpad
+      and the right paddle the right side, instead of being the edge paddles.
+      Useful with dualsense.
+    default: False
+
   debug:
     type: bool
     title: Debug
