@@ -113,7 +113,7 @@ children:
         title: Controller
         hint: >-
           Uses the touchpad of the emulated controller (if it exists).
-          Otherwise, the touchpad remains unmapped.
+          Otherwise, the touchpad remains unmapped (will still show up in the system).
           Meant to be used as steam input, so short press is unassigned by
           default and long press simulates trackpad click.
         children:
