@@ -1,6 +1,6 @@
 type: container
 tags: [lgc]
-title: Legion Controllers Configuration
+title: Legion Controllers
 hint: >-
   Allows for configuring the Legion controllers using the built in firmware
   commands and enabling emulation modes for various controller types.

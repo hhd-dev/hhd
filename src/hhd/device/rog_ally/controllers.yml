@@ -1,6 +1,6 @@
 type: container
 tags: [lgc]
-title: Ally Controller Configuration
+title: Ally Controller
 hint: >-
   Allows for configuring the ROG Ally controllers to a unified output.
 
