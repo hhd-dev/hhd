@@ -33,11 +33,6 @@ ASUS_KBD_PID = 0x1ABE
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
-ASUS_KBD_MAP: Sequence[tuple[set[Button], Button]] = [
-    ({"key_f16"}, "extra_l1"),
-    ({"key_f18"}, "extra_r1"),
-]
-
 ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
     "accel_y": ("accel_x", "accel", 1, 3),
@@ -164,14 +159,14 @@ def controller_loop(conf: Config, should_exit: TEvent):
     )
 
     # Grab shortcut keyboards
-    d_kbd_1 = KeyboardWrapper(
+    d_kbd_1 = (
         GenericGamepadEvdev(
             vid=[ASUS_VID],
             pid=[ASUS_KBD_PID],
-            capabilities={EC("EV_KEY"): [EC("KEY_MEDIA")]},
+            capabilities={EC("EV_KEY"): [EC("KEY_F23")]},
             required=False,
+            btn_map={EC("KEY_F17"): "extra_l1", EC("KEY_F18"): "extra_r1"},
         ),
-        ASUS_KBD_MAP,
     )
 
     multiplexer = Multiplexer(
