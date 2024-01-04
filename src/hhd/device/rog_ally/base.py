@@ -42,9 +42,9 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
     "accel_y": ("accel_x", "accel", 1, 3),
     "accel_z": ("accel_y", "accel", 1, 3),
-    "anglvel_x": ("gyro_z", "anglvel", 0.1, None),
-    "anglvel_y": ("gyro_x", "anglvel", 0.1, None),
-    "anglvel_z": ("gyro_y", "anglvel", -0.1, None),
+    "anglvel_x": ("gyro_x", "anglvel", 0.1, None),
+    "anglvel_y": ("gyro_y", "anglvel", -0.1, None),
+    "anglvel_z": ("gyro_z", "anglvel", -0.1, None),
     "timestamp": ("gyro_ts", None, 1, None),
 }
 
@@ -140,7 +140,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
     )
 
     # Imu
-    d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS)
+    d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS, gyro_scale="0.000266")
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int))
 
     # Inputs

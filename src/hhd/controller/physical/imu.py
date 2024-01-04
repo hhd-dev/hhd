@@ -101,6 +101,7 @@ def prepare_dev(
     type: str,
     attr: Sequence[str],
     freq: Sequence[int] | None,
+    scales: Sequence[str | None] | None,
     mappings: dict[str, tuple[Axis, str | None, float, float | None]],
     update_trigger: bool,
 ) -> DeviceInfo | None:
@@ -115,6 +116,15 @@ def prepare_dev(
             sfn = os.path.join(sensor_dir, f"in_{a}_sampling_frequency")
             if os.path.isfile(sfn):
                 write_sysfs(sensor_dir, f"in_{a}_sampling_frequency", f)
+
+    # Set scale
+    if scales is not None:
+        for a, s in zip(attr, scales):
+            if not s:
+                continue
+            sfn = os.path.join(sensor_dir, f"in_{a}_scale")
+            if os.path.isfile(sfn):
+                write_sysfs(sensor_dir, f"in_{a}_scale", s)
 
     # Set trigger
     if update_trigger:
@@ -210,12 +220,14 @@ class IioReader(Producer):
         types: Sequence[str],
         attr: Sequence[str],
         freq: Sequence[int] | None,
+        scale: Sequence[str | None] | None,
         mappings: dict[str, tuple[Axis, str | None, float, float | None]],
         update_trigger: bool = False,
     ) -> None:
         self.types = types
         self.attr = attr
         self.freq = freq
+        self.scale = scale
         self.mappings = mappings
         self.update_trigger = update_trigger
         self.fd = 0
@@ -231,6 +243,7 @@ class IioReader(Producer):
             type,
             self.attr,
             self.freq,
+            self.scale,
             self.mappings,
             self.update_trigger,
         )
@@ -308,16 +321,16 @@ class IioReader(Producer):
 
 
 class AccelImu(IioReader):
-    def __init__(self, freq=None) -> None:
+    def __init__(self, freq=None, scale=None) -> None:
         super().__init__(
-            ACCEL_NAMES, ["accel"], [freq] if freq else None, ACCEL_MAPPINGS
+            ACCEL_NAMES, ["accel"], [freq] if freq else None, [scale], ACCEL_MAPPINGS
         )
 
 
 class GyroImu(IioReader):
-    def __init__(self, freq=None) -> None:
+    def __init__(self, freq=None, scale=None) -> None:
         super().__init__(
-            GYRO_NAMES, ["anglvel"], [freq] if freq else None, GYRO_MAPPINGS
+            GYRO_NAMES, ["anglvel"], [freq] if freq else None, [scale], GYRO_MAPPINGS
         )
 
 
@@ -326,11 +339,14 @@ class CombinedImu(IioReader):
         self,
         freq: int = 400,
         map: dict[str, tuple[Axis, str | None, float, float | None]] | None = None,
+        gyro_scale: str | None = None,
+        accel_scale: str | None = None,
     ) -> None:
         super().__init__(
             IMU_NAMES,
             ["anglvel", "accel"],
             [freq, freq] if freq else None,
+            [gyro_scale, accel_scale],
             map if map is not None else BMI_MAPPINGS,
         )
 
