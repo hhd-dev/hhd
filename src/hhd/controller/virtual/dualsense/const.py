@@ -128,7 +128,7 @@ get_axis_map = lambda ofs: {
     "lt": AM(((ofs + 5) << 3), "u8"),
     "gyro_x": AM(((ofs + 15) << 3), "i16", scale=20),
     "gyro_y": AM(((ofs + 17) << 3), "i16", scale=20),
-    "gyro_z": AM(((ofs + 19) << 3), "i16", scale=20, flipped=True),
+    "gyro_z": AM(((ofs + 19) << 3), "i16", scale=20),
     "accel_x": AM(((ofs + 21) << 3), "i16", scale=10000),
     "accel_y": AM(((ofs + 23) << 3), "i16", scale=10000),
     "accel_z": AM(((ofs + 25) << 3), "i16", scale=10000),

@@ -38,15 +38,14 @@ ASUS_KBD_MAP: Sequence[tuple[set[Button], Button]] = [
     ({"key_f18"}, "extra_r1"),
 ]
 
-
-ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float | None]] = {
-    "accel_x": ("accel_z", "accel", 3),
-    "accel_y": ("accel_x", "accel", 3),
-    "accel_z": ("accel_y", "accel", 3),
-    "anglvel_x": ("gyro_z", "anglvel", None),
-    "anglvel_y": ("gyro_x", "anglvel", None),
-    "anglvel_z": ("gyro_y", "anglvel", None),
-    "timestamp": ("gyro_ts", "anglvel", None),
+ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+    "accel_x": ("accel_z", "accel", 1, 3),
+    "accel_y": ("accel_x", "accel", 1, 3),
+    "accel_z": ("accel_y", "accel", 1, 3),
+    "anglvel_x": ("gyro_z", "anglvel", 0.1, None),
+    "anglvel_y": ("gyro_x", "anglvel", 0.1, None),
+    "anglvel_z": ("gyro_y", "anglvel", -0.1, None),
+    "timestamp": ("gyro_ts", "anglvel", 1, None),
 }
 
 MODE_DELAY = 0.3
@@ -57,6 +56,7 @@ class AllyHidraw(GenericGamepadHidraw):
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
         if self.dev:
+            logger.info(f"Switching ROG Ally to gamepad mode.")
             switch_mode(self.dev, "default")
         self.mouse_mode = False
         return a
@@ -140,7 +140,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
     )
 
     # Imu
-    d_imu = CombinedImu(conf["imu_hz"].to(int))
+    d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS)
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int))
 
     # Inputs
