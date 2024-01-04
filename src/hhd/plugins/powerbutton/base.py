@@ -102,7 +102,7 @@ def get_config() -> PowerButtonConfig | None:
         if d.prod_name == prod:
             return d
 
-    return DEFAULT_DEVICE
+    return None
 
 
 def run_steam_shortpress(perms: Context):
