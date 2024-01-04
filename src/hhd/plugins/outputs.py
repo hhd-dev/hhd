@@ -26,8 +26,8 @@ def get_outputs(
         touchpad = touch_conf["mode"].to(str)
         correction = touch_conf["controller.correction"].to(TouchpadCorrectionType)
     else:
-        touchpad = "disabled"
-        correction = "disabled"
+        touchpad = "controller"
+        correction = "stretch"
 
     uses_touch = False
     match controller:
