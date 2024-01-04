@@ -328,9 +328,13 @@ class AccelImu(IioReader):
 
 
 class GyroImu(IioReader):
-    def __init__(self, freq=None, scale=None) -> None:
+    def __init__(self, freq=None, scale=None, map=None) -> None:
         super().__init__(
-            GYRO_NAMES, ["anglvel"], [freq] if freq else None, [scale], GYRO_MAPPINGS
+            GYRO_NAMES,
+            ["anglvel"],
+            [freq] if freq else None,
+            [scale],
+            map if map else GYRO_MAPPINGS,
         )
 
 

@@ -7,7 +7,7 @@ import time
 from threading import Event as TEvent
 from typing import Literal, Sequence
 
-from hhd.controller import Button, Consumer, Event, Producer
+from hhd.controller import Button, Consumer, Event, Producer, Axis
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
@@ -39,6 +39,14 @@ LEN_PIDS = {
     0x6183: "dinput",
     0x6184: "dual_dinput",
     0x6185: "fps",
+}
+
+# Legion go has a bit lower sensitivity than it should
+GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+    "anglvel_x": ("gyro_z", "anglvel", 6, None),
+    "anglvel_y": ("gyro_x", "anglvel", 6, None),
+    "anglvel_z": ("gyro_y", "anglvel", 6, None),
+    "timestamp": ("gyro_ts", None, 1, None),
 }
 
 
@@ -186,7 +194,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
 
     # Imu
     d_accel = AccelImu()
-    d_gyro = GyroImu()
+    d_gyro = GyroImu(map=GYRO_MAPPINGS)
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
