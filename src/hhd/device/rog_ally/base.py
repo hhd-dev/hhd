@@ -45,7 +45,7 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "anglvel_x": ("gyro_z", "anglvel", 0.1, None),
     "anglvel_y": ("gyro_x", "anglvel", 0.1, None),
     "anglvel_z": ("gyro_y", "anglvel", -0.1, None),
-    "timestamp": ("gyro_ts", "anglvel", 1, None),
+    "timestamp": ("gyro_ts", None, 1, None),
 }
 
 MODE_DELAY = 0.3
