@@ -159,14 +159,12 @@ def controller_loop(conf: Config, should_exit: TEvent):
     )
 
     # Grab shortcut keyboards
-    d_kbd_1 = (
-        GenericGamepadEvdev(
-            vid=[ASUS_VID],
-            pid=[ASUS_KBD_PID],
-            capabilities={EC("EV_KEY"): [EC("KEY_F23")]},
-            required=False,
-            btn_map={EC("KEY_F17"): "extra_l1", EC("KEY_F18"): "extra_r1"},
-        ),
+    d_kbd_1 = GenericGamepadEvdev(
+        vid=[ASUS_VID],
+        pid=[ASUS_KBD_PID],
+        capabilities={EC("EV_KEY"): [EC("KEY_F23")]},
+        required=False,
+        btn_map={EC("KEY_F17"): "extra_l1", EC("KEY_F18"): "extra_r1"},
     )
 
     multiplexer = Multiplexer(
