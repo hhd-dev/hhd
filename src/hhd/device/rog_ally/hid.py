@@ -107,6 +107,8 @@ def rgb_initialize(
         RGB_INIT_2,
         RGB_BRIGHTNESS_MAX,
         *rgb_set("main", "solid", 0, 0, 0),
+        *rgb_set("left", "solid", 0, 0, 0),
+        *rgb_set("right", "solid", 0, 0, 0),
         RGB_APPLY,
         RGB_SET,
     ]:
@@ -138,7 +140,7 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                         ev["green"],
                         ev["blue"],
                     ),
-                    RGB_SET, # set to avoid issues
+                    RGB_SET,  # set to avoid issues
                 ]
 
             for r in reps:
