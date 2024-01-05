@@ -107,6 +107,7 @@ INIT_EVERY_S = 10
 
 def process_events(events: Sequence[Event]):
     cmds = []
+    mode = None
     for ev in events:
         if ev["type"] == "led":
             if ev["mode"] == "disable":
@@ -123,6 +124,7 @@ def process_events(events: Sequence[Event]):
                         mode = "spiral"
                     case _:
                         assert False, f"Mode '{ev['mode']}' not supported."
+
                 cmds.extend(
                     rgb_set(
                         ev["code"],
@@ -132,21 +134,22 @@ def process_events(events: Sequence[Event]):
                         ev["blue"],
                     )
                 )
-    return cmds
+    return cmds, mode
 
 
 class RgbCallback:
     def __init__(self) -> None:
-        self.last_update = None
+        self.prev_mode = None
 
     def __call__(self, dev: Device, events: Sequence[Event]):
-        cmds = process_events(events)
+        cmds, mode = process_events(events)
         if not cmds:
             return
-
-        curr = time.perf_counter()
-        if not self.last_update or self.last_update + INIT_EVERY_S < curr:
-            self.last_update = curr
+        
+        if mode != self.prev_mode:
+            self.prev_mode = mode
+            # Init on start or when the mode
+            # changes
             cmds = [
                 RGB_INIT_1,
                 RGB_INIT_2,
