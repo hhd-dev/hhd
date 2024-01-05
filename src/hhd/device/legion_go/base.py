@@ -41,14 +41,6 @@ LEN_PIDS = {
     0x6185: "fps",
 }
 
-# Legion go has a bit lower sensitivity than it should
-GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "anglvel_x": ("gyro_z", "anglvel", 22, None),
-    "anglvel_y": ("gyro_x", "anglvel", 22, None),
-    "anglvel_z": ("gyro_y", "anglvel", 22, None),
-    "timestamp": ("gyro_ts", None, 1, None),
-}
-
 
 def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
     # Remove leftover udev rules
@@ -194,6 +186,13 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
 
     # Imu
     d_accel = AccelImu()
+    # Legion go has a bit lower sensitivity than it should
+    GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+        "anglvel_x": ("gyro_z", "anglvel", conf["gyro_scaling"].to(int), None),
+        "anglvel_y": ("gyro_x", "anglvel", conf["gyro_scaling"].to(int), None),
+        "anglvel_z": ("gyro_y", "anglvel", conf["gyro_scaling"].to(int), None),
+        "timestamp": ("gyro_ts", None, 1, None),
+    }
     d_gyro = GyroImu(map=GYRO_MAPPINGS)
 
     # Inputs

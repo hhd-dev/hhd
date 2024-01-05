@@ -39,6 +39,17 @@ children:
       100hz.
     options: [0, 40, 60, 75, 100, 125, 200, 300]
     default: 100
+  gyro_scaling:
+    type: int
+    title: Gyro Scale
+    hint: >-
+      Applies a scaling factor to the legion go gyroscope (since it is misconfigured
+      by the driver). Try different values to see what works best.
+      Low values cause a deadzone and high values will clip when moving the 
+      Go abruptly.
+    min: 15
+    max: 40
+    default: 22
   swap_legion:
     type: multiple
     title: Swap Legion Buttons with Start/Select
