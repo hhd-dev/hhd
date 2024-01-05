@@ -70,11 +70,12 @@ sudo frzr-unlock
 
 # Run installer
 sudo pacman -S base-devel
+sudo systemctl disable --now handycon.service
+sudo pikaur -R handygccs-git
 sudo pikaur -S hhd
-sudo pacman -R handygccs-git
 
 # Enable and reboot
-sudo systemctl enable hhd@$(whoami)
+sudo systemctl enable --now hhd@$(whoami)
 sudo reboot
 ```
 
@@ -90,7 +91,7 @@ sudo systemctl disable hhd@$(whoami)
 sudo pikaur -S handygccs-git
 sudo pacman -R hhd
 
-sudo systemctl enable handycon
+sudo systemctl enable --now handycon.service
 sudo reboot
 ```
 
@@ -117,8 +118,7 @@ to install a local version of HHD.
 sudo dnf install python-devel
 
 # Install Handheld Daemon to ~/.local/share/hhd
-mkdir -p ~/.local/share/hhd
-cd ~/.local/share/hhd
+mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
 python -m venv venv
 source venv/bin/activate
