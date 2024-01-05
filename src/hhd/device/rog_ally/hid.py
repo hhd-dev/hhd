@@ -86,26 +86,17 @@ def rgb_set(
     match side:
         case "left":
             return [
-                RGB_BRIGHTNESS_MAX,
                 rgb_command("left_left", mode, red, green, blue),
                 rgb_command("left_right", mode, red, green, blue),
-                RGB_APPLY,
-                RGB_SET,
             ]
         case "right":
             return [
-                RGB_BRIGHTNESS_MAX,
                 rgb_command("right_right", mode, red, green, blue),
                 rgb_command("right_left", mode, red, green, blue),
-                RGB_APPLY,
-                RGB_SET,
             ]
         case _:
             return [
-                RGB_BRIGHTNESS_MAX,
                 rgb_command("all", mode, red, green, blue),
-                RGB_APPLY,
-                RGB_SET,
             ]
 
 
@@ -115,7 +106,10 @@ def rgb_initialize(
     for cmd in [
         RGB_INIT_1,
         RGB_INIT_2,
+        RGB_BRIGHTNESS_MAX,
         *rgb_set("main", "solid", 0, 0, 0),
+        RGB_APPLY,
+        RGB_SET,
     ]:
         dev.write(cmd)
 
