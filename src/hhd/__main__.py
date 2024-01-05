@@ -3,13 +3,14 @@ import fcntl
 import logging
 import os
 import signal
+import subprocess
+import sys
 from os.path import join
 from threading import Condition
 from threading import Event as TEvent
 from threading import Lock, RLock
 from time import sleep
 from typing import Sequence, cast
-import subprocess
 
 import pkg_resources
 
@@ -133,6 +134,10 @@ def main():
     https = None
     prev_http_cfg = None
     updated = False
+
+    # Check we are in a virtual environment
+    # TODO: Improve
+    exe_python = sys.executable
 
     try:
         # Create nested hhd dir
@@ -258,6 +263,13 @@ def main():
 
                 # Settings
                 hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
+                # TODO: Improve check
+                try:
+                    if not "venv" in exe_python or True:
+                        del hhd_settings["hhd"]["version"]["children"]["update_stable"]
+                        del hhd_settings["hhd"]["version"]["children"]["update_beta"]
+                except Exception as e:
+                    logger.warning(f"Could not hide update settings. Error:\n{e}")
                 settings = merge_settings(
                     [*[p.settings() for p in sorted_plugins], hhd_settings]
                 )
@@ -502,12 +514,6 @@ def main():
                     except Exception as e:
                         logger.error(f"Error while updating decky plugin:\n{e}")
                 else:
-                    import sys
-
-                    # Check we are in a virtual environment
-                    # TODO: Improve
-                    exe_python = sys.executable
-
                     try:
                         logger.info(f"Updating Handheld Daemon.")
                         if "venv" in exe_python:
@@ -578,8 +584,6 @@ def main():
 
     if updated:
         # Use error code to restart service
-        import sys
-
         sys.exit(-1)
 
 
