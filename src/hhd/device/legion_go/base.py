@@ -188,7 +188,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
     d_accel = AccelImu()
     # Legion go has a bit lower sensitivity than it should
     GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-        "anglvel_x": ("gyro_z", "anglvel", conf["gyro_scaling"].to(int), None),
+        "anglvel_x": ("gyro_z", "anglvel", -conf["gyro_scaling"].to(int), None),
         "anglvel_y": ("gyro_x", "anglvel", conf["gyro_scaling"].to(int), None),
         "anglvel_z": ("gyro_y", "anglvel", conf["gyro_scaling"].to(int), None),
         "timestamp": ("gyro_ts", None, 1, None),
