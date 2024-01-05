@@ -13,7 +13,7 @@ from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .hid import rgb_callback, switch_mode
+from .hid import rgb_callback, switch_mode, rgb_initialize
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -60,15 +60,18 @@ class AllyHidraw(GenericGamepadHidraw):
             switch_mode(self.dev, "default")
         self.mouse_mode = False
 
-        # Init the leds
-        try:
-            subprocess.run(
-                ["asusctl", "led-mode", "static", "-c", "000000"], capture_output=True
-            )
-        except Exception as e:
-            logger.warning(
-                f"Could not initialize the LEDS with `asusctl`. LEDS might not work. Install asusctl to fix."
-            )
+        # # Init the leds
+        # try:
+        #     subprocess.run(
+        #         ["asusctl", "led-mode", "static", "-c", "000000"], capture_output=True
+        #     )
+        # except Exception as e:
+        #     logger.warning(
+        #         f"Could not initialize the LEDS with `asusctl`. LEDS might not work. Install asusctl to fix."
+        #     )
+
+        # Initializing leds
+        rgb_initialize()
 
         return a
 

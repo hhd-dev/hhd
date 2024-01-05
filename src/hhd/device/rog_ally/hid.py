@@ -9,6 +9,169 @@ RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
 
 
+# usb_buf[0x00]   = ;
+# usb_buf[0x01]   = ;
+# usb_buf[0x02]   = ;
+# usb_buf[0x03]   = ;
+# usb_buf[0x04]   = ;
+# usb_buf[0x05]   = ;
+# usb_buf[0x06]   = ;
+# usb_buf[0x07]   = ;
+# usb_buf[0x08]   = ;
+# usb_buf[0x09]   = ;
+# usb_buf[0x0A]   = ;
+# usb_buf[0x0B]   = ;
+# usb_buf[0x0C]   = ;
+# usb_buf[0x0D]   = ;
+# usb_buf[0x0E]   = ;
+
+
+def rgb_init():
+    return [  # Brightness Command
+        bytes(
+            [
+                0x5D,
+                0x41,
+                0x53,
+                0x55,
+                0x53,
+                0x20,
+                0x54,
+                0x65,
+                0x63,
+                0x68,
+                0x2E,
+                0x49,
+                0x6E,
+                0x63,
+                0x2E,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+            ]
+        ),
+    ]
+
+
+def rgb_save():
+    return [  # Brightness Command
+        bytes(
+            [
+                0x5A,
+                0xB4,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+            ]
+        ),
+    ]
+
+
 def rgb_brightness():
     return [  # Brightness Command
         bytes(
@@ -185,10 +348,14 @@ def rgb_command(side: Side, mode: RgbMode, red: int, green: int, blue: int):
     ]
 
 
+def rgb_initialize():
+    return [*rgb_init(), *rgb_brightness(), *rgb_save()]
+
+
 def rgb_set_both(mode: RgbMode, red: int, green: int, blue: int):
     return [
-        *rgb_brightness(),
-        *rgb_command("left", mode, red, green, blue),
+        # *rgb_brightness(),
+        # *rgb_command("left", mode, red, green, blue),
         *rgb_command("right", mode, red, green, blue),
     ]
 
