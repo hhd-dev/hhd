@@ -23,12 +23,10 @@ logger = logging.getLogger(__name__)
 class ButtonSetting(TypedDict):
     """Just a button, emits an event. Used for resets, etc."""
 
-    type: Literal["event"]
+    type: Literal["action"]
     tags: Sequence[str]
     title: str
     hint: str | None
-
-    default: bool | None
 
 
 class BooleanSetting(TypedDict):
@@ -109,6 +107,18 @@ class ColorSetting(TypedDict):
     default: Color | None
 
 
+class DisplaySetting(TypedDict):
+    """Shows a text value in the UI."""
+
+    type: Literal["display"]
+    tags: Sequence[str]
+    title: str
+    hint: str | None
+
+    config: Any | None
+    default: Any | None
+
+
 class CustomSetting(TypedDict):
     """Custom plugin setting.
 
@@ -140,6 +150,7 @@ Setting = (
     | IntegerSetting
     | ColorSetting
     | CustomSetting
+    | DisplaySetting
 )
 
 #
@@ -256,7 +267,7 @@ def fill_in_defaults(s: Setting | Container | Mode):
     s["tags"] = s.get("tags", [])
     s["title"] = s.get("title", "")
     s["hint"] = s.get("hint", None)
-    if s["type"] != "container":
+    if s["type"] != "container" and s["type"] != "action":
         s["default"] = s.get("default", None)
 
     match s["type"]:
@@ -362,6 +373,8 @@ def generate_desc(s: Setting | Container | Mode):
             desc += f"- boolean: [False, True]\n"
         case "multiple" | "discrete":
             desc += f"- options: [{', '.join(map(str, s['options']))}]\n"
+        case "action":
+            desc += f"- action: Set to True to run.\n"
 
     if (d := s.get("default", None)) is not None:
         desc += f"- default: {d}\n"
@@ -673,10 +686,13 @@ def validate_config(
 
     for k, d in options.items():
         v = conf.get(k, None)
-        default = d["default"]
+        if d["type"] == "action":
+            default = False
+        else:
+            default = d["default"]
         if v is None:
             if use_defaults and default is not None:
-                conf[k] = v
+                conf[k] = default
             continue
 
         match d["type"]:
@@ -686,7 +702,7 @@ def validate_config(
                         conf[k] = default
                     else:
                         del conf[k]
-            case "bool" | "event":
+            case "bool" | "action":
                 if v not in (False, True):
                     conf[k] = bool(v)
             case "multiple" | "discrete":

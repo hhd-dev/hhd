@@ -9,6 +9,7 @@ from threading import Event as TEvent
 from threading import Lock, RLock
 from time import sleep
 from typing import Sequence, cast
+import subprocess
 
 import pkg_resources
 
@@ -131,6 +132,7 @@ def main():
     # HTTP data
     https = None
     prev_http_cfg = None
+    updated = True
 
     try:
         # Create nested hhd dir
@@ -270,6 +272,13 @@ def main():
                         conf = get_default_state(settings)
                 else:
                     conf = new_conf
+
+                try:
+                    from importlib.metadata import version
+
+                    conf["hhd.version.version"] = version("hhd")
+                except Exception:
+                    pass
 
                 # Profiles
                 profiles = {}
@@ -471,6 +480,70 @@ def main():
             if https:
                 https.update(settings, conf, profiles, emit)
 
+            upd_stable = conf.get("hhd.version.update_stable", False)
+            upd_beta = conf.get("hhd.version.update_beta", False)
+            upd_decky = conf.get("hhd.version.update_decky", False)
+
+            if upd_stable or upd_beta or upd_decky:
+                set_log_plugin("main")
+                conf["hhd.version.update_stable"] = False
+                conf["hhd.version.update_beta"] = False
+                conf.get("hhd.version.update_decky", False)
+
+                switch_priviledge(ctx, False)
+                if upd_decky:
+                    logger.info("Updating Decky Plugin")
+                    try:
+                        subprocess.check_call(
+                            "curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh",
+                            shell=True,
+                        )
+                    except Exception as e:
+                        logger.error(f"Error while updating decky plugin:\n{e}")
+                else:
+                    import sys
+
+                    # Check we are in a virtual environment
+                    # TODO: Improve
+                    exe_python = sys.executable
+
+                    try:
+                        logger.info(f"Updating Handheld Daemon.")
+                        if "venv" in exe_python:
+                            subprocess.check_call(
+                                [
+                                    exe_python,
+                                    "-m",
+                                    "pip",
+                                    "uninstall",
+                                    "-y",
+                                    "hhd",
+                                ]
+                            )
+                            subprocess.check_call(
+                                [
+                                    exe_python,
+                                    "-m",
+                                    "pip",
+                                    "install",
+                                    "--upgrade",
+                                    "git+https://github.com/hhd-dev/hhd"
+                                    if upd_beta
+                                    else "hhd",
+                                ]
+                            )
+                        else:
+                            logger.error(
+                                f"Could not update, python executable is not within a venv (checked for 'venv' in path name):\n{exe_python}"
+                            )
+                    except Exception as e:
+                        logger.error(f"Error while updating:\n{e}")
+                switch_priviledge(ctx, True)
+
+                if upd_stable or upd_beta:
+                    updated = True
+                    should_exit.set()
+
             # Wait for events
             with lock:
                 if (
@@ -482,7 +555,7 @@ def main():
                     cond.wait(timeout=POLL_DELAY)
 
         set_log_plugin("main")
-        logger.info(f"HHD Daemon received interrupt, stopping plugins and exiting.")
+        logger.info(f"Received interrupt or updated. Stopping plugins and exiting.")
     finally:
         for fd in cfg_fds:
             try:
@@ -499,6 +572,12 @@ def main():
                 logger.info(f"Stopping plugin `{p.name}`.")
                 set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
                 p.close()
+
+    if updated:
+        # Use error code to restart service
+        import sys
+
+        sys.exit(-1)
 
 
 if __name__ == "__main__":

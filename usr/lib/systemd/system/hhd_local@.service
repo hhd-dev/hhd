@@ -5,7 +5,7 @@ Description=Handheld Daemon Service
 ExecStart=/home/%i/.local/share/hhd/venv/bin/hhd --user %i
 Nice=-12
 Restart=on-failure
-RestartSec=10
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
