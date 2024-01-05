@@ -78,12 +78,12 @@ class DisplayPlugin(HHDPlugin):
             )
 
             # Set brightness
-            if requested and requested != self.prev:
+            if requested is not None and requested != self.prev:
                 changed = False
                 # If the change is too low the display might not make the
                 # change, so while loop and increase requested values
+                logger.info(f"Setting brightness to {requested}")
                 while not changed and (requested >= 0 and requested <= 100):
-                    logger.info(f"Setting brightness to {requested}")
                     write_sysfs(
                         self.display,
                         "brightness",
@@ -103,10 +103,14 @@ class DisplayPlugin(HHDPlugin):
 
                     # In case the brightness did not change
                     # increase request
+                    requested_old = requested
                     if curr > requested:
                         requested -= 1
                     else:
                         requested += 1
+                    
+                    if not changed:
+                        logger.warning(f"Could not set brightness to {requested_old}. Trying {requested}.")
 
             conf["general.display.brightness"] = curr
             self.prev = curr
