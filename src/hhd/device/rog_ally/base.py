@@ -58,21 +58,10 @@ class AllyHidraw(GenericGamepadHidraw):
         if self.dev:
             logger.info(f"Switching ROG Ally to gamepad mode.")
             switch_mode(self.dev, "default")
+            logger.info(f"Initializing leds.")
+            rgb_initialize(self.dev)
+
         self.mouse_mode = False
-
-        # # Init the leds
-        # try:
-        #     subprocess.run(
-        #         ["asusctl", "led-mode", "static", "-c", "000000"], capture_output=True
-        #     )
-        # except Exception as e:
-        #     logger.warning(
-        #         f"Could not initialize the LEDS with `asusctl`. LEDS might not work. Install asusctl to fix."
-        #     )
-
-        # Initializing leds
-        rgb_initialize()
-
         return a
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
