@@ -19,7 +19,6 @@ from .const import (
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
 RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
-logger = logging.getLogger(__name__)
 
 
 def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
@@ -131,17 +130,18 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                         mode = "spiral"
                     case _:
                         assert False, f"Mode '{ev['mode']}' not supported."
-                reps = rgb_set(
-                    ev["code"],
-                    mode,
-                    ev["red"],
-                    ev["green"],
-                    ev["blue"],
-                )
+                reps = [
+                    *rgb_set(
+                        ev["code"],
+                        mode,
+                        ev["red"],
+                        ev["green"],
+                        ev["blue"],
+                    ),
+                    RGB_SET, # set to avoid issues
+                ]
 
-            logger.warning(f"Sending led commands")
             for r in reps:
-                logger.warning(r.hex())
                 dev.write(r)
 
 
