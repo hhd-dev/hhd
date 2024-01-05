@@ -17,6 +17,12 @@ version:
       title: Update (Stable)
       hint: "Updates to the latest version from PyPi (local install only)."
 
+    decky_version:
+      type: display
+      tags: [hhd-version-display-decky, text]
+      title: Decky Version
+      hint: "Displays the Handheld Daemon Decky plugin version."
+
     update_decky:
       type: action
       tags: [hhd-update-decky]
@@ -26,7 +32,7 @@ version:
     update_beta:
       type: action
       tags: [hhd-update-beta]
-      title: Update (Beta)
+      title: Update (Beta !!!)
       hint: "Updates to the master branch from git (local install only)."
 
 http:
