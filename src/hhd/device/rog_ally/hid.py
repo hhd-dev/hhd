@@ -66,7 +66,7 @@ def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
             red,
             green,
             blue,
-            0x00,  # speed
+            0xEB,  # speed
             0x00,  # direction
             0x00,  # breathing
             red,
@@ -88,16 +88,18 @@ def rgb_set(
             return [
                 rgb_command("left_left", mode, red, green, blue),
                 rgb_command("left_right", mode, red, green, blue),
+                RGB_APPLY,
                 RGB_SET,
             ]
         case "right":
             return [
                 rgb_command("right_right", mode, red, green, blue),
                 rgb_command("right_left", mode, red, green, blue),
+                RGB_APPLY,
                 RGB_SET,
             ]
         case _:
-            return [rgb_command("all", mode, red, green, blue), RGB_SET]
+            return [rgb_command("all", mode, red, green, blue), RGB_APPLY, RGB_SET]
 
 
 def rgb_initialize(
