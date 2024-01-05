@@ -145,7 +145,7 @@ class RgbCallback:
             return
 
         curr = time.perf_counter()
-        if not self.last_update or self.last_update + INIT_EVERY_S > curr:
+        if not self.last_update or self.last_update + INIT_EVERY_S < curr:
             self.last_update = curr
             cmds = [
                 RGB_INIT_1,
