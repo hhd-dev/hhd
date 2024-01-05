@@ -467,7 +467,8 @@ COMMANDS_MOUSE = [MODE_MOUSE, FLUSH_BUFFER]
 RGB_APPLY = buf([0x5A, 0xB4])
 RGB_SET = buf([0x5A, 0xB5])
 
-RGB_INIT = buf(
+RGB_INIT_1 = buf([0x5D, 0xB9])
+RGB_INIT_2 = buf(
     [
         0x5D,
         0x41,

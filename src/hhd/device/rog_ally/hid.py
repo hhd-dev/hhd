@@ -8,7 +8,8 @@ from .const import (
     COMMANDS_MOUSE,
     RGB_APPLY,
     RGB_SET,
-    RGB_INIT,
+    RGB_INIT_1,
+    RGB_INIT_2,
     buf,
     RGB_BRIGHTNESS_MAX,
 )
@@ -100,9 +101,10 @@ def rgb_initialize(
     dev: Device,
 ):
     for cmd in [
-        RGB_INIT,  # what does this do ?
+        RGB_INIT_1,
+        RGB_INIT_2,
         RGB_BRIGHTNESS_MAX,
-        *rgb_set("main", "solid", 0, 0, 0),
+        # *rgb_set("main", "solid", 0, 0, 0),
     ]:
         dev.write(cmd)
 
