@@ -65,9 +65,9 @@ def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
             0x00,  # speed
             0x00,  # direction
             0x00,  # breathing
-            red,
-            green,
-            blue,
+            # red,
+            # green,
+            # blue,
         ]
     )
 
