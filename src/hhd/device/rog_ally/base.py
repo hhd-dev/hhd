@@ -1,15 +1,11 @@
 import logging
 import select
+import subprocess
 import time
 from threading import Event as TEvent
 from typing import Literal, Sequence
 
-from hhd.controller import (
-    Axis,
-    Event,
-    Multiplexer,
-    can_read,
-)
+from hhd.controller import Axis, Event, Multiplexer, can_read
 from hhd.controller.base import Event
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
@@ -63,6 +59,7 @@ class AllyHidraw(GenericGamepadHidraw):
             logger.info(f"Switching ROG Ally to gamepad mode.")
             switch_mode(self.dev, "default")
         self.mouse_mode = False
+
         return a
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
@@ -147,6 +144,16 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
 
 def controller_loop(conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
+
+    # Init the leds
+    try:
+        subprocess.run(
+            ["asusctl", "led-mode", "static", "-c", "000000"], capture_output=True
+        )
+    except Exception as e:
+        logger.warning(
+            f"Could not initialize the LEDS with `asusctl`. LEDS might not work. Install asusctl to fix."
+        )
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
