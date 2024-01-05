@@ -123,15 +123,15 @@ def process_events(events: Sequence[Event]):
                         mode = "spiral"
                     case _:
                         assert False, f"Mode '{ev['mode']}' not supported."
-                reps = [
-                    *rgb_set(
+                cmds.extend(
+                    rgb_set(
                         ev["code"],
                         mode,
                         ev["red"],
                         ev["green"],
                         ev["blue"],
-                    ),
-                ]
+                    )
+                )
     return cmds
 
 
