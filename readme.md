@@ -386,6 +386,15 @@ with incorrect mappings (right trigger becomes a stick, etc).
 If the app hooks directly into the hidraw of the controller, it works properly.
 If it uses the evdev device its incorrect.
 
+### Disable Dualsense touchpad
+The Dualsense touchpad may interfere with games or steam input. 
+You can disable it with the following udev rule.
+Place it under `/etc/udev/rules.d/99-hhd-playstation-touchpad.rules`
+```bash
+# Disables all playstation touchpads from use as touchpads.
+ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="*Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+```
+
 ## Contributing
 You should install from source if you aim to contribute or want to pull from master.
 ```bash

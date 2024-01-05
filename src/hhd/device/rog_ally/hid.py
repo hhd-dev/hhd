@@ -9,23 +9,6 @@ RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
 
 
-# usb_buf[0x00]   = ;
-# usb_buf[0x01]   = ;
-# usb_buf[0x02]   = ;
-# usb_buf[0x03]   = ;
-# usb_buf[0x04]   = ;
-# usb_buf[0x05]   = ;
-# usb_buf[0x06]   = ;
-# usb_buf[0x07]   = ;
-# usb_buf[0x08]   = ;
-# usb_buf[0x09]   = ;
-# usb_buf[0x0A]   = ;
-# usb_buf[0x0B]   = ;
-# usb_buf[0x0C]   = ;
-# usb_buf[0x0D]   = ;
-# usb_buf[0x0E]   = ;
-
-
 def rgb_init():
     return [  # Brightness Command
         bytes(
