@@ -22,6 +22,7 @@ GamepadMode = Literal["default", "mouse", "macro"]
 
 logger = logging.getLogger(__name__)
 
+
 def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
     match mode:
         case "solid":
@@ -107,9 +108,9 @@ def rgb_initialize(
         RGB_INIT_1,
         RGB_INIT_2,
         RGB_BRIGHTNESS_MAX,
-        *rgb_set("main", "solid", 0, 0, 0),
         *rgb_set("left", "solid", 0, 0, 0),
         *rgb_set("right", "solid", 0, 0, 0),
+        *rgb_set("main", "solid", 0, 0, 0),
         RGB_APPLY,
         RGB_SET,
     ]:
@@ -141,7 +142,8 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                         ev["green"],
                         ev["blue"],
                     ),
-                    RGB_SET,  # set to avoid issues
+                    RGB_APPLY,
+                    RGB_SET,
                 ]
 
             logger.warning(f"Setting leds")
