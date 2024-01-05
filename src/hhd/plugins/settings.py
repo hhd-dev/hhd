@@ -176,6 +176,7 @@ STATE_HEADER = (
     + "#\n"
     + "# This file contains plugin software-only configuration that will be retained\n"
     + "# across reboots. You may edit this file in lueu of using a frontend.\n"
+    + "# This header is on the bottom to make editing easier with e.g., nano.\n"
     + "#\n"
     + "# Parameters that are stored in hardware (TDP, RGB colors, etc) and\n"
     + "# risky parameters that might cause instability and should be reset\n"
@@ -199,6 +200,7 @@ PROFILE_HEADER = (
     + "#\n"
     + "# This file contains the configuration options that will be set when\n"
     + "# applying the profile which shares this file name.\n"
+    + "# This header is on the bottom to make editing easier with e.g., nano.\n"
     + "#\n"
     + "# Settings are applied once, when applying the profile, and only the ones\n"
     + "# that are stated change. Therefore, they may drift as the system state changes\n"
@@ -412,7 +414,7 @@ def dump_comment(set: HHDSettings, header: str = STATE_HEADER):
         next_ofs = max(min(next_ofs, ofs), 0)
         out += f"\n# {'│' * next_ofs}{'└' * (ofs - next_ofs)} {lines[-1]}"
         out += f"\n# {'│' * next_ofs}"
-    out += "\n\n"
+    # out += "\n\n"
     return out
 
 
@@ -511,10 +513,11 @@ def save_state_yaml(fn: str, set: HHDSettings, conf: Config):
 
     conf["version"] = shash
     with open(fn, "w") as f:
-        f.write(dump_comment(set, STATE_HEADER))
         yaml.safe_dump(
             dump_settings(set, conf, "default"), f, width=85, sort_keys=False
         )
+        f.write("\n")
+        f.write(dump_comment(set, STATE_HEADER))
 
     return True
 
@@ -564,8 +567,9 @@ def save_profile_yaml(fn: str, set: HHDSettings, conf: Config | None = None):
 
     conf["version"] = shash
     with open(fn, "w") as f:
-        f.write(dump_comment(set, PROFILE_HEADER))
         yaml.safe_dump(dump_settings(set, conf, "unset"), f, width=85, sort_keys=False)
+        f.write("\n")
+        f.write(dump_comment(set, PROFILE_HEADER))
     return True
 
 
