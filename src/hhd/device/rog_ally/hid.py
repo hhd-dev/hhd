@@ -126,13 +126,16 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                         mode = "spiral"
                     case _:
                         assert False, f"Mode '{ev['mode']}' not supported."
-                reps = rgb_set(
-                    ev["code"],
-                    mode,
-                    ev["red"],
-                    ev["green"],
-                    ev["blue"],
-                )
+                reps = [
+                    *rgb_set(
+                        ev["code"],
+                        mode,
+                        ev["red"],
+                        ev["green"],
+                        ev["blue"],
+                    ),
+                    RGB_APPLY,
+                ]
 
             for r in reps:
                 dev.write(r)
