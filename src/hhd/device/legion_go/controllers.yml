@@ -79,7 +79,7 @@ children:
       #
       emulation:
         type: container
-        title: Enabled
+        title: Virtual
         hint: >-
           Adds an emulated touchpad. This touchpad is meant to be for desktop
           use and has left, right click support by default, within gamescope and
