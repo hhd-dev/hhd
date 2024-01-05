@@ -52,24 +52,22 @@ def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
         case _:
             c_zone = 0x00
 
-    return (
-        buf(
-            [
-                0x5A,
-                0xB3,
-                c_zone,  # zone
-                c_mode,  # mode
-                red,
-                green,
-                blue,
-                0x00,  # speed
-                0x00,  # direction
-                0x00,  # breathing
-                red,
-                green,
-                blue,
-            ]
-        ),
+    return buf(
+        [
+            0x5A,
+            0xB3,
+            c_zone,  # zone
+            c_mode,  # mode
+            red,
+            green,
+            blue,
+            0x00,  # speed
+            0x00,  # direction
+            0x00,  # breathing
+            red,
+            green,
+            blue,
+        ]
     )
 
 
@@ -102,7 +100,7 @@ def rgb_initialize(
     dev: Device,
 ):
     for cmd in [
-        RGB_INIT, # what does this do ?
+        RGB_INIT,  # what does this do ?
         RGB_BRIGHTNESS_MAX,
     ]:
         dev.write(cmd)
