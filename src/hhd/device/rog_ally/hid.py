@@ -1,22 +1,25 @@
+import logging
 from typing import Literal, Sequence
 
 from hhd.controller import Event
 from hhd.controller.lib.hid import Device
+
 from .const import (
-    COMMANDS_INIT,
     COMMANDS_GAME,
+    COMMANDS_INIT,
     COMMANDS_MOUSE,
     RGB_APPLY,
-    RGB_SET,
+    RGB_BRIGHTNESS_MAX,
     RGB_INIT_1,
     RGB_INIT_2,
+    RGB_SET,
     buf,
-    RGB_BRIGHTNESS_MAX,
 )
 
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
 RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
+logger = logging.getLogger(__name__)
 
 
 def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
@@ -135,6 +138,8 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                 )
 
             for r in reps:
+                logger.warning(f"Sending led commands")
+                logger.warning(r.hex())
                 dev.write(r)
 
 
