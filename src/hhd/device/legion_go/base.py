@@ -43,9 +43,9 @@ LEN_PIDS = {
 
 # Legion go has a bit lower sensitivity than it should
 GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "anglvel_x": ("gyro_z", "anglvel", 10, None),
-    "anglvel_y": ("gyro_x", "anglvel", 10, None),
-    "anglvel_z": ("gyro_y", "anglvel", 10, None),
+    "anglvel_x": ("gyro_z", "anglvel", 22, None),
+    "anglvel_y": ("gyro_x", "anglvel", 22, None),
+    "anglvel_z": ("gyro_y", "anglvel", 22, None),
     "timestamp": ("gyro_ts", None, 1, None),
 }
 
