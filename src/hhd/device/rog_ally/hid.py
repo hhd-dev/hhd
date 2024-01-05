@@ -20,6 +20,7 @@ Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
 RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
 
+logger = logging.getLogger(__name__)
 
 def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
     match mode:
@@ -65,7 +66,7 @@ def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
             red,
             green,
             blue,
-            0xEB,  # speed
+            0x00,  # speed
             0x00,  # direction
             0x00,  # breathing
             red,
@@ -143,7 +144,9 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                     RGB_SET,  # set to avoid issues
                 ]
 
+            logger.warning(f"Setting leds")
             for r in reps:
+                logger.warning(r.hex())
                 dev.write(r)
 
 
