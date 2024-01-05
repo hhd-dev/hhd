@@ -102,21 +102,37 @@ def rgb_set(
             ]
 
 
-def rgb_initialize(
-    dev: Device,
-):
-    for cmd in [
-        RGB_INIT_1,
-        RGB_INIT_2,
-        RGB_BRIGHTNESS_MAX,
-        *rgb_set("main", "solid", 0, 0, 0),
-        RGB_APPLY,
-        RGB_SET,
-    ]:
-        dev.write(cmd)
-
-
 INIT_EVERY_S = 10
+
+
+def process_events(events: Sequence[Event]):
+    cmds = []
+    for ev in events:
+        if ev["type"] == "led":
+            if ev["mode"] == "disable":
+                cmds.extend(rgb_set(ev["code"], "solid", 0, 0, 0))
+            else:
+                match ev["mode"]:
+                    case "blinking":
+                        mode = "pulse"
+                    case "rainbow":
+                        mode = "dynamic"
+                    case "solid":
+                        mode = "solid"
+                    case "spiral":
+                        mode = "spiral"
+                    case _:
+                        assert False, f"Mode '{ev['mode']}' not supported."
+                reps = [
+                    *rgb_set(
+                        ev["code"],
+                        mode,
+                        ev["red"],
+                        ev["green"],
+                        ev["blue"],
+                    ),
+                ]
+    return cmds
 
 
 class RgbCallback:
@@ -124,40 +140,25 @@ class RgbCallback:
         self.last_update = None
 
     def __call__(self, dev: Device, events: Sequence[Event]):
+        cmds = process_events(events)
+        if not cmds:
+            return
+
         curr = time.perf_counter()
         if not self.last_update or self.last_update + INIT_EVERY_S > curr:
-            rgb_initialize(dev)
+            self.last_update = curr
+            cmds = [
+                RGB_INIT_1,
+                RGB_INIT_2,
+                RGB_BRIGHTNESS_MAX,
+                *cmds,
+                RGB_APPLY,
+                RGB_SET,
+            ]
 
-        for ev in events:
-            if ev["type"] == "led":
-                if ev["mode"] == "disable":
-                    reps = rgb_set(ev["code"], "solid", 0, 0, 0)
-                else:
-                    match ev["mode"]:
-                        case "blinking":
-                            mode = "pulse"
-                        case "rainbow":
-                            mode = "dynamic"
-                        case "solid":
-                            mode = "solid"
-                        case "spiral":
-                            mode = "spiral"
-                        case _:
-                            assert False, f"Mode '{ev['mode']}' not supported."
-                    reps = [
-                        *rgb_set(
-                            ev["code"],
-                            mode,
-                            ev["red"],
-                            ev["green"],
-                            ev["blue"],
-                        ),
-                    ]
-
-                logger.warning(f"Setting leds")
-                for r in reps:
-                    logger.warning(r.hex())
-                    dev.write(r)
+        for r in cmds:
+            logger.warning(r.hex())
+            dev.write(r)
 
 
 def initialize(dev: Device):

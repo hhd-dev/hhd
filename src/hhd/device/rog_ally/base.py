@@ -14,7 +14,7 @@ from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .hid import RgbCallback, switch_mode, rgb_initialize, initialize
+from .hid import RgbCallback, switch_mode, initialize
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -53,10 +53,7 @@ VIBRATION_OFF: Event = {
 
 
 class AllyHidraw(GenericGamepadHidraw):
-    def __init__(
-        self, *args, init_leds: bool = False, init_controller: bool = False, **kwargs
-    ) -> None:
-        self.init_leds = init_leds
+    def __init__(self, *args, init_controller: bool = False, **kwargs) -> None:
         self.init_controller = init_controller
         super().__init__(*args, **kwargs)
 
@@ -183,7 +180,6 @@ def controller_loop(conf: Config, should_exit: TEvent):
         usage=[0x0080],
         required=True,
         callback=RgbCallback(),
-        init_leds=d_params["uses_leds"],
         init_controller=conf["initialize"].to(bool),
     )
 
