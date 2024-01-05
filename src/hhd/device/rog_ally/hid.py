@@ -3,6 +3,7 @@ from typing import Literal, Sequence
 from hhd.controller import Event
 from hhd.controller.lib.hid import Device
 from .const import (
+    COMMANDS_INIT,
     COMMANDS_GAME,
     COMMANDS_MOUSE,
     RGB_APPLY,
@@ -77,7 +78,6 @@ def rgb_set(
     red: int,
     green: int,
     blue: int,
-    quick: bool = False,
 ):
     match side:
         case "left":
@@ -137,6 +137,11 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
 
             for r in reps:
                 dev.write(r)
+
+
+def initialize(dev: Device):
+    for cmd in COMMANDS_INIT:
+        dev.write(cmd)
 
 
 def switch_mode(dev: Device, mode: GamepadMode):

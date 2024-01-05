@@ -435,9 +435,6 @@ COMMIT_RESET = [
 ]
 
 COMMANDS_INIT = [
-    # Switch to game mode
-    MODE_GAME,
-    FLUSH_BUFFER,
     # Reset to defaults
     REMAP_DPAD_LR,
     FLUSH_BUFFER,

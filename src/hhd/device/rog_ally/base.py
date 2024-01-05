@@ -13,7 +13,7 @@ from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .hid import rgb_callback, switch_mode, rgb_initialize
+from .hid import rgb_callback, switch_mode, rgb_initialize, initialize
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -56,9 +56,9 @@ class AllyHidraw(GenericGamepadHidraw):
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
         if self.dev:
-            logger.info(f"Switching ROG Ally to gamepad mode.")
-            switch_mode(self.dev, "default")
-            logger.info(f"Initializing leds.")
+            logger.info(f"Initializing ROG Ally.")
+            initialize(self.dev)
+            logger.info(f"Initializing ROG Ally LEDs.")
             rgb_initialize(self.dev)
 
         self.mouse_mode = False
