@@ -17,17 +17,17 @@ version:
       title: Update (Stable)
       hint: "Updates to the latest version from PyPi (local install only)."
 
+    update_decky:
+      type: action
+      tags: [hhd-update-decky]
+      title: Update Decky
+      hint: "Updates the Decky plugin to the latest release."
+
     update_beta:
       type: action
       tags: [hhd-update-beta]
       title: Update (Beta)
       hint: "Updates to the master branch from git (local install only)."
-
-    update_decky:
-      type: action
-      tags: [hhd-update-beta]
-      title: Update Decky
-      hint: "Updates the Decky plugin to the latest release."
 
 http:
   type: container

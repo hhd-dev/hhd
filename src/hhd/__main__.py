@@ -132,7 +132,7 @@ def main():
     # HTTP data
     https = None
     prev_http_cfg = None
-    updated = True
+    updated = False
 
     try:
         # Create nested hhd dir
@@ -488,14 +488,15 @@ def main():
                 set_log_plugin("main")
                 conf["hhd.version.update_stable"] = False
                 conf["hhd.version.update_beta"] = False
-                conf.get("hhd.version.update_decky", False)
+                conf["hhd.version.update_decky"] = False
 
                 switch_priviledge(ctx, False)
                 if upd_decky:
                     logger.info("Updating Decky Plugin")
                     try:
+                        home = expanduser("~/", ctx)
                         subprocess.check_call(
-                            "curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh",
+                            f'curl -L https://github.com/hhd-dev/hhd-decky/raw/main/update.sh | HOME="{home}" sh',
                             shell=True,
                         )
                     except Exception as e:
@@ -527,11 +528,14 @@ def main():
                                     "pip",
                                     "install",
                                     "--upgrade",
+                                    "--cache-dir",
+                                    "/tmp/__hhd_update_cache",
                                     "git+https://github.com/hhd-dev/hhd"
                                     if upd_beta
                                     else "hhd",
                                 ]
                             )
+                            updated = True
                         else:
                             logger.error(
                                 f"Could not update, python executable is not within a venv (checked for 'venv' in path name):\n{exe_python}"
@@ -540,8 +544,7 @@ def main():
                         logger.error(f"Error while updating:\n{e}")
                 switch_priviledge(ctx, True)
 
-                if upd_stable or upd_beta:
-                    updated = True
+                if updated:
                     should_exit.set()
 
             # Wait for events
