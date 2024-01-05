@@ -5,10 +5,22 @@ version:
   hint: "Handheld Daemon version manager (local install only)."
 
   children:
+    decky_version:
+      type: display
+      tags: [hhd-version-display-decky, text]
+      title: Decky Plugin Version
+      hint: "Displays the Handheld Daemon Decky plugin version."
+
+    update_decky:
+      type: action
+      tags: [hhd-update-decky]
+      title: "Update Decky\nRestarts session"
+      hint: "Updates the Decky plugin to the latest release."
+
     version:
       type: display
       tags: [hhd-version-display, text]
-      title: Version
+      title: Handheld Daemon Version
       hint: "Displays the Handheld Daemon version."
 
     update_stable:
@@ -17,28 +29,16 @@ version:
       title: Update (Stable)
       hint: "Updates to the latest version from PyPi (local install only)."
 
-    decky_version:
-      type: display
-      tags: [hhd-version-display-decky, text]
-      title: Decky Version
-      hint: "Displays the Handheld Daemon Decky plugin version."
-
-    update_decky:
-      type: action
-      tags: [hhd-update-decky]
-      title: Update Decky
-      hint: "Updates the Decky plugin to the latest release."
-
     update_beta:
       type: action
       tags: [hhd-update-beta]
-      title: Update (Beta !!!)
+      title: Update (Unstable)
       hint: "Updates to the master branch from git (local install only)."
 
 http:
   type: container
   tags: [hhd-http]
-  title: REST API Configuration (BETA)
+  title: API Configuration
   hint: >-
     Settings for configuring the http endpoint of HHD.
 
@@ -68,7 +68,7 @@ http:
     token:
       type: bool
       title: Use Security token
-      tags: [advanced]
+      tags: []
       hint: >-
         Generates a security token in `~/.config/hhd/token` that is required for
         authentication.

@@ -265,7 +265,7 @@ def main():
                 hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
                 # TODO: Improve check
                 try:
-                    if not "venv" in exe_python or True:
+                    if "venv" not in exe_python:
                         del hhd_settings["hhd"]["version"]["children"]["update_stable"]
                         del hhd_settings["hhd"]["version"]["children"]["update_beta"]
                 except Exception as e:
