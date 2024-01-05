@@ -102,6 +102,9 @@ def rgb_initialize(
     for cmd in [
         RGB_INIT,  # what does this do ?
         RGB_BRIGHTNESS_MAX,
+        *rgb_set("main", "solid", 0, 0, 0),
+        RGB_APPLY,
+        RGB_SET,
     ]:
         dev.write(cmd)
 
@@ -123,17 +126,13 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                         mode = "spiral"
                     case _:
                         assert False, f"Mode '{ev['mode']}' not supported."
-                reps = [
-                    *rgb_set(
-                        ev["code"],
-                        mode,
-                        ev["red"],
-                        ev["green"],
-                        ev["blue"],
-                    ),
-                    RGB_APPLY,
-                    RGB_SET,
-                ]
+                reps = rgb_set(
+                    ev["code"],
+                    mode,
+                    ev["red"],
+                    ev["green"],
+                    ev["blue"],
+                )
 
             for r in reps:
                 dev.write(r)
