@@ -70,7 +70,7 @@ class AllyHidraw(GenericGamepadHidraw):
             logger.info(f"Switching Ally Controllers to gamepad mode.")
             switch_mode(self.dev, "default")
             if self.init_leds:
-                logger.info(f"Initializing ROG Ally LEDs.")
+                logger.info(f"Initializing Ally LEDs.")
                 rgb_initialize(self.dev)
 
         self.mouse_mode = False
