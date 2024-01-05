@@ -6,38 +6,39 @@ session management.
 This will be done through a plugin system and an HTTP(/d-bus?) daemon, which will
 expose the settings of the plugins in a UI agnostic way.
 
-The current version contains a fully functional DualSense Edge (PS5) emulator
-for the Legion Go (including touchpad, gyro, and LED support).
-
 It is the aim of this project to provide generic hid-based emulators for most
 mainstream controllers (xbox Elite, DS4, PS5, Joycons), so that users of devices
 can pick the best target for their device and its controls, which may change
 depending on the game.
 
-*Current Features (Legion Go)*:
+*Current Features (for both ROG Ally and Legion Go)*:
 - Fully functional DualSense Edge emulation
     - All buttons supported
     - Rumble feedback
     - Touchpad support (Steam Input as well)
     - LED remapping
-- Evdev device emulation
+- Virtual Input device emulation
   - No weird glyphs
-  - Partial gyro and back button support (only outside Steam)
-  - Touchpad has right click (unlike DualSense Edge)
+  - Gyro and back button support (outside Steam)
+- Touchpad Emulation
+  - Fixes left and right clicks within gamescope when using the Legion Go
+    touchpad.
 - Power Button plugin for Big Picture/Steam Deck Mode
     - Short press makes Steam backup saves and wink before suspend.
-    - Long press opens Steam power menu
-- Hiding the original Xbox controller
+    - Long press opens Steam power menu.
+- Hides the original Xbox controller
 - HTTP based Configuration
   - Allows configuring HHD over Electron/React apps.
   - Token-based authentication and limited to localhost.
   - Will allow swapping configuration per game.
+- Built-in updater (soon to become available from Decky).
 
 *Planned Features (in this order)*:
 - Steam Deck controller emulation
   - No weird glyphs
-- TDP Plugin (Legion Go)
-  - Will provide parity with Legion Space, hardware is already reverse engineered
+- TDP Plugin
+  - Will provide parity with Legion Space/Armory crate, hardware is already reverse 
+    engineered for the Legion Go
 - High-end Over/Downclocking Utility for Ryzen processors
   - By hooking into the manufacturer ACPI API of the Ryzen platform,
     it will expose all TDP related parameters manufacturers have access to
@@ -50,10 +51,10 @@ depending on the game.
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PyPi.
 
->  On boot you might see an xbox controller. There is a bug with hiding the controller
+> On boot you might see an xbox controller. There is a bug with hiding the controller
 > during the boot process.
-> Flicking the fps switch on off fixes it and the controller is hidden until the next
-> reboot.
+> Flicking the fps switch on off on the Go fixes it and the controller is hidden 
+> until the next reboot. For the ally, you can change a setting in decky.
 
 ### ChimeraOS
 
@@ -108,14 +109,16 @@ and add this line to your `configuration.nix`:
   services.handheldDaemon.enable = true;
 ```
 
-### PyPi Based installation (Nobara or immutable filesystem)
-If you have a read-only filesystem or are on a Fedora-based system, you may opt
-to install a local version of HHD.
+### Local Installation (from PyPi)
+You can also install HHD using a local package, which enables auto-updating.
+`curl` script coming soon!
 
 ```bash
 # (nobara) Install Python Headers since evdev has no wheels
 # and nobara does not ship them (but arch does)
 sudo dnf install python-devel
+# (Chimera, Arch) In case you dont have gcc.
+sudo pacman -S base-devel
 
 # Install Handheld Daemon to ~/.local/share/hhd
 mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
@@ -123,6 +126,9 @@ mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 python -m venv venv
 source venv/bin/activate
 pip install hhd
+# Substitute with the following to pull from here
+# (if you are asked by devs; the master branch is not guaranteed to always work)
+# pip install git+https://github.com/hhd-dev/hhd
 
 # Install udev rules and create a service file
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
