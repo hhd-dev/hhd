@@ -46,6 +46,14 @@ children:
       Useful with dualsense.
     default: False
 
+  initialize:
+    type: bool
+    title: Initialize on start
+    hint: >-
+      Initializes the Ally controller on start, resetting bindings etc.
+      Disable if you adjust them yourself (with Armory Crate, asusctl, etc).
+    default: True
+
   debug:
     type: bool
     title: Debug

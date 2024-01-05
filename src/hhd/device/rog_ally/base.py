@@ -1,15 +1,16 @@
 import logging
 import select
-import subprocess
 import time
 from threading import Event as TEvent
 from typing import Literal, Sequence
 
 from hhd.controller import Axis, Event, Multiplexer, can_read
 from hhd.controller.base import Event
+from hhd.controller.lib.common import AM, BM, CM
+from hhd.controller.lib.hid import MAX_REPORT_SIZE
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
+from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
@@ -52,14 +53,25 @@ VIBRATION_OFF: Event = {
 
 
 class AllyHidraw(GenericGamepadHidraw):
+    def __init__(
+        self, *args, init_leds: bool = False, init_controller: bool = False, **kwargs
+    ) -> None:
+        self.init_leds = init_leds
+        self.init_controller = init_controller
+        super().__init__(*args, **kwargs)
+
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
         if self.dev:
-            logger.info(f"Initializing ROG Ally.")
-            initialize(self.dev)
-            logger.info(f"Initializing ROG Ally LEDs.")
-            rgb_initialize(self.dev)
+            if self.init_controller:
+                logger.info(f"Initializing Ally Controllers.")
+                initialize(self.dev)
+            logger.info(f"Switching Ally Controllers to gamepad mode.")
+            switch_mode(self.dev, "default")
+            if self.init_leds:
+                logger.info(f"Initializing ROG Ally LEDs.")
+                rgb_initialize(self.dev)
 
         self.mouse_mode = False
         return a
@@ -174,6 +186,8 @@ def controller_loop(conf: Config, should_exit: TEvent):
         usage=[0x0080],
         required=True,
         callback=rgb_callback,
+        init_leds=d_params["uses_leds"],
+        init_controller=conf["initialize"].to(bool),
     )
 
     # Grab shortcut keyboards

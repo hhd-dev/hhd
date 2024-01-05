@@ -30,15 +30,17 @@ def get_outputs(
         correction = "stretch"
 
     uses_touch = False
+    uses_leds = False
     match controller:
         case "dualsense":
             uses_touch = touchpad == "controller"
+            uses_leds = conf["dualsense.led_support"].to(bool)
             d = Dualsense(
                 touchpad_method=correction,
                 edge_mode=conf["dualsense.edge_mode"].to(bool),
                 use_bluetooth=conf["dualsense.bluetooth_mode"].to(bool),
                 enable_touchpad=uses_touch,
-                enable_rgb=conf["dualsense.led_support"].to(bool),
+                enable_rgb=uses_leds,
                 fake_timestamps=not motion,
             )
             producers.append(d)
@@ -76,7 +78,11 @@ def get_outputs(
         consumers.append(d)
         uses_touch = True
 
-    return producers, consumers, {"uses_touch": uses_touch, "is_dual": False}
+    return (
+        producers,
+        consumers,
+        {"uses_touch": uses_touch, "uses_leds": uses_leds, "is_dual": False},
+    )
 
 
 def get_outputs_config():
