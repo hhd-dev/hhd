@@ -104,7 +104,7 @@ def rgb_initialize(
         RGB_INIT_1,
         RGB_INIT_2,
         RGB_BRIGHTNESS_MAX,
-        # *rgb_set("main", "solid", 0, 0, 0),
+        *rgb_set("main", "solid", 0, 0, 0),
     ]:
         dev.write(cmd)
 
