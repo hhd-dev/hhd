@@ -142,8 +142,6 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                         ev["green"],
                         ev["blue"],
                     ),
-                    RGB_APPLY,
-                    RGB_SET,
                 ]
 
             logger.warning(f"Setting leds")
