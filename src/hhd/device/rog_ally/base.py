@@ -60,6 +60,16 @@ class AllyHidraw(GenericGamepadHidraw):
             switch_mode(self.dev, "default")
         self.mouse_mode = False
 
+        # Init the leds
+        try:
+            subprocess.run(
+                ["asusctl", "led-mode", "static", "-c", "000000"], capture_output=True
+            )
+        except Exception as e:
+            logger.warning(
+                f"Could not initialize the LEDS with `asusctl`. LEDS might not work. Install asusctl to fix."
+            )
+
         return a
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
@@ -144,16 +154,6 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
 
 def controller_loop(conf: Config, should_exit: TEvent):
     debug = conf.get("debug", False)
-
-    # Init the leds
-    try:
-        subprocess.run(
-            ["asusctl", "led-mode", "static", "-c", "000000"], capture_output=True
-        )
-    except Exception as e:
-        logger.warning(
-            f"Could not initialize the LEDS with `asusctl`. LEDS might not work. Install asusctl to fix."
-        )
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
