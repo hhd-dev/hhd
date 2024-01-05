@@ -12,7 +12,6 @@ from hhd.plugins.conf import Config
 
 logger = logging.getLogger(__name__)
 BACKLIGHT_DIR = "/sys/class/backlight/"
-LEVELS = [0, 5, 10, 15, 20, 35, 50, 75, 90, 100]
 
 
 def write_sysfs(dir: str, fn: str, val: Any):
@@ -41,9 +40,7 @@ class DisplayPlugin(HHDPlugin):
 
     def settings(self) -> HHDSettings:
         if self.display:
-            s = {"general": {"display": load_relative_yaml("settings.yml")}}
-            s["general"]["display"]["children"]["brightness"]["options"] = LEVELS
-            return s
+            return {"general": {"display": load_relative_yaml("settings.yml")}}
         else:
             return {}
 
@@ -72,27 +69,47 @@ class DisplayPlugin(HHDPlugin):
             return
 
         try:
-            requested = conf["general.display.brightness"].to(float | None)
-            # Set brightness
-            if requested and requested != -1 and requested != self.prev:
-                logger.info(f"Setting brightness to {requested}")
-                write_sysfs(
-                    self.display,
-                    "brightness",
-                    int(self.max_brightness * requested / 100),
-                )
-                # Wait a bit
-                sleep(0.1)
+            requested = conf["general.display.brightness"].to(int | None)
 
-            # Get brightness
-            curr = (
+            curr = int(
                 int(read_sysfs(self.display, "brightness", None))
                 * 100
                 / self.max_brightness
             )
-            discr = min(LEVELS, key=lambda x: abs(x - curr))
-            conf["general.display.brightness"] = discr
-            self.prev = discr
+
+            # Set brightness
+            if requested and requested != self.prev:
+                changed = False
+                # If the change is too low the display might not make the
+                # change, so while loop and increase requested values
+                while not changed and (requested >= 0 and requested <= 100):
+                    logger.info(f"Setting brightness to {requested}")
+                    write_sysfs(
+                        self.display,
+                        "brightness",
+                        int(self.max_brightness * requested / 100),
+                    )
+                    # Wait a bit
+                    sleep(0.1)
+
+                    # Get brightness
+                    new_curr = int(
+                        int(read_sysfs(self.display, "brightness", None))
+                        * 100
+                        / self.max_brightness
+                    )
+                    changed = new_curr != curr
+                    curr = new_curr
+
+                    # In case the brightness did not change
+                    # increase request
+                    if curr > requested:
+                        requested -= 1
+                    else:
+                        requested += 1
+
+            conf["general.display.brightness"] = curr
+            self.prev = curr
         except Exception as e:
             logger.error(f"Error while processing display settings:\n{type(e)}: {e}")
 

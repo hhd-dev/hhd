@@ -7,11 +7,11 @@ hint: >-
 
 children:
   brightness:
-    type: discrete
+    type: int
     tags: [display_brightness]
     title: Brightness
     hint: >-
       Sets the brightness level of a display. Only one display is supported and
       it is the one that was read.
-    options: null
-    default: -1
+    min: 0
+    max: 100

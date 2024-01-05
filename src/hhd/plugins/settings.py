@@ -74,6 +74,8 @@ class NumericalSetting(TypedDict):
 
     min: float | None
     max: float | None
+    step: int | None
+
     default: float | None
 
 
@@ -87,6 +89,8 @@ class IntegerSetting(TypedDict):
 
     min: int | None
     max: int | None
+    step: int | None
+
     default: int | None
 
 
@@ -287,6 +291,7 @@ def fill_in_defaults(s: Setting | Container | Mode):
         case "integer" | "float":
             s["min"] = s.get("min", None)
             s["max"] = s.get("max", None)
+            s["step"] = s.get("step", None)
         case "custom":
             s["config"] = s.get("config", None)
     return s
