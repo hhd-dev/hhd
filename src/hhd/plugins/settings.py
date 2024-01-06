@@ -10,6 +10,7 @@ from typing import (
     cast,
     Protocol,
 )
+import time
 from copy import copy
 
 from .conf import Config
@@ -470,7 +471,7 @@ def dump_setting(
             m = conf.get([*prev, "mode"], None)
             # Skip writing default values
             default = set.get("default", None)
-            if default is None:
+            if default is None and unmark != "unset":
                 out["mode"] = None
             elif m is None:
                 out["mode"] = unmark
@@ -533,7 +534,7 @@ def save_state_yaml(fn: str, set: HHDSettings, conf: Config, shash=None):
     conf["version"] = shash
     with open(fn, "w") as f:
         yaml.safe_dump(
-            dump_settings(set, conf, "default"), f, width=85, sort_keys=False
+            dump_settings(set, conf, "default"), f, sort_keys=False
         )
         f.write("\n")
         f.write(dump_comment(set, STATE_HEADER))
