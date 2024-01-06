@@ -7,7 +7,6 @@ import time
 
 from .const import (
     COMMANDS_GAME,
-    COMMANDS_INIT,
     COMMANDS_MOUSE,
     RGB_APPLY,
     RGB_BRIGHTNESS_MAX,
