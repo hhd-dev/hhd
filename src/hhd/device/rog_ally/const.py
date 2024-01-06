@@ -423,7 +423,42 @@ REMAP_TRIGGERS = buf(
         0x0E,
     ]
 )
-
+REMAP_M1M2_F17F18_MOUSE = (
+    buf(
+        [
+            0x5A,
+            0xD1,
+            0x02,
+            0x08,
+            0x2C,
+            0x02,
+            0x00,
+            0x28,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x02,
+            0x00,
+            0x30,
+        ]
+    ),
+)
 
 FLUSH_BUFFER = buf([0x5A, 0xD1, 0x0A, 0x01])
 
@@ -769,40 +804,7 @@ COMMANDS_MOUSE = [
         ]
     ),
     FLUSH_BUFFER,
-    buf(
-        [
-            0x5A,
-            0xD1,
-            0x02,
-            0x08,
-            0x2C,
-            0x02,
-            0x00,
-            0x28,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x00,
-            0x02,
-            0x00,
-            0x30,
-        ]
-    ),
+    REMAP_M1M2_F17F18_MOUSE,
     FLUSH_BUFFER,
     buf(
         [
