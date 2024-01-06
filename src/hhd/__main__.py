@@ -44,7 +44,6 @@ CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
 
 ERROR_DELAY = 5
 POLL_DELAY = 2
-MODIFY_DELAY = 0.1
 
 
 class EmitHolder(Emitter):
@@ -485,7 +484,6 @@ def main():
 
             if not has_new and saved:
                 # We triggered the interrupt, clear
-                sleep(MODIFY_DELAY)
                 should_initialize.clear()
 
             # Notify that events were applied
