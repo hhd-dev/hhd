@@ -100,6 +100,7 @@ children:
           short:
             type: multiple
             title: Short Action
+            tags: [advanced]
             hint: >-
               Maps short touches (less than 0.2s) to a virtual touchpad button.
             options:
@@ -110,6 +111,7 @@ children:
           hold:
             type: multiple
             title: Hold Action
+            tags: [advanced]
             hint: >-
               Maps long touches (more than 2s) to a virtual touchpad button.
             options:
@@ -152,6 +154,7 @@ children:
           short:
             type: multiple
             title: Short Action
+            tags: [advanced]
             hint: >-
               Maps short touches (less than 0.2s) to a touchpad action.
               Dualsense uses a physical press for left and a double tap for

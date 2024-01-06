@@ -35,6 +35,7 @@ children:
   share_to_qam:
     type: bool
     title: Map Armory to QAM.
+    tags: [advanced]
     default: True
 
   paddles_to_touchpad:
@@ -49,6 +50,7 @@ children:
   initialize:
     type: bool
     title: Initialize on start
+    tags: [advanced]
     hint: >-
       Initializes the Ally controller on start, resetting bindings etc.
       Disable if you adjust them yourself (with Armory Crate, asusctl, etc).
