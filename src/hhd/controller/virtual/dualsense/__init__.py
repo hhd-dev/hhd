@@ -391,9 +391,11 @@ class Dualsense(Producer, Consumer):
                             )
 
         # Cache
+        # Caching can cause issues since receivers expect reports
+        # at least a couple of times per second
         # if new_rep == self.report and not self.fake_timestamps:
         #     return
-        # self.report = new_rep
+        self.report = new_rep
 
         if self.fake_timestamps:
             new_rep[self.ofs + 27 : self.ofs + 31] = int(
