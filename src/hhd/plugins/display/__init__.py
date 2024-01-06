@@ -89,8 +89,6 @@ class DisplayPlugin(HHDPlugin):
                         "brightness",
                         int(self.max_brightness * requested / 100),
                     )
-                    # Wait a bit
-                    sleep(0.1)
 
                     # Get brightness
                     new_curr = int(
