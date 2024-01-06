@@ -14,7 +14,7 @@ from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .hid import RgbCallback, switch_mode, initialize
+from .hid import RgbCallback, switch_mode
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -53,8 +53,7 @@ VIBRATION_OFF: Event = {
 
 
 class AllyHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, init_controller: bool = False, **kwargs) -> None:
-        self.init_controller = init_controller
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
     def open(self) -> Sequence[int]:
@@ -63,9 +62,6 @@ class AllyHidraw(GenericGamepadHidraw):
         if self.dev:
             logger.info(f"Switching Ally Controllers to gamepad mode.")
             switch_mode(self.dev, "default")
-            # if self.init_controller:
-            #     logger.info(f"Initializing Ally Controllers.")
-            #     initialize(self.dev)
 
         self.mouse_mode = False
         return a
@@ -183,7 +179,6 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         usage=[0x0080],
         required=True,
         callback=RgbCallback(),
-        init_controller=conf["initialize"].to(bool),
     )
 
     # Grab shortcut keyboards

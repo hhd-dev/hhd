@@ -164,11 +164,6 @@ class RgbCallback:
             dev.write(r)
 
 
-def initialize(dev: Device):
-    for cmd in COMMANDS_INIT:
-        dev.write(cmd)
-
-
 def switch_mode(dev: Device, mode: GamepadMode):
     match mode:
         case "default":

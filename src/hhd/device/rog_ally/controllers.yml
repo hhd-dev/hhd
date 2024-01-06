@@ -38,15 +38,6 @@ children:
     tags: [advanced]
     default: True
 
-  initialize:
-    type: bool
-    title: Initialize on start
-    tags: [advanced]
-    hint: >-
-      Initializes the Ally controller on start, resetting bindings etc.
-      Disable if you adjust them yourself (with Armory Crate, asusctl, etc).
-    default: True
-
   debug:
     type: bool
     title: Debug

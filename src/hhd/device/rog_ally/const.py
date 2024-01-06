@@ -434,8 +434,9 @@ COMMIT_RESET = [
     buf([0x5A, 0xD1, 0x05, 0x04, 0x00, 0x64, 0x00, 0x64]),
 ]
 
-COMMANDS_INIT = [
-    # Reset to defaults
+COMMANDS_GAME = [
+    MODE_GAME,
+    FLUSH_BUFFER,
     REMAP_DPAD_LR,
     FLUSH_BUFFER,
     REMAP_DPAD_UD,
@@ -456,17 +457,13 @@ COMMANDS_INIT = [
     *COMMIT_RESET,
 ]
 
-COMMANDS_GAME = [
-    MODE_GAME,
-    FLUSH_BUFFER,
-    *COMMANDS_INIT,
-]
-
 COMMANDS_MOUSE = [
     MODE_MOUSE,
     FLUSH_BUFFER,
+    # FIXME: Add mouse init
     REMAP_M1M2_F17F18,
     FLUSH_BUFFER,
+    *COMMIT_RESET,
 ]
 
 RGB_APPLY = buf([0x5A, 0xB4])
