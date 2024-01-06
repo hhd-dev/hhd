@@ -126,9 +126,9 @@ get_axis_map = lambda ofs: {
     "rs_y": AM(((ofs + 3) << 3), "m8"),
     "rt": AM(((ofs + 4) << 3), "u8"),
     "lt": AM(((ofs + 5) << 3), "u8"),
-    "gyro_x": AM(((ofs + 15) << 3), "i16", scale=20*180/3.14),
-    "gyro_y": AM(((ofs + 17) << 3), "i16", scale=20*180/3.14),
-    "gyro_z": AM(((ofs + 19) << 3), "i16", scale=20*180/3.14),
+    "gyro_x": AM(((ofs + 15) << 3), "i16", scale=20 * 180 / 3.14),
+    "gyro_y": AM(((ofs + 17) << 3), "i16", scale=20 * 180 / 3.14),
+    "gyro_z": AM(((ofs + 19) << 3), "i16", scale=20 * 180 / 3.14),
     "accel_x": AM(((ofs + 21) << 3), "i16", scale=10000),
     "accel_y": AM(((ofs + 23) << 3), "i16", scale=10000),
     "accel_z": AM(((ofs + 25) << 3), "i16", scale=10000),
@@ -992,7 +992,7 @@ DS5_EDGE_DESCRIPTOR_BT = bytes(
     ]
 )
 
-DS5_EDGE_MAC_ADDR = [0x74, 0xE7, 0xD6, 0x3A, 0x47, 0xE8]
+DS5_EDGE_MAC_ADDR = [0x74, 0xE7, 0xD6, 0x3A, 0x53, 0x35]  # 0x47, 0xE8]
 DS5_EDGE_STOCK_REPORTS = {
     0x09: bytes(  # Pairing
         [
