@@ -134,11 +134,12 @@ class AllyHidraw(GenericGamepadHidraw):
         return out
 
 
-def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
+def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent):
     while not should_exit.is_set():
         try:
             logger.info("Launching emulated controller.")
-            controller_loop(conf, should_exit)
+            updated.clear()
+            controller_loop(conf.copy(), should_exit, updated)
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
@@ -150,7 +151,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
             time.sleep(ERROR_DELAY)
 
 
-def controller_loop(conf: Config, should_exit: TEvent):
+def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
     debug = conf.get("debug", False)
 
     # Output
@@ -231,7 +232,7 @@ def controller_loop(conf: Config, should_exit: TEvent):
             prepare(d)
 
         logger.info("Emulated controller launched, have fun!")
-        while not should_exit.is_set():
+        while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second
             r, _, _ = select.select(fds, [], [], REPORT_DELAY_MAX)

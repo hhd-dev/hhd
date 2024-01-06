@@ -174,6 +174,9 @@ class Config:
     def to(self, t: type[A]) -> A:
         return cast(t, self.conf)
 
+    def copy(self):
+        return Config([self.conf])
+
     @property
     def conf(self):
         with self._lock:

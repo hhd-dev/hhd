@@ -19,7 +19,10 @@ class RogAllyControllersPlugin(HHDPlugin):
 
     def __init__(self) -> None:
         self.t = None
-        self.event = None
+        self.should_exit = None
+        self.updated = Event()
+        self.started = False
+        self.t = None
 
     def open(
         self,
@@ -43,24 +46,30 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.prev = conf["controllers.rog_ally"]
 
         self.start(self.prev)
+        conf.update(self.prev.conf)
+        self.updated.set()
 
     def start(self, conf):
         from .base import plugin_run
 
+        if self.started:
+            return
+        self.started = True
+
         self.close()
-        self.event = Event()
+        self.should_exit = Event()
         self.t = Thread(
             target=plugin_run,
-            args=(conf, self.emit, self.context, self.event),
+            args=(conf, self.emit, self.context, self.should_exit, self.updated),
         )
         self.t.start()
 
     def close(self):
-        if not self.event or not self.t:
+        if not self.should_exit or not self.t:
             return
-        self.event.set()
+        self.should_exit.set()
         self.t.join()
-        self.event = None
+        self.should_exit = None
         self.t = None
 
 

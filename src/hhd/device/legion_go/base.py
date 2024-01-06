@@ -42,7 +42,9 @@ LEN_PIDS = {
 }
 
 
-def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent):
+def plugin_run(
+    conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent
+):
     # Remove leftover udev rules
     # unhide_all()
     if (gyro_fix := conf.get("gyro_fix", False)) and conf["gyro"].to(bool):
@@ -75,6 +77,8 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
                     time.sleep(ERROR_DELAY)
                     continue
 
+            conf_copy = conf.copy()
+            updated.clear()
             if (
                 controller_mode == "xinput"
                 and conf["xinput.mode"].to(str) != "disabled"
@@ -82,7 +86,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
                 logger.info("Launching emulated controller.")
                 if gyro_fixer:
                     gyro_fixer.open()
-                controller_loop_xinput(conf, should_exit)
+                controller_loop_xinput(conf_copy, should_exit, updated)
             else:
                 if controller_mode != "xinput":
                     logger.info(
@@ -93,7 +97,7 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
                         f"Controllers in xinput mode but emulation is disabled."
                     )
                 controller_loop_rest(
-                    controller_mode, pid if pid else 2, conf, should_exit
+                    controller_mode, pid if pid else 2, conf_copy, should_exit, updated
                 )
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
@@ -111,7 +115,9 @@ def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEven
             # unhide_all()
 
 
-def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent):
+def controller_loop_rest(
+    mode: str, pid: int, conf: Config, should_exit: TEvent, updated: TEvent
+):
     debug = conf.get("debug", False)
     shortcuts_enabled = conf["shortcuts"].to(bool)
     # FIXME: Sleep when shortcuts are disabled instead of polling raw interface
@@ -159,7 +165,7 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
             fds.extend(d_shortcuts.open())
             fds.extend(d_uinput.open())
 
-        while not should_exit.is_set():
+        while not should_exit.is_set() and not updated.is_set():
             select.select(fds, [], [], SELECT_TIMEOUT)
             evs = multiplexer.process(d_raw.produce(fds))
 
@@ -175,7 +181,7 @@ def controller_loop_rest(mode: str, pid: int, conf: Config, should_exit: TEvent)
         d_raw.close(True)
 
 
-def controller_loop_xinput(conf: Config, should_exit: TEvent):
+def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
     debug = conf.get("debug", False)
 
     # Output
@@ -297,7 +303,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent):
             prepare(d)
 
         logger.info("Emulated controller launched, have fun!")
-        while not should_exit.is_set():
+        while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second
             r, _, _ = select.select(fds, [], [], REPORT_DELAY_MAX)
