@@ -33,6 +33,7 @@ from .plugins.settings import (
     merge_settings,
     save_blacklist_yaml,
     save_profile_yaml,
+    get_settings_hash,
     save_state_yaml,
     validate_config,
 )
@@ -229,6 +230,7 @@ def main():
         state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
         token_fn = expanduser(join(CONFIG_DIR, "token"), ctx)
         settings: HHDSettings = {}
+        shash = None
 
         # Load profiles
         profiles = {}
@@ -272,6 +274,7 @@ def main():
                 settings = merge_settings(
                     [*[p.settings() for p in sorted_plugins], hhd_settings]
                 )
+                shash = get_settings_hash(hhd_settings)
 
                 # State
                 new_conf = load_state_yaml(state_fn, settings)
@@ -450,12 +453,12 @@ def main():
             has_new = should_initialize.is_set()
             saved = False
             # Save existing profiles if open
-            if save_state_yaml(state_fn, settings, conf):
+            if save_state_yaml(state_fn, settings, conf, shash):
                 fix_perms(state_fn, ctx)
                 saved = True
             for name, prof in profiles.items():
                 fn = join(profile_dir, name + ".yml")
-                if save_profile_yaml(fn, settings, prof):
+                if save_profile_yaml(fn, settings, prof, shash):
                     fix_perms(fn, ctx)
                     saved = True
             for prof in os.listdir(profile_dir):
@@ -478,6 +481,7 @@ def main():
                 join(profile_dir, "_template.yml"),
                 settings,
                 templates.get("_template", None),
+                shash,
             ):
                 fix_perms(join(profile_dir, "_template.yml"), ctx)
                 saved = True

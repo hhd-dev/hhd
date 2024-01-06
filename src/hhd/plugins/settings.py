@@ -522,10 +522,11 @@ def dump_settings(
     return merge_dicts({"version": None, **cast(Mapping, conf.conf)}, out)
 
 
-def save_state_yaml(fn: str, set: HHDSettings, conf: Config):
+def save_state_yaml(fn: str, set: HHDSettings, conf: Config, shash=None):
     import yaml
 
-    shash = get_settings_hash(set)
+    if shash is None:
+        shash = get_settings_hash(set)
     if conf.get("version", None) == shash and not conf.updated:
         return False
 
@@ -574,10 +575,13 @@ def load_blacklist_yaml(fn: str):
         return ["myplugin1"]
 
 
-def save_profile_yaml(fn: str, set: HHDSettings, conf: Config | None = None):
+def save_profile_yaml(
+    fn: str, set: HHDSettings, conf: Config | None = None, shash=None
+):
     import yaml
 
-    shash = get_settings_hash(set)
+    if shash is None:
+        shash = get_settings_hash(set)
     if conf is None:
         conf = Config({})
     elif conf.get("version", None) == shash and not conf.updated:

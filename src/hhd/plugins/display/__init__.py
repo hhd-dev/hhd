@@ -68,6 +68,7 @@ class DisplayPlugin(HHDPlugin):
         if not self.display:
             return
 
+        curr = None
         try:
             requested = conf["general.display.brightness"].to(int | None)
 
@@ -106,14 +107,18 @@ class DisplayPlugin(HHDPlugin):
                         requested -= 1
                     else:
                         requested += 1
-                    
+
                     if not changed:
-                        logger.warning(f"Could not set brightness to {requested_old}. Trying {requested}.")
+                        logger.warning(
+                            f"Could not set brightness to {requested_old}. Trying {requested}."
+                        )
 
             conf["general.display.brightness"] = curr
             self.prev = curr
         except Exception as e:
             logger.error(f"Error while processing display settings:\n{type(e)}: {e}")
+            # Set conf to avoid repeated updates
+            conf["general.display.brightness"] = curr
 
     def close(self):
         pass
