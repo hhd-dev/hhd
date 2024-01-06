@@ -34,7 +34,7 @@ hhd = "hhd.__main__:main"
 legion_go = "hhd.device.legion_go:autodetect"
 rog_ally = "hhd.device.rog_ally:autodetect"
 powerbuttond = "hhd.plugins.powerbutton:autodetect"
-display = "hhd.plugins.display:autodetect"
+# display = "hhd.plugins.display:autodetect"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
