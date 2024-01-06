@@ -166,7 +166,6 @@ class Dualsense(Producer, Consumer):
                         continue
 
                     rep = ev["data"]
-                    # flag2 = rep...
                     if self.use_bluetooth:
                         # skip seq_tag, tag sent by bluetooth report
                         # rest is the same
@@ -183,6 +182,7 @@ class Dualsense(Producer, Consumer):
 
                     flag0 = rep[1]
                     flag1 = rep[2]
+                    flag2 = rep[39]
                     if self.enable_rgb and (
                         flag1 & 4
                     ):  # DS_OUTPUT_VALID_FLAG1_LIGHTBAR_CONTROL_ENABLE
@@ -235,7 +235,14 @@ class Dualsense(Producer, Consumer):
                     #     )
                     #     pass
 
-                    if flag0 & 0x02:
+                    # Rumble
+                    # Flag 1
+                    # Death stranding uses 0x40 to turn on vibration
+                    # SDL uses 0x02 to disable audio haptics
+                    # old version used flag0 & 0x02
+                    # Initial compatibility rumble is flag0 0x01
+                    # Improved is flag2 0x04
+                    if flag0 & 0x01 or flag2 & 0x04:
                         right = rep[3]
                         left = rep[4]
 
