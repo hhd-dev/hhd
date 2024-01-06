@@ -62,7 +62,7 @@ children:
     default: disabled
   share_to_qam:
     type: bool
-    title: Map the Legion R button to QAM (instead of Mute).
+    title: Legion R to QAM
     default: True
 
   touchpad:
