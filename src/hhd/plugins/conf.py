@@ -134,7 +134,8 @@ class Config:
                 parse_conf(cont, self._conf)
             else:
                 self._conf = cont
-        self.updated = True
+                if self._conf != cont:
+                    self.updated = True
 
     def __contains__(self, key: str | tuple[str, ...]):
         with self._lock:

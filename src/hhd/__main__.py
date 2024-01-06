@@ -8,9 +8,9 @@ import sys
 from os.path import join
 from threading import Condition
 from threading import Event as TEvent
-from threading import Lock, RLock
+from threading import RLock
 from time import sleep
-from typing import Sequence, cast
+from typing import Sequence
 
 import pkg_resources
 
@@ -456,11 +456,13 @@ def main():
             if save_state_yaml(state_fn, settings, conf, shash):
                 fix_perms(state_fn, ctx)
                 saved = True
+                conf.updated = False
             for name, prof in profiles.items():
                 fn = join(profile_dir, name + ".yml")
                 if save_profile_yaml(fn, settings, prof, shash):
                     fix_perms(fn, ctx)
                     saved = True
+                    prof.updated = False
             for prof in os.listdir(profile_dir):
                 if prof.startswith("_") or not prof.endswith(".yml"):
                     continue

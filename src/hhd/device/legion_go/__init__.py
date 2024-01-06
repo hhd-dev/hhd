@@ -23,6 +23,7 @@ class LegionControllersPlugin(HHDPlugin):
         self.updated = Event()
         self.started = False
         self.t = None
+        self.prev = None
 
     def open(
         self,
@@ -41,13 +42,16 @@ class LegionControllersPlugin(HHDPlugin):
         return base
 
     def update(self, conf: Config):
-        if conf["controllers.legion_go"] == self.prev:
+        new_conf = conf["controllers.legion_go"]
+        if new_conf == self.prev:
             return
-        self.prev = conf["controllers.legion_go"]
+        if self.prev is None:
+            self.prev = new_conf
+        else:
+            self.prev.update(new_conf.conf)
 
-        self.start(self.prev)
-        conf.update(self.prev.conf)
         self.updated.set()
+        self.start(self.prev)
 
     def start(self, conf):
         from .base import plugin_run

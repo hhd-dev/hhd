@@ -41,13 +41,16 @@ class RogAllyControllersPlugin(HHDPlugin):
         return base
 
     def update(self, conf: Config):
-        if conf["controllers.rog_ally"] == self.prev:
+        new_conf = conf["controllers.rog_ally"]
+        if new_conf == self.prev:
             return
-        self.prev = conf["controllers.rog_ally"]
+        if self.prev is None:
+            self.prev = new_conf
+        else:
+            self.prev.update(new_conf.conf)
 
-        self.start(self.prev)
-        conf.update(self.prev.conf)
         self.updated.set()
+        self.start(self.prev)
 
     def start(self, conf):
         from .base import plugin_run
