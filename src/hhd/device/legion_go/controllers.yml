@@ -194,6 +194,7 @@ children:
   debug:
     type: bool
     title: Debug
+    tags: [advanced]
     hint: >-
       Output controller events to the console (high CPU use) and raises exceptions
       (HHD will crash on errors).
