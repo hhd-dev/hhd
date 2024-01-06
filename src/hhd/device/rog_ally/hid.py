@@ -145,7 +145,7 @@ class RgbCallback:
         cmds, mode = process_events(events)
         if not cmds:
             return
-        
+
         if mode != self.prev_mode:
             self.prev_mode = mode
             # Init on start or when the mode

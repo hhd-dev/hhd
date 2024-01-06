@@ -63,9 +63,9 @@ class AllyHidraw(GenericGamepadHidraw):
         if self.dev:
             logger.info(f"Switching Ally Controllers to gamepad mode.")
             switch_mode(self.dev, "default")
-            if self.init_controller:
-                logger.info(f"Initializing Ally Controllers.")
-                initialize(self.dev)
+            # if self.init_controller:
+            #     logger.info(f"Initializing Ally Controllers.")
+            #     initialize(self.dev)
 
         self.mouse_mode = False
         return a
