@@ -324,6 +324,21 @@ class Dualsense(Producer, Consumer):
                 case "button":
                     if not self.enable_touchpad and ev["code"].startswith("touchpad"):
                         continue
+                    if not self.edge_mode and (ev["code"] == "extra_l1"):
+                        # Place finger on correct place and click
+                        new_rep[self.ofs + 33] = 0x80
+                        new_rep[self.ofs + 34] = 0x01
+                        new_rep[self.ofs + 35] = 0x20
+                        # Replace code with click
+                        ev = {**ev, "code": "touchpad_left"}
+                    if not self.edge_mode and (ev["code"] == "extra_r1"):
+                        # Place finger on correct place and click
+                        new_rep[self.ofs + 33] = 0x00
+                        new_rep[self.ofs + 34] = 0x06
+                        new_rep[self.ofs + 35] = 0x20
+                        # Replace code with click
+                        ev = {**ev, "code": "touchpad_left"}
+
                     if ev["code"] in self.btn_map:
                         set_button(new_rep, self.btn_map[ev["code"]], ev["value"])
 

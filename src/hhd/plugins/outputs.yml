@@ -44,6 +44,7 @@ modes:
       bluetooth_mode:
         type: bool
         title: Bluetooth Mode
+        tags: [advanced]
         hint: >-
           Emulates the controller in bluetooth mode instead of USB mode.
           This is the default as it causes less issues with how apps
@@ -59,5 +60,6 @@ modes:
           Uses the edge product ID which enables paddle support.
           The edge controller is a bit obscure, so some games might not
           support it correctly.
-          You can disable this to use normal Dualsense (no paddle support).
+          You can disable this to use normal Dualsense.
+          The paddles are then remapped to touchpad clicks (left, right).
         default: True

@@ -180,14 +180,6 @@ children:
               right_click: Right Click
             default: "left_click"
 
-  paddles_to_touchpad:
-    type: bool
-    title: Paddles as Touchpad Clicks
-    hint: >-
-      Makes the top left paddle click the left side of the touchpad
-      and the top right paddle the right side, instead of being the back paddles.
-      Useful with dualsense.
-    default: False
   shortcuts:
     type: bool
     title: Enable Shortcuts Controller
