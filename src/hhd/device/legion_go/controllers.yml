@@ -25,6 +25,7 @@ children:
   accel:
     type: bool
     title: Accelerometer
+    tags: [advanced]
     hint: >-
       Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro; 
       if someone asks it will be fixed).
@@ -52,7 +53,7 @@ children:
     default: 22
   swap_legion:
     type: multiple
-    title: Swap Legion Buttons with Start/Select
+    title: Swap Legion with Start/Select
     hint: >-
       Swaps the legion buttons with start select.
     options:
