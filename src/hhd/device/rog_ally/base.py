@@ -61,11 +61,11 @@ class AllyHidraw(GenericGamepadHidraw):
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
         if self.dev:
+            logger.info(f"Switching Ally Controllers to gamepad mode.")
+            switch_mode(self.dev, "default")
             if self.init_controller:
                 logger.info(f"Initializing Ally Controllers.")
                 initialize(self.dev)
-            logger.info(f"Switching Ally Controllers to gamepad mode.")
-            switch_mode(self.dev, "default")
 
         self.mouse_mode = False
         return a
@@ -134,7 +134,9 @@ class AllyHidraw(GenericGamepadHidraw):
         return out
 
 
-def plugin_run(conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent):
+def plugin_run(
+    conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent
+):
     while not should_exit.is_set():
         try:
             logger.info("Launching emulated controller.")
