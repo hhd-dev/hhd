@@ -423,6 +423,8 @@ REMAP_TRIGGERS = buf(
         0x0E,
     ]
 )
+
+# Not verified this is the case
 REMAP_M1M2_F17F18_MOUSE = (
     buf(
         [
