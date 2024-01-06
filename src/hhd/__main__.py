@@ -446,6 +446,11 @@ def main():
                     update_log_plugins()
                 set_log_plugin("ukwn")
 
+            # Notify that events were applied
+            # Before saving to reduce delay (yaml files take 100ms :( )
+            if https:
+                https.update(settings, conf, profiles, emit)
+
             #
             # Save loop
             #
@@ -491,10 +496,6 @@ def main():
             if not has_new and saved:
                 # We triggered the interrupt, clear
                 should_initialize.clear()
-
-            # Notify that events were applied
-            if https:
-                https.update(settings, conf, profiles, emit)
 
             upd_stable = conf.get("hhd.version.update_stable", False)
             upd_beta = conf.get("hhd.version.update_beta", False)
