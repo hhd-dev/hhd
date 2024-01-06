@@ -458,7 +458,7 @@ def dump_setting(
                         m = conf.get([*prev, child_name], None)
                         # Skip writing default values
                         default = child.get("default", None)
-                        if default is None:
+                        if default is None and unmark != "unset":
                             out[child_name] = None
                         elif m is None:
                             out[child_name] = unmark
