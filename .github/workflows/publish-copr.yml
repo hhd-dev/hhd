@@ -22,3 +22,6 @@ jobs:
           FOLDER: pkg
           SSH_PRIVATE_KEY: ${{ secrets.COPR_SSH_PRIVATE_KEY }}
           MESSAGE: update to '${{ github.event.release.name }}'
+          SKIP_EMPTY_COMMITS: true
+          # Do not clear any files
+          CLEAR_GLOBS_FILE: .github/workflows/copr_glob.txt
