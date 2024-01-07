@@ -15,7 +15,7 @@ modes:
   uinput:
     type: container
     tags: [lgc_emulation_uinput, uinput]
-    title: Gamepad
+    title: Xbox
     hint: >-
       Creates a virtual `Handheld Daemon Controller` that can be used normally
       in apps. Back buttons are supported but steam will not detect them.
