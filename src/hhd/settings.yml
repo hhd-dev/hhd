@@ -45,17 +45,17 @@ http:
   children:
     enable:
       type: bool
-      title: Enable REST API.
+      title: Enable the API
       tags: [advanced]
       hint: >-
-        Enables the rest API of Handheld Daemon
+        Enables the API of Handheld Daemon (required for decky and ui).
       default: True
     port:
       type: int
-      title: REST API Port
+      title: API Port
       tags: [advanced, hhd-port, port, dropdown]
       hint: >-
-        Which port should the REST API be on?
+        Which port should the API be on?
       min: 1024
       max: 49151
       default: 5335
