@@ -85,5 +85,8 @@ def get_outputs(
     )
 
 
-def get_outputs_config():
-    return load_relative_yaml("outputs.yml")
+def get_outputs_config(can_disable: bool = False):
+    s = load_relative_yaml("outputs.yml")
+    if can_disable:
+        del s['modes']['disabled']
+    return s

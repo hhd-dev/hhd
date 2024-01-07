@@ -36,7 +36,7 @@ class RogAllyControllersPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         base = {"controllers": {"rog_ally": load_relative_yaml("controllers.yml")}}
         base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
-            get_outputs_config()
+            get_outputs_config(can_disable=False)
         )
         return base
 
