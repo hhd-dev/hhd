@@ -110,10 +110,17 @@ def rgb_multi_load_settings(
     blue: int,
     brightness: float = 1,
     speed: float = 1,
+    init: bool = True,
 ):
-    return [
+    base = [
         rgb_set_profile("right", profile, mode, red, green, blue, brightness, speed),
         rgb_set_profile("left", profile, mode, red, green, blue, brightness, speed),
+    ]
+    if not init:
+        return base
+
+    return [
+        *base,
         rgb_load_profile("left", profile),
         rgb_load_profile("right", profile),
         rgb_enable("left", True),
@@ -128,23 +135,32 @@ def rgb_multi_disable():
     ]
 
 
-def rgb_callback(dev: Device, events: Sequence[Event]):
-    for ev in events:
-        if ev["type"] == "led":
-            if ev["mode"] == "disable":
-                reps = rgb_multi_disable()
-            else:
-                match ev["mode"]:
-                    case "blinking":
-                        mode = "pulse"
-                    case "rainbow":
-                        mode = "dynamic"
-                    case "solid":
-                        mode = "solid"
-                    case "spiral":
-                        mode = "spiral"
-                    case _:
-                        assert False, f"Mode '{ev['mode']}' not supported."
+class RgbCallback:
+    def __init__(self) -> None:
+        self.prev_mode = None
+
+    def __call__(self, dev: Device, events: Sequence[Event]):
+        for ev in events:
+            if ev["type"] != "led":
+                continue
+
+            reps = None
+            mode = None
+            match ev["mode"]:
+                case "disable":
+                    pass
+                case "blinking":
+                    mode = "pulse"
+                case "rainbow":
+                    mode = "dynamic"
+                case "solid":
+                    mode = "solid"
+                case "spiral":
+                    mode = "spiral"
+                case _:
+                    pass
+
+            if mode:
                 reps = rgb_multi_load_settings(
                     mode,
                     0x03,
@@ -153,7 +169,12 @@ def rgb_callback(dev: Device, events: Sequence[Event]):
                     ev["blue"],
                     ev["brightness"],
                     ev["speed"],
+                    self.prev_mode != mode,
                 )
+                # Only init sparingly, to speed up execution
+                self.prev_mode = mode
+            else:
+                reps = rgb_multi_disable()
 
             for r in reps:
                 dev.write(r)

@@ -26,7 +26,7 @@ from .const import (
     LGO_TOUCHPAD_BUTTON_MAP,
 )
 from .gyro_fix import GyroFixer
-from .hid import rgb_callback
+from .hid import RgbCallback
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -230,7 +230,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
             axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
-            callback=rgb_callback,
+            callback=RgbCallback(),
             required=True,
         )
     )
