@@ -113,11 +113,13 @@ def rgb_multi_load_settings(
     init: bool = True,
 ):
     base = [
-        rgb_set_profile("right", profile, mode, red, green, blue, brightness, speed),
         rgb_set_profile("left", profile, mode, red, green, blue, brightness, speed),
+        rgb_set_profile("right", profile, mode, red, green, blue, brightness, speed),
     ]
-    if not init:
-        return base
+    # Always update
+    # Old firmware has issues with new way
+    # if not init:
+    #     return base
 
     return [
         *base,
