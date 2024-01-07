@@ -20,7 +20,6 @@ jobs:
       - name: Publish to COPR repo
         uses: ad-m/github-push-action@master
         with:
-          ssh-key: ${{ secrets.COPR_TOKEN }}
+          github_token: ${{ secrets.COPR_TOKEN }}
           repository: hhd-dev/hhd-copr
           directory: ./pkg
-          ssh: true
