@@ -71,3 +71,4 @@ jobs:
           github_token: ${{ secrets.COPR_TOKEN }}
           repository: hhd-dev/hhd-copr
           directory: ./pkg
+          ssh: true
