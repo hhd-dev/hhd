@@ -57,6 +57,7 @@ jobs:
   deploy_copr:
     runs-on: ubuntu-latest
     environment: prod
+    needs: deploy_pypi
 
     steps:
       - uses: actions/checkout@v3
