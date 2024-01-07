@@ -1,4 +1,4 @@
-name: Push to COPR
+name: Publish to COPR
 
 on:
   workflow_dispatch:
@@ -15,8 +15,10 @@ jobs:
       - name: Build spec file
         run: sed "s/REPLACE_VERSION/$(cat pyproject.toml | grep -E 'version = "[0-9\.]+"' -o | grep -E "[0-9\.]+" -o)/" hhd.spec > ./pkg/hhd.spec
       - name: Publish to COPR repo
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.COPR_TOKEN }}
-          repository: hhd-dev/hhd-copr
-          directory: ./pkg
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: git@github.com:hhd-dev/hhd-copr.git
+          BRANCH: main
+          FOLDER: pkg
+          SSH_PRIVATE_KEY: ${{ secrets.COPR_SSH_PRIVATE_KEY }}
+          MESSAGE: update to '${{ github.event.release.name }}'
