@@ -53,3 +53,21 @@ jobs:
           commit_message: update to '${{ github.event.release.name }}'
           allow_empty_commits: false
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
+
+  deploy_copr:
+    runs-on: ubuntu-latest
+    environment: prod
+    needs: deploy_pypi
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create spec file dir
+        run: mkdir -p ./pkg/
+      - name: Build spec file
+        run: sed "s/REPLACE_VERSION/$(cat pyproject.toml | grep -E 'version = "[0-9\.]+"' -o | grep -E "[0-9\.]+" -o)/" hhd.spec > ./pkg/hhd.spec
+      - name: Publish to COPR repo
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.COPR_TOKEN }}
+          repository: hhd-dev/hhd-copr
+          directory: ./pkg
