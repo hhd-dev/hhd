@@ -1,4 +1,4 @@
-name: Upload to PYPI, AUR
+name: Upload to PYPI, AUR, COPR
 
 on:
   workflow_dispatch:
