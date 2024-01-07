@@ -227,6 +227,11 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
 class Multiplexer:
     QAM_DELAY = 0.2
+    REBOOT_HOLD = 6
+    REBOOT_VIBRATION_STRENGTH = 0.8
+    REBOOT_VIBRATION_ON = 0.35
+    REBOOT_VIBRATION_OFF = 0.5
+    REBOOT_VIBRATION_NUM = 3
 
     def __init__(
         self,
@@ -241,6 +246,7 @@ class Multiplexer:
         trigger_discrete_lvl: float = 0.99,
         touchpad_short: TouchpadAction = "disabled",
         touchpad_right: TouchpadAction = "left_click",
+        select_reboots: bool = False,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -252,10 +258,12 @@ class Multiplexer:
         self.share_to_qam = share_to_qam
         self.touchpad_short = touchpad_short
         self.touchpad_right = touchpad_right
+        self.select_reboots = select_reboots
 
         self.state = {}
         self.touchpad_down = time.perf_counter()
-        self.queue: list[tuple[Event, float]] = []
+        self.queue: list[tuple[Event | Literal["reboot"], float]] = []
+        self.select_pressed = None
 
         assert touchpad is None, "touchpad rewiring not supported yet"
 
@@ -265,7 +273,45 @@ class Multiplexer:
 
         curr = time.perf_counter()
         while len(self.queue) and self.queue[0][1] < curr:
-            out.append(self.queue.pop(0)[0])
+            ev = self.queue.pop(0)[0]
+            if ev == "reboot":
+                try:
+                    import os
+                    os.system('systemctl reboot')
+                except Exception as e:
+                    logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
+            else:
+                out.append(ev)
+
+        if self.select_pressed and self.select_pressed + self.REBOOT_HOLD < curr:
+            self.select_pressed = None
+            for i in range(self.REBOOT_VIBRATION_NUM):
+                self.queue.append(
+                    (
+                        {
+                            "type": "rumble",
+                            "code": "main",
+                            "strong_magnitude": self.REBOOT_VIBRATION_STRENGTH,
+                            "weak_magnitude": self.REBOOT_VIBRATION_STRENGTH,
+                        },
+                        curr
+                        + i * (self.REBOOT_VIBRATION_ON + self.REBOOT_VIBRATION_OFF),
+                    )
+                )
+                self.queue.append(
+                    (
+                        {
+                            "type": "rumble",
+                            "code": "main",
+                            "strong_magnitude": 0,
+                            "weak_magnitude": 0,
+                        },
+                        curr
+                        + i * (self.REBOOT_VIBRATION_ON + self.REBOOT_VIBRATION_OFF)
+                        + self.REBOOT_VIBRATION_ON,
+                    )
+                )
+            self.queue.append(("reboot", curr))
 
         for ev in events:
             match ev["type"]:
@@ -338,6 +384,12 @@ class Multiplexer:
                                     ev["code"] = "select"
                                 else:
                                     ev["code"] = "start"
+
+                    if self.select_reboots and ev["code"] == "select":
+                        if ev["value"]:
+                            self.select_pressed = curr
+                        else:
+                            self.select_pressed = None
 
                     if self.share_to_qam and ev["code"] == "share":
                         if ev["value"]:

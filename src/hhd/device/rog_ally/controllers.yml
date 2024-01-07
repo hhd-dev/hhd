@@ -45,6 +45,10 @@ children:
       high: "High (!!)"
     default: medium
     
+  select_reboots:
+    type: bool
+    title: Hold Select to Reboot
+    default: True
 
   share_to_qam:
     type: bool

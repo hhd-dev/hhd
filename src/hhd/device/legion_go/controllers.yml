@@ -61,6 +61,12 @@ children:
       l_is_start: "Left is Start"
       l_is_select: "Left is Select"
     default: disabled
+  
+  select_reboots:
+    type: bool
+    title: Hold Select to Reboot
+    default: True
+
   share_to_qam:
     type: bool
     title: Legion R to QAM
