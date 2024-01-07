@@ -30,6 +30,9 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Sleep for 15 minutes
+        run: sleep 900s
+        shell: bash
 
   deploy_aur:
     runs-on: ubuntu-latest
@@ -37,9 +40,6 @@ jobs:
     needs: deploy_pypi
 
     steps:
-      - name: Sleep for 15 minutes
-        run: sleep 900s
-        shell: bash
       - uses: actions/checkout@v3
       - name: Create PKGBUILD dir
         run: mkdir -p ./pkg/
@@ -60,7 +60,7 @@ jobs:
   deploy_copr:
     runs-on: ubuntu-latest
     environment: prod
-    needs: deploy_aur
+    needs: deploy_pypi
 
     steps:
       - uses: actions/checkout@v3
