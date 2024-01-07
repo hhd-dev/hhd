@@ -9,7 +9,6 @@ from .const import (
     COMMANDS_GAME,
     COMMANDS_MOUSE,
     RGB_APPLY,
-    RGB_BRIGHTNESS_MAX,
     RGB_INIT_1,
     RGB_INIT_2,
     RGB_SET,
@@ -19,8 +18,22 @@ from .const import (
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
 RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
+Brightness = Literal["off", "low", "medium", "high"]
 
 logger = logging.getLogger(__name__)
+
+
+def rgb_set_brightness(brightness: Brightness):
+    match brightness:
+        case "high":
+            c = 0x03
+        case "medium":
+            c = 0x02
+        case "low":
+            c = 0x01
+        case _:
+            c = 0x00
+    return buf([0x5A, 0xBA, 0xC5, 0xC4, c])
 
 
 def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
@@ -137,8 +150,9 @@ def process_events(events: Sequence[Event]):
 
 
 class RgbCallback:
-    def __init__(self) -> None:
+    def __init__(self, brightness: Brightness) -> None:
         self.prev_mode = None
+        self.brightness: Brightness = brightness
 
     def __call__(self, dev: Device, events: Sequence[Event]):
         cmds, mode = process_events(events)
@@ -152,7 +166,7 @@ class RgbCallback:
             cmds = [
                 RGB_INIT_1,
                 RGB_INIT_2,
-                RGB_BRIGHTNESS_MAX,
+                rgb_set_brightness(self.brightness),
                 *cmds,
                 RGB_APPLY,
                 RGB_SET,

@@ -868,5 +868,3 @@ RGB_INIT_2 = buf(
         0x2E,
     ]
 )
-
-RGB_BRIGHTNESS_MAX = buf([0x5A, 0xBA, 0xC5, 0xC4, 0x03])

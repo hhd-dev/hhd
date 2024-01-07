@@ -14,7 +14,7 @@ from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .hid import RgbCallback, switch_mode
+from .hid import RgbCallback, switch_mode, Brightness
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -178,7 +178,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         usage_page=[0xFF31],
         usage=[0x0080],
         required=True,
-        callback=RgbCallback(),
+        callback=RgbCallback(conf["led_brightness"].to(Brightness)),
     )
 
     # Grab shortcut keyboards
