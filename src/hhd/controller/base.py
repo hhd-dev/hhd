@@ -227,10 +227,10 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
 class Multiplexer:
     QAM_DELAY = 0.2
-    REBOOT_HOLD = 6
+    REBOOT_HOLD = 4
     REBOOT_VIBRATION_STRENGTH = 0.6
     REBOOT_VIBRATION_ON = 0.3
-    REBOOT_VIBRATION_OFF = 0.5
+    REBOOT_VIBRATION_OFF = 0.8
     REBOOT_VIBRATION_NUM = 3
 
     def __init__(
@@ -264,6 +264,7 @@ class Multiplexer:
         self.touchpad_down = time.perf_counter()
         self.queue: list[tuple[Event | Literal["reboot"], float]] = []
         self.select_pressed = None
+        self.select_is_held = False
 
         assert touchpad is None, "touchpad rewiring not supported yet"
 
@@ -275,12 +276,15 @@ class Multiplexer:
         while len(self.queue) and self.queue[0][1] < curr:
             ev = self.queue.pop(0)[0]
             if ev == "reboot":
-                try:
-                    import os
-                    os.system('systemctl reboot')
-                except Exception as e:
-                    logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
-            else:
+                if self.select_is_held:
+                    try:
+                        import os
+
+                        os.system("systemctl reboot")
+                        logger.info("rebooting")
+                    except Exception as e:
+                        logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
+            elif self.select_is_held or not ev.get("from_reboot", False):
                 out.append(ev)
 
         if self.select_pressed and self.select_pressed + self.REBOOT_HOLD < curr:
@@ -293,7 +297,8 @@ class Multiplexer:
                             "code": "main",
                             "strong_magnitude": self.REBOOT_VIBRATION_STRENGTH,
                             "weak_magnitude": self.REBOOT_VIBRATION_STRENGTH,
-                        },
+                            "from_reboot": True,
+                        },  # type: ignore
                         curr
                         + i * (self.REBOOT_VIBRATION_ON + self.REBOOT_VIBRATION_OFF),
                     )
@@ -387,8 +392,10 @@ class Multiplexer:
 
                     if self.select_reboots and ev["code"] == "select":
                         if ev["value"]:
+                            self.select_is_held = True
                             self.select_pressed = curr
                         else:
+                            self.select_is_held = False
                             self.select_pressed = None
 
                     if self.share_to_qam and ev["code"] == "share":
