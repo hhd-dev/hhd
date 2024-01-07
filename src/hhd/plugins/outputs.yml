@@ -42,7 +42,7 @@ modes:
           support it correctly.
           You can disable this to use normal Dualsense.
           The paddles are then remapped to touchpad clicks (left, right).
-        default: True
+        default: False
 
       bluetooth_mode:
         type: bool
