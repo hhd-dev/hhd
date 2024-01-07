@@ -9,7 +9,7 @@ children:
   xinput:
     type: mode
     tags: [lgc_xinput]
-    title: X-input Emulation Mode
+    title: Emulation Mode (X-Input)
     hint: >-
       Emulate different controller types when the Legion Controllers are in X-Input mode.
 
