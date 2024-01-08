@@ -428,7 +428,8 @@ class HrtimerTrigger(IioReader):
 
         # Create trigger
         try:
-            os.makedirs("/config/iio/triggers/hrtimer/hhd", exist_ok=True)
+            if not os.path.isdir("/config/iio/triggers/hrtimer/hhd"):
+                os.makedirs("/config/iio/triggers/hrtimer/hhd", exist_ok=True)
         except Exception as e:
             logger.error(
                 f"Could not create 'hhd' trigger. IMU will not work. Error:\n{e}"
