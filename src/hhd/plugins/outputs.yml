@@ -29,20 +29,18 @@ modes:
     tags: [lgc_emulation_dualsense, dualsense]
     title: Dualsense
     hint: >-
-      Emulates the expensive Dualsense Sony controller, both Edge and non-edge
-      variants.
+      Emulates the Dualsense Sony controller from the Playstation 5.
+      Since this controller does not have paddles, the paddles are mapped
+      to left and right touchpad clicks.
 
     children:
-      edge_mode:
+      led_support:
         type: bool
-        title: Edge Mode
+        title: LED Support
         hint: >-
-          Uses the edge product ID which enables paddle support.
-          The edge controller is a bit obscure, so some games might not
-          support it correctly.
-          You can disable this to use normal Dualsense.
-          The paddles are then remapped to touchpad clicks (left, right).
-        default: False
+          Passes through the LEDs to the controller, which allows games
+          to control them.
+        default: True
 
       bluetooth_mode:
         type: bool
@@ -56,10 +54,32 @@ modes:
           Test and report back!
         default: True
 
+  dualsense_edge:
+    type: container
+    tags: [lgc_emulation_dualsense_edge, dualsense_edge]
+    title: Dualsense Edge
+    hint: >-
+      Emulates the expensive Dualsense Sony controller which enables paddle support.
+      The edge controller is a bit obscure, so some games might not
+      support it correctly.
+
+    children:
       led_support:
         type: bool
         title: LED Support
         hint: >-
           Passes through the LEDs to the controller, which allows games
           to control them.
+        default: True
+
+      bluetooth_mode:
+        type: bool
+        title: Bluetooth Mode
+        tags: [advanced]
+        hint: >-
+          Emulates the controller in bluetooth mode instead of USB mode.
+          This is the default as it causes less issues with how apps
+          interact with the controller.
+          However, using USB mode can improve LED support (?) in some games.
+          Test and report back!
         default: True

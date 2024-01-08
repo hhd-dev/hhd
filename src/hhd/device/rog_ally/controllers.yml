@@ -42,7 +42,7 @@ children:
       off: "Off"
       low: "Low"
       medium: "Medium"
-      high: "High (!!)"
+      high: "High"
     default: medium
     
   select_reboots:

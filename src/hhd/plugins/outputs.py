@@ -32,12 +32,25 @@ def get_outputs(
     uses_touch = False
     uses_leds = False
     match controller:
+        case "dualsense_edge":
+            uses_touch = touchpad == "controller"
+            uses_leds = conf["dualsense_edge.led_support"].to(bool)
+            d = Dualsense(
+                touchpad_method=correction,
+                edge_mode=True,
+                use_bluetooth=conf["dualsense_edge.bluetooth_mode"].to(bool),
+                enable_touchpad=uses_touch,
+                enable_rgb=uses_leds,
+                fake_timestamps=not motion,
+            )
+            producers.append(d)
+            consumers.append(d)
         case "dualsense":
             uses_touch = touchpad == "controller"
             uses_leds = conf["dualsense.led_support"].to(bool)
             d = Dualsense(
                 touchpad_method=correction,
-                edge_mode=conf["dualsense.edge_mode"].to(bool),
+                edge_mode=False,
                 use_bluetooth=conf["dualsense.bluetooth_mode"].to(bool),
                 enable_touchpad=uses_touch,
                 enable_rgb=uses_leds,
@@ -88,5 +101,5 @@ def get_outputs(
 def get_outputs_config(can_disable: bool = False):
     s = load_relative_yaml("outputs.yml")
     if not can_disable:
-        del s['modes']['disabled']
+        del s["modes"]["disabled"]
     return s
