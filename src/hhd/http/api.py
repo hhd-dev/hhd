@@ -112,8 +112,8 @@ class RestHandler(BaseHTTPRequestHandler):
         self.set_response_ok()
         self.wfile.write(json.dumps(data).encode())
 
-    def set_response_ok(self):
-        self.set_response(200, OK_HEADERS)
+    def set_response_ok(self, extra_headers={}):
+        self.set_response(200, {**OK_HEADERS, **extra_headers})
 
     def send_not_found(self, error: str):
         self.set_response(404, ERROR_HEADERS)
@@ -241,7 +241,7 @@ class RestHandler(BaseHTTPRequestHandler):
             case "profile":
                 self.handle_profile(segments[3:], params, content)
             case "settings":
-                self.set_response_ok()
+                self.set_response_ok({"Version": self.conf.get("version", "")})
                 with self.cond:
                     self.wfile.write(json.dumps(self.settings).encode())
             case "state":
