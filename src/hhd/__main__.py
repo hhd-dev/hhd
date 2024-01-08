@@ -345,47 +345,47 @@ def main():
                     )
                     cfg_fds.append(fd)
 
-                # Initialize http server
-                http_cfg = conf["hhd.http"]
-                if http_cfg != prev_http_cfg:
-                    prev_http_cfg = http_cfg
-                    if https:
-                        https.close()
-                    if http_cfg["enable"].to(bool):
-                        from .http import HHDHTTPServer
-
-                        port = http_cfg["port"].to(int)
-                        localhost = http_cfg["localhost"].to(bool)
-                        use_token = http_cfg["token"].to(bool)
-
-                        # Generate security token
-                        if use_token:
-                            if not os.path.isfile(token_fn):
-                                import hashlib
-                                import random
-
-                                token = hashlib.sha256(
-                                    str(random.random()).encode()
-                                ).hexdigest()[:12]
-                                with open(token_fn, "w") as f:
-                                    os.chmod(token_fn, 0o600)
-                                    f.write(token)
-                                fix_perms(token_fn, ctx)
-                            else:
-                                with open(token_fn, "r") as f:
-                                    token = f.read().strip()
-                        else:
-                            token = None
-
-                        set_log_plugin("rest")
-                        https = HHDHTTPServer(localhost, port, token)
-                        https.update(settings, conf, profiles, emit)
-                        https.open()
-                        update_log_plugins()
-                        set_log_plugin("main")
-
                 should_initialize.clear()
                 logger.info(f"Initialization Complete!")
+
+            # Initialize http server
+            http_cfg = conf["hhd.http"]
+            if http_cfg != prev_http_cfg:
+                prev_http_cfg = http_cfg
+                if https:
+                    https.close()
+                if http_cfg["enable"].to(bool):
+                    from .http import HHDHTTPServer
+
+                    port = http_cfg["port"].to(int)
+                    localhost = http_cfg["localhost"].to(bool)
+                    use_token = http_cfg["token"].to(bool)
+
+                    # Generate security token
+                    if use_token:
+                        if not os.path.isfile(token_fn):
+                            import hashlib
+                            import random
+
+                            token = hashlib.sha256(
+                                str(random.random()).encode()
+                            ).hexdigest()[:12]
+                            with open(token_fn, "w") as f:
+                                os.chmod(token_fn, 0o600)
+                                f.write(token)
+                            fix_perms(token_fn, ctx)
+                        else:
+                            with open(token_fn, "r") as f:
+                                token = f.read().strip()
+                    else:
+                        token = None
+
+                    set_log_plugin("rest")
+                    https = HHDHTTPServer(localhost, port, token)
+                    https.update(settings, conf, profiles, emit)
+                    https.open()
+                    update_log_plugins()
+                    set_log_plugin("main")
 
             #
             # Plugin loop
