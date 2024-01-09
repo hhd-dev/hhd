@@ -19,7 +19,7 @@ dependencies = [
   "evdev>=1.6.1",
   "PyYAML>=6.0.1",
   "rich>=13.5.2",
-  "setuptools>=65.5.1",
+  "setuptools>=65.5.0",
 ]
 
 [project.urls]
