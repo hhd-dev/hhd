@@ -254,7 +254,8 @@ class GenericGamepadEvdev(Producer, Consumer):
                             {
                                 "type": "button",
                                 "code": self.btn_map[e.code],
-                                "value": bool(e.value),
+                                # Only 1 is valid for press (look at sysrq)
+                                "value": e.value == 1,
                             }
                         )
                 elif e.type == B("EV_ABS"):
