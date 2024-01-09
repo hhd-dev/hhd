@@ -18,3 +18,6 @@ KERNELS=="input[0-9]*", SUBSYSTEMS=="input", ATTRS{phys}=="isa0060*", MODE="0666
 # Enable access to uhid and uinput
 KERNEL=="uinput", MODE="0666", TAG+="uaccess"
 KERNEL=="uhid", MODE="0666", TAG+="uaccess"
+
+# Allow access to brightness controls
+ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video $sys$devpath/brightness", RUN+="/bin/chmod g+w $sys$devpath/brightness"

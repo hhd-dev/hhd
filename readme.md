@@ -195,7 +195,7 @@ You can install Handheld Daemon from [AUR](https://aur.archlinux.org/packages/hh
 Both update automatically every time there is a new release.
 
 But, the auto-updater will not work, which is an important feature with devices
-without a keyboard...
+without a keyboard.
 ```bash
 # Arch
 yay -S hhd
@@ -316,37 +316,10 @@ if you are missing the `xpad` rule.
                        Name: ['Generic X-Box pad']
 ```
 
-### I can see the original controller and that is causing issues in X
-Hiding the original controller is a complex process, so it was skipped for the
-v0.1.* versions of HHD.
-However, it is implemented properly in v0.2.
-Some emulators select the original controller as controller 1, which caused 
-issues.
-This is not the case anymore.
-On boot you might see an xbox controller. There is a bug with hiding the controller
-during the boot process.
-Flicking the fps switch on off fixes it and the controller is hidden until the next
-reboot.
-
 ### Yuzu does not work with the PS5 controller
 See above.
 Use yuzu controller settings to select the DualSense controller and disable
 Steam Input.
-
-### PlayStation Driver
-There is a small touchpad issue with the PlayStation driver loaded.
-Where a cursor might appear when using the touchpad in Steam Input.
-This should be fixed in the latest version.
-If not, you can fix it by blacklisting the PlayStation driver.
-However, you will get a lot of issues if you dont exclusively use Steam Input
-afterwards so do not do it otherwise.
-You will not be able to use the touchpad as a touchpad anymore and that is the
-only way to wake up the screen in desktop mode.
-Games that do not support DualSense natively (e.g., wine games) will not have
-a correct gamepad profile and will not work either.
-```bash
-sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/modprobe.d/hhd.conf -o /etc/udev/modprobe.d/hhd.conf
-```
 
 ### Freezing Gyro
 The gyro used for the PS5 controller is found in the display.
@@ -360,10 +333,6 @@ However, a udev rule that is installed by default disables this.
 
 If you do not need gyro support, you should disable it for a .2% cpu utilisation
 reduction.
-By default, the accelerometer is disabled for this reason.
-
-You need to set both `gyro` and `gyro-fix` to `False` in the config to disable
-gyro support.
 
 ### No screen autorotation after install
 HHD includes a udev rule that disables screen autorotation, because it interferes
@@ -373,12 +342,13 @@ If you do not need gyro, you can do the local install and modify
 `83-hhd.rules` to remove that rule.
 The gyro will freeze and will be unusable after that.
 
-### Touchpad right click does not work in desktop
-HHD remaps the touchpad of the Legion Go to the PS5 touchpad.
-The PlayStation driver does not support right clicking.
-Switch to d-input to enable the touchpad when you're in the desktop.
-You can also disable touchpad emulation in the config or use evdev emulation
-which does not use the touchpad.
+### Touchpad Behavior is different after install/is not part of dualsense
+By default, in the Legion Go the handheld daemon uses a virtual touchpad
+with proper left/right clicks, which work in gamescope.
+If you use your device outside gamescope and find this problematic, switch
+`Touchpad Emulation` to `Disabled`.
+If you want to use your touchpad for steam input, set the option to `Controller`
+and use the `Right Touchpad` under steam.
 
 ### HandyGCCS
 HHD replicates all functionality of HandyGCCS for the Legion Go, so it is not
@@ -401,13 +371,11 @@ You can reset each controller by holding Legion R + RT + RB, Legion L + LT + LB.
 However, we do not know how to reset the Legion Space legion button swap at
 this point, so you need to use Legion Space for that.
 
-Another set of obscure issues occur depending on how apps hook to the PS5 controller.
-If the PlayStation driver is not active, the Linux kernel creates an evdev node
-with incorrect mappings (right trigger becomes a stick, etc).
-If the app hooks directly into the hidraw of the controller, it works properly.
-If it uses the evdev device its incorrect.
+Another set of obscure issues occur depending on how apps hook to the Dualsense controller.
+Certain versions of gamescope and certain games do not support the edge controller,
+so switch to `Dualsense` or `Xbox` emulation modes if you are having issues.
 
-### Disable Dualsense touchpad
+### Disabling Dualsense touchpad
 The Dualsense touchpad may interfere with games or steam input. 
 You can disable it with the following udev rule.
 Place it under `/etc/udev/rules.d/99-hhd-playstation-touchpad.rules`
@@ -417,28 +385,21 @@ ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="*Wireless Controller 
 ```
 
 ## Contributing
-You should install from source if you aim to contribute or want to pull from master.
+Either follow `Automatic Install` or `Manual Local Install` to install the base rules.
+Then, clone, optionally install the userspace rules, and run.
 ```bash
-# Install hhd to ~/.local/share/hhd
-mkdir -p ~/.local/share/
-git clone https://github.com/hhd-dev/hhd ~/.local/share/hhd
-
-cd ~/.local/share/hhd
+# Clone Handheld Daemon
+git clone https://github.com/hhd-dev/hhd
+cd hhd
 python -m venv venv
 source venv/bin/activate
 pip install -e .
 
-# Install udev rules and create a service file
-sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
-sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
-
-# Install udev rules to allow running in userspace (optional; great for debugging)
+# Install udev rules to allow running in userspace 
+# optional; great for debugging
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd-user.rules -o /etc/udev/rules.d/83-hhd-user.rules
 # Modprobe uhid to avoid rw errors
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/modules-load.d/hhd-user.conf -o /etc/modules-load.d/hhd-user.conf
-
-# Reboot
-sudo reboot
 
 # You can now run hhd in userspace!
 hhd
