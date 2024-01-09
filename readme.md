@@ -76,10 +76,10 @@ Then, update from Decky or the UI.
 
 ```bash
 # Install
-curl -L https://github.com/hhd-dev/hhd/raw/main/install.sh | sh
+curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | sh
 
 # Uninstall
-curl -L https://github.com/hhd-dev/hhd/raw/main/uninstall.sh | sh
+curl -L https://github.com/hhd-dev/hhd/raw/master/uninstall.sh | sh
 ```
 
 You can also install the Decky plugin.
