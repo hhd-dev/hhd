@@ -1,0 +1,112 @@
+type: mode
+tags: [touchpad]
+title: Touchpad Emulation
+hint: >-
+  Use an emulated touchpad.
+  Part of the controller if it is supported (e.g., Dualsense) or a virtual
+  one if not.
+
+default: emulation
+modes:
+  #
+  # No emulation
+  #
+  disabled:
+    type: container
+    title: Disabled
+    hint: >-
+      Does not modify the touchpad. Short + holding presses will not work
+      within gamescope.
+  #
+  # Virtual emulation
+  #
+  emulation:
+    type: container
+    title: Virtual
+    hint: >-
+      Adds an emulated touchpad. This touchpad is meant to be for desktop
+      use and has left, right click support by default, within gamescope and
+      outside of it, regardless of the "Tap to Click" setting.
+    children:
+      short:
+        type: multiple
+        title: Short Action
+        tags: [advanced]
+        hint: >-
+          Maps short touches (less than 0.2s) to a virtual touchpad button.
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "left_click"
+      hold:
+        type: multiple
+        title: Hold Action
+        tags: [advanced]
+        hint: >-
+          Maps long touches (more than 2s) to a virtual touchpad button.
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "right_click"
+  #
+  # Controller emulation
+  #
+  controller:
+    type: container
+    title: Controller
+    hint: >-
+      Uses the touchpad of the emulated controller (if it exists).
+      Otherwise, the touchpad remains unmapped (will still show up in the system).
+      Meant to be used as steam input, so short press is unassigned by
+      default and long press simulates trackpad click.
+    children:
+      correction:
+        type: multiple
+        title: Correction Type
+        hint: >-
+          The legion touchpad is square, whereas the DS5 one is rectangular.
+          Therefore, it needs to be corrected.
+          "Contain" maintain the whole DS5 touchpad and part of the Legion
+          one is unused. "Crop" uses the full legion touchpad, and limits
+          the area of the DS5. "Stretch" uses both fully (distorted).
+          "Crop End" enables use in steam input as the right touchpad.
+        options:
+          stretch: "Stretch"
+          crop_center: "Crop Center"
+          crop_start: "Crop Start"
+          crop_end: "Crop End"
+          contain_start: "Contain Start"
+          contain_end: "Contain End"
+          contain_center: "Contain Center"
+        default: crop_end
+
+      short:
+        type: multiple
+        title: Short Action
+        tags: [advanced]
+        hint: >-
+          Maps short touches (less than 0.2s) to a touchpad action.
+          Dualsense uses a physical press for left and a double tap for
+          right click (support for double tap varies; enable "Tap to Click"
+          in your desktop's touchpad settings).
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "disabled"
+
+      hold:
+        type: multiple
+        title: Hold Action
+        hint: >-
+          Maps long touches (more than 2s) to a touchpad action.
+          Dualsense uses a physical press for left and a double tap for
+          right click (support for double tap varies; enable "Tap to Click"
+          in your desktop's touchpad settings).
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "left_click"

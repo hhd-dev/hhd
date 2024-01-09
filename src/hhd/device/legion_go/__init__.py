@@ -8,6 +8,7 @@ from hhd.plugins import (
     HHDPlugin,
     load_relative_yaml,
     get_outputs_config,
+    get_touchpad_config,
 )
 from hhd.plugins.settings import HHDSettings
 
@@ -39,6 +40,7 @@ class LegionControllersPlugin(HHDPlugin):
         base["controllers"]["legion_go"]["children"]["xinput"].update(
             get_outputs_config()
         )
+        base["controllers"]["legion_go"]["children"]["touchpad"] = get_touchpad_config()
         return base
 
     def update(self, conf: Config):
