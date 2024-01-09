@@ -225,7 +225,8 @@ sudo systemctl start hhd@$(whoami)
 Go to [hhd.dev](https://hhd.dev) and enter your device token 
 (`~/.config/hhd/token`).
 That is it!
-You can also install the Electron version ([hhd-ui](https://github.com/hhd-dev/hhd-ui)) to use locally.
+You can also install the Electron version ([hhd-ui](https://github.com/hhd-dev/hhd-ui)) 
+to use completely offline or as an app (updating it has to be done manually for now).
 
 ### Using Decky
 If you have decky installed, you can use the following command to
