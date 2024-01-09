@@ -67,14 +67,18 @@ def run_steam_command(command: str, ctx: Context):
     return False
 
 
-def register_power_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
+def register_power_buttons(b: PowerButtonConfig) -> list[evdev.InputDevice]:
+    out = []
     for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
+        capture = False
         for phys in b.phys:
             if str(device.phys).startswith(phys):
-                device.grab()
-                logger.info(f"Captured power button '{device.name}': '{device.phys}'")
-                return device
-    return None
+                capture = True
+        if capture:
+            device.grab()
+            logger.info(f"Captured power button '{device.name}': '{device.phys}'")
+            out.append(device)
+    return out
 
 
 def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
@@ -131,6 +135,7 @@ def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event):
 
 def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event):
     press_dev = None
+    press_devs = []
     hold_dev = None
     try:
         while not should_exit.is_set():
@@ -151,7 +156,8 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
 
             if not press_dev or not hold_dev:
                 logger.info(f"Steam is running, hooking power button.")
-                press_dev = register_power_button(cfg)
+                press_devs = register_power_buttons(cfg)
+                press_dev = press_devs[0] if press_devs else None
                 hold_dev = register_hold_button(cfg)
             if not press_dev or not hold_dev:
                 logger.error(f"Power button interfaces not found, disabling plugin.")
@@ -190,6 +196,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
 
 def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Event):
     dev = None
+    devs = []
     try:
         pressed_time = None
         while not should_exit.is_set():
@@ -205,7 +212,8 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
 
             if not dev:
                 logger.info(f"Steam is running, hooking power button.")
-                dev = register_power_button(cfg)
+                devs = register_power_buttons(cfg)
+                dev = devs[0] if devs else None
             if not dev:
                 logger.error(f"Power button not found, disabling plugin.")
                 return
