@@ -3,8 +3,11 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 devices.
 With features ranging from TDP controls, to controller remappings, and gamescope 
 session management.
-This will be done through a plugin system and an HTTP(/d-bus?) daemon, which will
-expose the settings of the plugins in a UI agnostic way.
+
+This configuration is exposed through an API, and there is already a Decky
+plugin for it ([hhd-decky](https://github.com/hhd-dev/hhd-decky)) and a web
+app for it ([hhd.dev](https://hhd.dev)) that also works locally with Electron
+([hhd-ui](https://github.com/hhd-dev/hhd-ui)).
 
 It is the aim of this project to provide generic hid-based emulators for most
 mainstream controllers (xbox Elite, DS4, PS5, Joycons), so that users of devices
@@ -12,33 +15,33 @@ can pick the best target for their device and its controls, which may change
 depending on the game.
 
 *Current Features (for both ROG Ally and Legion Go)*:
-- Fully functional DualSense Edge emulation
+- Fully functional DualSense and Dualsense Edge emulation
     - All buttons supported
     - Rumble feedback
     - Touchpad support (Steam Input as well)
     - LED remapping
-- Virtual Input device emulation
+- Xbox 360 Style device emulation
   - No weird glyphs
   - Gyro and back button support (outside Steam)
-- Touchpad Emulation
+- Virtual Touchpad Emulation
   - Fixes left and right clicks within gamescope when using the Legion Go
     touchpad.
 - Power Button plugin for Big Picture/Steam Deck Mode
     - Short press makes Steam backup saves and wink before suspend.
     - Long press opens Steam power menu.
 - Hides the original Xbox controller
-- HTTP based Configuration
-  - Allows configuring HHD over Electron/React apps.
-  - Token-based authentication and limited to localhost.
-  - Will allow swapping configuration per game.
-- Built-in updater (soon to become available from Decky).
+- UI based Configuration
+  - Generic API that can be used from bash scripts (through `curl`)
+  - Decky Plugin
+  - Webpac
+- Built-in updater.
 
 *Planned Features (in this order)*:
 - Steam Deck controller emulation
   - No weird glyphs
 - TDP Plugin
   - Will provide parity with Legion Space/Armory crate, hardware is already reverse 
-    engineered for the Legion Go
+    engineered for the Legion Go.
 - High-end Over/Downclocking Utility for Ryzen processors
   - By hooking into the manufacturer ACPI API of the Ryzen platform,
     it will expose all TDP related parameters manufacturers have access to
@@ -51,83 +54,59 @@ depending on the game.
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PyPi.
 
-> On boot you might see an xbox controller. There is a bug with hiding the controller
-> during the boot process.
-> Flicking the fps switch on off on the Go fixes it and the controller is hidden 
-> until the next reboot. For the ally, you can change a setting in decky.
+> To ensure the gyro of the Legion Go with AMD SFH runs smoothly, 
+> a udev rule is included that disables the use of the accelerometer by the 
+> system (e.g., iio-sensor-proxy).
+> This limitation will be lifted in the future, if a new driver is written for
+> amd-sfh.
+> 
+> If you want display auto rotation to work, use the local steps and 
+> modify the `83-hhd.rules` file
+> to remove the iio udev rule. However, the gyro will not work properly.
 
-### ChimeraOS
+### Automatic Local Install
+You can use the following bash scripts to install and uninstall Handheld Daemon
+(experimental).
+Then, update from Decky or the UI.
 
-ChimeraOS does not ship with `gcc` to compile `hhd` dependencies and the
-functionality of `handygccs` which fixes the QAM button by default conflicts
-with `hhd`.
-
-The easiest way to install is to unlock the filesystem, install `hhd`, and
-remove `handygccs`.
-
-```bash
-# Unlock filesystem
-sudo frzr-unlock
-
-# Run installer
-sudo pacman -S base-devel
-sudo systemctl disable --now handycon.service
-sudo pikaur -R handygccs-git
-sudo pikaur -S hhd
-
-# Enable and reboot
-sudo systemctl enable --now hhd@$(whoami)
-sudo reboot
-```
-
-Then, repeat every time you update Chimera. As a bonus, you will get new HHD
-features as well 😊.
-
-#### Uninstall
-Just run the steps in reverse or switch to a locked Chimera version.
+> If your distro uses HandyGCCS/Handycon to fix certain key bindings by default
+> you need to uninstall it. Disabling it is not enough, since it is autostarted
+> by certain sessions (such as `gamescope-session-plus`). 
+> This includes both ChimeraOS and Nobara (see [Installation Issues](#issues)).
 
 ```bash
-sudo systemctl disable hhd@$(whoami)
+# Install
+curl -L https://github.com/hhd-dev/hhd/raw/main/install.sh | sh
 
-sudo pikaur -S handygccs-git
-sudo pacman -R hhd
-
-sudo systemctl enable --now handycon.service
-sudo reboot
+# Uninstall
+curl -L https://github.com/hhd-dev/hhd/raw/main/uninstall.sh | sh
 ```
 
-### ❄️ NixOS
-Update the `nixpkgs.url` input in your flake to point at [the PR](https://github.com/NixOS/nixpkgs/pull/277661/) branch:
-
-```nix
-  inputs = {
-    nixpkgs.url = "github:appsforartists/nixpkgs/handheld-daemon";
+You can also install the Decky plugin.
+```bash
+curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
 ```
 
-and add this line to your `configuration.nix`:
-```nix
-  services.handheldDaemon.enable = true;
-```
+Then, reboot and go to [hhd.dev](https://hhd.dev) to configure or read more in
+the configuration section.
 
-### Local Installation (from PyPi)
-You can also install HHD using a local package, which enables auto-updating.
-`curl` script coming soon!
+### Manual Local Installation
+You can also install Handheld Daemon using a local package, which enables auto-updating.
+These are the same steps as done in the Automatic Install (also see 
+[Installation Issues](#issues)).
 
 ```bash
-# (nobara) Install Python Headers since evdev has no wheels
-# and nobara does not ship them (but arch does)
-sudo dnf install python-devel
-# (Chimera, Arch) In case you dont have gcc.
-sudo pacman -S base-devel
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!! Delete HandyGCCS to avoid issues if you have it. !!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # Install Handheld Daemon to ~/.local/share/hhd
 mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
-python -m venv venv
+python -m venv --system-site-packages venv
 source venv/bin/activate
-pip install hhd
-# Substitute with the following to pull from here
-# (if you are asked by devs; the master branch is not guaranteed to always work)
+pip install --upgrade hhd
+# Substitute with the following to pull from github (may not always work)
 # pip install git+https://github.com/hhd-dev/hhd
 
 # Install udev rules and create a service file
@@ -140,7 +119,9 @@ sudo reboot
 ```
 
 #### Update Instructions
-Of course, you will want to update HHD to catch up to latest features
+Of course, you will want to update Handheld Daemon to catch up to latest features.
+You can either use the commands below or press `Update (Stable)` in one of the UIs
+(which runs these commands).
 ```bash
 sudo systemctl stop hhd_local@$(whoami)
 ~/.local/share/hhd/venv/bin/pip install --upgrade hhd
@@ -159,24 +140,78 @@ sudo rm /etc/systemd/system/hhd_local@.service
 rm -r ~/.config/hhd
 ```
 
-> The above should work on read-only filesystem, provided the /etc directory is
-> not read-only.
-
-### Arch-based Installation (AUR)
+### <a name="issues"></a> Common Issues with Install
+#### Missing Python Evdev
+In case you have installation issues, you might be missing the package `python-evdev`.
+You can either install it as part of your distribution (included by Nobara
+and ChimeraOS) or automatically through `pip` with the commands above.
+However, installing this package through `pip` requires `base-devel` on Arch and
+`python-devel` on Nobara.
 ```bash
-# Install using your AUR package manager
-sudo pikaur -S hhd
-sudo yay -S hhd
-sudo pacman -S hhd # Manjaro only
+# Nobara/Fedora
+sudo dnf install python-evdev
+# Arch based distros (included by ChimeraOs)
+sudo pacman -S python-evdev
+
+# OR
+
+# (nobara) Install Python Headers since evdev has no wheels
+# and nobara does not ship them (but arch does)
+sudo dnf install python-devel
+# (Chimera, Arch) In case you dont have gcc.
+sudo pacman -S base-devel
+```
+
+#### Having HandyGCCS Installed
+If your distro ships with HandyGCCS Handheld Daemon will not work, you have to uninstall it.
+```bash
+# ChimeraOS
+sudo frzr-unlock
+sudo systemctl disable --now handycon.service
+sudo pacman -R handygccs-git
+
+# Nobara
+sudo systemctl disable --now handycon.service
+sudo dnf remove handygccs-git # (verify ?)
+```
+
+### ❄️ NixOS (experimental)
+Update the `nixpkgs.url` input in your flake to point at [the PR](https://github.com/NixOS/nixpkgs/pull/277661/) branch:
+
+```nix
+  inputs = {
+    nixpkgs.url = "github:appsforartists/nixpkgs/handheld-daemon";
+```
+
+and add this line to your `configuration.nix`:
+```nix
+  services.handheldDaemon.enable = true;
+```
+
+
+### Distribution Installation (not recommended)
+You can install Handheld Daemon from [AUR](https://aur.archlinux.org/packages/hhd) 
+(Arch) or [COPR](https://copr.fedorainfracloud.org/coprs/hhd-dev/hhd/) (Fedora).
+Both update automatically every time there is a new release.
+
+But, the auto-updater will not work, which is an important feature with devices
+without a keyboard...
+```bash
+# Arch
+yay -S hhd
+
+# Fedora
+sudo dnf copr enable hhd-dev/hhd
+sudo dnf install hhd
 
 # Enable and reboot
 sudo systemctl enable hhd@$(whoami)
 sudo reboot
 ```
 
-But I dont want to reboot...
+In case you do not want to reboot.
 ```bash
-# Reload HHD's udev rules
+# Reload Handheld Daemon's udev rules
 sudo udevadm control --reload-rules && sudo udevadm trigger
 # Restart iio-proxy-service to stop it
 # from polling the accelerometer
@@ -185,36 +220,28 @@ sudo systemctl restart iio-sensor-proxy
 sudo systemctl start hhd@$(whoami)
 ```
 
-> To ensure the gyro of the Legion Go and other devices with AMD SFH runs smoothly, 
-> a udev rule is included that disables the use of the accelerometer by the 
-> system (e.g., iio-sensor-proxy).
-> This limitation will be lifted in the future, if a new driver is written for
-> amd-sfh.
+## <a name="configuration"></a>Configuration
+### UI Based
+Go to [hhd.dev](https://hhd.dev) and enter your device token 
+(`~/.config/hhd/token`).
+That is it!
+You can also install the Electron version ([hhd-ui](https://github.com/hhd-dev/hhd-ui)) to use locally.
 
-#### Updating/Uninstalling in Arch
-HHD will update automatically with your system from then on, or you can update it
-manually with your AUR package manager.
-To uninstall, just uninstall the package and reboot.
-
-```bash
-# Update using your AUR package manager
-sudo pikaur -S hhd
-sudo yay -S hhd
-sudo pacman -S hhd # manjaro only
-
-# Remove to uninstall
-sudo pacman -R hhd
-sudo reboot
+### Using Decky
+If you have decky installed, you can use the following command to
+install the Handheld Daemon decky plugin (visit 
+[hhd-decky](https://github.com/hhd-dev/hhd-decky) for details).
 ```
+curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
+```
+Then, just open up steam.
 
-## Configuring HHD
-
+### File based
 The reason you added your username to the `hhd` service was to bind the `hhd`
 daemon to your user.
 
-This allows HHD to add configuration files with appropriate permissions to your
-user dir, which is the following:
-
+This allows Handheld Daemon to add configuration files with appropriate
+permissions to your user, in the following directory:
 ```bash
 ~/.config/hhd
 ```
@@ -223,20 +250,8 @@ The global configuration for HHD is found in:
 ```bash
 ~/.config/hhd/state.yml
 ```
-This will allow you to set sticky HHD configuration options, such as emulation
-mode.
 
-Once set, HHD will hot-reload the configurations.
-
-HHD allows you to create profiles, that set multiple configurations together,
-through the profile directory:
-```bash
-~/.config/hhd/profiles
-```
-
-Right now, these profiles can only be set with the experimental HTTP API,
-which will be called through a GUI.
-This API is disabled by default in the current version of HHD.
+You can modify it and it will hot-reload upon saving.
 
 ## Frequently Asked Questions (FAQ)
 ### What does the current version of HHD do?
@@ -295,7 +310,7 @@ You will see the following in the HHD logs (`sudo systemctl status hhd@$(whoami)
 if you are missing the `xpad` rule.
 
 ```
-              ERROR    Device with the following not found:                                                                                                                          evdev.py:122
+              ERROR    Device with the following not found:
                        Vendor ID: ['17ef']
                        Product ID: ['6182']
                        Name: ['Generic X-Box pad']
