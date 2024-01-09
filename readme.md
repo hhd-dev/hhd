@@ -88,7 +88,7 @@ curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
 ```
 
 Then, reboot and go to [hhd.dev](https://hhd.dev) to configure or read more in
-the configuration section.
+the [configuration section](#configuration).
 
 ### Manual Local Installation
 You can also install Handheld Daemon using a local package, which enables auto-updating.
