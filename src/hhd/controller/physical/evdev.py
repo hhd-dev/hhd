@@ -250,14 +250,15 @@ class GenericGamepadEvdev(Producer, Consumer):
             for e in self.dev.read():
                 if e.type == B("EV_KEY"):
                     if e.code in self.btn_map:
-                        out.append(
-                            {
-                                "type": "button",
-                                "code": self.btn_map[e.code],
-                                # Only 1 is valid for press (look at sysrq)
-                                "value": e.value == 1,
-                            }
-                        )
+                        # Only 1 is valid for press (look at sysrq)
+                        if e.value == 0 or e.value == 1:
+                            out.append(
+                                {
+                                    "type": "button",
+                                    "code": self.btn_map[e.code],
+                                    "value": bool(e.value),
+                                }
+                            )
                 elif e.type == B("EV_ABS"):
                     if e.code in self.axis_map:
                         # Normalize
