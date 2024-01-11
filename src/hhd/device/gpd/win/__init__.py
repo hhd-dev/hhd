@@ -34,8 +34,8 @@ class GpdWinControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
-        base = {"controllers": {"gpd_win_4": load_relative_yaml("controllers.yml")}}
-        base["controllers"]["gpd_win_4"]["children"]["controller_mode"].update(
+        base = {"controllers": {"gpd_win": load_relative_yaml("controllers.yml")}}
+        base["controllers"]["gpd_win"]["children"]["controller_mode"].update(
             get_outputs_config(can_disable=False)
         )
         return base
