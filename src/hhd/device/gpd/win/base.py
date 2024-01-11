@@ -16,12 +16,12 @@ SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
 
-GPD_WIN_4_VID = 0x2f24
+GPD_WIN_4_VID = 0x2F24
 GPD_WIN_4_PID = 0x0135
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
-BACK_BUTTON_DELAY = 0.3
+BACK_BUTTON_DELAY = 0.05
 
 # /dev/input/event17 Microsoft X-Box 360 pad usb-0000:73:00.3-4.1/input0
 # bus: 0003, vendor 045e, product 028e, version 0101
@@ -40,18 +40,18 @@ BACK_BUTTON_DELAY = 0.3
 #    'product_string': 'Mouse for Windows',
 #    'usage_page': 1, 'usage': 6, 'interface_number': 1},
 
-class GpdWin4Hidraw(GenericGamepadHidraw):
-    l4_prev_timestamp = None
-    r4_prev_timestamp = None
 
+class GpdWin4Hidraw(GenericGamepadHidraw):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
     def open(self) -> Sequence[int]:
-        self.queue: list[tuple[Event, float]] = []
-        a = super().open()
+        self.left_pressed = None
+        self.right_pressed = None
+        self.clear_ts = None
 
-        return a
+        self.queue: list[tuple[Event, float]] = []
+        return super().open()
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         # If we can not read return
@@ -62,16 +62,10 @@ class GpdWin4Hidraw(GenericGamepadHidraw):
         curr = time.perf_counter()
         out: Sequence[Event] = []
 
-        # Remove up to one queued event
-        if len(self.queue):
-            ev, ofs = self.queue[0]
-            if ofs < curr:
-                out.append(ev)
-                self.queue.pop(0)
-
         # Read new events
+        left_pressed = None
+        right_pressed = None
         while can_read(self.fd):
-            resolve_lambda = None
             rep = self.dev.read(self.report_size)
 
             # l4 = 0x46
@@ -80,55 +74,55 @@ class GpdWin4Hidraw(GenericGamepadHidraw):
             # when both l4/r4 held, rep[2] and rep[3] will both be active
             #   they will be the same known values for l4 and r4
             #   but the order is not guaranteed to be consistent
-
             check = rep[2] + rep[3]
-
             match check:
                 case 0x46:
                     # action = "left/l4"
-                    if self.l4_prev_timestamp == None:
-                        out.append({"type": "button", "code": "extra_l1", "value": True})
-                    self.l4_prev_timestamp = curr
-
+                    left_pressed = True
+                    right_pressed = False
+                    self.clear_ts = None
                 case 0x48:
                     # action = "right/r4"
-                    if self.r4_prev_timestamp == None:
-                        out.append({"type": "button", "code": "extra_r1", "value": True})
-                    self.r4_prev_timestamp = curr
-
-                case 0x8e:
+                    left_pressed = False
+                    right_pressed = True
+                    self.clear_ts = None
+                case 0x8E:
                     # both l4 and r4 are being pressed
-                    if not self.r4_prev_timestamp:
-                        out.append({"type": "button", "code": "extra_r1", "value": True})
+                    left_pressed = True
+                    right_pressed = True
+                    self.clear_ts = None
+                case _:  # 0x00:
+                    left_pressed = False
+                    right_pressed = False
+                    if self.clear_ts is None:
+                        # Only update timeout if none
+                        self.clear_ts = curr + BACK_BUTTON_DELAY
 
-                    if not self.l4_prev_timestamp:
-                        out.append({"type": "button", "code": "extra_l1", "value": True})
+        if self.clear_ts and self.clear_ts < curr:
+            # Reset after timeout
+            if self.left_pressed:
+                out.append({"type": "button", "code": "extra_l1", "value": False})
+                self.left_pressed = False
+            if self.right_pressed:
+                out.append({"type": "button", "code": "extra_r1", "value": False})
+                self.right_pressed = False
+            self.clear_ts = None
+        else:
+            # If no timeout, update
+            # Left, right will be none if no events were received
+            # If they were, they will be true/false
+            # If that conflicts with the saved values, send events.
+            if left_pressed is not None and self.left_pressed != left_pressed:
+                out.append(
+                    {"type": "button", "code": "extra_l1", "value": left_pressed}
+                )
+                self.left_pressed = left_pressed
 
-                    self.r4_prev_timestamp = curr
-                    self.l4_prev_timestamp = curr                    
-                case 0x00:
-                    
-                    if self.l4_prev_timestamp:
-                        # release l4, zero out timestamp
-                        self.queue.append(
-                            (
-                                {"type": "button", "code": "extra_l1", "value": False},
-                                curr + BACK_BUTTON_DELAY,
-                            )
-                        )
-                        self.l4_prev_timestamp = None
-                    if self.r4_prev_timestamp:
-                        # release r4, zero out timestamp
-                        self.queue.append(
-                            (
-                                {"type": "button", "code": "extra_r1", "value": False},
-                                curr + BACK_BUTTON_DELAY,
-                            )
-                        )
-                        self.r4_prev_timestamp = None
-
-                    pass
-
+            if right_pressed is not None and self.right_pressed != right_pressed:
+                out.append(
+                    {"type": "button", "code": "extra_r1", "value": right_pressed}
+                )
+                self.right_pressed = right_pressed
         return out
 
 
@@ -155,9 +149,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
     debug = conf.get("debug", False)
 
     # Output
-    d_producers, d_outs, d_params = get_outputs(
-        conf["controller_mode"], None, None
-    )
+    d_producers, d_outs, d_params = get_outputs(conf["controller_mode"], None, False)
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
@@ -182,7 +174,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         vid=[GPD_WIN_4_VID],
         pid=[GPD_WIN_4_PID],
         # capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
-        required=True,
+        required=False,
         grab=True,
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
@@ -195,10 +187,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
-
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
     REPORT_DELAY_MIN = 1 / REPORT_FREQ_MAX
-
 
     fds = []
     devs = []
@@ -238,7 +228,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
                 if debug:
                     logger.info(evs)
 
-                d_vend.consume(evs)
+                # d_vend.consume(evs)
                 d_xinput.consume(evs)
 
             for d in d_outs:
