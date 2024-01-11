@@ -48,6 +48,7 @@ class GpdWin4Hidraw(GenericGamepadHidraw):
     def open(self) -> Sequence[int]:
         self.left_pressed = None
         self.right_pressed = None
+        self.last_pressed = None
         self.clear_ts = None
 
         self.queue: list[tuple[Event, float]] = []
@@ -79,12 +80,12 @@ class GpdWin4Hidraw(GenericGamepadHidraw):
                 case 0x46:
                     # action = "left/l4"
                     left_pressed = True
-                    right_pressed = False
+                    self.last_pressed = "left"
                     self.clear_ts = None
                 case 0x48:
                     # action = "right/r4"
-                    left_pressed = False
                     right_pressed = True
+                    self.last_pressed = "right"
                     self.clear_ts = None
                 case 0x8E:
                     # both l4 and r4 are being pressed
@@ -92,6 +93,12 @@ class GpdWin4Hidraw(GenericGamepadHidraw):
                     right_pressed = True
                     self.clear_ts = None
                 case _:  # 0x00:
+                    # This occurs only when one button is pressed
+                    # So in case both are remove one
+                    if self.last_pressed == "right" and self.left_pressed:
+                        left_pressed = False
+                    if self.last_pressed == "left" and self.right_pressed:
+                        right_pressed = False
                     self.clear_ts = curr + BACK_BUTTON_DELAY
 
         if self.clear_ts and self.clear_ts < curr:
