@@ -21,7 +21,7 @@ GPD_WIN_4_PID = 0x0135
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
-BACK_BUTTON_DELAY = 0.05
+BACK_BUTTON_DELAY = 0.1
 
 # /dev/input/event17 Microsoft X-Box 360 pad usb-0000:73:00.3-4.1/input0
 # bus: 0003, vendor 045e, product 028e, version 0101
@@ -92,11 +92,7 @@ class GpdWin4Hidraw(GenericGamepadHidraw):
                     right_pressed = True
                     self.clear_ts = None
                 case _:  # 0x00:
-                    left_pressed = False
-                    right_pressed = False
-                    if self.clear_ts is None:
-                        # Only update timeout if none
-                        self.clear_ts = curr + BACK_BUTTON_DELAY
+                    self.clear_ts = curr + BACK_BUTTON_DELAY
 
         if self.clear_ts and self.clear_ts < curr:
             # Reset after timeout
