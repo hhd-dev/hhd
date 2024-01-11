@@ -12,10 +12,10 @@ from hhd.plugins import (
 from hhd.plugins.settings import HHDSettings
 
 
-class GpdWin4ControllersPlugin(HHDPlugin):
-    name = "gpd_win_4_controllers"
+class GpdWinControllersPlugin(HHDPlugin):
+    name = "gpd_win_controllers"
     priority = 18
-    log = "gpd_win_4"
+    log = "gpdw"
 
     def __init__(self) -> None:
         self.t = None
@@ -41,7 +41,7 @@ class GpdWin4ControllersPlugin(HHDPlugin):
         return base
 
     def update(self, conf: Config):
-        new_conf = conf["controllers.gpd_win_4"]
+        new_conf = conf["controllers.gpd_win"]
         if new_conf == self.prev:
             return
         if self.prev is None:
@@ -85,4 +85,4 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         if not f.read().strip() == "G1618-04":
             return []
 
-    return [GpdWin4ControllersPlugin()]
+    return [GpdWinControllersPlugin()]
