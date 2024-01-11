@@ -1,0 +1,26 @@
+type: container
+tags: [lgc]
+title: GPD Controller
+hint: >-
+  Allows for configuring the gpd win controllers to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [gpd_gen_3_controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse gpd features.
+
+  #
+  # Common settings
+  #
+
+  debug:
+    type: bool
+    title: Debug
+    tags: [advanced]
+    hint: >-
+      Output controller events to the console (high CPU use) and raises exceptions
+      (HHD will crash on errors).
+    default: False
