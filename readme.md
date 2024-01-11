@@ -46,10 +46,8 @@ depending on the game.
   - By hooking into the manufacturer ACPI API of the Ryzen platform,
     it will expose all TDP related parameters manufacturers have access to
     when spec'ing laptops.
-  - RyzenAdj Successor
-    - No memory-relaxed requirement
-    - Safer, as it is the method used by manufacturers
-        (provided you stay within limits).
+  - No memory-relaxed requirement
+  - Safe, as it is the method used by manufacturers (provided you stay within limits).
 
 ## Installation Instructions
 You can install the latest stable version of `hhd` from AUR or PyPi.
