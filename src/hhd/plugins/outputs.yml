@@ -52,6 +52,7 @@ modes:
           gyro timestamp, effectively limiting the responsiveness of the
           controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
           If the IMU is not working, this setting will break the controller.
+        default: False
 
       bluetooth_mode:
         type: bool
@@ -93,6 +94,7 @@ modes:
           gyro timestamp, effectively limiting the responsiveness of the
           controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
           If the IMU is not working, this setting will break the controller.
+        default: False
 
       bluetooth_mode:
         type: bool
