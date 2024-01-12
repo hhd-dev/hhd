@@ -270,6 +270,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
         touchpad_short=touch_actions["short"].to(TouchpadAction),
         touchpad_right=touch_actions["hold"].to(TouchpadAction),
         select_reboots=conf["select_reboots"].to(bool),
+        r3_to_share=conf["m2_to_mute"].to(bool),
     )
 
     REPORT_FREQ_MIN = 25

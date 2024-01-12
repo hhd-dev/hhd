@@ -246,6 +246,7 @@ class Multiplexer:
         trigger_discrete_lvl: float = 0.99,
         touchpad_short: TouchpadAction = "disabled",
         touchpad_right: TouchpadAction = "left_click",
+        r3_to_share: bool = False,
         select_reboots: bool = False,
     ) -> None:
         self.swap_guide = swap_guide
@@ -259,6 +260,7 @@ class Multiplexer:
         self.touchpad_short = touchpad_short
         self.touchpad_right = touchpad_right
         self.select_reboots = select_reboots
+        self.r3_to_share = r3_to_share
 
         self.state = {}
         self.touchpad_down = time.perf_counter()
@@ -481,7 +483,7 @@ class Multiplexer:
 
                     # TODO: Make it a proper config option
                     # Remap M2 to the mute button
-                    if ev["code"] == "extra_r3":
+                    if self.r3_to_share and ev["code"] == "extra_r3":
                         ev["code"] = "share"
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
