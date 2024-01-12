@@ -17,12 +17,15 @@ class GpdWinControllersPlugin(HHDPlugin):
     priority = 18
     log = "gpdw"
 
-    def __init__(self) -> None:
+    def __init__(self, dmi: str, name: str) -> None:
         self.t = None
         self.should_exit = None
         self.updated = Event()
         self.started = False
         self.t = None
+
+        self.dmi = dmi
+        self.name = f"powerbuttond@'{name}'"
 
     def open(
         self,
@@ -36,7 +39,7 @@ class GpdWinControllersPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         base = {"controllers": {"gpd_win": load_relative_yaml("controllers.yml")}}
         base["controllers"]["gpd_win"]["children"]["controller_mode"].update(
-            get_outputs_config(can_disable=False)
+            get_outputs_config(can_disable=True)
         )
         return base
 
@@ -76,13 +79,18 @@ class GpdWinControllersPlugin(HHDPlugin):
         self.t = None
 
 
+GPD_WMIS = {"G1618-04": "GPD Win 4", "G1617-01": "GPD Win Mini"}
+
+
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
     # Match just product number, should be enough for now
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        if not f.read().strip() == "G1618-04":
+        dmi = f.read().strip()
+        name = GPD_WMIS.get(dmi)
+        if not name:
             return []
 
-    return [GpdWinControllersPlugin()]
+    return [GpdWinControllersPlugin(name, dmi)]
