@@ -393,8 +393,8 @@ class Dualsense(Producer, Consumer):
         # Cache
         # Caching can cause issues since receivers expect reports
         # at least a couple of times per second
-        # if new_rep == self.report and not self.fake_timestamps:
-        #     return
+        if new_rep == self.report and not self.fake_timestamps:
+            return
         self.report = new_rep
 
         if self.fake_timestamps:
