@@ -59,6 +59,7 @@ class Dualsense(Producer, Consumer):
         fake_timestamps: bool = False,
         enable_touchpad: bool = True,
         enable_rgb: bool = True,
+        sync_gyro: bool = False,
     ) -> None:
         self.available = False
         self.report = None
@@ -70,6 +71,7 @@ class Dualsense(Producer, Consumer):
         self.touchpad_method: TouchpadCorrectionType = touchpad_method
         self.enable_touchpad = enable_touchpad
         self.enable_rgb = enable_rgb
+        self.sync_gyro = sync_gyro
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -275,6 +277,9 @@ class Dualsense(Producer, Consumer):
 
     def consume(self, events: Sequence[Event]):
         assert self.dev and self.report
+        # To fix gyro to mouse in latest steam
+        # only send updates when gyro sends a timestamp
+        send = not self.sync_gyro
 
         new_rep = bytearray(self.report)
         for ev in events:
@@ -325,6 +330,7 @@ class Dualsense(Producer, Consumer):
                             )
                             new_rep[self.ofs + 35] = y >> 4
                         case "gyro_ts":
+                            send = True
                             new_rep[self.ofs + 27 : self.ofs + 31] = int(
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
@@ -393,8 +399,8 @@ class Dualsense(Producer, Consumer):
         # Cache
         # Caching can cause issues since receivers expect reports
         # at least a couple of times per second
-        if new_rep == self.report and not self.fake_timestamps:
-            return
+        # if new_rep == self.report and not self.fake_timestamps:
+        #     return
         self.report = new_rep
 
         if self.fake_timestamps:
@@ -413,4 +419,5 @@ class Dualsense(Producer, Consumer):
 
         if self.use_bluetooth:
             sign_crc32_inplace(self.report, DS5_INPUT_CRC32_SEED)
-        self.dev.send_input_report(self.report)
+        if send:
+            self.dev.send_input_report(self.report)

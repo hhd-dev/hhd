@@ -42,6 +42,17 @@ modes:
           to control them.
         default: True
 
+      sync_gyro:
+        type: bool
+        title: Gyro to Mouse Fix
+        hint: >-
+          In the latest steam update, `Gyro to Mouse [BETA]` misbehaves if a report is
+          sent without a new imu timestamp.
+          This option makes it so reports are sent only when there is a new
+          gyro timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
+          If the IMU is not working, this setting will break the controller.
+
       bluetooth_mode:
         type: bool
         title: Bluetooth Mode
@@ -71,6 +82,17 @@ modes:
           Passes through the LEDs to the controller, which allows games
           to control them.
         default: True
+
+      sync_gyro:
+        type: bool
+        title: Gyro to Mouse Fix
+        hint: >-
+          In the latest steam update, `Gyro to Mouse [BETA]` misbehaves if a report is
+          sent without a new imu timestamp.
+          This option makes it so reports are sent only when there is a new
+          gyro timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
+          If the IMU is not working, this setting will break the controller.
 
       bluetooth_mode:
         type: bool

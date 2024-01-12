@@ -32,7 +32,7 @@ children:
     default: False
   gyro_fix:
     type: discrete
-    title: Gyro Fix (hz)
+    title: Gyro Hz
     hint: >-
       Adds polling to the legion go gyroscope, to fix the low polling rate
       (required for gyroscope support). Set to 0 to disable.
@@ -61,6 +61,14 @@ children:
       l_is_start: "Left is Start"
       l_is_select: "Left is Select"
     default: disabled
+  
+  m2_to_mute:
+    type: bool
+    title: M2 As Mute
+    hint: >-
+      Maps the M2 to the mute button on Dualsense and the HAPPY_TRIGGER_20
+      on Xbox.
+    default: False
   
   select_reboots:
     type: bool
