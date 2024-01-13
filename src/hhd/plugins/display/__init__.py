@@ -40,7 +40,7 @@ class DisplayPlugin(HHDPlugin):
 
     def settings(self) -> HHDSettings:
         if self.display:
-            return {"general": {"display": load_relative_yaml("settings.yml")}}
+            return {"system": {"display": load_relative_yaml("settings.yml")}}
         else:
             return {}
 
@@ -70,7 +70,7 @@ class DisplayPlugin(HHDPlugin):
 
         curr = None
         try:
-            requested = conf["general.display.brightness"].to(int | None)
+            requested = conf["system.display.brightness"].to(int | None)
 
             curr = int(
                 int(read_sysfs(self.display, "brightness", None))

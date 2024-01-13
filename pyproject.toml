@@ -33,7 +33,7 @@ hhd = "hhd.__main__:main"
 [project.entry-points."hhd.plugins"]
 legion_go = "hhd.device.legion_go:autodetect"
 rog_ally = "hhd.device.rog_ally:autodetect"
-gpd_win = "hhd.device.gpd.win:autodetect"
+# gpd_win = "hhd.device.gpd.win:autodetect"
 powerbuttond = "hhd.plugins.powerbutton:autodetect"
 # display = "hhd.plugins.display:autodetect"
 
