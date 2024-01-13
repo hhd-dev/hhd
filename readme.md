@@ -173,6 +173,19 @@ sudo systemctl disable --now handycon.service
 sudo dnf remove handygccs-git # (verify ?)
 ```
 
+#### Issues on ROG Ally
+Using the gyroscope on the Ally requires a kernel that is patched to enable IMU
+support.
+See [Ally Nobara Fixes](https://github.com/jlobue10/ALLY_Nobara_fixes) for IMU the
+patches.
+
+Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
+does not wake up after sleep so Handheld Daemon stops working.
+
+In addition, without a patched kernel with `asus-hid`/`asus-wmi`, LEDs might not 
+initialize properly (theoretically they should work).
+This is currently under investigation.
+
 ### ❄️ NixOS (experimental)
 Update the `nixpkgs.url` input in your flake to point at [the PR](https://github.com/NixOS/nixpkgs/pull/277661/) branch:
 
