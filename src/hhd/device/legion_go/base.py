@@ -213,7 +213,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
     d_touch = GenericGamepadEvdev(
         vid=[0x17EF],
         pid=[0x6182],
-        # name=["  Legion Controller for Windows  Touchpad"],
+        name=[re.compile(".+Touchpad")],  # "  Legion Controller for Windows  Touchpad"
         capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
         btn_map=LGO_TOUCHPAD_BUTTON_MAP,
         axis_map=LGO_TOUCHPAD_AXIS_MAP,
