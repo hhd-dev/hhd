@@ -20,6 +20,7 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("Legion Go", "83E1"),
     PBC("ROG Ally", "ROG Ally RC71L_RC71L"),
     PBC("GPT Win 4", "G1618-04"),
+    PBC("GPD Win Mini", "G1617-01"),
 ]
 
 DEFAULT_DEVICE: PowerButtonConfig = PBC(
