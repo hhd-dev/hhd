@@ -5,7 +5,7 @@ Legion Go specific code.
 import argparse
 import subprocess
 import logging
-
+import re
 
 # This function is used to execute ACPI commands that are specific to the Legion Go using manufacturer specific ACPI calls.
 def execute_acpi_command(command_parts):
@@ -14,6 +14,7 @@ def execute_acpi_command(command_parts):
     """
     command = " ".join(command_parts)
     try:
+        logging.info(f"Executing command: {command}")
         result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
@@ -44,10 +45,16 @@ def get_tdp_value(mode):
     command_parts = [f"echo '\\_SB.GZFD.WMAE 0 0x11 0x01{mode_code}FF00' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call"]
     response = execute_acpi_command(command_parts)
     if response:
-        return response
+        match = re.search(r'\n0x([0-9a-fA-F]+)', response)
+        if match:
+            tdp_hex = match.group(1)
+            tdp_value = int(tdp_hex, 16) # Convert hex to decimal
+            logging.info(f"Retrieved TDP value for {mode} mode: {tdp_value}")
+        else:
+            logging.error("Failed to parse TDP value.")
     else:
         logging.error("Failed to retrieve TDP value.")
-        return None
+    return response
 
 
 def main():
