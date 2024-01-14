@@ -56,12 +56,48 @@ def get_tdp_value(mode):
         logging.error("Failed to retrieve TDP value.")
     return response
 
+def get_fan_curve():
+    # Define the ACPI command to retrieve the fan curve data
+    acpi_command_parts = ["echo '\\_SB.GZFD.WMAB 0 0x05 0x0000' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call"]
+    response = execute_acpi_command(acpi_command_parts)
+
+    if response:
+        try:
+            hex_data = response[response.find('{')+1:response.find('}')]
+            hex_values = hex_data.split(', ')
+
+            # Convert hex values to integers, handling trailing commas
+            fan_speed_values = [int(val.split(',')[0].strip(), 16) for val in hex_values if val.strip()]
+
+            # Skip the first value (indicating starting temperature step) and padding values
+            fan_speed_values = fan_speed_values[4:]  # Start from the first actual fan speed value
+
+            formatted_output = "Fan Curve:\n"
+
+            # Process the data assuming the pattern: 0x00, 0x00, 0x00, fan speed
+            for i in range(0, len(fan_speed_values), 4):
+                temperature = 10 + (i // 4) * 10  # Increment temperature by 10°C starting from 10°C
+                speed = fan_speed_values[i]  # Fan speed is the first value in each group of four
+                formatted_output += f"Temperature {temperature}°C: Fan Speed {speed}%\n"
+
+
+
+            logging.info("Fan Curve Data Retrieved:")
+            print(formatted_output)
+
+        except Exception as e:
+            logging.error(f"Error parsing fan curve: {e}")
+    
+    else:
+        logging.error("Failed to retrieve fan curve data.")
+
 
 def main():
     parser = argparse.ArgumentParser(description='Legion Go Control Script')
     parser.add_argument('--set-tdp', nargs=2, metavar=('MODE', 'WATTAGE'), help='Set TDP value. Modes: Slow, Steady, Fast.')
     parser.add_argument('--get-tdp', metavar='MODE', help='Get TDP value for a specific mode. Modes: Slow, Steady, Fast.')
     parser.add_argument('--set-fan-curve', nargs='+', type=int, help='Set fan curve. Pass fan speeds as a list.')
+    parser.add_argument('--get-fan-curve', action='store_true', help='Get fan curve.') 
     
 
     args = parser.parse_args()
@@ -75,6 +111,10 @@ def main():
 
     if args.set_fan_curve:
         set_fan_curve(args.set_fan_curve)
+
+    if args.get_fan_curve:
+        get_fan_curve()
+    
 
     
 
