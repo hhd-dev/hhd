@@ -141,7 +141,7 @@ def main():
     parser.add_argument('--set-tdp', nargs=2, metavar=('MODE', 'WATTAGE'), help='Set TDP value. Modes: Slow, Steady, Fast.')
     parser.add_argument('--get-tdp', metavar='MODE', help='Get TDP value for a specific mode. Modes: Slow, Steady, Fast.')
     parser.add_argument('--set-fan-curve', nargs=10, type=int, metavar='',  help='Set fan curve. Provide a series of fan speeds. i.e --set-fan-curve 0 10 20 30 40 50 60 70 80 90 100. Sets the fan speed to 0%% at 0°C, 10%% at 10°C, 20%% at 20°C, etc.')
-    parser.add_argument('--set-full-speed', nargs=1, type=int, metavar='State', help='Set fan speed to 100% bypassing the fan curve, accepts 1 or 0.')
+    parser.add_argument('--set-full-speed', nargs=1, type=int, metavar='State', help='Set fan speed to 100%% bypassing the fan curve, accepts 1 or 0.')
     parser.add_argument('--get-fan-curve', action='store_true', help='Get fan curve, retuns a list of fan speeds for different temperature thresholds.') 
     parser.add_argument('--verbose', action='store_true', help='Enable verbose logging, prints executed commands and their output.')
     args = parser.parse_args()
