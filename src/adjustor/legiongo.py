@@ -14,7 +14,7 @@ def execute_acpi_command(command_parts):
     """
     command = " ".join(command_parts)
     try:
-        logging.info(f"Executing command: {command}")
+        logging.debug(f"Command: {command}")
         result = subprocess.run(command, shell=True, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
@@ -56,6 +56,39 @@ def get_tdp_value(mode):
         logging.error("Failed to retrieve TDP value.")
     return response
 
+def set_fan_curve(fan_table):
+    """
+    Sets a new fan curve based on the provided fan table array.
+    The fan table should contain fan speed values that correspond to different temperature thresholds.
+
+    Args:
+        fan_table (list): An array of fan speeds to set the fan curve.
+
+    Returns:
+        str: The output from setting the new fan curve.
+    """
+    # Assuming Fan ID and Sensor ID are both 0 (as they are ignored)
+    fan_id_sensor_id = '0x00, 0x00'
+
+    # Assuming the temperature array length and values are ignored but required
+    temp_array_length = '0x0A, 0x00, 0x00, 0x00'  # Length 10 in hex
+    temp_values = ', '.join([f'0x{temp:02x}, 0x00' for temp in range(0, 101, 10)]) + ', 0x00'
+
+    # Fan speed values in uint16 format with null termination
+    fan_speed_values = ', '.join([f'0x{speed:02x}, 0x00' for speed in fan_table]) + ', 0x00'
+
+    # Constructing the full command
+    logging.info(f"Setting fan curve to: {fan_table}")
+    
+    command = ["echo '\\_SB.GZFD.WMAB 0 0x06 {{{fan_id_sensor_id}, {temp_array_length}, {fan_speed_values}, {temp_array_length}, {temp_values}}}' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call".format(
+        fan_id_sensor_id=fan_id_sensor_id,
+        temp_array_length=temp_array_length,
+        temp_values=temp_values,
+        fan_speed_values=fan_speed_values
+    )]
+    return execute_acpi_command(command)
+
+
 def get_fan_curve():
     # Define the ACPI command to retrieve the fan curve data
     acpi_command_parts = ["echo '\\_SB.GZFD.WMAB 0 0x05 0x0000' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call"]
@@ -91,19 +124,35 @@ def get_fan_curve():
     else:
         logging.error("Failed to retrieve fan curve data.")
 
+def set_full_speed(state):
+    """
+    Sets the fan speed to 100% bypassing the fan curve.
+    """
+    if state == 1:
+        logging.info("Setting fan speed to 100%")
+        command = ["echo '\\_SB.GZFD.WMAE 0 0x12 0x0104020100' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call"]
+    else:
+        logging.info("Setting fan speed to fan curve value.")
+        command = ["echo '\\_SB.GZFD.WMAE 0 0x12 0x0004020000' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call"]
+    return execute_acpi_command(command)
 
 def main():
     parser = argparse.ArgumentParser(description='Legion Go Control Script')
     parser.add_argument('--set-tdp', nargs=2, metavar=('MODE', 'WATTAGE'), help='Set TDP value. Modes: Slow, Steady, Fast.')
     parser.add_argument('--get-tdp', metavar='MODE', help='Get TDP value for a specific mode. Modes: Slow, Steady, Fast.')
-    parser.add_argument('--set-fan-curve', nargs='+', type=int, help='Set fan curve. Pass fan speeds as a list.')
-    parser.add_argument('--get-fan-curve', action='store_true', help='Get fan curve.') 
-    
-
+    parser.add_argument('--set-fan-curve', nargs=10, type=int, metavar='',  help='Set fan curve. Provide a series of fan speeds. i.e --set-fan-curve 0 10 20 30 40 50 60 70 80 90 100. Sets the fan speed to 0%% at 0°C, 10%% at 10°C, 20%% at 20°C, etc.')
+    parser.add_argument('--set-full-speed', nargs=1, type=int, metavar='State', help='Set fan speed to 100% bypassing the fan curve, accepts 1 or 0.')
+    parser.add_argument('--get-fan-curve', action='store_true', help='Get fan curve, retuns a list of fan speeds for different temperature thresholds.') 
+    parser.add_argument('--verbose', action='store_true', help='Enable verbose logging, prints executed commands and their output.')
     args = parser.parse_args()
+
+
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     if args.set_tdp:
         mode, wattage = args.set_tdp
+        print(args.set_tdp)
         set_tdp_value(mode, int(wattage))
 
     if args.get_tdp:
@@ -112,10 +161,14 @@ def main():
     if args.set_fan_curve:
         set_fan_curve(args.set_fan_curve)
 
+    if args.set_full_speed:
+        set_full_speed(args.set_full_speed[0])
+
     if args.get_fan_curve:
         get_fan_curve()
-    
 
+    if not any(vars(args).values()):
+        parser.print_help()
     
 
 if __name__ == "__main__":
