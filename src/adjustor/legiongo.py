@@ -136,12 +136,37 @@ def set_full_speed(state):
         command = ["echo '\\_SB.GZFD.WMAE 0 0x12 0x0004020000' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call"]
     return execute_acpi_command(command)
 
+def set_smart_fan_mode(mode_value):
+    """
+    Set the Smart Fan Mode of the system. This controls the system's cooling behavior, balancing
+    between cooling performance and noise level.
+
+    Args:
+        mode_value (int): The value of the Smart Fan Mode to set. Known values are:
+                          - 1: Quiet Mode (Blue LED)
+                          - 2: Balanced Mode    (White LED)
+                          - 3: Performance Mode (Red LED)
+                          - 224: Extreme Mode (Green LED?) Possible extreme power saving mode?
+                          - 255: Custom Mode (Purple LED)
+
+    Returns:
+        str: The result of the operation, or an error message if the operation fails.
+    """
+    valid_modes = [1, 2,3, 224, 255]
+    if mode_value not in valid_modes:
+        logging.error(f"Invalid mode_value. Must be one of {valid_modes}.")
+        return "Invalid mode_value provided."
+    # Construct and execute the ACPI command
+    command = ["echo '\\_SB.GZFD.WMAA 0 0x2C {mode_value}' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call".format(mode_value=mode_value)]
+    return execute_acpi_command(command)
+
 def main():
     parser = argparse.ArgumentParser(description='Legion Go Control Script')
+    parser.add_argument('--set-smart-fan-mode', nargs=1, type=int, metavar='value', help='Set the Smart Fan Mode. Known values are: 1: Quiet Mode (Blue LED), 2: Balanced Mode (White LED), 3: Performance Mode (Red LED), 224: Extreme Mode, 255: Custom Mode (Purple LED).')
     parser.add_argument('--set-tdp', nargs=2, metavar=('MODE', 'WATTAGE'), help='Set TDP value. Modes: Slow, Steady, Fast.')
-    parser.add_argument('--get-tdp', metavar='MODE', help='Get TDP value for a specific mode. Modes: Slow, Steady, Fast.')
-    parser.add_argument('--set-fan-curve', nargs=10, type=int, metavar='',  help='Set fan curve. Provide a series of fan speeds. i.e --set-fan-curve 0 10 20 30 40 50 60 70 80 90 100. Sets the fan speed to 0%% at 0°C, 10%% at 10°C, 20%% at 20°C, etc.')
-    parser.add_argument('--set-full-speed', nargs=1, type=int, metavar='State', help='Set fan speed to 100%% bypassing the fan curve, accepts 1 or 0.')
+    parser.add_argument('--get-tdp', metavar='MODE', help='Get TDP value for a specific mode. Modes: Slow, Steady, Fast. Use ALL to get all modes.')
+    parser.add_argument('--set-fan-curve', nargs=10, type=int, metavar='int',  help='Set fan curve. Provide a series of fan speeds. i.e --set-fan-curve 0 10 20 30 40 50 60 70 80 90 100. Sets the fan speed to 0%% at 0°C, 10%% at 10°C, 20%% at 20°C, etc.')
+    parser.add_argument('--set-full-speed', nargs=1, type=int, metavar='value', help='Set fan speed to 100%% bypassing the fan curve, accepts 1 or 0.')
     parser.add_argument('--get-fan-curve', action='store_true', help='Get fan curve, retuns a list of fan speeds for different temperature thresholds.') 
     parser.add_argument('--verbose', action='store_true', help='Enable verbose logging, prints executed commands and their output.')
     args = parser.parse_args()
@@ -150,13 +175,20 @@ def main():
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
+    if args.set_smart_fan_mode:
+        set_smart_fan_mode(args.set_smart_fan_mode[0])
+
     if args.set_tdp:
         mode, wattage = args.set_tdp
         print(args.set_tdp)
         set_tdp_value(mode, int(wattage))
 
     if args.get_tdp:
-        get_tdp_value(args.get_tdp)
+        if args.get_tdp == 'ALL':
+            for mode in ['Slow', 'Steady', 'Fast']:
+                get_tdp_value(mode)
+        else:
+            get_tdp_value(args.get_tdp)
 
     if args.set_fan_curve:
         set_fan_curve(args.set_fan_curve)
