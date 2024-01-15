@@ -160,9 +160,24 @@ def set_smart_fan_mode(mode_value):
     command = ["echo '\\_SB.GZFD.WMAA 0 0x2C {mode_value}' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call".format(mode_value=mode_value)]
     return execute_acpi_command(command)
 
+def get_smart_fan_mode():
+    """
+    Get the current Smart Fan Mode of the system.
+
+    Returns:
+        str: The result of the operation, or an error message if the operation fails.
+    """
+    # Construct and execute the ACPI command
+    command = ["echo '\\_SB.GZFD.WMAA 0 0x2D' | sudo tee /proc/acpi/call; sudo cat /proc/acpi/call"]
+    output = execute_acpi_command(command)
+    first_newline_position = output.find('\n')
+    output = output[first_newline_position+1:first_newline_position+6]
+    logging.info(f"Current Smart Fan Mode: {output}")
+
 def main():
     parser = argparse.ArgumentParser(description='Legion Go Control Script')
     parser.add_argument('--set-smart-fan-mode', nargs=1, type=int, metavar='value', help='Set the Smart Fan Mode. Known values are: 1: Quiet Mode (Blue LED), 2: Balanced Mode (White LED), 3: Performance Mode (Red LED), 224: Extreme Mode, 255: Custom Mode (Purple LED).')
+    parser.add_argument('--get-smart-fan-mode', action='store_true', help='Get the Smart Fan Mode.')
     parser.add_argument('--set-tdp', nargs=2, metavar=('MODE', 'WATTAGE'), help='Set TDP value. Modes: Slow, Steady, Fast.')
     parser.add_argument('--get-tdp', metavar='MODE', help='Get TDP value for a specific mode. Modes: Slow, Steady, Fast. Use ALL to get all modes.')
     parser.add_argument('--set-fan-curve', nargs=10, type=int, metavar='int',  help='Set fan curve. Provide a series of fan speeds. i.e --set-fan-curve 0 10 20 30 40 50 60 70 80 90 100. Sets the fan speed to 0%% at 0°C, 10%% at 10°C, 20%% at 20°C, etc.')
@@ -177,6 +192,9 @@ def main():
 
     if args.set_smart_fan_mode:
         set_smart_fan_mode(args.set_smart_fan_mode[0])
+
+    if args.get_smart_fan_mode:
+        get_smart_fan_mode()
 
     if args.set_tdp:
         mode, wattage = args.set_tdp
