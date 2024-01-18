@@ -3,21 +3,139 @@ tags: [adj]
 title: Adjustor
 hint: >-
   Configuration of the Performance Envelope of the system.
-
 children:
-  tdp_mode:
-    type: mode
-    tags: [adj_plat]
-    title: TDP Driver
-    hint: >-
-      How to control the overall TDP of the provided device.
-      Which modes are available will depend on the device and available drivers.
-    default: disabled
+  tdp:
+    type: container
+    tags: [adj_tdp]
+    title: "TDP Management"
+    hint: Configuration options related to Thermal Design Power management.
+    max_tdp:
+      type: int
+      title: "Max TDP"
+      hint: Set the maximum TDP of the system. This will be the upper limit.
+      min: 1
+      max: 40
+      step: 1
+      unit: "W"
+      value: 28
+    min_tdp:
+      type: int
+      title: "Min TDP"
+      hint: Set the minimum TDP of the system. This will be the lower limit.
+      min: 1
+      max: 40
+      step: 1
+      unit: "W"
+      value: 32
+    tdp:
+      type: int
+      title: "Steady TDP"
+      hint: Set the current TDP of the system. This will be the starting point.
+      min: 1
+      max: 40
+      step: 1
+      unit: "W"
+      value: 
+    tdp_fast:
+      type: int
+      title: "Fast TDP"
+      hint: Set the fast TDP of the system. This will be the upper limit.
+      min: 1
+      max: 40
+      step: 1
+      unit: "W"
+      value: 
+    tdp_slow:
+      type: int
+      title: "Slow TDP"
+      hint: Set the slow TDP of the system. This will be the lower limit.
+      min: 1
+      max: 40
+      step: 1
+      unit: "W"
+      value: 
+    tdp_mode:
+      type: container
+      tags: [adj_tdp_mode]
+      title: "TDP Mode"
+      hint: >-
+        How to set the TDP of the provided device. (Ryzenadj or Manufacturer)
+      default: disabled
+      value: ['ryzenadj', 'manufacturer']
+  cpu:
+    governor:
+      title: "CPU Governor"
+      hint: >-
+        The CPU governor is responsible for setting the CPU frequency. 
+      default: disabled
+      value: ['ondemand', 'performance', 'powersave']
+    smt:
+      title: "SMT"
+      hint: >-
+        Simultaneous Multi-Threading (SMT) is a technology that allows a CPU to run multiple threads on a single core. 
+      default: disabled
+      value: ['on', 'off']
+    boost:
+      title: "Boost"
+      hint: >-
+        Boost is a feature that allows a processor to run at a higher clock speed than its base clock speed. 
+      default: disabled
+      value: ['on', 'off']
+  gpu:
+    power_dpm_force_performance_level:
+      title: "GPU Performance Level"
+      hint: >-
+        The performance level of the GPU. 
+      default: disabled
+      value: ['auto', 'low', 'high']
+    frequency_min:
+      title: "GPU Minimum Frequency"
+      hint: >-
+        The minimum frequency of the GPU. 
+      default: disabled
+      value:
+    frequency_max:
+      title: "GPU Maximum Frequency"
+      hint: >-
+        The maximum frequency of the GPU. 
+      default: disabled
+      value:
+  device: 
+    legion_go:
+      powermode:
+        title: "Legion Go Power Mode"
+        hint: >-
+          The power mode of the Legion Go. 
+        default: disabled
+        value: ['balanced', 'performance', 'quiet', 'custom']
+      cooling:
+        full_fan_speed:
+          title: "Legion Go Full Fan Speed"
+          hint: >-
+            The full fan speed of the Legion Go. 
+          default: disabled
+          value:
+        fan_curve: # Takes 10 values
+          title: "Legion Go Fan Curve"
+          hint: >-
+            The fan curve of the Legion Go. 
+          default: disabled
+          value:
 
-    modes:
-      disabled:
-        type: container
-        title: "Disabled"
+
+
+    # Not sure on this part
+    rog_ally:
+      powermode:
+        title: "ROG Ally Power Mode"
+        hint: >-
+          The power mode of the ROG Ally. 
+        default: disabled
+        value: ['balanced', 'performance', 'quiet']
+
+
+
+
   # cpu:
   #   type: container
   #   tags: [adj_cpu]
