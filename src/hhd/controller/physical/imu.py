@@ -32,7 +32,7 @@ class DeviceInfo(NamedTuple):
 
 ACCEL_NAMES = ["accel_3d"]
 GYRO_NAMES = ["gyro_3d"]
-IMU_NAMES = ["bmi323-imu"]
+IMU_NAMES = ["bmi323-imu", "BMI0160"]
 
 ACCEL_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
@@ -74,7 +74,7 @@ def find_sensor(sensors: Sequence[str]):
         with open(name_fn, "r") as f:
             name = f.read().strip()
 
-        if name in sensors:
+        if any(sensor in name for sensor in sensors):
             logger.info(f"Found device '{name}' at\n{sensor_dir}")
             return sensor_dir, name
 
