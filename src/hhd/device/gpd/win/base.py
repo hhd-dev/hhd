@@ -4,11 +4,12 @@ import time
 from threading import Event as TEvent
 from typing import Sequence
 
-from hhd.controller import Event, Multiplexer, can_read
+from hhd.controller import Axis, Event, Multiplexer, can_read
 from hhd.controller.base import Event
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.imu import CombinedImu
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 ERROR_DELAY = 1
@@ -20,6 +21,16 @@ GPD_WIN_4_VID = 0x2F24
 GPD_WIN_4_PID = 0x0135
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
+
+GPD_WIN_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+    "accel_x": ("accel_z", "accel", 1, 3),
+    "accel_y": ("accel_x", "accel", 1, 3),
+    "accel_z": ("accel_y", "accel", 1, 3),
+    "anglvel_x": ("gyro_x", "anglvel", 1, None),
+    "anglvel_y": ("gyro_z", "anglvel", -1, None),
+    "anglvel_z": ("gyro_y", "anglvel", -1, None),
+    "timestamp": ("gyro_ts", None, 1, None),
+}
 
 BACK_BUTTON_DELAY = 0.1
 
@@ -152,7 +163,10 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
     debug = conf.get("debug", False)
 
     # Output
-    d_producers, d_outs, d_params = get_outputs(conf["controller_mode"], None, False)
+    d_producers, d_outs, d_params = get_outputs(conf["controller_mode"], None, conf["imu"].to(bool))
+
+    # Imu
+    d_imu = CombinedImu(conf["imu_hz"].to(int), GPD_WIN_MAPPINGS, gyro_scale="0.000266")
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
@@ -190,6 +204,9 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
+    if conf["imu"].to(bool):
+        REPORT_FREQ_MAX = max(REPORT_FREQ_MAX, conf["imu_hz"].to(float))
+
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
     REPORT_DELAY_MIN = 1 / REPORT_FREQ_MAX
 
@@ -207,6 +224,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
     try:
         d_vend.open()
         prepare(d_xinput)
+        if conf.get("imu", False):
+            prepare(d_imu)
         prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
