@@ -45,14 +45,14 @@ tdp_management:
       type: int
       title: Fast TDP (W)
       hint: Maximum TDP in Fast mode.
-      value: 22
+      value: 
     tdp_slow:
       type: int
       title: Slow TDP (W)
       hint: Maximum TDP in Slow mode. ()
-      value: 20
+      value: 
     tdp_steady:
       type: int
       title: Steady TDP (W)
       hint: Maximum TDP in Steady mode.
-      value: 20
+      value: 
