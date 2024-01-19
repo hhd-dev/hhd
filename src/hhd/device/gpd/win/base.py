@@ -1,16 +1,22 @@
 import logging
+import re
 import select
 import time
 from threading import Event as TEvent
 from typing import Sequence
 
 from hhd.controller import Axis, Event, Multiplexer, can_read
-from hhd.controller.base import Event
+from hhd.controller.base import Event, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.imu import CombinedImu
 from hhd.plugins import Config, Context, Emitter, get_outputs
+
+from .const import (
+    GPD_TOUCHPAD_AXIS_MAP,
+    GPD_TOUCHPAD_BUTTON_MAP,
+)
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -21,6 +27,8 @@ GPD_WIN_4_VID = 0x2F24
 GPD_WIN_4_PID = 0x0135
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
+TOUCHPAD_PID = 0x0255
+TOUCHPAD_VID = 0x093A
 
 GPD_WIN_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
@@ -161,9 +169,12 @@ def plugin_run(
 
 def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
     debug = conf.get("debug", False)
+    has_touchpad = "touchpad" in conf
 
     # Output
-    d_producers, d_outs, d_params = get_outputs(conf["controller_mode"], None, conf["imu"].to(bool))
+    d_producers, d_outs, d_params = get_outputs(
+        conf["controller_mode"], conf["touchpad"] if has_touchpad else None, conf["imu"].to(bool)
+    )
 
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int), GPD_WIN_MAPPINGS, gyro_scale="0.000266")
@@ -177,6 +188,18 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         required=True,
         hide=True,
     )
+
+    if has_touchpad:
+        d_touch = GenericGamepadEvdev(
+            vid=[TOUCHPAD_VID],
+            pid=[TOUCHPAD_PID],
+            name=[re.compile(".+Touchpad")],  # "PNP0C50:00 093A:0255 Touchpad"
+            capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
+            btn_map=GPD_TOUCHPAD_BUTTON_MAP,
+            axis_map=GPD_TOUCHPAD_AXIS_MAP,
+            aspect_ratio=1.333,
+            required=False,
+        )
 
     # Vendor
     d_vend = GpdWin4Hidraw(
@@ -196,10 +219,24 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
 
-    multiplexer = Multiplexer(
-        trigger="analog_to_discrete",
-        dpad="analog_to_discrete",
-    )
+    if has_touchpad:
+        touch_actions = (
+            conf["touchpad.controller"]
+            if conf["touchpad.mode"].to(TouchpadAction) == "controller"
+            else conf["touchpad.emulation"]
+        )
+
+        multiplexer = Multiplexer(
+            trigger="analog_to_discrete",
+            dpad="analog_to_discrete",
+            touchpad_short=touch_actions["short"].to(TouchpadAction),
+            touchpad_right=touch_actions["hold"].to(TouchpadAction),
+        )
+    else:
+        multiplexer = Multiplexer(
+            trigger="analog_to_discrete",
+            dpad="analog_to_discrete",
+        )
 
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
@@ -226,6 +263,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         prepare(d_xinput)
         if conf.get("imu", False):
             prepare(d_imu)
+        if has_touchpad and d_params["uses_touch"]:
+            prepare(d_touch)
         prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)

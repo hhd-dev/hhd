@@ -8,6 +8,7 @@ from hhd.plugins import (
     HHDPlugin,
     load_relative_yaml,
     get_outputs_config,
+    get_touchpad_config,
 )
 from hhd.plugins.settings import HHDSettings
 
@@ -41,6 +42,12 @@ class GpdWinControllersPlugin(HHDPlugin):
         base["controllers"]["gpd_win"]["children"]["controller_mode"].update(
             get_outputs_config(can_disable=False)
         )
+
+        if self.dmi == "G1617-01":
+            base["controllers"]["gpd_win"]["children"]["touchpad"] = get_touchpad_config()
+        else:
+            del base["controllers"]["gpd_win"]["children"]["touchpad"]
+
         return base
 
     def update(self, conf: Config):
@@ -93,4 +100,4 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         if not name:
             return []
 
-    return [GpdWinControllersPlugin(name, dmi)]
+    return [GpdWinControllersPlugin(dmi, name)]
