@@ -23,7 +23,7 @@ def execute_acpi_command(command_parts):
 
 
 def set_tdp_value(mode, wattage):
-    mode_mappings = {'Slow': '0x01', 'Steady': '0x02', 'Fast': '0x03'}
+    mode_mappings = {'slow': '0x01', 'steady': '0x02', 'fast': '0x03'}
     if mode not in mode_mappings:
         logging.error(f"Invalid TDP mode: {mode}. Must be one of {list(mode_mappings.keys())}.")
         return None
@@ -173,6 +173,7 @@ def get_smart_fan_mode():
     first_newline_position = output.find('\n')
     output = output[first_newline_position+1:first_newline_position+6]
     logging.info(f"Current Smart Fan Mode: {output}")
+    return output
 
 def main():
     parser = argparse.ArgumentParser(description='Legion Go Control Script')
