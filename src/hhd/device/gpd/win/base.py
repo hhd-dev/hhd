@@ -189,17 +189,16 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         hide=True,
     )
 
-    if has_touchpad:
-        d_touch = GenericGamepadEvdev(
-            vid=[TOUCHPAD_VID],
-            pid=[TOUCHPAD_PID],
-            name=[re.compile(".+Touchpad")],  # "PNP0C50:00 093A:0255 Touchpad"
-            capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
-            btn_map=GPD_TOUCHPAD_BUTTON_MAP,
-            axis_map=GPD_TOUCHPAD_AXIS_MAP,
-            aspect_ratio=1.333,
-            required=False,
-        )
+    d_touch = GenericGamepadEvdev(
+        vid=[TOUCHPAD_VID],
+        pid=[TOUCHPAD_PID],
+        name=[re.compile(".+Touchpad")],  # "PNP0C50:00 093A:0255 Touchpad"
+        capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
+        btn_map=GPD_TOUCHPAD_BUTTON_MAP,
+        axis_map=GPD_TOUCHPAD_AXIS_MAP,
+        aspect_ratio=1.333,
+        required=False,
+    )
 
     # Vendor
     d_vend = GpdWin4Hidraw(
