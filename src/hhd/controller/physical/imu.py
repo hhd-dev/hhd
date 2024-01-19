@@ -32,7 +32,7 @@ class DeviceInfo(NamedTuple):
 
 ACCEL_NAMES = ["accel_3d"]
 GYRO_NAMES = ["gyro_3d"]
-IMU_NAMES = ["bmi323-imu", "BMI0160"]
+IMU_NAMES = ["bmi323-imu", "BMI0160", "BMI0260"]
 
 ACCEL_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
@@ -365,7 +365,7 @@ class ForcedSampler:
         self.fds = []
         self.paths = []
         for d in self.devices:
-            f, _ = find_sensor(d)
+            f, _ = find_sensor([d])
             if not f:
                 continue
             if "accel" in d:
