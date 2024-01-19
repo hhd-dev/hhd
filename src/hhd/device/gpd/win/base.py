@@ -173,7 +173,9 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
-        conf["controller_mode"], conf["touchpad"] if has_touchpad else None, conf["imu"].to(bool)
+        conf["controller_mode"],
+        conf["touchpad"] if has_touchpad else None,
+        conf["imu"].to(bool),
     )
 
     # Imu
@@ -229,7 +231,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
             trigger="analog_to_discrete",
             dpad="analog_to_discrete",
             touchpad_short=touch_actions["short"].to(TouchpadAction),
-            touchpad_right=touch_actions["hold"].to(TouchpadAction),
+            touchpad_hold=touch_actions["hold"].to(TouchpadAction),
         )
     else:
         multiplexer = Multiplexer(
