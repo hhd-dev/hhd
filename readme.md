@@ -14,7 +14,12 @@ mainstream controllers (xbox Elite, DS4, PS5, Joycons), so that users of devices
 can pick the best target for their device and its controls, which may change
 depending on the game.
 
-*Current Features (for both ROG Ally and Legion Go)*:
+*Supported Devices*:
+- Legion Go
+- ROG Ally
+- GPD Win 4 and Mini
+
+*Current Features*:
 - Fully functional DualSense and Dualsense Edge emulation
     - All buttons supported
     - Rumble feedback
@@ -33,7 +38,7 @@ depending on the game.
 - UI based Configuration
   - Generic API that can be used from bash scripts (through `curl`)
   - Decky Plugin
-  - Webpac
+  - Webapp on https://hhd.dev and through Electron
 - Built-in updater.
 
 *Planned Features (in this order)*:
@@ -88,6 +93,15 @@ curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
 Then, reboot and go to [hhd.dev](https://hhd.dev) to configure or read more in
 the [configuration section](#configuration).
 
+#### Using an older version
+If you find any issues with the latest version of Handheld Daemon
+you can use any version by specifying it with the command below.
+```bash
+sudo systemctl stop hhd_local@$(whoami)
+~/.local/share/hhd/venv/bin/pip install hhd==1.0.6
+sudo systemctl start hhd_local@$(whoami)
+```
+
 ### Manual Local Installation
 You can also install Handheld Daemon using a local package, which enables auto-updating.
 These are the same steps as done in the Automatic Install (also see 
@@ -116,6 +130,15 @@ sudo systemctl enable hhd_local@$(whoami)
 sudo reboot
 ```
 
+#### Using an older version
+If you find any issues with the latest version of Handheld Daemon
+you can use any version by specifying it with the command below.
+```bash
+sudo systemctl stop hhd_local@$(whoami)
+~/.local/share/hhd/venv/bin/pip install hhd==1.0.6
+sudo systemctl start hhd_local@$(whoami)
+```
+
 #### Update Instructions
 Of course, you will want to update Handheld Daemon to catch up to latest features.
 You can either use the commands below or press `Update (Stable)` in one of the UIs
@@ -139,6 +162,45 @@ rm -r ~/.config/hhd
 ```
 
 ### <a name="issues"></a> Common Issues with Install
+#### Extra steps for ROG Ally
+Using the gyroscope on the Ally requires a kernel that is patched to enable IMU
+support.
+See [Ally Nobara Fixes](https://github.com/jlobue10/ALLY_Nobara_fixes) for IMU the
+patches themselves (IMU 0001-0005) and Fedora kernel binaries 
+(install with `sudo rmp -i <img>.rpm`)
+and [rog-ally-gaming/linux-chimeraos](https://github.com/rog-ally-gaming/linux-chimeraos)
+for Arch distribution binaries (install with `sudo pacman -U <img>.tar.xz`; except 6.1 kernels).
+
+If you compile your own kernel, your kernel config should also enable the
+modules `SYSFS trigger` with `CONFIG_IIO_SYSFS_TRIGGER` and
+`High resolution timer trigger` with `CONFIG_IIO_HRTIMER_TRIGGER`.
+Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I/O support ─> Triggers - standalone`.
+
+Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
+does not wake up after sleep so Handheld Daemon stops working.
+
+In addition, without a patched kernel with `asus-hid`/`asus-wmi`, LEDs might not 
+initialize properly (theoretically they should work).
+This is currently under investigation.
+
+#### Extra steps GPD Win Devices
+In order for the back buttons in GPD Win Devices to work, you need to map the
+back buttons to Left: Pause, Right: Printscreen using Windows.
+This is the default mapping, so if you never remapped them using Windows you
+will not have to.
+Handheld Daemon automatically handles the interval to enable being able to hold
+the button.
+
+Here is how the button settings should look:
+```
+Left-key: PrtSc + 0ms + NC + 0ms + NC + 0ms + NC
+Right-key: Pausc + 0ms + NC + 0ms + NC + 0ms + NC
+```
+
+To use the gyro, you will need a [dkms package](github.com/hhd-dev/bmi260)
+for the Bosch 260 IMU Driver.
+Follow the instructions in that repository to install it.
+
 #### Missing Python Evdev
 In case you have installation issues, you might be missing the package `python-evdev`.
 You can either install it as part of your distribution (included by Nobara
@@ -172,19 +234,6 @@ sudo pacman -R handygccs-git
 sudo systemctl disable --now handycon.service
 sudo dnf remove handygccs-git # (verify ?)
 ```
-
-#### Issues on ROG Ally
-Using the gyroscope on the Ally requires a kernel that is patched to enable IMU
-support.
-See [Ally Nobara Fixes](https://github.com/jlobue10/ALLY_Nobara_fixes) for IMU the
-patches.
-
-Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
-does not wake up after sleep so Handheld Daemon stops working.
-
-In addition, without a patched kernel with `asus-hid`/`asus-wmi`, LEDs might not 
-initialize properly (theoretically they should work).
-This is currently under investigation.
 
 ### ❄️ NixOS (experimental)
 Update the `nixpkgs.url` input in your flake to point at [the PR](https://github.com/NixOS/nixpkgs/pull/277661/) branch:
@@ -295,14 +344,14 @@ reason, and some games read the button order wrong.
 
 X-input requires a special udev rule to work, see below.
 
-### Other gamepad modes
-HHD remaps the x-input mode of the Legion Go controllers into a PS5 controller.
+### Other Legion Go gamepad modes
+Handheld Daemon remaps the x-input mode of the Legion Go controllers into a PS5 controller.
 All other modes function as normal.
-In addition, HHD adds a shortcuts device that allows remapping the back buttons
+In addition, Handheld Daemon adds a shortcuts device that allows remapping the back buttons
 and all Legion L, R + button combinations into shortcuts that will work accross
 all modes.
 
-### I can not see any controllers before or after installing HHD
+### I can not see any Legion Controllers controllers before or after installing
 Your kernel needs to know to use the `xpad` driver for the Legion Go's
 controllers.
 
@@ -386,6 +435,13 @@ this point, so you need to use Legion Space for that.
 Another set of obscure issues occur depending on how apps hook to the Dualsense controller.
 Certain versions of gamescope and certain games do not support the edge controller,
 so switch to `Dualsense` or `Xbox` emulation modes if you are having issues.
+
+If Steam itself is broken and can not see the controllers properly (e.g., you
+can not see led/gyro settings or the Edge controller mapping is wrong), you
+should update your distribution and if that does not fix it consider re-installing.
+There are certain gamescope/distro issues that cause this and we are unsure of
+the cause at this moment.
+ChimeraOS 44 and certain versions of Nobara 38 have this issue.
 
 ### Disabling Dualsense touchpad
 The Dualsense touchpad may interfere with games or steam input. 
