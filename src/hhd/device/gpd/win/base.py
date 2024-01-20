@@ -191,9 +191,11 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         hide=True,
     )
 
+    # "PNP0C50:00 0911:5288 Touchpad" on Win Max 2 2023
+    # "PNP0C50:00 093A:0255 Touchpad" on Win Mini
     d_touch = GenericGamepadEvdev(
-        vid=[TOUCHPAD_VID],
-        pid=[TOUCHPAD_PID],
+        vid=[TOUCHPAD_VID, 0x0911],
+        pid=[TOUCHPAD_PID, 0x5288],
         name=[re.compile(".+Touchpad")],  # "PNP0C50:00 093A:0255 Touchpad"
         capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
         btn_map=GPD_TOUCHPAD_BUTTON_MAP,
