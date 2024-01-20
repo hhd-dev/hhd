@@ -75,7 +75,7 @@ Then, update from Decky or the UI.
 > If your distro uses HandyGCCS/Handycon to fix certain key bindings by default
 > you need to uninstall it. Disabling it is not enough, since it is autostarted
 > by certain sessions (such as `gamescope-session-plus`). 
-> This includes both ChimeraOS and Nobara (see [Installation Issues](#issues)).
+> This includes both ChimeraOS and Nobara (see [Common Issues after Install](#issues)).
 
 ```bash
 # Install
@@ -86,12 +86,21 @@ curl -L https://github.com/hhd-dev/hhd/raw/master/uninstall.sh | sh
 ```
 
 You can also install the Decky plugin.
+Having Decky installed is a prerequisite ([instructions](https://github.com/SteamDeckHomebrew/decky-loader#-installation)).
 ```bash
 curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
 ```
 
 Then, reboot and go to [hhd.dev](https://hhd.dev) to configure or read more in
 the [configuration section](#configuration).
+
+> Before creating an issue, make sure you are using the latest Handheld Daemon 
+> version and that you read the extra information for each setting in 
+> either [hhd.dev](https://hhd.dev) or the `state.yml` file.
+> 
+> The context is required to understand what each setting does and is 
+> not included in the current version of the Decky Plugin 
+> due to UI limitations.
 
 #### Using an older version
 If you find any issues with the latest version of Handheld Daemon
@@ -105,12 +114,12 @@ sudo systemctl start hhd_local@$(whoami)
 ### Manual Local Installation
 You can also install Handheld Daemon using a local package, which enables auto-updating.
 These are the same steps as done in the Automatic Install (also see 
-[Installation Issues](#issues)).
+[Common Issues after Install](#issues)).
 
 ```bash
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# !!!! Delete HandyGCCS to avoid issues if you have it. !!!!
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!! Uninstall HandyGCCS to avoid issues if you have it. !!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # Install Handheld Daemon to ~/.local/share/hhd
 mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
