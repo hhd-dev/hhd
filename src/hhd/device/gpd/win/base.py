@@ -225,7 +225,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     d_kbd_1 = GenericGamepadEvdev(
         vid=[GPD_WIN_4_VID],
         pid=[GPD_WIN_4_PID],
-        # capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
+        # TODO: Verify capability check does not cause regressions
+        capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
         required=False,
         grab=True,
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
