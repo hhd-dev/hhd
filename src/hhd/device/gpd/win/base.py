@@ -168,6 +168,7 @@ def plugin_run(
             if first:
                 logger.warning("Controller in Mouse mode. Waiting...")
             first = False
+            continue
 
         try:
             logger.info("Launching emulated controller.")
