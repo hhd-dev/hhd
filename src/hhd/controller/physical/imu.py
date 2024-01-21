@@ -408,6 +408,7 @@ class HrtimerTrigger(IioReader):
         self.freq = freq
         self.devices = devices
         self.old_triggers = {}
+        self.opened = False
 
     def open(self):
         import subprocess
@@ -435,6 +436,7 @@ class HrtimerTrigger(IioReader):
                 f"Could not create 'hhd' trigger. IMU will not work. Error:\n{e}"
             )
             return
+        self.opened = True
 
         # Find trigger
         trig = None
@@ -475,6 +477,10 @@ class HrtimerTrigger(IioReader):
                 f.write(f"hhd")
 
     def close(self):
+        if not self.opened:
+            return
+        self.opened = False
+
         for trig, (name, buff) in self.old_triggers.items():
             try:
                 with open(buff, "w") as f:

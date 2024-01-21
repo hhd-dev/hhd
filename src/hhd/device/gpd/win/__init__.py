@@ -18,6 +18,8 @@ GPD_WMIS = {
     "G1619-05": "GPD Win Max 2 2023",
 }
 
+GPD_CONFS = {"G1619-05": {"hrtimer": True}}
+
 GPD_TOUCHPAD = ["G1617-01", "G1619-05"]
 
 
@@ -83,7 +85,14 @@ class GpdWinControllersPlugin(HHDPlugin):
         self.should_exit = Event()
         self.t = Thread(
             target=plugin_run,
-            args=(conf, self.emit, self.context, self.should_exit, self.updated),
+            args=(
+                conf,
+                self.emit,
+                self.context,
+                self.should_exit,
+                self.updated,
+                GPD_CONFS.get(self.dmi, {}),
+            ),
         )
         self.t.start()
 

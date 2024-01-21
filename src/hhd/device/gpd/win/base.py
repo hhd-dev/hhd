@@ -10,7 +10,7 @@ from hhd.controller.base import Event, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import GenericGamepadEvdev
-from hhd.controller.physical.imu import CombinedImu
+from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .const import (
@@ -149,13 +149,18 @@ class GpdWin4Hidraw(GenericGamepadHidraw):
 
 
 def plugin_run(
-    conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent
+    conf: Config,
+    emit: Emitter,
+    context: Context,
+    should_exit: TEvent,
+    updated: TEvent,
+    dconf: dict,
 ):
     while not should_exit.is_set():
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
-            controller_loop(conf.copy(), should_exit, updated)
+            controller_loop(conf.copy(), should_exit, updated, dconf)
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
@@ -167,7 +172,7 @@ def plugin_run(
             time.sleep(ERROR_DELAY)
 
 
-def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
+def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict):
     debug = conf.get("debug", False)
     has_touchpad = "touchpad" in conf
 
@@ -180,6 +185,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
 
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int), GPD_WIN_MAPPINGS, gyro_scale="0.000266")
+    d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
@@ -265,6 +271,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         d_vend.open()
         prepare(d_xinput)
         if conf.get("imu", False):
+            if dconf.get("hrtimer", False):
+                d_timer.open()
             prepare(d_imu)
         if has_touchpad and d_params["uses_touch"]:
             prepare(d_touch)
@@ -317,5 +325,6 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         raise
     finally:
         d_vend.close(True)
+        d_timer.close()
         for d in reversed(devs):
             d.close(True)
