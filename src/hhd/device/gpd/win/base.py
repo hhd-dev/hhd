@@ -7,6 +7,7 @@ from typing import Sequence
 
 from hhd.controller import Axis, Event, Multiplexer, can_read
 from hhd.controller.base import Event, TouchpadAction
+from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import GenericGamepadEvdev
@@ -159,7 +160,15 @@ def plugin_run(
     updated: TEvent,
     dconf: dict,
 ):
+    first = True
     while not should_exit.is_set():
+        devs = enumerate_unique(GAMEPAD_VID, GAMEPAD_PID)
+        if not devs:
+            time.sleep(ERROR_DELAY)
+            if first:
+                logger.warning("Controller in Mouse mode. Waiting...")
+            first = False
+
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
@@ -169,6 +178,7 @@ def plugin_run(
             logger.error(
                 f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
             )
+            first = True
             # Raise exception
             if conf.get("debug", False):
                 raise e
