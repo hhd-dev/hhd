@@ -162,8 +162,8 @@ def plugin_run(
 ):
     first = True
     while not should_exit.is_set():
-        devs = enumerate_unique(GAMEPAD_VID, GAMEPAD_PID)
-        if not devs:
+        devs = enumerate_unique(GAMEPAD_VID)
+        if not any(d.get("product_id", None) == GAMEPAD_PID for d in devs):
             time.sleep(ERROR_DELAY)
             if first:
                 logger.warning("Controller in Mouse mode. Waiting...")
