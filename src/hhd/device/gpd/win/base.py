@@ -5,19 +5,17 @@ import time
 from threading import Event as TEvent
 from typing import Sequence
 
+import evdev
+
 from hhd.controller import Axis, Event, Multiplexer, can_read
 from hhd.controller.base import Event, TouchpadAction
-from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .const import (
-    GPD_TOUCHPAD_AXIS_MAP,
-    GPD_TOUCHPAD_BUTTON_MAP,
-)
+from .const import GPD_TOUCHPAD_AXIS_MAP, GPD_TOUCHPAD_BUTTON_MAP
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -162,14 +160,17 @@ def plugin_run(
 ):
     first = True
     while not should_exit.is_set():
-        devs = enumerate_unique()
-        if not any(
-            (
-                d.get("vendor_id", None) == GAMEPAD_VID
-                and d.get("product_id", None) == GAMEPAD_PID
-            )
-            for d in devs
-        ):
+        found_gamepad = False
+        try:
+            for d in evdev.list_devices():
+                dev = evdev.InputDevice(d)
+                if dev.info.vendor == GAMEPAD_VID and dev.info.product == GAMEPAD_PID:
+                    found_gamepad = True
+        except Exception:
+            logger.warning("Failed finding device, skipping check.")
+            found_gamepad = True
+
+        if not found_gamepad:
             time.sleep(ERROR_DELAY)
             if first:
                 logger.warning("Controller in Mouse mode. Waiting...")
