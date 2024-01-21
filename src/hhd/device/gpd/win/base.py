@@ -27,8 +27,11 @@ GPD_WIN_4_VID = 0x2F24
 GPD_WIN_4_PID = 0x0135
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
-TOUCHPAD_PID = 0x0255
+
 TOUCHPAD_VID = 0x093A
+TOUCHPAD_PID = 0x0255
+TOUCHPAD_VID_2 = 0x0911
+TOUCHPAD_PID_2 = 0x5288
 
 GPD_WIN_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
@@ -200,9 +203,9 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     # "PNP0C50:00 0911:5288 Touchpad" on Win Max 2 2023
     # "PNP0C50:00 093A:0255 Touchpad" on Win Mini
     d_touch = GenericGamepadEvdev(
-        vid=[TOUCHPAD_VID, 0x0911],
-        pid=[TOUCHPAD_PID, 0x5288],
-        name=[re.compile(".+Touchpad")],  # "PNP0C50:00 093A:0255 Touchpad"
+        vid=[TOUCHPAD_VID, TOUCHPAD_VID_2],
+        pid=[TOUCHPAD_PID, TOUCHPAD_PID_2],
+        name=[re.compile(".+Touchpad")],
         capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
         btn_map=GPD_TOUCHPAD_BUTTON_MAP,
         axis_map=GPD_TOUCHPAD_AXIS_MAP,
