@@ -4,7 +4,8 @@ from hhd.controller.physical.evdev import B, to_map
 GPD_TOUCHPAD_BUTTON_MAP: dict[int, Button] = to_map(
     {
         "touchpad_touch": [B("BTN_TOOL_FINGER")],  # also BTN_TOUCH
-        "touchpad_right": [B("BTN_TOOL_DOUBLETAP")],
+        "touchpad_right": [B("BTN_TOOL_DOUBLETAP"), B("BTN_RIGHT")],
+        "touchpad_left": [B("BTN_MOUSE")],
     }
 )
 
