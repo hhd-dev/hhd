@@ -166,6 +166,7 @@ def plugin_run(
                 dev = evdev.InputDevice(d)
                 if dev.info.vendor == GAMEPAD_VID and dev.info.product == GAMEPAD_PID:
                     found_gamepad = True
+                    break
         except Exception:
             logger.warning("Failed finding device, skipping check.")
             found_gamepad = True

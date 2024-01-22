@@ -18,7 +18,7 @@ GPD_WMIS = {
     "G1619-05": "GPD Win Max 2 2023",
 }
 
-GPD_CONFS = {"G1619-05": {"hrtimer": True}}
+GPD_CONFS = {"G1619-05": {"hrtimer": True}, "G1618-04": {"hrtimer": True}}
 
 GPD_TOUCHPAD = ["G1617-01", "G1619-05"]
 
