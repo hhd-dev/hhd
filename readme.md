@@ -254,7 +254,7 @@ Update the `nixpkgs.url` input in your flake to point at [the PR](https://github
 
 and add this line to your `configuration.nix`:
 ```nix
-  services.handheldDaemon.enable = true;
+  services.handheld-daemon.enable = true;
 ```
 
 
