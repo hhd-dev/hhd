@@ -196,6 +196,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         dpad="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
         select_reboots=conf["select_reboots"].to(bool),
+        nintendo_mode=conf["nintendo_mode"].to(bool),
     )
 
     REPORT_FREQ_MIN = 25

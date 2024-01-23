@@ -62,6 +62,13 @@ children:
       l_is_select: "Left is Select"
     default: disabled
   
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+    
   m2_to_mute:
     type: bool
     title: M2 As Mute

@@ -49,6 +49,13 @@ children:
     type: bool
     title: Hold Select to Reboot
     default: True
+  
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
 
   share_to_qam:
     type: bool

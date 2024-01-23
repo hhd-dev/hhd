@@ -32,6 +32,13 @@ children:
     default: 400
 
   touchpad:
+  
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
 
   debug:
     type: bool

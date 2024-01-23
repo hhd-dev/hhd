@@ -249,6 +249,7 @@ class Multiplexer:
         touchpad_hold: TouchpadAction = "disabled",
         r3_to_share: bool = False,
         select_reboots: bool = False,
+        nintendo_mode: bool = False,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -263,6 +264,7 @@ class Multiplexer:
         self.touchpad_right = touchpad_right
         self.select_reboots = select_reboots
         self.r3_to_share = r3_to_share
+        self.nintendo_mode = nintendo_mode
 
         self.state = {}
         self.touchpad_x = 0
@@ -533,6 +535,17 @@ class Multiplexer:
 
                     if self.r3_to_share and ev["code"] == "extra_r3":
                         ev["code"] = "share"
+
+                    if self.nintendo_mode:
+                        match ev["code"]:
+                            case "a":
+                                ev["code"] = "b"
+                            case "b":
+                                ev["code"] = "a"
+                            case "x":
+                                ev["code"] = "y"
+                            case "y":
+                                ev["code"] = "x"
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})

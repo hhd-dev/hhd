@@ -263,11 +263,13 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             dpad="analog_to_discrete",
             touchpad_short=touch_actions["short"].to(TouchpadAction),
             touchpad_hold=touch_actions["hold"].to(TouchpadAction),
+            nintendo_mode=conf["nintendo_mode"].to(bool),
         )
     else:
         multiplexer = Multiplexer(
             trigger="analog_to_discrete",
             dpad="analog_to_discrete",
+            nintendo_mode=conf["nintendo_mode"].to(bool),
         )
 
     REPORT_FREQ_MIN = 25

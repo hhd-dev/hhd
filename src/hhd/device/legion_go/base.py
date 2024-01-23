@@ -143,6 +143,7 @@ def controller_loop_rest(
         dpad="analog_to_discrete",
         trigger="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
+        nintendo_mode=conf["nintendo_mode"].to(bool),
     )
     d_uinput = UInputDevice(
         name=f"HHD Shortcuts (Legion Mode: {mode})",
@@ -271,6 +272,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
         touchpad_right=touch_actions["hold"].to(TouchpadAction),
         select_reboots=conf["select_reboots"].to(bool),
         r3_to_share=conf["m2_to_mute"].to(bool),
+        nintendo_mode=conf["nintendo_mode"].to(bool),
     )
 
     REPORT_FREQ_MIN = 25
