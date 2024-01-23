@@ -36,7 +36,7 @@ class GpdWinControllersPlugin(HHDPlugin):
         self.t = None
 
         self.dmi = dmi
-        self.name = f"powerbuttond@'{name}'"
+        self.name = f"gpd_win_controllers@'{name}'"
 
     def open(
         self,
