@@ -15,7 +15,11 @@ from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .const import GPD_TOUCHPAD_AXIS_MAP, GPD_TOUCHPAD_BUTTON_MAP
+from .const import (
+    GPD_TOUCHPAD_AXIS_MAP,
+    GPD_TOUCHPAD_BUTTON_MAP,
+    GPD_WIN_DEFAULT_MAPPINGS,
+)
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -31,16 +35,6 @@ TOUCHPAD_VID = 0x093A
 TOUCHPAD_PID = 0x0255
 TOUCHPAD_VID_2 = 0x0911
 TOUCHPAD_PID_2 = 0x5288
-
-GPD_WIN_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "accel_x": ("accel_z", "accel", 1, 3),
-    "accel_y": ("accel_x", "accel", 1, 3),
-    "accel_z": ("accel_y", "accel", 1, 3),
-    "anglvel_x": ("gyro_x", "anglvel", 1, None),
-    "anglvel_y": ("gyro_z", "anglvel", -1, None),
-    "anglvel_z": ("gyro_y", "anglvel", -1, None),
-    "timestamp": ("gyro_ts", None, 1, None),
-}
 
 BACK_BUTTON_DELAY = 0.1
 
@@ -174,7 +168,7 @@ def plugin_run(
         if not found_gamepad:
             time.sleep(ERROR_DELAY)
             if first:
-                logger.warning("Controller in Mouse mode. Waiting...")
+                logger.info("Controller in Mouse mode. Waiting...")
             first = False
             continue
 
@@ -206,7 +200,11 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     )
 
     # Imu
-    d_imu = CombinedImu(conf["imu_hz"].to(int), GPD_WIN_MAPPINGS, gyro_scale="0.000266")
+    d_imu = CombinedImu(
+        conf["imu_hz"].to(int),
+        dconf.get("mapping", GPD_WIN_DEFAULT_MAPPINGS),
+        # gyro_scale="0.000266", #TODO: Find what this affects
+    )
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
     # Inputs

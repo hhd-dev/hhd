@@ -12,15 +12,18 @@ from hhd.plugins import (
 )
 from hhd.plugins.settings import HHDSettings
 
-GPD_WMIS = {
-    "G1618-04": "GPD Win 4",
-    "G1617-01": "GPD Win Mini",
-    "G1619-05": "GPD Win Max 2 2023",
+from .const import GPD_WIN_MAX_2_2023_MAPPINGS
+
+GPD_CONFS = {
+    "G1618-04": {"name": "GPD Win 4", "hrtimer": True},
+    "G1617-01": {"name": "GPD Win Mini", "touchpad": True},
+    "G1619-05": {
+        "name": "GPD Win Max 2 2023",
+        "hrtimer": True,
+        "touchpad": True,
+        "mapping": GPD_WIN_MAX_2_2023_MAPPINGS,
+    },
 }
-
-GPD_CONFS = {"G1619-05": {"hrtimer": True}, "G1618-04": {"hrtimer": True}}
-
-GPD_TOUCHPAD = ["G1617-01", "G1619-05"]
 
 
 class GpdWinControllersPlugin(HHDPlugin):
@@ -28,7 +31,7 @@ class GpdWinControllersPlugin(HHDPlugin):
     priority = 18
     log = "gpdw"
 
-    def __init__(self, dmi: str, name: str) -> None:
+    def __init__(self, dmi: str, dconf: dict) -> None:
         self.t = None
         self.should_exit = None
         self.updated = Event()
@@ -36,7 +39,8 @@ class GpdWinControllersPlugin(HHDPlugin):
         self.t = None
 
         self.dmi = dmi
-        self.name = f"gpd_win_controllers@'{name}'"
+        self.dconf = dconf
+        self.name = f"gpd_win_controllers@'{dconf.get('name', 'ukn')}'"
 
     def open(
         self,
@@ -53,7 +57,7 @@ class GpdWinControllersPlugin(HHDPlugin):
             get_outputs_config(can_disable=False, has_leds=False)
         )
 
-        if self.dmi in GPD_TOUCHPAD:
+        if self.dconf.get("touchpad", False):
             base["controllers"]["gpd_win"]["children"][
                 "touchpad"
             ] = get_touchpad_config()
@@ -91,7 +95,7 @@ class GpdWinControllersPlugin(HHDPlugin):
                 self.context,
                 self.should_exit,
                 self.updated,
-                GPD_CONFS.get(self.dmi, {}),
+                self.dconf,
             ),
         )
         self.t.start()
@@ -112,8 +116,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     # Match just product number, should be enough for now
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         dmi = f.read().strip()
-        name = GPD_WMIS.get(dmi)
-        if not name:
+        dconf = GPD_CONFS.get(dmi, None)
+        if not dconf:
             return []
 
-    return [GpdWinControllersPlugin(dmi, name)]
+    return [GpdWinControllersPlugin(dmi, dconf)]

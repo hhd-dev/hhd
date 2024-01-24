@@ -173,7 +173,6 @@ class RgbCallback:
             ]
 
         for r in cmds:
-            logger.warning(r.hex())
             dev.write(r)
 
 
