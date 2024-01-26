@@ -262,6 +262,9 @@ day after release, and can be managed through the Bazzite updater.
 In addition, Bazzite contains all the required patches for the Handheld Daemon
 supported devices, so it is the recommended distro to use Handheld Daemon with.
 
+After install, you can use `ujust` to install Decky and the Handheld Daemon Decky
+plugin with the commands `ujust get-decky`, `ujust get-hhd-decky`.
+
 If you need to use a different Handheld Daemon version or a custom one, the 
 install steps do not currently work for it, but this will be fixed in the future.
 Essentially, a new service file needs to be written for Bazzite that contains the
