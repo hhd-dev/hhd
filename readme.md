@@ -262,9 +262,9 @@ day after release, and can be managed through the Bazzite updater.
 In addition, Bazzite contains all the required patches for the Handheld Daemon
 supported devices, so it is the recommended distro to use Handheld Daemon with.
 
-In addition, Bazzite has some incompatibilities with the current install steps,
-so they will not work if you follow them.
-Essentially, a new service file needs to be written for it that contains the
+If you need to use a different Handheld Daemon version or a custom one, the 
+install steps do not currently work for it, but this will be fixed in the future.
+Essentially, a new service file needs to be written for Bazzite that contains the
 correct home path (`/var/home`) and then you can disable the built-in version
 service and use the new one instead.
 
