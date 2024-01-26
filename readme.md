@@ -193,10 +193,14 @@ Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I
 
 Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
 does not wake up after sleep so Handheld Daemon stops working.
+This patch is included with Linux kernel 6.7.
 
-In addition, without a patched kernel with `asus-hid`/`asus-wmi`, LEDs might not 
-initialize properly (theoretically they should work).
-This is currently under investigation.
+Without the patch series for the IMU (where patches 0001, and 0002 are included
+in kernel 6.8), the gyro will not work and if the `Motion` option is enabled,
+LEDs will not work either, so that should be turned off.
+
+You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
+the right stick into a mouse.
 
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
