@@ -266,7 +266,7 @@ After install, you can use `ujust` to install Decky and the Handheld Daemon Deck
 plugin with the commands `ujust get-decky`, `ujust get-hhd-decky`.
 
 If you need to use a different Handheld Daemon version or a custom one, the 
-install steps do not currently work for it, but this will be fixed in the future.
+install steps do not currently work for Bazzite, but this will be fixed in the future.
 Essentially, a new service file needs to be written for Bazzite that contains the
 correct home path (`/var/home`) and then you can disable the built-in version
 service and use the new one instead.
