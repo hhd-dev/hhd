@@ -55,7 +55,11 @@ depending on the game.
   - Safe, as it is the method used by manufacturers (provided you stay within limits).
 
 ## Installation Instructions
-You can install the latest stable version of `hhd` from AUR or PyPi.
+You can install the latest stable version of `hhd` from PyPi (recommended), AUR,
+or COPR.
+The easiest way to use Handheld Daemon is to install Bazzite which
+comes pre-installed with the latest version and all required kernel
+fixes for supported devices, see [here](#bazzite).
 
 > To ensure the gyro of the Legion Go with AMD SFH runs smoothly, 
 > a udev rule is included that disables the use of the accelerometer by the 
@@ -71,6 +75,7 @@ You can install the latest stable version of `hhd` from AUR or PyPi.
 You can use the following bash scripts to install and uninstall Handheld Daemon
 (experimental).
 Then, update from Decky or the UI.
+These steps do not work on Bazzite, see [here](#bazzite).
 
 > If your distro uses HandyGCCS/Handycon to fix certain key bindings by default
 > you need to uninstall it. Disabling it is not enough, since it is autostarted
@@ -115,6 +120,7 @@ sudo systemctl start hhd_local@$(whoami)
 You can also install Handheld Daemon using a local package, which enables auto-updating.
 These are the same steps as done in the Automatic Install (also see 
 [Common Issues after Install](#issues)).
+These steps do not work on Bazzite, see [here](#bazzite).
 
 ```bash
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -210,6 +216,11 @@ To use the gyro, you will need a [dkms package](github.com/hhd-dev/bmi260)
 for the Bosch 260 IMU Driver.
 Follow the instructions in that repository to install it.
 
+In addition, for devices other than the Win Mini, your kernel config should also 
+enable the modules `SYSFS trigger` with `CONFIG_IIO_SYSFS_TRIGGER` and
+`High resolution timer trigger` with `CONFIG_IIO_HRTIMER_TRIGGER`.
+Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I/O support ─> Triggers - standalone`.
+
 #### Missing Python Evdev
 In case you have installation issues, you might be missing the package `python-evdev`.
 You can either install it as part of your distribution (included by Nobara
@@ -243,6 +254,19 @@ sudo pacman -R handygccs-git
 sudo systemctl disable --now handycon.service
 sudo dnf remove handygccs-git # (verify ?)
 ```
+
+### <a name="bazzite"></a>Bazzite
+Handheld Daemon comes pre-installed on Bazzite and updates along-side the system.
+The latest version of Handheld Daemon becomes available at the latest the next
+day after release, and can be managed through the Bazzite updater.
+In addition, Bazzite contains all the required patches for the Handheld Daemon
+supported devices, so it is the recommended distro to use Handheld Daemon with.
+
+In addition, Bazzite has some incompatibilities with the current install steps,
+so they will not work if you follow them.
+Essentially, a new service file needs to be written for it that contains the
+correct home path (`/var/home`) and then you can disable the built-in version
+service and use the new one instead.
 
 ### ❄️ NixOS (experimental)
 Update the `nixpkgs.url` input in your flake to point at [the PR](https://github.com/NixOS/nixpkgs/pull/277661/) branch:
@@ -450,7 +474,7 @@ can not see led/gyro settings or the Edge controller mapping is wrong), you
 should update your distribution and if that does not fix it consider re-installing.
 There are certain gamescope/distro issues that cause this and we are unsure of
 the cause at this moment.
-ChimeraOS 44 and certain versions of Nobara 38 have this issue.
+ChimeraOS 44 and certain versions of Nobara 38 and 39 have this issue.
 
 ### Disabling Dualsense touchpad
 The Dualsense touchpad may interfere with games or steam input. 
