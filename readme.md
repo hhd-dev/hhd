@@ -17,7 +17,7 @@ depending on the game.
 *Supported Devices*:
 - Legion Go
 - ROG Ally
-- GPD Win 4 and Mini
+- GPD Win 4, Win Mini, and Win Max 2 2023
 
 *Current Features*:
 - Fully functional DualSense and Dualsense Edge emulation
