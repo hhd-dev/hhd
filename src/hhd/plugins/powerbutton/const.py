@@ -22,7 +22,7 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("GPT Win 4", "G1618-04"),
     PBC("GPD Win Mini", "G1617-01"),
     PBC("GPD Win Max 2 2023", "G1619-05"),
-    # PBC("AYANEO AIR Plus", "AIR Plus"),
+    PBC("AYANEO AIR Plus", "AIR Plus", type="hold_emitted"),
 ]
 
 DEFAULT_DEVICE: PowerButtonConfig = PBC(
