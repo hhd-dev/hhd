@@ -12,17 +12,10 @@ from hhd.plugins import (
 )
 from hhd.plugins.settings import HHDSettings
 
-AYANEO_CONFS = {
-    # "G1618-04": {"name": "GPD Win 4", "hrtimer": True},
-    # "G1617-01": {"name": "GPD Win Mini", "touchpad": True},
-    # "G1619-05": {
-    #     "name": "GPD Win Max 2 2023",
-    #     "hrtimer": True,
-    #     "touchpad": True,
-    #     "mapping": ayaneo_MAX_2_2023_MAPPINGS,
-    # },
-}
 
+AYANEO_CONFS = {
+    "AIR Plus": {"name": "AIR Plus", "hrtimer": True},
+}
 
 class AyaneoControllersPlugin(HHDPlugin):
     name = "ayaneo_controllers"
