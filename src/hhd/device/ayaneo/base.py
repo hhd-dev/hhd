@@ -38,93 +38,6 @@ KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
 
-class AyaneoHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-    def open(self) -> Sequence[int]:
-        self.left_pressed = None
-        self.right_pressed = None
-        self.last_pressed = None
-        self.clear_ts = None
-
-        self.queue: list[tuple[Event, float]] = []
-        return super().open()
-
-    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
-        # If we can not read return
-        if not self.fd or not self.dev:
-            return []
-
-        # Process events
-        curr = time.perf_counter()
-        out: Sequence[Event] = []
-
-        # Read new events
-        left_pressed = None
-        right_pressed = None
-        while can_read(self.fd):
-            rep = self.dev.read(self.report_size)
-
-            # l4 = 0x46
-            # r4 = 0x48
-            # both = l4 + r4
-            # when both l4/r4 held, rep[2] and rep[3] will both be active
-            #   they will be the same known values for l4 and r4
-            #   but the order is not guaranteed to be consistent
-            check = rep[2] + rep[3]
-            match check:
-                case 0x46:
-                    # action = "left/l4"
-                    left_pressed = True
-                    self.last_pressed = "left"
-                    self.clear_ts = None
-                case 0x48:
-                    # action = "right/r4"
-                    right_pressed = True
-                    self.last_pressed = "right"
-                    self.clear_ts = None
-                case 0x8E:
-                    # both l4 and r4 are being pressed
-                    left_pressed = True
-                    right_pressed = True
-                    self.clear_ts = None
-                case _:  # 0x00:
-                    # This occurs only when one button is pressed
-                    # So in case both are remove one
-                    if self.last_pressed == "right" and self.left_pressed:
-                        left_pressed = False
-                    if self.last_pressed == "left" and self.right_pressed:
-                        right_pressed = False
-                    self.clear_ts = curr + BACK_BUTTON_DELAY
-
-        if self.clear_ts and self.clear_ts < curr:
-            # Reset after timeout
-            if self.left_pressed:
-                out.append({"type": "button", "code": "extra_l1", "value": False})
-                self.left_pressed = False
-            if self.right_pressed:
-                out.append({"type": "button", "code": "extra_r1", "value": False})
-                self.right_pressed = False
-            self.clear_ts = None
-        else:
-            # If no timeout, update
-            # Left, right will be none if no events were received
-            # If they were, they will be true/false
-            # If that conflicts with the saved values, send events.
-            if left_pressed is not None and self.left_pressed != left_pressed:
-                out.append(
-                    {"type": "button", "code": "extra_l1", "value": left_pressed}
-                )
-                self.left_pressed = left_pressed
-
-            if right_pressed is not None and self.right_pressed != right_pressed:
-                out.append(
-                    {"type": "button", "code": "extra_r1", "value": right_pressed}
-                )
-                self.right_pressed = right_pressed
-        return out
-
 def plugin_run(
     conf: Config,
     emit: Emitter,
@@ -198,8 +111,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         hide=True,
     )
 
-    # "PNP0C50:00 0911:5288 Touchpad" on Win Max 2 2023
-    # "PNP0C50:00 093A:0255 Touchpad" on Win Mini
+
     # d_touch = GenericGamepadEvdev(
     #     vid=[TOUCHPAD_VID, TOUCHPAD_VID_2],
     #     pid=[TOUCHPAD_PID, TOUCHPAD_PID_2],
@@ -209,15 +121,6 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     #     axis_map=AYANEO_TOUCHPAD_AXIS_MAP,
     #     aspect_ratio=1.333,
     #     required=False,
-    # )
-
-    # Vendor
-    # d_vend = AyaneoHidraw(
-    #     vid=[KBD_VID],
-    #     pid=[KBD_PID],
-    #     usage_page=[0x0001],
-    #     usage=[0x0006],
-    #     required=True,
     # )
 
     d_kbd_1 = GenericGamepadEvdev(
