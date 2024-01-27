@@ -13,6 +13,7 @@ from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
+from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .const import (
@@ -123,11 +124,20 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     #     required=False,
     # )
 
+    d_volume_btn = UInputDevice(
+        name="AYANEO Volume Button",
+        phys="phys-hhd-ayaneo-volume-button",
+        capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
+        pid=KBD_PID,
+        vid=KBD_VID,
+        output_timestamps=True,
+    )
+
     d_kbd_1 = GenericGamepadEvdev(
         vid=[KBD_VID],
         pid=[KBD_PID],
         # TODO: Verify capability check does not cause regressions
-        capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
+        # capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
         required=False,
         grab=True,
         btn_map={
@@ -193,6 +203,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
+        
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
