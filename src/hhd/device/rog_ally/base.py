@@ -223,8 +223,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         d_vend.open()
         prepare(d_xinput)
         if conf.get("imu", False):
-            d_timer.open()
-            prepare(d_imu)
+            if d_timer.open():
+                prepare(d_imu)
         prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)

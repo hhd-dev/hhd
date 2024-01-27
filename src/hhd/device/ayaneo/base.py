@@ -199,9 +199,11 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         # d_vend.open()
         prepare(d_xinput)
         if conf.get("imu", False):
+            start_imu = True
             if dconf.get("hrtimer", False):
-                d_timer.open()
-            prepare(d_imu)
+                start_imu = d_timer.open()
+            if start_imu:
+                prepare(d_imu)
         # if has_touchpad and d_params["uses_touch"]:
         #     prepare(d_touch)
         prepare(d_volume_btn)

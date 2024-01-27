@@ -238,15 +238,20 @@ class IioReader(Producer):
         if not sens_dir or not type:
             return []
 
-        dev = prepare_dev(
-            sens_dir,
-            type,
-            self.attr,
-            self.freq,
-            self.scale,
-            self.mappings,
-            self.update_trigger,
-        )
+        try:
+            dev = prepare_dev(
+                sens_dir,
+                type,
+                self.attr,
+                self.freq,
+                self.scale,
+                self.mappings,
+                self.update_trigger,
+            )
+        except Exception as e:
+            logger.error(f"Could not open IMU with error:\n{e}")
+            return []
+
         if not dev:
             return []
 
@@ -435,7 +440,7 @@ class HrtimerTrigger(IioReader):
             logger.error(
                 f"Could not create 'hhd' trigger. IMU will not work. Error:\n{e}"
             )
-            return
+            return False
         self.opened = True
 
         # Find trigger
@@ -449,7 +454,7 @@ class HrtimerTrigger(IioReader):
                     break
         if not trig:
             logger.warning("Imu timer trigger not found, IMU will not work.")
-            return
+            return False
 
         # Set frequency
         try:
@@ -459,7 +464,7 @@ class HrtimerTrigger(IioReader):
                 f.write(str(self.freq))
         except Exception as e:
             logger.warning("Could not set sampling frequency, IMU will not work.")
-            return
+            return False
 
         self.old_triggers = {}
         for d in self.devices:
@@ -475,6 +480,8 @@ class HrtimerTrigger(IioReader):
                 self.old_triggers[trig_fn] = (f.read(), buff_fn)
             with open(trig_fn, "w") as f:
                 f.write(f"hhd")
+
+        return True
 
     def close(self):
         if not self.opened:
