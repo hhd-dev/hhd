@@ -39,6 +39,7 @@ KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
 
+
 def plugin_run(
     conf: Config,
     emit: Emitter,
@@ -112,7 +113,6 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         hide=True,
     )
 
-
     # d_touch = GenericGamepadEvdev(
     #     vid=[TOUCHPAD_VID, TOUCHPAD_VID_2],
     #     pid=[TOUCHPAD_PID, TOUCHPAD_PID_2],
@@ -124,27 +124,18 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     #     required=False,
     # )
 
-    d_volume_btn = UInputDevice(
-        name="AYANEO Volume Button",
-        phys="phys-hhd-ayaneo-volume-button",
-        capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
-        pid=KBD_PID,
-        vid=KBD_VID,
-        output_timestamps=True,
-    )
-
     d_kbd_1 = GenericGamepadEvdev(
         vid=[KBD_VID],
         pid=[KBD_PID],
-        # TODO: Verify capability check does not cause regressions
-        # capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
         required=False,
         grab=True,
         btn_map={
-            EC("KEY_F15"): "extra_l1", 
-            EC("KEY_F16"): "extra_r1", 
-            EC("KEY_F17"): "mode", 
-            EC("KEY_D"): "share"
+            EC("KEY_F15"): "extra_l1",
+            EC("KEY_F16"): "extra_r1",
+            EC("KEY_F17"): "mode",
+            EC("KEY_D"): "share",
+            EC("KEY_VOLUMEUP"): "key_volumeup",
+            EC("KEY_VOLUMEDOWN"): "key_volumedown",
         },
     )
 
@@ -170,6 +161,19 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             share_to_qam=conf["share_to_qam"].to(bool),
             nintendo_mode=conf["nintendo_mode"].to(bool),
         )
+
+    d_volume_btn = UInputDevice(
+        name="Handheld Daemon Volume Keyboard (Ayaneo)",
+        phys="phys-hhd-ayaneo-vbtn",
+        capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
+        btn_map={
+            "key_volumeup": EC("KEY_VOLUMEUP"),
+            "key_volumedown": EC("KEY_VOLUMEDOWN"),
+        },
+        pid=KBD_PID,
+        vid=KBD_VID,
+        output_timestamps=True,
+    )
 
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
@@ -200,10 +204,10 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             prepare(d_imu)
         # if has_touchpad and d_params["uses_touch"]:
         #     prepare(d_touch)
+        prepare(d_volume_btn)
         prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
-        
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
@@ -218,14 +222,13 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             for d in devs:
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
-            # evs.extend(d_vend.produce(r))
 
             evs = multiplexer.process(evs)
             if evs:
                 if debug:
                     logger.info(evs)
 
-                # d_vend.consume(evs)
+                d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
             for d in d_outs:
