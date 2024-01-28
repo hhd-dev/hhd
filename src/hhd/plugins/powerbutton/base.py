@@ -203,9 +203,13 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
             # Initial check for steam
             if not is_steam_gamescope_running(perms):
                 # Close devices
-                if dev:
-                    dev.close()
-                    dev = None
+                if devs:
+                    for d in devs:
+                        d.close()
+                        devs = []
+                    if dev:
+                        dev.close()
+                        dev = None
                 logger.info(f"Waiting for steam to launch.")
                 while not is_steam_gamescope_running(perms):
                     sleep(STEAM_WAIT_DELAY)
@@ -274,3 +278,6 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
     finally:
         if dev:
             dev.close()
+        if devs:
+            for d in devs:
+                d.close()
