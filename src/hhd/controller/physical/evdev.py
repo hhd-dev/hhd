@@ -149,16 +149,6 @@ class GenericGamepadEvdev(Producer, Consumer):
                 if not matches:
                     continue
 
-            self.dev = dev
-            if self.grab:
-                self.dev.grab()
-            self.ranges = {
-                a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
-            }
-            self.fd = dev.fd
-            self.started = True
-            self.effect_id = -1
-
             # Run after init to avoid having leftover rules
             if self.hide:
                 # Check we are root
@@ -172,6 +162,16 @@ class GenericGamepadEvdev(Producer, Consumer):
                     logger.warning(
                         f"Not running as root, device '{dev.name}' could not be hid."
                     )
+
+            self.dev = dev
+            if self.grab:
+                self.dev.grab()
+            self.ranges = {
+                a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
+            }
+            self.fd = dev.fd
+            self.started = True
+            self.effect_id = -1
 
             return [self.fd]
 
