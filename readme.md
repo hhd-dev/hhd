@@ -18,6 +18,7 @@ depending on the game.
 - Legion Go
 - ROG Ally
 - GPD Win 4, Win Mini, and Win Max 2 2023
+- Ayaneo Air Plus
 
 *Current Features*:
 - Fully functional DualSense and Dualsense Edge emulation
@@ -29,8 +30,7 @@ depending on the game.
   - No weird glyphs
   - Gyro and back button support (outside Steam)
 - Virtual Touchpad Emulation
-  - Fixes left and right clicks within gamescope when using the Legion Go
-    touchpad.
+  - Fixes left and right clicks within gamescope when using the device touchpad.
 - Power Button plugin for Big Picture/Steam Deck Mode
     - Short press makes Steam backup saves and wink before suspend.
     - Long press opens Steam power menu.
@@ -38,7 +38,7 @@ depending on the game.
 - UI based Configuration
   - Generic API that can be used from bash scripts (through `curl`)
   - Decky Plugin
-  - Webapp on https://hhd.dev and through Electron
+  - Webapp on https://hhd.dev and through Electron.
 - Built-in updater.
 
 *Planned Features (in this order)*:
@@ -61,19 +61,20 @@ The easiest way to use Handheld Daemon is to install Bazzite which
 comes pre-installed with the latest version and all required kernel
 fixes for supported devices, see [here](#bazzite).
 
+> [!WARNING]  
+> There is a bug that breaks how Dualsense controllers are parsed in Steam in various
+> distros, which causes Gyro, LEDs, and paddles to not be detected in Steam, 
+> and the Dualsense Edge mapping being very wrong.
+> ChimeraOS 45, and certain versions of Nobara 38, and 39 also have this issue.
+> It is being investigated.
+
 > To ensure the gyro of the Legion Go with AMD SFH runs smoothly, 
 > a udev rule is included that disables the use of the accelerometer by the 
 > system (e.g., iio-sensor-proxy).
-> This limitation will be lifted in the future, if a new driver is written for
-> amd-sfh.
-> 
-> If you want display auto rotation to work, use the local steps and 
-> modify the `83-hhd.rules` file
-> to remove the iio udev rule. However, the gyro will not work properly.
+> If you want display auto rotation to work, see manual local steps.
 
 ### Automatic Local Install
-You can use the following bash scripts to install and uninstall Handheld Daemon
-(experimental).
+You can use the following bash scripts to install and uninstall Handheld Daemon.
 Then, update from Decky or the UI.
 These steps do not work on Bazzite, see [here](#bazzite).
 
@@ -138,6 +139,10 @@ pip install --upgrade hhd
 
 # Install udev rules and create a service file
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
+
+# Change rules to re-enable display autorotation if you do not want gyro support.
+# sudo nano /etc/udev/rules.d/83-hhd.rules
+
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
 # Start service and reboot
