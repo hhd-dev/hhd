@@ -33,6 +33,7 @@ class DeviceInfo(NamedTuple):
 ACCEL_NAMES = ["accel_3d"]
 GYRO_NAMES = ["gyro_3d"]
 IMU_NAMES = ["bmi323-imu", "BMI0160", "BMI0260"]
+SYSFS_TRIG_CONFIG_DIR = os.environ.get("HHD_MOUNT_TRIG_SYSFS", "/var/trig_sysfs_config")
 
 ACCEL_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
@@ -419,9 +420,10 @@ class HrtimerTrigger(IioReader):
             subprocess.run(["modprobe", "industrialio-sw-trigger"], capture_output=True)
             subprocess.run(["modprobe", "iio-trig-sysfs"], capture_output=True)
             subprocess.run(["modprobe", "iio-trig-hrtimer"], capture_output=True)
-            os.makedirs("/config", exist_ok=True)
+            os.makedirs(SYSFS_TRIG_CONFIG_DIR, exist_ok=True)
             subprocess.run(
-                ["mount", "-t", "configfs", "none", "/config"], capture_output=True
+                ["mount", "-t", "configfs", "none", SYSFS_TRIG_CONFIG_DIR],
+                capture_output=True,
             )
         except Exception as e:
             logger.warning(
@@ -430,8 +432,9 @@ class HrtimerTrigger(IioReader):
 
         # Create trigger
         try:
-            if not os.path.isdir("/config/iio/triggers/hrtimer/hhd"):
-                os.makedirs("/config/iio/triggers/hrtimer/hhd", exist_ok=True)
+            trig_dir = os.path.join(SYSFS_TRIG_CONFIG_DIR, "iio/triggers/hrtimer/hhd")
+            if not os.path.isdir(trig_dir):
+                os.makedirs(trig_dir, exist_ok=True)
         except Exception as e:
             logger.error(
                 f"Could not create 'hhd' trigger. IMU will not work. Error:\n{e}"
@@ -494,7 +497,8 @@ class HrtimerTrigger(IioReader):
                 logger.error(f"Could not restore original trigger:\n{trig} to {name}")
 
         try:
-            os.rmdir("/config/iio/triggers/hrtimer/hhd")
+            trig_dir = os.path.join(SYSFS_TRIG_CONFIG_DIR, "iio/triggers/hrtimer/hhd")
+            os.rmdir(trig_dir)
         except Exception as e:
             logger.error(f"Could not delete hrtimer trigger. Error:\n{e}")
 
