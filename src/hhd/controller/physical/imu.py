@@ -238,19 +238,15 @@ class IioReader(Producer):
         if not sens_dir or not type:
             return []
 
-        try:
-            dev = prepare_dev(
-                sens_dir,
-                type,
-                self.attr,
-                self.freq,
-                self.scale,
-                self.mappings,
-                self.update_trigger,
-            )
-        except Exception as e:
-            logger.error(f"Could not open IMU with error:\n{e}")
-            return []
+        dev = prepare_dev(
+            sens_dir,
+            type,
+            self.attr,
+            self.freq,
+            self.scale,
+            self.mappings,
+            self.update_trigger,
+        )
 
         if not dev:
             return []
