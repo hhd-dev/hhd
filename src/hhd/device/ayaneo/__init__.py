@@ -1,5 +1,6 @@
 from threading import Event, Thread
 from typing import Any, Sequence
+from .const import AYANEO_AIR_PLUS_MAPPINGS
 
 from hhd.plugins import (
     Config,
@@ -14,7 +15,11 @@ from hhd.plugins.settings import HHDSettings
 
 
 AYANEO_CONFS = {
-    "AIR Plus": {"name": "AIR Plus", "hrtimer": True},
+    "AIR Plus": {
+        "name": "AYANEO AIR Plus", 
+        "hrtimer": True, 
+        "mapping": AYANEO_AIR_PLUS_MAPPINGS,
+    },
 }
 
 class AyaneoControllersPlugin(HHDPlugin):
