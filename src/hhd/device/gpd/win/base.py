@@ -249,6 +249,14 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
 
+    match conf["l4r4_to_qam"].to(str):
+        case "l4":
+            qam_button = "extra_l1"
+        case "r4":
+            qam_button = "extra_r1"
+        case _:
+            qam_button = None
+
     if has_touchpad:
         touch_actions = (
             conf["touchpad.controller"]
@@ -262,12 +270,14 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             touchpad_short=touch_actions["short"].to(TouchpadAction),
             touchpad_hold=touch_actions["hold"].to(TouchpadAction),
             nintendo_mode=conf["nintendo_mode"].to(bool),
+            qam_button=qam_button,
         )
     else:
         multiplexer = Multiplexer(
             trigger="analog_to_discrete",
             dpad="analog_to_discrete",
             nintendo_mode=conf["nintendo_mode"].to(bool),
+            qam_button=qam_button,
         )
 
     REPORT_FREQ_MIN = 25

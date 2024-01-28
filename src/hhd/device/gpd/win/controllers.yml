@@ -40,6 +40,15 @@ children:
       Swaps A with B and X with Y.
     default: False
 
+  l4r4_to_qam:
+    type: multiple
+    title: Map L4/R4 to QAM.
+    options:
+      disabled: "Disabled"
+      l4: "L4"
+      r4: "R4"
+    default: disabled
+
   debug:
     type: bool
     title: Debug

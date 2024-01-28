@@ -250,6 +250,7 @@ class Multiplexer:
         r3_to_share: bool = False,
         select_reboots: bool = False,
         nintendo_mode: bool = False,
+        qam_button: str | None = None,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -258,7 +259,6 @@ class Multiplexer:
         self.touchpad = touchpad
         self.status = status
         self.trigger_discrete_lvl = trigger_discrete_lvl
-        self.share_to_qam = share_to_qam
         self.touchpad_short = touchpad_short
         self.touchpad_hold = touchpad_hold
         self.touchpad_right = touchpad_right
@@ -273,6 +273,9 @@ class Multiplexer:
         self.queue: list[tuple[Event | Literal["reboot"], float]] = []
         self.select_pressed = None
         self.select_is_held = False
+        self.qam_button = qam_button
+        if share_to_qam:
+            self.qam_button = "share"
 
         assert touchpad is None, "touchpad rewiring not supported yet"
 
@@ -445,7 +448,7 @@ class Multiplexer:
                             self.select_is_held = False
                             self.select_pressed = None
 
-                    if self.share_to_qam and ev["code"] == "share":
+                    if self.qam_button is not None and ev["code"] == self.qam_button:
                         if ev["value"]:
                             ev["code"] = "mode"
                             self.queue.append(
