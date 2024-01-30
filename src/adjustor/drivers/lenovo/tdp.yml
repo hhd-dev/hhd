@@ -31,6 +31,13 @@ children:
             title: Boost Mode
             default: auto
             modes:
+              default:
+                type: container
+                title: Default
+                hint: >-
+                  Does not manage the boost fTDP and cTDP values, this means
+                  they are set to their default value and may misbehave on low
+                  TDPs.
               auto:
                 type: container
                 title: Auto
@@ -41,7 +48,8 @@ children:
                 type: container
                 title: Disabled
                 hint: >-
-                  Sets the sTDP and fTDP values to be equal to the steady TDP value.
+                  Sets the sTDP and fTDP values to be equal to the steady TDP value
+                  (e.g., boosting is disabled).
               manual:
                 type: container
                 title: Manual
