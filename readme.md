@@ -209,7 +209,7 @@ the right stick into a mouse.
 
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
-back buttons to Left: Pause, Right: Printscreen using Windows.
+back buttons to Left: Printscreen, Right: Pause using Windows.
 This is the default mapping, so if you never remapped them using Windows you
 will not have to.
 Handheld Daemon automatically handles the interval to enable being able to hold
