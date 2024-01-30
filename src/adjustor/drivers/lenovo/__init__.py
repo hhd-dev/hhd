@@ -30,7 +30,7 @@ processor), so if you reboot, the Go may have trouble booting.
 
 In any case, this change can be reverted either by going to the BIOS and setting
 the TDP Mode there, or by holding the Power Button for around 20s when the GO
-is closed to trigger an Embedded Processor reset (the controller lights will
+is closed to trigger an Embedded Computer reset (the controller lights will
 flash red twice).
 """
 
