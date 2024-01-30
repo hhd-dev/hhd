@@ -267,75 +267,75 @@ def parse_defaults(sets: HHDSettings):
     return out
 
 
-def fill_in_defaults(s: Setting | Container | Mode):
-    s = copy(s)
-    s["tags"] = s.get("tags", [])
-    s["title"] = s.get("title", "")
-    s["hint"] = s.get("hint", None)
-    if s["type"] != "container" and s["type"] != "action":
-        s["default"] = s.get("default", None)
+def pick_tag(tag, default, a, b):
+    if not b:
+        return a.get(tag, default)
+    return b.get(tag, a.get(tag, default))
 
-    match s["type"]:
-        case "container":
-            s["children"] = {
-                k: fill_in_defaults(v) for k, v in s.get("children", {}).items()
-            }
-        case "mode":
-            s["modes"] = {
-                k: cast(Container, fill_in_defaults(v))
-                for k, v in s.get("modes", {}).items()
-            }
-        case "multiple":
-            s["options"] = s.get("options", {})
-        case "discrete":
-            s["options"] = s.get("options", [])
-        case "integer" | "float":
-            s["min"] = s.get("min", None)
-            s["max"] = s.get("max", None)
-            s["step"] = s.get("step", None)
-        case "custom":
-            s["config"] = s.get("config", None)
-    return s
+
+DEFAULT_TAGS = {
+    "type": None,
+    "title": "",
+    "hint": "",
+    "tags": [],
+    "default": None,
+}
+
+TYPE_TAGS = {
+    "multiple": {"options": {}},
+    "discrete": {"options": []},
+    "int": {"min": None, "max": None, "step": None},
+    "float": {"min": None, "max": None, "step": None},
+    "custom": {"config": None},
+}
 
 
 def merge_reduce(
-    a: Setting | Container | Mode, b: Setting | Container | Mode
-) -> Setting | Container | Mode:
-    if a["type"] != b["type"]:
-        return fill_in_defaults(b)
+    a: Setting | Container | Mode, b: Setting | Container | Mode | None = None
+):
+    s = {}
+    for tag, default in DEFAULT_TAGS.items():
+        s[tag] = pick_tag(tag, default, a, b)
 
-    match a["type"]:
-        case "container":
-            out = cast(Container, dict(b))
-            new_children = dict(a.get("children", {}))
-            for k, v in b.items():
-                if k in out:
-                    out[k] = merge_reduce(out[k], b[k])
-                else:
-                    out[k] = v
-            out["children"] = new_children
-            return fill_in_defaults(out)
-        case "mode":
-            out = cast(Mode, dict(b))
-            new_children = dict(a.get("modes", {}))
-            for k, v in b.items():
-                if k in out:
-                    out[k] = merge_reduce(out[k], b[k])
-                else:
-                    out[k] = v
-            out["modes"] = new_children
-            return fill_in_defaults(out)
-        case _:
-            return fill_in_defaults(b)
+    for tag, default in TYPE_TAGS.get(a["type"], {}).items():
+        s[tag] = pick_tag(tag, default, a, b)
+
+    if b and b.get("type", None) == a.get("type", None):
+        match s["type"]:
+            case "container":
+                new_children = dict(a.get("children", {}))
+                for k, v in b.get("children", {}).items():
+                    if k in new_children:
+                        new_children[k] = merge_reduce(new_children[k], v)  # type: ignore
+                    else:
+                        new_children[k] = v
+                s["children"] = new_children
+            case "mode":
+                new_children = dict(a.get("modes", {}))
+                for k, v in b.get("modes", {}).items():
+                    if k in new_children:
+                        new_children[k] = merge_reduce(new_children[k], v)  # type: ignore
+                    else:
+                        new_children[k] = v
+                s["modes"] = new_children
+    else:
+        if a.get("type", None) == "container":
+            s["children"] = {
+                k: merge_reduce(v) for k, v in a.get("children", {}).items()
+            }
+
+        if a.get("type", None) == "mode":
+            s["modes"] = {k: merge_reduce(v) for k, v in a.get("modes", {}).items()}
+    return s
 
 
 def merge_reduce_sec(a: Section, b: Section):
-    out = {k: cast(Container, fill_in_defaults(v)) for k, v in a.items()}
+    out = {k: cast(Container, merge_reduce(v)) for k, v in a.items()}
     for k, v in b.items():
         if k in out:
             out[k] = cast(Container, merge_reduce(out[k], v))
         else:
-            out[k] = cast(Container, fill_in_defaults(v))
+            out[k] = cast(Container, merge_reduce(v))
 
     return out
 
@@ -533,9 +533,7 @@ def save_state_yaml(fn: str, set: HHDSettings, conf: Config, shash=None):
 
     conf["version"] = shash
     with open(fn, "w") as f:
-        yaml.safe_dump(
-            dump_settings(set, conf, "default"), f, sort_keys=False
-        )
+        yaml.safe_dump(dump_settings(set, conf, "default"), f, sort_keys=False)
         f.write("\n")
         f.write(dump_comment(set, STATE_HEADER))
 
