@@ -6,3 +6,9 @@ children:
     type: mode
     title: TDP Driver
     hint: Select the driver to use for setting the TDP.
+    modes:
+      disabled:
+        type: container
+        title: Disabled
+        hint: >-
+          Adjustor is inactive and will make no changes to the system.

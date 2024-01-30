@@ -1,5 +1,5 @@
 type: mode
-title: Fan Curve (Lenovo)
+title: Custom Fan Curve
 hint: >-
   Allows you to set a custom fan curve. This fan curve is only officially
   supported on custom mode, but you can nevertheless use it in other power
@@ -9,9 +9,9 @@ hint: >-
   Adjustor will automatically apply it for changes made through the UI
   but not with Legion L + Y.
 modes:
-  automatic:
+  disabled:
     type: container
-    title: Automatic
+    title: Disabled
     hint: >-
       Lets Legion GO manage the curve on its own. Setting this option will cause
       a mode change to reset the fan curve.
