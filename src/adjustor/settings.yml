@@ -1,58 +1,8 @@
-version: ec2dd84e
-tdp_management:
-  type: container
-  title: TDP Management
-  hint: Configuration options related to Thermal Design Power management for Legion
-    Go.
-  children:
-    tdp_mode:
-      type: container
-      title: TDP Mode
-      hint: How to set the TDP of the Legion Go device (Ryzenadj or Manufacturer)
-      default: disabled
-      options:
-      - ryzenadj
-      - legiongo
-      - disabled
-      value: legiongo
-      children:
-        manufacturer:
-          legion_go:
-            type: container
-            title: Manufacturer Mode
-            powermode:
-              title: Power Mode
-              hint: Select the power mode for Legion Go.
-              options:
-              - quiet
-              - balanced
-              - performance
-              - custom
-              value: quiet
-          ryzenadj:
-            type: container
-            title: Ryzenadj Mode
-            ryzenadj:
-              title: Ryzenadj
-              hint: Select the power mode for ryzenadj mode.
-              options:
-              - quiet
-              - balanced
-              - performance
-              - custom
-              value: quiet
-    tdp_fast:
-      type: int
-      title: Fast TDP (W)
-      hint: Maximum TDP in Fast mode.
-      value: 
-    tdp_slow:
-      type: int
-      title: Slow TDP (W)
-      hint: Maximum TDP in Slow mode. ()
-      value: 
-    tdp_steady:
-      type: int
-      title: Steady TDP (W)
-      hint: Maximum TDP in Steady mode.
-      value: 
+type: container
+title: Adjustor (TDP)
+hint: Various TDP settings for handheld devices.
+children:
+  tdp_mode:
+    type: mode
+    title: TDP Driver
+    hint: Select the driver to use for setting the TDP.

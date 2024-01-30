@@ -1,0 +1,65 @@
+type: container
+title: Lenovo
+hint: Uses the methods provided by Legion Space.
+children:
+  mode:
+    type: mode
+    title: Mode
+    modes:
+      quiet:
+        type: container
+        title: Quiet (8W)
+      balanced:
+        type: container
+        title: Balanced (15W)
+      performance:
+        type: container
+        title: Performance (20W)
+      custom:
+        type: container
+        title: Custom (15W-30W)
+        children:
+          tdp:
+            type: int
+            title: Steady TDP (W)
+            hint: Maximum TDP in steady state.
+            tags: [advanced]
+            min: 0
+            max: 30
+          boost:
+            type: mode
+            title: Boost Mode
+            default: auto
+            modes:
+              auto:
+                type: container
+                title: Auto
+                hint: >-
+                  Interpolates the boost values provided by Lenovo 
+                  (up to an fTDP of 41w and sTDP of 32w).
+              disabled:
+                type: container
+                title: Disabled
+                hint: >-
+                  Sets the sTDP and fTDP values to be equal to the steady TDP value.
+              manual:
+                type: container
+                title: Manual
+                hint: >-
+                  Allows you to control the slow TDP (sTDP) and fast TDP (fTDP)
+                  values manually.
+                children:
+                  stdp:
+                    type: int
+                    title: Slow TDP (W)
+                    hint: Maximum slow boost TDP (lasts 1-2 minutes).
+                    tags: [advanced]
+                    min: 0
+                    max: 32
+                  ftdp:
+                    type: int
+                    title: Fast TDP (W)
+                    hint: Maximum peak boost TDP (lasts for seconds).
+                    tags: [advanced]
+                    min: 0
+                    max: 41

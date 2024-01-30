@@ -1,0 +1,66 @@
+type: mode
+title: Fan Curve (Lenovo)
+hint: >-
+  Allows you to set a custom fan curve. This fan curve is only officially
+  supported on custom mode, but you can nevertheless use it in other power
+  modes at your own risk.
+
+  This fan curve needs to be reapplied every time you switch TDP modes.
+  Adjustor will automatically apply it for changes made through the UI
+  but not with Legion L + Y.
+modes:
+  automatic:
+    type: container
+    title: Automatic
+    hint: >-
+      Lets Legion GO manage the curve on its own. Setting this option will cause
+      a mode change to reset the fan curve.
+  manual:
+    type: container
+    title: Manual
+    children:
+      reapply:
+        title: Re-apply
+        type: event
+        hint: >-
+          Reapplies the fan curve below if it got reset.
+      reset:
+        title: Reset
+        type: event
+        hint: >-
+          Resets to the original fan curve provided by Lenovo in BIOS V28.
+      
+      st10: &speed_template
+        title: 10C
+        hint: Sets the speed at the named temperature.
+        type: int
+        min: 0
+        max: 115
+      
+      st20:
+        <<: *speed_template
+        title: 20C
+      st30:
+        <<: *speed_template
+        title: 30C
+      st40:
+        <<: *speed_template
+        title: 40C
+      st50:
+        <<: *speed_template
+        title: 50C
+      st60:
+        <<: *speed_template
+        title: 60C
+      st70:
+        <<: *speed_template
+        title: 70C
+      st80:
+        <<: *speed_template
+        title: 80C
+      st90:
+        <<: *speed_template
+        title: 90C
+      st100:
+        <<: *speed_template
+        title: 100C
