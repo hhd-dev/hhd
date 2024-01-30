@@ -181,7 +181,7 @@ sudo rm /etc/systemd/system/hhd_local@.service
 rm -r ~/.config/hhd
 ```
 
-### <a name="issues"></a> Common Issues with Install
+### <a name="issues"></a><a name="after-install"></a> After Install Instructions
 #### Extra steps for ROG Ally
 Using the gyroscope on the Ally requires a kernel that is patched to enable IMU
 support.
@@ -206,6 +206,10 @@ LEDs will not work either, so that should be turned off.
 
 You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
 the right stick into a mouse.
+
+#### Extra steps for Ayaneo
+Ayaneo uses the same gyroscope with the same configuration as the ally, so
+reference the Ally's IMU steps to enable gyroscope support.
 
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
