@@ -34,7 +34,6 @@ modes:
         title: 10C
         hint: Sets the speed at the named temperature.
         type: int
-        tags: [slider]
         min: 0
         max: 115
         step: 1
