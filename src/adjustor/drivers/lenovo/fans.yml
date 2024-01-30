@@ -21,12 +21,12 @@ modes:
     children:
       reapply:
         title: Re-apply
-        type: event
+        type: action
         hint: >-
           Reapplies the fan curve below if it got reset.
       reset:
         title: Reset
-        type: event
+        type: action
         hint: >-
           Resets to the original fan curve provided by Lenovo in BIOS V28.
       
