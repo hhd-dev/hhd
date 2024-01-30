@@ -12,3 +12,4 @@ children:
         title: Disabled
         hint: >-
           Adjustor is inactive and will make no changes to the system.
+          For safety reasons, the TDP driver reverts to disabled on reboot.
