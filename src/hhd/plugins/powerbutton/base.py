@@ -142,6 +142,10 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
             # Initial check for steam
             if not is_steam_gamescope_running(perms):
                 # Close devices
+                if press_devs:
+                    for d in press_devs:
+                        d.close()
+                    press_devs = []
                 if press_dev:
                     press_dev.close()
                     press_dev = None
