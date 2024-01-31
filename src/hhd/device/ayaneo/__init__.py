@@ -22,22 +22,10 @@ AYANEO_CONFS = {
         "hrtimer": True, 
         "mapping": AYANEO_AIR_PLUS_MAPPINGS,
     },
-    "AYANEO 2": {
-        "name": "AYANEO 2", 
-        "hrtimer": True,
-    },
-    "GEEK": {
-        "name": "AYANEO GEEK", 
-        "hrtimer": True,
-    },
-    "AYANEO 2S": {
-        "name": "AYANEO S2", 
-        "hrtimer": True,
-    },
-    "GEEK 1S": {
-        "name": "AYANEO GEEK 1S", 
-        "hrtimer": True,
-    },
+    "AYANEO 2": {"name": "AYANEO 2", "hrtimer": True},
+    "AYANEO 2S": {"name": "AYANEO S2", "hrtimer": True},
+    "GEEK": {"name": "AYANEO GEEK", "hrtimer": True},
+    "GEEK 1S": {"name": "AYANEO GEEK 1S", "hrtimer": True},
 }
 
 class AyaneoControllersPlugin(HHDPlugin):
