@@ -35,3 +35,19 @@ AYANEO_AIR_PLUS_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]
     "anglvel_z": ("gyro_y", "anglvel", 1, None),
     "timestamp": ("gyro_ts", None, 1, None),
 }
+
+AYANEO_DEFAULT_BTN_MAPPINGS: dict[int, str] = {
+    B("KEY_F15"): "extra_l1",
+    B("KEY_F16"): "extra_r1",
+    B("KEY_F17"): "mode",
+    B("KEY_D"): "share",
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+}
+
+AYANEO_NEXT_BTN_MAPPINGS: dict[int, str] = {
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+    B("D"): "share",
+    B("KEY_F12"): "mode",
+}
