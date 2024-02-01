@@ -5,7 +5,7 @@ class PowerButtonConfig(NamedTuple):
     device: str
     prod_name: str
     type: Literal["hold_emitted", "hold_isa"] = "hold_isa"
-    phys: Sequence[str] = ["LNXPWRBN", "PNP0C0C"]
+    phys: Sequence[str] = ["PNP0C0C", "LNXPWRBN"]
     hold_phys: Sequence[str] = ["phys-hhd-powerbutton", "isa0060"]
     hold_grab: bool = False
     hold_code: int = 125  # left meta
@@ -19,6 +19,7 @@ PBC = PowerButtonConfig
 SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("Legion Go", "83E1"),
     PBC("ROG Ally", "ROG Ally RC71L_RC71L"),
+    PBC("ROG Ally", "ROG Ally RC71L"),
     PBC("GPT Win 4", "G1618-04"),
     PBC("GPD Win Mini", "G1617-01"),
     PBC("GPD Win Max 2 2023", "G1619-05"),
@@ -27,6 +28,8 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("AYANEO GEEK", "GEEK", type="hold_emitted"),
     PBC("AYANEO 2S", "AYANEO 2S", type="hold_emitted"),
     PBC("AYANEO GEEK 1S", "GEEK 1S", type="hold_emitted"),
+    PBC("Steam Deck LCD", "SDL", type="hold_emitted", phys=["isa0060", "PNP0C0C", "LNXPWRBN"]),
+    PBC("Steam Deck OLED", "SDLD", type="hold_emitted", phys=["isa0060", "PNP0C0C", "LNXPWRBN"]),
 ]
 
 DEFAULT_DEVICE: PowerButtonConfig = PBC(

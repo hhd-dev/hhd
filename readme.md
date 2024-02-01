@@ -284,12 +284,12 @@ Essentially, a new service file needs to be written for Bazzite that contains th
 correct home path (`/var/home`) and then you can disable the built-in version
 service and use the new one instead.
 
-### ❄️ NixOS (experimental)
-Update the `nixpkgs.url` input in your flake to point at [the PR](https://github.com/NixOS/nixpkgs/pull/277661/) branch:
+### ❄️ NixOS
+Ensure your `nixpkgs` is on the `unstable` channel (as of Feb 2024):
 
 ```nix
   inputs = {
-    nixpkgs.url = "github:appsforartists/nixpkgs/handheld-daemon";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 ```
 
 and add this line to your `configuration.nix`:

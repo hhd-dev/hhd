@@ -80,6 +80,16 @@ def register_power_buttons(b: PowerButtonConfig) -> list[evdev.InputDevice]:
             out.append(device)
     return out
 
+def pick_closest_button(btns: list[evdev.InputDevice], cfg: PowerButtonConfig):
+    for phys in cfg.phys:
+        for b in btns:
+            if str(device.phys).startswith(phys):
+                return b
+    
+    if btns:
+        return btns[0]
+    return None
+
 
 def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
     if not b.hold_phys or not b.hold_code:
@@ -163,12 +173,12 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
                 press_devs = register_power_buttons(cfg)
                 press_dev = press_devs[0] if press_devs else None
                 hold_dev = register_hold_button(cfg)
-            if not press_dev or not hold_dev:
+            if not press_dev:
                 logger.error(f"Power button interfaces not found, disabling plugin.")
                 return
 
             # Add timeout to release the button if steam exits.
-            r = select.select([press_dev.fd, hold_dev.fd], [], [], STEAM_WAIT_DELAY)[0]
+            r = select.select([press_dev.fd, hold_dev.fd] if hold_dev else [press_dev.fd], [], [], STEAM_WAIT_DELAY)[0]
 
             if not r:
                 continue
@@ -181,7 +191,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
                 if ev.type == B("EV_KEY") and ev.code == B("KEY_POWER") and ev.value:
                     logger.info("Executing short press.")
                     issue_systemctl = not run_steam_shortpress(perms)
-            elif fd == hold_dev.fd:
+            elif hold_dev and fd == hold_dev.fd:
                 ev = hold_dev.read_one()
                 if ev.type == B("EV_KEY") and ev.code == cfg.hold_code and ev.value:
                     logger.info("Executing long press.")
@@ -221,7 +231,7 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
             if not dev:
                 logger.info(f"Steam is running, hooking power button.")
                 devs = register_power_buttons(cfg)
-                dev = devs[0] if devs else None
+                dev = pick_closest_button(devs, cfg)
             if not dev:
                 logger.error(f"Power button not found, disabling plugin.")
                 return
