@@ -225,7 +225,7 @@ Left-key: PrtSc + 0ms + NC + 0ms + NC + 0ms + NC
 Right-key: Pausc + 0ms + NC + 0ms + NC + 0ms + NC
 ```
 
-To use the gyro, you will need a [dkms package](github.com/hhd-dev/bmi260)
+To use the gyro, you will need a [dkms package](https://github.com/hhd-dev/bmi260)
 for the Bosch 260 IMU Driver.
 Follow the instructions in that repository to install it.
 
