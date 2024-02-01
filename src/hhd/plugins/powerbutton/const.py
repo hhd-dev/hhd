@@ -28,8 +28,18 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("AYANEO GEEK", "GEEK", type="hold_emitted"),
     PBC("AYANEO 2S", "AYANEO 2S", type="hold_emitted"),
     PBC("AYANEO GEEK 1S", "GEEK 1S", type="hold_emitted"),
-    PBC("Steam Deck LCD", "SDL", type="hold_emitted", phys=["isa0060", "PNP0C0C", "LNXPWRBN"]),
-    PBC("Steam Deck OLED", "SDLD", type="hold_emitted", phys=["isa0060", "PNP0C0C", "LNXPWRBN"]),
+    PBC(
+        "Steam Deck LCD",
+        "Jupiter",
+        type="hold_emitted",
+        phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
+    ),
+    PBC(
+        "Steam Deck OLED",
+        "Galileo",
+        type="hold_emitted",
+        phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
+    ),
 ]
 
 DEFAULT_DEVICE: PowerButtonConfig = PBC(

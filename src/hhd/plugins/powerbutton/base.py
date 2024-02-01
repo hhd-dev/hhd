@@ -80,12 +80,13 @@ def register_power_buttons(b: PowerButtonConfig) -> list[evdev.InputDevice]:
             out.append(device)
     return out
 
+
 def pick_closest_button(btns: list[evdev.InputDevice], cfg: PowerButtonConfig):
     for phys in cfg.phys:
         for b in btns:
-            if str(device.phys).startswith(phys):
+            if str(b.phys).startswith(phys):
                 return b
-    
+
     if btns:
         return btns[0]
     return None
@@ -178,7 +179,12 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
                 return
 
             # Add timeout to release the button if steam exits.
-            r = select.select([press_dev.fd, hold_dev.fd] if hold_dev else [press_dev.fd], [], [], STEAM_WAIT_DELAY)[0]
+            r = select.select(
+                [press_dev.fd, hold_dev.fd] if hold_dev else [press_dev.fd],
+                [],
+                [],
+                STEAM_WAIT_DELAY,
+            )[0]
 
             if not r:
                 continue
