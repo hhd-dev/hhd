@@ -82,7 +82,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match just product number, should be enough for now
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        if not f.read().strip() == "ROG Ally RC71L_RC71L":
+        # Different variants of the ally can have an additional _RC71L or not
+        if "ROG Ally RC71L" not in f.read().strip():
             return []
 
     return [RogAllyControllersPlugin()]
