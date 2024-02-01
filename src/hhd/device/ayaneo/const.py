@@ -20,8 +20,8 @@ AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]]
     "accel_x": ("accel_z", "accel", 1, 3),
     "accel_y": ("accel_x", "accel", 1, 3),
     "accel_z": ("accel_y", "accel", 1, 3),
-    "anglvel_x": ("gyro_x", "anglvel", 1, None),
-    "anglvel_y": ("gyro_z", "anglvel", -1, None),
+    "anglvel_x": ("gyro_z", "anglvel", -1, None),
+    "anglvel_y": ("gyro_x", "anglvel", -1, None),
     "anglvel_z": ("gyro_y", "anglvel", -1, None),
     "timestamp": ("gyro_ts", None, 1, None),
 }
@@ -34,4 +34,29 @@ AYANEO_AIR_PLUS_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]
     "anglvel_y": ("gyro_x", "anglvel", -1, None),
     "anglvel_z": ("gyro_y", "anglvel", 1, None),
     "timestamp": ("gyro_ts", None, 1, None),
+}
+
+AYANEO_DEFAULT_BTN_MAPPINGS: dict[int, str] = {
+    B("KEY_F15"): "extra_l1", # LC Button
+    B("KEY_F16"): "extra_r1", # RC Button
+    B("KEY_F17"): "mode", # Big Button
+    B("KEY_D"): "share",  # Small Button
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+}
+
+AYANEO_NEXT_BTN_MAPPINGS: dict[int, str] = {
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+    B("KEY_D"): "share", # Small Button [[40, 133], [32, 125]]
+    B("KEY_F12"): "mode", # Big Button [[96, 105, 133], [88, 97, 125]]
+}
+
+AYANEO_2021_BTN_MAPPINGS: dict[int, str] = {
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+    B("KEY_DELETE"): "share", # TM Button [97,100,111]
+    B("KEY_ESC"): "extra_l1", # ESC Button [1]
+    B("KEY_O"): "extra_l2", # KB Button [97, 24, 125]
+    # B("KEY_LEFTMETA"): "extra_r1", # Win Button [125], Conflict with KB Button
 }

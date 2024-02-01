@@ -20,6 +20,7 @@ from .const import (
     AYANEO_TOUCHPAD_AXIS_MAP,
     AYANEO_TOUCHPAD_BUTTON_MAP,
     AYANEO_DEFAULT_MAPPINGS,
+    AYANEO_DEFAULT_BTN_MAPPINGS,
 )
 
 ERROR_DELAY = 1
@@ -129,14 +130,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         pid=[KBD_PID],
         required=False,
         grab=True,
-        btn_map={
-            EC("KEY_F15"): "extra_l1",
-            EC("KEY_F16"): "extra_r1",
-            EC("KEY_F17"): "mode",
-            EC("KEY_D"): "share",
-            EC("KEY_VOLUMEUP"): "key_volumeup",
-            EC("KEY_VOLUMEDOWN"): "key_volumedown",
-        },
+        btn_map=dconf.get("btn_mapping", AYANEO_DEFAULT_BTN_MAPPINGS),
     )
 
     if has_touchpad:

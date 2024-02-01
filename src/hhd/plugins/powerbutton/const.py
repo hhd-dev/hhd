@@ -24,6 +24,10 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("GPD Win Mini", "G1617-01"),
     PBC("GPD Win Max 2 2023", "G1619-05"),
     PBC("AYANEO AIR Plus", "AIR Plus", type="hold_emitted"),
+    PBC("AYANEO 2", "AYANEO 2", type="hold_emitted"),
+    PBC("AYANEO GEEK", "GEEK", type="hold_emitted"),
+    PBC("AYANEO 2S", "AYANEO 2S", type="hold_emitted"),
+    PBC("AYANEO GEEK 1S", "GEEK 1S", type="hold_emitted"),
     PBC("Steam Deck LCD", "SDL", type="hold_emitted", phys=["isa0060", "PNP0C0C", "LNXPWRBN"]),
     PBC("Steam Deck OLED", "SDLD", type="hold_emitted", phys=["isa0060", "PNP0C0C", "LNXPWRBN"]),
 ]
