@@ -17,8 +17,15 @@ from .const import GPD_WIN_MAX_2_2023_MAPPINGS
 GPD_CONFS = {
     "G1618-04": {"name": "GPD Win 4", "hrtimer": True},
     "G1617-01": {"name": "GPD Win Mini", "touchpad": True},
+    # TODO: GPD Win Max has multiple product names, switch to partial match
+    "G1619-04": {
+        "name": "GPD Win Max 2 2023 (04)",
+        "hrtimer": True,
+        "touchpad": True,
+        "mapping": GPD_WIN_MAX_2_2023_MAPPINGS,
+    },
     "G1619-05": {
-        "name": "GPD Win Max 2 2023",
+        "name": "GPD Win Max 2 2023 (05)",
         "hrtimer": True,
         "touchpad": True,
         "mapping": GPD_WIN_MAX_2_2023_MAPPINGS,
