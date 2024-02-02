@@ -53,8 +53,4 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
     B("KEY_ESC"): "extra_l1",  # ESC Button [1]
     B("KEY_O"): "extra_l2",  # KB Button [97, 24, 125]
     # B("KEY_LEFTMETA"): "extra_r1", # Win Button [125], Conflict with KB Button
-    # Older than air devices without the hwdb rule by opengamepadui
-    B("KEY_F8"): "extra_l1",  # LC Button 66
-    B("KEY_F9"): "extra_r1",  # RC Button 67
-    B("KEY_F10"): "mode",  # Big Button 68
 }
