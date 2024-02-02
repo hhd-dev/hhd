@@ -18,8 +18,8 @@ from hhd.plugins.settings import HHDSettings
 
 AYANEO_CONFS = {
     "AIR Plus": {
-        "name": "AYANEO AIR Plus", 
-        "hrtimer": True, 
+        "name": "AYANEO AIR Plus",
+        "hrtimer": True,
         "mapping": AYANEO_AIR_PLUS_MAPPINGS,
     },
     "AYANEO 2": {"name": "AYANEO 2", "hrtimer": True},
@@ -27,6 +27,15 @@ AYANEO_CONFS = {
     "GEEK": {"name": "AYANEO GEEK", "hrtimer": True},
     "GEEK 1S": {"name": "AYANEO GEEK 1S", "hrtimer": True},
 }
+
+
+def get_default_config(product_name: str):
+    return {
+        "name": product_name,
+        "hrtimer": True,
+        "untested": True,
+    }
+
 
 class AyaneoControllersPlugin(HHDPlugin):
     name = "ayaneo_controllers"
@@ -115,11 +124,21 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
-    # Match just product number, should be enough for now
+    # Match just product name
+    # if a device exists here its officially supported
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         dmi = f.read().strip()
-        dconf = AYANEO_CONFS.get(dmi, None)
-        if not dconf:
-            return []
+    
+    dconf = AYANEO_CONFS.get(dmi, None)
+    if dconf:
+        return [AyaneoControllersPlugin(dmi, dconf)]
+    
+    # Fallback to chassis vendor since aya contains no usb devices
+    with open("/sys/class/dmi/id/chassis_vendor") as f:
+        vendor = f.read().strip()
 
-    return [AyaneoControllersPlugin(dmi, dconf)]
+    if "ayaneo" in vendor.lower().strip():
+        return [AyaneoControllersPlugin(dmi, get_default_config(dmi))]
+
+    return []
+

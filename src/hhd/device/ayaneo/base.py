@@ -17,10 +17,10 @@ from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .const import (
+    AYANEO_BTN_MAPPINGS,
+    AYANEO_DEFAULT_MAPPINGS,
     AYANEO_TOUCHPAD_AXIS_MAP,
     AYANEO_TOUCHPAD_BUTTON_MAP,
-    AYANEO_DEFAULT_MAPPINGS,
-    AYANEO_DEFAULT_BTN_MAPPINGS,
 )
 
 ERROR_DELAY = 1
@@ -28,9 +28,6 @@ SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
 
-from .const import (
-    AYANEO_DEFAULT_MAPPINGS,
-)
 
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
@@ -130,7 +127,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         pid=[KBD_PID],
         required=False,
         grab=True,
-        btn_map=dconf.get("btn_mapping", AYANEO_DEFAULT_BTN_MAPPINGS),
+        btn_map=dconf.get("btn_mapping", AYANEO_BTN_MAPPINGS),
     )
 
     if has_touchpad:
