@@ -5,7 +5,7 @@ class PowerButtonConfig(NamedTuple):
     device: str
     prod_name: str
     type: Literal["hold_emitted", "hold_isa"] = "hold_isa"
-    phys: Sequence[str] = ["PNP0C0C", "LNXPWRBN"]
+    phys: Sequence[str] = ["LNXPWRBN", "PNP0C0C"]
     hold_phys: Sequence[str] = ["phys-hhd-powerbutton", "isa0060"]
     hold_grab: bool = False
     hold_code: int = 125  # left meta
