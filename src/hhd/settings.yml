@@ -13,7 +13,7 @@ version:
 
     update_decky:
       type: action
-      tags: [hhd-update-decky]
+      tags: [hhd-update-decky, decky]
       title: "Update Decky"
       hint: "Updates the Decky plugin to the latest release."
 

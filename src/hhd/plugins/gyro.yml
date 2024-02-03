@@ -10,12 +10,15 @@ modes:
       The default axis loaded for this device.
   remapped:
     type: container
-    title: Configure
+    title: Override
     hint: >-
       Remap and invert the axis of your device. If the axis of your device are
       wrong, please submit a picture or a text version of the following.
     children:
-      product_name:
+      manufacturer:
+        type: display
+        title: Manufacturer
+      product:
         type: display
         title: Product
       x_axis: &axis
