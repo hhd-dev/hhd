@@ -194,7 +194,7 @@ def plugin_run(
 
 def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict):
     debug = conf.get("debug", False)
-    has_touchpad = "touchpad" in conf
+    has_touchpad = dconf.get("touchpad", False)
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
