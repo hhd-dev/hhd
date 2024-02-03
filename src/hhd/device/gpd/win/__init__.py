@@ -9,10 +9,11 @@ from hhd.plugins import (
     load_relative_yaml,
     get_outputs_config,
     get_touchpad_config,
+    get_gyro_config,
 )
 from hhd.plugins.settings import HHDSettings
 
-from .const import GPD_WIN_MAX_2_2023_MAPPINGS
+from .const import GPD_WIN_MAX_2_2023_MAPPINGS, GPD_WIN_DEFAULT_MAPPINGS
 
 GPD_CONFS = {
     "G1618-04": {"name": "GPD Win 4", "hrtimer": True},
@@ -71,6 +72,9 @@ class GpdWinControllersPlugin(HHDPlugin):
         else:
             del base["controllers"]["gpd_win"]["children"]["touchpad"]
 
+        base["controllers"]["gpd_win"]["children"]["gyro"] = get_gyro_config(
+            self.dconf.get("mapping", GPD_WIN_DEFAULT_MAPPINGS)
+        )
         return base
 
     def update(self, conf: Config):

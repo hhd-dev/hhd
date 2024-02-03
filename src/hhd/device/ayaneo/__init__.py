@@ -1,8 +1,6 @@
 from threading import Event, Thread
 from typing import Any, Sequence
-from .const import (
-    AYANEO_AIR_PLUS_MAPPINGS,
-)
+from .const import AYANEO_AIR_PLUS_MAPPINGS, AYANEO_DEFAULT_MAPPINGS
 
 from hhd.plugins import (
     Config,
@@ -12,6 +10,7 @@ from hhd.plugins import (
     load_relative_yaml,
     get_outputs_config,
     get_touchpad_config,
+    get_gyro_config,
 )
 from hhd.plugins.settings import HHDSettings
 
@@ -75,6 +74,10 @@ class AyaneoControllersPlugin(HHDPlugin):
         else:
             del base["controllers"]["ayaneo"]["children"]["touchpad"]
 
+        base["controllers"]["ayaneo"]["children"]["gyro"] = get_gyro_config(
+            self.dconf.get("mapping", AYANEO_DEFAULT_MAPPINGS)
+        )
+
         return base
 
     def update(self, conf: Config):
@@ -128,17 +131,19 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     # if a device exists here its officially supported
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         dmi = f.read().strip()
-    
+
     dconf = AYANEO_CONFS.get(dmi, None)
     if dconf:
         return [AyaneoControllersPlugin(dmi, dconf)]
-    
-    # Fallback to chassis vendor since aya contains no usb devices
-    # with open("/sys/class/dmi/id/chassis_vendor") as f:
-    #     vendor = f.read().strip()
 
-    # if "ayaneo" in vendor.lower().strip():
-    #     return [AyaneoControllersPlugin(dmi, get_default_config(dmi))]
+    # Fallback to chassis vendor since aya contains no usb devices
+    try:
+        with open("/sys/class/dmi/id/chassis_vendor") as f:
+            vendor = f.read().lower().strip()
+
+        if "ayaneo" in vendor:
+            return [AyaneoControllersPlugin(dmi, get_default_config(dmi))]
+    except Exception:
+        return []
 
     return []
-

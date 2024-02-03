@@ -9,9 +9,11 @@ from hhd.plugins import (
     load_relative_yaml,
     get_outputs_config,
     get_touchpad_config,
+    get_gyro_state,
+    get_gyro_config
 )
 from hhd.plugins.settings import HHDSettings
-
+from hhd.controller.physical.imu import BMI_MAPPINGS
 
 class LegionControllersPlugin(HHDPlugin):
     name = "legion_go_controllers"

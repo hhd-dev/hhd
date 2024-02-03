@@ -14,7 +14,7 @@ from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
-from hhd.plugins import Config, Context, Emitter, get_outputs
+from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
 
 from .const import (
     AYANEO_BTN_MAPPINGS,
@@ -96,8 +96,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     # Imu
     d_imu = CombinedImu(
         conf["imu_hz"].to(int),
-        dconf.get("mapping", AYANEO_DEFAULT_MAPPINGS),
-        # gyro_scale="0.000266", #TODO: Find what this affects
+        get_gyro_state(conf["gyro"], dconf.get("mapping", AYANEO_DEFAULT_MAPPINGS)),
     )
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
