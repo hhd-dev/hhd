@@ -56,6 +56,7 @@ jobs:
           commit_message: update to '${{ github.event.release.name }}'
           allow_empty_commits: false
           ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
+          updpkgsums: true
 
   deploy_copr:
     runs-on: ubuntu-latest
