@@ -17,12 +17,16 @@ pip install --upgrade hhd
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
+# Add hhd to user path
+mkdir -p ~/.local/bin
+ln -s ~/.local/share/hhd/venv/bin/hhd ~/.local/bin/hhd
+
 # Start service and reboot
 sudo systemctl enable hhd_local@$(whoami)
 
 echo ""
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo "!!! Do not forget to remove HandyGCCS/Handycon if your distro has it.        !!!"
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!!! Do not forget to remove HandyGCCS/Bundled HHD if your distro preinstalls it. !!!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo ""
 echo "Reboot to start Handheld Daemon!"

@@ -13,6 +13,9 @@ sudo systemctl stop hhd_local@$(whoami)
 # Remove Binary
 rm -rf ~/.local/share/hhd
 
+# Remove bin link
+rm -f ~/.local/bin/hhd
+
 # Remove /etc files
 sudo rm -f /etc/udev/rules.d/83-hhd.rules
 sudo rm -f /etc/systemd/system/hhd_local@.service
@@ -21,8 +24,8 @@ sudo rm -f /etc/systemd/system/hhd_local@.service
 # rm -rf ~/.config/hhd
 
 echo ""
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo "!!! Do not forget to re-enable HandyGCCS/Handycon if your device relies on it. !!!"
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!!! Do not forget to re-enable HandyGCCS/Bundled HHD if your device relies on it. !!!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo ""
 echo "Handheld Daemon Uninstalled. Reboot!"
