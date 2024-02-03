@@ -14,7 +14,10 @@ source venv/bin/activate
 pip install --upgrade hhd
 
 # Install udev rules and create a service file
+sudo mkdir -p /etc/udev/rules.d/
+sudo mkdir -p /etc/udev/hwdb.d/
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/hwdb.d/83-hhd.rules -o /etc/udev/hwdb.d/83-hhd.rules
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
 # Add hhd to user path

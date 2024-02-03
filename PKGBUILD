@@ -24,6 +24,8 @@ package() {
   # Install minimally necessary rules for running as a system service
 	mkdir -p ${pkgdir}/usr/lib/udev/rules.d/
   install -m644 usr/lib/udev/rules.d/83-hhd.rules ${pkgdir}/usr/lib/udev/rules.d/83-hhd.rules
+	mkdir -p ${pkgdir}/usr/lib/udev/hwdb.d/
+  install -m644 usr/lib/udev/hwdb.d/83-hhd.rules ${pkgdir}/usr/lib/udev/hwdb.d/83-hhd.rules
 	mkdir -p ${pkgdir}/usr/lib/systemd/system/
   install -m644 usr/lib/systemd/system/hhd@.service ${pkgdir}/usr/lib/systemd/system/hhd@.service
 }

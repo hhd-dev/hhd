@@ -34,6 +34,8 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 %{python3} -m installer --destdir="%{buildroot}" dist/*.whl
 mkdir -p %{buildroot}%{_udevrulesdir}
 install -m644 usr/lib/udev/rules.d/83-%{name}.rules %{buildroot}%{_udevrulesdir}/83-%{name}.rules
+mkdir -p %{buildroot}%{_sysconfdir}/udev/hwdb.d
+install -m644 usr/lib/udev/hwdb.d/83-%{name}.rules %{buildroot}%{_sysconfdir}/udev/hwdb.d/83-%{name}.rules
 mkdir -p %{buildroot}%{_unitdir}
 install -m644 usr/lib/systemd/system/%{name}@.service %{buildroot}%{_unitdir}/%{name}@.service
 
