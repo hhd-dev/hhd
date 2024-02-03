@@ -1,24 +1,19 @@
 # Handheld Daemon (HHD)
 Handheld Daemon is a project that aims to provide utilities for managing handheld
 devices.
-With features ranging from TDP controls, to controller remappings, and gamescope 
-session management.
+Right now, it features a fully functional controller emulator that exposes gyro,
+paddles, LEDs and QAM across Steam, Yuzu, Dolphin and others.
+It brings all supported devices up to parity with Steam Deck.
+Read [supported devices](#supported-devices) to see if your device is supported.
 
 This configuration is exposed through an API, and there is already a Decky
 plugin for it ([hhd-decky](https://github.com/hhd-dev/hhd-decky)) and a web
 app for it ([hhd.dev](https://hhd.dev)) that also works locally with Electron
 ([hhd-ui](https://github.com/hhd-dev/hhd-ui)).
 
-It is the aim of this project to provide generic hid-based emulators for most
-mainstream controllers (xbox Elite, DS4, PS5, Joycons), so that users of devices
-can pick the best target for their device and its controls, which may change
-depending on the game.
-
-*Supported Devices*:
-- Legion Go
-- ROG Ally
-- GPD Win 4, Win Mini, and Win Max 2 2023
-- Ayaneo Air Plus
+In addition, a new TDP plugin (currently non-functional) is in the works, that
+will allow both vendor specific and vendor independent TDP controls.
+Check out [adjustor](https://github.com/hhd-dev/adjustor)!.
 
 *Current Features*:
 - Fully functional DualSense and Dualsense Edge emulation
@@ -41,18 +36,39 @@ depending on the game.
   - Webapp on https://hhd.dev and through Electron.
 - Built-in updater.
 
-*Planned Features (in this order)*:
-- Steam Deck controller emulation
-  - No weird glyphs
-- TDP Plugin
-  - Will provide parity with Legion Space/Armory crate, hardware is already reverse 
-    engineered for the Legion Go.
-- High-end Over/Downclocking Utility for Ryzen processors
-  - By hooking into the manufacturer ACPI API of the Ryzen platform,
-    it will expose all TDP related parameters manufacturers have access to
-    when spec'ing laptops.
-  - No memory-relaxed requirement
-  - Safe, as it is the method used by manufacturers (provided you stay within limits).
+## <a name="devices"></a>Supported Devices
+The following devices have been verified to work correctly, with QAM, RGB remapping,
+Touchpad, and Gyro support.
+
+- Legion Go
+- ROG Ally
+- GPD Win 
+  - Win 4
+  - Win Mini
+  - Win Max 2 2023
+- Ayaneo
+  - Air Plus
+  - 2/2s (experimental)
+  - GEEK, GEEK 1S (experimental)
+- AOKZOE
+  - A1
+  - A1 Pro (experimental)
+
+In addition, Handheld Daemon will attempt to work on Ayaneo and GPD Win devices
+that have not been verified to work (controller emulation will be off on first start).
+If everything works and you fix the gyro axis for your device, open an issue
+so that your device can be added to the supported list.
+The touchpad will not work without being on the supported list on the current version.
+
+RGB support is not yet available for GPD Win 4 and Ayaneo devices, but is
+being investigated.
+The RGB settings of Ayaneo require direct writes to the Embedded Computer, which
+is considered dangerous.
+GPD Win 4 does not support RGB remapping on Windows, but there is a chance it
+is possible.
+
+Ayaneo devices do not currently have support for holding the power button to open
+the steam menu settings.
 
 ## Installation Instructions
 You can install the latest stable version of `hhd` from PyPi (recommended), AUR,
