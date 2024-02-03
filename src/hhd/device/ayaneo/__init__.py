@@ -142,7 +142,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Fallback to chassis vendor since aya contains no usb devices
     try:
-        with open("/sys/class/dmi/id/chassis_vendor") as f:
+        with open("/sys/class/dmi/id/board_vendor") as f:
             vendor = f.read().lower().strip()
 
         if "ayaneo" in vendor:

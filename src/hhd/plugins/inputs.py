@@ -16,7 +16,7 @@ def get_product():
 
 def get_vendor():
     try:
-        with open("/sys/devices/virtual/dmi/id/chassis_vendor", "r") as f:
+        with open("/sys/devices/virtual/dmi/id/board_vendor", "r") as f:
             return f.read().strip()
     except Exception:
         return "Uknown"
