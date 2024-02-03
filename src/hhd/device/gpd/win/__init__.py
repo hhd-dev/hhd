@@ -12,6 +12,7 @@ from hhd.plugins import (
     get_gyro_config,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.controller.lib.hid import enumerate_unique
 
 from .const import GPD_WIN_MAX_2_2023_MAPPINGS, GPD_WIN_DEFAULT_MAPPINGS
 
@@ -32,6 +33,14 @@ GPD_CONFS = {
         "mapping": GPD_WIN_MAX_2_2023_MAPPINGS,
     },
 }
+
+
+def get_default_config(product_name: str):
+    return {
+        "name": product_name,
+        "hrtimer": True,
+        "untested": True,
+    }
 
 
 class GpdWinControllersPlugin(HHDPlugin):
@@ -128,7 +137,15 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         dmi = f.read().strip()
         dconf = GPD_CONFS.get(dmi, None)
-        if not dconf:
-            return []
+        if dconf:
+            return [GpdWinControllersPlugin(dmi, dconf)]
 
-    return [GpdWinControllersPlugin(dmi, dconf)]
+    # Perform dmi agnostic detection
+    GPD_WIN_VID = 0x2F24
+    GPD_WIN_PID = 0x0135
+    try:
+        if len(enumerate_unique(GPD_WIN_VID, GPD_WIN_PID)):
+            return [GpdWinControllersPlugin(dmi, get_default_config(dmi))]
+    except Exception:
+        pass
+    return []
