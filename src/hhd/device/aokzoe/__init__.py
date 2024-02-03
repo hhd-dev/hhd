@@ -14,6 +14,7 @@ from hhd.plugins.settings import HHDSettings
 
 AOKZOE_CONFS = {
     "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
+    "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
 }
 
 
@@ -115,4 +116,3 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         return [AokzoeControllersPlugin(dmi, dconf)]
 
     return []
-
