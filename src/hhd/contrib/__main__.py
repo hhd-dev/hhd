@@ -41,7 +41,7 @@ def evdev():
 def hidraw():
     from hhd.controller.lib.hid import enumerate_unique, Device
     from hhd.controller.lib.common import hexify
-    from time import sleep
+    from time import sleep, time
 
     print("Available Devices with the Current Permissions")
     avail = []
@@ -67,8 +67,9 @@ def hidraw():
     d = Device(path=sel)
     print(f"Selected device `{str(sel)}`.")
 
+    start = time()
     for i in range(100000000):
-        print(f"{i:6d}:", d.read().hex())
+        print(f"{i:6d}: {time() - start:7.4f}", d.read().hex())
         sleep(0.001)
 
 
