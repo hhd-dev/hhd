@@ -60,7 +60,7 @@ def hidraw():
         sel = input("Enter device path (/dev/input/event# or #): ")
         try:
             sel = avail[int(sel) - 1]
-        except Exception as e:
+        except Exception:
             sel = sel.encode()
 
     print()
