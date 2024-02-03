@@ -134,11 +134,11 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         return [AyaneoControllersPlugin(dmi, dconf)]
     
     # Fallback to chassis vendor since aya contains no usb devices
-    with open("/sys/class/dmi/id/chassis_vendor") as f:
-        vendor = f.read().strip()
+    # with open("/sys/class/dmi/id/chassis_vendor") as f:
+    #     vendor = f.read().strip()
 
-    if "ayaneo" in vendor.lower().strip():
-        return [AyaneoControllersPlugin(dmi, get_default_config(dmi))]
+    # if "ayaneo" in vendor.lower().strip():
+    #     return [AyaneoControllersPlugin(dmi, get_default_config(dmi))]
 
     return []
 

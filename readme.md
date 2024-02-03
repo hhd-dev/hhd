@@ -211,6 +211,10 @@ the right stick into a mouse.
 Ayaneo uses the same gyroscope with the same configuration as the ally, so
 reference the Ally's IMU steps to enable gyroscope support.
 
+Ayaneo support is still in the preliminary stages.
+The buttons of these devices do not emit hold information, and due to this reason
+they may fail to register in certain use-cases.
+
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
 back buttons to Left: Printscreen, Right: Pause using Windows.
