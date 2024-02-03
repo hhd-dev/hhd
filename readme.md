@@ -6,7 +6,7 @@ paddles, LEDs and QAM across Steam, Yuzu, Dolphin and others.
 It brings all supported devices up to parity with Steam Deck.
 Read [supported devices](#supported-devices) to see if your device is supported.
 
-This configuration is exposed through an API, and there is already a Decky
+Handheld Daemon exposes configuration through an API, and there is already a Decky
 plugin for it ([hhd-decky](https://github.com/hhd-dev/hhd-decky)) and a web
 app for it ([hhd.dev](https://hhd.dev)) that also works locally with Electron
 ([hhd-ui](https://github.com/hhd-dev/hhd-ui)).
@@ -76,13 +76,13 @@ or COPR.
 The easiest way to use Handheld Daemon is to install Bazzite which
 comes pre-installed with the latest version and all required kernel
 fixes for supported devices, see [here](#bazzite).
+Nobara also packages hhd and it will become the default for supported devices soon.
 
 > [!WARNING]  
 > There is a bug that breaks how Dualsense controllers are parsed in Steam in various
 > distros, which causes Gyro, LEDs, and paddles to not be detected in Steam, 
 > and the Dualsense Edge mapping being very wrong.
-> ChimeraOS 45, and certain versions of Nobara 38, and 39 also have this issue.
-> It is being investigated.
+> It is being investigated, please open an issue for it with your distro information.
 
 > To ensure the gyro of the Legion Go with AMD SFH runs smoothly, 
 > a udev rule is included that disables the use of the accelerometer by the 
@@ -226,10 +226,7 @@ the right stick into a mouse.
 #### Extra steps for Ayaneo
 Ayaneo uses the same gyroscope with the same configuration as the ally, so
 reference the Ally's IMU steps to enable gyroscope support.
-
 Ayaneo support is still in the preliminary stages.
-The buttons of these devices do not emit hold information, and due to this reason
-they may fail to register in certain use-cases.
 
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
@@ -253,6 +250,9 @@ In addition, for devices other than the Win Mini, your kernel config should also
 enable the modules `SYSFS trigger` with `CONFIG_IIO_SYSFS_TRIGGER` and
 `High resolution timer trigger` with `CONFIG_IIO_HRTIMER_TRIGGER`.
 Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I/O support ─> Triggers - standalone`.
+
+There is a sporadic bug currently where gyro will stop working after suspend,
+just switch between mouse mode and not to fix while a fix is being developed.
 
 #### Missing Python Evdev
 In case you have installation issues, you might be missing the package `python-evdev`.
