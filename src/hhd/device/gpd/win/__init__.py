@@ -71,7 +71,11 @@ class GpdWinControllersPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         base = {"controllers": {"gpd_win": load_relative_yaml("controllers.yml")}}
         base["controllers"]["gpd_win"]["children"]["controller_mode"].update(
-            get_outputs_config(can_disable=False, has_leds=False)
+            get_outputs_config(
+                can_disable=True,
+                has_leds=False,
+                start_disabled=self.dconf.get("untested", False),
+            )
         )
 
         if self.dconf.get("touchpad", False):

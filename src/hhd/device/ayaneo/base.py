@@ -48,6 +48,10 @@ def plugin_run(
 ):
     first = True
     while not should_exit.is_set():
+        if conf["controller_mode"].to(str) == "disabled":
+            time.sleep(ERROR_DELAY)
+            continue
+
         found_gamepad = False
         try:
             for d in evdev.list_devices():

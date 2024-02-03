@@ -64,7 +64,11 @@ class AyaneoControllersPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         base = {"controllers": {"ayaneo": load_relative_yaml("controllers.yml")}}
         base["controllers"]["ayaneo"]["children"]["controller_mode"].update(
-            get_outputs_config(can_disable=False, has_leds=False)
+            get_outputs_config(
+                can_disable=True,
+                has_leds=False,
+                start_disabled=self.dconf.get("untested", False),
+            )
         )
 
         if self.dconf.get("touchpad", False):
