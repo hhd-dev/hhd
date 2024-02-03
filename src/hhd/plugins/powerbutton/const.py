@@ -40,6 +40,11 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         type="hold_emitted",
         phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
     ),
+    PBC("AOKZOE A1",
+        "AOKZOE A1 AR07",
+        type="hold_emitted",
+        phys=["LNXPWRBN"],
+    ),
 ]
 
 DEFAULT_DEVICE: PowerButtonConfig = PBC(
