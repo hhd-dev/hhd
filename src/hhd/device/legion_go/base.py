@@ -239,8 +239,8 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
         pid=list(LEN_PIDS),
-        # name=["  Legion Controller for Windows  Keyboard"],
-        capabilities={EC("EV_KEY"): [EC("KEY_1")]},
+        name=[re.compile(".+Keyboard")],  # "  Legion Controller for Windows  Keyboard"
+        # capabilities={EC("EV_KEY"): [EC("KEY_1")]},
         # report_size=64,
         required=True,
     )
