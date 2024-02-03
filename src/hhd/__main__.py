@@ -115,7 +115,7 @@ def main():
         "command",
         nargs="*",
         default=[],
-        help="The command to run. If empty, run as daemon. Right now, only the command token is supported.",
+        help="The command to run. If empty, run as daemon. Right now, only the command `token` is supported.",
     )
     args = parser.parse_args()
     user = args.user
