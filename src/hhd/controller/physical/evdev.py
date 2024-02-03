@@ -3,16 +3,17 @@ import logging
 import os
 import re
 import subprocess
-from typing import Mapping, Sequence, TypeVar, cast, Collection
+import time
+from typing import Collection, Mapping, Sequence, TypeVar, cast
 
 import evdev
 from evdev import ecodes, ff
 
 from hhd.controller import Axis, Button, Consumer, Event, Producer, can_read
 from hhd.controller.base import Event
-from hhd.controller.lib.common import hexify, matches_patterns
-from hhd.controller.lib.hide import hide_gamepad, unhide_gamepad, unhide_all
 from hhd.controller.const import AbsAxis, GamepadButton, KeyboardButton
+from hhd.controller.lib.common import hexify, matches_patterns
+from hhd.controller.lib.hide import hide_gamepad, unhide_all, unhide_gamepad
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +110,8 @@ class GenericGamepadEvdev(Producer, Consumer):
         required: bool = True,
         hide: bool = False,
         grab: bool = True,
+        msc_map: Mapping[int, Button] = {},
+        msc_delay: float = 0.1,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -117,6 +120,8 @@ class GenericGamepadEvdev(Producer, Consumer):
 
         self.btn_map = btn_map
         self.axis_map = axis_map
+        self.msc_map = msc_map
+        self.msc_delay = msc_delay
         self.aspect_ratio = aspect_ratio
 
         self.dev: evdev.InputDevice | None = None
@@ -125,6 +130,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.hide = hide
         self.grab = grab
         self.hidden = False
+        self.queue = []
 
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
@@ -158,6 +164,7 @@ class GenericGamepadEvdev(Producer, Consumer):
             self.fd = dev.fd
             self.started = True
             self.effect_id = -1
+            self.queue = []
 
             # Run after init to avoid having leftover rules
             if self.hide:
@@ -234,10 +241,17 @@ class GenericGamepadEvdev(Producer, Consumer):
                         self.dev.write(getattr(ecodes, "EV_FF"), self.effect_id, 1)
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
-        if not self.dev or not self.fd in fds:
-            return []
-
         out: list[Event] = []
+        curr = time.time()
+        if self.queue:
+            ev, t = self.queue[0]
+            if curr >= t:
+                out.append(ev)
+                self.queue.pop(0)
+
+        if not self.dev or not self.fd in fds:
+            return out
+
         if self.started and self.aspect_ratio is not None:
             self.started = False
             out.append(
@@ -275,6 +289,26 @@ class GenericGamepadEvdev(Producer, Consumer):
                                 "value": val,
                             }
                         )
+                elif e.type == B("EV_MSC"):
+                    if e.code in self.msc_map:
+                        out.append(
+                            {
+                                "type": "button",
+                                "code": self.btn_map[e.code],
+                                "value": True,
+                            }
+                        )
+                        self.queue.append(
+                            (
+                                {
+                                    "type": "button",
+                                    "code": self.btn_map[e.code],
+                                    "value": False,
+                                },
+                                curr + self.msc_delay,
+                            )
+                        )
+
         return out
 
 
