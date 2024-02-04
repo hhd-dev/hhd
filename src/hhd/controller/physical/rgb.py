@@ -1,11 +1,9 @@
 import os
 import time
-from typing import TYPE_CHECKING, Any, Sequence
-
-if TYPE_CHECKING:
-    from hhd.controller.base import RgbLedEvent, Event
+from typing import Any, Sequence
 
 from hhd.controller import Consumer
+from hhd.controller.base import Event, RgbLedEvent
 
 LED_PATH = "/sys/class/leds/multicolor:chassis/"
 
