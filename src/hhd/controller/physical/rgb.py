@@ -41,7 +41,7 @@ def chassis_led_set(ev: RgbLedEvent):
         case _:
             r_mode = 0
 
-    r_brightness = min(max(int(ev["brightness"] * 255), 255), 0)
+    r_brightness = max(min(int(ev["brightness"] * 255), 255), 0)
     r_red = max(min(ev["red"], 255), 0)
     r_green = max(min(ev["green"], 255), 0)
     r_blue = max(min(ev["blue"], 255), 0)
