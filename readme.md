@@ -251,6 +251,16 @@ enable the modules `SYSFS trigger` with `CONFIG_IIO_SYSFS_TRIGGER` and
 `High resolution timer trigger` with `CONFIG_IIO_HRTIMER_TRIGGER`.
 Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I/O support ─> Triggers - standalone`.
 
+#### Broken Steam Gyro Calibration
+Steam gyro calibration does not corrently work due to an issue with the accelerometer
+scale (bottom bar).
+Since the accelerometer is not currently used for anything this is not a high
+priority fix.
+The gyro will work fine in games.
+
+If you get drift, you can turn on `Auto-Calibrate Gyro Drift when Stationary` and
+then move the top bar (gyro) right until it covers the noise.
+
 #### Missing Python Evdev
 In case you have installation issues, you might be missing the package `python-evdev`.
 You can either install it as part of your distribution (included by Nobara
@@ -519,6 +529,33 @@ ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="*Wireless Controller 
 ```
 
 ## Contributing
+### Finding the correct axis for your device
+To figure the correct axis from your device, go to desktop and open the steam
+calibration settings.
+Then, go to https://hhd.dev , switch `Motion Axis` to `Override` and tweak only
+the axis (without invert) of your device until they match the glyphs in steam.
+
+> [!WARNING]  
+> Do not try to interpret what each axis means. Just change them randomly until
+> the glyphs line up with how you move your controller.
+> If you set multiple axis to a single one (such as X to Y, and Y to Y),
+> the X to Y option will be ignored.
+
+Then, jump in a first person game and turn on `Gyro to Mouse` or `Camera`.
+For `Gyro to Mouse`, use `Gyro to Mouse fix` if you get issues with the camera
+jumping around.
+By default, rotating your device like a steering wheel should turn left to right,
+and rotating it to face down or up should look up or down.
+Fix the invert settings of the axis so that it is intuitive.
+Finally, switch the setting `Gyro Turning Axis` from `Yaw` (rotate like a steering
+wheel) to `Roll` (turn left to right), and fix the remaining axis inversion.
+
+You can now either take a picture of your screen or translate the settings into
+text (e.g., x is k, y is l inverted, z is j) and open an issue.
+The override setting also displays the make and model of your device, which
+are required to add the mappings to Handheld Daemon.
+
+### Creating a Local Repo version
 Either follow `Automatic Install` or `Manual Local Install` to install the base rules.
 Then, clone, optionally install the userspace rules, and run.
 ```bash
@@ -529,14 +566,14 @@ python -m venv venv
 source venv/bin/activate
 pip install -e .
 
-# Install udev rules to allow running in userspace 
-# optional; great for debugging
+# Install udev rules to allow running without sudo (optional)
+# but great for debugging (not all devices will run properly, the rules need to be expanded)
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd-user.rules -o /etc/udev/rules.d/83-hhd-user.rules
 # Modprobe uhid to avoid rw errors
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/modules-load.d/hhd-user.conf -o /etc/modules-load.d/hhd-user.conf
-
 # You can now run hhd in userspace!
 hhd
-# Add user when running with sudo
+
+# Use the following to run with sudo
 sudo hhd --user $(whoami)
 ```
