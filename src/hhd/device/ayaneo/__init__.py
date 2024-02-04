@@ -13,6 +13,7 @@ from hhd.plugins import (
     get_gyro_config,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.controller.physical.rgb import is_led_supported
 
 
 AYANEO_CONFS = {
@@ -66,7 +67,7 @@ class AyaneoControllersPlugin(HHDPlugin):
         base["controllers"]["ayaneo"]["children"]["controller_mode"].update(
             get_outputs_config(
                 can_disable=True,
-                has_leds=False,
+                has_leds=is_led_supported(),
                 start_disabled=self.dconf.get("untested", False),
             )
         )

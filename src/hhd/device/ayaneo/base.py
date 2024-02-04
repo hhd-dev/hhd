@@ -1,27 +1,20 @@
 import logging
-import re
 import select
 import time
 from threading import Event as TEvent
-from typing import Sequence
 
 import evdev
 
-from hhd.controller import Axis, Event, Multiplexer, can_read
-from hhd.controller.base import Event, TouchpadAction
+from hhd.controller import Multiplexer
+from hhd.controller.base import TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
+from hhd.controller.physical.rgb import LedDevice
 from hhd.controller.virtual.uinput import UInputDevice
-from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
+from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
-from .const import (
-    AYANEO_BTN_MAPPINGS,
-    AYANEO_DEFAULT_MAPPINGS,
-    AYANEO_TOUCHPAD_AXIS_MAP,
-    AYANEO_TOUCHPAD_BUTTON_MAP,
-)
+from .const import AYANEO_BTN_MAPPINGS, AYANEO_DEFAULT_MAPPINGS
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -169,6 +162,10 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         output_timestamps=True,
     )
 
+    d_rgb = LedDevice()
+    if d_rgb.supported:
+        logger.info(f"RGB Support activated through kernel driver.")
+
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
@@ -227,6 +224,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
+            d_rgb.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
