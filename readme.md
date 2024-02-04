@@ -66,6 +66,8 @@ so that your device can be added to the supported list.
 The touchpad will not work for devices not on the supported list.
 
 RGB support is not yet available for GPD Win 4, it is currently being investigated.
+In addition, GPD Win 4's touch point acts like a mouse, so it unfortunately can not
+be used for steam input.
 Some devices do not support holding the power button to open steam settings on
 the current version, this will be fixed in a future release.
 
