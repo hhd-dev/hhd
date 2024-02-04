@@ -1,10 +1,10 @@
+import logging
+import os
 import select
+from threading import Event as TEvent, Thread
 from typing import Any, Generator, Literal, NamedTuple, Sequence
 
-from hhd.controller import Axis, Event, Axis, Producer
-import os
-
-import logging
+from hhd.controller import Axis, Event, Producer
 
 logger = logging.getLogger(__name__)
 
@@ -503,19 +503,61 @@ class HrtimerTrigger(IioReader):
             logger.error(f"Could not delete hrtimer trigger. Error:\n{e}")
 
 
-class SoftwareTrigger(IioReader):
-    """Unfinished"""
+def _sysfs_trig_sampler(ev: TEvent, trigger: int, rate: int = 65):
+    import time
 
-    BEGIN_ID: int = 72
-    ATTEMPTS: int = 3
+    trig = None
+    for fn in os.listdir("/sys/bus/iio/devices/"):
+        if not fn.startswith("trigger"):
+            continue
+        tmp = os.path.join("/sys/bus/iio/devices/", fn)
+        with open(os.path.join(tmp, "name")) as f:
+            name = f.read().strip()
+
+        if name == f"sysfstrig{trigger}":
+            trig = os.path.join(tmp, "trigger_now")
+            break
+
+    if trig is None:
+        logger.warning(f"Trigger `sysfstrig{trigger}` not found.")
+        return
+
+    g = None
+    delay = 1 / rate
+    try:
+        with open(trig, "w") as f:
+            while not ev.is_set():
+                f.seek(0)
+                f.write("1")
+                time.sleep(delay)
+    except KeyboardInterrupt:
+        raise
+    except Exception as e:
+        logger.warning(f"Trig sampler failed with error:\n{e}")
+    finally:
+        if g:
+            g.close()
+
+
+class SoftwareTrigger(IioReader):
+    BEGIN_ID: int = 5335
+    ATTEMPTS: int = 900
 
     def __init__(
-        self, devices: Sequence[Sequence[str]] = [IMU_NAMES, GYRO_NAMES, ACCEL_NAMES]
+        self,
+        freq: int,
+        devices: Sequence[Sequence[str]] = [IMU_NAMES, GYRO_NAMES, ACCEL_NAMES],
     ) -> None:
         self.devices = devices
         self.old_triggers = {}
+        self.freq = freq
+        self.opened = False
+        self.ev = None
+        self.thread = None
 
     def open(self):
+        import time
+
         try:
             os.system("modprobe iio-trig-sysfs")
         except Exception:
@@ -525,17 +567,27 @@ class SoftwareTrigger(IioReader):
             SoftwareTrigger.BEGIN_ID,
             SoftwareTrigger.BEGIN_ID + SoftwareTrigger.ATTEMPTS,
         ):
+            # Try to remove stale trigger
+            try:
+                with open(
+                    "/sys/bus/iio/devices/iio_sysfs_trigger/remove_trigger", "w"
+                ) as f:
+                    f.write(str(id))
+            except Exception:
+                pass
+            # Add new trigger
             try:
                 with open(
                     "/sys/bus/iio/devices/iio_sysfs_trigger/add_trigger", "w"
                 ) as f:
                     f.write(str(id))
                 break
-            except Exception as e:
-                print(e)
+            except Exception:
+                pass
+            time.sleep(0.02)
         else:
             logger.error(f"Failed to create software trigger.")
-            return
+            return False
         self.id = id
 
         self.old_triggers = {}
@@ -544,23 +596,48 @@ class SoftwareTrigger(IioReader):
             if not s:
                 continue
 
-            with open(os.path.join(s, "buffer/enable"), "w") as f:
-                f.write("0")
+            buff_fn = os.path.join(s, "buffer/enable")
             trig_fn = os.path.join(s, "trigger/current_trigger")
+            with open(buff_fn, "w") as f:
+                f.write("0")
             with open(trig_fn, "r") as f:
-                self.old_triggers[trig_fn] = f.read()
+                self.old_triggers[trig_fn] = (f.read(), buff_fn)
             with open(trig_fn, "w") as f:
                 f.write(f"sysfstrig{self.id}")
 
+        self.ev = TEvent()
+        self.thread = Thread(target=_sysfs_trig_sampler, args=(self.ev, id, self.freq))
+        self.thread.start()
+        self.opened = True
+
+        return True
+
     def close(self):
-        for trig, name in self.old_triggers.items():
+        if not self.opened:
+            return
+
+        # Stop trigger
+        self.opened = False
+        if self.ev:
+            self.ev.set()
+        if self.thread:
+            self.thread.join()
+        self.ev = None
+        self.thread = None
+
+        # Remove from current sensors
+        for trig, (name, buff) in self.old_triggers.items():
             try:
+                with open(buff, "w") as f:
+                    f.write("0")
                 with open(trig, "w") as f:
                     f.write(name)
             except Exception:
                 logger.error(f"Could not restore original trigger:\n{trig} to {name}")
 
+        # Delete trigger
         try:
+            logger.info(f"Closing trigger {self.id}")
             with open(
                 "/sys/bus/iio/devices/iio_sysfs_trigger/remove_trigger", "w"
             ) as f:
