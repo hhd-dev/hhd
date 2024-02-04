@@ -42,9 +42,9 @@ def chassis_led_set(ev: RgbLedEvent):
             r_mode = 0
 
     r_brightness = min(max(int(ev["brightness"] * 255), 255), 0)
-    r_red = min(max(ev["red"], 255), 0)
-    r_green = min(max(ev["green"], 255), 0)
-    r_blue = min(max(ev["blue"], 255), 0)
+    r_red = max(min(ev["red"], 255), 0)
+    r_green = max(min(ev["green"], 255), 0)
+    r_blue = max(min(ev["blue"], 255), 0)
 
     try:
         # Try to write to the old driver path
