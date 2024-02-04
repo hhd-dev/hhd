@@ -71,7 +71,7 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
 
 AYA_DEFAULT_CONF = {
     "hrtimer": True,
-    "btn": AYANEO_BTN_MAPPINGS,
+    "btn_mapping": AYANEO_BTN_MAPPINGS,
     "mapping": AYANEO_DEFAULT_MAPPINGS,
 }
 
@@ -105,7 +105,7 @@ def get_default_config(product_name: str, manufacturer: str):
     }
 
     if manufacturer == "AYA":
-        out["btn"] = AYANEO_BTN_MAPPINGS
+        out["btn_mapping"] = AYANEO_BTN_MAPPINGS
         out["mapping"] = AYANEO_DEFAULT_MAPPINGS
 
     return out
