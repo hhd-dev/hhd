@@ -86,7 +86,7 @@ CONFS = {
     "Loki Max": {
         "name": "Loki Max",
         "hrtimer": True,
-        "mappings": gen_gyro_state("x", False, "y", False, "z", False),
+        "mappings": gen_gyro_state("x", False, "z", True, "y", True),
     },
     # Ayaneo
     "AIR Plus": {
