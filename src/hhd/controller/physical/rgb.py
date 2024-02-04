@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def write_sysfs(dir: str, fn: str, val: Any):
+    logger.warning(f"Writing `{str(val)}` to \n{os.path.join(dir, fn)}")
     with open(os.path.join(dir, fn), "w") as f:
         f.write(str(val))
 
