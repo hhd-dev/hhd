@@ -16,7 +16,13 @@ BTN_MAPPINGS: dict[int, str] = {
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     # A1 mappings And onexplayer mini pro mappings
-    B("KEY_LEFTALT"): "share", # Turbo Button [29, 56, 125] KEY_LEFTCTRL + KEY_LEFTALT + KEY_LEFTMETA
-    B("KEY_D"): "mode", # Short press orange [32, 125] KEY_D + KEY_LEFTMETA
-    B("KEY_O"): "extra_l1", # KB Button [24, 97, 125]  KEY_O + KEY_RIGHTCTRL + KEY_LEFTMETA
+    B(
+        "KEY_LEFTALT"
+    ): "share",  # Turbo Button [29, 56, 125] KEY_LEFTCTRL + KEY_LEFTALT + KEY_LEFTMETA
+    B("KEY_D"): "mode",  # Short press orange [32, 125] KEY_D + KEY_LEFTMETA
+    B(
+        "KEY_O"
+    ): "extra_l1",  # KB Button [24, 97, 125]  KEY_O + KEY_RIGHTCTRL + KEY_LEFTMETA
+    # Loki Max
+    B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
 }

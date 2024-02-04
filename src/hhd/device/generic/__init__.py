@@ -16,6 +16,7 @@ CONFS = {
     "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
     "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
+    "Loki Max": {"name": "Loki Max", "hrtimer": True},
 }
 
 
