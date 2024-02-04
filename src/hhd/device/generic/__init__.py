@@ -1,18 +1,19 @@
 from threading import Event, Thread
 from typing import Any, Sequence
 
+from hhd.controller.physical.rgb import is_led_supported
 from hhd.plugins import (
     Config,
     Context,
     Emitter,
     HHDPlugin,
-    load_relative_yaml,
+    get_gyro_config,
     get_outputs_config,
+    load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
-from hhd.controller.physical.rgb import is_led_supported
 
-from .const import CONFS, get_default_config
+from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
 
 
 class GenericControllersPlugin(HHDPlugin):
@@ -41,15 +42,19 @@ class GenericControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
-        base = {"controllers": {"aokzoe": load_relative_yaml("controllers.yml")}}
-        base["controllers"]["aokzoe"]["children"]["controller_mode"].update(
+        base = {"controllers": {"handheld": load_relative_yaml("controllers.yml")}}
+        base["controllers"]["handheld"]["children"]["controller_mode"].update(
             get_outputs_config(can_disable=False, has_leds=is_led_supported())
+        )
+
+        base["controllers"]["ayaneo"]["children"]["gyro"] = get_gyro_config(
+            self.dconf.get("mapping", DEFAULT_MAPPINGS)
         )
 
         return base
 
     def update(self, conf: Config):
-        new_conf = conf["controllers.aokzoe"]
+        new_conf = conf["controllers.handheld"]
         if new_conf == self.prev:
             return
         if self.prev is None:
