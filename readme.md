@@ -538,8 +538,8 @@ the axis (without invert) of your device until they match the glyphs in steam.
 > [!WARNING]  
 > Do not try to interpret what each axis means. Just change them randomly until
 > the glyphs line up with how you move your controller.
-> If you set multiple axis to a single one (such as X to Y, and Y to Y),
-> the X to Y option will be ignored.
+> If you set multiple axis to a single one (e.g., X to Y, and Y to Y),
+> the first option (e.g., X to Y) option will be ignored.
 
 Then, jump in a first person game and turn on `Gyro to Mouse` or `Camera`.
 For `Gyro to Mouse`, use `Gyro to Mouse fix` if you get issues with the camera
