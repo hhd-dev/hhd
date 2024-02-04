@@ -40,7 +40,7 @@ children:
 
   share_to_qam:
     type: bool
-    title: Map buttom to QAM.
+    title: Map share buttom to QAM.
     tags: [advanced]
     default: True
 

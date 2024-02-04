@@ -12,27 +12,13 @@ from hhd.plugins import (
 from hhd.plugins.settings import HHDSettings
 from hhd.controller.physical.rgb import is_led_supported
 
-CONFS = {
-    "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
-    "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
-    "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
-    "Loki Max": {"name": "Loki Max", "hrtimer": True},
-}
-
-
-def get_default_config(product_name: str, manufacturer: str):
-    return {
-        "name": product_name,
-        "manufacturer": manufacturer,
-        "hrtimer": True,
-        "untested": True,
-    }
+from .const import CONFS, get_default_config
 
 
 class GenericControllersPlugin(HHDPlugin):
     name = "generic_controllers"
     priority = 18
-    log = "zokz"
+    log = "genc"
 
     def __init__(self, dmi: str, dconf: dict) -> None:
         self.t = None
@@ -129,5 +115,15 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYN"))]
     except Exception:
         pass
+
+    # Fallback to chassis vendor for aya
+    try:
+        with open("/sys/class/dmi/id/board_vendor") as f:
+            vendor = f.read().lower().strip()
+
+        if "ayaneo" in vendor:
+            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYA"))]
+    except Exception:
+        return []
 
     return []

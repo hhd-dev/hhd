@@ -58,7 +58,7 @@ def plugin_run(
         if not found_gamepad:
             time.sleep(ERROR_DELAY)
             if first:
-                logger.info("Controller in Mouse mode. Waiting...")
+                logger.info("Controller not found. Waiting...")
             first = False
             continue
 
@@ -177,8 +177,6 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
                 start_imu = d_timer.open()
             if start_imu:
                 prepare(d_imu)
-        # if has_touchpad and d_params["uses_touch"]:
-        #     prepare(d_touch)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
         for d in d_producers:
