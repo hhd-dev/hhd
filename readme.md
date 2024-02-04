@@ -53,22 +53,21 @@ Touchpad, and Gyro support.
 - AOKZOE
   - A1
   - A1 Pro (experimental)
+- Ayn
+  - Loki Max
+- Onexplayer
+  - Mini Pro
 
-In addition, Handheld Daemon will attempt to work on Ayaneo and GPD Win devices
-that have not been verified to work (controller emulation will be off on first start).
+In addition, Handheld Daemon will attempt to work on Ayaneo, Ayn, Onexplayer, and 
+GPD Win devices that have not been verified to work 
+(controller emulation will be off on first start).
 If everything works and you fix the gyro axis for your device, open an issue
 so that your device can be added to the supported list.
-The touchpad will not work without being on the supported list on the current version.
+The touchpad will not work for devices not on the supported list.
 
-RGB support is not yet available for GPD Win 4 and Ayaneo devices, but is
-being investigated.
-The RGB settings of Ayaneo require direct writes to the Embedded Computer, which
-is considered dangerous.
-GPD Win 4 does not support RGB remapping on Windows, but there is a chance it
-is possible.
-
-Ayaneo devices do not currently have support for holding the power button to open
-the steam menu settings.
+RGB support is not yet available for GPD Win 4, it is currently being investigated.
+Some devices do not support holding the power button to open steam settings on
+the current version, this will be fixed in a future release.
 
 ## Installation Instructions
 You can install the latest stable version of `hhd` from PyPi (recommended), AUR,
@@ -77,6 +76,8 @@ The easiest way to use Handheld Daemon is to install Bazzite which
 comes pre-installed with the latest version and all required kernel
 fixes for supported devices, see [here](#bazzite).
 Nobara also packages hhd and it will become the default for supported devices soon.
+However, it only packages fixes for the Ally and Legion Go at the time of this
+writing.
 
 > [!WARNING]  
 > There is a bug that breaks how Dualsense controllers are parsed in Steam in various
@@ -199,34 +200,17 @@ rm -r ~/.config/hhd
 
 ### <a name="issues"></a><a name="after-install"></a> After Install Instructions
 #### Extra steps for ROG Ally
-Using the gyroscope on the Ally requires a kernel that is patched to enable IMU
-support.
-See [Ally Nobara Fixes](https://github.com/jlobue10/ALLY_Nobara_fixes) for IMU the
-patches themselves (IMU 0001-0005) and Fedora kernel binaries 
-(install with `sudo rmp -i <img>.rpm`)
-and [rog-ally-gaming/linux-chimeraos](https://github.com/rog-ally-gaming/linux-chimeraos)
-for Arch distribution binaries (install with `sudo pacman -U <img>.tar.xz`; except 6.1 kernels).
-
-If you compile your own kernel, your kernel config should also enable the
-modules `SYSFS trigger` with `CONFIG_IIO_SYSFS_TRIGGER` and
-`High resolution timer trigger` with `CONFIG_IIO_HRTIMER_TRIGGER`.
-Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I/O support ─> Triggers - standalone`.
-
 Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
 does not wake up after sleep so Handheld Daemon stops working.
 This patch is included with Linux kernel 6.7.
 
+See [here](#gyro) for the required kernel patches.
 Without the patch series for the IMU (where patches 0001, and 0002 are included
 in kernel 6.8), the gyro will not work and if the `Motion` option is enabled,
 LEDs will not work either, so that should be turned off.
 
 You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
 the right stick into a mouse.
-
-#### Extra steps for Ayaneo
-Ayaneo uses the same gyroscope with the same configuration as the ally, so
-reference the Ally's IMU steps to enable gyroscope support.
-Ayaneo support is still in the preliminary stages.
 
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
@@ -242,17 +226,30 @@ Left-key: PrtSc + 0ms + NC + 0ms + NC + 0ms + NC
 Right-key: Pausc + 0ms + NC + 0ms + NC + 0ms + NC
 ```
 
-To use the gyro, you will need a [dkms package](https://github.com/hhd-dev/bmi260)
-for the Bosch 260 IMU Driver.
-Follow the instructions in that repository to install it.
+#### Extra steps for Ayaneo/Ayn/Onexplayer
+See [here](#gyro) for the required kernel patches.
+For led support in Ayaneo, you will need the 
+[ayaneo-platform](https://github.com/ShadowBlip/ayaneo-platform)
+driver, and for Ayn, the [ayn-platform](https://github.com/ShadowBlip/ayn-platform).
+Provided these drivers are installed and are supported by your device,
+LED support will be enabled by default.
 
-In addition, for devices other than the Win Mini, your kernel config should also 
+The paddles of the Ayn Loki Max are not remappable as far as we know.
+
+#### <a name="gyro"></a>Gyro Kernel Drivers
+Which kernel patch is required will depend on your device's bosch module.
+For the Bosch 260 IMU, you will need the 
+[bmi260-dkms](https://github.com/hhd-dev/bmi260) driver.
+For the Bosch 160 IMU and certain devices, you will need the following bmi160
+[kernel patch](https://github.com/pastaq/bmi160-aya-neo/blob/main/bmi160_ayaneo.patch).
+Ayaneo Air Plus and Ally use the Bosch 323 and need the patch series from
+this repository: [Ally Nobara Fixes](https://github.com/jlobue10/ALLY_Nobara_fixes). 
+The Legion Go does not need kernel patches.
+
+In addition, for most devices, your kernel config should also 
 enable the modules `SYSFS trigger` with `CONFIG_IIO_SYSFS_TRIGGER` and
 `High resolution timer trigger` with `CONFIG_IIO_HRTIMER_TRIGGER`.
 Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I/O support ─> Triggers - standalone`.
-
-There is a sporadic bug currently where gyro will stop working after suspend,
-just switch between mouse mode and not to fix while a fix is being developed.
 
 #### Missing Python Evdev
 In case you have installation issues, you might be missing the package `python-evdev`.
