@@ -46,12 +46,14 @@ def chassis_led_set(ev: RgbLedEvent):
     r_green = max(min(ev["green"], 255), 0)
     r_blue = max(min(ev["blue"], 255), 0)
 
+    # Mode only exists on ayn devices
     try:
-        # Try to write to the old driver path
-        # TODO: Remove
-        write_sysfs(LED_PATH, "device/led_mode", r_mode)
+        if os.path.exists(os.path.join(LED_PATH, "device/led_mode")):
+            write_sysfs(LED_PATH, "device/led_mode", r_mode)
     except Exception:
-        write_sysfs(LED_PATH, "led_mode", r_mode)
+        if os.path.exists(os.path.join(LED_PATH, "led_mode")):
+            write_sysfs(LED_PATH, "led_mode", r_mode)
+
     write_sysfs(LED_PATH, "brightness", r_brightness)
     write_sysfs(LED_PATH, "multi_intensity", f"{r_red} {r_green} {r_blue}")
 
