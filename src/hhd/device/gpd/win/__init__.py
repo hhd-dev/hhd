@@ -85,7 +85,7 @@ class GpdWinControllersPlugin(HHDPlugin):
         else:
             del base["controllers"]["gpd_win"]["children"]["touchpad"]
 
-        base["controllers"]["gpd_win"]["children"]["gyro"] = get_gyro_config(
+        base["controllers"]["gpd_win"]["children"]["imu_axis"] = get_gyro_config(
             self.dconf.get("mapping", GPD_WIN_DEFAULT_MAPPINGS)
         )
         return base
