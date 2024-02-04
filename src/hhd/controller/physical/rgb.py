@@ -7,6 +7,8 @@ if TYPE_CHECKING:
 
 from hhd.controller import Consumer
 
+LED_PATH = "/sys/class/leds/multicolor:chassis/"
+
 
 def write_sysfs(dir: str, fn: str, val: Any):
     with open(os.path.join(dir, fn), "w") as f:
@@ -23,24 +25,11 @@ def read_sysfs(dir: str, fn: str, default: str | None = None):
         raise e
 
 
-def chassis_led_sysfs_path():
-    old_path = "/sys/class/leds/multicolor:chassis/device"
-    new_path = "/sys/class/leds/multicolor:chassis/"
-
-    if os.path.exists(old_path):
-        return old_path
-
-    if os.path.exists(new_path):
-        return new_path
-
-    return None
-
-
 def is_led_supported():
-    return chassis_led_sysfs_path() is not None
+    return os.path.exists(LED_PATH)
 
 
-def chassis_led_set(path: str, ev: RgbLedEvent):
+def chassis_led_set(ev: RgbLedEvent):
     if ev["type"] != "led":
         return
 
@@ -55,21 +44,25 @@ def chassis_led_set(path: str, ev: RgbLedEvent):
     r_green = min(max(ev["green"], 255), 0)
     r_blue = min(max(ev["blue"], 255), 0)
 
-    write_sysfs(path, "led_mode", r_mode)
-    write_sysfs(path, "brightness", r_brightness)
-    write_sysfs(path, "multi_intensity", f"{r_red} {r_green} {r_blue}")
+    try:
+        # Try to write to the old driver path
+        # TODO: Remove
+        write_sysfs(LED_PATH, "device/led_mode", r_mode)
+    except Exception:
+        write_sysfs(LED_PATH, "led_mode", r_mode)
+    write_sysfs(LED_PATH, "brightness", r_brightness)
+    write_sysfs(LED_PATH, "multi_intensity", f"{r_red} {r_green} {r_blue}")
 
 
 class LedDevice(Consumer):
     def __init__(self, rate_limit: float = 4) -> None:
-        self.path = chassis_led_sysfs_path()
-        self.supported = self.path is not None
+        self.supported = is_led_supported()
         self.min_delay = 1 / rate_limit
         self.queued = None
         self.last = time.time() - self.min_delay
 
     def consume(self, events: Sequence[Event]):
-        if not self.path:
+        if not self.supported:
             return
 
         curr = time.time()
@@ -95,7 +88,7 @@ class LedDevice(Consumer):
             return
 
         if curr > self.last + self.min_delay:
-            chassis_led_set(self.path, ev)
+            chassis_led_set(ev)
             self.last = curr
         else:
             self.queued = (ev, curr + self.min_delay)
