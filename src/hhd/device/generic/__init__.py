@@ -20,9 +20,10 @@ CONFS = {
 }
 
 
-def get_default_config(product_name: str):
+def get_default_config(product_name: str, manufacturer: str):
     return {
         "name": product_name,
+        "manufacturer": manufacturer,
         "hrtimer": True,
         "untested": True,
     }
@@ -112,9 +113,21 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     # if a device exists here its officially supported
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         dmi = f.read().strip()
-    
+
     dconf = CONFS.get(dmi, None)
     if dconf:
         return [GenericControllersPlugin(dmi, dconf)]
+
+    # Begin hw agnostic dmi match
+    if "ONEXPLAYER" in dmi:
+        return [GenericControllersPlugin(dmi, get_default_config(dmi, "ONEXPLAYER"))]
+
+    try:
+        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
+            vendor = f.read().strip().lower()
+        if vendor == "ayn":
+            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYN"))]
+    except Exception:
+        pass
 
     return []
