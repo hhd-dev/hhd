@@ -1,16 +1,16 @@
 type: container
 tags: [lgc]
-title: AOKZOE Controller
+title: Handheld Controller
 hint: >-
-  Allows for configuring the aokzoe controllers to a unified output.
+  Allows for configuring your handheld's controller to a unified output.
 
 children:
   controller_mode:
     type: mode
-    tags: [aokzoe_controller_mode]
+    tags: [controller_mode]
     title: Controller Emulation
     hint: >-
-      Emulate different controller types to fuse AOKZOE features.
+      Emulate different controller types to fuse your device's features.
 
   #
   # Common settings

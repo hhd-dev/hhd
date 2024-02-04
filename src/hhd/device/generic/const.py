@@ -1,7 +1,7 @@
 from hhd.controller import Axis, Button, Configuration
 from hhd.controller.physical.evdev import B, to_map
 
-AOKZOE_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
     "accel_y": ("accel_x", "accel", 1, 3),
     "accel_z": ("accel_y", "accel", 1, 3),
@@ -11,7 +11,7 @@ AOKZOE_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]]
     "timestamp": ("gyro_ts", None, 1, None),
 }
 
-AOKZOE_BTN_MAPPINGS: dict[int, str] = {
+BTN_MAPPINGS: dict[int, str] = {
     # Volume buttons come from the same keyboard
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",

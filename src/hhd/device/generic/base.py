@@ -17,8 +17,8 @@ from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .const import (
-    AOKZOE_BTN_MAPPINGS,
-    AOKZOE_DEFAULT_MAPPINGS,
+    BTN_MAPPINGS,
+    DEFAULT_MAPPINGS,
 )
 
 ERROR_DELAY = 1
@@ -102,7 +102,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     # Imu
     d_imu = CombinedImu(
         conf["imu_hz"].to(int),
-        dconf.get("mapping", AOKZOE_DEFAULT_MAPPINGS),
+        dconf.get("mapping", DEFAULT_MAPPINGS),
         # gyro_scale="0.000266", #TODO: Find what this affects
     )
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
@@ -122,7 +122,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         pid=[KBD_PID],
         required=False,
         grab=True,
-        btn_map=dconf.get("btn_mapping", AOKZOE_BTN_MAPPINGS),
+        btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
     )
 
     multiplexer = Multiplexer(
@@ -133,8 +133,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     )
 
     d_volume_btn = UInputDevice(
-        name="Handheld Daemon Volume Keyboard (Aokzoe)",
-        phys="phys-hhd-aokzoe-vbtn",
+        name="Handheld Daemon Volume Keyboard",
+        phys="phys-hhd-vbtn",
         capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
         btn_map={
             "key_volumeup": EC("KEY_VOLUMEUP"),

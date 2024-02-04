@@ -12,7 +12,7 @@ from hhd.plugins import (
 from hhd.plugins.settings import HHDSettings
 
 
-AOKZOE_CONFS = {
+CONFS = {
     "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
     "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
@@ -27,8 +27,8 @@ def get_default_config(product_name: str):
     }
 
 
-class AokzoeControllersPlugin(HHDPlugin):
-    name = "aokzoe_controllers"
+class GenericControllersPlugin(HHDPlugin):
+    name = "generic_controllers"
     priority = 18
     log = "zokz"
 
@@ -41,7 +41,7 @@ class AokzoeControllersPlugin(HHDPlugin):
 
         self.dmi = dmi
         self.dconf = dconf
-        self.name = f"aokzoe_controllers@'{dconf.get('name', 'ukn')}'"
+        self.name = f"generic_controllers@'{dconf.get('name', 'ukn')}'"
 
     def open(
         self,
@@ -112,8 +112,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         dmi = f.read().strip()
     
-    dconf = AOKZOE_CONFS.get(dmi, None)
+    dconf = CONFS.get(dmi, None)
     if dconf:
-        return [AokzoeControllersPlugin(dmi, dconf)]
+        return [GenericControllersPlugin(dmi, dconf)]
 
     return []
