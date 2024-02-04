@@ -47,7 +47,7 @@ class GenericControllersPlugin(HHDPlugin):
             get_outputs_config(can_disable=False, has_leds=is_led_supported())
         )
 
-        base["controllers"]["ayaneo"]["children"]["imu_axis"] = get_gyro_config(
+        base["controllers"]["handheld"]["children"]["imu_axis"] = get_gyro_config(
             self.dconf.get("mapping", DEFAULT_MAPPINGS)
         )
 
