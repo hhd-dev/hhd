@@ -10,7 +10,7 @@ from hhd.plugins import (
     get_outputs_config,
 )
 from hhd.plugins.settings import HHDSettings
-
+from hhd.controller.physical.rgb import is_led_supported
 
 CONFS = {
     "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
@@ -57,7 +57,7 @@ class GenericControllersPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         base = {"controllers": {"aokzoe": load_relative_yaml("controllers.yml")}}
         base["controllers"]["aokzoe"]["children"]["controller_mode"].update(
-            get_outputs_config(can_disable=False, has_leds=False)
+            get_outputs_config(can_disable=False, has_leds=is_led_supported())
         )
 
         return base
