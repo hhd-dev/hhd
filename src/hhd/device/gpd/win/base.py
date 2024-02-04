@@ -154,7 +154,7 @@ def plugin_run(
 ):
     first = True
     while not should_exit.is_set():
-        if conf["controller_mode"].to(str) == "disabled":
+        if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
             continue
 
@@ -170,9 +170,9 @@ def plugin_run(
             found_gamepad = True
 
         if not found_gamepad:
-            time.sleep(ERROR_DELAY)
             if first:
                 logger.info("Controller in Mouse mode. Waiting...")
+            time.sleep(ERROR_DELAY)
             first = False
             continue
 
