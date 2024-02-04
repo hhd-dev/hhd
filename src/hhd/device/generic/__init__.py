@@ -44,7 +44,11 @@ class GenericControllersPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         base = {"controllers": {"handheld": load_relative_yaml("controllers.yml")}}
         base["controllers"]["handheld"]["children"]["controller_mode"].update(
-            get_outputs_config(can_disable=False, has_leds=is_led_supported())
+            get_outputs_config(
+                can_disable=True,
+                has_leds=is_led_supported(),
+                start_disabled=self.dconf.get("untested", False),
+            )
         )
 
         base["controllers"]["handheld"]["children"]["imu_axis"] = get_gyro_config(
