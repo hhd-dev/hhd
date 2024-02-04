@@ -1,5 +1,5 @@
 type: mode
-title: Gyro Axis
+title: Motion Axis
 
 default: default
 modes:

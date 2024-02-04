@@ -101,7 +101,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
     # Imu
     d_imu = CombinedImu(
         conf["imu_hz"].to(int),
-        get_gyro_state(conf["gyro"], dconf.get("mapping", DEFAULT_MAPPINGS)),
+        get_gyro_state(conf["imu_axis"], dconf.get("mapping", DEFAULT_MAPPINGS)),
     )
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
