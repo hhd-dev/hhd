@@ -525,7 +525,7 @@ def _sysfs_trig_sampler(ev: TEvent, trigger: int, rate: int = 65):
     fd = -1
     delay = 1 / rate
     try:
-        fd = os.open(trig, os.O_RDWR | os.O_NONBLOCK)
+        fd = os.open(trig, os.O_WRONLY)
         while not ev.is_set():
             os.write(fd, b"1")
             os.lseek(fd, 0, os.SEEK_SET)
