@@ -540,6 +540,10 @@ def _sysfs_trig_sampler(ev: TEvent, trigger: int, rate: int = 65):
 
 
 class SoftwareTrigger(IioReader):
+    ACCEL_NAMES = ACCEL_NAMES
+    GYRO_NAMES = GYRO_NAMES
+    IMU_NAMES = IMU_NAMES
+    
     BEGIN_ID: int = 5335
     ATTEMPTS: int = 900
 

@@ -12,7 +12,7 @@ from hhd.controller.base import Event, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
-from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
+from hhd.controller.physical.imu import CombinedImu, SoftwareTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
 
 from .const import (
@@ -208,7 +208,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         conf["imu_hz"].to(int),
         get_gyro_state(conf["gyro"], dconf.get("mapping", GPD_WIN_DEFAULT_MAPPINGS)),
     )
-    d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
+    # d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
+    d_timer = SoftwareTrigger(conf["imu_hz"].to(int), [SoftwareTrigger.IMU_NAMES])
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
