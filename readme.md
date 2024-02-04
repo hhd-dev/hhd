@@ -198,7 +198,7 @@ sudo rm /etc/systemd/system/hhd_local@.service
 rm -r ~/.config/hhd
 ```
 
-### <a name="issues"></a><a name="after-install"></a> After Install Instructions
+### <a name="issues"></a>After Install Instructions
 #### Extra steps for ROG Ally
 Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
 does not wake up after sleep so Handheld Daemon stops working.
@@ -295,11 +295,11 @@ sudo systemctl disable --now handycon.service
 sudo dnf remove handygccs-git # (verify ?)
 ```
 
-### <a name="bazzite"></a>Bazzite
+### <a name="bazzite"></a><a name="after-install"></a>Bazzite
 Handheld Daemon comes pre-installed on Bazzite and updates along-side the system.
 The latest version of Handheld Daemon becomes available at the latest the next
 day after release, and can be managed through the Bazzite updater.
-In addition, Bazzite contains all the required patches for the Handheld Daemon
+In addition, Bazzite contains all the required kernel patches for the Handheld Daemon
 supported devices, so it is the recommended distro to use Handheld Daemon with.
 
 After install, you can use `ujust` to install Decky and the Handheld Daemon Decky
@@ -310,6 +310,9 @@ install steps do not currently work for Bazzite, but this will be fixed in the f
 Essentially, a new service file needs to be written for Bazzite that contains the
 correct home path (`/var/home`) and then you can disable the built-in version
 service and use the new one instead.
+
+See [supported devices](#supported-devices) to check the status of your device and 
+[after install](#issues) for specific device quirks.
 
 ### ❄️ NixOS
 Ensure your `nixpkgs` is on the `unstable` channel (as of Feb 2024):
