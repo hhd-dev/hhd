@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from typing import Any, Sequence
@@ -6,6 +7,8 @@ from hhd.controller import Consumer
 from hhd.controller.base import Event, RgbLedEvent
 
 LED_PATH = "/sys/class/leds/multicolor:chassis/"
+
+logger = logging.getLogger(__name__)
 
 
 def write_sysfs(dir: str, fn: str, val: Any):
@@ -86,7 +89,12 @@ class LedDevice(Consumer):
             return
 
         if curr > self.last + self.min_delay:
-            chassis_led_set(ev)
+            try:
+                chassis_led_set(ev)
+            except Exception as e:
+                logger.error(f"Setting leds failed with error:\n{e}")
+                # Turn off support
+                self.supported = False
             self.last = curr
         else:
             self.queued = (ev, curr + self.min_delay)
