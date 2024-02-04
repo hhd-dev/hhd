@@ -256,7 +256,16 @@ class RestHandler(BaseHTTPRequestHandler):
                         self.cond.wait()
                     self.wfile.write(json.dumps(self.conf.conf).encode())
             case "version":
-                self.send_json({"version": 1})
+                self.send_json({"version": 2})
+            case "sections":
+                self.send_json(
+                    {
+                        "system": "System",
+                        "tdp": "TDP",
+                        "controller": "Controller",
+                        "hhd": "About",
+                    }
+                )
             case other:
                 self.send_not_found(f"Command '{other}' not supported.")
 
