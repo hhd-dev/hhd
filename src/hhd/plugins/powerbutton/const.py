@@ -52,6 +52,12 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         type="hold_emitted",
         phys=["LNXPWRBN"],
     ),
+    PBC(
+        "ONEXPLAYER Mini Pro",
+        "ONEXPLAYER Mini Pro",
+        type="hold_emitted",
+        phys=["LNXPWRBN"],
+    ),
 ]
 
 DEFAULT_DEVICE: PowerButtonConfig = PBC(
