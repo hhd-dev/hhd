@@ -1,5 +1,6 @@
 from hhd.controller import Axis, Button, Configuration
 from hhd.controller.physical.evdev import B, to_map
+from hhd.plugins import gen_gyro_state
 
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, 3),
@@ -82,7 +83,11 @@ CONFS = {
     # Onexplayer
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
     # Ayn
-    "Loki Max": {"name": "Loki Max", "hrtimer": True},
+    "Loki Max": {
+        "name": "Loki Max",
+        "hrtimer": True,
+        "mappings": gen_gyro_state("x", False, "y", True, "z", False),
+    },
     # Ayaneo
     "AIR Plus": {
         "name": "AYANEO AIR Plus",

@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, Literal
 
 from hhd.controller import Axis
 
@@ -108,6 +108,53 @@ def get_gyro_state(
             cast(Axis, f"gyro_{rem.get('z_axis', 'z')}"),
             "anglvel",
             -1 if rem.get("z_invert", False) else 1,
+            None,
+        ),
+    }
+
+
+AxChoice = Literal["x", "y", "z"]
+
+
+def gen_gyro_state(
+    x: AxChoice, inv_x: bool, y: AxChoice, inv_y: bool, z: AxChoice, inv_z: bool
+):
+    return {
+        "timestamp": ("gyro_ts", None, 1, None),
+        "accel_x": (
+            cast(Axis, f"accel_{x}"),
+            "accel",
+            -1 if inv_x else 1,
+            3,
+        ),
+        "accel_y": (
+            cast(Axis, f"accel_{y}"),
+            "accel",
+            -1 if inv_y else 1,
+            3,
+        ),
+        "accel_z": (
+            cast(Axis, f"accel_{z}"),
+            "accel",
+            -1 if inv_z else 1,
+            3,
+        ),
+        "anglvel_x": (
+            cast(Axis, f"gyro_{x}"),
+            "anglvel",
+            -1 if inv_x else 1,
+            None,
+        ),
+        "anglvel_y": (
+            cast(Axis, f"gyro_{y}"),
+            "anglvel",
+            -1 if inv_y else 1,
+            None,
+        ),
+        "anglvel_z": (
+            cast(Axis, f"gyro_{z}"),
+            "anglvel",
+            -1 if inv_z else 1,
             None,
         ),
     }
