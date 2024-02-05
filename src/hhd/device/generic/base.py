@@ -71,11 +71,11 @@ def plugin_run(
             try:
                 with open("/sys/devices/platform/oxp-platform/tt_toggle", "w") as f:
                     f.write("1")
+                logger.info(f"Turbo button takeover enabled")
             except Exception:
                 logger.warn(
                     f"Turbo takeover failed. Ensure you have the latest oxp-sensors driver installed."
                 )
-            logger.info(f"Turbo button takeover enabled")
 
         try:
             logger.info("Launching emulated controller.")
