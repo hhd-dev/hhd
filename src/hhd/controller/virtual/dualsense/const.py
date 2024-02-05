@@ -116,6 +116,11 @@ def prefill_ds5_report(bluetooth: bool):
     # bat = 10*lvl + 5
     d[ofs + 52] = (0x0 << 4) + 8
 
+    # Add dummy data in case the gyro is broken
+    d[ofs + 27 : ofs + 31] = int(28742700000000 / DS5_EDGE_DELTA_TIME_NS).to_bytes(
+        8, byteorder="little", signed=False
+    )[:4]
+
     return bytes(d)
 
 
