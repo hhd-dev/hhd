@@ -23,13 +23,15 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("GPT Win 4", "G1618-04"),
     PBC("GPD Win Mini", "G1617-01"),
     PBC("GPD Win Max 2 2023", "G1619-05"),
-    PBC("AYANEO AIR Plus", "AIR Plus", type="hold_emitted"),
-    PBC("AYANEO 2", "AYANEO 2", type="hold_emitted"),
-    PBC("AYANEO GEEK", "GEEK", type="hold_emitted"),
-    PBC("AYANEO 2S", "AYANEO 2S", type="hold_emitted"),
-    PBC("AYANEO GEEK 1S", "GEEK 1S", type="hold_emitted"),
-    PBC("AYANEO AIR", "AIR", type="hold_emitted"),
-    PBC("AYANEO AIR Pro", "AIR Pro", type="hold_emitted"),
+    # TODO: Remove these when correct behavior is verified
+    # TODO: Fix isa handling to only work when only shift is active
+    # PBC("AYANEO AIR Plus", "AIR Plus", type="hold_emitted"),
+    # PBC("AYANEO 2", "AYANEO 2", type="hold_emitted"),
+    # PBC("AYANEO GEEK", "GEEK", type="hold_emitted"),
+    # PBC("AYANEO 2S", "AYANEO 2S", type="hold_emitted"),
+    # PBC("AYANEO GEEK 1S", "GEEK 1S", type="hold_emitted"),
+    # PBC("AYANEO AIR", "AIR", type="hold_emitted"),
+    # PBC("AYANEO AIR Pro", "AIR Pro", type="hold_emitted"),
     PBC(
         "Steam Deck LCD",
         "Jupiter",
