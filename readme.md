@@ -282,6 +282,15 @@ ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="*Wireless Controller 
 The package `ds-inhibit` is available in AUR, packaged for Nobara, and enabled
 by default in Bazzite.
 
+#### Playstation Glyphs and Controller Image
+If you do not want playstation glyphs in Steam, you can use https://github.com/frazse/PS5-to-Xbox-glyphs
+as a CSS Loader plugin to switch them to Xbox.
+Then, there are CSS plugins for the Legion Go and Ally controller images in
+https://github.com/frazse/SBP-Legion-Go-Theme and 
+https://github.com/semakusut/SBP-ROG-Ally respectively.
+If you are using Bazzite, you can also find a `ujust` version of the commands in 
+the Bazzite readme.
+
 #### Missing Python Evdev
 In case you have installation issues, you might be missing the package `python-evdev`.
 You can either install it as part of your distribution (included by Nobara
