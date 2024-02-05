@@ -23,6 +23,7 @@ sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/s
 # Add hhd to user path
 mkdir -p ~/.local/bin
 ln -s ~/.local/share/hhd/venv/bin/hhd ~/.local/bin/hhd
+ln -s ~/.local/share/hhd/venv/bin/hhd.contrib ~/.local/bin/hhd.contrib
 
 # Start service and reboot
 sudo systemctl enable hhd_local@$(whoami)

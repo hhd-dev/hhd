@@ -15,9 +15,11 @@ rm -rf ~/.local/share/hhd
 
 # Remove bin link
 rm -f ~/.local/bin/hhd
+rm -f ~/.local/bin/hhd.contrib
 
 # Remove /etc files
 sudo rm -f /etc/udev/rules.d/83-hhd.rules
+sudo rm -f /etc/udev/hwdb.d/83-hhd.hwdb
 sudo rm -f /etc/systemd/system/hhd_local@.service
 
 # # Delete your configuration

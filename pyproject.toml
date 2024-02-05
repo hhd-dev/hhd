@@ -28,7 +28,7 @@ dependencies = [
 
 [project.entry-points."console_scripts"]
 hhd = "hhd.__main__:main"
-"hhd.legion_go" = "hhd.device.legion_go:main"
+"hhd.contrib" = "hhd.contrib:main"
 
 [project.entry-points."hhd.plugins"]
 legion_go = "hhd.device.legion_go:autodetect"
