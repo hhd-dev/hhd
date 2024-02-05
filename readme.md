@@ -39,6 +39,10 @@ Check out [adjustor](https://github.com/hhd-dev/adjustor)!.
 ## <a name="devices"></a>Supported Devices
 The following devices have been verified to work correctly, with QAM, RGB remapping,
 Touchpad, and Gyro support.
+The gyro axis might be incorrect for some of those devices, and can be easily
+fixed in the configuration menu by following [these steps](#gyro).
+If you do take the time, please open an issue with the correct mapping so it
+is added to your device.
 
 - Legion Go
 - ROG Ally
@@ -47,12 +51,13 @@ Touchpad, and Gyro support.
   - Win Mini
   - Win Max 2 2023
 - Ayaneo
-  - Air Plus
-  - 2/2s (experimental)
-  - GEEK, GEEK 1S (experimental)
+  - Air Standard/Plus/Pro
+  - 1S/1S Limited
+  - 2/2S 
+  - GEEK, GEEK 1S 
 - AOKZOE
   - A1
-  - A1 Pro (experimental)
+  - A1 Pro 
 - Ayn
   - Loki Max
 - Onexplayer
@@ -553,7 +558,7 @@ the cause at this moment.
 ChimeraOS 44 and certain versions of Nobara 38 and 39 have this issue.
 
 ## Contributing
-### Finding the correct axis for your device
+### <a name="gyro"></a> Finding the correct axis for your device
 To figure the correct axis from your device, go to desktop and open the steam
 calibration settings.
 Then, go to https://hhd.dev , switch `Motion Axis` to `Override` and tweak only
