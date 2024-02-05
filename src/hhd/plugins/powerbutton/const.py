@@ -28,6 +28,8 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("AYANEO GEEK", "GEEK", type="hold_emitted"),
     PBC("AYANEO 2S", "AYANEO 2S", type="hold_emitted"),
     PBC("AYANEO GEEK 1S", "GEEK 1S", type="hold_emitted"),
+    PBC("AYANEO AIR", "AIR", type="hold_emitted"),
+    PBC("AYANEO AIR Pro", "AIR Pro", type="hold_emitted"),
     PBC(
         "Steam Deck LCD",
         "Jupiter",
