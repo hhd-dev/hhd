@@ -1,6 +1,8 @@
 import logging
 import os
 import time
+from threading import Event as TEvent
+from threading import Thread
 from typing import Any, Sequence
 
 from hhd.controller import Consumer
@@ -60,6 +62,17 @@ def chassis_led_set(ev: RgbLedEvent):
     write_sysfs(LED_PATH, "multi_intensity", f"{r_red} {r_green} {r_blue}")
 
 
+def thread_chassis_led_set(ev: RgbLedEvent, pending: TEvent, error: TEvent):
+    try:
+        chassis_led_set(ev)
+    except Exception as e:
+        logger.error(f"Setting leds failed with error:\n{e}")
+        # Turn off support
+        error.set()
+    chassis_led_set(ev)
+    pending.clear()
+
+
 class LedDevice(Consumer):
     def __init__(self, rate_limit: float = 4) -> None:
         self.supported = is_led_supported()
@@ -67,8 +80,17 @@ class LedDevice(Consumer):
         self.queued = None
         self.last = time.time() - self.min_delay
 
+        self.pending = TEvent()
+        self.pending.set()
+        self.error = TEvent()
+        self.t = None
+
     def consume(self, events: Sequence[Event]):
         if not self.supported:
+            return
+
+        if self.error.isSet():
+            self.supported = False
             return
 
         curr = time.time()
@@ -93,13 +115,12 @@ class LedDevice(Consumer):
         if ev is None:
             return
 
-        if curr > self.last + self.min_delay:
-            try:
-                chassis_led_set(ev)
-            except Exception as e:
-                logger.error(f"Setting leds failed with error:\n{e}")
-                # Turn off support
-                self.supported = False
+        if curr > self.last + self.min_delay and not self.pending.is_set():
+            self.pending.set()
+            self.t = Thread(
+                target=thread_chassis_led_set, args=(ev, self.pending, self.error)
+            )
+            self.t.start()
             self.last = curr
         else:
             self.queued = (ev, curr + self.min_delay)
