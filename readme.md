@@ -213,8 +213,7 @@ This patch is included with Linux kernel 6.7.
 
 See [here](#gyro) for the required kernel patches.
 Without the patch series for the IMU (where patches 0001, and 0002 are included
-in kernel 6.8), the gyro will not work and if the `Motion` option is enabled,
-LEDs will not work either, so that should be turned off.
+in kernel 6.8), the gyro will not work.
 
 You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
 the right stick into a mouse.
@@ -242,8 +241,6 @@ Provided these drivers are installed and are supported by your device,
 LED support will be enabled by default.
 
 The paddles of the Ayn Loki Max are not remappable as far as we know.
-If the gyro driver is not installed and Motion is turned on, LED setting might
-not work.
 
 #### Extra steps for Legion Go
 If you are using a kernel older than 6.8 and you are not on a gaming distro
