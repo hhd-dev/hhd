@@ -48,11 +48,13 @@ def chassis_led_set(ev: RgbLedEvent):
 
     # Mode only exists on ayn devices
     try:
-        if os.path.exists(os.path.join(LED_PATH, "device/led_mode")):
-            write_sysfs(LED_PATH, "device/led_mode", r_mode)
+        write_sysfs(LED_PATH, "led_mode", r_mode)
     except Exception:
-        if os.path.exists(os.path.join(LED_PATH, "led_mode")):
-            write_sysfs(LED_PATH, "led_mode", r_mode)
+        logger.info("Could not write led_mode (not applicable for Ayaneo, only Ayn).")
+        try:
+            write_sysfs(LED_PATH, "device/led_mode", r_mode)
+        except Exception:
+            logger.info("Could not write led_mode to secondary path.")
 
     write_sysfs(LED_PATH, "brightness", r_brightness)
     write_sysfs(LED_PATH, "multi_intensity", f"{r_red} {r_green} {r_blue}")
