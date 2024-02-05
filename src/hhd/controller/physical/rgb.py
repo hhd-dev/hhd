@@ -49,7 +49,7 @@ def chassis_led_set(ev: RgbLedEvent):
     r_blue = max(min(ev["blue"], 255), 0)
 
     # Set low values to 0
-    if r_red < 3 and r_green < 3 and r_blue < 3:
+    if r_red < 5 and r_green < 5 and r_blue < 5:
         r_brightness = 0
 
     # Mode only exists on ayn devices
