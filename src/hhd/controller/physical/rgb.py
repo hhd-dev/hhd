@@ -74,7 +74,7 @@ def thread_chassis_led_set(ev: RgbLedEvent, pending: TEvent, error: TEvent):
 
 
 class LedDevice(Consumer):
-    def __init__(self, rate_limit: float = 4, threading: bool = True) -> None:
+    def __init__(self, rate_limit: float = 4, threading: bool = False) -> None:
         self.supported = is_led_supported()
         self.min_delay = 1 / rate_limit
         self.queued = None
