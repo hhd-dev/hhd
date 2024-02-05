@@ -156,7 +156,11 @@ class RgbCallback:
                 case "rainbow":
                     mode = "dynamic"
                 case "solid":
-                    mode = "solid"
+                    if ev["red"] or ev['green'] or ev['blue']:
+                        mode = "solid"
+                    else:
+                        # Disable if brightness is 0
+                        mode = None
                 case "spiral":
                     mode = "spiral"
                 case _:

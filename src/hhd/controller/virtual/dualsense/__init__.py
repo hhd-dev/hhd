@@ -89,9 +89,11 @@ class Dualsense(Producer, Consumer):
             version=DS5_EDGE_VERSION,
             country=DS5_EDGE_COUNTRY,
             name=DS5_EDGE_NAME if self.edge_mode else DS5_NAME,
-            report_descriptor=DS5_EDGE_DESCRIPTOR_BT
-            if self.use_bluetooth
-            else DS5_EDGE_DESCRIPTOR_USB,
+            report_descriptor=(
+                DS5_EDGE_DESCRIPTOR_BT
+                if self.use_bluetooth
+                else DS5_EDGE_DESCRIPTOR_USB
+            ),
         )
 
         self.touch_correction = correct_touchpad(
@@ -204,14 +206,22 @@ class Dualsense(Producer, Consumer):
                             # Skip rare SDL led initialization that is offset
                             continue
                         logger.info(f"Changing leds to RGB: {red} {green} {blue}")
+
+                        # Crunch lower values since steam is bugged
+                        if red < 3 and green < 3 and blue < 3:
+                            red = 0
+                            green = 0
+                            blue = 0
+
                         out.append(
                             {
                                 "type": "led",
                                 "code": "main",
                                 "mode": "solid",
-                                "brightness": led_brightness / 63
-                                if led_brightness
-                                else 1,
+                                # "brightness": led_brightness / 63
+                                # if led_brightness
+                                # else 1,
+                                "brightness": 1,
                                 "speed": 0,
                                 "red": red,
                                 "blue": blue,
