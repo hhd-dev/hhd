@@ -62,10 +62,7 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     ),
 ]
 
-DEFAULT_DEVICE: PowerButtonConfig = PBC(
-    "uknown",
-    "NA",
-)
+DEFAULT_DEVICE: PowerButtonConfig = PBC("uknown", "NA", "hold_emitted")
 
 
 # Legion go
