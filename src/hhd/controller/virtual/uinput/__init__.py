@@ -75,6 +75,8 @@ class UInputDevice(Consumer, Producer):
     def consume(self, events: Sequence[Event]):
         if not self.dev:
             return
+
+        wrote = False
         for ev in events:
             match ev["type"]:
                 case "axis":
@@ -90,6 +92,7 @@ class UInputDevice(Consumer, Producer):
                         if ax.bounds:
                             val = min(max(val, ax.bounds[0]), ax.bounds[1])
                         self.dev.write(B("EV_ABS"), ax.id, val)
+                        wrote = True
 
                         if ev["code"] == "touchpad_x":
                             self.dev.write(B("EV_ABS"), B("ABS_MT_POSITION_X"), val)
@@ -108,6 +111,7 @@ class UInputDevice(Consumer, Producer):
                             self.ofs = ts
                         ts -= self.ofs
                         self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
+                        wrote = True
                 case "button":
                     if ev["code"] in self.btn_map:
                         if ev["code"] == "touchpad_touch":
@@ -129,12 +133,13 @@ class UInputDevice(Consumer, Producer):
                             self.btn_map[ev["code"]],
                             1 if ev["value"] else 0,
                         )
+                        wrote = True
 
                 case "configuration":
                     if ev["code"] == "touchpad_aspect_ratio":
                         self.touchpad_aspect = float(ev["value"])
 
-        if self.output_timestamps:
+        if wrote and self.output_timestamps:
             # We have timestamps with ns accuracy.
             # Evdev expects us accuracy
             ts = time.perf_counter_ns() // 1000
@@ -144,7 +149,8 @@ class UInputDevice(Consumer, Producer):
             ts -= self.ofs
             self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
 
-        self.dev.syn()
+        if wrote:
+            self.dev.syn()
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         if not self.fd or not self.fd in fds or not self.dev:
