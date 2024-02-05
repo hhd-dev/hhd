@@ -263,6 +263,25 @@ The gyro will work fine in games.
 If you get drift, you can turn on `Auto-Calibrate Gyro Drift when Stationary` and
 then move the top bar (gyro) right until it covers the noise.
 
+#### High Touchpad Steam Input
+By default, the Dualsense kernel driver exposes the Dualsense trackpad as a normal
+trackpad.
+This means that if you go to use it as steam input, you still get the normal
+trackpad input.
+This leads to double input.
+
+You can either disable it with the package `ds-inhibit` which detects if steam
+is running and mutes it (still works in desktop) or with the following udev rule 
+(does not work in desktop).
+Place it under `/etc/udev/rules.d/99-hhd-playstation-touchpad.rules`
+```bash
+# Disables all playstation touchpads from use as touchpads.
+ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="*Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
+```
+
+The package `ds-inhibit` is available in AUR, packaged for Nobara, and enabled
+by default in Bazzite.
+
 #### Missing Python Evdev
 In case you have installation issues, you might be missing the package `python-evdev`.
 You can either install it as part of your distribution (included by Nobara
@@ -523,15 +542,6 @@ should update your distribution and if that does not fix it consider re-installi
 There are certain gamescope/distro issues that cause this and we are unsure of
 the cause at this moment.
 ChimeraOS 44 and certain versions of Nobara 38 and 39 have this issue.
-
-### Disabling Dualsense touchpad
-The Dualsense touchpad may interfere with games or steam input. 
-You can disable it with the following udev rule.
-Place it under `/etc/udev/rules.d/99-hhd-playstation-touchpad.rules`
-```bash
-# Disables all playstation touchpads from use as touchpads.
-ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="*Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-```
 
 ## Contributing
 ### Finding the correct axis for your device
