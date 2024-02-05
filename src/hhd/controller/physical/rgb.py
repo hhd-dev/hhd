@@ -74,14 +74,14 @@ def thread_chassis_led_set(ev: RgbLedEvent, pending: TEvent, error: TEvent):
 
 
 class LedDevice(Consumer):
-    def __init__(self, rate_limit: float = 4) -> None:
+    def __init__(self, rate_limit: float = 4, threading: bool = True) -> None:
         self.supported = is_led_supported()
         self.min_delay = 1 / rate_limit
         self.queued = None
         self.last = time.time() - self.min_delay
 
+        self.threading = threading
         self.pending = TEvent()
-        self.pending.set()
         self.error = TEvent()
         self.t = None
 
@@ -116,11 +116,19 @@ class LedDevice(Consumer):
             return
 
         if curr > self.last + self.min_delay and not self.pending.is_set():
-            self.pending.set()
-            self.t = Thread(
-                target=thread_chassis_led_set, args=(ev, self.pending, self.error)
-            )
-            self.t.start()
+            if self.threading:
+                self.pending.set()
+                self.t = Thread(
+                    target=thread_chassis_led_set, args=(ev, self.pending, self.error)
+                )
+                self.t.start()
+            else:
+                try:
+                    chassis_led_set(ev)
+                except Exception as e:
+                    logger.error(f"Setting leds failed with error:\n{e}")
+                    # Turn off support
+                    self.supported = False
             self.last = curr
         else:
             self.queued = (ev, curr + self.min_delay)
