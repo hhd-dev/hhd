@@ -42,7 +42,7 @@ def get_outputs(
                 enable_touchpad=uses_touch,
                 enable_rgb=uses_leds,
                 fake_timestamps=not motion,
-                sync_gyro=conf["dualsense_edge.sync_gyro"].to(bool),
+                sync_gyro=conf["dualsense_edge.sync_gyro"].to(bool) and motion,
             )
             producers.append(d)
             consumers.append(d)
@@ -56,7 +56,7 @@ def get_outputs(
                 enable_touchpad=uses_touch,
                 enable_rgb=uses_leds,
                 fake_timestamps=not motion,
-                sync_gyro=conf["dualsense.sync_gyro"].to(bool),
+                sync_gyro=conf["dualsense.sync_gyro"].to(bool) and motion,
             )
             producers.append(d)
             consumers.append(d)
