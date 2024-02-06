@@ -33,7 +33,7 @@ def is_led_supported():
     return os.path.exists(LED_PATH)
 
 
-def chassis_led_set(ev: RgbLedEvent):
+def chassis_led_set(ev: RgbLedEvent, init: bool = True):
     if ev["type"] != "led":
         return
 
@@ -49,16 +49,19 @@ def chassis_led_set(ev: RgbLedEvent):
     r_blue = max(min(ev["blue"], 255), 0)
 
     # Mode only exists on ayn devices
-    try:
-        write_sysfs(LED_PATH, "led_mode", r_mode)
-    except Exception:
-        logger.info("Could not write led_mode (not applicable for Ayaneo, only Ayn).")
+    if init:
         try:
-            write_sysfs(LED_PATH, "device/led_mode", r_mode)
+            write_sysfs(LED_PATH, "led_mode", r_mode)
         except Exception:
-            logger.info("Could not write led_mode to secondary path.")
+            logger.info(
+                "Could not write led_mode (not applicable for Ayaneo, only Ayn)."
+            )
+            try:
+                write_sysfs(LED_PATH, "device/led_mode", r_mode)
+            except Exception:
+                logger.info("Could not write led_mode to secondary path.")
 
-    write_sysfs(LED_PATH, "brightness", r_brightness)
+        write_sysfs(LED_PATH, "brightness", r_brightness)
     write_sysfs(LED_PATH, "multi_intensity", f"{r_red} {r_green} {r_blue}")
 
 
@@ -84,6 +87,7 @@ class LedDevice(Consumer):
         self.pending = TEvent()
         self.error = TEvent()
         self.t = None
+        self.init = False
 
     def consume(self, events: Sequence[Event]):
         if not self.supported:
@@ -124,7 +128,8 @@ class LedDevice(Consumer):
                 self.t.start()
             else:
                 try:
-                    chassis_led_set(ev)
+                    chassis_led_set(ev, not self.init)
+                    self.init = True
                 except Exception as e:
                     logger.error(f"Setting leds failed with error:\n{e}")
                     # Turn off support
