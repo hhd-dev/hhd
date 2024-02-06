@@ -49,10 +49,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
-    from .base import get_config, DEFAULT_DEVICE
+    from .const import get_config, get_default_config
 
     cfg = get_config()
     if not cfg:
-        return [PowerbuttondPlugin(DEFAULT_DEVICE)]
+        return [PowerbuttondPlugin(get_default_config())]
 
     return [PowerbuttondPlugin(cfg)]

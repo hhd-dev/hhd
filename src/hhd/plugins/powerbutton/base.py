@@ -11,7 +11,7 @@ from evdev import ecodes as e
 
 from hhd.utils import Context, expanduser
 
-from .const import DEFAULT_DEVICE, SUPPORTED_DEVICES, PowerButtonConfig
+from .const import PowerButtonConfig
 
 logger = logging.getLogger(__name__)
 
@@ -106,17 +106,6 @@ def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
                     device.grab()
                 logger.info(f"Captured hold keyboard '{device.name}': '{device.phys}'")
                 return device
-    return None
-
-
-def get_config() -> PowerButtonConfig | None:
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        prod = f.read().strip()
-
-    for d in SUPPORTED_DEVICES:
-        if d.prod_name == prod:
-            return d
-
     return None
 
 
@@ -232,6 +221,8 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
                         dev = None
                 logger.info(f"Waiting for steam to launch.")
                 while not is_steam_gamescope_running(perms):
+                    if should_exit.is_set():
+                        return
                     sleep(STEAM_WAIT_DELAY)
 
             if not dev:

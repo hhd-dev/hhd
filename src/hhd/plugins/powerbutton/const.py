@@ -64,7 +64,21 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     ),
 ]
 
-DEFAULT_DEVICE: PowerButtonConfig = PBC("uknown", "NA", "hold_emitted")
+
+def get_config() -> PowerButtonConfig | None:
+    with open("/sys/devices/virtual/dmi/id/product_name") as f:
+        prod = f.read().strip()
+
+    for d in SUPPORTED_DEVICES:
+        if d.prod_name == prod:
+            return d
+
+    return None
+
+
+def get_default_config():
+    # Prepare for per-manufacturer customization
+    return PBC("uknown", "NA", "hold_emitted")
 
 
 # Legion go
