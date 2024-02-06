@@ -86,12 +86,7 @@ Nobara also packages hhd and it will become the default for supported devices so
 However, it only packages fixes for the Ally and Legion Go at the time of this
 writing.
 
-> [!WARNING]  
-> There is a bug that breaks how Dualsense controllers are parsed in Steam in various
-> distros, which causes Gyro, LEDs, and paddles to not be detected in Steam, 
-> and the Dualsense Edge mapping being very wrong.
-> It is being investigated, please open an issue for it with your distro information.
-
+> [!IMPORTANT]
 > To ensure the gyro of the Legion Go with AMD SFH runs smoothly, 
 > a udev rule is included that disables the use of the accelerometer by the 
 > system (e.g., iio-sensor-proxy).
@@ -281,7 +276,7 @@ The gyro will work fine in games.
 If you get drift, you can turn on `Auto-Calibrate Gyro Drift when Stationary` and
 then move the top bar (gyro) right until it covers the noise.
 
-#### High Touchpad Steam Input
+#### High Touchpad Sensitivity in Steam Input
 By default, the Dualsense kernel driver exposes the Dualsense trackpad as a normal
 trackpad.
 This means that if you go to use it as steam input, you still get the normal
@@ -448,7 +443,8 @@ Then, go to https://hhd.dev , switch `Motion Axis` to `Override` and tweak only
 the axis (without invert) of your device until they match the glyphs in steam.
 
 > [!WARNING]  
-> Do not try to interpret what each axis means. Just change them randomly until
+> Do not try to interpret what each axis means. You will get a headache. 
+> Just change them randomly until
 > the glyphs line up with how you move your controller.
 > If you set multiple axis to a single one (e.g., X to Y, and Y to Y),
 > the first option (e.g., X to Y) option will be ignored.
