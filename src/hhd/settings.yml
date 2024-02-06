@@ -11,6 +11,12 @@ version:
       title: Decky Plugin Version
       hint: "Displays the Handheld Daemon Decky plugin version."
 
+    decky_deprecation:
+      type: display
+      tags: [hhd-version-display-decky, text]
+      title: "WARNING: This button will be removed soon, update Decky now!"
+      default: " "
+
     update_decky:
       type: action
       tags: [hhd-update-decky, decky]
