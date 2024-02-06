@@ -37,10 +37,10 @@ Check out [adjustor](https://github.com/hhd-dev/adjustor)!.
 - Built-in updater.
 
 ## <a name="devices"></a>Supported Devices
-The following devices have been verified to work correctly, with QAM, RGB remapping,
-Touchpad, and Gyro support.
+The following devices have been verified to work correctly, with QAM, 
+Paddles/extra buttons, RGB remapping, Touchpad, and Gyro support.
 The gyro axis might be incorrect for some of those devices, and can be easily
-fixed in the configuration menu by following [these steps](#gyro).
+fixed in the configuration menu by following [these steps](#axis).
 If you do take the time, please open an issue with the correct mapping so it
 is added to your device.
 
@@ -436,7 +436,7 @@ The global configuration for HHD is found in:
 You can modify it and it will hot-reload upon saving.
 
 ## Contributing
-### <a name="gyro"></a> Finding the correct axis for your device
+### <a name="axis"></a> Finding the correct axis for your device
 To figure the correct axis from your device, go to desktop and open the steam
 calibration settings.
 Then, go to https://hhd.dev , switch `Motion Axis` to `Override` and tweak only
