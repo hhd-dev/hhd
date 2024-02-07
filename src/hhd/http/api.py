@@ -7,7 +7,7 @@ from threading import Condition, Thread
 from typing import Any, Mapping
 from urllib.parse import parse_qs, urlparse
 
-from hhd.plugins import Config, Emitter, HHDSettings, get_relative_fn
+from hhd.plugins import Config, Emitter, HHDSettings, get_relative_fn, load_relative_yaml
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ _control_char_table = str.maketrans(
 )
 _control_char_table[ord("\\")] = r"\\"
 
+SECTIONS = load_relative_yaml('../sections.yml')['sections']
 
 def parse_path(path: str) -> tuple[list, dict[str, list[str]]]:
     try:
@@ -258,14 +259,7 @@ class RestHandler(BaseHTTPRequestHandler):
             case "version":
                 self.send_json({"version": 2})
             case "sections":
-                self.send_json(
-                    {
-                        "system": "System",
-                        "tdp": "TDP",
-                        "controller": "Controller",
-                        "hhd": "About",
-                    }
-                )
+                self.send_json(SECTIONS)
             case other:
                 self.send_not_found(f"Command '{other}' not supported.")
 

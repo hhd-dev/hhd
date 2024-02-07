@@ -38,6 +38,11 @@ generic = "hhd.device.generic:autodetect"
 powerbuttond = "hhd.plugins.powerbutton:autodetect"
 # display = "hhd.plugins.display:autodetect"
 
+[project.entry-points."hhd.i18n"]
+
+[project.entry-points."babel.extractors"]
+hhd_yaml = "hhd.contrib.i18n:extract_hhd_yaml"
+
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"

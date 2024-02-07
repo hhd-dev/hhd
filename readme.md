@@ -463,6 +463,30 @@ text (e.g., x is k, y is l inverted, z is j) and open an issue.
 The override setting also displays the make and model of your device, which
 are required to add the mappings to Handheld Daemon.
 
+### Localizing Handheld Daemon
+You can find `pot` and `po` files for Handheld Daemon under the  `i18n` directory.
+You can clone/download this repository and open the `./i18n` directory.
+Then, just copy the `template.pot` file into `<your_locale>/LC_MESSAGES/messages.po`
+and begin translating with your favorite text editor, or by using
+tool such as [Lokalize](https://apps.kde.org/lokalize/).
+
+The files can be updated for a new version with the following commands:
+```bash
+# Prepare dev environment
+git clone https://github.com/hhd-dev/hhd
+cd hhd
+python -m venv venv
+pip install babel
+pip install -e .
+
+# Generate POT file
+pybabel extract --no-location -F i18n/babel.cfg -o i18n/template.pot src/hhd
+# Update current pot files
+pybabel update -i i18n/template.pot -d i18n -D hhd
+# Generate PO files for your language (essentially a copy with a header change)
+pybabel init -i i18n/template.pot -l el_gr -d i18n -D hhd
+```
+
 ### Creating a Local Repo version
 Either follow `Automatic Install` or `Manual Local Install` to install the base rules.
 Then, clone, optionally install the userspace rules, and run.

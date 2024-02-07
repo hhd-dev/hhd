@@ -1,0 +1,789 @@
+# Greek (Greece) translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-02-07 17:22+0100\n"
+"PO-Revision-Date: 2024-02-07 17:26+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: el_GR\n"
+"Language-Team: el_GR <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#. Section Name for: system
+#. Setting: System
+#. Field: title
+msgid "System"
+msgstr ""
+
+#. Section Name for: tdp
+msgid "TDP"
+msgstr ""
+
+#. Section Name for: controller
+#. Setting: Controller
+#. Field: title
+msgid "Controller"
+msgstr ""
+
+#. Section Name for: hhd
+msgid "About"
+msgstr ""
+
+#. Setting: Version Information
+#. Field: title
+msgid "Version Information"
+msgstr ""
+
+#. Setting: Version Information
+#. Field: hint
+msgid "Handheld Daemon version manager (local install only)."
+msgstr ""
+
+#. Setting: Decky Plugin Version
+#. Field: title
+msgid "Decky Plugin Version"
+msgstr ""
+
+#. Setting: Decky Plugin Version
+#. Field: hint
+msgid "Displays the Handheld Daemon Decky plugin version."
+msgstr ""
+
+#. Setting: WARNING: This button will be removed soon, update Decky now!
+#. Field: title
+msgid "WARNING: This button will be removed soon, update Decky now!"
+msgstr ""
+
+#. Setting: Update Decky
+#. Field: title
+msgid "Update Decky"
+msgstr ""
+
+#. Setting: Update Decky
+#. Field: hint
+msgid "Updates the Decky plugin to the latest release."
+msgstr ""
+
+#. Setting: Handheld Daemon Version
+#. Field: title
+msgid "Handheld Daemon Version"
+msgstr ""
+
+#. Setting: Handheld Daemon Version
+#. Field: hint
+msgid "Displays the Handheld Daemon version."
+msgstr ""
+
+#. Setting: Update (Stable)
+#. Field: title
+msgid "Update (Stable)"
+msgstr ""
+
+#. Setting: Update (Stable)
+#. Field: hint
+msgid "Updates to the latest version from PyPi (local install only)."
+msgstr ""
+
+#. Setting: Update (Unstable)
+#. Field: title
+msgid "Update (Unstable)"
+msgstr ""
+
+#. Setting: Update (Unstable)
+#. Field: hint
+msgid "Updates to the master branch from git (local install only)."
+msgstr ""
+
+#. Setting: API Configuration
+#. Field: title
+msgid "API Configuration"
+msgstr ""
+
+#. Setting: API Configuration
+#. Field: hint
+msgid "Settings for configuring the http endpoint of HHD."
+msgstr ""
+
+#. Setting: Enable the API
+#. Field: title
+msgid "Enable the API"
+msgstr ""
+
+#. Setting: Enable the API
+#. Field: hint
+msgid "Enables the API of Handheld Daemon (required for decky and ui)."
+msgstr ""
+
+#. Setting: API Port
+#. Field: title
+msgid "API Port"
+msgstr ""
+
+#. Setting: API Port
+#. Field: hint
+msgid "Which port should the API be on?"
+msgstr ""
+
+#. Setting: Limit Access to localhost
+#. Field: title
+msgid "Limit Access to localhost"
+msgstr ""
+
+#. Setting: Limit Access to localhost
+#. Field: hint
+msgid "Sets the API target to '127.0.0.1' instead '0.0.0.0'."
+msgstr ""
+
+#. Setting: Use Security token
+#. Field: title
+msgid "Use Security token"
+msgstr ""
+
+#. Setting: Use Security token
+#. Field: hint
+msgid ""
+"Generates a security token in `~/.config/hhd/token` that is required for "
+"authentication."
+msgstr ""
+
+#. Setting: Handheld Controller
+#. Field: title
+msgid "Handheld Controller"
+msgstr ""
+
+#. Setting: Handheld Controller
+#. Field: hint
+msgid "Allows for configuring your handheld's controller to a unified output."
+msgstr ""
+
+#. Setting: Controller Emulation
+#. Field: title
+msgid "Controller Emulation"
+msgstr ""
+
+#. Setting: Controller Emulation
+#. Field: hint
+msgid "Emulate different controller types to fuse your device's features."
+msgstr ""
+
+#. Setting: Motion Support
+#. Field: title
+msgid "Motion Support"
+msgstr ""
+
+#. Setting: Motion Support
+#. Field: hint
+msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
+msgstr ""
+
+#. Setting: Motion Hz
+#. Field: title
+msgid "Motion Hz"
+msgstr ""
+
+#. Setting: Motion Hz
+#. Field: hint
+msgid ""
+"Sets the sampling frequency for the IMU. Check "
+"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
+msgstr ""
+
+#. Setting: Nintendo Mode (A-B Swap)
+#. Field: title
+msgid "Nintendo Mode (A-B Swap)"
+msgstr ""
+
+#. Setting: Nintendo Mode (A-B Swap)
+#. Field: hint
+msgid "Swaps A with B and X with Y."
+msgstr ""
+
+#. Setting: Map share buttom to QAM.
+#. Field: title
+msgid "Map share buttom to QAM."
+msgstr ""
+
+#. Setting: Debug
+#. Field: title
+msgid "Debug"
+msgstr ""
+
+#. Setting: Debug
+#. Field: hint
+msgid ""
+"Output controller events to the console (high CPU use) and raises "
+"exceptions (HHD will crash on errors)."
+msgstr ""
+
+#. Setting: GPD Controller
+#. Field: title
+msgid "GPD Controller"
+msgstr ""
+
+#. Setting: GPD Controller
+#. Field: hint
+msgid "Allows for configuring the gpd win controllers to a unified output."
+msgstr ""
+
+#. Setting: Controller Emulation
+#. Field: hint
+msgid "Emulate different controller types to fuse gpd features."
+msgstr ""
+
+#. Setting: Map L4/R4 to QAM.
+#. Field: title
+msgid "Map L4/R4 to QAM."
+msgstr ""
+
+#. Setting: Map L4/R4 to QAM.
+#. Option: disabled
+#. Setting: Swap Legion with Start/Select
+#. Setting: Disabled
+#. Field: title
+#. Setting: Short Action
+#. Setting: Hold Action
+msgid "Disabled"
+msgstr ""
+
+#. Setting: Map L4/R4 to QAM.
+#. Option: l4
+msgid "L4"
+msgstr ""
+
+#. Setting: Map L4/R4 to QAM.
+#. Option: r4
+msgid "R4"
+msgstr ""
+
+#. Setting: Legion Controllers
+#. Field: title
+msgid "Legion Controllers"
+msgstr ""
+
+#. Setting: Legion Controllers
+#. Field: hint
+msgid ""
+"Allows for configuring the Legion controllers using the built in firmware"
+" commands and enabling emulation modes for various controller types."
+msgstr ""
+
+#. Setting: Emulation Mode (X-Input)
+#. Field: title
+msgid "Emulation Mode (X-Input)"
+msgstr ""
+
+#. Setting: Emulation Mode (X-Input)
+#. Field: hint
+msgid ""
+"Emulate different controller types when the Legion Controllers are in "
+"X-Input mode."
+msgstr ""
+
+#. Setting: Gyroscope
+#. Field: title
+msgid "Gyroscope"
+msgstr ""
+
+#. Setting: Gyroscope
+#. Field: hint
+msgid "Enables gyroscope support (.3% background CPU use)"
+msgstr ""
+
+#. Setting: Accelerometer
+#. Field: title
+msgid "Accelerometer"
+msgstr ""
+
+#. Setting: Accelerometer
+#. Field: hint
+msgid ""
+"Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro;  "
+"if someone asks it will be fixed)."
+msgstr ""
+
+#. Setting: Gyro Hz
+#. Field: title
+msgid "Gyro Hz"
+msgstr ""
+
+#. Setting: Gyro Hz
+#. Field: hint
+msgid ""
+"Adds polling to the legion go gyroscope, to fix the low polling rate "
+"(required for gyroscope support). Set to 0 to disable. Due to hardware "
+"limitations, there is a marginal difference above 100hz."
+msgstr ""
+
+#. Setting: Gyro Scale
+#. Field: title
+msgid "Gyro Scale"
+msgstr ""
+
+#. Setting: Gyro Scale
+#. Field: hint
+msgid ""
+"Applies a scaling factor to the legion go gyroscope (since it is "
+"misconfigured by the driver). Try different values to see what works "
+"best. Low values cause a deadzone and high values will clip when moving "
+"the  Go abruptly."
+msgstr ""
+
+#. Setting: Swap Legion with Start/Select
+#. Field: title
+msgid "Swap Legion with Start/Select"
+msgstr ""
+
+#. Setting: Swap Legion with Start/Select
+#. Field: hint
+msgid "Swaps the legion buttons with start select."
+msgstr ""
+
+#. Setting: Swap Legion with Start/Select
+#. Option: l_is_start
+msgid "Left is Start"
+msgstr ""
+
+#. Setting: Swap Legion with Start/Select
+#. Option: l_is_select
+msgid "Left is Select"
+msgstr ""
+
+#. Setting: M2 As Mute
+#. Field: title
+msgid "M2 As Mute"
+msgstr ""
+
+#. Setting: M2 As Mute
+#. Field: hint
+msgid ""
+"Maps the M2 to the mute button on Dualsense and the HAPPY_TRIGGER_20 on "
+"Xbox."
+msgstr ""
+
+#. Setting: Hold Select to Reboot
+#. Field: title
+msgid "Hold Select to Reboot"
+msgstr ""
+
+#. Setting: Legion R to QAM
+#. Field: title
+msgid "Legion R to QAM"
+msgstr ""
+
+#. Setting: Enable Shortcuts Controller
+#. Field: title
+msgid "Enable Shortcuts Controller"
+msgstr ""
+
+#. Setting: Enable Shortcuts Controller
+#. Field: hint
+msgid ""
+"When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
+"controller to restore Guide, QAM, and shortcut functionality."
+msgstr ""
+
+#. Setting: Ally Controller
+#. Field: title
+msgid "Ally Controller"
+msgstr ""
+
+#. Setting: Ally Controller
+#. Field: hint
+msgid "Allows for configuring the ROG Ally controllers to a unified output."
+msgstr ""
+
+#. Setting: Controller Emulation
+#. Field: hint
+msgid "Emulate different controller types to fuse ROG features."
+msgstr ""
+
+#. Setting: Motion Hz
+#. Field: hint
+msgid ""
+"Sets the sampling frequency for the IMU. 1600 requires an IMU patch. "
+"Check "
+"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
+msgstr ""
+
+#. Setting: Led Brightness
+#. Field: title
+msgid "Led Brightness"
+msgstr ""
+
+#. Setting: Led Brightness
+#. Field: hint
+msgid ""
+"When LEDs are configured, set their brightness. High does not work below "
+"30% brightness."
+msgstr ""
+
+#. Setting: Led Brightness
+#. Option: False
+msgid "Off"
+msgstr ""
+
+#. Setting: Led Brightness
+#. Option: low
+msgid "Low"
+msgstr ""
+
+#. Setting: Led Brightness
+#. Option: medium
+msgid "Medium"
+msgstr ""
+
+#. Setting: Led Brightness
+#. Option: high
+msgid "High"
+msgstr ""
+
+#. Setting: Map Armory to QAM.
+#. Field: title
+msgid "Map Armory to QAM."
+msgstr ""
+
+#. Setting: Motion Axis
+#. Field: title
+msgid "Motion Axis"
+msgstr ""
+
+#. Setting: Default
+#. Field: title
+msgid "Default"
+msgstr ""
+
+#. Setting: Default
+#. Field: hint
+msgid "The default axis loaded for this device."
+msgstr ""
+
+#. Setting: Override
+#. Field: title
+msgid "Override"
+msgstr ""
+
+#. Setting: Override
+#. Field: hint
+msgid ""
+"Remap and invert the axis of your device. If the axis of your device are "
+"wrong, please submit a picture or a text version of the following."
+msgstr ""
+
+#. Setting: Manufacturer
+#. Field: title
+msgid "Manufacturer"
+msgstr ""
+
+#. Setting: Product
+#. Field: title
+msgid "Product"
+msgstr ""
+
+#. Setting: Axis X
+#. Field: title
+msgid "Axis X"
+msgstr ""
+
+#. Setting: Axis X
+#. Option: x
+#. Setting: Axis Y
+#. Setting: Axis Z
+msgid "X"
+msgstr ""
+
+#. Setting: Axis X
+#. Option: y
+#. Setting: Axis Y
+#. Setting: Axis Z
+msgid "Y"
+msgstr ""
+
+#. Setting: Axis X
+#. Option: z
+#. Setting: Axis Y
+#. Setting: Axis Z
+msgid "Z"
+msgstr ""
+
+#. Setting: Invert X
+#. Field: title
+msgid "Invert X"
+msgstr ""
+
+#. Setting: Axis Y
+#. Field: title
+msgid "Axis Y"
+msgstr ""
+
+#. Setting: Invert Y
+#. Field: title
+msgid "Invert Y"
+msgstr ""
+
+#. Setting: Axis Z
+#. Field: title
+msgid "Axis Z"
+msgstr ""
+
+#. Setting: Invert Z
+#. Field: title
+msgid "Invert Z"
+msgstr ""
+
+#. Setting: Disabled
+#. Field: hint
+msgid "Does not modify the default controller."
+msgstr ""
+
+#. Setting: Xbox
+#. Field: title
+msgid "Xbox"
+msgstr ""
+
+#. Setting: Xbox
+#. Field: hint
+msgid ""
+"Creates a virtual `Handheld Daemon Controller` that can be used normally "
+"in apps. Back buttons are supported but steam will not detect them. If "
+"Gyroscope or Accelerometer are enabled, a Motion device will be created "
+"as well (experimental; works in Dolphin)."
+msgstr ""
+
+#. Setting: Dualsense
+#. Field: title
+msgid "Dualsense"
+msgstr ""
+
+#. Setting: Dualsense
+#. Field: hint
+msgid ""
+"Emulates the Dualsense Sony controller from the Playstation 5. Since this"
+" controller does not have paddles, the paddles are mapped to left and "
+"right touchpad clicks."
+msgstr ""
+
+#. Setting: LED Support
+#. Field: title
+msgid "LED Support"
+msgstr ""
+
+#. Setting: LED Support
+#. Field: hint
+msgid ""
+"Passes through the LEDs to the controller, which allows games to control "
+"them."
+msgstr ""
+
+#. Setting: Gyro to Mouse Fix
+#. Field: title
+msgid "Gyro to Mouse Fix"
+msgstr ""
+
+#. Setting: Gyro to Mouse Fix
+#. Field: hint
+msgid ""
+"In the latest steam update, `Gyro to Mouse [BETA]` misbehaves if a report"
+" is sent without a new imu timestamp. This option makes it so reports are"
+" sent only when there is a new gyro timestamp, effectively limiting the "
+"responsiveness of the controller to that of the IMU (e.g., for Legion Go "
+"100hz instead of 400hz). If the IMU is not working, this setting will "
+"break the controller."
+msgstr ""
+
+#. Setting: Bluetooth Mode
+#. Field: title
+msgid "Bluetooth Mode"
+msgstr ""
+
+#. Setting: Bluetooth Mode
+#. Field: hint
+msgid ""
+"Emulates the controller in bluetooth mode instead of USB mode. This is "
+"the default as it causes less issues with how apps interact with the "
+"controller. However, using USB mode can improve LED support (?) in some "
+"games. Test and report back!"
+msgstr ""
+
+#. Setting: Dualsense Edge
+#. Field: title
+msgid "Dualsense Edge"
+msgstr ""
+
+#. Setting: Dualsense Edge
+#. Field: hint
+msgid ""
+"Emulates the expensive Dualsense Sony controller which enables paddle "
+"support. The edge controller is a bit obscure, so some games might not "
+"support it correctly."
+msgstr ""
+
+#. Setting: Touchpad Emulation
+#. Field: title
+msgid "Touchpad Emulation"
+msgstr ""
+
+#. Setting: Touchpad Emulation
+#. Field: hint
+msgid ""
+"Use an emulated touchpad. Part of the controller if it is supported "
+"(e.g., Dualsense) or a virtual one if not."
+msgstr ""
+
+#. Setting: Disabled
+#. Field: hint
+msgid ""
+"Does not modify the touchpad. Short + holding presses will not work "
+"within gamescope."
+msgstr ""
+
+#. Setting: Virtual
+#. Field: title
+msgid "Virtual"
+msgstr ""
+
+#. Setting: Virtual
+#. Field: hint
+msgid ""
+"Adds an emulated touchpad. This touchpad is meant to be for desktop use "
+"and has left, right click support by default, within gamescope and "
+"outside of it, regardless of the \"Tap to Click\" setting."
+msgstr ""
+
+#. Setting: Short Action
+#. Field: title
+msgid "Short Action"
+msgstr ""
+
+#. Setting: Short Action
+#. Field: hint
+msgid "Maps short touches (less than 0.2s) to a virtual touchpad button."
+msgstr ""
+
+#. Setting: Short Action
+#. Option: left_click
+#. Setting: Hold Action
+msgid "Left Click"
+msgstr ""
+
+#. Setting: Short Action
+#. Option: right_click
+#. Setting: Hold Action
+msgid "Right Click"
+msgstr ""
+
+#. Setting: Hold Action
+#. Field: title
+msgid "Hold Action"
+msgstr ""
+
+#. Setting: Hold Action
+#. Field: hint
+msgid "Maps long touches (more than 2s) to a virtual touchpad button."
+msgstr ""
+
+#. Setting: Controller
+#. Field: hint
+msgid ""
+"Uses the touchpad of the emulated controller (if it exists). Otherwise, "
+"the touchpad remains unmapped (will still show up in the system). Meant "
+"to be used as steam input, so short press is unassigned by default and "
+"long press simulates trackpad click."
+msgstr ""
+
+#. Setting: Correction Type
+#. Field: title
+msgid "Correction Type"
+msgstr ""
+
+#. Setting: Correction Type
+#. Field: hint
+msgid ""
+"The legion touchpad is square, whereas the DS5 one is rectangular. "
+"Therefore, it needs to be corrected. \"Contain\" maintain the whole DS5 "
+"touchpad and part of the Legion one is unused. \"Crop\" uses the full "
+"legion touchpad, and limits the area of the DS5. \"Stretch\" uses both "
+"fully (distorted). \"Crop End\" enables use in steam input as the right "
+"touchpad."
+msgstr ""
+
+#. Setting: Correction Type
+#. Option: stretch
+msgid "Stretch"
+msgstr ""
+
+#. Setting: Correction Type
+#. Option: crop_center
+msgid "Crop Center"
+msgstr ""
+
+#. Setting: Correction Type
+#. Option: crop_start
+msgid "Crop Start"
+msgstr ""
+
+#. Setting: Correction Type
+#. Option: crop_end
+msgid "Crop End"
+msgstr ""
+
+#. Setting: Correction Type
+#. Option: contain_start
+msgid "Contain Start"
+msgstr ""
+
+#. Setting: Correction Type
+#. Option: contain_end
+msgid "Contain End"
+msgstr ""
+
+#. Setting: Correction Type
+#. Option: contain_center
+msgid "Contain Center"
+msgstr ""
+
+#. Setting: Short Action
+#. Field: hint
+msgid ""
+"Maps short touches (less than 0.2s) to a touchpad action. Dualsense uses "
+"a physical press for left and a double tap for right click (support for "
+"double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
+"settings)."
+msgstr ""
+
+#. Setting: Hold Action
+#. Field: hint
+msgid ""
+"Maps long touches (more than 2s) to a touchpad action. Dualsense uses a "
+"physical press for left and a double tap for right click (support for "
+"double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
+"settings)."
+msgstr ""
+
+#. Setting: System
+#. Field: hint
+msgid ""
+"Basic display settings. Brightness (and framerate TBD). This pane is "
+"meant to replace "
+msgstr ""
+
+#. Setting: Brightness
+#. Field: title
+msgid "Brightness"
+msgstr ""
+
+#. Setting: Brightness
+#. Field: hint
+msgid ""
+"Sets the brightness level of a display. Only one display is supported and"
+" it is the one that was read."
+msgstr ""
+
