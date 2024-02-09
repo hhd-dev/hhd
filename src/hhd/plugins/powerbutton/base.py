@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 STEAM_PID = "~/.steam/steam.pid"
 STEAM_EXE = "~/.steam/root/ubuntu12_32/steam"
 STEAM_WAIT_DELAY = 0.5
-LONG_PRESS_DELAY = 2.5
+LONG_PRESS_DELAY = 2.0
 
 
 def B(b: str):
@@ -260,6 +260,7 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
                 # Button was pressed but we hit a timeout, that means
                 # it is a long press
                 press_type = "long_press"
+                pressed_time = None
             else:
                 # Otherwise, no press
                 press_type = "no_press"
