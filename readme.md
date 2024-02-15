@@ -129,39 +129,59 @@ STAMP limit is not used on STT.
 The main TDP function of the GO is `SSFM` and it is called when changing power
 modes in Legion Space, pressing Legion L + Y, or during boot.
 
-| Name                  | SMU  | ALIB |
-| --------------------- | ---- | ---- |
-| STAMP Limit           | 0x14 | 0x05 |
-| Fast Limit            | 0x15 | 0x06 |
-| Slow Limit            | 0x16 | 0x07 |
-| Slow Time             | 0x17 | 0x08 |
-| STAPM Time            | 0x18 | 0x01 |
-| TCTL (Temp Target)    | 0x19 | 0x03 |
-| Skin Temp Power Limit | 0x4a | 0x2e |
-| VRM Current           | 0x1a | 0x0b |
-| ??????                | 0x3d | 0x2c |
-| ??????                | 0x35 | 0x24 |
-| ??????                | 0x33 | 0x22 |
-| ??????                | 0x21 | 0x32 |
+For settings that change when plugged in, the format is the following: (AC/DC)
 
-| ??????                | |  |
+THPY must be STAPM. Depending on it different values are set.
 
-DPC1 = 0x05
-DPC2 = 0x07
-DPC3 = 0x06
-DPC4 = 0x01
-DPC5 = 0x08
-DPC8 = 0x03
-DPC9 = 0x32
-DPCC = 0x2C
-DC11 = 0x2E
-DC10 = 0x22
-DPCE = 0x24
-DPC6 = 0x0B
+### THPY == 1
+| Name                  | SMU  | ALIB | LEN  | Quiet      | Balanced   | Performance | Custom          |
+| --------------------- | ---- | ---- | ---- | ---------- | ---------- | ----------- | --------------- |
+| STAMP Limit           | 0x14 | 0x05 | DPC1 | 0W         | 0W         | 0W          | 0w              |
+| Slow Limit            | 0x16 | 0x07 | DPC2 |            | 25w / 15w  | 32w / 20w   | 32w             |
+| Fast Limit            | 0x15 | 0x06 | DPC3 | 20w        | 30w        | 35w         | 41w             |
+| STAPM Time            | 0x18 | 0x01 | DPC4 | 100s       | 100s       | 200s / 150s | 200s / 100s     |
+| Slow Time             | 0x17 | 0x08 | DPC5 | 5s         | 10s        | 5s          | 5s              |
+| VRM Current           | 0x1a | 0x0b | DPC6 | 0xD2F0     | 0xD2F0     | 0xD2F0      | 0xD2F0          |
+| ??????                | 0x1c | 0x0C | DPC7 | 0x00019A28 | 0x00019A28 | 0x00019A28  | 0x00019A28      |
+| TCTL (Temp Target)    | 0x19 | 0x03 | DPC8 | 15w / 8w   | 90C / 80C  | 95C / 85C   | 100C            |
+| ??????                | 0x21 | 0x32 | DPC9 | *          | *          | *           | *               |
+| ??????                | 0x37 | 0x26 | DPCA | 0x0200     | 0x0250     | 0x0249      | 0x01D1          |
+| ??????                | 0x38 | 0x27 | DPCB | 0x02C8     | 0x51       | 0xFF1B      | 0xFF5F          |
+| ??????                | 0x3d | 0x2c | DPCC | 0xFA1E     | 0x04A2     | 0x0CDF      | 0x13EA          |
+| ??????                | 0x31 | 0x20 | DPCD | 0x3333     | 0x3333     | 0x3333      | 0x3333          |
+| ??????                | 0x35 | 0x24 | DPCE | 0x83       | 0x62       | 0xE5        | 0x62 / 0x4F     |
+| ??????                | 0x36 | 0x25 | DPCF | 0x199A     | 0x199A     | 0x11EC      | 0x199A          |
+| ??????                | 0x33 | 0x22 | DC10 | 0x2700     | 0x2B00     | 0x2F00      | 0x3000 / 0x2E00 |
+| Skin Temp Power Limit | 0x4a | 0x2e | DC11 | 8w         | 15w        | 20w         | 30w / 25w       |
 
-DPC7 = 0x0C
-DPCA = 0x26
-DPCB = 0x27
-DPCD = 0x20
-DPCF = 0x25
-SSZE = 0x57
+### Else
+| Name                  | SMU  | ALIB | LEN  | Quiet      | Balanced   | Performance | Custom      |
+| --------------------- | ---- | ---- | ---- | ---------- | ---------- | ----------- | ----------- |
+| STAMP Limit           | 0x14 | 0x05 | DPC1 | 8w         | 15w        | 20w         | 30w / 25w   |
+| Slow Limit            | 0x16 | 0x07 | DPC2 | 15w / 8w   | 25w / 15w  | 32w / 20w   | 32w         |
+| Fast Limit            | 0x15 | 0x06 | DPC3 | 20w        | 30w        | 35w         | 41w         |
+| STAPM Time            | 0x18 | 0x01 | DPC4 | 100s       | 100s       | 200s / 150s | 200s / 100s |
+| Slow Time             | 0x17 | 0x08 | DPC5 | 5s         | 10s        | 5s          | 5s          |
+| VRM Current           | 0x1a | 0x0b | DPC6 | 0xD2F0     | 0xD2F0     | 0xD2F0      | 0xD2F0      |
+| ??????                | 0x1c | 0x0C | DPC7 | 0x00019A28 | 0x00019A28 | 0x00019A28  | 0x00019A28  |
+| TCTL (Temp Target)    | 0x19 | 0x03 | DPC8 | 75C / 70C  | 90C / 80C  | 95C / 85C   | 100C        |
+| ??????                | 0x21 | 0x32 | DPC9 | *          | *          | *           | *           |
+| ??????                | 0x37 | 0x26 | DPCA |            |            |             |             |
+| ??????                | 0x38 | 0x27 | DPCB |            |            |             |             |
+| ??????                | 0x3d | 0x2c | DPCC |            |            |             |             |
+| ??????                | 0x31 | 0x20 | DPCD |            |            |             |             |
+| ??????                | 0x35 | 0x24 | DPCE |            |            |             |             |
+| ??????                | 0x36 | 0x25 | DPCF |            |            |             |             |
+| ??????                | 0x33 | 0x22 | DC10 |            |            |             |             |
+| Skin Temp Power Limit | 0x4a | 0x2e | DC11 |            |            |             |             |
+
+*DVP9 always is: 
+if cput == 0x80:
+    0x0001D4C0
+elif cput == 0x41:
+    if adpt:
+        0x0001D4C0
+    else:
+        0x00012CC8
+else:
+    it breaks because 0
