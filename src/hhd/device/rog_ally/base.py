@@ -27,9 +27,9 @@ GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
 ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "accel_x": ("accel_z", "accel", 1, 3),
-    "accel_y": ("accel_x", "accel", 1, 3),
-    "accel_z": ("accel_y", "accel", 1, 3),
+    "accel_x": ("gyro_x", "accel", 1, 3),
+    "accel_y": ("gyro_z", "accel", -1, 3),
+    "accel_z": ("gyro_y", "accel", -1, 3),
     "anglvel_x": ("gyro_x", "anglvel", 1, None),
     "anglvel_y": ("gyro_z", "anglvel", -1, None),
     "anglvel_z": ("gyro_y", "anglvel", -1, None),
