@@ -25,6 +25,7 @@ dependencies = [
 
 [project.entry-points."console_scripts"]
 adjustor = "adjustor.__main__:main"
+adj = "adjustor.__main__:main"
 
 [project.entry-points."hhd.plugins"]
 adjustor = "adjustor.hhd:autodetect"
