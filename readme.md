@@ -137,7 +137,7 @@ THPY must be STAPM. Depending on it different values are set.
 | Name                  | SMU  | ALIB | LEN  | Quiet      | Balanced   | Performance | Custom          |
 | --------------------- | ---- | ---- | ---- | ---------- | ---------- | ----------- | --------------- |
 | STAMP Limit           | 0x14 | 0x05 | DPC1 | 0W         | 0W         | 0W          | 0w              |
-| Slow Limit            | 0x16 | 0x07 | DPC2 |            | 25w / 15w  | 32w / 20w   | 32w             |
+| Slow Limit            | 0x16 | 0x07 | DPC2 | 15w / 8w   | 25w / 15w  | 32w / 20w   | 32w             |
 | Fast Limit            | 0x15 | 0x06 | DPC3 | 20w        | 30w        | 35w         | 41w             |
 | STAPM Time            | 0x18 | 0x01 | DPC4 | 100s       | 100s       | 200s / 150s | 200s / 100s     |
 | Slow Time             | 0x17 | 0x08 | DPC5 | 5s         | 10s        | 5s          | 5s              |
