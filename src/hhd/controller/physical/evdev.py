@@ -74,6 +74,30 @@ XBOX_AXIS_MAP: dict[int, AbsAxis] = to_map(
     }
 )
 
+DINPUT_AXIS_MAP: dict[int, Axis] = to_map(
+    {
+        # Sticks
+        # Values should range from -1 to 1
+        "ls_x": [B("ABS_X")],
+        "ls_y": [B("ABS_Y")],
+        "rs_x": [B("ABS_Z")],
+        "rs_y": [B("ABS_RZ")],
+        # Triggers
+        # Values should range from -1 to 1
+        "rt": [B("ABS_BRAKE")],
+        "lt": [B("ABS_GAS")],
+        # Hat, implemented as axis. Either -1, 0, or 1
+        "hat_x": [B("ABS_HAT0X")],
+        "hat_y": [B("ABS_HAT0Y")],
+    }
+)
+DINPUT_AXIS_POSTPROCESS = {
+    "ls_x": {"zero_is_middle": True},
+    "ls_y": {"zero_is_middle": True},
+    "rs_x": {"zero_is_middle": True},
+    "rs_y": {"zero_is_middle": True},
+}
+
 
 def list_joysticks(input_device_dir="/dev/input"):
     return glob.glob(f"{input_device_dir}/js*")
@@ -112,6 +136,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         grab: bool = True,
         msc_map: Mapping[int, Button] = {},
         msc_delay: float = 0.1,
+        postprocess: dict[str, dict] = {},
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -131,6 +156,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.grab = grab
         self.hidden = False
         self.queue = []
+        self.postprocess = postprocess
 
     def open(self) -> Sequence[int]:
         for d in evdev.list_devices():
@@ -277,15 +303,22 @@ class GenericGamepadEvdev(Producer, Consumer):
                             )
                 elif e.type == B("EV_ABS"):
                     if e.code in self.axis_map:
-                        # Normalize
-                        val = e.value / abs(
-                            self.ranges[e.code][1 if e.value >= 0 else 0]
-                        )
+                        ax = self.axis_map[e.code]
+                        if ax in self.postprocess and self.postprocess[ax].get(
+                            "zero_is_middle", False
+                        ):
+                            mmax = self.ranges[e.code][1] + 1
+                            val = (e.value - mmax // 2 + 1) / mmax * 2
+                        else:
+                            # Normalize
+                            val = e.value / abs(
+                                self.ranges[e.code][1 if e.value >= 0 else 0]
+                            )
 
                         out.append(
                             {
                                 "type": "axis",
-                                "code": self.axis_map[e.code],
+                                "code": ax,
                                 "value": val,
                             }
                         )

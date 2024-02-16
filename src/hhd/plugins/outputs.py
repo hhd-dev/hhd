@@ -101,7 +101,10 @@ def get_outputs(
 
 
 def get_outputs_config(
-    can_disable: bool = False, has_leds: bool = True, start_disabled: bool = False
+    can_disable: bool = False,
+    has_leds: bool = True,
+    start_disabled: bool = False,
+    default_device: str | None = None,
 ):
     s = load_relative_yaml("outputs.yml")
     if not can_disable:
@@ -110,6 +113,8 @@ def get_outputs_config(
         del s["modes"]["dualsense"]["children"]["led_support"]
         del s["modes"]["dualsense_edge"]["children"]["led_support"]
 
+    if default_device:
+        s["default"] = default_device
     if start_disabled:
         s["default"] = "disabled"
     return s

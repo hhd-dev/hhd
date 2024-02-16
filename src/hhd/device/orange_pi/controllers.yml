@@ -1,0 +1,56 @@
+type: container
+tags: [lgc]
+title: Handheld Controller
+hint: >-
+  Allows for configuring your handheld's controller to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse your device's features.
+
+  #
+  # Common settings
+  #
+  imu:
+    type: bool
+    title: Motion Support
+    hint: >-
+      Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
+    default: True
+
+  imu_hz:
+    type: discrete
+    title: Motion Hz
+    hint: >-
+      Sets the sampling frequency for the IMU.
+      Check `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`.
+    options: [50, 100, 200, 400, 800, 1600]
+    default: 400
+  
+  imu_axis:
+
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+
+  share_to_qam:
+    type: bool
+    title: Map share buttom to QAM.
+    tags: [advanced]
+    default: True
+
+  debug:
+    type: bool
+    title: Debug
+    tags: [advanced]
+    hint: >-
+      Output controller events to the console (high CPU use) and raises exceptions
+      (HHD will crash on errors).
+    default: False

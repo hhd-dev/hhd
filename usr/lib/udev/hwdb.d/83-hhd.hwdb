@@ -5,3 +5,16 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnAYANEO:*
   KEYBOARD_KEY_67=f16
   KEYBOARD_KEY_68=f17
   KEYBOARD_KEY_69=f18
+
+## OrangePi G1621-02/NEO-01 (OrangePi Neo) (to be placed to /usr/lib/udev/hwdb.d/)
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnG1621-02:*
+  KEYBOARD_KEY_64=f15
+  KEYBOARD_KEY_65=f16
+  KEYBOARD_KEY_66=f15
+  KEYBOARD_KEY_67=f16
+  KEYBOARD_KEY_68=f17
+  KEYBOARD_KEY_69=f18
+
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
+  KEYBOARD_KEY_66=f15
+  KEYBOARD_KEY_67=f16
