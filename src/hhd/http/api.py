@@ -257,7 +257,7 @@ class RestHandler(BaseHTTPRequestHandler):
                         self.cond.wait()
                     self.wfile.write(json.dumps(self.conf.conf).encode())
             case "version":
-                self.send_json({"version": 2})
+                self.send_json({"version": 3})
             case "sections":
                 self.send_json(SECTIONS)
             case other:

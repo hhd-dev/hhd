@@ -72,6 +72,7 @@ class NumericalSetting(TypedDict):
     tags: Sequence[str]
     title: str
     hint: str | None
+    unit: str | None
 
     min: float | None
     max: float | None
@@ -87,6 +88,7 @@ class IntegerSetting(TypedDict):
     tags: Sequence[str]
     title: str
     hint: str | None
+    unit: str | None
 
     min: int | None
     max: int | None
@@ -284,8 +286,8 @@ DEFAULT_TAGS = {
 TYPE_TAGS = {
     "multiple": {"options": {}},
     "discrete": {"options": []},
-    "int": {"min": None, "max": None, "step": None},
-    "float": {"min": None, "max": None, "step": None},
+    "int": {"min": None, "max": None, "step": None, "unit": None},
+    "float": {"min": None, "max": None, "step": None, "unit": None},
     "custom": {"config": None},
 }
 
