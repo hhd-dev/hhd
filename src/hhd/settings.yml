@@ -1,27 +1,13 @@
-version:
+settings:
   type: container
-  tags: [hhd-version]
-  title: Version Information
-  hint: "Handheld Daemon version manager (local install only)."
+  title: About
 
   children:
-    decky_version:
-      type: display
-      tags: [hhd-version-display-decky, text]
-      title: Decky Plugin Version
-      hint: "Displays the Handheld Daemon Decky plugin version."
-
     decky_deprecation:
       type: display
       tags: [hhd-version-display-decky, text]
-      title: "WARNING: This button will be removed soon, update Decky now!"
+      title: "It is no longer possible to update Decky from here. If you see this, update the Decky plugin manually."
       default: " "
-
-    update_decky:
-      type: action
-      tags: [hhd-update-decky, decky]
-      title: "Update Decky"
-      hint: "Updates the Decky plugin to the latest release."
 
     version:
       type: display

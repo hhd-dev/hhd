@@ -308,7 +308,7 @@ def merge_reduce(
                     if k in new_children:
                         new_children[k] = merge_reduce(new_children[k], v)  # type: ignore
                     else:
-                        new_children[k] = v
+                        new_children[k] = merge_reduce(v)  # type: ignore
                 s["children"] = new_children
             case "mode":
                 new_children = dict(a.get("modes", {}))
@@ -316,7 +316,7 @@ def merge_reduce(
                     if k in new_children:
                         new_children[k] = merge_reduce(new_children[k], v)  # type: ignore
                     else:
-                        new_children[k] = v
+                        new_children[k] = merge_reduce(v)  # type: ignore
                 s["modes"] = new_children
     else:
         if a.get("type", None) == "container":

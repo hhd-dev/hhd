@@ -267,8 +267,8 @@ def main():
                 # TODO: Improve check
                 try:
                     if "venv" not in exe_python:
-                        del hhd_settings["hhd"]["version"]["children"]["update_stable"]
-                        del hhd_settings["hhd"]["version"]["children"]["update_beta"]
+                        del hhd_settings["hhd"]["settings"]["children"]["update_stable"]
+                        del hhd_settings["hhd"]["settings"]["children"]["update_beta"]
                 except Exception as e:
                     logger.warning(f"Could not hide update settings. Error:\n{e}")
                 settings = merge_settings(
@@ -290,7 +290,7 @@ def main():
                 try:
                     from importlib.metadata import version
 
-                    conf["hhd.version.version"] = version("hhd")
+                    conf["hhd.settings.version"] = version("hhd")
                 except Exception:
                     pass
 
@@ -497,62 +497,51 @@ def main():
                 # We triggered the interrupt, clear
                 should_initialize.clear()
 
-            upd_stable = conf.get("hhd.version.update_stable", False)
-            upd_beta = conf.get("hhd.version.update_beta", False)
-            upd_decky = conf.get("hhd.version.update_decky", False)
+            upd_stable = conf.get("hhd.settings.update_stable", False)
+            upd_beta = conf.get("hhd.settings.update_beta", False)
 
-            if upd_stable or upd_beta or upd_decky:
+            if upd_stable or upd_beta:
                 set_log_plugin("main")
-                conf["hhd.version.update_stable"] = False
-                conf["hhd.version.update_beta"] = False
-                conf["hhd.version.update_decky"] = False
+                conf["hhd.settings.update_stable"] = False
+                conf["hhd.settings.update_beta"] = False
 
                 switch_priviledge(ctx, False)
-                if upd_decky:
-                    logger.info("Updating Decky Plugin")
-                    try:
-                        home = expanduser("~/", ctx)
+                try:
+                    logger.info(f"Updating Handheld Daemon.")
+                    if "venv" in exe_python:
                         subprocess.check_call(
-                            f'curl -L https://github.com/hhd-dev/hhd-decky/raw/main/update.sh | HOME="{home}" sh',
-                            shell=True,
+                            [
+                                exe_python,
+                                "-m",
+                                "pip",
+                                "uninstall",
+                                "-y",
+                                "hhd",
+                            ]
                         )
-                    except Exception as e:
-                        logger.error(f"Error while updating decky plugin:\n{e}")
-                else:
-                    try:
-                        logger.info(f"Updating Handheld Daemon.")
-                        if "venv" in exe_python:
-                            subprocess.check_call(
-                                [
-                                    exe_python,
-                                    "-m",
-                                    "pip",
-                                    "uninstall",
-                                    "-y",
-                                    "hhd",
-                                ]
-                            )
-                            subprocess.check_call(
-                                [
-                                    exe_python,
-                                    "-m",
-                                    "pip",
-                                    "install",
-                                    "--upgrade",
-                                    "--cache-dir",
-                                    "/tmp/__hhd_update_cache",
+                        subprocess.check_call(
+                            [
+                                exe_python,
+                                "-m",
+                                "pip",
+                                "install",
+                                "--upgrade",
+                                "--cache-dir",
+                                "/tmp/__hhd_update_cache",
+                                (
                                     "git+https://github.com/hhd-dev/hhd"
                                     if upd_beta
-                                    else "hhd",
-                                ]
-                            )
-                            updated = True
-                        else:
-                            logger.error(
-                                f"Could not update, python executable is not within a venv (checked for 'venv' in path name):\n{exe_python}"
-                            )
-                    except Exception as e:
-                        logger.error(f"Error while updating:\n{e}")
+                                    else "hhd"
+                                ),
+                            ]
+                        )
+                        updated = True
+                    else:
+                        logger.error(
+                            f"Could not update, python executable is not within a venv (checked for 'venv' in path name):\n{exe_python}"
+                        )
+                except Exception as e:
+                    logger.error(f"Error while updating:\n{e}")
                 switch_priviledge(ctx, True)
 
                 if updated:
