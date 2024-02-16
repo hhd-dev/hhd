@@ -1,0 +1,9 @@
+settings:
+  type: container
+
+  children:
+    powerbuttond:
+      type: bool
+      title: Steam Powerbutton Handler
+      hint: "Enables the Steam Powerbutton handler (responsible for the wink and powerbutton menu)."
+      default: True

@@ -9,6 +9,7 @@ class PowerButtonConfig(NamedTuple):
     hold_phys: Sequence[str] = ["phys-hhd-powerbutton", "isa0060"]
     hold_grab: bool = False
     hold_code: int = 125  # left meta
+    unsupported: bool = False
 
 
 # POWER_BUTTON_NAMES = ["Power Button"]
@@ -23,15 +24,6 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("GPT Win 4", "G1618-04"),
     PBC("GPD Win Mini", "G1617-01"),
     PBC("GPD Win Max 2 2023", "G1619-05"),
-    # TODO: Remove these when correct behavior is verified
-    # TODO: Fix isa handling to only work when only shift is active
-    # PBC("AYANEO AIR Plus", "AIR Plus", type="hold_emitted"),
-    # PBC("AYANEO 2", "AYANEO 2", type="hold_emitted"),
-    # PBC("AYANEO GEEK", "GEEK", type="hold_emitted"),
-    # PBC("AYANEO 2S", "AYANEO 2S", type="hold_emitted"),
-    # PBC("AYANEO GEEK 1S", "GEEK 1S", type="hold_emitted"),
-    # PBC("AYANEO AIR", "AIR", type="hold_emitted"),
-    # PBC("AYANEO AIR Pro", "AIR Pro", type="hold_emitted"),
     PBC("OrangePi G1621-02/G1621-02", "G1621-02"),
     PBC("OrangePi NEO-01/NEO-01", "NEO-01"),
     PBC(
@@ -67,20 +59,28 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
 ]
 
 
-def get_config() -> PowerButtonConfig | None:
+def get_config() -> PowerButtonConfig:
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         prod = f.read().strip()
+
+    try:
+        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
+            sys = f.read().strip()
+    except Exception:
+        sys = None
 
     for d in SUPPORTED_DEVICES:
         if d.prod_name == prod:
             return d
 
-    return None
+    if "ONEXPLAYER" in prod or "AOKZOE" in prod:
+        return PBC(prod, prod, type="hold_emitted", phys=["LNXPWRBN"], unsupported=True)
 
+    if sys == "AYA" or sys == "AYN":
+        # TODO: Fix isa handling to only work when only shift is active
+        return PBC(prod, prod, type="hold_emitted")
 
-def get_default_config():
-    # Prepare for per-manufacturer customization
-    return PBC("uknown", "NA", "hold_emitted")
+    return PBC("uknown", "NA", "hold_emitted", unsupported=True)
 
 
 # Legion go
