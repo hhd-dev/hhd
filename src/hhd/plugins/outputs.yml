@@ -41,6 +41,16 @@ modes:
           Passes through the LEDs to the controller, which allows games
           to control them.
         default: True
+      
+      paddles_to_clicks:
+        type: bool
+        title: Paddles to Clicks
+        hint: >-
+          Maps the paddles of the device to left and right touchpad clicks
+          making them usable in Steam.
+          If more than 2 paddles (e.g., Legion Go) uses the top ones.
+          If extra buttons (e.g., Ayaneo, GPD), uses them instead.
+        default: True
 
       sync_gyro:
         type: bool

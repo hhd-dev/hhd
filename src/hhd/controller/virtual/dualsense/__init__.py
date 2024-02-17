@@ -60,6 +60,7 @@ class Dualsense(Producer, Consumer):
         enable_touchpad: bool = True,
         enable_rgb: bool = True,
         sync_gyro: bool = False,
+        paddles_to_clicks: bool = False,
     ) -> None:
         self.available = False
         self.report = None
@@ -72,6 +73,7 @@ class Dualsense(Producer, Consumer):
         self.enable_touchpad = enable_touchpad
         self.enable_rgb = enable_rgb
         self.sync_gyro = sync_gyro
+        self.paddles_to_clicks = paddles_to_clicks
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -347,14 +349,14 @@ class Dualsense(Producer, Consumer):
                 case "button":
                     if not self.enable_touchpad and ev["code"].startswith("touchpad"):
                         continue
-                    if not self.edge_mode and (ev["code"] == "extra_l1"):
+                    if self.paddles_to_clicks and (ev["code"] == "extra_l1"):
                         # Place finger on correct place and click
                         new_rep[self.ofs + 33] = 0x80
                         new_rep[self.ofs + 34] = 0x01
                         new_rep[self.ofs + 35] = 0x20
                         # Replace code with click
                         ev = {**ev, "code": "touchpad_left"}
-                    if not self.edge_mode and (ev["code"] == "extra_r1"):
+                    if self.paddles_to_clicks and (ev["code"] == "extra_r1"):
                         # Place finger on correct place and click
                         new_rep[self.ofs + 33] = 0x00
                         new_rep[self.ofs + 34] = 0x06
