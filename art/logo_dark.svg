@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="513.23004"
-   height="275.33823"
-   viewBox="0 0 513.23004 275.33823"
+   width="385.92368"
+   height="148.29019"
+   viewBox="0 0 385.92367 148.29019"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -12,14 +12,16 @@
    xmlns:svg="http://www.w3.org/2000/svg"><defs
      id="defs1" /><g
      id="g11"
-     transform="translate(-1526.5844,-35.903136)"><rect
+     transform="translate(-1591.0884,-96.247386)"
+     style="display:inline"><rect
        style="display:none;fill:#333333;stroke-width:0.778231"
        id="rect12"
        width="515.67297"
        height="279.05045"
        x="1525.9523"
        y="33.480999" /><g
-       id="g39"><path
+       id="g39"
+       style="display:inline"><path
          style="fill:#ac8a00;fill-opacity:1"
          d="m 1839.7378,229.68123 86.4072,-1.12175 47.2398,-90.24136 -19.5694,-39.38968 -50.999,0.935672 -5.9441,13.351408 z"
          id="path12" /><path
