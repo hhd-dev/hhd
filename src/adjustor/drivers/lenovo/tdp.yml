@@ -1,36 +1,38 @@
-type: container
-title: Lenovo
-hint: Uses the methods provided by Legion Space.
-children:
-  mode:
-    type: mode
-    title: Mode
-    modes:
-      quiet:
-        type: container
-        title: Quiet (8W)
-      balanced:
-        type: container
-        title: Balanced (15W)
-      performance:
-        type: container
-        title: Performance (20W)
-      custom:
-        type: container
-        title: Custom (15W-30W)
-        children:
-          tdp:
-            type: int
-            title: TDP (W)
-            hint: >-
-              Maximum TDP in steady state. Sets both cTDP and sTDP values in WMI.
-              cTDP is set to STAMP Limit in BIOS and sTDP is set to sPPT
+type: mode
+title: Lenovo TDP
+modes:
+  quiet:
+    type: container
+    title: Quiet (8W)
+  balanced:
+    type: container
+    title: Balanced (15W)
+  performance:
+    type: container
+    title: Performance (20W)
+  custom:
+    type: container
+    title: Custom (< 25-30W)
+    children:
+      tdp:
+        type: int
+        title: TDP
+        hint: >-
+          Maximum TDP in steady state. 
+          Sets STAMP, Skin Power Limit to it (steady state).
+          If boost is enabled, interpolates slow and fast TDPs based
+          on those provided by Lenovo.
+          If disabled, it sets the Slow limit equal to TDP and the Fast
+          limit to +2W.
+          Boost is recommended for desktop use.
 
-            tags: [advanced]
-            min: 0
-            max: 32
-          boost:
-            type: bool
-            title: Boost (Recommended)
-            default: True
-            hint: >-
+        tags: [advanced]
+        min: 0
+        max: 30
+        step: 1
+        unit: W
+      boost:
+        type: bool
+        title: Boost
+        default: True
+        hint: >-

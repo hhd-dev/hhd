@@ -1,15 +1,3 @@
 type: container
 title: Adjustor (TDP)
 hint: Various TDP settings for handheld devices.
-children:
-  tdp_mode:
-    type: mode
-    title: TDP Driver
-    hint: Select the driver to use for setting the TDP.
-    modes:
-      disabled:
-        type: container
-        title: Disabled
-        hint: >-
-          Adjustor is inactive and will make no changes to the system.
-          For safety reasons, the TDP driver reverts to disabled on reboot.

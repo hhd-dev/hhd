@@ -41,23 +41,14 @@ class LenovoDriverPlugin(HHDPlugin):
         self.priority = 6
         self.log = "adjl"
 
-    def settings(self) -> HHDSettings:
+    def settings(self):
         return {
             "tdp": {
                 "adjustor": {
                     "type": "container",
                     "children": {
-                        "tdp_mode": {
-                            "type": "mode",
-                            "modes": {"lenovo": load_relative_yaml("tdp.yml")},
-                        },  # type: ignore
+                        "lenovo": load_relative_yaml("tdp.yml"),
                         "fan": load_relative_yaml("fans.yml"),
-                        "brick_lenovo": {
-                            "type": "bool",
-                            "title": "For other drivers, disable Lenovo TDP (hack).",
-                            "hint": BRICK_HINT,
-                            "default": False,
-                        },
                     },
                 }
             }
