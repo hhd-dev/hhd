@@ -6,3 +6,8 @@ children:
     title: Enable TDP Controls
     type: bool
     default: False
+
+  set_limits:
+    title: Enforce Device Limits
+    type: bool
+    default: True

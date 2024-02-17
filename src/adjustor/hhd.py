@@ -38,10 +38,13 @@ class AdjustorPlugin(HHDPlugin):
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
-    
+
     from .drivers.lenovo import LenovoDriverPlugin
+    from .drivers.smu import SmuDriverPlugin
+
     drivers = [
-        LenovoDriverPlugin()
+        LenovoDriverPlugin(),
+        SmuDriverPlugin(),
     ]
 
     if not drivers:
