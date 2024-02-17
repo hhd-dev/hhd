@@ -1,4 +1,17 @@
-# Handheld Daemon (HHD)
+<h1 align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/hhd-dev/hhd/master/art/logo_dark.svg" width="70%">
+        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/hhd-dev/hhd/master/art/logo_light.svg" width="70%">
+        <img alt="Handheld Daemon Logo." src="https://raw.githubusercontent.com/hhd-dev/hhd/master/res/art/logo_light.svg" width="90%">
+    </picture>
+</h1>
+
+[![PyPI package version](https://badge.fury.io/py/hhd.svg)](https://pypi.org/project/hhd/)
+[![Python version 3.10+](https://img.shields.io/badge/python-3.10%2B-informational.svg)](https://pypi.org/project/pasteur/)
+[![Code style is Black](https://img.shields.io/badge/code%20style-black-black.svg)](https://github.com/psf/black)
+<!-- [![]()]() -->
+
+# Handheld Daemon
 Handheld Daemon is a project that aims to provide utilities for managing handheld
 devices.
 Right now, it features a fully functional controller emulator that exposes gyro,
