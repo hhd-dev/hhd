@@ -1,3 +1,8 @@
 type: container
 title: Adjustor (TDP)
 hint: Various TDP settings for handheld devices.
+children:
+  enable:
+    title: Enable TDP Controls
+    type: bool
+    default: False

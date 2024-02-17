@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class AdjustorPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"adjustor_main"
-        self.priority = 5
+        self.priority = 10
         self.log = "adjs"
 
     def settings(self) -> HHDSettings:
