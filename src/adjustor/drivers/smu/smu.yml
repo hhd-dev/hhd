@@ -7,9 +7,30 @@ children:
     type: action
     title: Apply SMU Settings
 
-  boost:
+  std:
     type: container
-    title: Boost Parameters
+    title: Standard Parameters
+    hint: >-
+      Standard TDP parameters for Ryzen processors. All need to be set to
+      properly control the TDP of the device.
+
+      Ryzen processors have 2 modes: STTv2 and STAPM (legacy). AMD suggests to 
+      manufacturers to use STTv2, which makes the Legion Go the only device to 
+      offer the STAPM alternative through a BIOS setting.
+
+      In STTv2, the device will keep boosting until the "skin" of the device
+      (hottest user accessible spot) reaches a manufacturer set temperature.
+      Then, the device will use the Skin Temp TDP limit.
+      In STAPM, the device averages the TDP values from the 1-3 previous minutes
+      and keeps that value under the STAPM TDP limit.
+      Either mode ignores the other mode's limit (STAPM limit does nothing on
+      STT and Skin Temp Limit does nothing on STAPM), so both should be set.
+
+      The Fast and Slow limits control boosting behavior.
+      The Fast TDP limit is the actual max TDP value of the device.
+      Then,the Slow TDP limit averages the last 10-20s of TDP values and keeps
+      the value below it.
+
     children:
       fast_limit:
         type: int
@@ -29,27 +50,6 @@ children:
         unit: W
         default: 25
 
-      slow_time:
-        type: int
-        title: Slow Limit Integration Time
-        min: 0
-        max: 20
-        step: 5
-        unit: s
-        default: 10
-
-  steady:
-    type: container
-    title: Steady Parameters
-    children:
-      temp_target:
-        type: int
-        title: Temp Target (TCTL)
-        min: 0
-        max: 105
-        default: 95
-        unit: C
-
       stt_limit:
         type: int
         title: Skin Temp TDP Limit
@@ -68,6 +68,41 @@ children:
         unit: W
         default: 15
 
+  adv:
+    type: container
+    title: Advanced Parameters
+    hint: >-
+      The Advanced Parameters below control boosting behavior and need to be
+      adjusted per device depending on its cooling system.
+      They mostly affect boosting behavior, which is important for desktop use.
+
+      The exception is the Temp Target (TCTL), which controls the max temperature
+      of the CPU die. On most devices, it can safely be raised up to 100C. 
+      However, if a temperature spike makes the chip reach 105C, it will enter
+      a thermal protection mode, which is 5W, for a couple of minutes.
+
+      The integration times for Slow TDP and STAPM influence how many previous
+      TDP values the CPU will average to calculate its current Slow and STAPM 
+      TDP values.
+
+    children:
+      temp_target:
+        type: int
+        title: Temp Target (TCTL)
+        min: 0
+        max: 105
+        default: 95
+        unit: C
+
+      slow_time:
+        type: int
+        title: Slow Limit Integration Time
+        min: 0
+        max: 20
+        step: 5
+        unit: s
+        default: 10
+
       stapm_time:
         type: int
         title: STAPM Limit Integration Time
@@ -76,3 +111,8 @@ children:
         step: 5
         unit: s
         default: 200
+      
+      enable:
+        type: bool
+        title: Set Advanced Parameters on Apply
+        default: False
