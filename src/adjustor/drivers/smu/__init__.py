@@ -19,12 +19,11 @@ class SmuQamPlugin(HHDPlugin):
         self.log = "smuq"
 
     def settings(self):
-        q = load_relative_yaml("qam.yml")
         return {
             "tdp": {
                 "adjustor": {
                     "type": "container",
-                    "children": {"tdp": q["tdp"], "boost": q["boost"]},
+                    "children": load_relative_yaml("qam.yml"),
                 }
             }
         }

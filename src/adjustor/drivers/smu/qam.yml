@@ -13,3 +13,7 @@ boost:
   title: Allow Boost
   type: bool
   default: True
+
+apply:
+  title: Apply TDP
+  type: action
