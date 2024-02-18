@@ -76,6 +76,8 @@ class NumericalSetting(TypedDict):
 
     min: float | None
     max: float | None
+    smin: int | None
+    smax: int | None
     step: int | None
 
     default: float | None
@@ -92,6 +94,8 @@ class IntegerSetting(TypedDict):
 
     min: int | None
     max: int | None
+    smin: int | None
+    smax: int | None
     step: int | None
 
     default: int | None
@@ -286,8 +290,8 @@ DEFAULT_TAGS = {
 TYPE_TAGS = {
     "multiple": {"options": {}},
     "discrete": {"options": []},
-    "int": {"min": None, "max": None, "step": None, "unit": None},
-    "float": {"min": None, "max": None, "step": None, "unit": None},
+    "int": {"min": None, "max": None, "step": None, "unit": None, "smin": None, "smax": None},
+    "float": {"min": None, "max": None, "step": None, "unit": None, "smin": None, "smax": None},
     "custom": {"config": None},
 }
 
