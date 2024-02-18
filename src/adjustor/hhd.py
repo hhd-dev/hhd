@@ -40,11 +40,14 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         return existing
 
     from .drivers.lenovo import LenovoDriverPlugin
-    from .drivers.smu import SmuDriverPlugin
+    from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
+    from .drivers.platform import PlatformProfilePlugin
 
     drivers = [
         LenovoDriverPlugin(),
         SmuDriverPlugin(),
+        SmuQamPlugin(),
+        PlatformProfilePlugin(),
     ]
 
     if not drivers:

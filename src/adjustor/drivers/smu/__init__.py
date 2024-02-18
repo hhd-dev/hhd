@@ -12,6 +12,37 @@ from hhd.plugins.conf import Config
 logger = logging.getLogger(__name__)
 
 
+class SmuQamPlugin(HHDPlugin):
+    def __init__(self) -> None:
+        self.name = f"adjustor_smu_qam"
+        self.priority = 6
+        self.log = "smuq"
+
+    def settings(self):
+        q = load_relative_yaml("qam.yml")
+        return {
+            "tdp": {
+                "adjustor": {
+                    "type": "container",
+                    "children": {"tdp": q["tdp"], "boost": q["boost"]},
+                }
+            }
+        }
+
+    def open(
+        self,
+        emit,
+        context: Context,
+    ):
+        pass
+
+    def update(self, conf: Config):
+        pass
+
+    def close(self):
+        pass
+
+
 class SmuDriverPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"adjustor_smu"

@@ -1,0 +1,9 @@
+type: multiple
+title: Platform Profile
+options:
+  low-power: Low Power
+  cool: Cool
+  quiet: Quiet
+  balanced: Balanced
+  balanced-performance: Balanced Performance
+  performance: Performance
