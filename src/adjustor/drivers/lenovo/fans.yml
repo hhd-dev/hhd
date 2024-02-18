@@ -85,7 +85,7 @@ modes:
         smin: 100
 
       enforce_limits:
-        title: Use Windows Minimums
+        title: Enforce Windows Minimums
         type: bool
         default: True
         hint: >-

@@ -1,24 +1,8 @@
 type: container
-title: Ryzen SMU
+title: Ryzen SMU Configurator
 tags: [advanced]
 hint: >-
 children:
-  tdp:
-    title: Easy TDP
-    hint: >-
-      Controls all Ryzen SMU settings through preset curves.
-    type: int
-    min: 0
-    max: 25
-    step: 1
-    unit: W
-    default: 15
-  
-  boost:
-    title: Allow Boost
-    type: bool
-    default: True
-
   apply:
     type: action
     title: Apply SMU Settings
@@ -48,21 +32,27 @@ children:
       Then,the Slow TDP limit averages the last 10-20s of TDP values and keeps
       the value below it.
 
+      The Energy Policy is set automatically by the processor when connecting
+      to a charger.
+      It affects power consumption by around 2W, and its effect is mostly to
+      allow or block the processor from downclocking below 1.6GHz.
+      The battery profile was found to have an effect on VRR for the Ally.
+
     children:
       fast_limit:
         type: int
         title: Fast TDP Limit
         min: 0
-        max: 41
+        max: 55
         step: 1
         unit: W
-        default: 15
+        default: 32
 
       slow_limit:
         type: int
         title: Slow TDP Limit
         min: 0
-        max: 32
+        max: 55
         step: 1
         unit: W
         default: 25
@@ -71,7 +61,7 @@ children:
         type: int
         title: Skin Temp TDP Limit
         min: 0
-        max: 25
+        max: 55
         step: 1
         unit: W
         default: 15
@@ -80,10 +70,18 @@ children:
         type: int
         title: STAPM TDP Limit
         min: 0
-        max: 25
+        max: 55
         step: 1
         unit: W
         default: 15
+
+      acdc:
+        type: multiple
+        title: Energy Policy Override
+        options:
+          disabled: Disabled
+          power_saving: Battery
+          max_performance: Plugged In
 
   adv:
     tags: [advanced]
@@ -102,12 +100,6 @@ children:
       The integration times for Slow TDP and STAPM influence how many previous
       TDP values the CPU will average to calculate its current Slow and STAPM 
       TDP values.
-
-      The Energy Policy is set automatically by the processor when connecting
-      to a charger.
-      It affects power consumption by around 2W, and its effect is mostly to
-      allow or block the processor from downclocking below 1.6GHz.
-      The battery profile was found to have an effect on VRR for the Ally.
 
     children:
       temp_target:
@@ -135,16 +127,8 @@ children:
         step: 5
         unit: s
         default: 200
-
-      acdc:
-        type: multiple
-        title: Energy Policy Override
-        options:
-          disabled: Disabled
-          power_saving: Battery
-          max_performance: Plugged In
       
       enable:
         type: bool
-        title: Set Advanced Parameters on Apply
+        title: Enable Advanced Parameters
         default: False
