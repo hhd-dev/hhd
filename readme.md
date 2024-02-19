@@ -68,6 +68,7 @@ is added to your device.
   - 1S/1S Limited
   - 2/2S 
   - GEEK, GEEK 1S 
+  - NEXT Lite/Pro/Advance
 - AOKZOE
   - A1
   - A1 Pro 
