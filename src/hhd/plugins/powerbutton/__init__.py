@@ -20,7 +20,7 @@ def run(**config: Any):
 class PowerbuttondPlugin(HHDPlugin):
     def __init__(self, cfg: "PowerButtonConfig") -> None:
         self.name = f"powerbuttond@'{cfg.device}'"
-        self.priority = 20
+        self.priority = 90
         self.log = "pbtn"
         self.cfg = cfg
         self.t = None
