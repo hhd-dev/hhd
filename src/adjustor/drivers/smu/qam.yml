@@ -31,3 +31,10 @@ children:
   apply:
     title: Apply TDP
     type: action
+
+  status:
+    title: TDP Status
+    type: display
+    # For translation
+    choices:
+      uninit: Not Set

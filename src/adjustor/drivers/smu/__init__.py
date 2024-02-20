@@ -54,6 +54,9 @@ class SmuQamPlugin(HHDPlugin):
         self.old_pp = None
         self.has_pp = False
 
+        self.old_tdp = None
+        self.old_boost = None
+
     def settings(self):
         if not self.enabled:
             self.initialized = False
@@ -73,7 +76,6 @@ class SmuQamPlugin(HHDPlugin):
         else:
             del out["tdp"]["qam"]["children"]["platform_profile"]
             self.has_pp = False
-
         return out
 
     def open(
@@ -98,6 +100,17 @@ class SmuQamPlugin(HHDPlugin):
             pp = get_platform_profile()
             conf["tdp.qam.platform_profile"] = pp
             self.old_pp = pp
+
+        new_tdp = conf["tdp.qam.tdp"].to(int)
+        new_boost = conf["tdp.qam.boost"].to(bool)
+        if new_tdp != self.old_tdp or new_boost != self.old_boost:
+            conf["tdp.qam.status"] = "Not Set"
+            self.old_tdp = new_tdp
+            self.old_boost = new_boost
+
+        if conf["tdp.qam.apply"].to(bool):
+            conf["tdp.qam.apply"] = False
+            conf["tdp.qam.status"] = "Applied"
 
     def close(self):
         pass
