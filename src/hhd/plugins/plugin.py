@@ -52,7 +52,7 @@ class InputEvent(TypedDict):
     conf_state: Mapping[Configuration, Any]
 
 
-Event = ConfigEvent | InputEvent | ProfileEvent | ApplyEvent
+Event = ConfigEvent | InputEvent | ProfileEvent | ApplyEvent | SettingsEvent
 
 
 class Emitter(Protocol):
