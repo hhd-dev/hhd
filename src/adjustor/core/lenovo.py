@@ -27,6 +27,9 @@ def set_fan_curve(arr: Sequence[int], lim: Sequence[int] | None = None):
     if len(arr) != 10:
         logger.error(f"Invalid fan curve length: {len(arr)}. Should be 10.")
         return False
+    if any(not isinstance(d, int) for d in arr):
+        logger.error(f"Curve has null value, not setting.")
+        return False
 
     if lim:
         for a, b in zip(arr, lim):

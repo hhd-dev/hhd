@@ -53,12 +53,10 @@ class AdjustorPlugin(HHDPlugin):
         self.priority = 10
         self.log = "adjs"
         self.enabled = False
+        self.enfoce_limits = True
 
     def settings(self) -> HHDSettings:
-        out = {"tdp": {"general": load_relative_yaml("settings.yml")}}
-        if not self.enabled:
-            del out["tdp"]["general"]["children"]["set_limits"]
-        return out
+        return {"tdp": {"general": load_relative_yaml("settings.yml")}}
 
     def open(
         self,
@@ -69,9 +67,11 @@ class AdjustorPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         new_enabled = conf["tdp.general.enable"].to(bool)
-        if new_enabled != self.enabled:
+        new_enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
+        if new_enabled != self.enabled or new_enforce_limits != self.enfoce_limits:
             self.emit({"type": "settings"})
         self.enabled = new_enabled
+        self.enfoce_limits = new_enforce_limits
 
     def close(self):
         pass

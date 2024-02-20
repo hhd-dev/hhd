@@ -1,5 +1,5 @@
 import logging
-
+from adjustor.core.lenovo import MIN_CURVE
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
 from typing import cast
@@ -113,58 +113,35 @@ class LenovoDriverPlugin(HHDPlugin):
             # Fan curve stuff, implies initialization
             if conf["tdp.lenovo.fan.manual.reset"].to(bool):
                 conf["tdp.lenovo.fan.manual.reset"] = False
-                conf["tdp.lenovo.fan.manual.st10"] = 44
-                conf["tdp.lenovo.fan.manual.st20"] = 48
-                conf["tdp.lenovo.fan.manual.st30"] = 55
-                conf["tdp.lenovo.fan.manual.st40"] = 60
-                conf["tdp.lenovo.fan.manual.st50"] = 71
-                conf["tdp.lenovo.fan.manual.st60"] = 79
-                conf["tdp.lenovo.fan.manual.st70"] = 87
-                conf["tdp.lenovo.fan.manual.st80"] = 87
-                conf["tdp.lenovo.fan.manual.st90"] = 100
-                conf["tdp.lenovo.fan.manual.st100"] = 100
+                for i, v in enumerate(MIN_CURVE):
+                    conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = v
 
-            if conf["tdp.lenovo.fan.manual.enforce_limits"].to(bool):
-                if conf["tdp.lenovo.fan.manual.st10"].to(int) < 44:
-                    conf["tdp.lenovo.fan.manual.st10"] = 44
-                if conf["tdp.lenovo.fan.manual.st20"].to(int) < 48:
-                    conf["tdp.lenovo.fan.manual.st20"] = 48
-                if conf["tdp.lenovo.fan.manual.st30"].to(int) < 55:
-                    conf["tdp.lenovo.fan.manual.st30"] = 55
-                if conf["tdp.lenovo.fan.manual.st40"].to(int) < 60:
-                    conf["tdp.lenovo.fan.manual.st40"] = 60
-                if conf["tdp.lenovo.fan.manual.st50"].to(int) < 71:
-                    conf["tdp.lenovo.fan.manual.st50"] = 71
-                if conf["tdp.lenovo.fan.manual.st60"].to(int) < 79:
-                    conf["tdp.lenovo.fan.manual.st60"] = 79
-                if conf["tdp.lenovo.fan.manual.st70"].to(int) < 87:
-                    conf["tdp.lenovo.fan.manual.st70"] = 87
-                if conf["tdp.lenovo.fan.manual.st80"].to(int) < 87:
-                    conf["tdp.lenovo.fan.manual.st80"] = 87
-                if conf["tdp.lenovo.fan.manual.st90"].to(int) < 100:
-                    conf["tdp.lenovo.fan.manual.st90"] = 100
-                if conf["tdp.lenovo.fan.manual.st100"].to(int) < 100:
-                    conf["tdp.lenovo.fan.manual.st100"] = 100
+            try:
+                if conf["tdp.lenovo.fan.manual.enforce_limits"].to(bool):
+                    for i, v in enumerate(MIN_CURVE):
+                        if conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"].to(int) < v:
+                            conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = v
+            except Exception as e:
+                # Missing fan curve value, reinit
+                self.startup = True
 
             if conf["tdp.lenovo.fan.mode"].to(str) == "manual" and conf[
                 "tdp.lenovo.fan.manual.apply"
             ].to(bool):
                 conf["tdp.lenovo.fan.manual.apply"] = False
-                self.fan_curve_set = True
-                set_fan_curve(
+                self.fan_curve_set = set_fan_curve(
                     [
-                        conf["tdp.lenovo.fan.manual.st10"].to(int),
-                        conf["tdp.lenovo.fan.manual.st20"].to(int),
-                        conf["tdp.lenovo.fan.manual.st30"].to(int),
-                        conf["tdp.lenovo.fan.manual.st40"].to(int),
-                        conf["tdp.lenovo.fan.manual.st50"].to(int),
-                        conf["tdp.lenovo.fan.manual.st60"].to(int),
-                        conf["tdp.lenovo.fan.manual.st70"].to(int),
-                        conf["tdp.lenovo.fan.manual.st80"].to(int),
-                        conf["tdp.lenovo.fan.manual.st90"].to(int),
-                        conf["tdp.lenovo.fan.manual.st100"].to(int),
+                        conf[f"tdp.lenovo.fan.manual.st{i}"].to(int)
+                        for i in (10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
                     ]
                 )
+            else:
+                # Check fan curve has not changed
+                for i in (10, 20, 30, 40, 50, 60, 70, 80, 90, 100):
+                    if conf[f"tdp.lenovo.fan.manual.st{i}"].to(int) != self.old_conf[
+                        f"fan.manual.st{i}"
+                    ].to(int):
+                        self.fan_curve_set = False
 
         # Initialize values so we do not query them all the time
         if self.startup:
@@ -173,16 +150,8 @@ class LenovoDriverPlugin(HHDPlugin):
 
             arr = get_fan_curve()
             if arr:
-                conf["tdp.lenovo.fan.manual.st10"] = arr[0]
-                conf["tdp.lenovo.fan.manual.st20"] = arr[1]
-                conf["tdp.lenovo.fan.manual.st30"] = arr[2]
-                conf["tdp.lenovo.fan.manual.st40"] = arr[3]
-                conf["tdp.lenovo.fan.manual.st50"] = arr[4]
-                conf["tdp.lenovo.fan.manual.st60"] = arr[5]
-                conf["tdp.lenovo.fan.manual.st70"] = arr[6]
-                conf["tdp.lenovo.fan.manual.st80"] = arr[7]
-                conf["tdp.lenovo.fan.manual.st90"] = arr[8]
-                conf["tdp.lenovo.fan.manual.st100"] = arr[9]
+                for i, v in enumerate(arr):
+                    conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = v
             self.startup = False
 
         # Update TDP values
