@@ -26,7 +26,7 @@ def call(method: str, args: Sequence[bytes | int]):
             cmd += f" 0x{arg:02x}"
         else:
             cmd += f" b{arg.hex()}"
-    logger.info(f"Executing '{cmd}'")
+    logger.info(f"Executing ACPI call:\n'{cmd}'")
 
     try:
         with open("/proc/acpi/call", "wb") as f:
