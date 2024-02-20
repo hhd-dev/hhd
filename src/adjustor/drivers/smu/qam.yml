@@ -17,11 +17,8 @@ children:
     hint: >-
       Controls all Ryzen SMU settings through preset curves.
     type: int
-    min: 0
-    max: 30
     step: 1
     unit: W
-    default: 15
 
   boost:
     title: Allow Boost

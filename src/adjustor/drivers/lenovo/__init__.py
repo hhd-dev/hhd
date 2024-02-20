@@ -18,10 +18,13 @@ class LenovoDriverPlugin(HHDPlugin):
         self.priority = 6
         self.log = "adjl"
         self.enabled = False
+        self.initialized = False
 
     def settings(self):
         if not self.enabled:
+            self.initialized = False
             return {}
+        self.initialized = True
         return {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
 
     def open(
@@ -33,6 +36,14 @@ class LenovoDriverPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         self.enabled = conf['tdp.general.enable'].to(bool)
+        if not self.enabled or not self.initialized:
+            return
+        
+        
+
+        self.old_conf = conf['tdp.lenovo']
+
+        
 
     def close(self):
         pass

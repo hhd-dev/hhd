@@ -1,13 +1,9 @@
-from typing import Any, Sequence, TYPE_CHECKING
-import os
-from hhd.plugins import (
-    HHDPlugin,
-    Context,
-)
-from hhd.plugins import load_relative_yaml
 import logging
 
+from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
+
+from adjustor.core.alib import AlibParams, DeviceParams
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +39,16 @@ def get_platform_profile():
 
 
 class SmuQamPlugin(HHDPlugin):
-    def __init__(self, platform_profile: bool = True) -> None:
+
+    def __init__(
+        self, dev: dict[str, DeviceParams], platform_profile: bool = True
+    ) -> None:
         self.name = f"adjustor_smu_qam"
         self.priority = 6
         self.log = "smuq"
         self.enabled = False
         self.initialized = False
+        self.dev = dev
 
         self.check_pp = platform_profile
         self.old_pp = None
@@ -117,11 +117,19 @@ class SmuQamPlugin(HHDPlugin):
 
 
 class SmuDriverPlugin(HHDPlugin):
-    def __init__(self) -> None:
+
+    def __init__(
+        self,
+        dev: dict[str, DeviceParams],
+        cpu: dict[str, AlibParams],
+    ) -> None:
         self.name = f"adjustor_smu"
         self.priority = 9
         self.log = "asmu"
         self.enabled = False
+
+        self.dev = dev
+        self.cpu = cpu
 
     def settings(self):
         if not self.enabled:

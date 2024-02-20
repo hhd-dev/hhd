@@ -13,6 +13,7 @@ class AlibParams(NamedTuple):
 class DeviceParams(NamedTuple):
     min: int | None
     smin: int | None
+    default: int | None
     smax: int | None
     max: int | None
 
@@ -33,9 +34,8 @@ ALIB_PARAMS = {
     "slow_time": A(0x08, 0, 30),
     "stapm_time": A(0x01, 0, 300),
     # Temp
-    "tctl": A(0x03, 0, 105),
+    "temp_target": A(0x03, 0, 105),
 }
-ALIB_PARAMS_REMBRANDT = ALIB_PARAMS
 
 
 def alib(
@@ -61,7 +61,7 @@ def alib(
             return False
 
         if dev and name in dev:
-            dmin, smin, smax, dmax = dev[name]
+            dmin, smin, _, smax, dmax = dev[name]
             if limit == "device" and (
                 (dmin is not None and val < dmin) or (dmax is not None and val > dmax)
             ):

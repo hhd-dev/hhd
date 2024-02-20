@@ -224,3 +224,13 @@ def set_fast_tdp(val: int):
 def set_slow_tdp(val: int):
     logger.info(f"Setting slow TDP to {val}.")
     return set_feature(0x0101FF00, val)
+
+
+def get_full_fan_speed():
+    logger.info(f"Getting full fan speed.")
+    return get_feature(0x04020000)
+
+
+def set_full_fan_speed(enable: bool):
+    logger.info(f"Setting full fan mode to {enable}.")
+    return set_feature(0x04020000, int(enable))

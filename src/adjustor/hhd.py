@@ -48,11 +48,12 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
+    from .core.const import DEV_PARAMS_LEGO, ALIB_PARAMS_REMBRANDT
 
     drivers = [
         LenovoDriverPlugin(),
-        SmuDriverPlugin(),
-        SmuQamPlugin(),
+        SmuDriverPlugin(DEV_PARAMS_LEGO, ALIB_PARAMS_REMBRANDT),
+        SmuQamPlugin(DEV_PARAMS_LEGO),
     ]
 
     if not drivers:

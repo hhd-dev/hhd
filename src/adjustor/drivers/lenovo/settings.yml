@@ -43,6 +43,11 @@ children:
             default: True
             hint: >-
               Allows the device to boost by setting appropriate slow and fast TDPs.
+  
+  ffss:
+    type: bool
+    title: Set Fan to Full Speed
+
   fan:
     type: mode
     title: Custom Fan Curve
@@ -72,6 +77,15 @@ children:
             hint: >-
               Reapplies the fan curve below if it got reset.
           
+          status:
+            title: Fan Curve Status
+            type: display
+            # For translation
+            choices:
+              uninit: Not Set
+              init: Set
+
+
           st10: &speed_template
             title: 10C
             hint: Sets the speed at the named temperature.
@@ -142,3 +156,8 @@ children:
             type: action
             hint: >-
               Resets to the original fan curve provided by Lenovo in BIOS V28.
+
+  power_light:
+    tags: [advanced]
+    type: bool
+    title: Enable Power Light
