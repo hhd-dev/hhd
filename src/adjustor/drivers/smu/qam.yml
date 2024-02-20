@@ -1,17 +1,6 @@
 title: Quick Settings
 type: container
 children:
-  platform_profile:
-    type: multiple
-    title: Platform Profile
-    options:
-      low-power: Low Power
-      cool: Cool
-      quiet: Quiet
-      balanced: Balanced
-      balanced-performance: Balanced Performance
-      performance: Performance
-
   tdp:
     title: TDP
     hint: >-

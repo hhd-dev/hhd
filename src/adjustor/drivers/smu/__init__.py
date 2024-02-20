@@ -1,4 +1,5 @@
 import logging
+import time
 
 from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
@@ -38,10 +39,15 @@ def get_platform_profile():
         return None
 
 
+PP_DELAY = 0.2
+
+
 class SmuQamPlugin(HHDPlugin):
 
     def __init__(
-        self, dev: dict[str, DeviceParams], platform_profile: bool = True
+        self,
+        dev: dict[str, DeviceParams],
+        pp_map: list[tuple[str, int]] | None,
     ) -> None:
         self.name = f"adjustor_smu_qam"
         self.priority = 7
@@ -53,13 +59,15 @@ class SmuQamPlugin(HHDPlugin):
         self.emit = None
         self.old_conf = None
 
-        self.check_pp = platform_profile
-        self.old_pp = None
-        self.has_pp = False
-
         self.old_tdp = None
         self.old_boost = None
         self.is_set = False
+
+        self.pp_map = pp_map
+        if pp_map:
+            self.pps = get_platform_choices() or []
+        else:
+            self.pps = []
 
     def settings(self):
         if not self.enabled:
@@ -68,18 +76,6 @@ class SmuQamPlugin(HHDPlugin):
 
         self.initialized = True
         out = {"tdp": {"qam": load_relative_yaml("qam.yml")}}
-
-        # Limit platform profile choices or remove
-        choices = get_platform_choices()
-        if choices and self.check_pp:
-            options = out["tdp"]["qam"]["children"]["platform_profile"]["options"]
-            for c in list(options):
-                if c not in choices:
-                    del options[c]
-            self.has_pp = True
-        else:
-            del out["tdp"]["qam"]["children"]["platform_profile"]
-            self.has_pp = False
 
         # Set device limits based on stapm
         lims = self.dev.get("skin_limit", self.dev.get("stapm_limit", None))
@@ -112,17 +108,6 @@ class SmuQamPlugin(HHDPlugin):
         if not self.enabled or not self.initialized:
             return
 
-        if self.has_pp:
-            cpp = conf["tdp.qam.platform_profile"].to(str)
-
-            if cpp and cpp != self.old_pp:
-                logger.info(f"Setting platform profile to '{cpp}'")
-                set_platform_profile(cpp)
-
-            pp = get_platform_profile()
-            conf["tdp.qam.platform_profile"] = pp
-            self.old_pp = pp
-
         new_tdp = conf["tdp.qam.tdp"].to(int)
         new_boost = conf["tdp.qam.boost"].to(bool)
         changed = (
@@ -135,6 +120,14 @@ class SmuQamPlugin(HHDPlugin):
 
             conf["tdp.smu.std.skin_limit"] = new_tdp
             conf["tdp.smu.std.stapm_limit"] = new_tdp
+
+            if self.pp_map:
+                pp = self.pp_map[0][0]
+                for npp, tdp in self.pp_map:
+                    if tdp < new_tdp and npp in self.pps:
+                        pp = npp
+                conf["tdp.smu.platform_profile"] = pp
+
             if new_boost:
                 try:
                     fmax = self.dev["fast_limit"].smax
@@ -174,6 +167,7 @@ class SmuDriverPlugin(HHDPlugin):
         self,
         dev: dict[str, DeviceParams],
         cpu: dict[str, AlibParams],
+        platform_profile: bool = True,
     ) -> None:
         self.name = f"adjustor_smu"
         self.priority = 9
@@ -185,6 +179,8 @@ class SmuDriverPlugin(HHDPlugin):
         self.dev = dev
         self.cpu = cpu
 
+        self.check_pp = platform_profile
+        self.has_pp = False
         self.old_vals = {}
 
         for k in dev:
@@ -202,6 +198,18 @@ class SmuDriverPlugin(HHDPlugin):
                 "smu": load_relative_yaml("smu.yml"),
             }
         }
+
+        # Limit platform profile choices or remove
+        choices = get_platform_choices()
+        if choices and self.check_pp:
+            options = out["tdp"]["smu"]["children"]["platform_profile"]["options"]
+            for c in list(options):
+                if c not in choices:
+                    del options[c]
+            self.has_pp = True
+        else:
+            del out["tdp"]["smu"]["children"]["platform_profile"]
+            self.has_pp = False
 
         # Remove unsupported instructions
         # Add absolute limits based on CPU
@@ -274,6 +282,10 @@ class SmuDriverPlugin(HHDPlugin):
 
         if conf["tdp.smu.apply"].to(bool):
             conf["tdp.smu.apply"] = False
+            cpp = conf["tdp.smu.platform_profile"].to(str)
+            logger.info(f"Setting platform profile to '{cpp}'")
+            set_platform_profile(cpp)
+            time.sleep(PP_DELAY)
             alib(
                 new_vals,
                 self.cpu,

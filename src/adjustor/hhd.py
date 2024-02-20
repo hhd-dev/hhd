@@ -1,7 +1,7 @@
 from adjustor.core.acpi import initialize, check_perms
 
 from typing import Sequence
-from adjustor.core.const import CPU_DATA
+from adjustor.core.const import CPU_DATA, ROG_ALLY_PP_MAP
 
 import os
 from hhd.plugins import (
@@ -97,6 +97,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         drivers_matched = True
         legion_go = True
 
+    pp_enable = not legion_go or bool(os.environ.get("HHD_ADJ_DEBUG"))
     if (
         os.environ.get("HHD_ADJ_DEBUG")
         or os.environ.get("HHD_ENABLE_SMU")
@@ -104,14 +105,15 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     ):
         for name, (dev, cpu) in CPU_DATA.items():
             if name in cpuinfo:
-                drivers.append(SmuDriverPlugin(dev, cpu))
                 drivers.append(
-                    SmuQamPlugin(
+                    SmuDriverPlugin(
                         dev,
-                        platform_profile=(
-                            not legion_go or bool(os.environ.get("HHD_ADJ_DEBUG"))
-                        ),
-                    ),
+                        cpu,
+                        platform_profile=pp_enable,
+                    )
+                )
+                drivers.append(
+                    SmuQamPlugin(dev, ROG_ALLY_PP_MAP if pp_enable else None),
                 )
                 break
 

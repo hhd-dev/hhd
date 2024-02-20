@@ -1,11 +1,11 @@
 type: container
-title: Ryzen SMU Configurator
+title: Advanced Configurator
 tags: [advanced, expert]
 hint: >-
 children:
   apply:
     type: action
-    title: Apply SMU Settings
+    title: Apply Settings
 
   status:
     title: TDP Status
@@ -14,6 +14,18 @@ children:
     choices:
       uninit: Not Set
       init: Set
+  
+  platform_profile:
+    type: multiple
+    title: Platform Profile
+    default: balanced
+    options:
+      low-power: Low Power
+      cool: Cool
+      quiet: Quiet
+      balanced: Balanced
+      balanced-performance: Balanced Performance
+      performance: Performance
 
   std:
     tags: [advanced]

@@ -1,5 +1,11 @@
 from .alib import A, D, DeviceParams, AlibParams
 
+ROG_ALLY_PP_MAP = [
+    ("low-power", 0),
+    ("balanced", 13),
+    ("performance", 20),
+]
+
 ALIB_PARAMS = {
     # TDPs
     "stapm_limit": A(0x05, 0, 54, 1000),
