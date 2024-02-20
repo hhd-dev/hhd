@@ -176,7 +176,7 @@ class SmuDriverPlugin(HHDPlugin):
         cpu: dict[str, AlibParams],
     ) -> None:
         self.name = f"adjustor_smu"
-        self.priority = 8
+        self.priority = 9
         self.log = "asmu"
         self.enabled = False
         self.initialized = False
