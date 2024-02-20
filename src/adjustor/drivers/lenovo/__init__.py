@@ -33,7 +33,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.initialized = False
         self.startup = True
         self.old_conf = None
-        self.fan_curve_set = False
+        self.fan_curve_set = None
 
     def settings(self):
         if not self.enabled:
@@ -92,7 +92,12 @@ class LenovoDriverPlugin(HHDPlugin):
 
             # Reset fan curve on mode change
             mode = conf["tdp.lenovo.fan.mode"].to(str)
-            if mode != self.old_conf["fan.mode"].to(str) and mode != "manual":
+            if (
+                self.fan_curve_set
+                and mode != self.old_conf["fan.mode"].to(str)
+                and mode != "manual"
+            ):
+                self.fan_curve_set = False
                 tdp_mode = get_tdp_mode()
                 if tdp_mode:
                     set_tdp_mode("performance")
@@ -188,10 +193,15 @@ class LenovoDriverPlugin(HHDPlugin):
             conf["tdp.lenovo.tdp.custom.tdp"] = steady
             conf["tdp.lenovo.tdp.custom.boost"] = fast > steady + 2
 
-        if self.fan_curve_set:
-            conf["tdp.lenovo.fan.manual.status"] = "Set"
-        else:
-            conf["tdp.lenovo.fan.manual.status"] = "Not Set"
+        match self.fan_curve_set:
+            case None:
+                msg = "Unknown"
+            case False:
+                msg = "Not Set"
+            case True:
+                msg = "Set"
+
+        conf["tdp.lenovo.fan.manual.status"] = msg
         self.old_conf = conf["tdp.lenovo"]
 
     def close(self):

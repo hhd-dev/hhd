@@ -82,8 +82,10 @@ children:
             type: display
             # For translation
             choices:
-              uninit: Not Set
-              init: Set
+              startup: Unknown
+              not-set: Not Set
+              set: Set
+
 
           st10: &speed_template
             title: 10C
