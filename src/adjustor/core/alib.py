@@ -24,24 +24,11 @@ D = DeviceParams
 
 logger = logging.getLogger(__name__)
 
-ALIB_PARAMS = {
-    # TDPs
-    "stapm_limit": A(0x05, 0, 54, 1000),
-    "fast_limit": A(0x06, 0, 54, 1000),
-    "slow_limit": A(0x07, 0, 54, 1000),
-    "skin_limit": A(0x2E, 0, 100, 1000),
-    # Times
-    "slow_time": A(0x08, 0, 30),
-    "stapm_time": A(0x01, 0, 300),
-    # Temp
-    "temp_target": A(0x03, 0, 105),
-}
-
 
 def alib(
     params: dict[str, int],
+    cpu: dict[str, A],
     limit: Limit = "device",
-    cpu: dict[str, A] = ALIB_PARAMS,
     dev: dict[str, D] = {},
 ):
     length = 2

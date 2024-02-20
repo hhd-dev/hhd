@@ -57,7 +57,7 @@ children:
         unit: W
         default: 25
 
-      stt_limit:
+      skin_limit:
         type: int
         title: Skin Temp TDP Limit
         min: 0

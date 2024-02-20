@@ -131,14 +131,30 @@ class SmuDriverPlugin(HHDPlugin):
         self.dev = dev
         self.cpu = cpu
 
+        for k in dev:
+            assert (
+                k in cpu
+            ), f"Device supports more keys than what is available in its architecture spec. Key '{k}' missing."
+
     def settings(self):
         if not self.enabled:
             return {}
-        return {
+        out = {
             "tdp": {
                 "smu": load_relative_yaml("smu.yml"),
             }
         }
+
+        std = out["tdp"]["smu"]["children"]["std"]["children"]
+        for k in list(std):
+            if k not in self.cpu:
+                del std[k]
+        adv = out["tdp"]["smu"]["children"]["std"]["children"]
+        for k in list(adv):
+            if k not in self.cpu and k != "enable":
+                del adv[k]
+
+        return out
 
     def open(
         self,
