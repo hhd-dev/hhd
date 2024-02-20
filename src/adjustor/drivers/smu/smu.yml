@@ -1,6 +1,6 @@
 type: container
 title: Ryzen SMU Configurator
-tags: [advanced]
+tags: [advanced, expert]
 hint: >-
 children:
   apply:

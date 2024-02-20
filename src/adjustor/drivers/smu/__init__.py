@@ -17,8 +17,11 @@ class SmuQamPlugin(HHDPlugin):
         self.name = f"adjustor_smu_qam"
         self.priority = 6
         self.log = "smuq"
+        self.enabled = False
 
     def settings(self):
+        if not self.enabled:
+            return {}
         return {"tdp": {"qam": load_relative_yaml("qam.yml")}}
 
     def open(
@@ -29,7 +32,7 @@ class SmuQamPlugin(HHDPlugin):
         pass
 
     def update(self, conf: Config):
-        pass
+        self.enabled = conf["tdp.general.enable"].to(bool)
 
     def close(self):
         pass
@@ -40,8 +43,11 @@ class SmuDriverPlugin(HHDPlugin):
         self.name = f"adjustor_smu"
         self.priority = 9
         self.log = "asmu"
+        self.enabled = False
 
     def settings(self):
+        if not self.enabled:
+            return {}
         return {
             "tdp": {
                 "smu": load_relative_yaml("smu.yml"),
@@ -56,7 +62,7 @@ class SmuDriverPlugin(HHDPlugin):
         pass
 
     def update(self, conf: Config):
-        pass
+        self.enabled = conf["tdp.general.enable"].to(bool)
 
     def close(self):
         pass

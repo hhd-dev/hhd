@@ -17,8 +17,11 @@ class LenovoDriverPlugin(HHDPlugin):
         self.name = f"adjustor_lenovo"
         self.priority = 6
         self.log = "adjl"
+        self.enabled = False
 
     def settings(self):
+        if not self.enabled:
+            return {}
         return {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
 
     def open(
@@ -29,7 +32,7 @@ class LenovoDriverPlugin(HHDPlugin):
         pass
 
     def update(self, conf: Config):
-        pass
+        self.enabled = conf['tdp.general.enable'].to(bool)
 
     def close(self):
         pass
