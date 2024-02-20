@@ -33,6 +33,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.log = "adjl"
         self.enabled = False
         self.initialized = False
+        self.enforce_limits = True
         self.startup = True
         self.old_conf = None
         self.fan_curve_set = None
@@ -44,7 +45,12 @@ class LenovoDriverPlugin(HHDPlugin):
             self.startup = True
             return {}
         self.initialized = True
-        return {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
+        out = {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
+        if not self.enforce_limits:
+            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"]["children"][
+                "tdp"
+            ]["max"] = 40
+        return out
 
     def open(
         self,
@@ -55,6 +61,7 @@ class LenovoDriverPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         self.enabled = conf["tdp.general.enable"].to(bool)
+        self.enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
             self.old_conf = None
             self.startup = True
@@ -82,7 +89,7 @@ class LenovoDriverPlugin(HHDPlugin):
                 ) and boost is not None:
                     if boost:
                         set_slow_tdp(steady + 2)
-                        set_fast_tdp(min(54, int(steady * 41 / 30)))
+                        set_fast_tdp(min(42, int(steady * 41 / 30)))
                     else:
                         set_slow_tdp(steady)
                         set_fast_tdp(steady)
