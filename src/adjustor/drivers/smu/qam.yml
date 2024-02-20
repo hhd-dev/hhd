@@ -29,5 +29,5 @@ children:
     default: True
 
   apply:
-    title: Apply
+    title: Apply TDP
     type: action
