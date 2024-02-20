@@ -282,10 +282,13 @@ class SmuDriverPlugin(HHDPlugin):
 
         if conf["tdp.smu.apply"].to(bool):
             conf["tdp.smu.apply"] = False
-            cpp = conf["tdp.smu.platform_profile"].to(str)
-            logger.info(f"Setting platform profile to '{cpp}'")
-            set_platform_profile(cpp)
-            time.sleep(PP_DELAY)
+
+            if self.has_pp:
+                cpp = conf["tdp.smu.platform_profile"].to(str)
+                logger.info(f"Setting platform profile to '{cpp}'")
+                set_platform_profile(cpp)
+                time.sleep(PP_DELAY)
+
             alib(
                 new_vals,
                 self.cpu,
