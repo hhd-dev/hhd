@@ -3,7 +3,7 @@ import logging
 from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
 
-from adjustor.core.alib import AlibParams, DeviceParams
+from adjustor.core.alib import AlibParams, DeviceParams, alib
 
 logger = logging.getLogger(__name__)
 
@@ -148,9 +148,13 @@ class SmuDriverPlugin(HHDPlugin):
         self.priority = 8
         self.log = "asmu"
         self.enabled = False
+        self.initialized = False
+        self.enforce_limits = True
 
         self.dev = dev
         self.cpu = cpu
+
+        self.old_vals = {}
 
         for k in dev:
             assert (
@@ -159,21 +163,41 @@ class SmuDriverPlugin(HHDPlugin):
 
     def settings(self):
         if not self.enabled:
+            self.initialized = False
             return {}
+        self.initialized = True
         out = {
             "tdp": {
                 "smu": load_relative_yaml("smu.yml"),
             }
         }
 
+        # Remove unsupported instructions
+        # Add absolute limits based on CPU
         std = out["tdp"]["smu"]["children"]["std"]["children"]
         for k in list(std):
-            if k not in self.cpu:
+            if k in self.cpu:
+                lims = self.cpu[k]
+                std[k].update({"min": lims.min, "max": lims.max})
+            else:
                 del std[k]
         adv = out["tdp"]["smu"]["children"]["std"]["children"]
         for k in list(adv):
-            if k not in self.cpu and k != "enable":
+            if k in self.cpu and k != "enable":
+                lims = self.cpu[k]
+                std[k].update({"min": lims.min, "max": lims.max})
+            else:
                 del adv[k]
+
+        # Set sane defaults based on device
+        std = out["tdp"]["smu"]["children"]["std"]["children"]
+        for k in list(std):
+            if k in self.dev:
+                std[k]["default"] = self.dev[k].default
+        adv = out["tdp"]["smu"]["children"]["std"]["children"]
+        for k in list(adv):
+            if k in self.dev and k != "enable":
+                adv[k]["default"] = self.dev[k].default
 
         return out
 
@@ -186,6 +210,44 @@ class SmuDriverPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         self.enabled = conf["tdp.general.enable"].to(bool)
+        self.enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
+        if not self.enabled or not self.initialized:
+            return
+
+        if self.enforce_limits:
+            for k, v in conf['tdp.smu.std'].to(dict).items():
+                if k in self.dev:
+                    mmin, mmax = self.dev[k].smin, self.dev[k].smax
+                    if v < mmin:
+                        conf['tdp.smu.std', k] = mmin
+                    if v > mmax:
+                        conf["tdp.smu.std", k] = mmax
+            for k, v in conf["tdp.smu.adv"].to(dict).items():
+                if k in self.dev and k != 'enable':
+                    mmin, mmax = self.dev[k].smin, self.dev[k].smax
+                    if v < mmin:
+                        conf["tdp.smu.adv", k] = mmin
+                    if v > mmax:
+                        conf["tdp.smu.adv", k] = mmax
+
+        new_vals = {}
+        for k, v in conf["tdp.smu.std"].to(dict[str, int]).items():
+            new_vals[k] = v
+        if conf["tdp.smu.adv.enable"].to(bool):
+            for k, v in conf["tdp.smu.adv"].to(dict[str, int]).items():
+                if k != "enable":
+                    new_vals[k] = v
+
+        if conf["tdp.smu.apply"].to(bool):
+            conf["tdp.smu.apply"] = False
+            alib(
+                new_vals,
+                self.cpu,
+                limit="device" if self.enforce_limits else "cpu",
+                dev=self.dev,
+            )
+
+        self.old_vals = new_vals
 
     def close(self):
         pass
