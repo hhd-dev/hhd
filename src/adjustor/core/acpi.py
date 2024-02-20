@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 from typing import NamedTuple, Sequence
 
@@ -12,10 +13,20 @@ class Command(NamedTuple):
 
 def initialize():
     try:
-        subprocess.run(["modprobe", "acpi_call"], capture_output=True)
+        o = subprocess.run(["modprobe", "acpi_call"], capture_output=True)
+        logger.info(f"'acpi_call' modprobe output:\n{(o.stdout + o.stderr).decode()}")
         return True
     except Exception as e:
-        logger.error(f"Failed initializing acpi_call with error:\n{e}")
+        logger.warning(f"Failed loading acpi_call with error:\n{e}")
+        return False
+
+
+def check_perms():
+    try:
+        with open("/proc/acpi/call", "wb") as f:
+            return f.writable()
+    except Exception as e:
+        logger.error(f"Could open acpi_call file ('/proc/acpi/call'). Error:\n{e}")
         return False
 
 

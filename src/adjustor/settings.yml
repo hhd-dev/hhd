@@ -11,3 +11,10 @@ children:
     title: Enforce Device Limits
     type: bool
     default: True
+
+  error:
+    title: Error
+    type: display
+    tags: [error]
+    options: 
+      nowrite: Can not write to ACPI Call file. ACPI Call is required for TDP.

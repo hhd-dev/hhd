@@ -44,7 +44,7 @@ class SmuQamPlugin(HHDPlugin):
         self, dev: dict[str, DeviceParams], platform_profile: bool = True
     ) -> None:
         self.name = f"adjustor_smu_qam"
-        self.priority = 6
+        self.priority = 7
         self.log = "smuq"
         self.enabled = False
         self.initialized = False
@@ -124,7 +124,7 @@ class SmuDriverPlugin(HHDPlugin):
         cpu: dict[str, AlibParams],
     ) -> None:
         self.name = f"adjustor_smu"
-        self.priority = 9
+        self.priority = 8
         self.log = "asmu"
         self.enabled = False
 

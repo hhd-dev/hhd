@@ -38,6 +38,8 @@ class LenovoDriverPlugin(HHDPlugin):
     def settings(self):
         if not self.enabled:
             self.initialized = False
+            self.old_conf = None
+            self.startup = True
             return {}
         self.initialized = True
         return {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
@@ -52,12 +54,14 @@ class LenovoDriverPlugin(HHDPlugin):
     def update(self, conf: Config):
         self.enabled = conf["tdp.general.enable"].to(bool)
         if not self.enabled or not self.initialized:
+            self.old_conf = None
+            self.startup = True
             return
 
         if self.old_conf:
             # Update device if something changed
             mode = conf["tdp.lenovo.tdp.mode"].to(str)
-            if mode != self.old_conf["tdp.mode"].to(str):
+            if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
                 set_tdp_mode(cast(TdpMode, mode))
                 self.fan_curve_set = False
 
@@ -83,17 +87,20 @@ class LenovoDriverPlugin(HHDPlugin):
 
             # Other options
             ffss = conf["tdp.lenovo.ffss"].to(bool)
-            if ffss != self.old_conf["ffss"].to(bool):
+            if ffss is not None and ffss != self.old_conf["ffss"].to(bool):
                 set_full_fan_speed(ffss)
 
             power_light = conf["tdp.lenovo.power_light"].to(bool)
-            if power_light != self.old_conf["power_light"].to(bool):
+            if power_light is not None and power_light != self.old_conf[
+                "power_light"
+            ].to(bool):
                 set_power_light(power_light)
 
             # Reset fan curve on mode change
             mode = conf["tdp.lenovo.fan.mode"].to(str)
             if (
                 self.fan_curve_set
+                and mode is not None
                 and mode != self.old_conf["fan.mode"].to(str)
                 and mode != "manual"
             ):
