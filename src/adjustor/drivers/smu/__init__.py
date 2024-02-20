@@ -110,7 +110,7 @@ class SmuQamPlugin(HHDPlugin):
 
         if conf["tdp.qam.apply"].to(bool):
             conf["tdp.qam.apply"] = False
-            conf["tdp.qam.status"] = "Applied"
+            conf["tdp.qam.status"] = "Set"
 
     def close(self):
         pass

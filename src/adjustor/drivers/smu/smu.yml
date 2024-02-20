@@ -32,11 +32,11 @@ children:
       Then,the Slow TDP limit averages the last 10-20s of TDP values and keeps
       the value below it.
 
-      The Energy Policy is set automatically by the processor when connecting
-      to a charger.
-      It affects power consumption by around 2W, and its effect is mostly to
-      allow or block the processor from downclocking below 1.6GHz.
-      The battery profile was found to have an effect on VRR for the Ally.
+    # The Energy Policy is set automatically by the processor when connecting
+    # to a charger.
+    # It affects power consumption by around 2W, and its effect is mostly to
+    # allow or block the processor from downclocking below 1.6GHz.
+    # The battery profile was found to have an effect on VRR for the Ally.
 
     children:
       fast_limit:
@@ -75,13 +75,13 @@ children:
         unit: W
         default: 15
 
-      acdc:
-        type: multiple
-        title: Energy Policy Override
-        options:
-          disabled: Disabled
-          power_saving: Battery
-          max_performance: Plugged In
+      # acdc:
+      #   type: multiple
+      #   title: Energy Policy Override
+      #   options:
+      #     disabled: Disabled
+      #     power_saving: Battery
+      #     max_performance: Plugged In
 
   adv:
     tags: [advanced]

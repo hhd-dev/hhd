@@ -38,3 +38,4 @@ children:
     # For translation
     choices:
       uninit: Not Set
+      init: Set
