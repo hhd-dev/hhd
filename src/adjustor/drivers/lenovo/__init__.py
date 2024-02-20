@@ -19,17 +19,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.log = "adjl"
 
     def settings(self):
-        return {
-            "tdp": {
-                "adjustor": {
-                    "type": "container",
-                    "children": {
-                        "lenovo": load_relative_yaml("tdp.yml"),
-                        "fan": load_relative_yaml("fans.yml"),
-                    },
-                }
-            }
-        }
+        return {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
 
     def open(
         self,

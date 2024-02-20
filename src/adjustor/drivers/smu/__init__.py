@@ -19,14 +19,7 @@ class SmuQamPlugin(HHDPlugin):
         self.log = "smuq"
 
     def settings(self):
-        return {
-            "tdp": {
-                "adjustor": {
-                    "type": "container",
-                    "children": load_relative_yaml("qam.yml"),
-                }
-            }
-        }
+        return {"tdp": {"qam": load_relative_yaml("qam.yml")}}
 
     def open(
         self,
@@ -45,18 +38,13 @@ class SmuQamPlugin(HHDPlugin):
 class SmuDriverPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"adjustor_smu"
-        self.priority = 12
+        self.priority = 9
         self.log = "asmu"
 
     def settings(self):
         return {
             "tdp": {
-                "adjustor": {
-                    "type": "container",
-                    "children": {
-                        "smu": load_relative_yaml("smu.yml"),
-                    },
-                }
+                "smu": load_relative_yaml("smu.yml"),
             }
         }
 

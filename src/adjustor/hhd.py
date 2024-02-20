@@ -19,7 +19,7 @@ class AdjustorPlugin(HHDPlugin):
         self.log = "adjs"
 
     def settings(self) -> HHDSettings:
-        return {"tdp": {"adjustor": load_relative_yaml("settings.yml")}}
+        return {"tdp": {"general": load_relative_yaml("settings.yml")}}
 
     def open(
         self,
@@ -41,13 +41,11 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
-    from .drivers.platform import PlatformProfilePlugin
 
     drivers = [
         LenovoDriverPlugin(),
-        # SmuDriverPlugin(),
-        # SmuQamPlugin(),
-        # PlatformProfilePlugin(),
+        SmuDriverPlugin(),
+        SmuQamPlugin(),
     ]
 
     if not drivers:
