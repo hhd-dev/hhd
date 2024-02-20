@@ -44,6 +44,7 @@ logger = logging.getLogger(__name__)
 CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
 
 ERROR_DELAY = 5
+INIT_DELAY = 0.4
 POLL_DELAY = 2
 
 
@@ -257,7 +258,7 @@ def main():
             if should_initialize.is_set() or initial_run:
                 # wait a bit to allow other processes to save files
                 if not initial_run:
-                    sleep(POLL_DELAY)
+                    sleep(INIT_DELAY)
                 initial_run = False
                 set_log_plugin("main")
                 logger.info(f"Reloading configuration.")
