@@ -45,9 +45,9 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     drivers = [
         LenovoDriverPlugin(),
-        SmuDriverPlugin(),
-        SmuQamPlugin(),
-        PlatformProfilePlugin(),
+        # SmuDriverPlugin(),
+        # SmuQamPlugin(),
+        # PlatformProfilePlugin(),
     ]
 
     if not drivers:

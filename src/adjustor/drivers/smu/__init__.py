@@ -45,7 +45,7 @@ class SmuQamPlugin(HHDPlugin):
 class SmuDriverPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"adjustor_smu"
-        self.priority = 7
+        self.priority = 12
         self.log = "asmu"
 
     def settings(self):
