@@ -1,10 +1,12 @@
 import logging
-from adjustor.core.lenovo import MIN_CURVE
-from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
-from hhd.plugins.conf import Config
+import time
 from typing import cast
 
+from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
+from hhd.plugins.conf import Config
+
 from adjustor.core.lenovo import (
+    MIN_CURVE,
     TdpMode,
     get_fan_curve,
     get_fast_tdp,
@@ -12,13 +14,13 @@ from adjustor.core.lenovo import (
     get_power_light,
     get_steady_tdp,
     get_tdp_mode,
+    set_fan_curve,
     set_fast_tdp,
     set_full_fan_speed,
     set_power_light,
     set_slow_tdp,
     set_steady_tdp,
     set_tdp_mode,
-    set_fan_curve,
 )
 
 logger = logging.getLogger(__name__)
@@ -80,7 +82,7 @@ class LenovoDriverPlugin(HHDPlugin):
                 ) and boost is not None:
                     if boost:
                         set_slow_tdp(steady + 2)
-                        set_fast_tdp(min(54, int(steady * 41 // 30)))
+                        set_fast_tdp(min(54, int(steady * 41 / 30)))
                     else:
                         set_slow_tdp(steady)
                         set_fast_tdp(steady)

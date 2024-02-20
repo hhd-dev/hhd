@@ -59,6 +59,7 @@ class SmuQamPlugin(HHDPlugin):
 
         self.old_tdp = None
         self.old_boost = None
+        self.is_set = False
 
     def settings(self):
         if not self.enabled:
@@ -130,7 +131,7 @@ class SmuQamPlugin(HHDPlugin):
             and self.old_boost is not None
         )
         if changed or conf["tdp.qam.apply"].to(bool):
-            conf["tdp.qam.status"] = "Not Set"
+            self.is_set = False
 
             conf["tdp.smu.std.skin_limit"] = new_tdp
             conf["tdp.smu.std.stapm_limit"] = new_tdp
@@ -140,8 +141,10 @@ class SmuQamPlugin(HHDPlugin):
                     smax = self.dev["stapm_limit"].smax
                     assert fmax and smax
 
-                    conf["tdp.smu.std.slow_limit"] = new_tdp + 2
                     conf["tdp.smu.std.fast_limit"] = int(new_tdp * (fmax / smax))
+                    conf["tdp.smu.std.slow_limit"] = min(
+                        new_tdp + 2, conf["tdp.smu.std.fast_limit"].to(int)
+                    )
                 except Exception as e:
                     logger.error(f"Setting boost failed with error:\n{e}")
                     conf["tdp.qam.boost"] = False
@@ -154,7 +157,12 @@ class SmuQamPlugin(HHDPlugin):
         if conf["tdp.qam.apply"].to(bool):
             conf["tdp.qam.apply"] = False
             conf["tdp.smu.apply"] = True
+            self.is_set = True
+
+        if self.is_set:
             conf["tdp.qam.status"] = "Set"
+        else:
+            conf["tdp.qam.status"] = "Not Set"
 
     def close(self):
         pass
