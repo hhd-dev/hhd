@@ -57,8 +57,6 @@ children:
       modes at your own risk.
 
       This fan curve needs to be reapplied every time you switch TDP modes.
-      Adjustor will automatically apply it for changes made through the UI
-      but not with Legion L + Y.
     default: disabled
     modes:
       disabled:
