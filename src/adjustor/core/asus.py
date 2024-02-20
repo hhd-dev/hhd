@@ -42,8 +42,8 @@ def write_fan_curve(arr: list[int]):
             r" \_SB_.ATKD.WMNB",
             [
                 0,
-                c,
-                int.to_bytes(0x00110024, length=4, byteorder="little", signed=False)
+                0x53564544,
+                int.to_bytes(c, length=4, byteorder="little", signed=False)
                 + bytes(POINTS)
                 + bytes(arr),
             ],
