@@ -34,8 +34,9 @@ DEV_PARAMS_LEGO = DEV_PARAMS_7040
 
 CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
     "AMD Ryzen Z1 Extreme": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
+    "AMD Ryzen 7 7800U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     # GPD Win 4
     # model name    : AMD Ryzen 7 6800U with Radeon Graphics
-    # 28W work fine
+    # 28W works fine, 30W is pushing it
     "AMD Ryzen 7 6800U": (DEV_PARAMS_6040, ALIB_PARAMS_6040),
 }
