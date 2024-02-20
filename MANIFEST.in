@@ -1,0 +1,2 @@
+recursive-include src/adjustor *.yml
+recursive-include src/adjustor *.yaml
