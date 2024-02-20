@@ -7,7 +7,7 @@ children:
     type: bool
     default: False
 
-  set_limits:
+  enforce_limits:
     title: Enforce Device Limits
     type: bool
     default: True

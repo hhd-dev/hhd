@@ -49,6 +49,9 @@ class SmuQamPlugin(HHDPlugin):
         self.enabled = False
         self.initialized = False
         self.dev = dev
+        self.enforce_limits = True
+        self.emit = None
+        self.old_conf = None
 
         self.check_pp = platform_profile
         self.old_pp = None
@@ -76,6 +79,23 @@ class SmuQamPlugin(HHDPlugin):
         else:
             del out["tdp"]["qam"]["children"]["platform_profile"]
             self.has_pp = False
+
+        # Set device limits based on stapm
+        lims = self.dev.get("skin_limit", self.dev.get("stapm_limit", None))
+        assert (
+            lims
+        ), f"Device params do not include skin limit or stapm limit to set tdp."
+
+        dmin, smin, default, smax, dmax = lims
+        if self.enforce_limits:
+            out["tdp"]["qam"]["children"]["tdp"].update(
+                {"min": smin, "max": smax, "default": default}
+            )
+        else:
+            out["tdp"]["qam"]["children"]["tdp"].update(
+                {"min": dmin, "max": dmax, "default": default}
+            )
+
         return out
 
     def open(
@@ -83,10 +103,11 @@ class SmuQamPlugin(HHDPlugin):
         emit,
         context: Context,
     ):
-        pass
+        self.emit = emit
 
     def update(self, conf: Config):
         self.enabled = conf["tdp.general.enable"].to(bool)
+        self.enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
             return
 
