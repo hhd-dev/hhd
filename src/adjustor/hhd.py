@@ -83,7 +83,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
-    from .core.const import DEV_PARAMS_LEGO, ALIB_PARAMS_REMBRANDT
 
     drivers = []
     with open("/sys/devices/virtual/dmi/id/product_name") as f:

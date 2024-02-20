@@ -13,9 +13,9 @@ ALIB_PARAMS = {
     "temp_target": A(0x03, 0, 105),
 }
 
-ALIB_PARAMS_REMBRANDT: dict[str, AlibParams] = ALIB_PARAMS
+ALIB_PARAMS_7040: dict[str, AlibParams] = ALIB_PARAMS
 
-DEV_PARAMS_REMBRANDT: dict[str, DeviceParams] = {
+DEV_PARAMS_7040: dict[str, DeviceParams] = {
     "stapm_limit": D(0, 4, 15, 30, 40),
     "skin_limit": D(0, 4, 15, 30, 40),
     "slow_limit": D(0, 4, 20, 32, 43),
@@ -27,6 +27,15 @@ DEV_PARAMS_REMBRANDT: dict[str, DeviceParams] = {
     "temp_target": D(60, 70, 85, 90, 100),
 }
 
-DEV_PARAMS_LEGO = DEV_PARAMS_REMBRANDT
+ALIB_PARAMS_6040: dict[str, AlibParams] = ALIB_PARAMS
+DEV_PARAMS_6040: dict[str, DeviceParams] = DEV_PARAMS_7040
 
-CPU_DATA = {"AMD Ryzen Z1 Extreme": (DEV_PARAMS_REMBRANDT, ALIB_PARAMS_REMBRANDT)}
+DEV_PARAMS_LEGO = DEV_PARAMS_7040
+
+CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
+    "AMD Ryzen Z1 Extreme": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
+    # GPD Win 4
+    # model name    : AMD Ryzen 7 6800U with Radeon Graphics
+    # 28W work fine
+    "AMD Ryzen 7 6800U": (DEV_PARAMS_6040, ALIB_PARAMS_6040),
+}
