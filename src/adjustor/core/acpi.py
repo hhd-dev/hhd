@@ -19,14 +19,16 @@ def initialize():
         return False
 
 
-def call(method: str, args: Sequence[bytes | int]):
+def call(method: str, args: Sequence[bytes | int], risky: bool = True):
     cmd = method
     for arg in args:
         if isinstance(arg, int):
             cmd += f" 0x{arg:02x}"
         else:
             cmd += f" b{arg.hex()}"
-    logger.info(f"Executing ACPI call:\n'{cmd}'")
+
+    log = logger.info if risky else logger.debug
+    log(f"Executing ACPI call:\n'{cmd}'")
 
     try:
         with open("/proc/acpi/call", "wb") as f:
@@ -43,9 +45,9 @@ def read():
 
     if d == "not called\0":
         return None
-    if d.startswith("0x") and d.endswith('\0'):
+    if d.startswith("0x") and d.endswith("\0"):
         return int(d[:-1], 16)
-    if d.startswith("{") and d.endswith('}\0'):
-        bs = d[1:-2].split(', ')
+    if d.startswith("{") and d.endswith("}\0"):
+        bs = d[1:-2].split(", ")
         return bytes(int(b, 16) for b in bs)
     assert False, f"Return value '{d}' supported yet or was truncated."

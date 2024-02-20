@@ -12,7 +12,7 @@ TdpMode = Literal["quiet", "balanced", "performance", "custom"]
 
 def get_fan_curve():
     logger.info("Retrieving fan curve.")
-    o = call(r"\_SB.GZFD.WMAB", [0, 0x05, bytes([0, 0, 0, 0])])
+    o = call(r"\_SB.GZFD.WMAB", [0, 0x05, bytes([0, 0, 0, 0])], risky=False)
     if not o:
         return None
     o = read()
@@ -102,13 +102,13 @@ def set_fan_curve(arr: Sequence[int], lim: Sequence[int] | None = None):
 
 
 def set_power_light(enabled: bool):
-    logger.info(f"Setting power light status.")
+    logger.debug(f"Setting power light status.")
     return call(r"\_SB.GZFD.WMAF", [0, 0x02, bytes([0x03, int(enabled), 0x00])])
 
 
 def get_power_light():
     logger.info(f"Getting power light status.")
-    if not call(r"\_SB.GZFD.WMAF", [0, 0x01, 0x03]):
+    if not call(r"\_SB.GZFD.WMAF", [0, 0x01, 0x03], risky=False):
         return None
     o = read()
     if isinstance(o, bytes) and len(o) == 2:
@@ -116,30 +116,11 @@ def get_power_light():
     return None
 
 
-def get_feature_expanded(dev: int, feature: int, type: int = 0):
-    if not call(
-        r"\_SB.GZFD.WMAE",
-        [
-            0,
-            0x11,
-            int.to_bytes(type, length=2, byteorder="little", signed=False)
-            + bytes(
-                [
-                    feature,
-                    dev,
-                ]
-            ),
-        ],
-    ):
-        return None
-
-    return read()
-
-
 def get_feature(id: int):
     if not call(
         r"\_SB.GZFD.WMAE",
         [0, 0x11, int.to_bytes(id, length=4, byteorder="little", signed=False)],
+        risky=False,
     ):
         return None
 
@@ -177,8 +158,8 @@ def set_tdp_mode(mode: TdpMode):
 
 
 def get_tdp_mode() -> TdpMode | None:
-    logger.info(f"Retrieving TDP Mode.")
-    if not call(r"\_SB.GZFD.WMAA", [0, 0x2D]):
+    logger.debug(f"Retrieving TDP Mode.")
+    if not call(r"\_SB.GZFD.WMAA", [0, 0x2D], risky=False):
         logger.error(f"Failed retrieving TDP Mode.")
         return None
 
@@ -197,17 +178,17 @@ def get_tdp_mode() -> TdpMode | None:
 
 
 def get_steady_tdp():
-    logger.info(f"Retrieving steady TDP.")
+    logger.debug(f"Retrieving steady TDP.")
     return get_feature(0x0102FF00)
 
 
 def get_fast_tdp():
-    logger.info(f"Retrieving fast TDP.")
+    logger.debug(f"Retrieving fast TDP.")
     return get_feature(0x0103FF00)
 
 
 def get_slow_tdp():
-    logger.info(f"Retrieving slow TDP.")
+    logger.debug(f"Retrieving slow TDP.")
     return get_feature(0x0101FF00)
 
 
@@ -227,7 +208,7 @@ def set_slow_tdp(val: int):
 
 
 def get_full_fan_speed():
-    logger.info(f"Getting full fan speed.")
+    logger.debug(f"Getting full fan speed.")
     return get_feature(0x04020000)
 
 
