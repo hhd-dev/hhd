@@ -92,16 +92,27 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         cpuinfo = f.read().strip()
 
     drivers_matched = False
+    legion_go = False
     if prod == "83E1":
         drivers.append(LenovoDriverPlugin())
         drivers_matched = True
+        legion_go = True
 
-    if os.environ.get("HHD_ENABLE_SMU") or not drivers_matched:
+    if (
+        os.environ.get("HHD_ADJ_DEBUG")
+        or os.environ.get("HHD_ENABLE_SMU")
+        or not drivers_matched
+    ):
         for name, (dev, cpu) in CPU_DATA.items():
             if name in cpuinfo:
                 drivers.append(SmuDriverPlugin(dev, cpu))
                 drivers.append(
-                    SmuQamPlugin(dev),
+                    SmuQamPlugin(
+                        dev,
+                        platform_profile=(
+                            not legion_go or bool(os.environ.get("HHD_ADJ_DEBUG"))
+                        ),
+                    ),
                 )
                 break
 
