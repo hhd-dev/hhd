@@ -39,4 +39,13 @@ def call(method: str, args: Sequence[bytes | int]):
 
 def read():
     with open("/proc/acpi/call", "rb") as f:
-        return f.read().decode()
+        d = f.read().decode().strip()
+
+    if d == "not called\0":
+        return None
+    if d.startswith("0x") and d.endswith('\0'):
+        return int(d[:-1], 16)
+    if d.startswith("{") and d.endswith('}\0'):
+        bs = d[1:-2].split(', ')
+        return bytes(int(b, 16) for b in bs)
+    assert False, f"Return value '{d}' supported yet or was truncated."
