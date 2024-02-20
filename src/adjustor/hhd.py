@@ -1,7 +1,9 @@
 from adjustor.core.acpi import initialize, check_perms
 
 from typing import Sequence
+from adjustor.core.const import CPU_DATA
 
+import os
 from hhd.plugins import (
     HHDPlugin,
     Context,
@@ -83,15 +85,32 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
     from .core.const import DEV_PARAMS_LEGO, ALIB_PARAMS_REMBRANDT
 
-    drivers = [
-        AdjustorInitPlugin(),
-        LenovoDriverPlugin(),
-        SmuDriverPlugin(DEV_PARAMS_LEGO, ALIB_PARAMS_REMBRANDT),
-        SmuQamPlugin(DEV_PARAMS_LEGO),
-    ]
+    drivers = []
+    with open("/sys/devices/virtual/dmi/id/product_name") as f:
+        prod = f.read().strip()
+    with open("/proc/cpuinfo") as f:
+        cpuinfo = f.read().strip()
+
+    drivers_matched = False
+    if prod == "83E1":
+        drivers.append(LenovoDriverPlugin())
+        drivers_matched = True
+
+    if os.environ.get("HHD_ENABLE_SMU") or not drivers_matched:
+        for name, (dev, cpu) in CPU_DATA.items():
+            if name in cpuinfo:
+                drivers.append(SmuDriverPlugin(dev, cpu))
+                drivers.append(
+                    SmuQamPlugin(dev),
+                )
+                break
 
     if not drivers:
-        logger.debug(f"No tdp drivers found for this device, exiting Adjustor.")
+        logger.info(f"No tdp drivers found for this device, exiting Adjustor.")
         return []
 
-    return [*drivers, AdjustorPlugin()]
+    return [
+        *drivers,
+        AdjustorInitPlugin(),
+        AdjustorPlugin(),
+    ]
