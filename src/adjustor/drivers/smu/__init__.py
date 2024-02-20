@@ -181,7 +181,9 @@ class SmuDriverPlugin(HHDPlugin):
 
         self.check_pp = platform_profile
         self.has_pp = False
+        self.old_pp = None
         self.old_vals = {}
+        self.is_set = False
 
         for k in dev:
             assert (
@@ -277,8 +279,9 @@ class SmuDriverPlugin(HHDPlugin):
                 if k != "enable":
                     new_vals[k] = v
 
-        if set(new_vals.items()) != set(self.old_vals.items()):
-            conf["tdp.smu.status"] = "Not Set"
+        new_pp = conf["tdp.smu.platform_profile"].to(str)
+        if set(new_vals.items()) != set(self.old_vals.items()) or new_pp != self.old_pp:
+            self.is_set = False
 
         if conf["tdp.smu.apply"].to(bool):
             conf["tdp.smu.apply"] = False
@@ -295,9 +298,14 @@ class SmuDriverPlugin(HHDPlugin):
                 limit="device" if self.enforce_limits else "cpu",
                 dev=self.dev,
             )
-            conf["tdp.smu.status"] = "Set"
+            self.is_set = True
 
+        self.old_pp = new_pp
         self.old_vals = new_vals
+        if self.is_set:
+            conf["tdp.smu.status"] = "Set"
+        else:
+            conf["tdp.smu.status"] = "Not Set"
 
     def close(self):
         pass
