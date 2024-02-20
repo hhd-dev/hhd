@@ -124,13 +124,36 @@ class SmuQamPlugin(HHDPlugin):
 
         new_tdp = conf["tdp.qam.tdp"].to(int)
         new_boost = conf["tdp.qam.boost"].to(bool)
-        if new_tdp != self.old_tdp or new_boost != self.old_boost:
+        changed = (
+            (new_tdp != self.old_tdp or new_boost != self.old_boost)
+            and self.old_tdp is not None
+            and self.old_boost is not None
+        )
+        if changed or conf["tdp.qam.apply"].to(bool):
             conf["tdp.qam.status"] = "Not Set"
-            self.old_tdp = new_tdp
-            self.old_boost = new_boost
 
+            conf["tdp.smu.std.skin_limit"] = new_tdp
+            conf["tdp.smu.std.stapm_limit"] = new_tdp
+            if new_boost:
+                try:
+                    fmax = self.dev["fast_limit"].smax
+                    smax = self.dev["stapm_limit"].smax
+                    assert fmax and smax
+
+                    conf["tdp.smu.std.slow_limit"] = new_tdp + 2
+                    conf["tdp.smu.std.fast_limit"] = int(new_tdp * (fmax / smax))
+                except Exception as e:
+                    logger.error(f"Setting boost failed with error:\n{e}")
+                    conf["tdp.qam.boost"] = False
+            else:
+                conf["tdp.smu.std.slow_limit"] = new_tdp
+                conf["tdp.smu.std.fast_limit"] = new_tdp
+
+        self.old_tdp = new_tdp
+        self.old_boost = new_boost
         if conf["tdp.qam.apply"].to(bool):
             conf["tdp.qam.apply"] = False
+            conf["tdp.smu.apply"] = True
             conf["tdp.qam.status"] = "Set"
 
     def close(self):
@@ -215,15 +238,15 @@ class SmuDriverPlugin(HHDPlugin):
             return
 
         if self.enforce_limits:
-            for k, v in conf['tdp.smu.std'].to(dict).items():
+            for k, v in conf["tdp.smu.std"].to(dict).items():
                 if k in self.dev:
                     mmin, mmax = self.dev[k].smin, self.dev[k].smax
                     if v < mmin:
-                        conf['tdp.smu.std', k] = mmin
+                        conf["tdp.smu.std", k] = mmin
                     if v > mmax:
                         conf["tdp.smu.std", k] = mmax
             for k, v in conf["tdp.smu.adv"].to(dict).items():
-                if k in self.dev and k != 'enable':
+                if k in self.dev and k != "enable":
                     mmin, mmax = self.dev[k].smin, self.dev[k].smax
                     if v < mmin:
                         conf["tdp.smu.adv", k] = mmin
@@ -238,6 +261,9 @@ class SmuDriverPlugin(HHDPlugin):
                 if k != "enable":
                     new_vals[k] = v
 
+        if set(new_vals.items()) != set(self.old_vals.items()):
+            conf["tdp.smu.status"] = "Not Set"
+
         if conf["tdp.smu.apply"].to(bool):
             conf["tdp.smu.apply"] = False
             alib(
@@ -246,6 +272,7 @@ class SmuDriverPlugin(HHDPlugin):
                 limit="device" if self.enforce_limits else "cpu",
                 dev=self.dev,
             )
+            conf["tdp.smu.status"] = "Set"
 
         self.old_vals = new_vals
 

@@ -7,6 +7,14 @@ children:
     type: action
     title: Apply SMU Settings
 
+  status:
+    title: TDP Status
+    type: display
+    # For translation
+    choices:
+      uninit: Not Set
+      init: Set
+
   std:
     tags: [advanced]
     type: container

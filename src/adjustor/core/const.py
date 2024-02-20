@@ -5,7 +5,7 @@ ALIB_PARAMS = {
     "stapm_limit": A(0x05, 0, 54, 1000),
     "fast_limit": A(0x06, 0, 54, 1000),
     "slow_limit": A(0x07, 0, 54, 1000),
-    "skin_limit": A(0x2E, 0, 100, 1000),
+    "skin_limit": A(0x2E, 0, 54, 1000),
     # Times
     "slow_time": A(0x08, 0, 30),
     "stapm_time": A(0x01, 0, 300),
