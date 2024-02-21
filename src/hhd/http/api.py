@@ -2,12 +2,19 @@ import itertools
 import json
 import logging
 import os
+from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Condition, Thread
 from typing import Any, Mapping
 from urllib.parse import parse_qs, urlparse
 
-from hhd.plugins import Config, Emitter, HHDSettings, get_relative_fn, load_relative_yaml
+from hhd.plugins import (
+    Config,
+    Emitter,
+    HHDSettings,
+    get_relative_fn,
+    load_relative_yaml,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +36,7 @@ STANDARD_HEADERS = {
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
     "Access-Control-Allow-Headers": "*",
+    "Access-Control-Expose-Headers": "*, Version",
     "Access-Control-Max-Age": "86400",
     "WWW-Authenticate": "Bearer",
 }
@@ -43,7 +51,8 @@ _control_char_table = str.maketrans(
 )
 _control_char_table[ord("\\")] = r"\\"
 
-SECTIONS = load_relative_yaml('../sections.yml')['sections']
+SECTIONS = load_relative_yaml("../sections.yml")["sections"]
+
 
 def parse_path(path: str) -> tuple[list, dict[str, list[str]]]:
     try:
@@ -242,9 +251,15 @@ class RestHandler(BaseHTTPRequestHandler):
             case "profile":
                 self.handle_profile(segments[3:], params, content)
             case "settings":
-                self.set_response_ok({"Version": self.conf.get("version", "")})
+                v = self.conf.get("version", "")
+                self.set_response_ok({"Version": v})
                 with self.cond:
-                    self.wfile.write(json.dumps(self.settings).encode())
+                    s = dict(deepcopy(self.settings))
+                    try:
+                        s["hhd"]["version"] = {"type": "version", "value": v}  # type: ignore
+                    except Exception as e:
+                        logger.error(f"Error while writing version hash to response.")
+                    self.wfile.write(json.dumps(s).encode())
             case "state":
                 self.set_response_ok()
                 with self.cond:
@@ -257,7 +272,7 @@ class RestHandler(BaseHTTPRequestHandler):
                         self.cond.wait()
                     self.wfile.write(json.dumps(self.conf.conf).encode())
             case "version":
-                self.send_json({"version": 3})
+                self.send_json({"version": 4})
             case "sections":
                 self.send_json(SECTIONS)
             case other:
