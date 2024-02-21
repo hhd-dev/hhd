@@ -63,11 +63,16 @@ class SmuQamPlugin(HHDPlugin):
         self.old_boost = None
         self.is_set = False
 
-        self.pp_map = pp_map
         if pp_map:
             self.pps = get_platform_choices() or []
+            if self.pps:
+                self.pp_map = pp_map
+            else:
+                logger.warning(f"Platform profile map was provided but device does not have platform profiles.")
+                self.pp_map = None
         else:
             self.pps = []
+            self.pp_map = None
 
     def settings(self):
         if not self.enabled:

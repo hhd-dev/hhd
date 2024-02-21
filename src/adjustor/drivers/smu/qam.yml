@@ -10,7 +10,7 @@ children:
     unit: W
 
   boost:
-    title: Allow Boost
+    title: TDP Boost
     type: bool
     default: True
 
