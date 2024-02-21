@@ -111,6 +111,11 @@ CONFS = {
     "NEXT Lite": {"name": "AYANEO NEXT Lite", **AYA_DEFAULT_CONF},
     "NEXT Pro": {"name": "AYANEO NEXT Pro", **AYA_DEFAULT_CONF},
     "NEXT": {"name": "AYANEO NEXT", **AYA_DEFAULT_CONF},
+    "SLIDE": {
+        "name": "AYANEO SLIDE",
+        **AYA_DEFAULT_CONF,
+        "mapping": gen_gyro_state("z", True, "x", False, "y", False),
+    },
 }
 
 
