@@ -20,6 +20,7 @@ children:
     title: Platform Profile
     default: balanced
     options:
+      disabled: Not Set
       low-power: Low Power
       cool: Cool
       quiet: Quiet

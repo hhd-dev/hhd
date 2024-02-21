@@ -121,7 +121,7 @@ class SmuQamPlugin(HHDPlugin):
             conf["tdp.smu.std.skin_limit"] = new_tdp
             conf["tdp.smu.std.stapm_limit"] = new_tdp
 
-            if self.pp_map:
+            if self.pp_map and conf["tdp.smu.platform_profile"].to(str) != "disabled":
                 pp = self.pp_map[0][0]
                 for npp, tdp in self.pp_map:
                     if tdp < new_tdp and npp in self.pps:
@@ -206,7 +206,7 @@ class SmuDriverPlugin(HHDPlugin):
         if choices and self.check_pp:
             options = out["tdp"]["smu"]["children"]["platform_profile"]["options"]
             for c in list(options):
-                if c not in choices:
+                if c not in choices and c != "disabled":
                     del options[c]
             self.has_pp = True
         else:
@@ -279,18 +279,24 @@ class SmuDriverPlugin(HHDPlugin):
                 if k != "enable":
                     new_vals[k] = v
 
-        new_pp = conf["tdp.smu.platform_profile"].to(str)
-        if set(new_vals.items()) != set(self.old_vals.items()) or new_pp != self.old_pp:
+        if set(new_vals.items()) != set(self.old_vals.items()):
             self.is_set = False
+
+        if self.has_pp:
+            new_pp = conf["tdp.smu.platform_profile"].to(str)
+            if new_pp != self.old_pp and new_pp != "disabled":
+                self.is_set = False
+            self.old_pp = new_pp
 
         if conf["tdp.smu.apply"].to(bool):
             conf["tdp.smu.apply"] = False
 
             if self.has_pp:
                 cpp = conf["tdp.smu.platform_profile"].to(str)
-                logger.info(f"Setting platform profile to '{cpp}'")
-                set_platform_profile(cpp)
-                time.sleep(PP_DELAY)
+                if cpp != "disabled":
+                    logger.info(f"Setting platform profile to '{cpp}'")
+                    set_platform_profile(cpp)
+                    time.sleep(PP_DELAY)
 
             alib(
                 new_vals,
@@ -300,7 +306,6 @@ class SmuDriverPlugin(HHDPlugin):
             )
             self.is_set = True
 
-        self.old_pp = new_pp
         self.old_vals = new_vals
         if self.is_set:
             conf["tdp.smu.status"] = "Set"
