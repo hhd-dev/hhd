@@ -69,11 +69,12 @@ is added to your device.
   - 2/2S 
   - GEEK, GEEK 1S 
   - NEXT Lite/Pro/Advance
+  - SLIDE
+- Ayn
+  - Loki Max
 - AOKZOE
   - A1
   - A1 Pro 
-- Ayn
-  - Loki Max
 - Onexplayer
   - Mini Pro
 
