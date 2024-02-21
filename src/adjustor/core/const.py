@@ -2,6 +2,7 @@ from .alib import A, D, DeviceParams, AlibParams
 
 ROG_ALLY_PP_MAP = [
     ("low-power", 0),
+    ("quiet", 0),
     ("balanced", 13),
     ("performance", 20),
 ]
@@ -38,9 +39,14 @@ DEV_PARAMS_6040: dict[str, DeviceParams] = DEV_PARAMS_7040
 
 DEV_PARAMS_LEGO = DEV_PARAMS_7040
 
+DEV_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams], bool]] = {
+    "NEO-01": (DEV_PARAMS_7040, ALIB_PARAMS_7040, False),
+    "83E1": (DEV_PARAMS_LEGO, ALIB_PARAMS_7040, False),
+}
+
 CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
     "AMD Ryzen Z1 Extreme": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
-    "AMD Ryzen 7 7800U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
+    "AMD Ryzen 7 7840U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     # GPD Win 4
     # model name    : AMD Ryzen 7 6800U with Radeon Graphics
     # 28W works fine, 30W is pushing it

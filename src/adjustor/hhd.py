@@ -1,7 +1,7 @@
 from adjustor.core.acpi import initialize, check_perms
 
 from typing import Sequence
-from adjustor.core.const import CPU_DATA, ROG_ALLY_PP_MAP
+from adjustor.core.const import CPU_DATA, ROG_ALLY_PP_MAP, DEV_DATA
 
 import os
 from hhd.plugins import (
@@ -91,29 +91,39 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         cpuinfo = f.read().strip()
 
     drivers_matched = False
-    legion_go = False
     if prod == "83E1":
         drivers.append(LenovoDriverPlugin())
         drivers_matched = True
-        legion_go = True
 
-    pp_enable = not legion_go or bool(os.environ.get("HHD_ADJ_DEBUG"))
-    if (
-        os.environ.get("HHD_ADJ_DEBUG")
-        or os.environ.get("HHD_ENABLE_SMU")
-        or not drivers_matched
-    ):
+    if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
+        drivers_matched = False
+
+    if not drivers_matched and prod in DEV_DATA:
+        dev, cpu, pp_enable = DEV_DATA[prod]
+        pp_enable |= bool(os.environ.get("HHD_ADJ_DEBUG"))
+        drivers.append(
+            SmuDriverPlugin(
+                dev,
+                cpu,
+                platform_profile=pp_enable,
+            )
+        )
+        drivers.append(
+            SmuQamPlugin(dev, ROG_ALLY_PP_MAP if pp_enable else None),
+        )
+        drivers_matched = True
+
+    if not drivers_matched:
         for name, (dev, cpu) in CPU_DATA.items():
             if name in cpuinfo:
                 drivers.append(
                     SmuDriverPlugin(
                         dev,
-                        cpu,
-                        platform_profile=pp_enable,
+                        cpu,                        platform_profile=True,
                     )
                 )
                 drivers.append(
-                    SmuQamPlugin(dev, ROG_ALLY_PP_MAP if pp_enable else None),
+                    SmuQamPlugin(dev, ROG_ALLY_PP_MAP),
                 )
                 break
 
