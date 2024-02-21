@@ -36,7 +36,7 @@ STANDARD_HEADERS = {
     "Access-Control-Allow-Credentials": "true",
     "Access-Control-Allow-Methods": "POST, GET, OPTIONS, DELETE",
     "Access-Control-Allow-Headers": "*",
-    "Access-Control-Expose-Headers": "*, Version",
+    # "Access-Control-Expose-Headers": "*, Version",
     "Access-Control-Max-Age": "86400",
     "WWW-Authenticate": "Bearer",
 }
