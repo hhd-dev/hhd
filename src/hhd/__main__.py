@@ -275,7 +275,7 @@ def main():
                 settings = merge_settings(
                     [*[p.settings() for p in sorted_plugins], hhd_settings]
                 )
-                shash = get_settings_hash(hhd_settings)
+                shash = get_settings_hash(settings)
 
                 # State
                 new_conf = load_state_yaml(state_fn, settings)
