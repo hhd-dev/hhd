@@ -10,6 +10,7 @@ children:
   enforce_limits:
     title: Enforce Device Limits
     type: bool
+    tags: [ expert ]
     default: True
 
   error:

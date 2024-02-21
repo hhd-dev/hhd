@@ -56,7 +56,10 @@ class AdjustorPlugin(HHDPlugin):
         self.enfoce_limits = True
 
     def settings(self) -> HHDSettings:
-        return {"tdp": {"general": load_relative_yaml("settings.yml")}}
+        out = {"tdp": {"general": load_relative_yaml("settings.yml")}}
+        if os.environ.get("HHD_ADJ_ENABLE_TDP"):
+            out['tdp']['general']['children']['enable']['default'] = True
+        return out
 
     def open(
         self,
@@ -119,7 +122,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                 drivers.append(
                     SmuDriverPlugin(
                         dev,
-                        cpu,                        platform_profile=True,
+                        cpu,
+                        platform_profile=True,
                     )
                 )
                 drivers.append(
