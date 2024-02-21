@@ -162,7 +162,7 @@ def set_tdp_mode(mode: TdpMode):
 
 def get_tdp_mode() -> TdpMode | None:
     logger.debug(f"Retrieving TDP Mode.")
-    if not call(r"\_SB.GZFD.WMAA", [0, 0x2D], risky=False):
+    if not call(r"\_SB.GZFD.WMAA", [0, 0x2D, 0], risky=False):
         logger.error(f"Failed retrieving TDP Mode.")
         return None
 
