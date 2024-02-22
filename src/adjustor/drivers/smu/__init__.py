@@ -64,6 +64,7 @@ class SmuQamPlugin(HHDPlugin):
         self.old_tdp = None
         self.old_boost = None
         self.is_set = False
+        self.lims = self.dev.get("skin_limit", self.dev.get("stapm_limit", None))
 
         if pp_map:
             self.pps = get_platform_choices() or []
@@ -85,7 +86,7 @@ class SmuQamPlugin(HHDPlugin):
         out = {"tdp": {"qam": load_relative_yaml("qam.yml")}}
 
         # Set device limits based on stapm
-        lims = self.dev.get("skin_limit", self.dev.get("stapm_limit", None))
+        lims = self.lims
         assert (
             lims
         ), f"Device params do not include skin limit or stapm limit to set tdp."
@@ -118,13 +119,24 @@ class SmuQamPlugin(HHDPlugin):
 
         curr = time.time()
         new_tdp = conf["tdp.qam.tdp"].to(int)
+        if self.startup and self.lims:
+            _, smin, _, smax, _ = self.lims
+            if smin and new_tdp < smin:
+                logger.warning(f"Device TDP ({new_tdp}) too low for startup, adjusting.")
+                new_tdp = smin
+                conf["tdp.qam.tdp"] = smin
+            if smax and new_tdp > smax:
+                logger.warning(f"Device TDP ({new_tdp}) too low for startup, adjusting.")
+                new_tdp = smax
+                conf["tdp.qam.tdp"] = smax
+
         new_boost = conf["tdp.qam.boost"].to(bool)
         changed = (
             (new_tdp != self.old_tdp or new_boost != self.old_boost)
             and self.old_tdp is not None
             and self.old_boost is not None
         )
-        if changed:
+        if self.startup or changed:
             self.queued = curr + APPLY_DELAY
             self.is_set = False
 
