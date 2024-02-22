@@ -40,7 +40,7 @@ def get_platform_profile():
 
 
 PP_DELAY = 0.2
-
+APPLY_DELAY = 1
 
 class SmuQamPlugin(HHDPlugin):
 
@@ -58,6 +58,8 @@ class SmuQamPlugin(HHDPlugin):
         self.enforce_limits = True
         self.emit = None
         self.old_conf = None
+        self.startup = True
+        self.queued = None
 
         self.old_tdp = None
         self.old_boost = None
@@ -111,8 +113,10 @@ class SmuQamPlugin(HHDPlugin):
         self.enabled = conf["tdp.general.enable"].to(bool)
         self.enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
+            self.startup = True
             return
 
+        curr = time.time()
         new_tdp = conf["tdp.qam.tdp"].to(int)
         new_boost = conf["tdp.qam.boost"].to(bool)
         changed = (
@@ -120,7 +124,8 @@ class SmuQamPlugin(HHDPlugin):
             and self.old_tdp is not None
             and self.old_boost is not None
         )
-        if changed or conf["tdp.qam.apply"].to(bool):
+        if changed:
+            self.queued = curr + APPLY_DELAY
             self.is_set = False
 
             conf["tdp.smu.std.skin_limit"] = new_tdp
@@ -150,17 +155,13 @@ class SmuQamPlugin(HHDPlugin):
                 conf["tdp.smu.std.slow_limit"] = new_tdp
                 conf["tdp.smu.std.fast_limit"] = new_tdp
 
+        if self.startup or (self.queued and self.queued < curr):
+            self.startup = False
+            self.queued = None
+            conf["tdp.smu.apply"] = True
+
         self.old_tdp = new_tdp
         self.old_boost = new_boost
-        if conf["tdp.qam.apply"].to(bool):
-            conf["tdp.qam.apply"] = False
-            conf["tdp.smu.apply"] = True
-            self.is_set = True
-
-        if self.is_set:
-            conf["tdp.qam.status"] = "Set"
-        else:
-            conf["tdp.qam.status"] = "Not Set"
 
     def close(self):
         pass
