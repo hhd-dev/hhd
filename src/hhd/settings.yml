@@ -29,7 +29,7 @@ settings:
 
 http:
   type: container
-  tags: [hhd-http, advanced]
+  tags: [hhd-http, advanced, expert]
   title: API Configuration
   hint: >-
     Settings for configuring the http endpoint of HHD.

@@ -25,7 +25,7 @@ children:
   accel:
     type: bool
     title: Accelerometer
-    tags: [advanced]
+    tags: [advanced, expert]
     hint: >-
       Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro; 
       if someone asks it will be fixed).
@@ -99,7 +99,7 @@ children:
   debug:
     type: bool
     title: Debug
-    tags: [advanced]
+    tags: [advanced, expert]
     hint: >-
       Output controller events to the console (high CPU use) and raises exceptions
       (HHD will crash on errors).
