@@ -36,6 +36,7 @@ children:
             min: 0
             max: 30
             step: 1
+            default: 30
             unit: W
           boost:
             type: bool
@@ -69,21 +70,6 @@ children:
         type: container
         title: Manual
         children:
-          apply:
-            title: Apply Fan Curve
-            type: action
-            hint: >-
-              Reapplies the fan curve below if it got reset.
-          
-          status:
-            title: Fan Curve Status
-            type: display
-            # For translation
-            choices:
-              startup: Unknown
-              not-set: Not Set
-              set: Set
-
 
           st10: &speed_template
             title: 10C
@@ -91,7 +77,7 @@ children:
             tags: [slim]
             type: int
             min: 0
-            smin: 44
+            default: 44
             max: 115
             step: 2
             unit: "%"
@@ -99,39 +85,39 @@ children:
           st20:
             <<: *speed_template
             title: 20C
-            smin: 48
+            default: 48
           st30:
             <<: *speed_template
             title: 30C
-            smin: 55
+            default: 55
           st40:
             <<: *speed_template
             title: 40C
-            smin: 60
+            default: 60
           st50:
             <<: *speed_template
             title: 50C
-            smin: 71
+            default: 71
           st60:
             <<: *speed_template
             title: 60C
-            smin: 79
+            default: 79
           st70:
             <<: *speed_template
             title: 70C
-            smin: 87
+            default: 87
           st80:
             <<: *speed_template
             title: 80C
-            smin: 87
+            default: 87
           st90:
             <<: *speed_template
             title: 90C
-            smin: 100
+            default: 100
           st100:
             <<: *speed_template
             title: 100C
-            smin: 100
+            default: 100
 
           enforce_limits:
             title: Enforce Windows Minimums
