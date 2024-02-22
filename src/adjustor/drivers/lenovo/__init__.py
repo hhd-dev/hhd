@@ -25,6 +25,7 @@ from adjustor.core.lenovo import (
 
 logger = logging.getLogger(__name__)
 
+APPLY_DELAY = 0.5
 
 class LenovoDriverPlugin(HHDPlugin):
     def __init__(self) -> None:
@@ -37,6 +38,9 @@ class LenovoDriverPlugin(HHDPlugin):
         self.startup = True
         self.old_conf = None
         self.fan_curve_set = False
+
+        self.queue_fan = None
+        self.queue_tdp = None
 
     def settings(self):
         if not self.enabled:
@@ -69,6 +73,10 @@ class LenovoDriverPlugin(HHDPlugin):
             self.fan_curve_set = False
             return
         
+        #
+        # Checks
+        #
+
         # Initialize values so we do not query them all the time
         if self.startup:
             conf["tdp.lenovo.ffss"] = get_full_fan_speed()
@@ -80,7 +88,11 @@ class LenovoDriverPlugin(HHDPlugin):
             self.old_conf = conf["tdp.lenovo"]
             return
 
+        curr = time.time()
+
+        #
         # Other options
+        #
         ffss = conf["tdp.lenovo.ffss"].to(bool)
         if ffss is not None and ffss != self.old_conf["ffss"].to(bool):
             set_full_fan_speed(ffss)
@@ -91,81 +103,89 @@ class LenovoDriverPlugin(HHDPlugin):
         ].to(bool):
             set_power_light(power_light)
         
-        # Update device if something changed
+        #
+        # TDP
+        #
+        
+        # Update tdp mode if user changed through the app
+        tdp_reset = False
         mode = conf["tdp.lenovo.tdp.mode"].to(str)
         if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
             set_tdp_mode(cast(TdpMode, mode))
-            self.fan_curve_set = False
-
-        if mode == "custom":
-            steady = conf["tdp.lenovo.tdp.custom.tdp"].to(int)
-            steady_updated = steady and steady != self.old_conf[
-                "tdp.custom.tdp"
-            ].to(int)
-            if steady_updated:
-                set_steady_tdp(steady)
-
-            boost = conf["tdp.lenovo.tdp.custom.boost"].to(bool)
-            if (
-                steady_updated
-                or boost != self.old_conf["tdp.custom.boost"].to(bool)
-            ) and boost is not None:
-                if boost:
-                    set_slow_tdp(steady + 2)
-                    set_fast_tdp(min(42, int(steady * 41 / 30)))
-                else:
-                    set_slow_tdp(steady)
-                    set_fast_tdp(steady)
+            tdp_reset = True
+        
+        # Grab from power button
+        new_mode = get_tdp_mode()
+        if new_mode != mode:
+            tdp_reset = True
+        conf["tdp.lenovo.tdp.mode"] = new_mode
 
         # Reset fan curve on mode change
-        mode = conf["tdp.lenovo.fan.mode"].to(str)
+        # Has to happen before setting the stdp, ftdp values, in case
+        # we are in custom mode
+        fan_mode = conf["tdp.lenovo.fan.mode"].to(str)
         if (
-            self.fan_curve_set
-            and mode is not None
-            and mode != self.old_conf["fan.mode"].to(str)
-            and mode != "manual"
+            fan_mode != self.old_conf["fan.mode"].to(str) and fan_mode != "manual"
         ):
-            self.fan_curve_set = False
             tdp_mode = get_tdp_mode()
             if tdp_mode:
                 set_tdp_mode("performance")
                 set_tdp_mode(tdp_mode)
+                tdp_reset = True
 
-        # Fan curve stuff, implies initialization
+        # In custom mode, re-apply settings with debounce
+        if new_mode == "custom":
+            # Check user changed values
+            steady = conf["tdp.lenovo.tdp.custom.tdp"].to(int)
+            steady_updated = steady and steady != self.old_conf[
+                "tdp.custom.tdp"
+            ].to(int)
+            boost = conf["tdp.lenovo.tdp.custom.boost"].to(bool)
+            boost_updated = boost != self.old_conf["tdp.custom.boost"].to(bool)
+            
+            # If yes, queue an update
+            # Debounce
+            if steady_updated or boost_updated:
+                self.queue_tdp = curr + APPLY_DELAY
+            
+            if (self.queue_tdp and self.queue_tdp < curr) or tdp_reset:
+                self.queue_tdp = None
+                if boost:
+                    set_steady_tdp(steady)
+                    set_slow_tdp(steady + 2)
+                    set_fast_tdp(min(42, int(steady * 41 / 30)))
+                else:
+                    set_steady_tdp(steady)
+                    set_slow_tdp(steady)
+                    set_fast_tdp(steady)
+
+        # Fan curve stuff
+        # If tdp reset, so was the curve
+        if tdp_reset:
+            self.fan_curve_set = False
+
+        # Handle fan curve resets
         if conf["tdp.lenovo.fan.manual.reset"].to(bool):
             conf["tdp.lenovo.fan.manual.reset"] = False
             for i, v in enumerate(MIN_CURVE):
                 conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = v
-
+        
+        # Handle fan curve limits
         if conf["tdp.lenovo.fan.manual.enforce_limits"].to(bool):
             for i, v in enumerate(MIN_CURVE):
                 if conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"].to(int) < v:
                     conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = v
 
-        # Update TDP values
-        conf["tdp.lenovo.tdp.mode"] = get_tdp_mode()
-        if self.old_conf and conf["tdp.lenovo.tdp.mode"].to(str) != self.old_conf[
-            "tdp.mode"
-        ].to(str):
-            self.fan_curve_set = False
-        if conf["tdp.lenovo.tdp.mode"].to(str) == "custom":
-            steady = get_steady_tdp()
-            fast = get_fast_tdp()
-            if not isinstance(steady, int) or not isinstance(fast, int):
-                logger.error(f"Could not read tdp values.")
-                return
-            conf["tdp.lenovo.tdp.custom.tdp"] = steady
-            conf["tdp.lenovo.tdp.custom.boost"] = fast > steady + 2
-
-
-        # Check fan curve has not changed
+        # Check if fan curve has changed
+        # Use debounce logic on these changes
         for i in (10, 20, 30, 40, 50, 60, 70, 80, 90, 100):
             if conf[f"tdp.lenovo.fan.manual.st{i}"].to(int) != self.old_conf[
                 f"fan.manual.st{i}"
             ].to(int):
-                self.fan_curve_set = False
+                self.queue_fan = curr + APPLY_DELAY
 
-        if conf["tdp.lenovo.fan.mode"].to(str) == "manual" and not self.fan_curve_set:
+        apply_curve = (self.queue_fan and self.queue_fan < curr) or not self.fan_curve_set
+        if conf["tdp.lenovo.fan.mode"].to(str) == "manual" and apply_curve:
             try:
                 set_fan_curve(
                     [
@@ -175,8 +195,8 @@ class LenovoDriverPlugin(HHDPlugin):
                 )
             except Exception as e:
                 logger.error(f"Could not set fan curve. Error:\n{e}")
-
             self.fan_curve_set = True
+            self.queue_fan = None
         
         # Save current config
         self.old_conf = conf["tdp.lenovo"]
