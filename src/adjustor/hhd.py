@@ -1,3 +1,4 @@
+from hhd.plugins.plugin import Emitter
 from adjustor.core.acpi import initialize, check_perms
 
 from typing import Sequence
@@ -12,7 +13,7 @@ from hhd.plugins import HHDSettings, load_relative_yaml
 import logging
 
 from hhd.plugins.conf import Config
-
+from .utils import exists_sentinel, remove_sentinel, install_sentinel
 logger = logging.getLogger(__name__)
 
 
@@ -23,6 +24,11 @@ class AdjustorInitPlugin(HHDPlugin):
         self.log = "adji"
         self.init = False
         self.failed = False
+        self.safe_mode = False
+
+    def open(self, emit: Emitter, context: Context):
+        if exists_sentinel() or not install_sentinel():
+            self.safe_mode = True
 
     def settings(self):
         return {}
@@ -30,6 +36,14 @@ class AdjustorInitPlugin(HHDPlugin):
     def update(self, conf: Config):
         if self.failed:
             conf["tdp.general.enable"] = False
+        if self.safe_mode:
+            logger.warning(f"Due to a sentinel error, auto-start is disabled.")
+            conf["tdp.general.error"] = (
+                "Due to Handheld Daemon not exiting properly, auto-start is disabled."
+            )
+            conf["tdp.general.enable"] = False
+            self.safe_mode = False
+            
         if self.init:
             return
 
@@ -45,7 +59,9 @@ class AdjustorInitPlugin(HHDPlugin):
             self.failed = True
 
         self.init = True
-
+    
+    def close(self):
+        remove_sentinel()
 
 class AdjustorPlugin(HHDPlugin):
     def __init__(self) -> None:
