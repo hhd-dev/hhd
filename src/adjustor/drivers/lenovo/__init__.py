@@ -82,7 +82,6 @@ class LenovoDriverPlugin(HHDPlugin):
         if self.startup:
             conf["tdp.lenovo.ffss"] = get_full_fan_speed()
             conf["tdp.lenovo.power_light"] = get_power_light()
-            self.startup = False
 
         # If not old config, exit, as values can not be set
         if not self.old_conf:
@@ -137,8 +136,8 @@ class LenovoDriverPlugin(HHDPlugin):
         if new_mode == "custom":
             # Check user changed values
             steady = conf["tdp.lenovo.tdp.custom.tdp"].to(int)
-            if self.startup and (steady > 30 or steady < 5):
-                logger.warning(f"Config contains TDP outside the device spec. Resetting for stability reasons.")
+            if self.startup and (steady > 30 or steady < 7):
+                logger.warning(f"TDP ({steady}) outside the device spec. Resetting for stability reasons.")
                 steady = 30
                 conf["tdp.lenovo.tdp.custom.tdp"] = 30
             steady_updated = steady and steady != self.old_conf[
@@ -204,6 +203,9 @@ class LenovoDriverPlugin(HHDPlugin):
         
         # Save current config
         self.old_conf = conf["tdp.lenovo"]
+
+        if self.startup:
+            self.startup = False
 
     def close(self):
         pass

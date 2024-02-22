@@ -7,7 +7,6 @@ SENTINEL_FILE = os.environ.get("HHD_ADJ_SENTINEL", "/etc/adjustor_sentinel.lock"
 
 def install_sentinel():
     try:
-        logger.error(SENTINEL_FILE)
         with open(SENTINEL_FILE, 'w') as f:
             f.write('sentinel')
         return True
