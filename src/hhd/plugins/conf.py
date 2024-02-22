@@ -131,11 +131,15 @@ class Config:
 
             d[seq[-1]] = val
             if isinstance(self._conf, MutableMapping):
+                init = deepcopy(self._conf)
                 parse_conf(cont, self._conf)
+                # FIXME: verify no regressions
+                if init != self._conf:
+                    self._updated = True
             else:
                 self._conf = cont
                 if self._conf != cont:
-                    self.updated = True
+                    self._updated = True
 
     def __contains__(self, key: str | tuple[str, ...]):
         with self._lock:

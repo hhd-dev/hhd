@@ -659,9 +659,9 @@ def load_profile_yaml(fn: str):
 
 
 def get_settings_hash(set: HHDSettings):
-    import hashlib
+    import hashlib, json
 
-    return hashlib.md5(dump_comment(set).encode()).hexdigest()[:8]
+    return hashlib.md5(json.dumps(set).encode()).hexdigest()[:8]
 
 
 def unravel(d: Setting | Container | Mode, prev: Sequence[str], out: MutableMapping):
