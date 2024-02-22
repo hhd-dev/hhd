@@ -128,7 +128,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             )
         )
         drivers.append(
-            SmuQamPlugin(dev, ROG_ALLY_PP_MAP if pp_enable else None),
+            SmuQamPlugin(dev, ROG_ALLY_PP_MAP if pp_enable else None, init_tdp=not prod == "83E1"),
         )
         drivers_matched = True
 

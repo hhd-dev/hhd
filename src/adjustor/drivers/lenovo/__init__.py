@@ -26,6 +26,7 @@ from adjustor.core.lenovo import (
 logger = logging.getLogger(__name__)
 
 APPLY_DELAY = 0.5
+TDP_DELAY = 0.1
 
 class LenovoDriverPlugin(HHDPlugin):
     def __init__(self) -> None:
@@ -136,13 +137,17 @@ class LenovoDriverPlugin(HHDPlugin):
         if new_mode == "custom":
             # Check user changed values
             steady = conf["tdp.lenovo.tdp.custom.tdp"].to(int)
+
+            steady_updated = steady and steady != self.old_conf[
+                "tdp.custom.tdp"
+            ].to(int)
+
             if self.startup and (steady > 30 or steady < 7):
                 logger.warning(f"TDP ({steady}) outside the device spec. Resetting for stability reasons.")
                 steady = 30
                 conf["tdp.lenovo.tdp.custom.tdp"] = 30
-            steady_updated = steady and steady != self.old_conf[
-                "tdp.custom.tdp"
-            ].to(int)
+                steady_updated = True
+
             boost = conf["tdp.lenovo.tdp.custom.boost"].to(bool)
             boost_updated = boost != self.old_conf["tdp.custom.boost"].to(bool)
             
@@ -155,11 +160,15 @@ class LenovoDriverPlugin(HHDPlugin):
                 self.queue_tdp = None
                 if boost:
                     set_steady_tdp(steady)
+                    time.sleep(TDP_DELAY)
                     set_slow_tdp(steady + 2)
+                    time.sleep(TDP_DELAY)
                     set_fast_tdp(min(42, int(steady * 41 / 30)))
                 else:
                     set_steady_tdp(steady)
+                    time.sleep(TDP_DELAY)
                     set_slow_tdp(steady)
+                    time.sleep(TDP_DELAY)
                     set_fast_tdp(steady)
 
         # Fan curve stuff

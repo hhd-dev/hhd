@@ -48,6 +48,7 @@ class SmuQamPlugin(HHDPlugin):
         self,
         dev: dict[str, DeviceParams],
         pp_map: list[tuple[str, int]] | None,
+        init_tdp: bool = True
     ) -> None:
         self.name = f"adjustor_smu_qam"
         self.priority = 7
@@ -65,6 +66,11 @@ class SmuQamPlugin(HHDPlugin):
         self.old_boost = None
         self.is_set = False
         self.lims = self.dev.get("skin_limit", self.dev.get("stapm_limit", None))
+
+        # Workaround for debugging on the legion go
+        # Avoids sending SMU commands that will conflict with Lenovo TDP on
+        # startup
+        self.init_tdp = init_tdp
 
         if pp_map:
             self.pps = get_platform_choices() or []
@@ -114,7 +120,7 @@ class SmuQamPlugin(HHDPlugin):
         self.enabled = conf["tdp.general.enable"].to(bool)
         self.enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
-            self.startup = True
+            self.startup = self.init_tdp
             return
 
         curr = time.time()
