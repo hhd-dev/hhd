@@ -68,11 +68,11 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
     # 2021 Mappings
     B("KEY_DELETE"): "share",  # TM Button [97,100,111]
     B("KEY_ESC"): "extra_l1",  # ESC Button [1]
-    B("KEY_O"): "extra_l2",  # KB Button [97, 24, 125]
+    B("KEY_O"): "extra_r1",  # KB Button [97, 24, 125]
     # B("KEY_LEFTMETA"): "extra_r1", # Win Button [125], Conflict with KB Button
     # Air mappings
     B("KEY_F11"): "extra_l1",  # LC Button [87, 97, 125] F11 + LCTRL + LMETA
-    B("KEY_F10"): "extra_l2",  # Rc Button [68, 97, 125] F10 + LCTRL + LMETA
+    B("KEY_F10"): "extra_r1",  # Rc Button [68, 97, 125] F10 + LCTRL + LMETA
 }
 
 AYA_DEFAULT_CONF = {
