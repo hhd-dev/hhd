@@ -26,6 +26,7 @@ from .plugins import (
 )
 from .plugins.settings import (
     Validator,
+    parse_defaults,
     get_default_state,
     load_blacklist_yaml,
     load_profile_yaml,
@@ -393,6 +394,7 @@ def main():
             #
 
             # Process events
+            set_log_plugin("main")
             settings_changed = False
             for ev in emit.get_events():
                 match ev["type"]:
@@ -421,31 +423,43 @@ def main():
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")
 
-            # Validate config
-            validate_config(conf, settings, validator)
-
             # If settings changed, the configuration needs to reload
             # but it needs to be saved first
             if settings_changed:
-                should_initialize.set()
+                logger.info(f"Reloading settings.")
 
-            # Plugins are promised that once they emit a
-            # settings change they are not called with the old settings
-            if not settings_changed:
-                #
-                # Plugin event loop
-                #
+                # Settings
+                hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
+                # TODO: Improve check
+                try:
+                    if "venv" not in exe_python:
+                        del hhd_settings["hhd"]["settings"]["children"]["update_stable"]
+                        del hhd_settings["hhd"]["settings"]["children"]["update_beta"]
+                except Exception as e:
+                    logger.warning(f"Could not hide update settings. Error:\n{e}")
+                settings = merge_settings(
+                    [*[p.settings() for p in sorted_plugins], hhd_settings]
+                )
+                shash = get_settings_hash(settings)
 
-                for p in reversed(sorted_plugins):
-                    set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                    p.prepare(conf)
-                    update_log_plugins()
+            # Validate config
+            conf = Config([parse_defaults(settings), conf.conf])
+            validate_config(conf, settings, validator)
 
-                for p in sorted_plugins:
-                    set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                    p.update(conf)
-                    update_log_plugins()
-                set_log_plugin("ukwn")
+            #
+            # Plugin event loop
+            #
+
+            for p in reversed(sorted_plugins):
+                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                p.prepare(conf)
+                update_log_plugins()
+
+            for p in sorted_plugins:
+                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                p.update(conf)
+                update_log_plugins()
+            set_log_plugin("ukwn")
 
             # Notify that events were applied
             # Before saving to reduce delay (yaml files take 100ms :( )
