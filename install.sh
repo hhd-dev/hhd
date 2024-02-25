@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # Installs Handheld Daemon to ~/.local/share/hhd
 
-if [ "$EUID" -eq 0 ]
+if [ "$EUID" = 0 ]
   then echo "You should run this script as your user, not root (sudo)."
   exit
 fi
@@ -9,7 +9,7 @@ fi
 # Install Handheld Daemon to ~/.local/share/hhd
 mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
-python -m venv --system-site-packages venv
+python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install --upgrade hhd
 

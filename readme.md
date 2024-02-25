@@ -165,7 +165,7 @@ These steps do not work on Bazzite, see [here](#bazzite).
 # Install Handheld Daemon to ~/.local/share/hhd
 mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
-python -m venv --system-site-packages venv
+python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install --upgrade hhd
 # Substitute with the following to pull from github (may not always work)
@@ -173,11 +173,11 @@ pip install --upgrade hhd
 
 # Install udev rules and create a service file
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/hwdb.d/83-hhd.hwdb -o /etc/udev/hwdb.d/83-hhd.hwdb
+sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
 # Change rules to re-enable display autorotation if you do not want gyro support.
 # sudo nano /etc/udev/rules.d/83-hhd.rules
-
-sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/systemd/system/hhd_local%40.service -o /etc/systemd/system/hhd_local@.service
 
 # Start service and reboot
 sudo systemctl enable hhd_local@$(whoami)
@@ -208,9 +208,12 @@ To uninstall, simply stop the service and remove the added files.
 ```bash
 sudo systemctl disable hhd_local@$(whoami)
 sudo systemctl stop hhd_local@$(whoami)
+
 rm -rf ~/.local/share/hhd
 sudo rm /etc/udev/rules.d/83-hhd.rules
+sudo rm /etc/udev/hwdb.d/83-hhd.hwdb
 sudo rm /etc/systemd/system/hhd_local@.service
+
 # Delete your configuration
 rm -r ~/.config/hhd
 ```
