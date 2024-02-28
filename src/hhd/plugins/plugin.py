@@ -86,6 +86,9 @@ class HHDPlugin:
     def update(self, conf: Config):
         pass
 
+    def notify(self, events: Sequence[Event]):
+        pass
+
     def close(self):
         pass
 

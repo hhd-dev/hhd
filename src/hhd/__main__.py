@@ -396,7 +396,8 @@ def main():
             # Process events
             set_log_plugin("main")
             settings_changed = False
-            for ev in emit.get_events():
+            events = emit.get_events()
+            for ev in events:
                 match ev["type"]:
                     case "settings":
                         settings_changed = True
@@ -450,11 +451,19 @@ def main():
             # Plugin event loop
             #
 
+            # Allow plugins to process events
+            for p in sorted_plugins:
+                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                p.notify(events)
+                update_log_plugins()
+
+            # Run prepare loop
             for p in reversed(sorted_plugins):
                 set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
                 p.prepare(conf)
                 update_log_plugins()
 
+            # Run update loop
             for p in sorted_plugins:
                 set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
                 p.update(conf)
