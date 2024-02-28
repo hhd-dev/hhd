@@ -137,7 +137,7 @@ def plugin_run(
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
-            controller_loop(conf.copy(), should_exit, updated)
+            controller_loop(conf.copy(), should_exit, updated, emit)
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
@@ -149,7 +149,7 @@ def plugin_run(
             time.sleep(ERROR_DELAY)
 
 
-def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
+def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter):
     debug = conf.get("debug", False)
 
     # Output
@@ -197,6 +197,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent):
         share_to_qam=conf["share_to_qam"].to(bool),
         select_reboots=conf["select_reboots"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
+        emit=emit,
     )
 
     REPORT_FREQ_MIN = 25

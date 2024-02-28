@@ -179,7 +179,7 @@ def plugin_run(
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
-            controller_loop(conf.copy(), should_exit, updated, dconf)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
@@ -192,7 +192,7 @@ def plugin_run(
             time.sleep(ERROR_DELAY)
 
 
-def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict):
+def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter):
     debug = conf.get("debug", False)
     has_touchpad = dconf.get("touchpad", False)
 
@@ -283,6 +283,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             dpad="analog_to_discrete",
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
+            emit=emit
         )
 
     REPORT_FREQ_MIN = 25

@@ -66,7 +66,7 @@ def plugin_run(
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
-            controller_loop(conf.copy(), should_exit, updated, dconf)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
@@ -79,7 +79,9 @@ def plugin_run(
             time.sleep(ERROR_DELAY)
 
 
-def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict):
+def controller_loop(
+    conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
+):
     debug = conf.get("debug", False)
 
     # Output
@@ -121,6 +123,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
         dpad="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
+        emit=emit,
     )
 
     # d_volume_btn = UInputDevice(

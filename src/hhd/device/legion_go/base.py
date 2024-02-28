@@ -86,7 +86,7 @@ def plugin_run(
                 logger.info("Launching emulated controller.")
                 if gyro_fixer:
                     gyro_fixer.open()
-                controller_loop_xinput(conf_copy, should_exit, updated)
+                controller_loop_xinput(conf_copy, should_exit, updated, emit)
             else:
                 if controller_mode != "xinput":
                     logger.info(
@@ -97,7 +97,12 @@ def plugin_run(
                         f"Controllers in xinput mode but emulation is disabled."
                     )
                 controller_loop_rest(
-                    controller_mode, pid if pid else 2, conf_copy, should_exit, updated
+                    controller_mode,
+                    pid if pid else 2,
+                    conf_copy,
+                    should_exit,
+                    updated,
+                    emit,
                 )
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
@@ -116,7 +121,12 @@ def plugin_run(
 
 
 def controller_loop_rest(
-    mode: str, pid: int, conf: Config, should_exit: TEvent, updated: TEvent
+    mode: str,
+    pid: int,
+    conf: Config,
+    should_exit: TEvent,
+    updated: TEvent,
+    emit: Emitter,
 ):
     debug = conf.get("debug", False)
     shortcuts_enabled = conf["shortcuts"].to(bool)
@@ -144,6 +154,7 @@ def controller_loop_rest(
         trigger="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
+        emit=emit,
     )
     d_uinput = UInputDevice(
         name=f"HHD Shortcuts (Legion Mode: {mode})",
@@ -182,7 +193,9 @@ def controller_loop_rest(
         d_raw.close(True)
 
 
-def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
+def controller_loop_xinput(
+    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter
+):
     debug = conf.get("debug", False)
 
     # Output
@@ -273,6 +286,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
         select_reboots=conf["select_reboots"].to(bool),
         r3_to_share=conf["m2_to_mute"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
+        emit=emit,
     )
 
     REPORT_FREQ_MIN = 25
