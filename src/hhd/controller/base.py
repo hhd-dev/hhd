@@ -1,11 +1,16 @@
 import logging
 import select
 import time
-from typing import Any, Literal, NamedTuple, Sequence, TypedDict
+from typing import Any, Literal, NamedTuple, Sequence, TypedDict, Callable
 
 from .const import Axis, Button, Configuration
 
 logger = logging.getLogger(__name__)
+
+
+class SpecialEvent(TypedDict):
+    type: Literal["special"]
+    event: Literal["qam_single", "qam_double", "qam_tripple", "qam_hold"]
 
 
 class RumbleEvent(TypedDict):
@@ -224,6 +229,9 @@ class Consumer:
 
 TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
+QAM_HOLD_TIME = 1
+QAM_MULTI_PRESS_DELAY = 0.3
+
 
 class Multiplexer:
     QAM_DELAY = 0.2
@@ -239,8 +247,9 @@ class Multiplexer:
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
         dpad: None | Literal["analog_to_discrete"] = None,
         led: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
-        touchpad: None
-        | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
+        touchpad: (
+            None | Literal["left_to_main", "right_to_main", "main_to_sides"]
+        ) = None,
         status: None | Literal["both_to_main"] = None,
         share_to_qam: bool = False,
         trigger_discrete_lvl: float = 0.99,
@@ -251,6 +260,7 @@ class Multiplexer:
         select_reboots: bool = False,
         nintendo_mode: bool = False,
         qam_button: str | None = None,
+        emit: Callable[[SpecialEvent], None] | None = None,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -265,6 +275,7 @@ class Multiplexer:
         self.select_reboots = select_reboots
         self.r3_to_share = r3_to_share
         self.nintendo_mode = nintendo_mode
+        self.emit = emit
 
         self.state = {}
         self.touchpad_x = 0
@@ -276,6 +287,10 @@ class Multiplexer:
         self.qam_button = qam_button
         if share_to_qam:
             self.qam_button = "share"
+
+        self.qam_pressed = None
+        self.qam_released = None
+        self.qam_times = 0
 
         assert touchpad is None, "touchpad rewiring not supported yet"
 
@@ -386,18 +401,20 @@ class Multiplexer:
                         out.append(
                             {
                                 "type": "button",
-                                "code": "dpad_up"
-                                if ev["code"] == "hat_y"
-                                else "dpad_right",
+                                "code": (
+                                    "dpad_up" if ev["code"] == "hat_y" else "dpad_right"
+                                ),
                                 "value": ev["value"] > 0.5,
                             }
                         )
                         out.append(
                             {
                                 "type": "button",
-                                "code": "dpad_down"
-                                if ev["code"] == "hat_y"
-                                else "dpad_left",
+                                "code": (
+                                    "dpad_down"
+                                    if ev["code"] == "hat_y"
+                                    else "dpad_left"
+                                ),
                                 "value": ev["value"] < -0.5,
                             }
                         )
@@ -449,41 +466,16 @@ class Multiplexer:
                             self.select_pressed = None
 
                     if self.qam_button is not None and ev["code"] == self.qam_button:
+                        ev["code"] = ""  # type: ignore
                         if ev["value"]:
-                            ev["code"] = "mode"
-                            self.queue.append(
-                                (
-                                    {
-                                        "type": "button",
-                                        "code": "a",
-                                        "value": True,
-                                    },
-                                    curr + self.QAM_DELAY,
-                                )
-                            )
+                            self.qam_pressed = curr
+                            self.qam_released = None
+                            self.qam_times += 1
                         else:
-                            # TODO: Clean this up
-                            ev["code"] = ""  # type: ignore
-                            self.queue.append(
-                                (
-                                    {
-                                        "type": "button",
-                                        "code": "mode",
-                                        "value": False,
-                                    },
-                                    curr + self.QAM_DELAY,
-                                ),
-                            )
-                            self.queue.append(
-                                (
-                                    {
-                                        "type": "button",
-                                        "code": "a",
-                                        "value": False,
-                                    },
-                                    curr + self.QAM_DELAY,
-                                ),
-                            )
+                            # Only apply if qam_pressed was not yanked
+                            if self.qam_pressed:
+                                self.qam_released = curr
+                            self.qam_pressed = None
 
                     if ev["code"] == "touchpad_right":
                         match self.touchpad_right:
@@ -574,6 +566,71 @@ class Multiplexer:
                 self.touchpad_x,
                 self.touchpad_y,
             )
+
+        # Handle QAM button
+        qam_apply = False
+        if self.qam_pressed and curr - self.qam_pressed > QAM_HOLD_TIME:
+            qam_apply = True
+        if self.qam_released and curr - self.qam_released > QAM_MULTI_PRESS_DELAY:
+            qam_apply = True
+
+        if qam_apply and self.qam_released and self.qam_times == 1:
+            out.append(
+                {
+                    "type": "button",
+                    "code": "mode",
+                    "value": True,
+                },
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": "a",
+                        "value": True,
+                    },
+                    curr + self.QAM_DELAY,
+                )
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": "a",
+                        "value": False,
+                    },
+                    curr + 2 * self.QAM_DELAY,
+                ),
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": "mode",
+                        "value": False,
+                    },
+                    curr + 2 * self.QAM_DELAY,
+                ),
+            )
+        if qam_apply and self.emit:
+            if self.qam_pressed:
+                self.emit({"type": "special", "event": "qam_hold"})
+            else:
+                match self.qam_times:
+                    case 0:
+                        pass
+                    case 1:
+                        self.emit({"type": "special", "event": "qam_single"})
+                    case 2:
+                        self.emit({"type": "special", "event": "qam_double"})
+                    case _:
+                        self.emit({"type": "special", "event": "qam_tripple"})
+        if qam_apply:
+            held = " then held" if self.qam_pressed else ""
+            logger.info(f"QAM Pressed {self.qam_times}{held}.")
+            self.qam_pressed = None
+            self.qam_released = None
+            self.qam_times = 0
 
         for s in status_events:
             match s:

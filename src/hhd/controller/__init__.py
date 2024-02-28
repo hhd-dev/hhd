@@ -8,6 +8,7 @@ from .base import (
     TouchpadCorrectionType,
     can_read,
     correct_touchpad,
+    SpecialEvent,
 )
 from .const import Axis, Button, Configuration
 
@@ -24,4 +25,5 @@ __all__ = [
     "correct_touchpad",
     "KeyboardWrapper",
     "Multiplexer",
+    "SpecialEvent",
 ]

@@ -8,7 +8,7 @@ from typing import (
     TypedDict,
 )
 
-from hhd.controller import Axis, Button, Configuration
+from hhd.controller import Axis, Button, Configuration, SpecialEvent
 
 from .conf import Config
 from .settings import HHDSettings
@@ -52,7 +52,9 @@ class InputEvent(TypedDict):
     conf_state: Mapping[Configuration, Any]
 
 
-Event = ConfigEvent | InputEvent | ProfileEvent | ApplyEvent | SettingsEvent
+Event = (
+    ConfigEvent | InputEvent | ProfileEvent | ApplyEvent | SettingsEvent | SpecialEvent
+)
 
 
 class Emitter(Protocol):
