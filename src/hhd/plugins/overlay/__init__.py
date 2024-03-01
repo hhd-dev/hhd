@@ -49,7 +49,7 @@ class OverlayPlugin(HHDPlugin):
             match ev["event"]:
                 case "guide":
                     # Close to avoid issues with steam
-                    cmd = "close"
+                    cmd = "close_now"
                 case "qam_single":
                     # Close to avoid issues with steam
                     cmd = "close"

@@ -465,7 +465,7 @@ class Multiplexer:
                             self.select_is_held = False
                             self.select_pressed = None
 
-                    if self.emit and ev["code"] == "guide" and ev["value"]:
+                    if self.emit and ev["code"] == "mode" and not ev["value"]:
                         # Steam might do weirdness, emit an event to prepare
                         # the overlay
                         self.emit({"type": "special", "event": "guide"})

@@ -24,7 +24,9 @@ from .x11 import (
 )
 
 logger = logging.getLogger(__name__)
-Command = Literal["close", "open_qam", "open_expanded", "open_notification"]
+Command = Literal[
+    "close_now", "close", "open_qam", "open_expanded", "open_notification"
+]
 Status = Literal["closed", "qam", "expanded", "notification"]
 
 GUARD_CHECK = 0.5
