@@ -20,6 +20,8 @@ Requires:       python3-evdev
 Requires:       python3-rich
 Requires:       python3-yaml
 Requires:       python3-setuptools
+Requires:       python3-xlib
+Requires:       libusb1
 
 %description
 Handheld Daemon is a project that aims to provide utilities for managing handheld devices. With features ranging from TDP controls, to controller remappings, and gamescope session management. This will be done through a plugin system and an HTTP(/d-bus?) daemon, which will expose the settings of the plugins in a UI agnostic way.
