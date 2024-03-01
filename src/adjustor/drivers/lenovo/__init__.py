@@ -72,11 +72,7 @@ class LenovoDriverPlugin(HHDPlugin):
         new_lims = new_enforce_limits != self.enforce_limits
         self.enforce_limits = new_enforce_limits
 
-        if (
-            not self.enabled
-            or not self.initialized
-            or new_lims
-        ):
+        if not self.enabled or not self.initialized or new_lims:
             self.old_conf = None
             self.startup = True
             self.fan_curve_set = False
@@ -161,10 +157,10 @@ class LenovoDriverPlugin(HHDPlugin):
 
             # If yes, queue an update
             # Debounce
-            if steady_updated or boost_updated:
+            if steady_updated or boost_updated or tdp_reset:
                 self.queue_tdp = curr + APPLY_DELAY
 
-            if (self.queue_tdp and self.queue_tdp < curr) or tdp_reset:
+            if self.queue_tdp and self.queue_tdp < curr:
                 self.queue_tdp = None
                 if boost:
                     set_steady_tdp(steady)
@@ -182,7 +178,7 @@ class LenovoDriverPlugin(HHDPlugin):
         # Fan curve stuff
         # If tdp reset, so was the curve
         if tdp_reset:
-            self.fan_curve_set = False
+            self.queue_fan = curr + APPLY_DELAY
 
         # Handle fan curve resets
         if conf["tdp.lenovo.fan.manual.reset"].to(bool):
