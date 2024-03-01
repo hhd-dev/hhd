@@ -229,12 +229,11 @@ class Consumer:
 
 TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
-QAM_HOLD_TIME = 1
-QAM_MULTI_PRESS_DELAY = 0.3
-
 
 class Multiplexer:
-    QAM_DELAY = 0.2
+    QAM_HOLD_TIME = 1
+    QAM_MULTI_PRESS_DELAY = 0.25
+    QAM_DELAY = 0.1
     REBOOT_HOLD = 4
     REBOOT_VIBRATION_STRENGTH = 0.6
     REBOOT_VIBRATION_ON = 0.3
@@ -574,9 +573,9 @@ class Multiplexer:
 
         # Handle QAM button
         qam_apply = False
-        if self.qam_pressed and curr - self.qam_pressed > QAM_HOLD_TIME:
+        if self.qam_pressed and curr - self.qam_pressed > self.QAM_HOLD_TIME:
             qam_apply = True
-        if self.qam_released and curr - self.qam_released > QAM_MULTI_PRESS_DELAY:
+        if self.qam_released and curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY:
             qam_apply = True
 
         if qam_apply and self.qam_released and self.qam_times == 1:
