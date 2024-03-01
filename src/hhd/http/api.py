@@ -302,8 +302,12 @@ class RestHandler(BaseHTTPRequestHandler):
                 case other:
                     return self.send_not_found(f"File not found:\n{path}")
         except Exception as e:
-            logger.error(f"Encountered error while serving unauthenticated request.")
-            return self.send_error(f"Encountered error while serving request:\n{e}")
+            logger.debug(f"Encountered error while serving unauthenticated request.")
+            try:
+                return self.send_error(f"Encountered error while serving request:\n{e}")
+            except Exception:
+                # Generated due to polling website going in the background
+                pass
 
     def do_POST(self):
         if not self.send_authenticate():
