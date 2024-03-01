@@ -39,7 +39,7 @@ def get_overlay_display(displays: Sequence[str]):
         d.close()
 
 
-def find_win(display: display.Display, win: str):
+def find_win(display: display.Display, win: list[str]):
     n = display.get_atom("WM_CLASS")
     for w in display.screen().root.query_tree().children:
         v = w.get_property(n, Xatom.STRING, 0, 50)
@@ -47,16 +47,23 @@ def find_win(display: display.Display, win: str):
             continue
         if not v.value:
             continue
-        if win in v.value.decode():
+
+        classes = [c.decode() for c in v.value.split(b"\00") if c]
+        found = True
+        for val in win:
+            if val not in classes:
+                found = False
+
+        if found:
             return w
 
 
 def find_hhd(display: display.Display):
-    return find_win(display, "dev.hhd.hhd-ui")
+    return find_win(display, ["dev.hhd.hhd-ui"])
 
 
 def find_steam(display: display.Display):
-    return find_win(display, "steamwebhelper")
+    return find_win(display, ["steamwebhelper", "steam"])
 
 
 def print_data(display: display.Display):

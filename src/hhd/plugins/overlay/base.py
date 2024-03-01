@@ -87,6 +87,10 @@ def loop_manage_overlay(
 
             r, _, _ = select.select([fd_out, fd_err], [], [], GUARD_CHECK)
 
+            if proc.poll() is not None:
+                logger.warning(f"Overlay stopped (steam may have restarted). Closing.")
+                return
+
             if shown and is_steam_shown(disp, steam):
                 logger.warning(
                     f"Steam overlay shown while hhd-ui is active. Hiding UI to avoid issues."
@@ -117,6 +121,7 @@ def loop_manage_overlay(
     finally:
         logger.info(f"Stopping overlay process.")
         proc.kill()
+        proc.wait()
 
 
 class OverlayService:
@@ -125,7 +130,6 @@ class OverlayService:
         self.started = False
         self.t = None
         self.should_exit = None
-        self.failed = False
 
     def _start(self):
         # Should not be called by outsiders
@@ -137,13 +141,13 @@ class OverlayService:
         exe = find_overlay_exe()
         if not exe:
             logger.warning("Overlay is not installed, not launching.")
-            return
+            return False
         logger.info(f"Found overlay executable '{exe}'")
 
         displays = get_gamescope_displays()
         if not displays:
             logger.warning("Could not find overlay displays, gamescope is not active.")
-            return
+            return False
         logger.debug(f"Found the following gamescope displays: {displays}")
 
         res = get_overlay_display(displays)
@@ -151,7 +155,7 @@ class OverlayService:
             logger.error(
                 f"Could not find overlay display in gamescope displays. This should never happen."
             )
-            return
+            return False
         disp, name = res
         logger.debug(f"Overlay display is the folling: DISPLAY={name}")
 
@@ -192,18 +196,14 @@ class OverlayService:
             # do not initialize for those.
             return
         old = switch_priviledge(self.ctx, False)
-        if self.failed:
-            return
         try:
             if not self._start():
-                self.failed = True
                 return
             if not self.is_healthy():
                 logger.warning(f"Overlay service died, attempting to restart.")
                 self.close()
                 if not self._start():
-                    logger.warning(f"Restarting failed, disabling overlay.")
-                    self.failed = True
+                    logger.warning(f"Restarting overlay failed.")
                     return
 
             if not self.proc:
@@ -213,7 +213,6 @@ class OverlayService:
             update_status(self.proc, cmd)
         except Exception as e:
             logger.error(f"Failed launching overlay with error:\n{e}")
-            self.failed = True
             self.close()
         finally:
             restore_priviledge(old)
