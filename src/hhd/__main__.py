@@ -443,8 +443,11 @@ def main():
                 )
                 shash = get_settings_hash(settings)
 
+                # Add new defaults
+                conf = Config([parse_defaults(settings), conf.conf])
+                conf.updated = True
+
             # Validate config
-            conf = Config([parse_defaults(settings), conf.conf])
             validate_config(conf, settings, validator)
 
             #
