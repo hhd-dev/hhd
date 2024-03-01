@@ -17,6 +17,7 @@ classifiers = [
 
 dependencies = [
   "rich>=13.5.2",
+  "pyroute2>=0.7.3",
 ]
 
 [project.urls]
