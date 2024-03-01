@@ -100,9 +100,9 @@ def loop_manage_overlay(
                     logger.info(f"UI: {l}")
 
             if fd_out in r:
-                cmd = proc.stdout.readline()
+                cmd = proc.stdout.readline()[:-1]
                 if cmd.startswith("stat:"):
-                    status = cast(Status, cmd[4:])
+                    status = cast(Status, cmd[5:])
                     if status == "closed":
                         if shown:
                             hide_hhd(disp, hhd, steam, old)
