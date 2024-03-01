@@ -39,6 +39,7 @@ def update_status(proc: subprocess.Popen, cmd: Command):
 
     try:
         proc.stdin.write(f"\ncmd:{cmd}\n")
+        proc.stdin.flush()
         return True
     except Exception as e:
         logger.warning(f"Could not update overlay status with error:\n{e}")
@@ -96,11 +97,10 @@ def loop_manage_overlay(
             if fd_err in r:
                 l = proc.stderr.readline()[:-1]
                 if l:
-                    logger.info(f"Electron: {l}")
+                    logger.info(f"UI: {l}")
 
             if fd_out in r:
                 cmd = proc.stdout.readline()
-                logger.info(cmd)
                 if cmd.startswith("stat:"):
                     status = cast(Status, cmd[4:])
                     if status == "closed":
