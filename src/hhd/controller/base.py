@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class SpecialEvent(TypedDict):
     type: Literal["special"]
-    event: Literal["qam_single", "qam_double", "qam_tripple", "qam_hold"]
+    event: Literal["guide", "qam_single", "qam_double", "qam_tripple", "qam_hold"]
 
 
 class RumbleEvent(TypedDict):
@@ -464,6 +464,11 @@ class Multiplexer:
                         else:
                             self.select_is_held = False
                             self.select_pressed = None
+
+                    if self.emit and ev["code"] == "guide" and ev["value"]:
+                        # Steam might do weirdness, emit an event to prepare
+                        # the overlay
+                        self.emit({"type": "special", "event": "guide"})
 
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore

@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any, Sequence
 
-from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml
+from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml, Event
 
 logger = logging.getLogger(__name__)
 
@@ -11,36 +11,71 @@ class OverlayPlugin(HHDPlugin):
         self.name = f"overlay"
         self.priority = 95
         self.log = "ovrl"
+        self.ovf = None
+        self.enabled = False
 
     def open(
         self,
         emit,
         context: Context,
     ):
-        self.started = False
-        self.context = context
+        try:
+            from .base import OverlayService
+
+            self.ovf = OverlayService(context)
+        except Exception as e:
+            logger.warning(
+                f"Could not init overlay service, is python-xlib installed? Error:\n{e}"
+            )
+            self.ovf = None
 
     def settings(self):
-        d = {"hhd": {"overlay": load_relative_yaml("settings.yml")}}
-        # if self.cfg.unsupported:
-        #     d["hhd"]["overlay"]["children"]["powerbuttond"]["default"] = False
-        return d
+        if not self.ovf:
+            return {}
+        return {"hhd": {"overlay": load_relative_yaml("settings.yml")}}
 
     def update(self, conf: Config):
-        pass
+        # Or with self.enabled to require restart
+        self.enabled = self.enabled or conf["hhd.overlay.enabled"].to(bool)
 
-    def start(self):
-        pass
+    def notify(self, events: Sequence[Event]):
+        if not self.ovf or not self.enabled:
+            return
 
-    def stop(self):
-        pass
+        for ev in events:
+            if ev["type"] != "special":
+                continue
+
+            match ev["event"]:
+                case "guide":
+                    # Close to avoid issues with steam
+                    cmd = "close"
+                case "qam_single":
+                    # Close to avoid issues with steam
+                    cmd = "close"
+                case "qam_hold":
+                    # Open QAM with hold for accessibility
+                    cmd = "open_qam"
+                case "qam_double":
+                    # Preferred bind for QAM is dual press
+                    cmd = "open_qam"
+                case "qam_tripple":
+                    # Allow opening expanded menu with tripple press
+                    cmd = "open_expanded"
+                case _:
+                    cmd = None
+
+            if cmd:
+                logger.info(f"Executing overlay command: '{cmd}'")
+                self.ovf.update(cmd)
 
     def close(self):
-        self.stop()
+        if self.ovf:
+            self.ovf.close()
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
-    return []
+    return [OverlayPlugin()]

@@ -421,6 +421,8 @@ def main():
                             conf.update(profiles[ev["name"]].conf)
                     case "state":
                         conf.update(ev["config"].conf)
+                    case "special":
+                        pass
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")
 
@@ -455,10 +457,11 @@ def main():
             #
 
             # Allow plugins to process events
-            for p in sorted_plugins:
-                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                p.notify(events)
-                update_log_plugins()
+            if events:
+                for p in sorted_plugins:
+                    set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                    p.notify(events)
+                    update_log_plugins()
 
             # Run prepare loop
             for p in reversed(sorted_plugins):

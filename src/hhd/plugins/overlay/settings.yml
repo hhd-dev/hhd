@@ -1,0 +1,8 @@
+type: container
+title: Overlay Settings
+
+children:
+  enabled:
+    type: bool
+    title: "Overlay with QAM Double/Tripple press (requires restart)"
+    default: True

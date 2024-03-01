@@ -1,6 +1,6 @@
 import logging
 import time
-from typing import Sequence, cast
+from typing import Sequence
 
 from evdev import UInput
 
@@ -188,7 +188,7 @@ class UInputDevice(Consumer, Producer):
                         out.append(self.rumble)
                     else:
                         logger.warn(
-                            f"Rumble requested but a rumble effect has not been uploaded."
+                            f"Rumble requested but a rumble effect has not been uploaded.\n{ev}"
                         )
                 elif ev.type == B("EV_FF") and not ev.value:
                     out.append(
