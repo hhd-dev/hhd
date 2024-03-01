@@ -62,7 +62,9 @@ def parse_path(path: str) -> tuple[list, dict[str, list[str]]]:
         else:
             segments = []
 
-        params = {k: v for k, v in parse_qs(url.query).items() if v}
+        params = {
+            k: v for k, v in parse_qs(url.query, keep_blank_values=True).items() if v
+        }
         return segments, params
     except Exception:
         return [], {}
@@ -270,9 +272,12 @@ class RestHandler(BaseHTTPRequestHandler):
                             )
                         self.emit({"type": "state", "config": Config(content)})
                         self.cond.wait()
+                    elif "poll" in params:
+                        # Hang for the next update if the UI requests it.
+                        self.cond.wait()
                     self.wfile.write(json.dumps(self.conf.conf).encode())
             case "version":
-                self.send_json({"version": 4})
+                self.send_json({"version": 5})
             case "sections":
                 self.send_json(SECTIONS)
             case other:
