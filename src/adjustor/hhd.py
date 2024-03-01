@@ -1,19 +1,17 @@
-from hhd.plugins.plugin import Emitter
-from adjustor.core.acpi import initialize, check_perms
-
-from typing import Sequence
-from adjustor.core.const import CPU_DATA, ROG_ALLY_PP_MAP, DEV_DATA
-
-import os
-from hhd.plugins import (
-    HHDPlugin,
-    Context,
-)
-from hhd.plugins import HHDSettings, load_relative_yaml
 import logging
+import os
+from threading import Event as TEvent, Thread
+from typing import Sequence
 
+from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
-from .utils import exists_sentinel, remove_sentinel, install_sentinel
+from hhd.plugins.plugin import Emitter
+
+from adjustor.core.acpi import check_perms, initialize
+from adjustor.core.const import CPU_DATA, DEV_DATA, ROG_ALLY_PP_MAP
+
+from .utils import exists_sentinel, install_sentinel, remove_sentinel
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +41,7 @@ class AdjustorInitPlugin(HHDPlugin):
             )
             conf["tdp.general.enable"] = False
             self.safe_mode = False
-            
+
         if self.init:
             return
 
@@ -59,9 +57,10 @@ class AdjustorInitPlugin(HHDPlugin):
             self.failed = True
 
         self.init = True
-    
+
     def close(self):
         remove_sentinel()
+
 
 class AdjustorPlugin(HHDPlugin):
     def __init__(self) -> None:
@@ -71,11 +70,38 @@ class AdjustorPlugin(HHDPlugin):
         self.enabled = False
         self.enfoce_limits = True
 
+        self.t = None
+        self.should_exit = None
+
     def settings(self) -> HHDSettings:
         out = {"tdp": {"general": load_relative_yaml("settings.yml")}}
         if os.environ.get("HHD_ADJ_ENABLE_TDP"):
-            out['tdp']['general']['children']['enable']['default'] = True
+            out["tdp"]["general"]["children"]["enable"]["default"] = True
         return out
+
+    def _start(self):
+        if self.should_exit or self.t:
+            return
+        try:
+            from .events import loop_process_events
+
+            self.should_exit = TEvent()
+            self.t = Thread(
+                target=loop_process_events, args=(self.emit, self.should_exit)
+            )
+            self.t.start()
+        except Exception as e:
+            logger.warning(
+                f"Could not init ACPI event handling. Is pyroute2 installed?"
+            )
+
+    def _stop(self):
+        if not self.should_exit or not self.t:
+            return
+        self.should_exit.set()
+        self.t.join()
+        self.should_exit = None
+        self.t = None
 
     def open(
         self,
@@ -92,8 +118,13 @@ class AdjustorPlugin(HHDPlugin):
         self.enabled = new_enabled
         self.enfoce_limits = new_enforce_limits
 
+        if self.enabled:
+            self._start()
+        else:
+            self._stop()
+
     def close(self):
-        pass
+        self._stop()
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
@@ -128,7 +159,9 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             )
         )
         drivers.append(
-            SmuQamPlugin(dev, ROG_ALLY_PP_MAP if pp_enable else None, init_tdp=not prod == "83E1"),
+            SmuQamPlugin(
+                dev, ROG_ALLY_PP_MAP if pp_enable else None, init_tdp=not prod == "83E1"
+            ),
         )
         drivers_matched = True
 
