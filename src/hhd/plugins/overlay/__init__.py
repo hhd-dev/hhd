@@ -66,8 +66,10 @@ class OverlayPlugin(HHDPlugin):
                     cmd = None
 
             if cmd:
-                logger.info(f"Executing overlay command: '{cmd}'")
-                self.ovf.update(cmd)
+                init = cmd != "close"
+                if init:
+                    logger.info(f"Executing overlay command: '{cmd}'")
+                self.ovf.update(cmd, init)
 
     def close(self):
         if self.ovf:

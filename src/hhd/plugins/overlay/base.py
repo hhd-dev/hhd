@@ -185,13 +185,16 @@ class OverlayService:
 
         return True
 
-    def update(self, cmd: Command):
+    def update(self, cmd: Command, init: bool):
         # Accessing the user's display requires the user's priviledges
+        if not self.started and not init:
+            # This function is called with QAM single presses and guide presses
+            # do not initialize for those.
+            return
         old = switch_priviledge(self.ctx, False)
         if self.failed:
             return
         try:
-
             if not self._start():
                 self.failed = True
                 return
@@ -212,5 +215,5 @@ class OverlayService:
             logger.error(f"Failed launching overlay with error:\n{e}")
             self.failed = True
             self.close()
+        finally:
             restore_priviledge(old)
-            raise e
