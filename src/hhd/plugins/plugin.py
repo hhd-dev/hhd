@@ -27,6 +27,11 @@ class SettingsEvent(TypedDict):
     type: Literal["settings"]
 
 
+class PowerEvent(TypedDict):
+    type: Literal["acpi"]
+    event: Literal["ac", "dc", "tdp", "battery"]
+
+
 class ProfileEvent(TypedDict):
     type: Literal["profile"]
     name: str
@@ -53,7 +58,13 @@ class InputEvent(TypedDict):
 
 
 Event = (
-    ConfigEvent | InputEvent | ProfileEvent | ApplyEvent | SettingsEvent | SpecialEvent
+    ConfigEvent
+    | InputEvent
+    | ProfileEvent
+    | ApplyEvent
+    | SettingsEvent
+    | SpecialEvent
+    | PowerEvent
 )
 
 

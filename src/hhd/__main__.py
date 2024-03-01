@@ -423,6 +423,8 @@ def main():
                         conf.update(ev["config"].conf)
                     case "special":
                         pass
+                    case "power":
+                        pass
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")
 
