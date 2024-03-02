@@ -1,6 +1,6 @@
 type: container
 tags: [lgc]
-title: Handheld
+title: Orange Pi Neo
 hint: >-
   Allows for configuring your handheld's controller to a unified output.
 
