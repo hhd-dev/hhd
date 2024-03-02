@@ -76,7 +76,7 @@ modes:
       bluetooth_mode:
         type: bool
         title: Bluetooth Mode
-        tags: [advanced]
+        tags: [advanced, expert]
         hint: >-
           Emulates the controller in bluetooth mode instead of USB mode.
           This is the default as it causes less issues with how apps
@@ -127,7 +127,7 @@ modes:
       bluetooth_mode:
         type: bool
         title: Bluetooth Mode
-        tags: [advanced]
+        tags: [advanced, expert]
         hint: >-
           Emulates the controller in bluetooth mode instead of USB mode.
           This is the default as it causes less issues with how apps
