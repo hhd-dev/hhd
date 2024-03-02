@@ -60,6 +60,7 @@ class Dualsense(Producer, Consumer):
         enable_touchpad: bool = True,
         enable_rgb: bool = True,
         sync_gyro: bool = False,
+        flip_z: bool = True,
         paddles_to_clicks: bool = False,
     ) -> None:
         self.available = False
@@ -73,6 +74,7 @@ class Dualsense(Producer, Consumer):
         self.enable_touchpad = enable_touchpad
         self.enable_rgb = enable_rgb
         self.sync_gyro = sync_gyro
+        self.flip_z = flip_z
         self.paddles_to_clicks = paddles_to_clicks
 
         self.ofs = (
@@ -300,6 +302,12 @@ class Dualsense(Producer, Consumer):
                     if not self.enable_touchpad and ev["code"].startswith("touchpad"):
                         continue
                     if ev["code"] in self.axis_map:
+                        if not self.flip_z and ev["code"] == "gyro_z":
+                            # Due to hhd's initial focus on steam input, all
+                            # devices were calibrated with an inverted x axis
+                            # compared to a real dualsense controller
+                            # So to not invert x, you have to invert x.
+                            ev["value"] = -ev["value"]
                         encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])
                     # DPAD is weird
                     match ev["code"]:

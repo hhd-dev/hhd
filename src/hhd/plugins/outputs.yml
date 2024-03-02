@@ -41,7 +41,7 @@ modes:
           Passes through the LEDs to the controller, which allows games
           to control them.
         default: True
-      
+
       paddles_to_clicks:
         type: bool
         title: Paddles to Clicks
@@ -63,6 +63,15 @@ modes:
           controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
           If the IMU is not working, this setting will break the controller.
         default: False
+
+      flip_z:
+        type: bool
+        title: Invert Roll Axis
+        default: True
+        hint: >-
+          Inverts the roll (Z) axis compared to a real Dualsense controller.
+          Useful for Steam Input, since you want it to be inverted to look
+          left to right, but an issue in emulators.
 
       bluetooth_mode:
         type: bool
@@ -105,6 +114,15 @@ modes:
           controller to that of the IMU (e.g., for Legion Go 100hz instead of 400hz).
           If the IMU is not working, this setting will break the controller.
         default: False
+
+      flip_z:
+        type: bool
+        title: Invert Roll Axis
+        default: True
+        hint: >-
+          Inverts the roll (Z) axis compared to a real Dualsense controller.
+          Useful for Steam Input, since you want it to be inverted to look
+          left to right, but an issue in emulators.
 
       bluetooth_mode:
         type: bool
