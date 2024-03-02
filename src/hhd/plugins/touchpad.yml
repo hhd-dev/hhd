@@ -23,6 +23,7 @@ modes:
   emulation:
     type: container
     title: Virtual
+    tags: [non-essential]
     hint: >-
       Adds an emulated touchpad. This touchpad is meant to be for desktop
       use and has left, right click support by default, within gamescope and
@@ -56,6 +57,7 @@ modes:
   controller:
     type: container
     title: Controller
+    tags: [non-essential]
     hint: >-
       Uses the touchpad of the emulated controller (if it exists).
       Otherwise, the touchpad remains unmapped (will still show up in the system).
