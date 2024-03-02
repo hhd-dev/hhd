@@ -1,6 +1,6 @@
 settings:
   type: container
-  title: Handheld Daemon Settings
+  title: Core Settings
 
   children:
     decky_deprecation:

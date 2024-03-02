@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class OverlayPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"overlay"
-        self.priority = 95
+        self.priority = 75
         self.log = "ovrl"
         self.ovf = None
         self.enabled = False
@@ -32,11 +32,11 @@ class OverlayPlugin(HHDPlugin):
     def settings(self):
         if not self.ovf:
             return {}
-        return {"hhd": {"overlay": load_relative_yaml("settings.yml")}}
+        return {"hhd": {"settings": load_relative_yaml("settings.yml")}}
 
     def update(self, conf: Config):
         # Or with self.enabled to require restart
-        self.enabled = self.enabled or conf["hhd.overlay.enabled"].to(bool)
+        self.enabled = self.enabled or conf["hhd.settings.overlay_enabled"].to(bool)
 
     def notify(self, events: Sequence[Event]):
         if not self.ovf or not self.enabled:
