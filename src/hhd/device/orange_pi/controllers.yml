@@ -1,6 +1,6 @@
 type: container
 tags: [lgc]
-title: Handheld Controller
+title: Handheld
 hint: >-
   Allows for configuring your handheld's controller to a unified output.
 
