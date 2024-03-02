@@ -2,6 +2,6 @@ sections:
   system: System
   tdp: TDP
   controller: Controller
-  hhd: About
+  hhd: Settings
   bazzite: Bazzite
   utilities: Utilities
