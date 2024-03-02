@@ -25,6 +25,7 @@ children:
   imu_hz:
     type: discrete
     title: Motion Hz
+    tags: [ non-essential ]
     hint: >-
       Sets the sampling frequency for the IMU.
       1600 requires an IMU patch.
@@ -35,6 +36,7 @@ children:
   led_brightness:
     type: multiple
     title: Led Brightness
+    tags: [ non-essential ]
     hint: >-
       When LEDs are configured, set their brightness.
       High does not work below 30% brightness.
@@ -47,11 +49,13 @@ children:
     
   select_reboots:
     type: bool
+    tags: [ non-essential ]
     title: Hold Select to Reboot
     default: True
   
   nintendo_mode:
     type: bool
+    tags: [ non-essential ]
     title: Nintendo Mode (A-B Swap)
     hint: >-
       Swaps A with B and X with Y.
@@ -59,6 +63,7 @@ children:
 
   share_to_qam:
     type: bool
+    tags: [ non-essential ]
     title: Map Armory to QAM.
     tags: [advanced]
     default: True

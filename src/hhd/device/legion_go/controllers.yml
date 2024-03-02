@@ -33,6 +33,7 @@ children:
   gyro_fix:
     type: discrete
     title: Gyro Hz
+    tags: [ non-essential ]
     hint: >-
       Adds polling to the legion go gyroscope, to fix the low polling rate
       (required for gyroscope support). Set to 0 to disable.
@@ -43,6 +44,7 @@ children:
   gyro_scaling:
     type: int
     title: Gyro Scale
+    tags: [ non-essential ]
     hint: >-
       Applies a scaling factor to the legion go gyroscope (since it is misconfigured
       by the driver). Try different values to see what works best.
@@ -54,6 +56,7 @@ children:
   swap_legion:
     type: multiple
     title: Swap Legion with Start/Select
+    tags: [ non-essential ]
     hint: >-
       Swaps the legion buttons with start select.
     options:
@@ -65,6 +68,7 @@ children:
   nintendo_mode:
     type: bool
     title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
     hint: >-
       Swaps A with B and X with Y.
     default: False
@@ -72,6 +76,7 @@ children:
   m2_to_mute:
     type: bool
     title: M2 As Mute
+    tags: [ non-essential ]
     hint: >-
       Maps the M2 to the mute button on Dualsense and the HAPPY_TRIGGER_20
       on Xbox.
@@ -80,11 +85,13 @@ children:
   select_reboots:
     type: bool
     title: Hold Select to Reboot
+    tags: [ non-essential ]
     default: True
 
   share_to_qam:
     type: bool
     title: Legion R to QAM
+    tags: [ non-essential ]
     default: True
 
   touchpad:
@@ -92,6 +99,7 @@ children:
   shortcuts:
     type: bool
     title: Enable Shortcuts Controller
+    tags: [ non-essential ]
     hint: >-
       When in other modes (dinput, dual dinput, and fps), enable a shortcuts 
       controller to restore Guide, QAM, and shortcut functionality.

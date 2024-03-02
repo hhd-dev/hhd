@@ -1,6 +1,6 @@
 type: container
 tags: [lgc]
-title: Handheld Controller
+title: Handheld
 hint: >-
   Allows for configuring your handheld's controller to a unified output.
 
@@ -25,6 +25,7 @@ children:
   imu_hz:
     type: discrete
     title: Motion Hz
+    tags: [ non-essential ]
     hint: >-
       Sets the sampling frequency for the IMU.
       Check `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`.
@@ -36,6 +37,7 @@ children:
   nintendo_mode:
     type: bool
     title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
     hint: >-
       Swaps A with B and X with Y.
     default: False
@@ -49,7 +51,7 @@ children:
   debug:
     type: bool
     title: Debug
-    tags: [advanced, expert]
+    tags: [advanced, expert, non-essential]
     hint: >-
       Output controller events to the console (high CPU use) and raises exceptions
       (HHD will crash on errors).

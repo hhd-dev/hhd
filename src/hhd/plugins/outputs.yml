@@ -26,7 +26,7 @@ modes:
   #
   dualsense:
     type: container
-    tags: [lgc_emulation_dualsense, dualsense]
+    tags: [lgc_emulation_dualsense, dualsense, non-essential]
     title: Dualsense
     hint: >-
       Emulates the Dualsense Sony controller from the Playstation 5.
@@ -78,7 +78,7 @@ modes:
 
   dualsense_edge:
     type: container
-    tags: [lgc_emulation_dualsense_edge, dualsense_edge]
+    tags: [lgc_emulation_dualsense_edge, dualsense_edge, non-essential]
     title: Dualsense Edge
     hint: >-
       Emulates the expensive Dualsense Sony controller which enables paddle support.

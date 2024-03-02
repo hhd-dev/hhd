@@ -37,6 +37,7 @@ children:
   
   nintendo_mode:
     type: bool
+    tags: [ non-essential ]
     title: Nintendo Mode (A-B Swap)
     hint: >-
       Swaps A with B and X with Y.
@@ -44,6 +45,7 @@ children:
 
   l4r4_to_qam:
     type: multiple
+    tags: [ non-essential ]
     title: Map L4/R4 to QAM.
     options:
       disabled: "Disabled"

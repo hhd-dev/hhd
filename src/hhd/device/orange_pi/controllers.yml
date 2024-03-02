@@ -18,6 +18,7 @@ children:
   imu:
     type: bool
     title: Motion Support
+    tags: [ non-essential ]
     hint: >-
       Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
     default: True
@@ -25,6 +26,7 @@ children:
   imu_hz:
     type: discrete
     title: Motion Hz
+    tags: [ non-essential ]
     hint: >-
       Sets the sampling frequency for the IMU.
       Check `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`.
@@ -36,6 +38,7 @@ children:
   nintendo_mode:
     type: bool
     title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
     hint: >-
       Swaps A with B and X with Y.
     default: False

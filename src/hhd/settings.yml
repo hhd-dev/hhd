@@ -1,6 +1,7 @@
 settings:
   type: container
   title: Core Settings
+  tags: [non-essential]
 
   children:
     decky_deprecation:

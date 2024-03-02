@@ -2,6 +2,7 @@ type: mode
 title: Motion Axis
 
 default: default
+tags: [ non-essential ]
 modes:
   default:
     type: container
