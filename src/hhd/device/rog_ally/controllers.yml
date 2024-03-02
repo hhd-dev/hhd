@@ -63,9 +63,8 @@ children:
 
   share_to_qam:
     type: bool
-    tags: [ non-essential ]
+    tags: [ advanced ]
     title: Map Armory to QAM.
-    tags: [advanced]
     default: True
 
   debug:

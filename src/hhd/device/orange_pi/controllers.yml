@@ -18,7 +18,6 @@ children:
   imu:
     type: bool
     title: Motion Support
-    tags: [ non-essential ]
     hint: >-
       Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
     default: True
