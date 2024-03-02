@@ -147,11 +147,13 @@ class OverlayService:
         logger.info(f"Found overlay executable '{exe}'")
 
         # FIXME: Find why this command sometimes fails with user priviledges
+        switch_priviledge(self.ctx, True)
         displays = get_gamescope_displays()
         if not displays:
             logger.warning("Could not find overlay displays, gamescope is not active.")
             return False
         logger.debug(f"Found the following gamescope displays: {displays}")
+        switch_priviledge(self.ctx, False)
 
         res = get_overlay_display(displays)
         if not res:
