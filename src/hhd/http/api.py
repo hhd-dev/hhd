@@ -258,7 +258,11 @@ class RestHandler(BaseHTTPRequestHandler):
                 with self.cond:
                     s = dict(deepcopy(self.settings))
                     try:
-                        s["hhd"]["version"] = {"type": "version", "value": v}  # type: ignore
+                        s["hhd"]["version"] = {  # type: ignore
+                            "type": "version",
+                            "tags": ["non-essential", "advanced", "expert", "hide"],
+                            "value": v,
+                        }
                     except Exception as e:
                         logger.error(f"Error while writing version hash to response.")
                     self.wfile.write(json.dumps(s).encode())
