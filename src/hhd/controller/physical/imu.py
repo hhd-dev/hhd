@@ -295,14 +295,10 @@ class IioReader(Producer):
             if se.axis:
                 # TODO: Implement parsing iio fully, by adding shifting and cutoff
                 d = data[ofs >> 3 : (ofs >> 3) + (se.storage_bits >> 3)]
-                d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
-                if self.legion_fix and d == -124:
-                    # Legion go likes to overflow to -124 in both directions
-                    # skip this number to avoid jitters
-                    continue
+                d_raw = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
                 # d = d >> se.shift
                 # d &= (1 << se.bits) - 1
-                d = d * se.scale + se.offset
+                d = d_raw * se.scale + se.offset
 
                 if se.max_val is not None:
                     if d > 0:
@@ -311,13 +307,16 @@ class IioReader(Producer):
                         d = max(d, -se.max_val)
 
                 if se.axis not in self.prev or self.prev[se.axis] != d:
-                    out.append(
-                        {
-                            "type": "axis",
-                            "code": se.axis,
-                            "value": d,
-                        }
-                    )
+                    if not (self.legion_fix and d_raw == -124):
+                        # Legion go likes to overflow to -124 in both directions
+                        # skip this number to avoid jitters
+                        out.append(
+                            {
+                                "type": "axis",
+                                "code": se.axis,
+                                "value": d,
+                            }
+                        )
                     self.prev[se.axis] = d
             ofs += se.storage_bits
 
