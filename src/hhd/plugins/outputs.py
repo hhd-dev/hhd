@@ -44,6 +44,7 @@ def get_outputs(
                 fake_timestamps=not motion,
                 sync_gyro=conf["dualsense_edge.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=False,
+                flip_z=conf["dualsense_edge.flip_z"].to(bool),
             )
             producers.append(d)
             consumers.append(d)
@@ -59,6 +60,7 @@ def get_outputs(
                 fake_timestamps=not motion,
                 sync_gyro=conf["dualsense.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=conf["dualsense.paddles_to_clicks"].to(bool),
+                flip_z=conf["dualsense.flip_z"].to(bool),
             )
             producers.append(d)
             consumers.append(d)
