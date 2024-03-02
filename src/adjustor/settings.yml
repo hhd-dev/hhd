@@ -1,19 +1,17 @@
 type: container
-title: General Settings
-tags: [ advanced ]
 children:
-  enable:
+  tdp_enable:
     title: Enable TDP Controls
     type: bool
     default: False
 
   enforce_limits:
-    title: Enforce Device Limits
+    title: Enforce Device TDP Limits
     type: bool
     tags: [ expert ]
     default: True
 
-  error:
+  tdp_error:
     title: Error
     type: display
     tags: [error]

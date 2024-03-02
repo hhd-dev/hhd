@@ -42,13 +42,14 @@ def get_platform_profile():
 PP_DELAY = 0.2
 APPLY_DELAY = 1
 
+
 class SmuQamPlugin(HHDPlugin):
 
     def __init__(
         self,
         dev: dict[str, DeviceParams],
         pp_map: list[tuple[str, int]] | None,
-        init_tdp: bool = True
+        init_tdp: bool = True,
     ) -> None:
         self.name = f"adjustor_smu_qam"
         self.priority = 7
@@ -77,7 +78,9 @@ class SmuQamPlugin(HHDPlugin):
             if self.pps:
                 self.pp_map = pp_map
             else:
-                logger.warning(f"Platform profile map was provided but device does not have platform profiles.")
+                logger.warning(
+                    f"Platform profile map was provided but device does not have platform profiles."
+                )
                 self.pp_map = None
         else:
             self.pps = []
@@ -117,8 +120,8 @@ class SmuQamPlugin(HHDPlugin):
         self.emit = emit
 
     def update(self, conf: Config):
-        self.enabled = conf["tdp.general.enable"].to(bool)
-        self.enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
+        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        self.enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
             self.startup = self.init_tdp
             return
@@ -128,11 +131,15 @@ class SmuQamPlugin(HHDPlugin):
         if self.startup and self.lims:
             _, smin, _, smax, _ = self.lims
             if smin and new_tdp < smin:
-                logger.warning(f"Device TDP ({new_tdp}) too low for startup, adjusting.")
+                logger.warning(
+                    f"Device TDP ({new_tdp}) too low for startup, adjusting."
+                )
                 new_tdp = smin
                 conf["tdp.qam.tdp"] = smin
             if smax and new_tdp > smax:
-                logger.warning(f"Device TDP ({new_tdp}) too low for startup, adjusting.")
+                logger.warning(
+                    f"Device TDP ({new_tdp}) too low for startup, adjusting."
+                )
                 new_tdp = smax
                 conf["tdp.qam.tdp"] = smax
 
@@ -274,8 +281,8 @@ class SmuDriverPlugin(HHDPlugin):
         pass
 
     def update(self, conf: Config):
-        self.enabled = conf["tdp.general.enable"].to(bool)
-        self.enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
+        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        self.enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
             return
 

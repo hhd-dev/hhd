@@ -33,25 +33,25 @@ class AdjustorInitPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         if self.failed:
-            conf["tdp.general.enable"] = False
+            conf["hhd.settings.tdp_enable"] = False
         if self.safe_mode:
             logger.warning(f"Due to a sentinel error, auto-start is disabled.")
-            conf["tdp.general.error"] = (
+            conf["hhd.settings.tdp_error"] = (
                 "Due to Handheld Daemon not exiting properly, auto-start is disabled."
             )
-            conf["tdp.general.enable"] = False
+            conf["hhd.settings.tdp_enable"] = False
             self.safe_mode = False
 
         if self.init:
             return
 
-        if not conf["tdp.general.enable"].to(bool):
+        if not conf["hhd.settings.tdp_enable"].to(bool):
             return
 
         initialize()
         if not check_perms():
-            conf["tdp.general.enable"] = False
-            conf["tdp.general.error"] = (
+            conf["hhd.settings.tdp_enable"] = False
+            conf["hhd.settings.tdp_error"] = (
                 "Can not write to 'acpi_call'. It is required for TDP."
             )
             self.failed = True
@@ -65,7 +65,7 @@ class AdjustorInitPlugin(HHDPlugin):
 class AdjustorPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"adjustor_main"
-        self.priority = 10
+        self.priority = 80
         self.log = "adjs"
         self.enabled = False
         self.enfoce_limits = True
@@ -74,9 +74,9 @@ class AdjustorPlugin(HHDPlugin):
         self.should_exit = None
 
     def settings(self) -> HHDSettings:
-        out = {"tdp": {"general": load_relative_yaml("settings.yml")}}
+        out = {"hhd": {"settings": load_relative_yaml("settings.yml")}}
         if os.environ.get("HHD_ADJ_ENABLE_TDP"):
-            out["tdp"]["general"]["children"]["enable"]["default"] = True
+            out["hhd"]["settings"]["children"]["tdp_enable"]["default"] = True
         return out
 
     def _start(self):
@@ -111,8 +111,8 @@ class AdjustorPlugin(HHDPlugin):
         self.emit = emit
 
     def update(self, conf: Config):
-        new_enabled = conf["tdp.general.enable"].to(bool)
-        new_enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
+        new_enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         if new_enabled != self.enabled or new_enforce_limits != self.enfoce_limits:
             self.emit({"type": "settings"})
         self.enabled = new_enabled

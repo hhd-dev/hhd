@@ -67,8 +67,8 @@ class LenovoDriverPlugin(HHDPlugin):
         pass
 
     def update(self, conf: Config):
-        self.enabled = conf["tdp.general.enable"].to(bool)
-        new_enforce_limits = conf["tdp.general.enforce_limits"].to(bool)
+        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         new_lims = new_enforce_limits != self.enforce_limits
         self.enforce_limits = new_enforce_limits
 
