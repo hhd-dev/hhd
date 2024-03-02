@@ -4,6 +4,7 @@ import logging
 import os
 from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
 from threading import Condition, Thread
 from typing import Any, Mapping
 from urllib.parse import parse_qs, urlparse
@@ -346,6 +347,10 @@ class RestHandler(BaseHTTPRequestHandler):
         return self.do_GET
 
 
+class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
+    pass
+
+
 class HHDHTTPServer:
     def __init__(
         self,
@@ -383,7 +388,7 @@ class HHDHTTPServer:
             self.cond.notify_all()
 
     def open(self):
-        self.https = HTTPServer(
+        self.https = ThreadingSimpleServer(
             ("127.0.0.1" if self.localhost else "", self.port), self.handler
         )
         self.t = Thread(target=self.https.serve_forever)
