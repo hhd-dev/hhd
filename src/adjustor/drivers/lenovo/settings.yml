@@ -1,5 +1,6 @@
 title: Lenovo TDP
 type: container
+tags: [hide-title]
 hint: >-
   Uses the interface of Legion Space to set the TDP of the device.
 children:
@@ -68,6 +69,7 @@ children:
       manual:
         type: container
         title: Manual
+        tags: [ non-essential ]
         children:
 
           st10: &speed_template

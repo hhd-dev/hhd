@@ -1,5 +1,6 @@
 title: Quick Settings
 type: container
+tags: [ hide-title ]
 children:
   tdp:
     title: TDP
