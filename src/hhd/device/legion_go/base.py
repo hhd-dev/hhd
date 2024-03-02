@@ -200,7 +200,7 @@ def controller_loop_xinput(conf: Config, should_exit: TEvent, updated: TEvent):
         "anglvel_z": ("gyro_y", "anglvel", conf["gyro_scaling"].to(int), None),
         "timestamp": ("gyro_ts", None, 1, None),
     }
-    d_gyro = GyroImu(map=GYRO_MAPPINGS)
+    d_gyro = GyroImu(map=GYRO_MAPPINGS, legion_fix=True)
 
     # Inputs
     d_xinput = GenericGamepadEvdev(

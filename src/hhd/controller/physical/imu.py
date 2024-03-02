@@ -224,6 +224,7 @@ class IioReader(Producer):
         scale: Sequence[str | None] | None,
         mappings: dict[str, tuple[Axis, str | None, float, float | None]],
         update_trigger: bool = False,
+        legion_fix: bool = False,
     ) -> None:
         self.types = types
         self.attr = attr
@@ -233,6 +234,7 @@ class IioReader(Producer):
         self.update_trigger = update_trigger
         self.fd = 0
         self.dev = None
+        self.legion_fix = legion_fix
 
     def open(self):
         sens_dir, type = find_sensor(self.types)
@@ -294,6 +296,10 @@ class IioReader(Producer):
                 # TODO: Implement parsing iio fully, by adding shifting and cutoff
                 d = data[ofs >> 3 : (ofs >> 3) + (se.storage_bits >> 3)]
                 d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
+                if self.legion_fix and d == -124:
+                    # Legion go likes to overflow to -124 in both directions
+                    # skip this number to avoid jitters
+                    continue
                 # d = d >> se.shift
                 # d &= (1 << se.bits) - 1
                 d = d * se.scale + se.offset
@@ -330,13 +336,16 @@ class AccelImu(IioReader):
 
 
 class GyroImu(IioReader):
-    def __init__(self, freq=None, scale=None, map=None) -> None:
+    def __init__(
+        self, freq=None, scale=None, map=None, legion_fix: bool = False
+    ) -> None:
         super().__init__(
             GYRO_NAMES,
             ["anglvel"],
             [freq] if freq else None,
             [scale],
             map if map else GYRO_MAPPINGS,
+            legion_fix=legion_fix,
         )
 
 
