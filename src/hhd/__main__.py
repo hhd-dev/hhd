@@ -385,7 +385,15 @@ def main():
                     set_log_plugin("rest")
                     https = HHDHTTPServer(localhost, port, token)
                     https.update(settings, conf, profiles, emit)
-                    https.open()
+                    try:
+                        https.open()
+                    except Exception as e:
+                        logger.error(
+                            f"Could not start http API on port {port}.\n"
+                            + "Is another version of Handheld Daemon open?"
+                            + "Closing."
+                        )
+                        return
                     update_log_plugins()
                     set_log_plugin("main")
 
