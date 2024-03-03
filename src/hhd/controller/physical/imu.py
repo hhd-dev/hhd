@@ -307,9 +307,16 @@ class IioReader(Producer):
                         d = max(d, -se.max_val)
 
                 if se.axis not in self.prev or self.prev[se.axis] != d:
-                    if not (self.legion_fix and d_raw == -124):
+                    if not (
+                        self.legion_fix and (d_raw == -124 or d_raw // 1000 == -125)
+                    ):
                         # Legion go likes to overflow to -124 in both directions
                         # skip this number to avoid jitters
+                        # With a kernel patch to allow higher resolution, this happens
+                        # with the following numbers
+                        # 4d 95 f3 c7: -124715
+                        # 33 97 f3 c7: -124718
+                        # Reported by hhd: -124422, -124419
                         out.append(
                             {
                                 "type": "axis",
