@@ -317,6 +317,10 @@ class IioReader(Producer):
                         # 4d 95 f3 c7: -124715
                         # 33 97 f3 c7: -124718
                         # Reported by hhd: -124422, -124419
+                        # Legion go axis tester
+                        # import time
+                        # if se.axis == "gyro_x":
+                        #     print(f"{time.time() % 1:.3f} {d_raw}")
                         out.append(
                             {
                                 "type": "axis",
