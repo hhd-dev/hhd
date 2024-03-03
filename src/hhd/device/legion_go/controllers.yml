@@ -51,7 +51,7 @@ children:
       Low values cause a deadzone and high values will clip when moving the 
       Go abruptly.
     min: 15
-    max: 50
+    max: 80
     default: 22
   swap_legion:
     type: multiple
