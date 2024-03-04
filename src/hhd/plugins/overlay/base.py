@@ -140,7 +140,7 @@ class OverlayService:
             return True
         logger.info("Attempting to launch overlay.")
 
-        exe = find_overlay_exe()
+        exe = find_overlay_exe(self.ctx)
         if not exe:
             logger.warning("Overlay is not installed, not launching.")
             return False

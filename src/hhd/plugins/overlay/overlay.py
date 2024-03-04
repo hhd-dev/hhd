@@ -6,12 +6,27 @@ from hhd.utils import expanduser
 import subprocess
 
 
-def find_overlay_exe():
+def find_overlay_exe(ctx: Context):
     INSTALLED_PATHS = ["hhd-ui-dbg", "hhd-ui"]
 
+    usr = os.environ.get("HHD_OVERLAY")
+    if usr:
+        if os.path.exists(usr):
+            return usr
+        INSTALLED_PATHS.insert(0, usr)
+
+    # FIXME: Potential priviledge escalation attack!
+    # Runs as the user in `inject_overlay`, so this should
+    # not be the case. Will still be executed.
     for fn in INSTALLED_PATHS:
-        if shutil.which(fn):
-            return fn
+        local = shutil.which(fn, path=expanduser("~/.local/bin", ctx))
+        if local:
+            return local
+
+    for fn in INSTALLED_PATHS:
+        system = shutil.which(fn)
+        if system:
+            return system
 
 
 def inject_overlay(fn: str, display: str, ctx: Context):
