@@ -364,7 +364,7 @@ In addition, Bazzite contains all the required kernel patches for the Handheld D
 supported devices, so it is the recommended distro to use Handheld Daemon with.
 
 After install, you can use `ujust` to install Decky and the Handheld Daemon Decky
-plugin with the commands `ujust get-decky`, `ujust get-hhd-decky`.
+plugin with the commands `ujust setup-decky`, `ujust setup-decky hhd-decky`.
 
 If you need to use a different Handheld Daemon version or a custom one, the 
 install steps do not currently work for Bazzite, but this will be fixed in the future.
