@@ -36,7 +36,7 @@ TOUCHPAD_PID = 0x0255
 TOUCHPAD_VID_2 = 0x0911
 TOUCHPAD_PID_2 = 0x5288
 
-BACK_BUTTON_DELAY = 0.1
+BACK_BUTTON_DELAY = 0.07
 
 # /dev/input/event17 Microsoft X-Box 360 pad usb-0000:73:00.3-4.1/input0
 # bus: 0003, vendor 045e, product 028e, version 0101
@@ -192,7 +192,9 @@ def plugin_run(
             time.sleep(ERROR_DELAY)
 
 
-def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter):
+def controller_loop(
+    conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
+):
     debug = conf.get("debug", False)
     has_touchpad = dconf.get("touchpad", False)
 
@@ -276,6 +278,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             touchpad_hold=touch_actions["hold"].to(TouchpadAction),
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
+            emit=emit,
         )
     else:
         multiplexer = Multiplexer(
@@ -283,7 +286,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, dconf: d
             dpad="analog_to_discrete",
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
-            emit=emit
+            emit=emit,
         )
 
     REPORT_FREQ_MIN = 25
