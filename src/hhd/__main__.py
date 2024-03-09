@@ -390,7 +390,7 @@ def main():
                     except Exception as e:
                         logger.error(
                             f"Could not start http API on port {port}.\n"
-                            + "Is another version of Handheld Daemon open?"
+                            + "Is another version of Handheld Daemon open?\n"
                             + "Closing."
                         )
                         return

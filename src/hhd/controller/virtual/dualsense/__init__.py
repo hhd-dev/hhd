@@ -308,7 +308,10 @@ class Dualsense(Producer, Consumer):
                             # compared to a real dualsense controller
                             # So to not invert x, you have to invert x.
                             ev["value"] = -ev["value"]
-                        encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])
+                        try:
+                            encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])
+                        except Exception:
+                            logger.warning(f"Encoding '{ev['code']}' with {ev['value']} overflowed.")
                     # DPAD is weird
                     match ev["code"]:
                         case "hat_x":
@@ -349,7 +352,7 @@ class Dualsense(Producer, Consumer):
                                 (y & 0x0F) << 4
                             )
                             new_rep[self.ofs + 35] = y >> 4
-                        case "gyro_ts":
+                        case "gyro_ts" | "accel_ts" | "imu_ts":
                             send = True
                             new_rep[self.ofs + 27 : self.ofs + 31] = int(
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS

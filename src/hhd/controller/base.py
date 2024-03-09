@@ -383,6 +383,63 @@ class Multiplexer:
         for ev in events:
             match ev["type"]:
                 case "axis":
+                    match self.imu:
+                        case "left_to_main":
+                            match ev["code"]:
+                                case "left_accel_x":
+                                    ev["code"] = "accel_x"
+                                case "left_accel_y":
+                                    ev["code"] = "accel_y"
+                                case "left_accel_z":
+                                    ev["code"] = "accel_z"
+                                case "left_gyro_x":
+                                    ev["code"] = "gyro_x"
+                                case "left_gyro_y":
+                                    ev["code"] = "gyro_y"
+                                case "left_gyro_z":
+                                    ev["code"] = "gyro_z"
+                                case "left_imu_ts":
+                                    ev["code"] = "imu_ts"
+                        case "right_to_main":
+                            match ev["code"]:
+                                case "right_accel_x":
+                                    ev["code"] = "accel_x"
+                                case "right_accel_y":
+                                    ev["code"] = "accel_y"
+                                case "right_accel_z":
+                                    ev["code"] = "accel_z"
+                                case "right_gyro_x":
+                                    ev["code"] = "gyro_x"
+                                case "right_gyro_y":
+                                    ev["code"] = "gyro_y"
+                                case "right_gyro_z":
+                                    ev["code"] = "gyro_z"
+                                case "right_imu_ts":
+                                    ev["code"] = "imu_ts"
+                        case "main_to_sides":
+                            match ev["code"]:
+                                case "accel_x":
+                                    ev["code"] = "right_accel_x"
+                                    ev["code"] = "left_accel_x"
+                                case "accel_y":
+                                    ev["code"] = "right_accel_y"
+                                    ev["code"] = "left_accel_y"
+                                case "accel_z":
+                                    ev["code"] = "right_accel_z"
+                                    ev["code"] = "left_accel_z"
+                                case "gyro_x":
+                                    ev["code"] = "right_gyro_x"
+                                    ev["code"] = "left_gyro_x"
+                                case "gyro_y":
+                                    ev["code"] = "right_gyro_y"
+                                    ev["code"] = "left_gyro_y"
+                                case "gyro_z":
+                                    ev["code"] = "right_gyro_z"
+                                    ev["code"] = "left_gyro_z"
+                                case "imu_ts":
+                                    ev["code"] = "right_imu_ts"
+                                    ev["code"] = "left_imu_ts"
+
                     if self.trigger == "analog_to_discrete" and ev["code"] in (
                         "lt",
                         "rt",

@@ -388,7 +388,6 @@ def controller_loop_xinput(
                     # 8ms per count
                     ts_count[ev["code"]] += diff * 8_000_000
                     ev["value"] = ts_count[ev["code"]]
-
             evs = multiplexer.process(evs)
 
             if evs:

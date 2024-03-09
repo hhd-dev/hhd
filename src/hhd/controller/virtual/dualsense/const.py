@@ -134,9 +134,9 @@ get_axis_map = lambda ofs: {
     "gyro_x": AM(((ofs + 15) << 3), "i16", scale=20 * 180 / 3.14),
     "gyro_y": AM(((ofs + 17) << 3), "i16", scale=20 * 180 / 3.14),
     "gyro_z": AM(((ofs + 19) << 3), "i16", scale=20 * 180 / 3.14),
-    "accel_x": AM(((ofs + 21) << 3), "i16", scale=10000),
-    "accel_y": AM(((ofs + 23) << 3), "i16", scale=10000),
-    "accel_z": AM(((ofs + 25) << 3), "i16", scale=10000),
+    "accel_x": AM(((ofs + 21) << 3), "i16", scale=1000),
+    "accel_y": AM(((ofs + 23) << 3), "i16", scale=1000),
+    "accel_z": AM(((ofs + 25) << 3), "i16", scale=1000),
 }
 
 DS5_BT_AXIS_MAP = get_axis_map(DS5_INPUT_REPORT_BT_OFS)

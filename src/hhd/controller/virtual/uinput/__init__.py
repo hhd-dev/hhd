@@ -102,6 +102,7 @@ class UInputDevice(Consumer, Producer):
                     elif self.output_imu_timestamps and ev["code"] in (
                         "accel_ts",
                         "gyro_ts",
+                        "imu_ts",
                     ):
                         # We have timestamps with ns accuracy.
                         # Evdev expects us accuracy
