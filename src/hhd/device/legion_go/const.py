@@ -91,17 +91,17 @@ LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
         "left_accel_x": AM(35 << 3, "i16", scale=-0.001197, order="big"),
         "left_accel_z": AM(37 << 3, "i16", scale=-0.001197, order="big"),
         "left_accel_y": AM(39 << 3, "i16", scale=-0.001197, order="big"),
-        "left_gyro_x": AM(41 << 3, "i16", scale=-0.000066, order="big"),
-        "left_gyro_z": AM(43 << 3, "i16", scale=0.000066, order="big"),
-        "left_gyro_y": AM(45 << 3, "i16", scale=-0.000066, order="big"),
+        "left_gyro_x": AM(41 << 3, "i16", scale=-0.000133, order="big"),
+        "left_gyro_z": AM(43 << 3, "i16", scale=0.000133, order="big"),
+        "left_gyro_y": AM(45 << 3, "i16", scale=-0.000133, order="big"),
         # Right
         "right_imu_ts": AM(47 << 3, "u8", scale=1),
         "right_accel_z": AM(48 << 3, "i16", scale=0.001197, order="big"),
         "right_accel_x": AM(50 << 3, "i16", scale=-0.001197, order="big"),
         "right_accel_y": AM(52 << 3, "i16", scale=-0.001197, order="big"),
-        "right_gyro_z": AM(54 << 3, "i16", scale=-0.000066, order="big"),
-        "right_gyro_x": AM(56 << 3, "i16", scale=-0.000066, order="big"),
-        "right_gyro_y": AM(58 << 3, "i16", scale=-0.000066, order="big"),
+        "right_gyro_z": AM(54 << 3, "i16", scale=-0.000133, order="big"),
+        "right_gyro_x": AM(56 << 3, "i16", scale=-0.000133, order="big"),
+        "right_gyro_y": AM(58 << 3, "i16", scale=-0.000133, order="big"),
     }
 }
 
