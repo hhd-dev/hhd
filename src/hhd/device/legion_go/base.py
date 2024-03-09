@@ -449,11 +449,8 @@ class SelectivePassthrough(Producer, Consumer):
                 out.append(ev)
             elif ev["type"] == "button" and ev["code"] in self.passthrough:
                 out.append(ev)
-            elif (
-                ev["type"] == "axis"
-                and "imu" in ev["code"]
-                or "accel" in ev["code"]
-                or "gyro" in ev["code"]
+            elif ev["type"] == "axis" and (
+                "imu" in ev["code"] or "accel" in ev["code"] or "gyro" in ev["code"]
             ):
                 out.append(ev)
             elif ev["type"] == "button" and self.state:

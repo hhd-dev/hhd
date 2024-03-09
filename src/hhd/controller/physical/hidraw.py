@@ -47,6 +47,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         callback: EventCallback | None = None,
         report_size: int = MAX_REPORT_SIZE,
         required: bool = True,
+        lossless: bool = True,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -61,6 +62,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.config_map = config_map
         self.callback = callback
         self.required = required
+        self.lossless = lossless
 
         self.path = None
         self.dev: Device | None = None
@@ -119,9 +121,13 @@ class GenericGamepadHidraw(Producer, Consumer):
             return []
         rep = None
 
-        # Throw away stale events
-        while can_read(self.fd):
+        if self.lossless:
+            # Keep all events
             rep = self.dev.read(self.report_size)
+        else:
+            # Throw away stale events
+            while can_read(self.fd):
+                rep = self.dev.read(self.report_size)
 
         # If we could not read (?) return
         if not rep:
