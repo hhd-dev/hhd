@@ -48,16 +48,18 @@ def plugin_run(
     others: dict,
 ):
     reset = others.get("reset", False)
-    if (
-        conf["imu.mode"].to(str) == "display"
-        and (gyro_fix := conf.get("imu.display.gyro_fix", False))
-        and conf["imu.display.gyro"].to(bool)
-    ):
-        gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
-    else:
-        gyro_fixer = None
+    gyro_fixer = None
 
     while not should_exit.is_set():
+        if (
+            conf["imu.mode"].to(str) == "display"
+            and (gyro_fix := conf.get("imu.display.gyro_fix", False))
+            and conf["imu.display.gyro"].to(bool)
+        ):
+            gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
+        else:
+            gyro_fixer = None
+
         try:
             controller_mode = None
             pid = None
@@ -326,7 +328,7 @@ def controller_loop_xinput(
     )
 
     REPORT_FREQ_MIN = 25
-    REPORT_FREQ_MAX = 400
+    REPORT_FREQ_MAX = 500
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
     REPORT_DELAY_MIN = 1 / REPORT_FREQ_MAX
@@ -356,6 +358,10 @@ def controller_loop_xinput(
         for d in d_producers:
             prepare(d)
 
+        # begin = time.perf_counter()
+        ts_count: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
+        ts_last: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
+
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
@@ -370,7 +376,29 @@ def controller_loop_xinput(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
+            # Patch timestamps to convert them to ns
+            for ev in evs:
+                if ev["type"] == "axis" and "_imu_ts" in ev["code"]:
+                    # Find diff between previous event
+                    last = ts_last[ev["code"]]
+                    curr = ev["value"]
+                    diff = curr - last
+                    if curr < last:
+                        diff += 256
+                    ts_last[ev["code"]] = curr
+                    # 8ms per count
+                    ts_count[ev["code"]] += diff * 8_000_000
+                    ev["value"] = ts_count[ev["code"]]
+
             evs = multiplexer.process(evs)
+            # curr = time.perf_counter() - begin
+            # for ev in evs:
+            #     if "ts" not in ev["code"]:
+            #         continue
+            #     print(
+            #         f"{curr:7.3f}: {ev['type']:7s} {ev['code']:15s} {ev.get('value', 0):7d}"
+            #     )
+
             if evs:
                 if debug:
                     logger.info(evs)
