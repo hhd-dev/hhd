@@ -302,11 +302,7 @@ class Dualsense(Producer, Consumer):
                     if not self.enable_touchpad and ev["code"].startswith("touchpad"):
                         continue
                     if ev["code"] in self.axis_map:
-                        if not self.flip_z and ev["code"] == "gyro_z":
-                            # Due to hhd's initial focus on steam input, all
-                            # devices were calibrated with an inverted x axis
-                            # compared to a real dualsense controller
-                            # So to not invert x, you have to invert x.
+                        if self.flip_z and ev["code"] == "gyro_z":
                             ev["value"] = -ev["value"]
                         try:
                             encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])

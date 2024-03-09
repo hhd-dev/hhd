@@ -239,7 +239,7 @@ def controller_loop_xinput(
             conf["imu.display.gyro_scaling"].to(int),
             None,
         ),
-        "timestamp": ("gyro_ts", None, 1, None),
+        "timestamp": ("imu_ts", None, 1, None),
     }
     d_gyro = GyroImu(map=GYRO_MAPPINGS, legion_fix=True)
 

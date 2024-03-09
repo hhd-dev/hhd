@@ -3,13 +3,13 @@ from hhd.controller.physical.evdev import B, to_map
 from hhd.plugins import gen_gyro_state
 
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "accel_x": ("accel_z", "accel", 1, 3),
-    "accel_y": ("accel_x", "accel", 1, 3),
-    "accel_z": ("accel_y", "accel", 1, 3),
-    "anglvel_x": ("gyro_z", "anglvel", -1, None),
+    "accel_x": ("accel_z", "accel", 1, None),
+    "accel_y": ("accel_x", "accel", -1, None),
+    "accel_z": ("accel_y", "accel", -1, None),
+    "anglvel_x": ("gyro_z", "anglvel", 1, None),
     "anglvel_y": ("gyro_x", "anglvel", -1, None),
     "anglvel_z": ("gyro_y", "anglvel", -1, None),
-    "timestamp": ("gyro_ts", None, 1, None),
+    "timestamp": ("imu_ts", None, 1, None),
 }
 
 BTN_MAPPINGS: dict[int, str] = {
@@ -32,23 +32,23 @@ BTN_MAPPINGS: dict[int, str] = {
 }
 
 AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "accel_x": ("accel_z", "accel", 1, 3),
-    "accel_y": ("accel_x", "accel", 1, 3),
-    "accel_z": ("accel_y", "accel", 1, 3),
-    "anglvel_x": ("gyro_z", "anglvel", -1, None),
+    "accel_x": ("accel_z", "accel", 1, None),
+    "accel_y": ("accel_x", "accel", -1, None),
+    "accel_z": ("accel_y", "accel", -1, None),
+    "anglvel_x": ("gyro_z", "anglvel", 1, None),
     "anglvel_y": ("gyro_x", "anglvel", -1, None),
     "anglvel_z": ("gyro_y", "anglvel", -1, None),
-    "timestamp": ("gyro_ts", None, 1, None),
+    "timestamp": ("imu_ts", None, 1, None),
 }
 
 AYANEO_AIR_PLUS_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "accel_x": ("accel_z", "accel", 1, 3),
-    "accel_y": ("accel_x", "accel", 1, 3),
-    "accel_z": ("accel_y", "accel", 1, 3),
-    "anglvel_x": ("gyro_z", "anglvel", 1, None),
+    "accel_x": ("accel_z", "accel", -1, None),
+    "accel_y": ("accel_x", "accel", -1, None),
+    "accel_z": ("accel_y", "accel", 1, None),
+    "anglvel_x": ("gyro_z", "anglvel", -1, None),
     "anglvel_y": ("gyro_x", "anglvel", -1, None),
     "anglvel_z": ("gyro_y", "anglvel", 1, None),
-    "timestamp": ("gyro_ts", None, 1, None),
+    "timestamp": ("imu_ts", None, 1, None),
 }
 
 AYANEO_BTN_MAPPINGS: dict[int, str] = {
@@ -91,7 +91,7 @@ CONFS = {
     "Loki Max": {
         "name": "Loki Max",
         "hrtimer": True,
-        "mapping": gen_gyro_state("x", False, "z", True, "y", True),
+        "mapping": gen_gyro_state("x", False, "z", False, "y", True),
     },
     # Ayaneo
     "AIR Plus": {
@@ -114,7 +114,7 @@ CONFS = {
     "SLIDE": {
         "name": "AYANEO SLIDE",
         **AYA_DEFAULT_CONF,
-        "mapping": gen_gyro_state("z", True, "x", False, "y", False),
+        "mapping": gen_gyro_state("z", False, "x", False, "y", False),
     },
 }
 
