@@ -1,18 +1,15 @@
-import argparse
 import logging
 import re
 import select
-import sys
 import time
 from threading import Event as TEvent
-from typing import Literal, Sequence
+from typing import Sequence
 
-from hhd.controller import Button, Consumer, Event, Producer, Axis
+from hhd.controller import Axis, Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
@@ -26,7 +23,7 @@ from .const import (
     LGO_TOUCHPAD_BUTTON_MAP,
 )
 from .gyro_fix import GyroFixer
-from .hid import RgbCallback
+from .hid import LegionHidraw, RgbCallback
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -43,11 +40,19 @@ LEN_PIDS = {
 
 
 def plugin_run(
-    conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent
+    conf: Config,
+    emit: Emitter,
+    context: Context,
+    should_exit: TEvent,
+    updated: TEvent,
+    others: dict,
 ):
-    # Remove leftover udev rules
-    # unhide_all()
-    if (gyro_fix := conf.get("gyro_fix", False)) and conf["gyro"].to(bool):
+    reset = others.get("reset", False)
+    if (
+        conf["imu.mode"].to(str) == "display"
+        and (gyro_fix := conf.get("imu.display.gyro_fix", False))
+        and conf["imu.display.gyro"].to(bool)
+    ):
         gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
     else:
         gyro_fixer = None
@@ -86,7 +91,7 @@ def plugin_run(
                 logger.info("Launching emulated controller.")
                 if gyro_fixer:
                     gyro_fixer.open()
-                controller_loop_xinput(conf_copy, should_exit, updated, emit)
+                controller_loop_xinput(conf_copy, should_exit, updated, emit, reset)
             else:
                 if controller_mode != "xinput":
                     logger.info(
@@ -103,6 +108,7 @@ def plugin_run(
                     should_exit,
                     updated,
                     emit,
+                    reset,
                 )
         except Exception as e:
             logger.error(f"Received the following error:\n{type(e)}: {e}")
@@ -116,8 +122,7 @@ def plugin_run(
         finally:
             if gyro_fixer:
                 gyro_fixer.close()
-            # Remove leftover udev rules
-            # unhide_all()
+        reset = False
 
 
 def controller_loop_rest(
@@ -127,6 +132,7 @@ def controller_loop_rest(
     should_exit: TEvent,
     updated: TEvent,
     emit: Emitter,
+    reset: bool,
 ):
     debug = conf.get("debug", False)
     shortcuts_enabled = conf["shortcuts"].to(bool)
@@ -137,7 +143,7 @@ def controller_loop_rest(
         logger.info(f"Shortcuts disabled. Waiting for controllers to change modes.")
 
     d_raw = SelectivePassthrough(
-        GenericGamepadHidraw(
+        LegionHidraw(
             vid=[LEN_VID],
             pid=list(LEN_PIDS),
             usage_page=[0xFFA0],
@@ -146,7 +152,7 @@ def controller_loop_rest(
             axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             required=True,
-        )
+        ).with_settings(None, reset)
     )
 
     multiplexer = Multiplexer(
@@ -194,12 +200,17 @@ def controller_loop_rest(
 
 
 def controller_loop_xinput(
-    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter
+    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, reset: bool
 ):
     debug = conf.get("debug", False)
 
     # Output
-    motion = conf["accel"].to(bool) or conf["gyro"].to(bool)
+    dimu = conf["imu.mode"].to(str)
+    motion = (
+        dimu != "display"
+        or conf["imu.display.accel"].to(bool)
+        or conf["imu.display.gyro"].to(bool)
+    )
     d_producers, d_outs, d_params = get_outputs(
         conf["xinput"], conf["touchpad"], motion
     )
@@ -208,9 +219,24 @@ def controller_loop_xinput(
     d_accel = AccelImu()
     # Legion go has a bit lower sensitivity than it should
     GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-        "anglvel_x": ("gyro_z", "anglvel", -conf["gyro_scaling"].to(int), None),
-        "anglvel_y": ("gyro_x", "anglvel", conf["gyro_scaling"].to(int), None),
-        "anglvel_z": ("gyro_y", "anglvel", conf["gyro_scaling"].to(int), None),
+        "anglvel_x": (
+            "gyro_z",
+            "anglvel",
+            -conf["imu.display.gyro_scaling"].to(int),
+            None,
+        ),
+        "anglvel_y": (
+            "gyro_x",
+            "anglvel",
+            conf["imu.display.gyro_scaling"].to(int),
+            None,
+        ),
+        "anglvel_z": (
+            "gyro_y",
+            "anglvel",
+            conf["imu.display.gyro_scaling"].to(int),
+            None,
+        ),
         "timestamp": ("gyro_ts", None, 1, None),
     }
     d_gyro = GyroImu(map=GYRO_MAPPINGS, legion_fix=True)
@@ -235,7 +261,7 @@ def controller_loop_xinput(
         required=True,
     )
     d_raw = SelectivePassthrough(
-        GenericGamepadHidraw(
+        LegionHidraw(
             vid=[LEN_VID],
             pid=list(LEN_PIDS),
             usage_page=[0xFFA0],
@@ -246,8 +272,9 @@ def controller_loop_xinput(
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=RgbCallback(),
             required=True,
-        )
+        ).with_settings(dimu, reset)
     )
+
     # Mute keyboard shortcuts, mute
     d_shortcuts = GenericGamepadEvdev(
         vid=[LEN_VID],
@@ -274,6 +301,14 @@ def controller_loop_xinput(
         else conf["touchpad.emulation"]
     )
 
+    match dimu:
+        case "left":
+            simu = "left_to_main"
+        case "right":
+            simu = "right_to_main"
+        case _:
+            simu = None
+
     multiplexer = Multiplexer(
         swap_guide=swap_guide,
         trigger="analog_to_discrete",
@@ -287,6 +322,7 @@ def controller_loop_xinput(
         r3_to_share=conf["m2_to_mute"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
+        imu=simu,
     )
 
     REPORT_FREQ_MIN = 25
@@ -308,10 +344,11 @@ def controller_loop_xinput(
 
     try:
         prepare(d_xinput)
-        if conf.get("accel", False):
-            prepare(d_accel)
-        if conf.get("gyro", False):
-            prepare(d_gyro)
+        if motion and dimu == "display":
+            if conf.get("imu.display.accel", False):
+                prepare(d_accel)
+            if conf.get("imu.display.gyro", False):
+                prepare(d_gyro)
         prepare(d_shortcuts)
         if d_params["uses_touch"]:
             prepare(d_touch)

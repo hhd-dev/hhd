@@ -260,6 +260,7 @@ class Multiplexer:
         nintendo_mode: bool = False,
         qam_button: str | None = None,
         emit: Callable[[SpecialEvent], None] | None = None,
+        imu: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -275,6 +276,7 @@ class Multiplexer:
         self.r3_to_share = r3_to_share
         self.nintendo_mode = nintendo_mode
         self.emit = emit
+        self.imu = imu
 
         self.state = {}
         self.touchpad_x = 0

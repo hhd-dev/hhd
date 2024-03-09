@@ -16,43 +16,60 @@ children:
   #
   # Common settings
   #
-  gyro:
-    type: bool
-    title: Gyroscope
-    hint: >-
-      Enables gyroscope support (.3% background CPU use)
-    default: True
-  accel:
-    type: bool
-    title: Accelerometer
-    tags: [advanced, expert]
-    hint: >-
-      Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro; 
-      if someone asks it will be fixed).
-    default: False
-  gyro_fix:
-    type: discrete
-    title: Gyro Hz
-    tags: [ non-essential ]
-    hint: >-
-      Adds polling to the legion go gyroscope, to fix the low polling rate
-      (required for gyroscope support). Set to 0 to disable.
-      Due to hardware limitations, there is a marginal difference above
-      100hz.
-    options: [0, 40, 60, 75, 100, 125, 200, 300]
-    default: 100
-  gyro_scaling:
-    type: int
-    title: Gyro Scale
-    tags: [ non-essential ]
-    hint: >-
-      Applies a scaling factor to the legion go gyroscope (since it is misconfigured
-      by the driver). Try different values to see what works best.
-      Low values cause a deadzone and high values will clip when moving the 
-      Go abruptly.
-    min: 15
-    max: 80
-    default: 22
+  imu:
+    type: mode
+    title: Motions Device
+    default: display
+    tags: [non-essential]
+
+    modes:
+      display:
+        type: container
+        title: Display
+        children:
+          gyro:
+            type: bool
+            title: Gyroscope
+            hint: >-
+              Enables gyroscope support (.3% background CPU use)
+            default: True
+          accel:
+            type: bool
+            title: Accelerometer
+            tags: [advanced, expert]
+            hint: >-
+              Enables accelerometer support (CURRENTLY BROKEN).
+            default: False
+          gyro_fix:
+            type: discrete
+            title: Gyro Hz
+            tags: [ non-essential ]
+            hint: >-
+              Adds polling to the legion go gyroscope, to fix the low polling rate
+              (required for gyroscope support). Set to 0 to disable.
+              Due to hardware limitations, there is a marginal difference above
+              100hz.
+            options: [0, 40, 60, 75, 100, 125, 200, 300]
+            default: 100
+          gyro_scaling:
+            type: int
+            title: Gyro Scale
+            tags: [ non-essential ]
+            hint: >-
+              Applies a scaling factor to the legion go gyroscope (since it is misconfigured
+              by the driver). Try different values to see what works best.
+              Low values cause a deadzone and high values will clip when moving the 
+              Go abruptly.
+            min: 15
+            max: 80
+            default: 22
+      left:
+        type: container
+        title: Left Controller
+      right:
+        type: container
+        title: Right Controller
+
   swap_legion:
     type: multiple
     title: Swap Legion with Start/Select
@@ -104,6 +121,14 @@ children:
       When in other modes (dinput, dual dinput, and fps), enable a shortcuts 
       controller to restore Guide, QAM, and shortcut functionality.
     default: True
+
+  factory_reset:
+    type: action
+    title: Factory Reset Controllers
+    tags: [ non-essential ]
+    hint: >-
+      Resets the controllers to factory settings.
+
   debug:
     type: bool
     title: Debug

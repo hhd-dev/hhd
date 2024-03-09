@@ -1,8 +1,12 @@
+import logging
 from enum import Enum
 from typing import Literal, Sequence
 
 from hhd.controller import Event
 from hhd.controller.lib.hid import Device
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
+
+logger = logging.getLogger(__name__)
 
 Controller = Literal["left", "right"]
 RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
@@ -10,6 +14,10 @@ RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
 RGB_MODE_PULSE = 0x02
 RGB_MODE_DYNAMIC = 0x03
 RGB_MODE_SPIRAL = 0x04
+
+
+def to_bytes(s: str):
+    return bytes.fromhex(s.replace(" ", ""))
 
 
 def _get_controller(c: Controller):
@@ -102,6 +110,40 @@ def rgb_enable(controller: Controller, enable: bool):
     )
 
 
+def controller_enable_gyro(controller: Controller):
+    rc = _get_controller(controller)
+    EN = 0x01
+    M = 0x02
+    return [
+        # Enable the gyro if its disabled
+        bytes([0x05, 0x06, 0x6A, 0x02, rc, EN, 0x01]),
+        # Enable high quality report
+        bytes([0x05, 0x06, 0x6A, 0x07, rc, M, 0x01]),
+    ]
+
+
+def controller_disable_gyro(controller: Controller):
+    rc = _get_controller(controller)
+    M = 0x01
+    return [
+        # Disable high quality report
+        bytes([0x05, 0x06, 0x6A, 0x07, rc, M, 0x01]),
+    ]
+
+
+def controller_factory_reset():
+    return [
+        # RX
+        to_bytes("0405 05 01 01 01 01"),
+        # Dongle (?)
+        to_bytes("0405 05 01 01 02 01"),
+        # Left
+        to_bytes("0405 05 01 01 03 01"),
+        # Right
+        to_bytes("0405 05 01 01 04 01"),
+    ]
+
+
 def rgb_multi_load_settings(
     mode: RgbMode,
     profile: Literal[1, 2, 3],
@@ -156,7 +198,7 @@ class RgbCallback:
                 case "rainbow":
                     mode = "dynamic"
                 case "solid":
-                    if ev["red"] or ev['green'] or ev['blue']:
+                    if ev["red"] or ev["green"] or ev["blue"]:
                         mode = "solid"
                     else:
                         # Disable if brightness is 0
@@ -184,3 +226,46 @@ class RgbCallback:
 
             for r in reps:
                 dev.write(r)
+
+
+class LegionHidraw(GenericGamepadHidraw):
+    def with_settings(self, gyro: str | None, reset: bool):
+        self.gyro = gyro
+        self.reset = reset
+        return self
+
+    def open(self):
+        out = super().open()
+        if not out:
+            return out
+        if not self.dev:
+            return out
+
+        cmds = []
+
+        if self.gyro == "left":
+            cmds.extend(controller_enable_gyro("left"))
+        if self.gyro == "right":
+            cmds.extend(controller_enable_gyro("right"))
+        if self.reset:
+            logger.warning(f"Factory Resetting controllers")
+            cmds.extend(controller_factory_reset())
+
+        for r in cmds:
+            self.dev.write(r)
+
+        return out
+
+    def close(self, exit: bool) -> bool:
+        if not self.dev:
+            return super().close(exit)
+
+        cmds = []
+        if self.gyro == "left":
+            cmds.extend(controller_disable_gyro("left"))
+        if self.gyro == "right":
+            cmds.extend(controller_disable_gyro("right"))
+        for r in cmds:
+            self.dev.write(r)
+
+        return super().close(exit)

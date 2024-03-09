@@ -10,10 +10,11 @@ from hhd.plugins import (
     get_outputs_config,
     get_touchpad_config,
     get_gyro_state,
-    get_gyro_config
+    get_gyro_config,
 )
 from hhd.plugins.settings import HHDSettings
 from hhd.controller.physical.imu import BMI_MAPPINGS
+
 
 class LegionControllersPlugin(HHDPlugin):
     name = "legion_go_controllers"
@@ -47,6 +48,9 @@ class LegionControllersPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         new_conf = conf["controllers.legion_go"]
+        reset = conf["controllers.legion_go.factory_reset"].to(bool)
+        conf["controllers.legion_go.factory_reset"] = False
+
         if new_conf == self.prev:
             return
         if self.prev is None:
@@ -54,10 +58,13 @@ class LegionControllersPlugin(HHDPlugin):
         else:
             self.prev.update(new_conf.conf)
 
-        self.updated.set()
-        self.start(self.prev)
+        if reset:
+            self.started = False
+        else:
+            self.updated.set()
+        self.start(self.prev, reset)
 
-    def start(self, conf):
+    def start(self, conf, reset=False):
         from .base import plugin_run
 
         if self.started:
@@ -68,7 +75,14 @@ class LegionControllersPlugin(HHDPlugin):
         self.should_exit = Event()
         self.t = Thread(
             target=plugin_run,
-            args=(conf, self.emit, self.context, self.should_exit, self.updated),
+            args=(
+                conf,
+                self.emit,
+                self.context,
+                self.should_exit,
+                self.updated,
+                {"reset": reset},
+            ),
         )
         self.t.start()
 
