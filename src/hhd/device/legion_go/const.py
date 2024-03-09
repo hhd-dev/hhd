@@ -80,10 +80,28 @@ LGO_RAW_INTERFACE_AXIS_MAP: dict[int | None, dict[Axis, AM]] = {
         # "mouse_wheel": AM(25 << 3, "m8", scale=1), # TODO: Fix weird behavior
         # "touchpad_x": AM(26 << 3, "u16"),
         # "touchpad_y": AM(28 << 3, "u16"),
+        # Legacy
         # "left_gyro_x": AM(30 << 3, "m8"),
         # "left_gyro_y": AM(31 << 3, "m8"),
         # "right_gyro_x": AM(32 << 3, "m8"),
         # "right_gyro_y": AM(33 << 3, "m8"),
+        # Per controller IMU
+        # Left
+        "left_imu_ts": AM(34 << 3, "u8", scale=1),
+        "left_accel_x": AM(35 << 3, "i16", scale=1),
+        "left_accel_y": AM(37 << 3, "i16", scale=1),
+        "left_accel_z": AM(39 << 3, "i16", scale=1),
+        "left_gyro_x": AM(41 << 3, "i16", scale=1),
+        "left_gyro_y": AM(43 << 3, "i16", scale=1),
+        "left_gyro_z": AM(45 << 3, "i16", scale=1),
+        # Right
+        "right_imu_ts": AM(47 << 3, "u8", scale=1),
+        "right_accel_x": AM(48 << 3, "i16", scale=1),
+        "right_accel_y": AM(50 << 3, "i16", scale=1),
+        "right_accel_z": AM(52 << 3, "i16", scale=1),
+        "right_gyro_x": AM(54 << 3, "i16", scale=1),
+        "right_gyro_y": AM(56 << 3, "i16", scale=1),
+        "right_gyro_z": AM(58 << 3, "i16", scale=1),
     }
 }
 

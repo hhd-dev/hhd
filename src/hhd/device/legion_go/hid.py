@@ -261,10 +261,10 @@ class LegionHidraw(GenericGamepadHidraw):
             return super().close(exit)
 
         cmds = []
-        if self.gyro == "left":
-            cmds.extend(controller_disable_gyro("left"))
-        if self.gyro == "right":
-            cmds.extend(controller_disable_gyro("right"))
+        # Always reset both gyros to avoid leaving them on
+        # in case they use battery
+        cmds.extend(controller_disable_gyro("left"))
+        cmds.extend(controller_disable_gyro("right"))
         for r in cmds:
             self.dev.write(r)
 
