@@ -358,7 +358,6 @@ def controller_loop_xinput(
         for d in d_producers:
             prepare(d)
 
-        # begin = time.perf_counter()
         ts_count: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
         ts_last: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
 
@@ -391,13 +390,6 @@ def controller_loop_xinput(
                     ev["value"] = ts_count[ev["code"]]
 
             evs = multiplexer.process(evs)
-            # curr = time.perf_counter() - begin
-            # for ev in evs:
-            #     if "ts" not in ev["code"]:
-            #         continue
-            #     print(
-            #         f"{curr:7.3f}: {ev['type']:7s} {ev['code']:15s} {ev.get('value', 0):7d}"
-            #     )
 
             if evs:
                 if debug:
