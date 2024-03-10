@@ -14,7 +14,7 @@ class Command(NamedTuple):
 def initialize():
     try:
         o = subprocess.run(["modprobe", "acpi_call"], capture_output=True)
-        logger.info(f"'acpi_call' modprobe output:\n{(o.stdout + o.stderr).decode()}")
+        logger.info(f"'acpi_call' modprobe output:\n{(o.stdout + o.stderr).decode()}".strip())
         return True
     except Exception as e:
         logger.warning(f"Failed loading acpi_call with error:\n{e}")
