@@ -236,7 +236,7 @@ def controller_loop_xinput(
         "anglvel_x": (
             "gyro_z",
             "anglvel",
-            -conf["imu.display.gyro_scaling"].to(int),
+            conf["imu.display.gyro_scaling"].to(int),
             None,
         ),
         "anglvel_y": (
