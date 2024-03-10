@@ -16,7 +16,7 @@ from ..controller.virtual.uinput import (
 
 
 def get_outputs(
-    conf, touch_conf, motion: bool = False
+    conf, touch_conf, motion: bool = False, *, controller_id: int = 0
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -45,6 +45,7 @@ def get_outputs(
                 sync_gyro=conf["dualsense_edge.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=False,
                 flip_z=conf["dualsense_edge.flip_z"].to(bool),
+                controller_id=controller_id,
             )
             producers.append(d)
             consumers.append(d)
@@ -61,6 +62,7 @@ def get_outputs(
                 sync_gyro=conf["dualsense.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=conf["dualsense.paddles_to_clicks"].to(bool),
                 flip_z=conf["dualsense.flip_z"].to(bool),
+                controller_id=controller_id,
             )
             producers.append(d)
             consumers.append(d)

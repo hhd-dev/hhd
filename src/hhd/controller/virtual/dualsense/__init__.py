@@ -23,8 +23,9 @@ from .const import (
     DS5_EDGE_MAX_REPORT_FREQ,
     DS5_EDGE_MIN_REPORT_FREQ,
     DS5_EDGE_NAME,
-    DS5_NAME,
     DS5_EDGE_PRODUCT,
+    DS5_EDGE_REPORT_PAIRING,
+    DS5_EDGE_REPORT_PAIRING_ID,
     DS5_EDGE_STOCK_REPORTS,
     DS5_EDGE_TOUCH_HEIGHT,
     DS5_EDGE_TOUCH_WIDTH,
@@ -33,6 +34,7 @@ from .const import (
     DS5_INPUT_CRC32_SEED,
     DS5_INPUT_REPORT_BT_OFS,
     DS5_INPUT_REPORT_USB_OFS,
+    DS5_NAME,
     DS5_PRODUCT,
     DS5_USB_AXIS_MAP,
     DS5_USB_BTN_MAP,
@@ -62,6 +64,7 @@ class Dualsense(Producer, Consumer):
         sync_gyro: bool = False,
         flip_z: bool = True,
         paddles_to_clicks: bool = False,
+        controller_id: int = 0,
     ) -> None:
         self.available = False
         self.report = None
@@ -76,6 +79,7 @@ class Dualsense(Producer, Consumer):
         self.sync_gyro = sync_gyro
         self.flip_z = flip_z
         self.paddles_to_clicks = paddles_to_clicks
+        self.controller_id = controller_id
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -144,7 +148,14 @@ class Dualsense(Producer, Consumer):
                     self.available = False
                 case "get_report":
                     if ev["rnum"] in DS5_EDGE_STOCK_REPORTS:
-                        rep = DS5_EDGE_STOCK_REPORTS[ev["rnum"]]
+                        num = ev["rnum"]
+                        if num == DS5_EDGE_REPORT_PAIRING_ID:
+                            # Customize pairing report to have per-controller
+                            # calibration
+                            rep = DS5_EDGE_REPORT_PAIRING(self.controller_id)
+                        else:
+                            rep = DS5_EDGE_STOCK_REPORTS[num]
+
                         if self.use_bluetooth:
                             rep = sign_crc32_append(rep, DS5_FEATURE_CRC32_SEED)
                         self.dev.send_get_report_reply(ev["id"], 0, rep)
@@ -307,7 +318,9 @@ class Dualsense(Producer, Consumer):
                         try:
                             encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])
                         except Exception:
-                            logger.warning(f"Encoding '{ev['code']}' with {ev['value']} overflowed.")
+                            logger.warning(
+                                f"Encoding '{ev['code']}' with {ev['value']} overflowed."
+                            )
                     # DPAD is weird
                     match ev["code"]:
                         case "hat_x":

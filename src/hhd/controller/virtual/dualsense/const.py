@@ -998,6 +998,32 @@ DS5_EDGE_DESCRIPTOR_BT = bytes(
 )
 
 DS5_EDGE_MAC_ADDR = [0x74, 0xE7, 0xD6, 0x3A, 0x53, 0x35]  # 0x47, 0xE8]
+DS5_EDGE_REPORT_PAIRING_ID = 9
+DS5_EDGE_REPORT_PAIRING = lambda idx: bytes(
+    # Customize Pairing Report Id
+    [
+        0x09,
+        DS5_EDGE_MAC_ADDR[0],
+        DS5_EDGE_MAC_ADDR[1],
+        DS5_EDGE_MAC_ADDR[2],
+        idx or DS5_EDGE_MAC_ADDR[3],
+        DS5_EDGE_MAC_ADDR[4],
+        DS5_EDGE_MAC_ADDR[5],
+        0x08,
+        0x25,
+        0x00,
+        0x1E,
+        0x00,
+        0xEE,
+        0x74,
+        0xD0,
+        0xBC,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+    ]
+)
 DS5_EDGE_STOCK_REPORTS = {
     0x09: bytes(  # Pairing
         [

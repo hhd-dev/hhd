@@ -208,13 +208,25 @@ def controller_loop_xinput(
 
     # Output
     dimu = conf["imu.mode"].to(str)
+
+    match dimu:
+        case "left":
+            simu = "left_to_main"
+            cidx = 1
+        case "right":
+            simu = "right_to_main"
+            cidx = 2
+        case _:
+            simu = None
+            cidx = 0
+
     motion = (
         dimu != "display"
         or conf["imu.display.accel"].to(bool)
         or conf["imu.display.gyro"].to(bool)
     )
     d_producers, d_outs, d_params = get_outputs(
-        conf["xinput"], conf["touchpad"], motion
+        conf["xinput"], conf["touchpad"], motion, controller_id=cidx
     )
 
     # Imu
@@ -302,15 +314,6 @@ def controller_loop_xinput(
         if conf["touchpad.mode"].to(TouchpadAction) == "controller"
         else conf["touchpad.emulation"]
     )
-
-    match dimu:
-        case "left":
-            simu = "left_to_main"
-        case "right":
-            simu = "right_to_main"
-        case _:
-            simu = None
-
     multiplexer = Multiplexer(
         swap_guide=swap_guide,
         trigger="analog_to_discrete",
