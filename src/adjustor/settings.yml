@@ -1,19 +1,51 @@
-type: container
-children:
-  tdp_enable:
-    title: Enable TDP Controls
-    type: bool
-    default: False
+tdp:
+  title: TDP Controls
+  type: container
+  children:
+    tdp_enable:
+      title: Enable TDP Controls
+      type: action
+      tags: [ non-essential ]
+      hint: >-
+        Enables TDP management by the Handheld Daemon.
+        While enabled, Handheld Daemon will set and maintain the TDP limits set
+        on start-up and during other device changes (ac/dc).
 
-  enforce_limits:
-    title: Enforce Device TDP Limits
-    type: bool
-    tags: [ expert ]
-    default: True
+        If the device crashes, TDP setting will be disabled on next startup.
 
-  tdp_error:
-    title: Error
-    type: display
-    tags: [error]
-    options: 
-      nowrite: Can not write to ACPI Call file. ACPI Call is required for TDP.
+    tdp_error:
+      title: Error
+      type: display
+      tags: [ error, non-essential ]
+      options: 
+        nowrite: Can not write to ACPI Call file. ACPI Call is required for TDP.
+
+hhd:
+  type: container
+  children:
+    tdp_enable:
+      title: Enable TDP Controls
+      type: bool
+      default: False
+      hint: >-
+        Enables TDP management by the Handheld Daemon.
+        While enabled, Handheld Daemon will set and maintain the TDP limits set
+        on start-up and during other device changes (ac/dc).
+
+        If the device crashes, TDP setting will be disabled on next startup.
+
+    enforce_limits:
+      title: Enforce Device TDP Limits
+      type: bool
+      tags: [ expert ]
+      default: True
+      hint: >-
+        When this option is on, the settings will adhere to the limits set out
+        by the device manufacturer, subject to their availability.
+
+        With it off, the TDP settings ranges will expand to what is logically
+        possible for the current device (regardless of manufacturer specifications).
+
+        All settings outside specifications will be set to system specifications
+        after rebooting.
+

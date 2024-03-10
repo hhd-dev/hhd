@@ -23,24 +23,36 @@ class AdjustorInitPlugin(HHDPlugin):
         self.init = False
         self.failed = False
         self.safe_mode = False
+        self.enabled = False
+        self.action_enabled = False
 
     def open(self, emit: Emitter, context: Context):
         if exists_sentinel() or not install_sentinel():
             self.safe_mode = True
 
     def settings(self):
-        return {}
+        if self.enabled and not self.failed:
+            self.action_enabled = False
+            return {}
+        self.action_enabled = True
+        return {"tdp": {"tdp": load_relative_yaml("settings.yml")["tdp"]}}
 
     def update(self, conf: Config):
+        if self.action_enabled and conf["tdp.tdp.tdp_enable"].to(bool):
+            conf["tdp.tdp.tdp_enable"] = False
+            conf["hhd.settings.tdp_enable"] = True
+
         if self.failed:
             conf["hhd.settings.tdp_enable"] = False
         if self.safe_mode:
             logger.warning(f"Due to a sentinel error, auto-start is disabled.")
-            conf["hhd.settings.tdp_error"] = (
-                "Due to Handheld Daemon not exiting properly, auto-start is disabled."
+            conf["tdp.tdp.tdp_error"] = (
+                "Due to a suspected crash, auto-start was disabled."
             )
             conf["hhd.settings.tdp_enable"] = False
             self.safe_mode = False
+
+        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
 
         if self.init:
             return
@@ -51,10 +63,11 @@ class AdjustorInitPlugin(HHDPlugin):
         initialize()
         if not check_perms():
             conf["hhd.settings.tdp_enable"] = False
-            conf["hhd.settings.tdp_error"] = (
+            conf["tdp.tdp.tdp_error"] = (
                 "Can not write to 'acpi_call'. It is required for TDP."
             )
             self.failed = True
+            self.enabled = False
 
         self.init = True
 
@@ -74,7 +87,7 @@ class AdjustorPlugin(HHDPlugin):
         self.should_exit = None
 
     def settings(self) -> HHDSettings:
-        out = {"hhd": {"settings": load_relative_yaml("settings.yml")}}
+        out = {"hhd": {"settings": load_relative_yaml("settings.yml")["hhd"]}}
         if os.environ.get("HHD_ADJ_ENABLE_TDP"):
             out["hhd"]["settings"]["children"]["tdp_enable"]["default"] = True
         return out
