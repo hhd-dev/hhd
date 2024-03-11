@@ -33,7 +33,7 @@ Status = Literal["closed", "qam", "expanded", "notification"]
 
 GUARD_CHECK = 0.5
 STARTUP_MAX_DELAY = 10
-LOOP_SLEEP = 0.1
+LOOP_SLEEP = 0.05
 
 
 def update_status(proc: subprocess.Popen, cmd: Command):
@@ -93,6 +93,7 @@ def loop_manage_overlay(
                 logger.error(f"Steam window not found, exitting overlay.")
                 break
 
+            start = time.perf_counter()
             r, _, _ = select.select([fd_out, fd_err, fd_disp], [], [], GUARD_CHECK)
 
             if proc.poll() is not None:
@@ -136,8 +137,12 @@ def loop_manage_overlay(
                             applied_changes = True
                         shown = True
 
-            # Sleep a bit to avoid waking up too much
-            time.sleep(LOOP_SLEEP)
+            # Sleep a bit to avoid running too often
+            # Only do so if the earlier sleep was too short to avoid having
+            # steam slipping in the UI and flashing the screen
+            elapsed = time.perf_counter() - start
+            if elapsed < LOOP_SLEEP:
+                time.sleep(LOOP_SLEEP - elapsed)
     except Exception as e:
         logger.warning(f"The overlay process ended with an exception:\n{e}")
     finally:
