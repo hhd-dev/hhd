@@ -140,7 +140,8 @@ def prepare_hhd(display, hhd):
 def process_events(disp):
     try:
         for _ in range(disp.pending_events()):
-            if "STEAM" in disp.get_atom_name(disp.next_event().atom):
+            ev = disp.next_event()
+            if ev and hasattr(ev, "atom") and "STEAM" in disp.get_atom_name(ev.atom):
                 return True
         return False
     except Exception as e:
