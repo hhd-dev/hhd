@@ -1,12 +1,19 @@
 import logging
 import subprocess
-from typing import Sequence
+from typing import Any, NamedTuple, Sequence
 
+import Xlib
 from Xlib import Xatom, display, error
 
 logger = logging.getLogger(__name__)
 
 X11_DIR = b"/tmp/.X11-unix/"
+
+
+class CachedValues(NamedTuple):
+    overlay: bool
+    focus: bool
+    notify: bool
 
 
 def get_gamescope_displays():
@@ -56,6 +63,12 @@ def find_win(display: display.Display, win: list[str]):
 
         if found:
             return w
+
+
+def register_changes(display, win):
+    win.change_attributes(event_mask=Xlib.X.PropertyChangeMask)
+    display.flush()
+    display.sync()
 
 
 def find_hhd(display: display.Display):
@@ -120,29 +133,51 @@ def prepare_hhd(display, hhd):
     hhd.change_property(display.get_atom("STEAM_GAME"), Xatom.CARDINAL, 32, [5335])
     hhd.change_property(display.get_atom("STEAM_NOTIFICATION"), Xatom.CARDINAL, 32, [0])
     hhd.change_property(display.get_atom("STEAM_BIGPICTURE"), Xatom.CARDINAL, 32, [1])
+    display.flush()
+    display.sync()
+
+
+def process_events(disp):
+    try:
+        for _ in range(disp.pending_events()):
+            if "STEAM" in disp.get_atom_name(disp.next_event().atom):
+                return True
+        return False
+    except Exception as e:
+        logger.warning(f"Failed to process display events with error:\n{e}")
+    return True
+
+
+def update_steam_values(display, steam):
+    stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
+    stat_overlay = display.get_atom("STEAM_OVERLAY")
+    stat_notify = display.get_atom("STEAM_NOTIFICATION")
+
+    def was_set(v):
+        prop = steam.get_property(stat_focus, Xatom.CARDINAL, 0, 15)
+        return prop and prop.value and prop.value[0]
+
+    out = CachedValues(
+        focus=was_set(stat_focus),
+        overlay=was_set(stat_overlay),
+        notify=was_set(stat_notify),
+    )
+    return out, out.focus or out.overlay or out.notify
 
 
 def show_hhd(display, hhd, steam):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
     stat_overlay = display.get_atom("STEAM_OVERLAY")
-
-    old = (
-        steam.get_property(stat_focus, Xatom.CARDINAL, 0, 15),
-        steam.get_property(stat_overlay, Xatom.CARDINAL, 0, 15),
-    )
+    stat_notify = display.get_atom("STEAM_NOTIFICATION")
 
     hhd.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
     hhd.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
     steam.change_property(stat_focus, Xatom.CARDINAL, 32, [0])
     steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
+    steam.change_property(stat_notify, Xatom.CARDINAL, 32, [0])
 
-    # Force the values to refresh
-    hhd.get_property(stat_focus, Xatom.CARDINAL, 0, 5)
-    hhd.get_property(stat_overlay, Xatom.CARDINAL, 0, 5)
-    steam.get_property(stat_focus, Xatom.CARDINAL, 0, 5)
-    steam.get_property(stat_overlay, Xatom.CARDINAL, 0, 5)
-
-    return old
+    display.flush()
+    display.sync()
 
 
 def is_steam_shown(display, steam):
@@ -157,24 +192,23 @@ def is_steam_shown(display, steam):
         return False
 
 
-def hide_hhd(display, hhd, steam, old):
+def hide_hhd(display, hhd, steam, old: CachedValues | None):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
     stat_overlay = display.get_atom("STEAM_OVERLAY")
+    stat_notify = display.get_atom("STEAM_NOTIFICATION")
 
     # Set values
     hhd.change_property(stat_focus, Xatom.CARDINAL, 32, [0])
     hhd.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
-    # Refresh values
-    hhd.get_property(stat_focus, Xatom.CARDINAL, 0, 5)
-    hhd.get_property(stat_overlay, Xatom.CARDINAL, 0, 5)
 
     # Restore steam
-    if not old:
-        return
+    if old:
+        if old.overlay:
+            steam.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
+        if old.focus:
+            steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
+        if old.notify:
+            steam.change_property(stat_notify, Xatom.CARDINAL, 32, [1])
 
-    if old[0]:
-        steam.change_property(stat_focus, Xatom.CARDINAL, 32, old[0].value)
-        steam.get_property(stat_focus, Xatom.CARDINAL, 0, 5)
-    if old[1]:
-        steam.change_property(stat_overlay, Xatom.CARDINAL, 32, old[1].value)
-        steam.get_property(stat_overlay, Xatom.CARDINAL, 0, 5)
+    display.flush()
+    display.sync()

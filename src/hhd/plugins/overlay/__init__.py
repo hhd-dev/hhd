@@ -47,12 +47,14 @@ class OverlayPlugin(HHDPlugin):
                 continue
 
             match ev["event"]:
-                case "guide":
-                    # Close to avoid issues with steam
-                    cmd = "close_now"
-                case "qam_single":
-                    # Close to avoid issues with steam
-                    cmd = "close"
+                # We can listen to steam and mute it
+                # So we can ignore QAM and Guide presses
+                # case "guide":
+                #     # Close to avoid issues with steam
+                #     cmd = "close_now"
+                # case "qam_single":
+                #     # Close to avoid issues with steam
+                #     cmd = "close"
                 case "qam_hold":
                     # Open QAM with hold for accessibility
                     cmd = "open_qam"
