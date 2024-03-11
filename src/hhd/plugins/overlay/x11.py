@@ -139,11 +139,12 @@ def prepare_hhd(display, hhd):
 
 def process_events(disp):
     try:
+        found = False
         for _ in range(disp.pending_events()):
             ev = disp.next_event()
             if ev and hasattr(ev, "atom") and "STEAM" in disp.get_atom_name(ev.atom):
-                return True
-        return False
+                found = True
+        return found
     except Exception as e:
         logger.warning(f"Failed to process display events with error:\n{e}")
     return True

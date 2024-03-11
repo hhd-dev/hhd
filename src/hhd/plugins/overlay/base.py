@@ -128,6 +128,7 @@ def loop_manage_overlay(
                     if status == "closed":
                         if shown:
                             hide_hhd(disp, hhd, steam, old)
+                            old = None
                             applied_changes = True
                         shown = False
                     else:
