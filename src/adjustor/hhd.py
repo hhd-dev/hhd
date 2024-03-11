@@ -68,6 +68,8 @@ class AdjustorInitPlugin(HHDPlugin):
             )
             self.failed = True
             self.enabled = False
+        else:
+            conf["tdp.tdp.tdp_error"] = ""
 
         self.init = True
 
