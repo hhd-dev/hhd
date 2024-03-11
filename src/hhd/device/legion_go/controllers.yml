@@ -60,9 +60,9 @@ children:
               by the driver). Try different values to see what works best.
               Low values cause a deadzone and high values will clip when moving the 
               Go abruptly.
-            min: 15
-            max: 80
-            default: 22
+            min: 45
+            max: 120
+            default: 76
       left:
         type: container
         title: Left Controller

@@ -24,6 +24,7 @@ class AM(NamedTuple):
     scale: float | None = None
     offset: float = 0
     flipped: bool = False
+    bounds: tuple[int, int] | None = None
 
 
 class CM(NamedTuple):
@@ -103,6 +104,8 @@ def encode_axis(buff: bytearray, t: AM, val: float):
 
     if t.scale:
         new_val = int(t.scale * val + t.offset)
+        if t.bounds:
+            new_val = min(max(new_val, t.bounds[0]), t.bounds[1])
     else:
         new_val = None
 
