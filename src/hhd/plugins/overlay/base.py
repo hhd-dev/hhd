@@ -138,6 +138,8 @@ def loop_manage_overlay(
 
             # Sleep a bit to avoid waking up too much
             time.sleep(LOOP_SLEEP)
+    except Exception as e:
+        logger.warning(f"The overlay process ended with an exception:\n{e}")
     finally:
         logger.info(f"Stopping overlay process.")
         proc.kill()
