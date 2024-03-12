@@ -22,227 +22,227 @@ msgstr ""
 #. Setting: System
 #. Field: title
 msgid "System"
-msgstr ""
+msgstr "系统"
 
 #. Section Name for: tdp
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Section Name for: controller
 #. Setting: Controller
 #. Field: title
 msgid "Controller"
-msgstr ""
+msgstr "控制器"
 
 #. Section Name for: hhd
 msgid "About"
-msgstr ""
+msgstr "关于"
 
 #. Setting: Version Information
 #. Field: title
 msgid "Version Information"
-msgstr ""
+msgstr "版本信息"
 
 #. Setting: Version Information
 #. Field: hint
 msgid "Handheld Daemon version manager (local install only)."
-msgstr ""
+msgstr "Handheld Daemon 版本管理 (仅本地安装)"
 
 #. Setting: Decky Plugin Version
 #. Field: title
 msgid "Decky Plugin Version"
-msgstr ""
+msgstr "Decky 插件版本"
 
 #. Setting: Decky Plugin Version
 #. Field: hint
 msgid "Displays the Handheld Daemon Decky plugin version."
-msgstr ""
+msgstr "显示 Handheld Daemon Decky 插件版本"
 
 #. Setting: WARNING: This button will be removed soon, update Decky now!
 #. Field: title
 msgid "WARNING: This button will be removed soon, update Decky now!"
-msgstr ""
+msgstr "警告：此按钮将很快被移除，请立即更新 Decky！"
 
 #. Setting: Update Decky
 #. Field: title
 msgid "Update Decky"
-msgstr ""
+msgstr "更新 Decky"
 
 #. Setting: Update Decky
 #. Field: hint
 msgid "Updates the Decky plugin to the latest release."
-msgstr ""
+msgstr "更新 Decky 插件到最新版本"
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr ""
+msgstr "Handheld Daemon 版本"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
 msgid "Displays the Handheld Daemon version."
-msgstr ""
+msgstr "显示 Handheld Daemon 版本"
 
 #. Setting: Update (Stable)
 #. Field: title
 msgid "Update (Stable)"
-msgstr ""
+msgstr "更新（稳定版）"
 
 #. Setting: Update (Stable)
 #. Field: hint
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr ""
+msgstr "从 PyPi 更新到最新版本（仅本地安装）"
 
 #. Setting: Update (Unstable)
 #. Field: title
 msgid "Update (Unstable)"
-msgstr ""
+msgstr "更新（不稳定版）"
 
 #. Setting: Update (Unstable)
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
-msgstr ""
+msgstr "更新到 git 的 master 分支（仅本地安装）"
 
 #. Setting: API Configuration
 #. Field: title
 msgid "API Configuration"
-msgstr ""
+msgstr "API 配置"
 
 #. Setting: API Configuration
 #. Field: hint
 msgid "Settings for configuring the http endpoint of HHD."
-msgstr ""
+msgstr "HHD 的 http 端点的设置"
 
 #. Setting: Enable the API
 #. Field: title
 msgid "Enable the API"
-msgstr ""
+msgstr "启用 API"
 
 #. Setting: Enable the API
 #. Field: hint
 msgid "Enables the API of Handheld Daemon (required for decky and ui)."
-msgstr ""
+msgstr "启用 Handheld Daemon 的 API（decky 和 hhd-ui 必需）"
 
 #. Setting: API Port
 #. Field: title
 msgid "API Port"
-msgstr ""
+msgstr "API 端口"
 
 #. Setting: API Port
 #. Field: hint
 msgid "Which port should the API be on?"
-msgstr ""
+msgstr "API 要使用哪个端口？"
 
 #. Setting: Limit Access to localhost
 #. Field: title
 msgid "Limit Access to localhost"
-msgstr ""
+msgstr "仅限本地访问"
 
 #. Setting: Limit Access to localhost
 #. Field: hint
 msgid "Sets the API target to '127.0.0.1' instead '0.0.0.0'."
-msgstr ""
+msgstr "API 监听目标设置为 '127.0.0.1' 而不是 '0.0.0.0'"
 
 #. Setting: Use Security token
 #. Field: title
 msgid "Use Security token"
-msgstr ""
+msgstr "使用安全令牌"
 
 #. Setting: Use Security token
 #. Field: hint
 msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
-msgstr ""
+msgstr "在 `~/.config/hhd/token` 生成一个安全令牌，用于认证"
 
 #. Setting: Handheld Controller
 #. Field: title
 msgid "Handheld Controller"
-msgstr ""
+msgstr "掌机控制器"
 
 #. Setting: Handheld Controller
 #. Field: hint
 msgid "Allows for configuring your handheld's controller to a unified output."
-msgstr ""
+msgstr "可以配置您的掌机控制器为统一设备输出"
 
 #. Setting: Controller Emulation
 #. Field: title
 msgid "Controller Emulation"
-msgstr ""
+msgstr "控制器模拟"
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse your device's features."
-msgstr ""
+msgstr "模拟不同类型的控制器，以便融合设备特性"
 
 #. Setting: Motion Support
 #. Field: title
 msgid "Motion Support"
-msgstr ""
+msgstr "体感支持"
 
 #. Setting: Motion Support
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
-msgstr ""
+msgstr "启用陀螺仪/加速度计（IMU）支持（0.3% 后台 CPU 使用）"
 
 #. Setting: Motion Hz
 #. Field: title
 msgid "Motion Hz"
-msgstr ""
+msgstr "体感采样率"
 
 #. Setting: Motion Hz
 #. Field: hint
 msgid ""
 "Sets the sampling frequency for the IMU. Check "
 "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
-msgstr ""
+msgstr "设置 IMU 的采样频率。检查 `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
 msgid "Nintendo Mode (A-B Swap)"
-msgstr ""
+msgstr "任天堂模式（A-B 交换）"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: hint
 msgid "Swaps A with B and X with Y."
-msgstr ""
+msgstr "A 与 B 交换，X 与 Y 交换"
 
 #. Setting: Map share buttom to QAM.
 #. Field: title
 msgid "Map share buttom to QAM."
-msgstr ""
+msgstr "将 share 按钮映射为快捷菜单键"
 
 #. Setting: Debug
 #. Field: title
 msgid "Debug"
-msgstr ""
+msgstr "Debug模式"
 
 #. Setting: Debug
 #. Field: hint
 msgid ""
 "Output controller events to the console (high CPU use) and raises "
 "exceptions (HHD will crash on errors)."
-msgstr ""
+msgstr "输出控制器事件到控制台（高 CPU 使用）并抛出异常（HHD 将在错误时崩溃）"
 
 #. Setting: GPD Controller
 #. Field: title
 msgid "GPD Controller"
-msgstr ""
+msgstr "GPD 控制器"
 
 #. Setting: GPD Controller
 #. Field: hint
 msgid "Allows for configuring the gpd win controllers to a unified output."
-msgstr ""
+msgstr "可以配置您的 GPD 控制器为统一设备输出"
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse gpd features."
-msgstr ""
+msgstr "模拟不同类型的控制器，以融合 GPD 设备的特性"
 
 #. Setting: Map L4/R4 to QAM.
 #. Field: title
 msgid "Map L4/R4 to QAM."
-msgstr ""
+msgstr "将 L4/R4 映射为快捷菜单键"
 
 #. Setting: Map L4/R4 to QAM.
 #. Option: disabled
@@ -252,68 +252,68 @@ msgstr ""
 #. Setting: Short Action
 #. Setting: Hold Action
 msgid "Disabled"
-msgstr ""
+msgstr "禁用"
 
 #. Setting: Map L4/R4 to QAM.
 #. Option: l4
 msgid "L4"
-msgstr ""
+msgstr "L4"
 
 #. Setting: Map L4/R4 to QAM.
 #. Option: r4
 msgid "R4"
-msgstr ""
+msgstr "R4"
 
 #. Setting: Legion Controllers
 #. Field: title
 msgid "Legion Controllers"
-msgstr ""
+msgstr "Legion 控制器"
 
 #. Setting: Legion Controllers
 #. Field: hint
 msgid ""
 "Allows for configuring the Legion controllers using the built in firmware"
 " commands and enabling emulation modes for various controller types."
-msgstr ""
+msgstr "使用控制器固件内置命令配置 Legion 控制器，并启用各种控制器类型的模拟模式"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: title
 msgid "Emulation Mode (X-Input)"
-msgstr ""
+msgstr "模拟模式（X-Input）"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
 msgid ""
 "Emulate different controller types when the Legion Controllers are in "
 "X-Input mode."
-msgstr ""
+msgstr "当 Legion 控制器处于 X-Input 模式时模拟不同类型的控制器"
 
 #. Setting: Gyroscope
 #. Field: title
 msgid "Gyroscope"
-msgstr ""
+msgstr "陀螺仪"
 
 #. Setting: Gyroscope
 #. Field: hint
 msgid "Enables gyroscope support (.3% background CPU use)"
-msgstr ""
+msgstr "启用陀螺仪支持（0.3% 后台 CPU 使用）"
 
 #. Setting: Accelerometer
 #. Field: title
 msgid "Accelerometer"
-msgstr ""
+msgstr "加速度传感器"
 
 #. Setting: Accelerometer
 #. Field: hint
 msgid ""
 "Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro;  "
 "if someone asks it will be fixed)."
-msgstr ""
+msgstr "启用加速度传感器支持（当前不可用，会干扰陀螺仪；后续会修复）"
 
 #. Setting: Gyro Hz
 #. Field: title
 msgid "Gyro Hz"
-msgstr ""
+msgstr "陀螺仪采样率"
 
 #. Setting: Gyro Hz
 #. Field: hint
@@ -321,12 +321,12 @@ msgid ""
 "Adds polling to the legion go gyroscope, to fix the low polling rate "
 "(required for gyroscope support). Set to 0 to disable. Due to hardware "
 "limitations, there is a marginal difference above 100hz."
-msgstr ""
+msgstr "对Legion Go 陀螺仪的额外轮询 ，用于修复低轮询率（需要陀螺仪支持）。设置为 0 以禁用。由于硬件限制，100hz 以上的差异微乎其微"
 
 #. Setting: Gyro Scale
 #. Field: title
 msgid "Gyro Scale"
-msgstr ""
+msgstr "陀螺仪缩放"
 
 #. Setting: Gyro Scale
 #. Field: hint
@@ -335,76 +335,76 @@ msgid ""
 "misconfigured by the driver). Try different values to see what works "
 "best. Low values cause a deadzone and high values will clip when moving "
 "the  Go abruptly."
-msgstr ""
+msgstr "对 Legion Go 陀螺仪应用缩放系数（因为驱动程序配置错误）。尝试不同的值以找到最佳效果。低值会导致死区，高值会在快速移动时裁剪"
 
 #. Setting: Swap Legion with Start/Select
 #. Field: title
 msgid "Swap Legion with Start/Select"
-msgstr ""
+msgstr "交换 Start/Select 按钮"
 
 #. Setting: Swap Legion with Start/Select
 #. Field: hint
 msgid "Swaps the legion buttons with start select."
-msgstr ""
+msgstr "交换 Legion Go 的 Start/Select 按钮"
 
 #. Setting: Swap Legion with Start/Select
 #. Option: l_is_start
 msgid "Left is Start"
-msgstr ""
+msgstr "左侧为 Start"
 
 #. Setting: Swap Legion with Start/Select
 #. Option: l_is_select
 msgid "Left is Select"
-msgstr ""
+msgstr "左侧为 Select"
 
 #. Setting: M2 As Mute
 #. Field: title
 msgid "M2 As Mute"
-msgstr ""
+msgstr "M2 静音键"
 
 #. Setting: M2 As Mute
 #. Field: hint
 msgid ""
 "Maps the M2 to the mute button on Dualsense and the HAPPY_TRIGGER_20 on "
 "Xbox."
-msgstr ""
+msgstr "将 M2 映射为 Dualsense 的静音按钮和 Xbox 的 HAPPY_TRIGGER_20"
 
 #. Setting: Hold Select to Reboot
 #. Field: title
 msgid "Hold Select to Reboot"
-msgstr ""
+msgstr "按住 Select 键重启"
 
 #. Setting: Legion R to QAM
 #. Field: title
 msgid "Legion R to QAM"
-msgstr ""
+msgstr "Legion R 映射为快捷菜单键"
 
 #. Setting: Enable Shortcuts Controller
 #. Field: title
 msgid "Enable Shortcuts Controller"
-msgstr ""
+msgstr "启用快捷控制器"
 
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
 msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
-msgstr ""
+msgstr "在其他模式（dinput、双 dinput 和 fps）中，启用快捷控制器以恢复 Guide、QAM 和快捷功能"
 
 #. Setting: Ally Controller
 #. Field: title
 msgid "Ally Controller"
-msgstr ""
+msgstr "Ally 控制器"
 
 #. Setting: Ally Controller
 #. Field: hint
 msgid "Allows for configuring the ROG Ally controllers to a unified output."
-msgstr ""
+msgstr "可以配置您的 ROG Ally 控制器为统一设备输出"
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse ROG features."
-msgstr ""
+msgstr "模拟不同类型的控制器，以融合 ROG 设备的特性"
 
 #. Setting: Motion Hz
 #. Field: hint
@@ -412,86 +412,86 @@ msgid ""
 "Sets the sampling frequency for the IMU. 1600 requires an IMU patch. "
 "Check "
 "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
-msgstr ""
+msgstr "设置 IMU 的采样频率。1600 需要一个 IMU 补丁。检查 `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
 
 #. Setting: Led Brightness
 #. Field: title
 msgid "Led Brightness"
-msgstr ""
+msgstr "LED 亮度"
 
 #. Setting: Led Brightness
 #. Field: hint
 msgid ""
 "When LEDs are configured, set their brightness. High does not work below "
 "30% brightness."
-msgstr ""
+msgstr "设置 LED 的亮度。高亮度在 30% 以下不起作用"
 
 #. Setting: Led Brightness
 #. Option: False
 msgid "Off"
-msgstr ""
+msgstr "关闭"
 
 #. Setting: Led Brightness
 #. Option: low
 msgid "Low"
-msgstr ""
+msgstr "低"
 
 #. Setting: Led Brightness
 #. Option: medium
 msgid "Medium"
-msgstr ""
+msgstr "中"
 
 #. Setting: Led Brightness
 #. Option: high
 msgid "High"
-msgstr ""
+msgstr "高"
 
 #. Setting: Map Armory to QAM.
 #. Field: title
 msgid "Map Armory to QAM."
-msgstr ""
+msgstr "将 Armory 键映射为快捷菜单建"
 
 #. Setting: Motion Axis
 #. Field: title
 msgid "Motion Axis"
-msgstr ""
+msgstr "体感轴"
 
 #. Setting: Default
 #. Field: title
 msgid "Default"
-msgstr ""
+msgstr "默认"
 
 #. Setting: Default
 #. Field: hint
 msgid "The default axis loaded for this device."
-msgstr ""
+msgstr "本设备默认轴设置"
 
 #. Setting: Override
 #. Field: title
 msgid "Override"
-msgstr ""
+msgstr "覆盖"
 
 #. Setting: Override
 #. Field: hint
 msgid ""
 "Remap and invert the axis of your device. If the axis of your device are "
 "wrong, please submit a picture or a text version of the following."
-msgstr ""
+msgstr "重新映射和反转设备的轴。如果设备轴错误，请提交以下选项的图片或文本版本"
 
 #. Setting: Manufacturer
 #. Field: title
 msgid "Manufacturer"
-msgstr ""
+msgstr "制造商"
 
 #. Setting: Product
 #. Field: title
 msgid "Product"
-msgstr ""
+msgstr "产品"
 
 #. Setting: Axis X
 #. Field: title
 msgid "Axis X"
-msgstr ""
+msgstr "X 轴"
 
 #. Setting: Axis X
 #. Option: x
@@ -517,32 +517,32 @@ msgstr ""
 #. Setting: Invert X
 #. Field: title
 msgid "Invert X"
-msgstr ""
+msgstr "X 轴反转"
 
 #. Setting: Axis Y
 #. Field: title
 msgid "Axis Y"
-msgstr ""
+msgstr "Y 轴"
 
 #. Setting: Invert Y
 #. Field: title
 msgid "Invert Y"
-msgstr ""
+msgstr "Y 轴反转"
 
 #. Setting: Axis Z
 #. Field: title
 msgid "Axis Z"
-msgstr ""
+msgstr "Z 轴"
 
 #. Setting: Invert Z
 #. Field: title
 msgid "Invert Z"
-msgstr ""
+msgstr "Z 轴反转"
 
 #. Setting: Disabled
 #. Field: hint
 msgid "Does not modify the default controller."
-msgstr ""
+msgstr "不修改默认控制器"
 
 #. Setting: Xbox
 #. Field: title
@@ -556,7 +556,7 @@ msgid ""
 "in apps. Back buttons are supported but steam will not detect them. If "
 "Gyroscope or Accelerometer are enabled, a Motion device will be created "
 "as well (experimental; works in Dolphin)."
-msgstr ""
+msgstr "创建一个虚拟的 `Handheld Daemon Controller` 设备，可以在应用中正常使用。支持背键，但 Steam 不会检测到它们。如果启用了陀螺仪或加速度计，还将创建一个 Motion 设备（实验性的, 在 Dolphin 中工作）"
 
 #. Setting: Dualsense
 #. Field: title
@@ -569,24 +569,24 @@ msgid ""
 "Emulates the Dualsense Sony controller from the Playstation 5. Since this"
 " controller does not have paddles, the paddles are mapped to left and "
 "right touchpad clicks."
-msgstr ""
+msgstr "模拟索尼 PlayStation 5 的 Dualsense 控制器。由于该控制器背键，背键被映射为左右触摸板点击"
 
 #. Setting: LED Support
 #. Field: title
 msgid "LED Support"
-msgstr ""
+msgstr "LED 支持"
 
 #. Setting: LED Support
 #. Field: hint
 msgid ""
 "Passes through the LEDs to the controller, which allows games to control "
 "them."
-msgstr ""
+msgstr "将设备 LED 作为到控制器 LED，允许游戏控制它们"
 
 #. Setting: Gyro to Mouse Fix
 #. Field: title
 msgid "Gyro to Mouse Fix"
-msgstr ""
+msgstr "陀螺仪转鼠标 修复"
 
 #. Setting: Gyro to Mouse Fix
 #. Field: hint
@@ -602,7 +602,7 @@ msgstr ""
 #. Setting: Bluetooth Mode
 #. Field: title
 msgid "Bluetooth Mode"
-msgstr ""
+msgstr "蓝牙模式"
 
 #. Setting: Bluetooth Mode
 #. Field: hint
@@ -611,7 +611,7 @@ msgid ""
 "the default as it causes less issues with how apps interact with the "
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
-msgstr ""
+msgstr "模拟控制器蓝牙模式而不是 USB 模式。这是默认设置，因为它会减少应用与控制器交互的问题。但是，使用 USB 模式可以改善一些游戏中的 LED 支持。欢迎测试并反馈！"
 
 #. Setting: Dualsense Edge
 #. Field: title
@@ -624,31 +624,31 @@ msgid ""
 "Emulates the expensive Dualsense Sony controller which enables paddle "
 "support. The edge controller is a bit obscure, so some games might not "
 "support it correctly."
-msgstr ""
+msgstr "模拟索尼 Dualsense 控制器，启用背键支持。Edge 控制器有点复杂，因此一些游戏可能无法正确支持它"
 
 #. Setting: Touchpad Emulation
 #. Field: title
 msgid "Touchpad Emulation"
-msgstr ""
+msgstr "触摸板模拟"
 
 #. Setting: Touchpad Emulation
 #. Field: hint
 msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
-msgstr ""
+msgstr "模拟一个触摸板。如果支持（例如 Dualsense），则是控制器的一部分，否则是一个独立的虚拟设备"
 
 #. Setting: Disabled
 #. Field: hint
 msgid ""
 "Does not modify the touchpad. Short + holding presses will not work "
 "within gamescope."
-msgstr ""
+msgstr "不修改触摸板。在 gamescope 中不会工作"
 
 #. Setting: Virtual
 #. Field: title
 msgid "Virtual"
-msgstr ""
+msgstr "虚拟"
 
 #. Setting: Virtual
 #. Field: hint
@@ -656,39 +656,39 @@ msgid ""
 "Adds an emulated touchpad. This touchpad is meant to be for desktop use "
 "and has left, right click support by default, within gamescope and "
 "outside of it, regardless of the \"Tap to Click\" setting."
-msgstr ""
+msgstr "添加一个模拟触摸板。这个触摸板是用于桌面使用的，默认情况下在 gamescope 内外都支持左右键点击，不受“轻触点击”设置的影响"
 
 #. Setting: Short Action
 #. Field: title
 msgid "Short Action"
-msgstr ""
+msgstr "短按动作"
 
 #. Setting: Short Action
 #. Field: hint
 msgid "Maps short touches (less than 0.2s) to a virtual touchpad button."
-msgstr ""
+msgstr "将短触摸（小于 0.2s）映射为虚拟触摸板按钮"
 
 #. Setting: Short Action
 #. Option: left_click
 #. Setting: Hold Action
 msgid "Left Click"
-msgstr ""
+msgstr "点击左侧"
 
 #. Setting: Short Action
 #. Option: right_click
 #. Setting: Hold Action
 msgid "Right Click"
-msgstr ""
+msgstr "点击右侧"
 
 #. Setting: Hold Action
 #. Field: title
 msgid "Hold Action"
-msgstr ""
+msgstr "长按动作"
 
 #. Setting: Hold Action
 #. Field: hint
 msgid "Maps long touches (more than 2s) to a virtual touchpad button."
-msgstr ""
+msgstr "将长触摸（大于 2s）映射为虚拟触摸板按钮"
 
 #. Setting: Controller
 #. Field: hint
@@ -702,7 +702,7 @@ msgstr ""
 #. Setting: Correction Type
 #. Field: title
 msgid "Correction Type"
-msgstr ""
+msgstr "校正类型"
 
 #. Setting: Correction Type
 #. Field: hint
@@ -713,42 +713,42 @@ msgid ""
 "legion touchpad, and limits the area of the DS5. \"Stretch\" uses both "
 "fully (distorted). \"Crop End\" enables use in steam input as the right "
 "touchpad."
-msgstr ""
+msgstr "Legion 触摸板是正方形的，而 DS5 触摸板是长方形的。因此，需要进行校正。\"Contain\" 保持整个 DS5 触摸板，部分 Legion 触摸板未使用。\"裁切\" 使用整个 Legion 触摸板，并限制 DS5 的区域。\"拉伸\" 完整使用（拉伸）。\"Crop End\" 在 Steam 输入中启用右触摸板"
 
 #. Setting: Correction Type
 #. Option: stretch
 msgid "Stretch"
-msgstr ""
+msgstr "拉伸"
 
 #. Setting: Correction Type
 #. Option: crop_center
 msgid "Crop Center"
-msgstr ""
+msgstr "居中裁剪"
 
 #. Setting: Correction Type
 #. Option: crop_start
 msgid "Crop Start"
-msgstr ""
+msgstr "左对齐裁剪"
 
 #. Setting: Correction Type
 #. Option: crop_end
 msgid "Crop End"
-msgstr ""
+msgstr "右对齐裁剪"
 
 #. Setting: Correction Type
 #. Option: contain_start
 msgid "Contain Start"
-msgstr ""
+msgstr "左对齐包含"
 
 #. Setting: Correction Type
 #. Option: contain_end
 msgid "Contain End"
-msgstr ""
+msgstr "右对齐包含"
 
 #. Setting: Correction Type
 #. Option: contain_center
 msgid "Contain Center"
-msgstr ""
+msgstr "居中包含"
 
 #. Setting: Short Action
 #. Field: hint
@@ -778,7 +778,7 @@ msgstr ""
 #. Setting: Brightness
 #. Field: title
 msgid "Brightness"
-msgstr ""
+msgstr "亮度"
 
 #. Setting: Brightness
 #. Field: hint
