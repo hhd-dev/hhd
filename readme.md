@@ -527,3 +527,9 @@ hhd
 # Use the following to run with sudo
 sudo hhd --user $(whoami)
 ```
+
+# License
+Handheld Daemon is licensed under THE GNU GPLv3+. See LICENSE for details.
+A small number of files are dual licensed with MIT, and contain
+SPDX headers denoting so. 
+Versions prior to and excluding 2.0.0 are licensed using MIT.

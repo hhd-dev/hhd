@@ -3,7 +3,7 @@ Version:        REPLACE_VERSION
 Release:        1%{?dist}
 Summary:        Handheld Daemon, a tool for configuring handheld devices.
 
-License:        MIT
+License:        GPL-3.0-or-later AND MIT
 URL:            https://github.com/hhd-dev/hhd
 Source:        	https://pypi.python.org/packages/source/h/%{name}/%{name}-%{version}.tar.gz   
 

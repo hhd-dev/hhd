@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: MIT and GPL-3.0-only
 # Sourced from library python-uhid
 
 from __future__ import annotations
