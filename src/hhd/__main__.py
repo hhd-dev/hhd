@@ -634,11 +634,15 @@ def main():
                                                 f"Downloading overlay: {100*idx*blockSize / total:.1f}%"
                                             )
 
+                                    out_fn = expanduser("~/.local/bin/hhd-ui", ctx)
                                     urllib.request.urlretrieve(
                                         asset["browser_download_url"],
-                                        expanduser("~/.local/bin/hhd-ui.AppImage", ctx),
+                                        out_fn,
                                         reporthook=progress,
                                     )
+
+                                    st = os.stat(out_fn)
+                                    os.chmod(out_fn, st.st_mode | os.stat.S_IEXEC)
                                     break
                             updated = True
                     else:
