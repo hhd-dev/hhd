@@ -623,9 +623,21 @@ def main():
                                     expanduser("~/.local/bin", ctx), exist_ok=True
                                 )
                                 if "hhd-ui.AppImage" == asset["name"]:
+                                    REPORT_POINTS = 8
+
+                                    def progress(idx, blockSize, total):
+                                        interval = int(
+                                            total / blockSize / REPORT_POINTS
+                                        )
+                                        if idx % interval == 0:
+                                            logger.info(
+                                                f"Downloading overlay: {100*idx*blockSize / total:.1f}%"
+                                            )
+
                                     urllib.request.urlretrieve(
                                         asset["browser_download_url"],
                                         expanduser("~/.local/bin/hhd-ui.AppImage", ctx),
+                                        reporthook=progress,
                                     )
                                     break
                             updated = True
