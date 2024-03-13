@@ -3,6 +3,7 @@ import os
 from threading import Event as TEvent, Thread
 from typing import Sequence
 
+from hhd.utils import expanduser
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
 from hhd.plugins.plugin import Emitter
@@ -13,6 +14,11 @@ from adjustor.core.const import CPU_DATA, DEV_DATA, ROG_ALLY_PP_MAP
 from .utils import exists_sentinel, install_sentinel, remove_sentinel
 
 logger = logging.getLogger(__name__)
+
+CONFLICTING_PLUGINS = {
+    "SimpleDeckyTDP": "~/homebrew/plugins/SimpleDeckyTDP",
+    "PowerControl": "~/homebrew/plugins/PowerControl",
+}
 
 
 class AdjustorInitPlugin(HHDPlugin):
@@ -27,6 +33,7 @@ class AdjustorInitPlugin(HHDPlugin):
         self.action_enabled = False
 
     def open(self, emit: Emitter, context: Context):
+        self.context = context
         if exists_sentinel() or not install_sentinel():
             self.safe_mode = True
 
@@ -42,6 +49,7 @@ class AdjustorInitPlugin(HHDPlugin):
             conf["tdp.tdp.tdp_enable"] = False
             conf["hhd.settings.tdp_enable"] = True
 
+        old_enabled = conf["hhd.settings.tdp_enable"].to(bool)
         if self.failed:
             conf["hhd.settings.tdp_enable"] = False
         if self.safe_mode:
@@ -54,24 +62,36 @@ class AdjustorInitPlugin(HHDPlugin):
 
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
 
-        if self.init:
+        if self.init or not old_enabled:
             return
 
-        if not conf["hhd.settings.tdp_enable"].to(bool):
-            return
+        for name, path in CONFLICTING_PLUGINS.items():
+            if os.path.exists(expanduser(path, self.context)):
+                err = (
+                    f'Found plugin "{name}" at the following path:\n{path}\n'
+                    + "TDP Controls can not be enabled while other TDP plugins are installed."
+                )
+                conf["tdp.tdp.tdp_error"] = err
+                conf["hhd.settings.tdp_enable"] = False
+                logger.error(err)
+                self.failed = True
+                self.enabled = False
+                return
 
-        initialize()
-        if not check_perms():
+        if not check_perms() or not initialize():
             conf["hhd.settings.tdp_enable"] = False
             conf["tdp.tdp.tdp_error"] = (
                 "Can not write to 'acpi_call'. It is required for TDP."
             )
             self.failed = True
             self.enabled = False
-        else:
-            conf["tdp.tdp.tdp_error"] = ""
+            return
 
+        self.failed = False
+        self.enabled = True
         self.init = True
+        conf["hhd.settings.tdp_enable"] = True
+        conf["tdp.tdp.tdp_error"] = ""
 
     def close(self):
         remove_sentinel()
