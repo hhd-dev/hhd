@@ -11,7 +11,7 @@ mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
 python3 -m venv --system-site-packages venv
 source venv/bin/activate
-pip install --upgrade hhd
+pip install --upgrade hhd adjustor
 
 # Install udev rules and create a service file
 sudo mkdir -p /etc/udev/rules.d/
@@ -25,12 +25,16 @@ mkdir -p ~/.local/bin
 ln -s ~/.local/share/hhd/venv/bin/hhd ~/.local/bin/hhd
 ln -s ~/.local/share/hhd/venv/bin/hhd.contrib ~/.local/bin/hhd.contrib
 
+FINAL_URL='https://api.github.com/repos/hhd-dev/hhd-decky/releases/latest'
+curl -L $(curl -s "${FINAL_URL}" | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/.local/bin/hhd-ui
+chmod +x $HOME/.local/bin/hhd-ui
+
 # Start service and reboot
 sudo systemctl enable hhd_local@$(whoami)
 
 echo ""
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo "!!! Do not forget to remove HandyGCCS/Bundled HHD if your distro preinstalls it. !!!"
-echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!!! Do not forget to remove a Bundled Handheld Daemon if your distro preinstalls it. !!!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo ""
 echo "Reboot to start Handheld Daemon!"
