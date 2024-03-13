@@ -583,7 +583,8 @@ def main():
                                 "pip",
                                 "uninstall",
                                 "-y",
-                                "hhd adjustor",
+                                "hhd",
+                                "adjustor",
                             ]
                         )
                         subprocess.check_call(
@@ -596,9 +597,14 @@ def main():
                                 "--cache-dir",
                                 "/tmp/__hhd_update_cache",
                                 (
-                                    "git+https://github.com/hhd-dev/hhd git+https://github.com/hhd-dev/adjustor"
+                                    "git+https://github.com/hhd-dev/hhd"
                                     if upd_beta
-                                    else "hhd adjustor"
+                                    else "hhd"
+                                ),
+                                (
+                                    "git+https://github.com/hhd-dev/adjustor"
+                                    if upd_beta
+                                    else "adjustor"
                                 ),
                             ]
                         )
@@ -624,7 +630,8 @@ def main():
                             f"Could not update, python executable is not within a venv (checked for 'venv' in path name):\n{exe_python}"
                         )
                 except Exception as e:
-                    logger.error(f"Error while updating:\n{e}")
+                    err = f"Error while updating:\n{e}"
+                    logger.error(err)
                 switch_priviledge(ctx, True)
 
                 if updated:

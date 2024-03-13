@@ -40,6 +40,11 @@ settings:
       title: Update (Unstable)
       hint: "Updates to the master branch from git (local install only)."
 
+    update_error:
+      title: Update Error
+      type: display
+      tags: [ error, non-essential ]
+
 http:
   type: container
   tags: [hhd-http, advanced, expert]
