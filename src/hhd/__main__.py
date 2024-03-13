@@ -289,12 +289,37 @@ def main():
                 else:
                     conf = new_conf
 
-                try:
-                    from importlib.metadata import version
+                from importlib.metadata import version
 
-                    conf["hhd.settings.version"] = version("hhd")
+                try:
+                    ver = version("hhd")
+                    conf["hhd.settings.version"] = ver
+                    logger.info(f"Handheld Daemon Version: {ver}")
                 except Exception:
                     pass
+
+                try:
+                    ver = version("adjustor")
+                    conf["hhd.settings.version_adj"] = ver
+                    logger.info(f"Adjustor Version: {ver}")
+                except Exception:
+                    logger.info(f"Adjustor not installed")
+
+                try:
+                    from hhd.plugins.overlay.overlay import (
+                        find_overlay_exe,
+                        get_overlay_version,
+                    )
+
+                    exe = find_overlay_exe(ctx)
+                    if exe:
+                        ver = get_overlay_version(exe, ctx)
+                        conf["hhd.settings.version_ui"] = ver
+                        logger.info(f"Overlay Version: {ver}")
+                    else:
+                        logger.info(f"Overlay not installed")
+                except Exception:
+                    logger.info(exe)
 
                 # Profiles
                 profiles = {}
@@ -556,7 +581,7 @@ def main():
                                 "pip",
                                 "uninstall",
                                 "-y",
-                                "hhd",
+                                "hhd adjustor",
                             ]
                         )
                         subprocess.check_call(
@@ -569,12 +594,27 @@ def main():
                                 "--cache-dir",
                                 "/tmp/__hhd_update_cache",
                                 (
-                                    "git+https://github.com/hhd-dev/hhd"
+                                    "git+https://github.com/hhd-dev/hhd git+https://github.com/hhd-dev/adjustor"
                                     if upd_beta
-                                    else "hhd"
+                                    else "hhd adjustor"
                                 ),
                             ]
                         )
+
+                        import urllib.request, json
+
+                        with urllib.request.urlopen(
+                            "https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest"
+                        ) as f:
+                            release_data = json.load(f)
+
+                        for asset in release_data:
+                            if "hhd-ui.AppImage" == asset["name"]:
+                                urllib.request.urlretrieve(
+                                    asset["browser_download_url"],
+                                    expanduser("~/.local/bin/hhd-ui.AppImage", ctx),
+                                )
+                                break
                         updated = True
                     else:
                         logger.error(

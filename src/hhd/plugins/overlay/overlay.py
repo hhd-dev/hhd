@@ -7,7 +7,7 @@ import subprocess
 
 
 def find_overlay_exe(ctx: Context):
-    INSTALLED_PATHS = ["hhd-ui-dbg", "hhd-ui"]
+    INSTALLED_PATHS = ["hhd-ui.AppImage", "hhd-ui-dbg", "hhd-ui"]
 
     usr = os.environ.get("HHD_OVERLAY")
     if usr:
@@ -41,3 +41,20 @@ def inject_overlay(fn: str, display: str, ctx: Context):
         group=ctx.egid,
     )
     return out
+
+
+def get_overlay_version(fn: str, ctx: Context):
+    return (
+        subprocess.run(
+            [fn, "--version"],
+            env={"HOME": expanduser("~", ctx)},
+            text=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            user=ctx.euid,
+            group=ctx.egid,
+            timeout=5,
+        )
+        .stdout.strip()
+    )
