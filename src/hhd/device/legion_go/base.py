@@ -379,6 +379,17 @@ def controller_loop_xinput(
                     evs.extend(d.produce(r))
 
             # Patch timestamps to convert them to ns
+            # for d in ('x', 'y', 'z'):
+            #     p = False
+            #     for ev in evs:
+            #         if f"accel_{d}" in ev["code"]:
+            #             print(
+            #                 f"{ev['code'].split('accel_')[1]}: {ev['value']:12.5e} ", end=""
+            #             )
+            #             p = True
+            #     if not p:
+            #         print(f"{d}:              ", end='')
+            # print()
             for ev in evs:
                 if ev["type"] == "axis" and "_imu_ts" in ev["code"]:
                     # Find diff between previous event
@@ -392,7 +403,6 @@ def controller_loop_xinput(
                     ts_count[ev["code"]] += diff * 8_000_000
                     ev["value"] = ts_count[ev["code"]]
             evs = multiplexer.process(evs)
-
             if evs:
                 if debug:
                     logger.info(evs)

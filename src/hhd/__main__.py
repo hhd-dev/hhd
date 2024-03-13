@@ -303,6 +303,7 @@ def main():
                     conf["hhd.settings.version_adj"] = ver
                     logger.info(f"Adjustor Version: {ver}")
                 except Exception:
+                    conf["hhd.settings.version_adj"] = "Not Installed"
                     logger.info(f"Adjustor not installed")
 
                 try:
@@ -317,6 +318,7 @@ def main():
                         conf["hhd.settings.version_ui"] = ver
                         logger.info(f"Overlay Version: {ver}")
                     else:
+                        conf["hhd.settings.version_ui"] = "Not Installed"
                         logger.info(f"Overlay not installed")
                 except Exception:
                     logger.info(exe)
@@ -609,6 +611,7 @@ def main():
                             release_data = json.load(f)
 
                         for asset in release_data:
+                            os.makedirs(expanduser("~/.local/bin", ctx), exist_ok=True)
                             if "hhd-ui.AppImage" == asset["name"]:
                                 urllib.request.urlretrieve(
                                     asset["browser_download_url"],
