@@ -7,8 +7,7 @@ if [ "$EUID" -eq 0 ]
 fi
 
 # Disable Service
-sudo systemctl disable hhd_local@$(whoami)
-sudo systemctl stop hhd_local@$(whoami)
+sudo systemctl disable --now hhd_local@$(whoami)
 
 # Remove Binary
 rm -rf ~/.local/share/hhd

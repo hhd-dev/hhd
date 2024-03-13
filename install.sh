@@ -30,7 +30,7 @@ curl -L $(curl -s "${FINAL_URL}" | grep "browser_download_url" | cut -d '"' -f 4
 chmod +x $HOME/.local/bin/hhd-ui
 
 # Start service and reboot
-sudo systemctl enable hhd_local@$(whoami)
+sudo systemctl enable --now hhd_local@$(whoami)
 
 echo ""
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
