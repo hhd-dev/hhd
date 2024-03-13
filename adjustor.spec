@@ -3,7 +3,7 @@ Version:        REPLACE_VERSION
 Release:        1%{?dist}
 Summary:        Adjustor, a userspace program for managing the TDP of handheld devices.
 
-License:        MIT
+License:        GPL-3.0-or-later
 URL:            https://github.com/hhd-dev/adjustor
 Source:        	https://pypi.python.org/packages/source/a/%{name}/%{name}-%{version}.tar.gz   
 

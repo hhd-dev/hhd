@@ -54,3 +54,7 @@ as a plugin upon restart, or to its own venv to use independently.
 ```python
 pip install -e .
 ```
+
+# License
+Adjustor is licensed under THE GNU GPLv3+. See LICENSE for details.
+Versions prior to and excluding 2.0.0 are licensed using MIT.
