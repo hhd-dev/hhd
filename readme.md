@@ -14,19 +14,17 @@
 # Handheld Daemon
 Handheld Daemon is a project that aims to provide utilities for managing handheld
 devices.
-Right now, it features a fully functional controller emulator that exposes gyro,
-paddles, LEDs and QAM across Steam, Yuzu, Dolphin and others.
+It features a fully functional controller emulator that exposes gyro,
+paddles, LEDs and QAM across Steam, RPCS3, Dolphin and others.
+In addition, it features TDP controls for Ryzen devices (beta) and manufacturer
+TDP controls for the Legion Go.
 It brings all supported devices up to parity with Steam Deck.
 Read [supported devices](#supported-devices) to see if your device is supported.
 
 Handheld Daemon exposes configuration through an API, and there is already a Decky
-plugin for it ([hhd-decky](https://github.com/hhd-dev/hhd-decky)) and a web
-app for it ([hhd.dev](https://hhd.dev)) that also works locally with Electron
+plugin for it ([hhd-decky](https://github.com/hhd-dev/hhd-decky)) and a steam
+overlay, web app for it ([hhd.dev](https://hhd.dev)) that also works locally with Electron
 ([hhd-ui](https://github.com/hhd-dev/hhd-ui)).
-
-In addition, a new TDP plugin (currently non-functional) is in the works, that
-will allow both vendor specific and vendor independent TDP controls.
-Check out [adjustor](https://github.com/hhd-dev/adjustor)!.
 
 *Current Features*:
 - Fully functional DualSense and Dualsense Edge emulation
@@ -40,9 +38,10 @@ Check out [adjustor](https://github.com/hhd-dev/adjustor)!.
 - Virtual Touchpad Emulation
   - Fixes left and right clicks within gamescope when using the device touchpad.
 - Power Button plugin for Big Picture/Steam Deck Mode
-    - Short press makes Steam backup saves and wink before suspend.
-    - Long press opens Steam power menu.
-- Hides the original Xbox controller
+  - Short press makes Steam backup saves and wink before suspend.
+  - Long press opens Steam power menu.
+- TDP Controls ([adjustor](https://github.com/hhd-dev/adjustor))
+- Fully Featured Steam Overlay
 - UI based Configuration
   - Generic API that can be used from bash scripts (through `curl`)
   - Decky Plugin
@@ -112,11 +111,6 @@ You can use the following bash scripts to install and uninstall Handheld Daemon.
 Then, update from Decky or the UI.
 These steps do not work on Bazzite, see [here](#bazzite).
 
-> If your distro uses HandyGCCS/Handycon to fix certain key bindings by default
-> you need to uninstall it. Disabling it is not enough, since it is autostarted
-> by certain sessions (such as `gamescope-session-plus`). 
-> This includes both ChimeraOS and Nobara (see [Common Issues after Install](#issues)).
-
 ```bash
 # Install
 curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | sh
@@ -134,6 +128,7 @@ curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
 Then, reboot and go to [hhd.dev](https://hhd.dev) to configure or read more in
 the [configuration section](#configuration).
 
+> [!IMPORTANT]
 > Before creating an issue, make sure you are using the latest Handheld Daemon 
 > version and that you read the extra information for each setting in 
 > either [hhd.dev](https://hhd.dev) or the `state.yml` file.
@@ -217,59 +212,17 @@ sudo rm /etc/systemd/system/hhd_local@.service
 # Delete your configuration
 rm -r ~/.config/hhd
 ```
+### <a name="gyro"></a>Kernel Patches
+There is an optional kernel patch for the Legion Go that increases the Display
+Gyro accuracy [here](https://github.com/hhd-dev/linux-handheld/blob/master/6.6/0001-amd-sfh-bump-sensitivity.patch).
 
-### <a name="issues"></a>After Install Instructions
-#### Extra steps for ROG Ally
-Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
-does not wake up after sleep so Handheld Daemon stops working.
-This patch is included with Linux kernel 6.7.
-
-See [here](#gyro) for the required kernel patches.
-Without the patch series for the IMU (where patches 0001, and 0002 are included
-in kernel 6.8), the gyro will not work.
-
-You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
-the right stick into a mouse.
-
-#### Extra steps GPD Win Devices
-In order for the back buttons in GPD Win Devices to work, you need to map the
-back buttons to Left: Printscreen, Right: Pause using Windows.
-This is the default mapping, so if you never remapped them using Windows you
-will not have to.
-Handheld Daemon automatically handles the interval to enable being able to hold
-the button.
-
-Here is how the button settings should look:
-```
-Left-key: PrtSc + 0ms + NC + 0ms + NC + 0ms + NC
-Right-key: Pausc + 0ms + NC + 0ms + NC + 0ms + NC
-```
-
-#### Extra steps for Ayaneo/Ayn/Onexplayer
-See [here](#gyro) for the required kernel patches.
-For led support in Ayaneo, you will need the 
+For LED support, the following modules are required for Ayaneo and Ayn: 
 [ayaneo-platform](https://github.com/ShadowBlip/ayaneo-platform)
 driver, and for Ayn, the [ayn-platform](https://github.com/ShadowBlip/ayn-platform).
 Provided these drivers are installed and are supported by your device,
 LED support will be enabled by default.
 
-The paddles of the Ayn Loki Max are not remappable as far as we know.
-
-#### Extra steps for Legion Go
-If you are using a kernel older than 6.8 and you are not on a gaming distro
-(ChimeraOS, Nobara, Bazzite), you need the following rule for the controllers
-to be recognized.
-```bash
-# Enable xpad for the Legion Go controllers
-ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6182", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 17ef 6182 > /sys/bus/usb/drivers/xpad/new_id'"
-```
-
-If you have set any mappings on Legion Space, they will interfere with Handheld
-Daemon.
-In this case, you may reset your controllers by holding Legion R + RT + RB, 
-and then Legion L + LT + LB or booting into windows.
-
-#### <a name="gyro"></a>Gyro Kernel Drivers
+### Gyro
 Which kernel patch is required will depend on your device's bosch module.
 For the Bosch 260 IMU, you will need the 
 [bmi260-dkms](https://github.com/hhd-dev/bmi260) driver.
@@ -284,15 +237,51 @@ enable the modules `SYSFS trigger` with `CONFIG_IIO_SYSFS_TRIGGER` and
 `High resolution timer trigger` with `CONFIG_IIO_HRTIMER_TRIGGER`.
 Both are under `Linux Kernel Configuration ─> Device Drivers ─> Industrial I/O support ─> Triggers - standalone`.
 
-#### Broken Steam Gyro Calibration
-Steam gyro calibration does not corrently work due to an issue with the accelerometer
-scale (bottom bar).
-Since the accelerometer is not currently used for anything this is not a high
-priority fix.
-The gyro will work fine in games.
+### <a name="issues"></a>After Install Instructions
+#### Extra steps for ROG Ally
+Without an up-to-date `asus-wmi` kernel driver the usb device of the controller
+does not wake up after sleep so Handheld Daemon stops working.
+This patch is included with Linux kernel 6.7.
+You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
+the right stick into a mouse.
 
-If you get drift, you can turn on `Auto-Calibrate Gyro Drift when Stationary` and
-then move the top bar (gyro) right until it covers the noise.
+#### Extra steps GPD Win Devices
+In order for the back buttons in GPD Win Devices to work, you need to map the
+back buttons to Left: Printscreen, Right: Pause using Windows.
+This is the default mapping, so if you never remapped them using Windows you
+will not have to.
+Handheld Daemon automatically handles the interval to enable being able to hold
+the buttons.
+
+Here is how the button settings should look:
+```
+Left-key: PrtSc + 0ms + NC + 0ms + NC + 0ms + NC
+Right-key: Pausc + 0ms + NC + 0ms + NC + 0ms + NC
+```
+
+Unfortunately, its not possible to rapid double tap the buttons due to their
+implementation.
+The R4 button is mapped to Side Menu (QAM) by default.
+
+#### Extra steps for Ayaneo/Ayn/Onexplayer
+You might experience a tiny amount of lag with the Ayaneo LEDs
+The paddles of the Ayn Loki Max are not remappable as far as we know.
+
+#### Extra steps for Legion Go
+If you are using a kernel older than 6.8 and you are not on a gaming distro
+(ChimeraOS, Nobara, Bazzite), you need the following rule for the controllers
+to be recognized.
+```bash
+# Enable xpad for the Legion Go controllers
+ATTRS{idVendor}=="17ef", ATTRS{idProduct}=="6182", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 17ef 6182 > /sys/bus/usb/drivers/xpad/new_id'"
+```
+
+If you have set any mappings on Legion Space, they will interfere with Handheld
+Daemon.
+As of version 2.0.0, you can factory reset the controllers from the Handheld
+Daemon settings, or you
+can partially reset them controllers by holding Legion R + RT + RB, 
+and then Legion L + LT + LB or booting into windows.
 
 #### High Touchpad Sensitivity in Steam Input
 By default, the Dualsense kernel driver exposes the Dualsense trackpad as a normal
