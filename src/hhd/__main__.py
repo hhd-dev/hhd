@@ -644,7 +644,9 @@ def main():
                                     st = os.stat(out_fn)
                                     os.chmod(out_fn, st.st_mode | stat.S_IEXEC)
                                     break
-                            updated = True
+                        
+                        # Set updated
+                        updated = True
                     else:
                         logger.error(
                             f"Could not update, python executable is not within a venv (checked for 'venv' in path name):\n{exe_python}"
