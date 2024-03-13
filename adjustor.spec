@@ -35,5 +35,6 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 %files
 %doc readme.md
 %license LICENSE
+%{_bindir}/adj
 %{_bindir}/%{name}*
 %{python3_sitelib}/%{name}*
