@@ -611,7 +611,7 @@ def main():
 
                         if not upd_beta:
                             # No beta version for the UI yet, skip updating it
-                            import urllib.request, json
+                            import urllib.request, json, stat
 
                             with urllib.request.urlopen(
                                 "https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest"
@@ -642,7 +642,7 @@ def main():
                                     )
 
                                     st = os.stat(out_fn)
-                                    os.chmod(out_fn, st.st_mode | os.stat.S_IEXEC)
+                                    os.chmod(out_fn, st.st_mode | stat.S_IEXEC)
                                     break
                             updated = True
                     else:
