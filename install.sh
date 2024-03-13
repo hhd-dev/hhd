@@ -25,7 +25,7 @@ mkdir -p ~/.local/bin
 ln -s ~/.local/share/hhd/venv/bin/hhd ~/.local/bin/hhd
 ln -s ~/.local/share/hhd/venv/bin/hhd.contrib ~/.local/bin/hhd.contrib
 
-FINAL_URL='https://api.github.com/repos/hhd-dev/hhd-decky/releases/latest'
+FINAL_URL='https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest'
 curl -L $(curl -s "${FINAL_URL}" | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/.local/bin/hhd-ui
 chmod +x $HOME/.local/bin/hhd-ui
 
@@ -37,4 +37,4 @@ echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 echo "!!! Do not forget to remove a Bundled Handheld Daemon if your distro preinstalls it. !!!"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 echo ""
-echo "Reboot to start Handheld Daemon!"
+echo "Reboot!"
