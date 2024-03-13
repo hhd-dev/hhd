@@ -52,7 +52,7 @@ children:
       disabled: "Disabled"
       l4: "L4"
       r4: "R4"
-    default: disabled
+    default: r4
 
   debug:
     type: bool
