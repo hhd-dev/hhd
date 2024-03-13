@@ -392,11 +392,12 @@ But, the auto-updater will not work, which is an important feature with devices
 without a keyboard.
 ```bash
 # Arch
-yay -S hhd
+yay -S hhd hhd-ui adjustor
 
 # Fedora
 sudo dnf copr enable hhd-dev/hhd
-sudo dnf install hhd
+sudo dnf install hhd adjustor
+# HHD-UI todo
 
 # Enable and reboot
 sudo systemctl enable hhd@$(whoami)
