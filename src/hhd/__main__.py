@@ -609,28 +609,33 @@ def main():
                             ]
                         )
 
-                        import urllib.request, json
+                        if not upd_beta:
+                            # No beta version for the UI yet, skip updating it
+                            import urllib.request, json
 
-                        with urllib.request.urlopen(
-                            "https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest"
-                        ) as f:
-                            release_data = json.load(f)
+                            with urllib.request.urlopen(
+                                "https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest"
+                            ) as f:
+                                release_data = json.load(f)
 
-                        for asset in release_data:
-                            os.makedirs(expanduser("~/.local/bin", ctx), exist_ok=True)
-                            if "hhd-ui.AppImage" == asset["name"]:
-                                urllib.request.urlretrieve(
-                                    asset["browser_download_url"],
-                                    expanduser("~/.local/bin/hhd-ui.AppImage", ctx),
+                            for asset in release_data["assets"]:
+                                os.makedirs(
+                                    expanduser("~/.local/bin", ctx), exist_ok=True
                                 )
-                                break
-                        updated = True
+                                if "hhd-ui.AppImage" == asset["name"]:
+                                    urllib.request.urlretrieve(
+                                        asset["browser_download_url"],
+                                        expanduser("~/.local/bin/hhd-ui.AppImage", ctx),
+                                    )
+                                    break
+                            updated = True
                     else:
                         logger.error(
                             f"Could not update, python executable is not within a venv (checked for 'venv' in path name):\n{exe_python}"
                         )
                 except Exception as e:
                     err = f"Error while updating:\n{e}"
+                    conf["hhd.settings.update_error"] = err
                     logger.error(err)
                 switch_priviledge(ctx, True)
 
