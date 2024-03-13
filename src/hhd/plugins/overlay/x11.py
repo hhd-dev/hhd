@@ -103,7 +103,7 @@ def print_debug(display: display.Display):
 
     print()
     print("WINDOWS:")
-    for i, w in enumerate(r.query_tree().children):
+    for i, w in enumerate([r, *r.query_tree().children]):
         print(f"{i:02d}", end="")
         for p in w.list_properties():
             n = d.get_atom_name(p)

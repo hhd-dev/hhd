@@ -64,10 +64,10 @@ children:
             default: 76
       left:
         type: container
-        title: Left Controller
+        title: Left Controller [BETA]
       right:
         type: container
-        title: Right Controller
+        title: Right Controller [BETA]
 
   swap_legion:
     type: multiple
