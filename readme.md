@@ -162,9 +162,14 @@ mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
 python3 -m venv --system-site-packages venv
 source venv/bin/activate
-pip install --upgrade hhd
+pip install --upgrade hhd adjustor
 # Substitute with the following to pull from github (may not always work)
-# pip install git+https://github.com/hhd-dev/hhd
+# pip install git+https://github.com/hhd-dev/hhd git+https://github.com/hhd-dev/hhd-ui
+
+# Install the UI to ~/.local/bin
+FINAL_URL='https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest'
+curl -L $(curl -s "${FINAL_URL}" | grep "browser_download_url" | cut -d '"' -f 4) -o $HOME/.local/bin/hhd-ui
+chmod +x $HOME/.local/bin/hhd-ui
 
 # Install udev rules and create a service file
 sudo curl https://raw.githubusercontent.com/hhd-dev/hhd/master/usr/lib/udev/rules.d/83-hhd.rules -o /etc/udev/rules.d/83-hhd.rules
@@ -205,6 +210,7 @@ sudo systemctl disable hhd_local@$(whoami)
 sudo systemctl stop hhd_local@$(whoami)
 
 rm -rf ~/.local/share/hhd
+rm -f ~/.local/bin/hhd-ui
 sudo rm /etc/udev/rules.d/83-hhd.rules
 sudo rm /etc/udev/hwdb.d/83-hhd.hwdb
 sudo rm /etc/systemd/system/hhd_local@.service
