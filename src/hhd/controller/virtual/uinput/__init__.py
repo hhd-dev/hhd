@@ -192,7 +192,7 @@ class UInputDevice(Consumer, Producer):
                         # Ignore erase events
                         erase = self.dev.begin_erase(ev.value)
                         erase.retval = 0
-                        ev.end_erase(erase)
+                        self.dev.end_erase(erase)
                 elif ev.type == B("EV_FF") and ev.value:
                     if self.rumble:
                         out.append(self.rumble)
