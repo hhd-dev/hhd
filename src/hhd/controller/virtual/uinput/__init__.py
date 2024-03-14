@@ -23,6 +23,7 @@ UInput._find_device = _patch
 
 
 class UInputDevice(Consumer, Producer):
+
     def __init__(
         self,
         capabilities=GAMEPAD_CAPABILITIES,
@@ -34,6 +35,7 @@ class UInputDevice(Consumer, Producer):
         phys: str = "phys-hhd-gamepad",
         output_imu_timestamps: str | bool = False,
         output_timestamps: bool = False,
+        input_props: Sequence[int] = [],
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -47,6 +49,7 @@ class UInputDevice(Consumer, Producer):
         self.output_timestamps = output_timestamps
         self.ofs = 0
         self.sys_ofs = 0
+        self.input_props = input_props
 
         self.rumble: Event | None = None
 
@@ -58,6 +61,7 @@ class UInputDevice(Consumer, Producer):
             vendor=self.vid,
             product=self.pid,
             phys=self.phys,
+            input_props=self.input_props
         )
         self.touchpad_aspect = 1
         self.touch_id = 1

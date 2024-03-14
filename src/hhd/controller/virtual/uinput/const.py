@@ -464,14 +464,15 @@ MOTION_AXIS_MAP: dict[Axis, AX] = {
     "gyro_z": AX(B("ABS_RZ"), 1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
 }
 
-LEFT_MOTION_AXIS_MAP: dict[Axis, AX] = {
+MOTION_LEFT_AXIS_MAP: dict[Axis, AX] = {
     "left_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore
 }
 
-RIGHT_MOTION_AXIS_MAP: dict[Axis, AX] = {
+MOTION_RIGHT_AXIS_MAP: dict[Axis, AX] = {
     "right_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore
 }
 
+MOTION_INPUT_PROPS = [B("INPUT_PROP_ACCELEROMETER")]
 
 TOUCHPAD_AXIS_MAP: dict[Axis, AX] = {
     "touchpad_x": AX(B("ABS_X"), 1023, bounds=(0, 2048)),

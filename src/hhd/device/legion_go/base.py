@@ -14,9 +14,10 @@ from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.uinput import (
     HHD_PID_MOTION,
     HHD_PID_VENDOR,
-    RIGHT_MOTION_AXIS_MAP,
-    LEFT_MOTION_AXIS_MAP,
     MOTION_CAPABILITIES,
+    MOTION_INPUT_PROPS,
+    MOTION_LEFT_AXIS_MAP,
+    MOTION_RIGHT_AXIS_MAP,
     UInputDevice,
 )
 from hhd.plugins import Config, Context, Emitter, get_outputs
@@ -343,8 +344,9 @@ def controller_loop_xinput(
         capabilities=MOTION_CAPABILITIES,
         pid=HHD_PID_MOTION,
         btn_map={},
-        axis_map=RIGHT_MOTION_AXIS_MAP,
+        axis_map=MOTION_RIGHT_AXIS_MAP,
         output_imu_timestamps="right_imu_ts",
+        input_props=MOTION_INPUT_PROPS,
     )
     d_left = UInputDevice(
         name="Handheld Daemon Controller Left Motion Sensors",
@@ -352,8 +354,9 @@ def controller_loop_xinput(
         capabilities=MOTION_CAPABILITIES,
         pid=HHD_PID_MOTION,
         btn_map={},
-        axis_map=LEFT_MOTION_AXIS_MAP,
+        axis_map=MOTION_LEFT_AXIS_MAP,
         output_imu_timestamps="left_imu_ts",
+        input_props=MOTION_INPUT_PROPS,
     )
 
     REPORT_FREQ_MIN = 25

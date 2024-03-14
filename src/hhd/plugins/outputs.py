@@ -1,6 +1,5 @@
 from typing import Any, Mapping, Sequence
 
-from .utils import load_relative_yaml
 from ..controller.base import Consumer, Producer
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
@@ -8,11 +7,13 @@ from ..controller.virtual.uinput import (
     HHD_PID_TOUCHPAD,
     MOTION_AXIS_MAP,
     MOTION_CAPABILITIES,
+    MOTION_INPUT_PROPS,
     TOUCHPAD_AXIS_MAP,
     TOUCHPAD_BUTTON_MAP,
     TOUCHPAD_CAPABILITIES,
     UInputDevice,
 )
+from .utils import load_relative_yaml
 
 
 def get_outputs(
@@ -79,6 +80,7 @@ def get_outputs(
                     btn_map={},
                     axis_map=MOTION_AXIS_MAP,
                     output_imu_timestamps=True,
+                    input_props=MOTION_INPUT_PROPS,
                 )
                 producers.append(d)
                 consumers.append(d)
