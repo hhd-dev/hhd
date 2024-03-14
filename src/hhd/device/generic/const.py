@@ -28,7 +28,8 @@ BTN_MAPPINGS: dict[int, str] = {
     #
     # Loki Max
     #
-    B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
+    # Provided by AOKZOE A1 Turbo button as KEY_LEFTALT
+    # B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
 }
 
 AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
