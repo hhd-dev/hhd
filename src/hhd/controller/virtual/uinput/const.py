@@ -456,13 +456,22 @@ GAMEPAD_AXIS_MAP: dict[Axis, AX] = {
 }
 
 MOTION_AXIS_MAP: dict[Axis, AX] = {
-    "accel_x": AX(B("ABS_X"), 8192, bounds=(-32768, 32768)),
-    "accel_y": AX(B("ABS_Y"), 8192, bounds=(-32768, 32768)),
-    "accel_z": AX(B("ABS_Z"), 8192, bounds=(-32768, 32768)),
-    "gyro_x": AX(B("ABS_RX"), 1024, bounds=(-2097152, 2097152)),
-    "gyro_y": AX(B("ABS_RY"), 1024, bounds=(-2097152, 2097152)),
-    "gyro_z": AX(B("ABS_RZ"), 1024, bounds=(-2097152, 2097152)),
+    "accel_x": AX(B("ABS_X"), 8192 / 9.8, bounds=(-32768, 32768)),
+    "accel_y": AX(B("ABS_Y"), 8192 / 9.8, bounds=(-32768, 32768)),
+    "accel_z": AX(B("ABS_Z"), 8192 / 9.8, bounds=(-32768, 32768)),
+    "gyro_x": AX(B("ABS_RX"), 1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
+    "gyro_y": AX(B("ABS_RY"), 1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
+    "gyro_z": AX(B("ABS_RZ"), 1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
 }
+
+LEFT_MOTION_AXIS_MAP: dict[Axis, AX] = {
+    "left_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore
+}
+
+RIGHT_MOTION_AXIS_MAP: dict[Axis, AX] = {
+    "right_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore
+}
+
 
 TOUCHPAD_AXIS_MAP: dict[Axis, AX] = {
     "touchpad_x": AX(B("ABS_X"), 1023, bounds=(0, 2048)),

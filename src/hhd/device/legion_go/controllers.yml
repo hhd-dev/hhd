@@ -18,10 +18,13 @@ children:
   #
   imu:
     type: mode
-    title: Motions Device
+    title: Controller Motions Device
     default: display
 
     modes:
+      disabled:
+        type: container
+        title: Disabled
       display:
         type: container
         title: Display
@@ -68,6 +71,14 @@ children:
       right:
         type: container
         title: Right Controller [BETA]
+
+  dual_evdev:
+    type: bool
+    title: Dual Controller Motion Output (evdev)
+    default: False
+    hint: >-
+      Adds two Motions evdev devices, one for each controller that can be used
+      at the same time.
 
   swap_legion:
     type: multiple

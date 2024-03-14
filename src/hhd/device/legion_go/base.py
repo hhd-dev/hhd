@@ -11,7 +11,14 @@ from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.imu import AccelImu, GyroImu
-from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
+from hhd.controller.virtual.uinput import (
+    HHD_PID_MOTION,
+    HHD_PID_VENDOR,
+    RIGHT_MOTION_AXIS_MAP,
+    LEFT_MOTION_AXIS_MAP,
+    MOTION_CAPABILITIES,
+    UInputDevice,
+)
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .const import (
@@ -220,10 +227,10 @@ def controller_loop_xinput(
             simu = None
             cidx = 0
 
-    motion = (
-        dimu != "display"
-        or conf["imu.display.accel"].to(bool)
-        or conf["imu.display.gyro"].to(bool)
+    dual_evdev = conf["dual_evdev"].to(bool)
+    motion = dimu != "disabled" or (
+        dimu == "display"
+        and (conf["imu.display.accel"].to(bool) or conf["imu.display.gyro"].to(bool))
     )
     d_producers, d_outs, d_params = get_outputs(
         conf["xinput"], conf["touchpad"], motion, controller_id=cidx
@@ -286,7 +293,7 @@ def controller_loop_xinput(
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=RgbCallback(),
             required=True,
-        ).with_settings(dimu, reset)
+        ).with_settings("both" if dual_evdev else dimu, reset)
     )
 
     # Mute keyboard shortcuts, mute
@@ -330,6 +337,25 @@ def controller_loop_xinput(
         imu=simu,
     )
 
+    d_right = UInputDevice(
+        name="Handheld Daemon Controller Right Motion Sensors",
+        phys="phys-hhd-main",
+        capabilities=MOTION_CAPABILITIES,
+        pid=HHD_PID_MOTION,
+        btn_map={},
+        axis_map=RIGHT_MOTION_AXIS_MAP,
+        output_imu_timestamps="right_imu_ts",
+    )
+    d_left = UInputDevice(
+        name="Handheld Daemon Controller Left Motion Sensors",
+        phys="phys-hhd-main",
+        capabilities=MOTION_CAPABILITIES,
+        pid=HHD_PID_MOTION,
+        btn_map={},
+        axis_map=LEFT_MOTION_AXIS_MAP,
+        output_imu_timestamps="left_imu_ts",
+    )
+
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 500
 
@@ -360,6 +386,9 @@ def controller_loop_xinput(
         prepare(d_raw)
         for d in d_producers:
             prepare(d)
+        if dual_evdev:
+            prepare(d_left)
+            prepare(d_right)
 
         ts_count: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
         ts_last: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
@@ -402,6 +431,12 @@ def controller_loop_xinput(
                     # 8ms per count
                     ts_count[ev["code"]] += diff * 8_000_000
                     ev["value"] = ts_count[ev["code"]]
+
+            # Process dual evdev first to avoid multiplexing it
+            if dual_evdev:
+                d_left.consume(evs)
+                d_right.consume(evs)
+
             evs = multiplexer.process(evs)
             if evs:
                 if debug:

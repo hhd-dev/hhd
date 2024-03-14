@@ -243,9 +243,9 @@ class LegionHidraw(GenericGamepadHidraw):
 
         cmds = []
 
-        if self.gyro == "left":
+        if self.gyro in ("left", "both"):
             cmds.extend(controller_enable_gyro("left"))
-        if self.gyro == "right":
+        if self.gyro in ("right", "both"):
             cmds.extend(controller_enable_gyro("right"))
         if self.reset:
             logger.warning(f"Factory Resetting controllers")

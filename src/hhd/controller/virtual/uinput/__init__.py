@@ -32,7 +32,7 @@ class UInputDevice(Consumer, Producer):
         pid: int = HHD_PID_GAMEPAD,
         name: str = "Handheld Daemon Controller",
         phys: str = "phys-hhd-gamepad",
-        output_imu_timestamps: bool = False,
+        output_imu_timestamps: str | bool = False,
         output_timestamps: bool = False,
     ) -> None:
         self.capabilities = capabilities
@@ -99,10 +99,15 @@ class UInputDevice(Consumer, Producer):
                         elif ev["code"] == "touchpad_y":
                             self.dev.write(B("EV_ABS"), B("ABS_MT_POSITION_Y"), val)
 
-                    elif self.output_imu_timestamps and ev["code"] in (
-                        "accel_ts",
-                        "gyro_ts",
-                        "imu_ts",
+                    elif (
+                        self.output_imu_timestamps
+                        and ev["code"]
+                        in (
+                            "accel_ts",
+                            "gyro_ts",
+                            "imu_ts",
+                        )
+                        or ev["code"] == self.output_imu_timestamps
                     ):
                         # We have timestamps with ns accuracy.
                         # Evdev expects us accuracy
