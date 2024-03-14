@@ -35,6 +35,7 @@ overlay, web app for it ([hhd.dev](https://hhd.dev)) that also works locally wit
 - Xbox 360 Style device emulation
   - No weird glyphs
   - Gyro and back button support (outside Steam)
+  - Dual Evdev Motion Controllers for Legion Go
 - Virtual Touchpad Emulation
   - Fixes left and right clicks within gamescope when using the device touchpad.
 - Power Button plugin for Big Picture/Steam Deck Mode
