@@ -61,7 +61,7 @@ class UInputDevice(Consumer, Producer):
             vendor=self.vid,
             product=self.pid,
             phys=self.phys,
-            input_props=self.input_props
+            input_props=self.input_props,
         )
         self.touchpad_aspect = 1
         self.touch_id = 1
@@ -104,15 +104,14 @@ class UInputDevice(Consumer, Producer):
                             self.dev.write(B("EV_ABS"), B("ABS_MT_POSITION_Y"), val)
 
                     elif (
-                        self.output_imu_timestamps
+                        self.output_imu_timestamps is True
                         and ev["code"]
                         in (
                             "accel_ts",
                             "gyro_ts",
                             "imu_ts",
                         )
-                        or ev["code"] == self.output_imu_timestamps
-                    ):
+                    ) or ev["code"] == self.output_imu_timestamps:
                         # We have timestamps with ns accuracy.
                         # Evdev expects us accuracy
                         ts = ev["value"] // 1000
@@ -120,7 +119,8 @@ class UInputDevice(Consumer, Producer):
                         if ts > self.ofs + 2**30:
                             self.ofs = ts
                         ts -= self.ofs
-                        self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
+                        if ts > 0:
+                            self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
                         wrote = True
                 case "button":
                     if ev["code"] in self.btn_map:
