@@ -234,6 +234,16 @@ def controller_loop(
         raise
     finally:
         # d_vend.close(True)
-        d_timer.close()
+        try:
+            d_timer.close()
+        except Exception as e:
+            logger.error(f"Error while closing device '{d}' with exception:\n{e}")
+            if debug:
+                raise e
         for d in reversed(devs):
-            d.close(True)
+            try:
+                d.close(True)
+            except Exception as e:
+                logger.error(f"Error while closing device '{d}' with exception:\n{e}")
+                if debug:
+                    raise e

@@ -460,7 +460,12 @@ def controller_loop_xinput(
         raise
     finally:
         for d in reversed(devs):
-            d.close(True)
+            try:
+                d.close(True)
+            except Exception as e:
+                logger.error(f"Error while closing device '{d}' with exception:\n{e}")
+                if debug:
+                    raise e
 
 
 class SelectivePassthrough(Producer, Consumer):
