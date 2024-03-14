@@ -59,21 +59,23 @@ def hidraw():
 
     print("Available Devices with the Current Permissions")
     avail = []
+    infos = {}
     for i, d in enumerate(enumerate_unique()):
         avail.append(d["path"])
-        print(
-            f"{i + 1}:",
-            f"{str(d['path'])} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}:"
+        n = int(d["path"].decode().split("hidraw")[1])
+        infos[n] = (
+            f"{d['path'].decode():15s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}:"
             + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
-            + f" Names '{d['manufacturer_string']}': '{d['product_string']}'",
+            + f" Names '{d['manufacturer_string']}': '{d['product_string']}'"
         )
+    print("\n".join([infos[k] for k in sorted(infos)]))
 
     print()
     sel = None
     while sel not in avail:
-        sel = input("Enter device path (/dev/input/event# or #): ")
+        sel = input("Enter device path (/dev/hidraw# or #): ")
         try:
-            sel = avail[int(sel) - 1]
+            sel = f"/dev/hidraw{int(sel)}".encode()
         except Exception:
             sel = sel.encode()
 
@@ -83,7 +85,7 @@ def hidraw():
 
     start = time()
     for i in range(100000000):
-        print(f"{i:6d}: {time() - start:7.4f}", d.read().hex())
+        print(f"{i:6d}: {time() - start:8.4f}", d.read().hex())
         sleep(0.001)
 
 
