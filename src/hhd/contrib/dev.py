@@ -2,20 +2,20 @@ import argparse
 
 
 def evdev():
-    from evdev import list_devices, InputDevice
-    from time import sleep
+    from evdev import list_devices, InputDevice, categorize
+    from time import sleep, perf_counter
 
     print("Available Devices with the Current Permissions")
     avail = list_devices()
-    for i, d in enumerate(avail):
-        print(f"{i + 1}:", InputDevice(d))
+    for d in avail:
+        print(InputDevice(d))
 
     print()
     sel = None
     while sel not in avail:
         sel = input("Enter device path (/dev/input/event# or #): ")
         try:
-            sel = avail[int(sel) - 1]
+            sel = f"/dev/input/event{int(sel)}"
         except Exception as e:
             pass
 
@@ -30,11 +30,25 @@ def evdev():
         d.grab()
     except Exception as e:
         print("Could not grab device, error:")
-        print(e)
+        print("\nYou may continue.")
     print()
 
+    endcap = False
+    start = perf_counter()
     for ev in d.read_loop():
-        print(ev)
+        curr = perf_counter() - start
+        if ev.code == 0 and ev.type == 0 and ev.value == 0:
+            print(
+                f"└ SYN ─ {curr:7.3}s ────────────────────────────────────────────────────────┘"
+            )
+            endcap = True
+        else:
+            if endcap:
+                print(
+                    "\n┌────────────────────────────────────────────────────────────────────────┐"
+                )
+                endcap = False
+            print(f"│ {str(categorize(ev)):>70s} │")
         sleep(0.001)
 
 
@@ -96,4 +110,3 @@ def main():
                 print(f"Command `{c}` not supported.")
     except KeyboardInterrupt:
         pass
-
