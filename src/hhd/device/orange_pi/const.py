@@ -12,16 +12,25 @@ DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "timestamp": ("imu_ts", None, 1, None),
 }
 
-BTN_MAPPINGS: dict[int, str] = {
+AT_BTN_MAPPINGS: dict[int, str] = {
     # Volume buttons come from the same keyboard
     B("KEY_F16"): "mode",  # Big Button
     B("KEY_F15"): "share",  # Small Button
+    # B("KEY_F17"): "extra_l1",  # LC Button
+    # B("KEY_F18"): "extra_r1",  # RC Button
+}
+
+GAMEPAD_BTN_MAPPINGS: dict[int, str] = {
+    # Volume buttons come from the same keyboard
+    # B("KEY_F16"): "mode",  # Big Button
+    # B("KEY_F15"): "share",  # Small Button
     B("KEY_F17"): "extra_l1",  # LC Button
     B("KEY_F18"): "extra_r1",  # RC Button
 }
 
 CONFS = {
-    "G1621-02": {"name": "OrangePi G1621-02/G1621-02", "hrtimer": True},
+    # New hardware new firmware, the unit below was dissassembled
+    # "G1621-02": {"name": "OrangePi G1621-02/G1621-02", "hrtimer": True},
     "NEO-01": {"name": "OrangePi NEO-01/NEO-01", "hrtimer": True},
 }
 

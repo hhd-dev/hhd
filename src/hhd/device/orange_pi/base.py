@@ -12,10 +12,9 @@ from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.physical.rgb import LedDevice
-from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
-from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS
+from .const import AT_BTN_MAPPINGS, GAMEPAD_BTN_MAPPINGS, DEFAULT_MAPPINGS
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -115,7 +114,16 @@ def controller_loop(
         pid=[KBD_PID],
         required=False,
         # grab=True,
-        btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
+        btn_map=dconf.get("at_mapping", AT_BTN_MAPPINGS),
+    )
+
+    d_kbd_2 = GenericGamepadEvdev(
+        vid=GAMEPAD_VIDS,
+        pid=GAMEPAD_PIDS,
+        required=False,
+        # grab=True,
+        capabilities={EC("EV_KEY"): [EC("KEY_F16")]},
+        btn_map=dconf.get("gamepad_mapping", GAMEPAD_BTN_MAPPINGS),
     )
 
     multiplexer = Multiplexer(
@@ -172,8 +180,8 @@ def controller_loop(
                 start_imu = d_timer.open()
             if start_imu:
                 prepare(d_imu)
-        # prepare(d_volume_btn)
         prepare(d_kbd_1)
+        prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
 
