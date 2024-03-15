@@ -101,6 +101,7 @@ def loop_manage_overlay(
 
             # If steam tries to appear while the overlay is active
             # yank its focus
+            process_events(disp)
             if shown:
                 old, was_shown = update_steam_values(disp, steam, old)
                 if was_shown:
