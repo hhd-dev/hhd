@@ -77,7 +77,6 @@ def loop_manage_overlay(
         steam = find_steam(disp)
         old = None
         shown = False
-        applied_changes = False
 
         if hhd:
             logger.info(f"UI window found in gamescope, starting handler.")
@@ -102,17 +101,11 @@ def loop_manage_overlay(
 
             # If steam tries to appear while the overlay is active
             # yank its focus
-            updated = process_events(disp)
-            if shown and updated and not applied_changes:
-                old, was_shown = update_steam_values(disp, steam)
+            if shown:
+                old, was_shown = update_steam_values(disp, steam, old)
                 if was_shown:
                     show_hhd(disp, hhd, steam)
                     logger.warning("Steam opened, hiding it.")
-                    applied_changes = True
-            elif fd_disp in r and updated:
-                # We just processed the update events,
-                # start listening to steam again
-                applied_changes = False
 
             # Process system logs
             if fd_err in r:
@@ -129,13 +122,11 @@ def loop_manage_overlay(
                         if shown:
                             hide_hhd(disp, hhd, steam, old)
                             old = None
-                            applied_changes = True
                         shown = False
                     else:
                         if not shown:
-                            old, _ = update_steam_values(disp, steam)
+                            old, _ = update_steam_values(disp, steam, None)
                             show_hhd(disp, hhd, steam)
-                            applied_changes = True
                         shown = True
 
             # Sleep a bit to avoid running too often

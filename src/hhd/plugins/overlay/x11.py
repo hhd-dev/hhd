@@ -156,7 +156,7 @@ def process_events(disp):
     return True
 
 
-def update_steam_values(display, steam):
+def update_steam_values(display, steam, old):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
     stat_overlay = display.get_atom("STEAM_OVERLAY")
     stat_notify = display.get_atom("STEAM_NOTIFICATION")
@@ -165,12 +165,16 @@ def update_steam_values(display, steam):
         prop = steam.get_property(stat_focus, Xatom.CARDINAL, 0, 15)
         return prop and prop.value and prop.value[0]
 
+    new_focus = was_set(stat_focus)
+    new_overlay = was_set(stat_overlay)
+    new_notify = was_set(stat_notify)
+
     out = CachedValues(
-        focus=was_set(stat_focus),
-        overlay=was_set(stat_overlay),
-        notify=was_set(stat_notify),
+        focus=new_focus or (old and old.focus),
+        overlay=new_overlay or (old and old.overlay),
+        notify=new_notify or (old and old.notify),
     )
-    return out, out.focus or out.overlay or out.notify
+    return out, new_focus or new_overlay or new_notify
 
 
 def show_hhd(display, hhd, steam):
