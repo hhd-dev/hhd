@@ -10,6 +10,7 @@ children:
   status:
     title: TDP Status
     type: display
+    tags: [slim, tdp_status]
     # For translation
     choices:
       uninit: Not Set
