@@ -78,7 +78,7 @@ class AdjustorInitPlugin(HHDPlugin):
                 self.enabled = False
                 return
 
-        if not check_perms() or not initialize():
+        if not initialize() and not check_perms():
             conf["hhd.settings.tdp_enable"] = False
             conf["tdp.tdp.tdp_error"] = (
                 "Can not write to 'acpi_call'. It is required for TDP."
