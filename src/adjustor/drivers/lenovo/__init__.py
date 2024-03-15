@@ -25,8 +25,8 @@ from adjustor.core.lenovo import (
 
 logger = logging.getLogger(__name__)
 
-APPLY_DELAY = 0.5
-TDP_DELAY = 0.1
+APPLY_DELAY = 2.2
+TDP_DELAY = 0.2
 
 
 class LenovoDriverPlugin(HHDPlugin):
@@ -178,7 +178,8 @@ class LenovoDriverPlugin(HHDPlugin):
         # Fan curve stuff
         # If tdp reset, so was the curve
         if tdp_reset:
-            self.queue_fan = curr + APPLY_DELAY
+            # 2x to apply after tdp
+            self.queue_fan = curr + 2 * APPLY_DELAY
 
         # Handle fan curve resets
         if conf["tdp.lenovo.fan.manual.reset"].to(bool):
