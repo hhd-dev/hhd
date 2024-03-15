@@ -10,12 +10,13 @@ def main():
         "command",
         nargs="+",
         default=[],
-        help="Supported commands: `evdev`, `hidraw`",
+        help="Supported commands: `evdev`, `hidraw`, `gamescope`",
     )
     args = parser.parse_args()
 
+    cmds = args.command
     try:
-        match c := args.command[0]:
+        match cmds[0]:
             case "evdev":
                 from .dev import evdev
 
@@ -27,9 +28,8 @@ def main():
             case "gamescope":
                 from .gs import gamescope_debug
 
-                gamescope_debug()
+                gamescope_debug(cmds[1] if len(cmds) >= 2 else None)
             case _:
-                print(f"Command `{c}` not supported.")
+                print(f"Command `{cmds[0]}` not supported.")
     except KeyboardInterrupt:
         pass
-
