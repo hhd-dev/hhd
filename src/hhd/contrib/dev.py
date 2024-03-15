@@ -1,6 +1,3 @@
-import argparse
-
-
 def evdev():
     from evdev import list_devices, InputDevice, categorize
     from time import sleep, perf_counter
@@ -87,28 +84,3 @@ def hidraw():
     for i in range(100000000):
         print(f"{i:6d}: {time() - start:8.4f}", d.read().hex())
         sleep(0.001)
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        prog="HHD: Handheld Daemon contribution helper scripts",
-        description="Scripts to automate the capture of events, etc.",
-    )
-    parser.add_argument(
-        "command",
-        nargs="+",
-        default=[],
-        help="Supported commands: `evdev`, `hidraw`",
-    )
-    args = parser.parse_args()
-
-    try:
-        match c := args.command[0]:
-            case "evdev":
-                evdev()
-            case "hidraw":
-                hidraw()
-            case _:
-                print(f"Command `{c}` not supported.")
-    except KeyboardInterrupt:
-        pass

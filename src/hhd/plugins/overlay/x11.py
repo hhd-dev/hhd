@@ -104,23 +104,21 @@ def print_debug(display: display.Display):
     print()
     print("WINDOWS:")
     for i, w in enumerate([r, *r.query_tree().children]):
-        print(f"{i:02d}", end="")
+        print(f"\n{i:02d}:", end="")
         for p in w.list_properties():
             n = d.get_atom_name(p)
             if "WM_NAME" == n:
-                print(
-                    f" {w.get_property(p, Xatom.STRING, 0, 100).value.decode()}", end=""
-                )
-        print(f":", end="")
+                print(f" '{w.get_property(p, Xatom.STRING, 0, 100).value.decode()}'")
+                break
+        else:
+            print(" no name")
+
         for p in w.list_properties():
             n = d.get_atom_name(p)
             if "STEAM" in n or "GAMESCOPE" in n:
                 print(
-                    f" {n}: {list(w.get_property(p, Xatom.CARDINAL, 0, 15).value)},",
-                    end="",
+                    f"> {n}: {list(w.get_property(p, Xatom.CARDINAL, 0, 15).value)},",
                 )
-
-        print()
         for p in w.list_properties():
             n = d.get_atom_name(p)
             if "STEAM" not in n and "GAMESCOPE" not in n:
