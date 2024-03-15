@@ -46,14 +46,22 @@ def get_overlay_display(displays: Sequence[str]):
         d.close()
 
 
-def find_win(display: display.Display, win: list[str]):
+def find_win(display: display.Display, win: list[str], atoms: list[str] = []):
     n = display.get_atom("WM_CLASS")
+    a_ids = [display.get_atom(a, only_if_exists=True) for a in atoms]
+
     for w in display.screen().root.query_tree().children:
+        # Check the window has the proper class
         v = w.get_property(n, Xatom.STRING, 0, 50)
         if not v:
             continue
         if not v.value:
             continue
+
+        # Check the window has all the required atoms
+        for a_id in a_ids:
+            if not w.get_property(a_id, Xatom.STRING, 0, 50):
+                return
 
         classes = [c.decode() for c in v.value.split(b"\00") if c]
         found = True
