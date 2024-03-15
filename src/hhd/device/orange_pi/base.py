@@ -104,9 +104,9 @@ def controller_loop(
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
-        axis_map=DINPUT_AXIS_MAP,
+        # axis_map=DINPUT_AXIS_MAP,
         hide=True,
-        postprocess=DINPUT_AXIS_POSTPROCESS,
+        # postprocess=DINPUT_AXIS_POSTPROCESS,
     )
 
     d_kbd_1 = GenericGamepadEvdev(
