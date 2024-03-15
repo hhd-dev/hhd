@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-07 17:22+0100\n"
+"POT-Creation-Date: 2024-03-14 23:19-0300\n"
 "PO-Revision-Date: 2024-02-07 17:26+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: el_GR\n"
@@ -35,42 +35,28 @@ msgid "Controller"
 msgstr ""
 
 #. Section Name for: hhd
-msgid "About"
+msgid "Settings"
 msgstr ""
 
-#. Setting: Version Information
+#. Section Name for: bazzite
+msgid "Bazzite"
+msgstr ""
+
+#. Section Name for: utilities
+msgid "Utilities"
+msgstr ""
+
+#. Setting: Core Settings
 #. Field: title
-msgid "Version Information"
+msgid "Core Settings"
 msgstr ""
 
-#. Setting: Version Information
-#. Field: hint
-msgid "Handheld Daemon version manager (local install only)."
-msgstr ""
-
-#. Setting: Decky Plugin Version
+#. Setting: It is no longer possible to update Decky from here. If you see
+#. this, update the Decky plugin manually.
 #. Field: title
-msgid "Decky Plugin Version"
-msgstr ""
-
-#. Setting: Decky Plugin Version
-#. Field: hint
-msgid "Displays the Handheld Daemon Decky plugin version."
-msgstr ""
-
-#. Setting: WARNING: This button will be removed soon, update Decky now!
-#. Field: title
-msgid "WARNING: This button will be removed soon, update Decky now!"
-msgstr ""
-
-#. Setting: Update Decky
-#. Field: title
-msgid "Update Decky"
-msgstr ""
-
-#. Setting: Update Decky
-#. Field: hint
-msgid "Updates the Decky plugin to the latest release."
+msgid ""
+"It is no longer possible to update Decky from here. If you see this, "
+"update the Decky plugin manually."
 msgstr ""
 
 #. Setting: Handheld Daemon Version
@@ -80,7 +66,19 @@ msgstr ""
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
+#. Setting: Handheld Daemon UI Version
+#. Setting: Adjustor (TDP) Version
 msgid "Displays the Handheld Daemon version."
+msgstr ""
+
+#. Setting: Handheld Daemon UI Version
+#. Field: title
+msgid "Handheld Daemon UI Version"
+msgstr ""
+
+#. Setting: Adjustor (TDP) Version
+#. Field: title
+msgid "Adjustor (TDP) Version"
 msgstr ""
 
 #. Setting: Update (Stable)
@@ -101,6 +99,11 @@ msgstr ""
 #. Setting: Update (Unstable)
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
+msgstr ""
+
+#. Setting: Update Error
+#. Field: title
+msgid "Update Error"
 msgstr ""
 
 #. Setting: API Configuration
@@ -155,13 +158,14 @@ msgid ""
 "authentication."
 msgstr ""
 
-#. Setting: Handheld Controller
+#. Setting: Handheld
 #. Field: title
-msgid "Handheld Controller"
+msgid "Handheld"
 msgstr ""
 
-#. Setting: Handheld Controller
+#. Setting: Handheld
 #. Field: hint
+#. Setting: Orange Pi Neo
 msgid "Allows for configuring your handheld's controller to a unified output."
 msgstr ""
 
@@ -246,9 +250,9 @@ msgstr ""
 
 #. Setting: Map L4/R4 to QAM.
 #. Option: disabled
-#. Setting: Swap Legion with Start/Select
 #. Setting: Disabled
 #. Field: title
+#. Setting: Swap Legion with Start/Select
 #. Setting: Short Action
 #. Setting: Hold Action
 msgid "Disabled"
@@ -288,6 +292,16 @@ msgid ""
 "X-Input mode."
 msgstr ""
 
+#. Setting: Controller Motions Device
+#. Field: title
+msgid "Controller Motions Device"
+msgstr ""
+
+#. Setting: Display
+#. Field: title
+msgid "Display"
+msgstr ""
+
 #. Setting: Gyroscope
 #. Field: title
 msgid "Gyroscope"
@@ -305,9 +319,7 @@ msgstr ""
 
 #. Setting: Accelerometer
 #. Field: hint
-msgid ""
-"Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro;  "
-"if someone asks it will be fixed)."
+msgid "Enables accelerometer support (CURRENTLY BROKEN)."
 msgstr ""
 
 #. Setting: Gyro Hz
@@ -335,6 +347,28 @@ msgid ""
 "misconfigured by the driver). Try different values to see what works "
 "best. Low values cause a deadzone and high values will clip when moving "
 "the  Go abruptly."
+msgstr ""
+
+#. Setting: Left Controller [BETA]
+#. Field: title
+msgid "Left Controller [BETA]"
+msgstr ""
+
+#. Setting: Right Controller [BETA]
+#. Field: title
+msgid "Right Controller [BETA]"
+msgstr ""
+
+#. Setting: Dual Controller Motion Output (evdev)
+#. Field: title
+msgid "Dual Controller Motion Output (evdev)"
+msgstr ""
+
+#. Setting: Dual Controller Motion Output (evdev)
+#. Field: hint
+msgid ""
+"Adds two Motions evdev devices, one for each controller that can be used "
+"at the same time."
 msgstr ""
 
 #. Setting: Swap Legion with Start/Select
@@ -389,6 +423,21 @@ msgstr ""
 msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
+msgstr ""
+
+#. Setting: Factory Reset Controllers
+#. Field: title
+msgid "Factory Reset Controllers"
+msgstr ""
+
+#. Setting: Factory Reset Controllers
+#. Field: hint
+msgid "Resets the controllers to factory settings."
+msgstr ""
+
+#. Setting: Orange Pi Neo
+#. Field: title
+msgid "Orange Pi Neo"
 msgstr ""
 
 #. Setting: Ally Controller
@@ -583,6 +632,19 @@ msgid ""
 "them."
 msgstr ""
 
+#. Setting: Paddles to Clicks
+#. Field: title
+msgid "Paddles to Clicks"
+msgstr ""
+
+#. Setting: Paddles to Clicks
+#. Field: hint
+msgid ""
+"Maps the paddles of the device to left and right touchpad clicks making "
+"them usable in Steam. If more than 2 paddles (e.g., Legion Go) uses the "
+"top ones. If extra buttons (e.g., Ayaneo, GPD), uses them instead."
+msgstr ""
+
 #. Setting: Gyro to Mouse Fix
 #. Field: title
 msgid "Gyro to Mouse Fix"
@@ -597,6 +659,19 @@ msgid ""
 "responsiveness of the controller to that of the IMU (e.g., for Legion Go "
 "100hz instead of 400hz). If the IMU is not working, this setting will "
 "break the controller."
+msgstr ""
+
+#. Setting: Invert Roll Axis
+#. Field: title
+msgid "Invert Roll Axis"
+msgstr ""
+
+#. Setting: Invert Roll Axis
+#. Field: hint
+msgid ""
+"Inverts the roll (Z) axis compared to a real Dualsense controller. Useful"
+" for Steam Input, since you want it to be inverted to look left to right,"
+" but an issue in emulators."
 msgstr ""
 
 #. Setting: Bluetooth Mode
@@ -786,4 +861,54 @@ msgid ""
 "Sets the brightness level of a display. Only one display is supported and"
 " it is the one that was read."
 msgstr ""
+
+#. Setting: Overlay with QAM Double/Tripple press (requires restart)
+#. Field: title
+msgid "Overlay with QAM Double/Tripple press (requires restart)"
+msgstr ""
+
+#. Setting: Steam Powerbutton Handler
+#. Field: title
+msgid "Steam Powerbutton Handler"
+msgstr ""
+
+#. Setting: Steam Powerbutton Handler
+#. Field: hint
+msgid ""
+"Enables the Steam Powerbutton handler (responsible for the wink and "
+"powerbutton menu)."
+msgstr ""
+
+#~ msgid "About"
+#~ msgstr ""
+
+#~ msgid "Version Information"
+#~ msgstr ""
+
+#~ msgid "Handheld Daemon version manager (local install only)."
+#~ msgstr ""
+
+#~ msgid "Decky Plugin Version"
+#~ msgstr ""
+
+#~ msgid "Displays the Handheld Daemon Decky plugin version."
+#~ msgstr ""
+
+#~ msgid "WARNING: This button will be removed soon, update Decky now!"
+#~ msgstr ""
+
+#~ msgid "Update Decky"
+#~ msgstr ""
+
+#~ msgid "Updates the Decky plugin to the latest release."
+#~ msgstr ""
+
+#~ msgid "Handheld Controller"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Enables accelerometer support (CURRENTLY "
+#~ "BROKEN; interferes with gyro;  if "
+#~ "someone asks it will be fixed)."
+#~ msgstr ""
 
