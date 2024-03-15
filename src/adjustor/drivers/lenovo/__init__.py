@@ -132,6 +132,7 @@ class LenovoDriverPlugin(HHDPlugin):
             tdp_mode = get_tdp_mode()
             if tdp_mode:
                 set_tdp_mode("performance")
+                time.sleep(TDP_DELAY)
                 set_tdp_mode(tdp_mode)
                 tdp_reset = True
 
