@@ -7,8 +7,8 @@ from hhd.plugins.overlay.x11 import (
 )
 
 
-def gamescope_debug(did: str | None):
-    if not did:
+def gamescope_debug(args: list[str]):
+    if not args or not args[0].startswith(":"):
         ds = get_gamescope_displays()
         print(f"Gamescope displays found: {str(ds)}")
         d = get_overlay_display(ds)
@@ -17,10 +17,11 @@ def gamescope_debug(did: str | None):
             return
         d, name = d
     else:
+        did = args[0]
         name = did
         d = Display(did)
 
     print(f"Overlay display is '{name}'")
 
     print("\nDebug Data:")
-    print_debug(d)
+    print_debug(d, args)

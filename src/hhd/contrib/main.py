@@ -28,7 +28,7 @@ def main():
             case "gamescope":
                 from .gs import gamescope_debug
 
-                gamescope_debug(cmds[1] if len(cmds) >= 2 else None)
+                gamescope_debug(cmds[1:])
             case _:
                 print(f"Command `{cmds[0]}` not supported.")
     except KeyboardInterrupt:

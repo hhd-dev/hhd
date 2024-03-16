@@ -101,17 +101,23 @@ def print_data(display: display.Display):
         print()
 
 
-def print_debug(display: display.Display):
+def print_debug(display: display.Display, args: list[str]):
     d = display
     r = display.screen().root
 
-    print("ATOMS:")
-    for v in r.list_properties():
-        print(f"{v: 4d}: {d.get_atom_name(v)}")
+    if "noatoms" not in args:
+        print("ATOMS:")
+        for v in r.list_properties():
+            print(f"{v: 4d}: {d.get_atom_name(v)}")
+
+    if "root" in args:
+        windows = [r]
+    else:
+        windows = [r, *r.query_tree().children]
 
     print()
     print("WINDOWS:")
-    for i, w in enumerate([r, *r.query_tree().children]):
+    for i, w in enumerate(windows):
         print(f"\n{i:02d}:", end="")
         for p in w.list_properties():
             n = d.get_atom_name(p)
