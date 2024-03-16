@@ -124,7 +124,7 @@ def encode_axis(buff: bytearray, t: AM, val: float):
             )
         case "m32":
             if not new_val:
-                new_val = int(((1 << 31) - 1) * val + (1 << 31))
+                new_val = int(round(((1 << 31) - 1) * val + (1 << 31) - 1))
             buff[t.loc >> 3 : (t.loc >> 3) + 4] = int.to_bytes(
                 new_val, 4, t.order, signed=False
             )
@@ -142,7 +142,7 @@ def encode_axis(buff: bytearray, t: AM, val: float):
             )
         case "m16":
             if not new_val:
-                new_val = int(((1 << 15) - 1) * val + (1 << 15))
+                new_val = int(round(((1 << 15) - 1) * val + (1 << 15) - 1))
             buff[t.loc >> 3 : (t.loc >> 3) + 2] = int.to_bytes(
                 new_val, 2, t.order, signed=False
             )
@@ -160,7 +160,7 @@ def encode_axis(buff: bytearray, t: AM, val: float):
             )
         case "m8":
             if not new_val:
-                new_val = int(((1 << 7) - 1) * val + (1 << 7))
+                new_val = int(round(((1 << 7) - 1) * val + (1 << 7) - 1))
             buff[t.loc >> 3 : (t.loc >> 3) + 1] = int.to_bytes(
                 new_val, 1, t.order, signed=False
             )
