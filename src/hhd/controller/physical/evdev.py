@@ -98,6 +98,34 @@ DINPUT_AXIS_POSTPROCESS = {
     "rs_y": {"zero_is_middle": True},
 }
 
+if calib := os.environ.get("HHD_CALIB"):
+    # TODO: Move this into the gui
+    # Accepts the following format: <axis>: <min> <max> <deadzone>
+    # Everything below deadzone gets set to 0.
+    # If axis is positive, it gets scaled so that it is 1 when max is hit
+    # If negative, it is scaled to be -1 when it reaches the min value
+    # HHD_CALIB=$(cat <<-END
+    # {
+    #     "ls_x": {"min": -1, "max": 1, "deadzone": 0.05},
+    #     "ls_y": {"min": -1, "max": 1, "deadzone": 0.05},
+    #     "rs_x": {"min": -1, "max": 1, "deadzone": 0.05},
+    #     "rs_y": {"min": -1, "max": 1, "deadzone": 0.05},
+    #     "lt": {"min": 0, "max": 1, "deadzone": 0.05},
+    #     "rt": {"min": 0, "max": 1, "deadzone": 0.05}
+    # }
+    # END
+    # )
+    import json
+
+    try:
+        AXIS_CALIBRATION = json.loads(calib)
+        logger.info(f"Loaded calibration:\n{calib}")
+    except Exception as e:
+        logger.info(f"Could not load Axis Calibration:\n{calib}\nError:{e}")
+        AXIS_CALIBRATION = {}
+else:
+    AXIS_CALIBRATION = {}
+
 
 def list_joysticks(input_device_dir="/dev/input"):
     return glob.glob(f"{input_device_dir}/js*")
@@ -122,6 +150,7 @@ def find_joystick(ev: str):
 
 
 class GenericGamepadEvdev(Producer, Consumer):
+
     def __init__(
         self,
         vid: Sequence[int],
@@ -136,7 +165,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         grab: bool = True,
         msc_map: Mapping[int, Button] = {},
         msc_delay: float = 0.1,
-        postprocess: dict[str, dict] = {},
+        postprocess: dict[str, dict] = AXIS_CALIBRATION,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -314,6 +343,23 @@ class GenericGamepadEvdev(Producer, Consumer):
                             val = e.value / abs(
                                 self.ranges[e.code][1 if e.value >= 0 else 0]
                             )
+
+                        # Calibrate
+                        if ax in self.postprocess:
+                            calib = self.postprocess[ax]
+                            if val < 0 and "min" in calib:
+                                m = calib["min"]
+                                if m:
+                                    # avoid division by 0
+                                    val = -max(m, val) / m
+                            elif val > 0 and "max" in calib:
+                                m = calib["max"]
+                                val = min(m, val) / m
+
+                            if "deadzone" in calib:
+                                d = calib["deadzone"]
+                                if abs(val) < d:
+                                    val = 0
 
                         out.append(
                             {
