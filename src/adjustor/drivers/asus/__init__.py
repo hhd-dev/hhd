@@ -1,6 +1,7 @@
 import logging
 import time
 from typing import cast
+import os
 
 from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
@@ -34,10 +35,54 @@ def set_tdp(pretty: str, fn: str, val: int):
         return False
 
 
+def find_fan_curve_dir():
+    for dir in os.listdir(FAN_CURVE_ENDPOINT):
+        name_fn = os.path.join(FAN_CURVE_ENDPOINT, dir, "name")
+        with open(name_fn, "r") as f:
+            name = f.read()
+        if name == FAN_CURVE_NAME:
+            return os.path.join(FAN_CURVE_ENDPOINT, dir)
+    return None
+
+
 def set_fan_curve(points: list[int], curve: list[int]):
     point_str = ",".join([f"{p:> 4d} C" for p in points])
     curve_str = ",".join([f"{p:> 4d} %" for p in curve])
     logger.info(f"Setting the following fan curve:\n{point_str}\n{curve_str}")
+
+    dir = find_fan_curve_dir()
+    if not dir:
+        logger.error(f"Could not find hwmon with name:\n'{FAN_CURVE_NAME}'")
+        return False
+
+    for fan in (1, 2):
+        for i, (temp, speed) in enumerate(zip(points, curve)):
+            print(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_temp"))
+            with open(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_temp"), "r") as f:
+                f.write(f"{temp}\n")
+            with open(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_pwm"), "r") as f:
+                f.write(f"{speed}\n")
+
+    for fan in (1, 2):
+        with open(os.path.join(dir, f"pwm{fan}_enable"), "r") as f:
+            f.write(f"2\n")
+
+    return True
+
+
+def disable_fan_curve():
+    logger.info(f"Disabling custom fan curve.")
+
+    dir = find_fan_curve_dir()
+    if not dir:
+        logger.error(f"Could not find hwmon with name:\n'{FAN_CURVE_NAME}'")
+        return False
+
+    for fan in (1, 2):
+        with open(os.path.join(dir, f"pwm{fan}_enable"), "r") as f:
+            f.write(f"0\n")
+
+    return True
 
 
 class AsusDriverPlugin(HHDPlugin):
@@ -161,7 +206,7 @@ class AsusDriverPlugin(HHDPlugin):
         # Check if fan curve has changed
         # Use debounce logic on these changes
         if self.startup:
-            self.queue_fan = curr + 2*APPLY_DELAY
+            self.queue_fan = curr + 2 * APPLY_DELAY
         for i in POINTS:
             if conf[f"tdp.asus.fan.manual.st{i}"].to(int) != self.old_conf[
                 f"fan.manual.st{i}"
@@ -169,11 +214,15 @@ class AsusDriverPlugin(HHDPlugin):
                 self.queue_fan = curr + APPLY_DELAY
 
         apply_curve = self.queue_fan and self.queue_fan < curr
-        if conf["tdp.asus.fan.mode"].to(str) == "manual" and apply_curve:
+        if apply_curve:
             try:
-                set_fan_curve(
-                    POINTS, [conf[f"tdp.asus.fan.manual.st{i}"].to(int) for i in POINTS]
-                )
+                if conf["tdp.asus.fan.mode"].to(str) == "manual":
+                    set_fan_curve(
+                        POINTS,
+                        [conf[f"tdp.asus.fan.manual.st{i}"].to(int) for i in POINTS],
+                    )
+                else:
+                    disable_fan_curve()
             except Exception as e:
                 logger.error(f"Could not set fan curve. Error:\n{e}")
             self.queue_fan = None
