@@ -531,10 +531,7 @@ class Multiplexer:
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore
                         if ev["value"]:
-                            if not self.qam_pressed:
-                                # Only increment qam_times if qam was not pressed
-                                # before, loki likes to send press events twice
-                                self.qam_times += 1
+                            self.qam_times += 1
                             self.qam_pressed = curr
                             self.qam_released = None
                         else:
