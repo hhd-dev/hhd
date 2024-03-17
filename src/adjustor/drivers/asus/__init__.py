@@ -179,7 +179,7 @@ class AsusDriverPlugin(HHDPlugin):
                 steady = 5
             if steady < 13:
                 set_platform_profile("quiet")
-            elif steady < 0:
+            elif steady < 20:
                 set_platform_profile("balanced")
             else:
                 set_platform_profile("performance")
