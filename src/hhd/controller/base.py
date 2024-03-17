@@ -493,6 +493,14 @@ class Multiplexer:
                             }
                         )
 
+                    if self.select_reboots and ev["code"] == "select":
+                        if ev["value"]:
+                            self.select_is_held = True
+                            self.select_pressed = curr
+                        else:
+                            self.select_is_held = False
+                            self.select_pressed = None
+
                     if self.swap_guide and ev["code"] in (
                         "start",
                         "select",
@@ -514,14 +522,6 @@ class Multiplexer:
                                     ev["code"] = "select"
                                 else:
                                     ev["code"] = "start"
-
-                    if self.select_reboots and ev["code"] == "select":
-                        if ev["value"]:
-                            self.select_is_held = True
-                            self.select_pressed = curr
-                        else:
-                            self.select_is_held = False
-                            self.select_pressed = None
 
                     if self.emit and ev["code"] == "mode" and ev["value"]:
                         # Steam might do weirdness, emit an event to prepare
