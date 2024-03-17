@@ -81,6 +81,7 @@ def get_outputs(
                     axis_map=MOTION_AXIS_MAP,
                     output_imu_timestamps=True,
                     input_props=MOTION_INPUT_PROPS,
+                    ignore_cmds=True
                 )
                 producers.append(d)
                 consumers.append(d)
@@ -96,6 +97,7 @@ def get_outputs(
             btn_map=TOUCHPAD_BUTTON_MAP,
             axis_map=TOUCHPAD_AXIS_MAP,
             output_timestamps=True,
+            ignore_cmds=True,
         )
         producers.append(d)
         consumers.append(d)

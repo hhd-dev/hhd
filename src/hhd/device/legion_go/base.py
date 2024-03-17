@@ -347,6 +347,7 @@ def controller_loop_xinput(
         axis_map=MOTION_RIGHT_AXIS_MAP,
         output_imu_timestamps="right_imu_ts",
         input_props=MOTION_INPUT_PROPS,
+        ignore_cmds=True,
     )
     d_left = UInputDevice(
         name="Handheld Daemon Controller Left Motion Sensors",
@@ -357,6 +358,7 @@ def controller_loop_xinput(
         axis_map=MOTION_LEFT_AXIS_MAP,
         output_imu_timestamps="left_imu_ts",
         input_props=MOTION_INPUT_PROPS,
+        ignore_cmds=True,
     )
 
     REPORT_FREQ_MIN = 25

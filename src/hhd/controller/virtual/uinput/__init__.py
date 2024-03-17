@@ -36,6 +36,7 @@ class UInputDevice(Consumer, Producer):
         output_imu_timestamps: str | bool = False,
         output_timestamps: bool = False,
         input_props: Sequence[int] = [],
+        ignore_cmds: bool = False,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -50,6 +51,7 @@ class UInputDevice(Consumer, Producer):
         self.ofs = 0
         self.sys_ofs = 0
         self.input_props = input_props
+        self.ignore_cmds = ignore_cmds
 
         self.rumble: Event | None = None
 
@@ -66,6 +68,12 @@ class UInputDevice(Consumer, Producer):
         self.touchpad_aspect = 1
         self.touch_id = 1
         self.fd = self.dev.fd
+
+        if self.ignore_cmds:
+            # Do not wake up if we ignore to save utilization
+            # When the output contains a timestamp, it is fed back to evdev
+            # causing double wake-ups.
+            return []
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
@@ -163,7 +171,7 @@ class UInputDevice(Consumer, Producer):
             self.dev.syn()
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
-        if not self.fd or not self.fd in fds or not self.dev:
+        if self.ignore_cmds or not self.fd or not self.fd in fds or not self.dev:
             return []
 
         out: Sequence[Event] = []
