@@ -198,6 +198,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
         select_reboots=conf["select_reboots"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
+        swap_guide="guide_is_start" if conf["swap_armory"].to(bool) else None,
     )
 
     REPORT_FREQ_MIN = 25

@@ -67,6 +67,14 @@ children:
     title: Map Armory to QAM.
     default: True
 
+  swap_armory:
+    type: bool
+    title: Swap ROG and Start/Select
+    tags: [ non-essential ]
+    hint: >-
+      Swaps the Armory Crate and Command center buttons with start and select.
+    default: False
+
   debug:
     type: bool
     title: Debug
