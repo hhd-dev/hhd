@@ -40,7 +40,6 @@ def find_fan_curve_dir():
         name_fn = os.path.join(FAN_CURVE_ENDPOINT, dir, "name")
         with open(name_fn, "r") as f:
             name = f.read().strip()
-        print(name_fn, name)
         if name == FAN_CURVE_NAME:
             return os.path.join(FAN_CURVE_ENDPOINT, dir)
     return None
@@ -59,13 +58,13 @@ def set_fan_curve(points: list[int], curve: list[int]):
     for fan in (1, 2):
         for i, (temp, speed) in enumerate(zip(points, curve)):
             print(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_temp"))
-            with open(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_temp"), "r") as f:
+            with open(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_temp"), "w") as f:
                 f.write(f"{temp}\n")
-            with open(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_pwm"), "r") as f:
+            with open(os.path.join(dir, f"pwm{fan}_auto_point{i+1}_pwm"), "w") as f:
                 f.write(f"{speed}\n")
 
     for fan in (1, 2):
-        with open(os.path.join(dir, f"pwm{fan}_enable"), "r") as f:
+        with open(os.path.join(dir, f"pwm{fan}_enable"), "w") as f:
             f.write(f"2\n")
 
     return True
@@ -80,7 +79,7 @@ def disable_fan_curve():
         return False
 
     for fan in (1, 2):
-        with open(os.path.join(dir, f"pwm{fan}_enable"), "r") as f:
+        with open(os.path.join(dir, f"pwm{fan}_enable"), "w") as f:
             f.write(f"0\n")
 
     return True
