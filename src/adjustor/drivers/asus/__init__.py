@@ -205,7 +205,7 @@ class AsusDriverPlugin(HHDPlugin):
 
         # Check if fan curve has changed
         # Use debounce logic on these changes
-        if conf["tdp.asus.fan.mode"] != self.old_conf["fan.mode"]:
+        if conf["tdp.asus.fan.mode"].to(str) != self.old_conf["fan.mode"].to(str):
             self.queue_fan = curr + APPLY_DELAY
         if self.startup:
             self.queue_fan = curr + 2 * APPLY_DELAY
