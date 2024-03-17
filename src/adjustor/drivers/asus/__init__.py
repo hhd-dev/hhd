@@ -39,7 +39,7 @@ def find_fan_curve_dir():
     for dir in os.listdir(FAN_CURVE_ENDPOINT):
         name_fn = os.path.join(FAN_CURVE_ENDPOINT, dir, "name")
         with open(name_fn, "r") as f:
-            name = f.read()
+            name = f.read().strip()
         print(name_fn, name)
         if name == FAN_CURVE_NAME:
             return os.path.join(FAN_CURVE_ENDPOINT, dir)
