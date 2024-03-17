@@ -183,9 +183,9 @@ class AsusDriverPlugin(HHDPlugin):
             if boost:
                 set_tdp("steady", CTDP_FN, steady)
                 time.sleep(TDP_DELAY)
-                set_tdp("slow", STDP_FN, steady + 2)
+                set_tdp("slow", STDP_FN, int(steady * 43 / 30))
                 time.sleep(TDP_DELAY)
-                set_tdp("fast", FTDP_FN, int(steady * 41 / 30))
+                set_tdp("fast", FTDP_FN, int(steady * 53 / 30))
             else:
                 set_tdp("steady", CTDP_FN, steady)
                 time.sleep(TDP_DELAY)
