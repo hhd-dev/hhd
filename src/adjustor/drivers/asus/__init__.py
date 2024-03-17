@@ -168,7 +168,8 @@ class AsusDriverPlugin(HHDPlugin):
         if self.startup or steady_updated or boost_updated:
             self.queue_tdp = curr + APPLY_DELAY
 
-        if self.queue_tdp and self.queue_tdp < curr:
+        tdp_set = self.queue_tdp and self.queue_tdp < curr
+        if tdp_set:
             if steady < 13:
                 set_platform_profile("quiet")
             elif steady < 0:
@@ -204,10 +205,10 @@ class AsusDriverPlugin(HHDPlugin):
 
         # Check if fan curve has changed
         # Use debounce logic on these changes
+        if tdp_set and conf["tdp.asus.fan.mode"].to(str) == "manual":
+            self.queue_fan = curr + APPLY_DELAY
         if conf["tdp.asus.fan.mode"].to(str) != self.old_conf["fan.mode"].to(str):
             self.queue_fan = curr + APPLY_DELAY
-        if self.startup:
-            self.queue_fan = curr + 2 * APPLY_DELAY
         for i in POINTS:
             if conf[f"tdp.asus.fan.manual.st{i}"].to(int) != self.old_conf[
                 f"fan.manual.st{i}"
@@ -220,6 +221,7 @@ class AsusDriverPlugin(HHDPlugin):
                 # Always disable fan curve first
                 disable_fan_curve()
                 if conf["tdp.asus.fan.mode"].to(str) == "manual":
+                    time.sleep(TDP_DELAY)
                     set_fan_curve(
                         POINTS,
                         [conf[f"tdp.asus.fan.manual.st{i}"].to(int) for i in POINTS],
