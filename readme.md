@@ -11,11 +11,12 @@ setting TDP on demand in Ryzen processors, through ACPI.
 This means that it can be used regardless of the current memory policy
 or secure-boot/lockdown status (provided the module `acpi_call` is installed.).
 
-In addition, it fully implements Lenovo's WMI protocol for the Legion Go, allowing
-setting the TDP, including boosting behavior, without interference from
-the Embedded Computer.
-As part of the latest Lenovo bios, it also allows for setting a custom fan curve
-for the Legion Go.
+For the ROG Ally and Legion Go that have an ACPI/EC implementation for bios and fan curves,
+Adjustor uses the manufactuer way for setting TDP.
+For the ally, the asus-wmi kernel driver is used to set the tdp and manage the
+fan curves.
+For the go, Lenovo's WMI methods are called through `acpi_call`, which will hopefully
+become part of a driver in the future.
 
 ## AMD TDP Control
 Adjustor controls TDP through the Dynamic Power and Thermal Configuration Interface
