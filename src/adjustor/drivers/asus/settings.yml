@@ -1,0 +1,99 @@
+title: Asus TDP
+type: container
+tags: [hide-title]
+hint: >-
+  Uses the interface of Legion Space to set the TDP of the device.
+children:
+  tdp:
+    type: int
+    title: TDP
+    hint: >-
+      Average TDP Target.
+
+      Sets the values STAMP and Skin Power Limit to it.
+      If it is not, it sets the Slow limit equal to TDP and the Fast
+      limit to +2W.
+      Boost is recommended for desktop use.
+
+    min: 0
+    max: 30
+    step: 1
+    default: 30
+    unit: W
+  boost:
+    type: bool
+    title: TDP Boost
+    default: True
+    hint: >-
+      Allows the device to boost by setting appropriate slow and fast TDPs.
+
+  fan:
+    type: mode
+    title: Custom Fan Curve
+    hint: >-
+      Allows you to set a custom fan curve.
+    default: disabled
+    modes:
+      disabled:
+        type: container
+        title: Disabled
+        hint: >-
+          Lets the device manage the fan curve on its own.
+      manual:
+        type: container
+        title: Manual [BETA]
+        tags: [ non-essential ]
+        children:
+
+          st30: &speed_template
+            title: 30C
+            hint: Sets the speed at the named temperature.
+            tags: [slim]
+            type: int
+            min: 0
+            default: 40
+            max: 100
+            step: 2
+            unit: "%"
+            
+          st40:
+            <<: *speed_template
+            title: 40C
+            default: 40
+          st50:
+            <<: *speed_template
+            title: 50C
+            default: 40
+          st60:
+            <<: *speed_template
+            title: 60C
+            default: 50
+          st70:
+            <<: *speed_template
+            title: 70C
+            default: 60
+          st80:
+            <<: *speed_template
+            title: 80C
+            default: 70
+          st90:
+            <<: *speed_template
+            title: 90C
+            default: 80
+          st100:
+            <<: *speed_template
+            title: 100C
+            default: 90
+
+          enforce_limits:
+            title: Enforce Minimums
+            type: bool
+            default: True
+            hint: >-
+              Enforce a reasonable minimum fan curve.
+            
+          reset:
+            title: Restore Default
+            type: action
+            hint: >-
+              Restore a default sane fan curve.

@@ -79,7 +79,7 @@ class AdjustorInitPlugin(HHDPlugin):
                 return
 
         initialize()
-        if  not check_perms():
+        if not check_perms():
             conf["hhd.settings.tdp_enable"] = False
             conf["tdp.tdp.tdp_error"] = (
                 "Can not write to 'acpi_call'. It is required for TDP."
@@ -168,6 +168,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         return existing
 
     from .drivers.lenovo import LenovoDriverPlugin
+    from .drivers.asus import AsusDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
 
     drivers = []
@@ -179,6 +180,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     drivers_matched = False
     if prod == "83E1":
         drivers.append(LenovoDriverPlugin())
+        drivers_matched = True
+
+    if "ROG Ally RC71L" in prod:
+        drivers.append(AsusDriverPlugin())
         drivers_matched = True
 
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):

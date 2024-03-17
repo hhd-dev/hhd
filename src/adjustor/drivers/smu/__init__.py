@@ -5,39 +5,9 @@ from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
 
 from adjustor.core.alib import AlibParams, DeviceParams, alib
+from adjustor.core.platform import get_platform_choices, set_platform_profile
 
 logger = logging.getLogger(__name__)
-
-
-def get_platform_choices():
-    try:
-        with open("/sys/firmware/acpi/platform_profile_choices", "r") as f:
-            return f.read().strip().split(" ")
-    except Exception:
-        logger.info(
-            f"Could not enumerate platform profile choices. Disabling platform profile."
-        )
-        return None
-
-
-def set_platform_profile(prof: str):
-    try:
-        with open("/sys/firmware/acpi/platform_profile", "w") as f:
-            f.write(prof)
-        return True
-    except Exception as e:
-        logger.error(f"Could not set platform profile with error:\n{e}")
-        return False
-
-
-def get_platform_profile():
-    try:
-        with open("/sys/firmware/acpi/platform_profile", "r") as f:
-            return f.read().replace("\n", "")
-    except Exception as e:
-        logger.error(f"Could not read platform profile with error:\n{e}")
-        return None
-
 
 PP_DELAY = 0.2
 APPLY_DELAY = 1
