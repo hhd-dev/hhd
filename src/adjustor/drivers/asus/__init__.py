@@ -65,7 +65,7 @@ def set_fan_curve(points: list[int], curve: list[int]):
 
     for fan in (1, 2):
         with open(os.path.join(dir, f"pwm{fan}_enable"), "w") as f:
-            f.write(f"2")
+            f.write(f"0")
 
     return True
 
@@ -80,7 +80,7 @@ def disable_fan_curve():
 
     for fan in (1, 2):
         with open(os.path.join(dir, f"pwm{fan}_enable"), "w") as f:
-            f.write(f"0")
+            f.write(f"2")
 
     return True
 
