@@ -170,6 +170,8 @@ class AsusDriverPlugin(HHDPlugin):
 
         tdp_set = self.queue_tdp and self.queue_tdp < curr
         if tdp_set:
+            if steady < 5:
+                steady = 5
             if steady < 13:
                 set_platform_profile("quiet")
             elif steady < 0:
