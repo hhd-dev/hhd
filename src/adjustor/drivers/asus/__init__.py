@@ -40,6 +40,7 @@ def find_fan_curve_dir():
         name_fn = os.path.join(FAN_CURVE_ENDPOINT, dir, "name")
         with open(name_fn, "r") as f:
             name = f.read()
+        print(name_fn, name)
         if name == FAN_CURVE_NAME:
             return os.path.join(FAN_CURVE_ENDPOINT, dir)
     return None
