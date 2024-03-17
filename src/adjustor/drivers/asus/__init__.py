@@ -13,7 +13,10 @@ TDP_DELAY = 0.2
 
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
 STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
-CTDP_FN = " /sys/devices/platform/asus-nb-wmi/ppt_pl1_spl"
+CTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl1_spl"
+
+FAN_CURVE_ENDPOINT = "/sys/class/hwmon"
+FAN_CURVE_NAME = "asus_custom_fan_curve"
 
 POINTS = [30, 40, 50, 60, 70, 80, 90, 100]
 MIN_CURVE = [30, 30, 30, 45, 50, 50, 50, 50]
@@ -27,7 +30,7 @@ def set_tdp(pretty: str, fn: str, val: int):
             f.write(f"{val}\n")
         return True
     except Exception as e:
-        logger.error(f"Failed writing value with error:{e}")
+        logger.error(f"Failed writing value with error:\n{e}")
         return False
 
 
