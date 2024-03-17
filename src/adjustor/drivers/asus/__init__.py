@@ -218,13 +218,13 @@ class AsusDriverPlugin(HHDPlugin):
         apply_curve = self.queue_fan and self.queue_fan < curr
         if apply_curve:
             try:
+                # Always disable fan curve first
+                disable_fan_curve()
                 if conf["tdp.asus.fan.mode"].to(str) == "manual":
                     set_fan_curve(
                         POINTS,
                         [conf[f"tdp.asus.fan.manual.st{i}"].to(int) for i in POINTS],
                     )
-                else:
-                    disable_fan_curve()
             except Exception as e:
                 logger.error(f"Could not set fan curve. Error:\n{e}")
             self.queue_fan = None
