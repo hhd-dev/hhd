@@ -55,8 +55,8 @@ def find_fan_curve_dir():
 
 def set_fan_curve(points: list[int], curve: list[int]):
     point_str = ",".join([f"{p:> 4d} C" for p in points])
-    curve_str = ",".join([f"{p:> 4d} %" for p in curve])
-    logger.info(f"Setting the following fan curve:\n{point_str}\n{curve_str}")
+    curve_str = ",".join([f"{p:> 4d} /" for p in curve])
+    logger.info(f"Setting the following fan curve:\n{point_str}\n{curve_str} 255")
 
     dir = find_fan_curve_dir()
     if not dir:
