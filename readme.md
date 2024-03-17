@@ -46,8 +46,11 @@ overlay, web app for it ([hhd.dev](https://hhd.dev)) that also works locally wit
 - UI based Configuration
   - Generic API that can be used from bash scripts (through `curl`)
   - Decky Plugin
-  - Webapp on https://hhd.dev and through Electron.
+  - Gamemode Overlay, web app, and desktop app
 - Built-in updater.
+
+## Showcase
+![Overlay](./docs/overlay.gif)
 
 ## <a name="devices"></a>Supported Devices
 The following devices have been verified to work correctly, with QAM, 
