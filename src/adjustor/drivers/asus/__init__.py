@@ -96,7 +96,7 @@ class AsusDriverPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"asus"
         self.priority = 6
-        self.log = "adjl"
+        self.log = "adja"
         self.enabled = False
         self.initialized = False
         self.enforce_limits = True
