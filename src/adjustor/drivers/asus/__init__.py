@@ -13,6 +13,7 @@ APPLY_DELAY = 1.5
 TDP_DELAY = 0.2
 MIN_TDP_START = 7
 MAX_TDP_START = 30
+MAX_TDP = 54
 
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
 STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
@@ -190,9 +191,9 @@ class AsusDriverPlugin(HHDPlugin):
             if boost:
                 set_tdp("steady", CTDP_FN, steady)
                 time.sleep(TDP_DELAY)
-                set_tdp("slow", STDP_FN, int(steady * 43 / 30))
+                set_tdp("slow", STDP_FN, min(MAX_TDP, int(steady * 43 / 30)))
                 time.sleep(TDP_DELAY)
-                set_tdp("fast", FTDP_FN, int(steady * 53 / 30))
+                set_tdp("fast", FTDP_FN, min(MAX_TDP, int(steady * 53 / 30)))
             else:
                 set_tdp("steady", CTDP_FN, steady)
                 time.sleep(TDP_DELAY)
