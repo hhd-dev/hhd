@@ -19,9 +19,14 @@ CTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl1_spl"
 FAN_CURVE_ENDPOINT = "/sys/class/hwmon"
 FAN_CURVE_NAME = "asus_custom_fan_curve"
 
+# Default Ally curve is the following
+# [40 45 55 63 68 74 74 74]
+# [10 20 66 86 132 188 188 188] / 2.55
+# [ 4  8  ]
+
 POINTS = [30, 40, 50, 60, 70, 80, 90, 100]
-MIN_CURVE = [30, 30, 30, 45, 50, 50, 50, 50]
-DEFAULT_CURVE = [40, 40, 40, 50, 60, 75, 75, 75]
+MIN_CURVE = [2, 5, 17, 17, 17, 17, 17, 17]
+DEFAULT_CURVE = [5, 10, 20, 35, 55, 75, 75, 75]
 
 
 def set_tdp(pretty: str, fn: str, val: int):
