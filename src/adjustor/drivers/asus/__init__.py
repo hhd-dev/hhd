@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 APPLY_DELAY = 1.5
 TDP_DELAY = 0.2
+MIN_TDP_START = 7
+MAX_TDP_START = 30
 
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
 STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
@@ -157,12 +159,12 @@ class AsusDriverPlugin(HHDPlugin):
 
         steady_updated = steady and steady != self.old_conf["tdp"].to(int)
 
-        if self.startup and (steady > 30 or steady < 7):
+        if self.startup and (steady > MAX_TDP_START or steady < MIN_TDP_START):
             logger.warning(
                 f"TDP ({steady}) outside the device spec. Resetting for stability reasons."
             )
-            steady = 30
-            conf["tdp.asus.tdp"] = 30
+            steady = min(max(steady, MIN_TDP_START), MAX_TDP_START)
+            conf["tdp.asus.tdp"] = steady
             steady_updated = True
 
         boost = conf["tdp.asus.boost"].to(bool)
