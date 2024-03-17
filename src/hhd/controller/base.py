@@ -242,7 +242,9 @@ class Multiplexer:
 
     def __init__(
         self,
-        swap_guide: None | Literal["guide_is_start", "guide_is_select"] = None,
+        swap_guide: (
+            None | Literal["guide_is_start", "guide_is_select", "select_is_guide"]
+        ) = None,
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
         dpad: None | Literal["analog_to_discrete"] = None,
         led: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
@@ -508,10 +510,18 @@ class Multiplexer:
                         "share",
                     ):
                         match ev["code"]:
+                            # TODO: Refactor the logic of this file,
+                            # the arguments do not make sense.
                             case "start":
-                                ev["code"] = "mode"
+                                if self.swap_guide == "select_is_guide":
+                                    ev["code"] = "share"
+                                else:
+                                    ev["code"] = "mode"
                             case "select":
-                                ev["code"] = "share"
+                                if self.swap_guide == "select_is_guide":
+                                    ev["code"] = "mode"
+                                else:
+                                    ev["code"] = "share"
                             case "mode":
                                 if self.swap_guide == "guide_is_start":
                                     ev["code"] = "start"
