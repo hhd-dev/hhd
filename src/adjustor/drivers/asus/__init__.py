@@ -21,7 +21,7 @@ FAN_CURVE_NAME = "asus_custom_fan_curve"
 
 POINTS = [30, 40, 50, 60, 70, 80, 90, 100]
 MIN_CURVE = [30, 30, 30, 45, 50, 50, 50, 50]
-DEFAULT_CURVE = [40, 40, 40, 50, 60, 70, 80, 90]
+DEFAULT_CURVE = [40, 40, 40, 50, 60, 75, 75, 75]
 
 
 def set_tdp(pretty: str, fn: str, val: int):
@@ -226,7 +226,13 @@ class AsusDriverPlugin(HHDPlugin):
                     time.sleep(TDP_DELAY)
                     set_fan_curve(
                         POINTS,
-                        [conf[f"tdp.asus.fan.manual.st{i}"].to(int) for i in POINTS],
+                        [
+                            min(
+                                int(conf[f"tdp.asus.fan.manual.st{i}"].to(int) * 2.55),
+                                255,
+                            )
+                            for i in POINTS
+                        ],
                     )
             except Exception as e:
                 logger.error(f"Could not set fan curve. Error:\n{e}")
