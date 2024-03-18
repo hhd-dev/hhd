@@ -223,21 +223,27 @@ class AsusDriverPlugin(HHDPlugin):
         # Use debounce logic on these changes
         if tdp_set and conf["tdp.asus.fan.mode"].to(str) == "manual":
             self.queue_fan = curr + APPLY_DELAY
-        if conf["tdp.asus.fan.mode"].to(str) != self.old_conf["fan.mode"].to(str):
-            self.queue_fan = curr + APPLY_DELAY
         for i in POINTS:
             if conf[f"tdp.asus.fan.manual.st{i}"].to(int) != self.old_conf[
                 f"fan.manual.st{i}"
             ].to(int):
                 self.queue_fan = curr + APPLY_DELAY
+        # If mode changes, only apply curve if set to manual
+        # otherwise disable and reset tdp
+        if conf["tdp.asus.fan.mode"].to(str) != self.old_conf["fan.mode"].to(str):
+            if conf["tdp.asus.fan.mode"].to(str) == "manual":
+                self.queue_fan = curr + APPLY_DELAY
+            else:
+                try:
+                    disable_fan_curve()
+                except Exception as e:
+                    logger.error(f"Could not disable fan curve. Error:\n{e}")
+                self.queue_tdp = curr + APPLY_DELAY
 
         apply_curve = self.queue_fan and self.queue_fan < curr
         if apply_curve:
             try:
-                # Always disable fan curve first
-                disable_fan_curve()
                 if conf["tdp.asus.fan.mode"].to(str) == "manual":
-                    time.sleep(TDP_DELAY)
                     set_fan_curve(
                         POINTS,
                         [
