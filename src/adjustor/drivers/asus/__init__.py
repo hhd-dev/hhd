@@ -213,11 +213,11 @@ class AsusDriverPlugin(HHDPlugin):
             for k, v in zip(POINTS, DEFAULT_CURVE):
                 conf[f"tdp.asus.fan.manual.st{k}"] = v
 
-        # Handle fan curve limits
-        if conf["tdp.asus.fan.manual.enforce_limits"].to(bool):
-            for k, v in zip(POINTS, MIN_CURVE):
-                if conf[f"tdp.asus.fan.manual.st{k}"].to(int) < v:
-                    conf[f"tdp.asus.fan.manual.st{k}"] = v
+        # # Handle fan curve limits
+        # if conf["tdp.asus.fan.manual.enforce_limits"].to(bool):
+        #     for k, v in zip(POINTS, MIN_CURVE):
+        #         if conf[f"tdp.asus.fan.manual.st{k}"].to(int) < v:
+        #             conf[f"tdp.asus.fan.manual.st{k}"] = v
 
         # Check if fan curve has changed
         # Use debounce logic on these changes

@@ -2,7 +2,7 @@ title: Asus TDP
 type: container
 tags: [hide-title]
 hint: >-
-  Uses the interface of Legion Space to set the TDP of the device.
+  Uses the interface of Armory Crate to set the TDP of the device.
 children:
   tdp:
     type: int
@@ -10,15 +10,14 @@ children:
     hint: >-
       Average TDP Target.
 
-      Sets the values STAMP and Skin Power Limit to it.
-      If it is not, it sets the Slow limit equal to TDP and the Fast
-      limit to +2W.
+      Sets the values STAMP and Skin Power Limit to it without boost.
+      With boost, it sets the fast value to 53/30*tdp and the slow value to 43/30*tdp.
       Boost is recommended for desktop use.
 
     min: 5
     max: 30
     step: 1
-    default: 30
+    default: 15
     unit: W
   boost:
     type: bool
@@ -84,16 +83,16 @@ children:
             <<: *speed_template
             title: 100C
             default: 75
-
-          enforce_limits:
-            title: Enforce Minimums
-            type: bool
-            default: True
-            hint: >-
-              Enforce a reasonable minimum fan curve.
             
           reset:
             title: Restore Default
             type: action
             hint: >-
               Restore a default sane fan curve.
+
+          disclaimer:
+            title: Fan Curve Limitation
+            type: display
+            default: >-
+              Asus hardware limits the minimum fan curve depending on TDP.
+              The minimums are 25%, 50%, and 75% for low, middle, and high TDPs.
