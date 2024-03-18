@@ -73,6 +73,8 @@ def set_fan_curve(points: list[int], curve: list[int]):
     for fan in (1, 2):
         with open(os.path.join(dir, f"pwm{fan}_enable"), "w") as f:
             f.write(f"1")
+        if fan == 1:
+            time.sleep(TDP_DELAY)
 
     return True
 
@@ -87,7 +89,9 @@ def disable_fan_curve():
 
     for fan in (1, 2):
         with open(os.path.join(dir, f"pwm{fan}_enable"), "w") as f:
-            f.write(f"3")
+            f.write(f"2")
+        if fan == 1:
+            time.sleep(TDP_DELAY)
 
     return True
 
