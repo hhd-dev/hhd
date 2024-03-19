@@ -18,6 +18,19 @@ from .const import (
 logger = logging.getLogger(__name__)
 
 
+def trim(rep: bytes):
+    if not rep:
+        return rep
+    idx = len(rep) - 1
+    while idx > 0 and rep[idx] == 0x00:
+        idx -= 1
+    return rep[: idx + 1]
+
+
+def pad(rep):
+    return bytes(rep) + bytes([0 for _ in range(64 - len(rep))])
+
+
 class SteamdeckOLEDController(Producer, Consumer):
     def __init__(
         self,
@@ -26,6 +39,7 @@ class SteamdeckOLEDController(Producer, Consumer):
         self.report = None
         self.dev = None
         self.start = 0
+        self.last_rep = None
 
     def open(self) -> Sequence[int]:
         self.available = False
@@ -61,7 +75,48 @@ class SteamdeckOLEDController(Producer, Consumer):
         return True
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
-        return []
+        if not self.fd or not self.dev or self.fd not in fds:
+            return []
+
+        # Process queued events
+        out: Sequence[Event] = []
+        assert self.dev
+        while ev := self.dev.read_event():
+            match ev["type"]:
+                case "open":
+                    logger.info(f"OPENED")
+                case "close":
+                    logger.info(f"CLOSED")
+                case "get_report":
+                    match self.last_rep:
+                        case 0xAE:
+                            rep = bytes(
+                                [
+                                    0x00,
+                                    0xAE,
+                                    0x15,
+                                    0x01,
+                                    *[0x10 for _ in range(15)],
+                                ]
+                            )
+                        case _:
+                            rep = bytes([])
+                    self.dev.send_get_report_reply(ev["id"], 0, pad(rep))
+                    logger.info(
+                        f"GET_REPORT: {ev}\nRESPONSE({self.last_rep:02x}): {rep.hex()}"
+                    )
+                case "set_report":
+                    self.dev.send_set_report_reply(ev["id"], 0)
+                    logger.info(
+                        f"SET_REPORT({ev['rnum']:02x}:{ev['rtype']:02x}): {trim(ev['data']).hex()}"
+                    )
+                    self.last_rep = ev["data"][3]
+                case "output":
+                    logger.info(f"OUTPUT")
+                case _:
+                    logger.warning(f"UKN_EVENT: {ev}")
+
+        return out
 
     def consume(self, events: Sequence[Event]):
         pass
