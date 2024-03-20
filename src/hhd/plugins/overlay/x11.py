@@ -1,9 +1,14 @@
 import logging
 import subprocess
+import time
+from select import select
+from threading import Event as TEvent
 from typing import Any, NamedTuple, Sequence
 
 import Xlib
-from Xlib import Xatom, display, error
+from Xlib import X, Xatom, display, error
+
+from hhd.plugins import Emitter
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +106,7 @@ def print_data(display: display.Display):
         print()
 
 
-def print_debug(display: display.Display, args: list[str]):
+def print_debug(display: display.Display, args: list[str] = []):
     d = display
     r = display.screen().root
 
@@ -230,3 +235,46 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
 
     display.flush()
     display.sync()
+
+
+def monitor_gamescope(emit: Emitter, should_exit: TEvent):
+    GAMESCOPE_WAIT = 2
+    GAMESCOPE_GUARD = 1
+
+    should_exit = TEvent()
+
+    while not should_exit.is_set():
+        # Wait for gamescope
+        try:
+            res = get_overlay_display(get_gamescope_displays())
+            if not res:
+                time.sleep(GAMESCOPE_WAIT)
+                continue
+
+            d, name = res
+            logger.info(f"Found gamescope display {name}")
+            r = d.screen().root
+            r.change_attributes(event_mask=X.PropertyChangeMask)
+            fn = d.fileno()
+            atom = d.get_atom("GAMESCOPE_FOCUSED_APP_GFX")
+            old = None
+
+            while not should_exit.is_set():
+                rs = select([fn], [], [], GAMESCOPE_GUARD)[0]
+                if not rs:
+                    continue
+
+                process_events(d)
+
+                val = r.get_property(atom, Xatom.CARDINAL, 0, 5)
+                if not val or not val.value:
+                    continue
+
+                game = val.value[0]
+                if old != game:
+                    old = game
+                    logger.warning(game)
+
+        except Exception as e:
+            logger.warning(f"Lost connection to gamescope. Did steam exit? Error:\n{e}")
+            time.sleep(GAMESCOPE_WAIT)
