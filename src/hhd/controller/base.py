@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 
 class SpecialEvent(TypedDict):
     type: Literal["special"]
-    event: Literal["guide", "qam_single", "qam_double", "qam_tripple", "qam_hold"]
+    event: Literal[
+        "guide", "guide_b", "qam_single", "qam_double", "qam_tripple", "qam_hold"
+    ]
 
 
 class RumbleEvent(TypedDict):
@@ -89,6 +91,9 @@ TouchpadCorrectionType = Literal[
     "contain_start",
     "contain_end",
     "contain_center",
+    "left",
+    "right",
+    "center",
     "disabled",
 ]
 
@@ -101,6 +106,57 @@ def correct_touchpad(
     ratio = dst / src
 
     match method:
+        case "left":
+            if ratio > 2:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=0,
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio / 2
+                return TouchpadCorrection(
+                    x_mult=width / 2,
+                    x_ofs=0,
+                    y_mult=new_height,
+                    y_ofs=(height - new_height),
+                )
+        case "right":
+            if ratio > 2:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=(width - new_width),
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio / 2
+                return TouchpadCorrection(
+                    x_mult=width / 2,
+                    x_ofs=width / 2,
+                    y_mult=new_height,
+                    y_ofs=(height - new_height),
+                )
+        case "center":
+            if ratio > 1:
+                new_width = width / ratio
+                return TouchpadCorrection(
+                    x_mult=new_width,
+                    x_ofs=(width - new_width) / 2,
+                    y_mult=height,
+                    y_ofs=0,
+                )
+            else:
+                new_height = height * ratio
+                return TouchpadCorrection(
+                    x_mult=width,
+                    x_ofs=0,
+                    y_mult=new_height,
+                    y_ofs=(height - new_height) / 2,
+                )
         case "crop_center":
             if ratio > 1:
                 new_width = width / ratio
@@ -294,6 +350,7 @@ class Multiplexer:
         self.qam_pressed = None
         self.qam_released = None
         self.qam_times = 0
+        self.guide_pressed = False
 
         assert touchpad is None, "touchpad rewiring not supported yet"
 
@@ -533,10 +590,12 @@ class Multiplexer:
                                 else:
                                     ev["code"] = "start"
 
-                    if self.emit and ev["code"] == "mode" and ev["value"]:
+                    if self.emit and ev["code"] == "mode":
                         # Steam might do weirdness, emit an event to prepare
                         # the overlay
-                        self.emit({"type": "special", "event": "guide"})
+                        self.guide_pressed = ev["value"]
+                        if ev["value"]:
+                            self.emit({"type": "special", "event": "guide"})
 
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore
@@ -614,6 +673,14 @@ class Multiplexer:
                                 ev["code"] = "y"
                             case "y":
                                 ev["code"] = "x"
+
+                    # if (
+                    #     self.guide_pressed
+                    #     and self.emit
+                    #     and ev["code"] == "b"
+                    #     and ev["value"]
+                    # ):
+                    #     self.emit({"type": "special", "event": "guide_b"})
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})

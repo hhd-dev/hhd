@@ -229,9 +229,15 @@ class RgbCallback:
 
 
 class LegionHidraw(GenericGamepadHidraw):
-    def with_settings(self, gyro: str | None, reset: bool):
+    def with_settings(self, gyro: str | None, reset: bool, use_touchpad: bool = False):
         self.gyro = gyro
         self.reset = reset
+        self.use_touchpad = use_touchpad
+        self.old_touched = False
+        self.old_x = 0
+        self.old_y = 0
+        self.touch_changed = None
+        self.touchpad_init = True
         return self
 
     def open(self):
@@ -243,7 +249,8 @@ class LegionHidraw(GenericGamepadHidraw):
 
         cmds = []
 
-        if self.gyro in ("left", "both"):
+        gyro_active = self.gyro in ("left", "right", "both")
+        if self.gyro in ("left", "both") or (not gyro_active and self.use_touchpad):
             cmds.extend(controller_enable_gyro("left"))
         if self.gyro in ("right", "both"):
             cmds.extend(controller_enable_gyro("right"))
@@ -253,6 +260,47 @@ class LegionHidraw(GenericGamepadHidraw):
 
         for r in cmds:
             self.dev.write(r)
+
+        return out
+
+    def produce(self, fds: Sequence[int]):
+        out = super().produce(fds)
+        # TODO: Cleanup
+        # Or remove, since this option is problematic
+        # If removing, remove the produce function completely
+        if self.use_touchpad and self.report:
+            if self.touchpad_init:
+                self.touchpad_init = False
+                out = [
+                    *out,
+                    {
+                        "type": "configuration",
+                        "code": "touchpad_aspect_ratio",
+                        "value": 1,
+                    },
+                ]
+
+            x = int.from_bytes(self.report[26:28])
+            y = int.from_bytes(self.report[28:30])
+            touched = bool(x or y)
+            changed = touched != self.old_touched or x != self.old_x or y != self.old_y
+            if changed:
+                out = list(out)
+                if touched != self.old_touched:
+                    self.old_touched = touched
+                    out.append(
+                        {"type": "button", "code": "touchpad_touch", "value": touched}
+                    )
+                if x != self.old_x:
+                    self.old_x = x
+                    out.append(
+                        {"type": "axis", "code": "touchpad_x", "value": x / 1000}
+                    )
+                if y != self.old_y:
+                    self.old_y = y
+                    out.append(
+                        {"type": "axis", "code": "touchpad_y", "value": y / 1000}
+                    )
 
         return out
 

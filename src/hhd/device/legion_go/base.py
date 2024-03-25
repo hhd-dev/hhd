@@ -229,6 +229,10 @@ def controller_loop_xinput(
             cidx = 0
 
     dual_evdev = conf["dual_evdev"].to(bool)
+    fix_hold = (
+        conf["touchpad_hold"].to(bool)
+        and conf["touchpad.mode"].to(TouchpadAction) == "controller"
+    )
     motion = dimu != "disabled" or (
         dimu == "display"
         and (conf["imu.display.accel"].to(bool) or conf["imu.display.gyro"].to(bool))
@@ -294,7 +298,7 @@ def controller_loop_xinput(
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=RgbCallback(),
             required=True,
-        ).with_settings("both" if dual_evdev else dimu, reset)
+        ).with_settings("both" if dual_evdev else dimu, reset, fix_hold)
     )
 
     # Mute keyboard shortcuts, mute
@@ -387,7 +391,12 @@ def controller_loop_xinput(
                 prepare(d_gyro)
         prepare(d_shortcuts)
         if d_params["uses_touch"]:
-            prepare(d_touch)
+            if fix_hold:
+                # If fixing hold, only do touchpad
+                devs.append(d_touch)
+                d_touch.open()
+            else:
+                prepare(d_touch)
         prepare(d_raw)
         for d in d_producers:
             prepare(d)
@@ -510,6 +519,8 @@ class SelectivePassthrough(Producer, Consumer):
             elif ev["type"] == "axis" and (
                 "imu" in ev["code"] or "accel" in ev["code"] or "gyro" in ev["code"]
             ):
+                out.append(ev)
+            elif "touchpad" in ev["code"]:
                 out.append(ev)
             elif ev["type"] == "button" and self.state:
                 self.to_disable_btn.add(ev["code"])

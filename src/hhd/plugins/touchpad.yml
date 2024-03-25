@@ -66,23 +66,29 @@ modes:
     children:
       correction:
         type: multiple
-        title: Correction Type
+        title: Location
         hint: >-
-          The legion touchpad is square, whereas the DS5 one is rectangular.
-          Therefore, it needs to be corrected.
-          "Contain" maintain the whole DS5 touchpad and part of the Legion
-          one is unused. "Crop" uses the full legion touchpad, and limits
-          the area of the DS5. "Stretch" uses both fully (distorted).
-          "Crop End" enables use in steam input as the right touchpad.
+          Controls the placement of the real touchpad to the virtual one, using
+          what steam expects. In Steam, the "Left" touchpad maps to the left
+          half, the "Right" touchpad maps to the right half, and "Center" maps
+          to the whole touchpad.
+          Therefore, the virtual touchpad is cropped to the left side for left,
+          the right side for right, and expanded in the center for center.
+          This means when set to center, half of the left touchpad is left and
+          half of the right is right.
+          "Stretch" stretches the touchpad to the whole dualsense surface.
         options:
+          right: "Right"
+          center: "Center"
+          left: "Left"
           stretch: "Stretch"
-          crop_center: "Crop Center"
-          crop_start: "Crop Start"
-          crop_end: "Crop End"
-          contain_start: "Contain Start"
-          contain_end: "Contain End"
-          contain_center: "Contain Center"
-        default: crop_end
+          # crop_center: "Crop Center (Old)"
+          # crop_start: "Crop Start (Old)"
+          # crop_end: "Crop End (Old)"
+          # contain_start: "Contain Start (Old)"
+          # contain_end: "Contain End (Old)"
+          # contain_center: "Contain Center (Old)"
+        default: right
 
       short:
         type: multiple
