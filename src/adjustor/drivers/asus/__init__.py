@@ -98,7 +98,7 @@ def disable_fan_curve():
 
 class AsusDriverPlugin(HHDPlugin):
     def __init__(self) -> None:
-        self.name = f"asus"
+        self.name = f"adjustor_asus"
         self.priority = 6
         self.log = "adja"
         self.enabled = False

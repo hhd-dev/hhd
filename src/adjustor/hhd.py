@@ -22,7 +22,7 @@ CONFLICTING_PLUGINS = {
 
 
 class AdjustorInitPlugin(HHDPlugin):
-    def __init__(self) -> None:
+    def __init__(self, use_acpi_call: bool = True) -> None:
         self.name = f"adjustor_init"
         self.priority = 5
         self.log = "adji"
@@ -31,6 +31,7 @@ class AdjustorInitPlugin(HHDPlugin):
         self.safe_mode = False
         self.enabled = False
         self.action_enabled = False
+        self.use_acpi_call = use_acpi_call
 
     def open(self, emit: Emitter, context: Context):
         self.context = context
@@ -78,15 +79,16 @@ class AdjustorInitPlugin(HHDPlugin):
                 self.enabled = False
                 return
 
-        initialize()
-        if not check_perms():
-            conf["hhd.settings.tdp_enable"] = False
-            conf["tdp.tdp.tdp_error"] = (
-                "Can not write to 'acpi_call'. It is required for TDP."
-            )
-            self.failed = True
-            self.enabled = False
-            return
+        if self.use_acpi_call:
+            initialize()
+            if not check_perms():
+                conf["hhd.settings.tdp_enable"] = False
+                conf["tdp.tdp.tdp_error"] = (
+                    "Can not write to 'acpi_call'. It is required for TDP."
+                )
+                self.failed = True
+                self.enabled = False
+                return
 
         self.failed = False
         self.enabled = True
@@ -177,10 +179,12 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     with open("/proc/cpuinfo") as f:
         cpuinfo = f.read().strip()
 
+    use_acpi_call = False
     drivers_matched = False
     if prod == "83E1":
         drivers.append(LenovoDriverPlugin())
         drivers_matched = True
+        use_acpi_call = True
 
     if "ROG Ally RC71L" in prod:
         drivers.append(AsusDriverPlugin())
@@ -205,6 +209,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             ),
         )
         drivers_matched = True
+        use_acpi_call = True
 
     if not drivers_matched:
         for name, (dev, cpu) in CPU_DATA.items():
@@ -219,6 +224,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                 drivers.append(
                     SmuQamPlugin(dev, ROG_ALLY_PP_MAP),
                 )
+                use_acpi_call = True
                 break
 
     if not drivers:
@@ -227,6 +233,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     return [
         *drivers,
-        AdjustorInitPlugin(),
+        AdjustorInitPlugin(use_acpi_call=use_acpi_call),
         AdjustorPlugin(),
     ]
