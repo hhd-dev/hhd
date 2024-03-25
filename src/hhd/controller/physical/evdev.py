@@ -183,7 +183,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.required = required
         self.hide = hide
         self.grab = grab
-        self.hidden = False
+        self.hidden = None
         self.queue = []
         self.postprocess = postprocess
 
@@ -254,7 +254,7 @@ class GenericGamepadEvdev(Producer, Consumer):
     def close(self, exit: bool) -> bool:
         if self.dev:
             if self.hidden:
-                unhide_gamepad(self.dev.path)
+                unhide_gamepad(self.dev.path, self.hidden)
             self.dev.close()
             self.dev = None
             self.fd = 0

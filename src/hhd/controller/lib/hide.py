@@ -50,11 +50,11 @@ def reload_children(parent: str):
     return True
 
 
-def hide_gamepad(devpath: str, vid: int, pid: int):
+def hide_gamepad(devpath: str, vid: int, pid: int) -> str | None:
     input_dev = get_gamepad_name(devpath)
     parent = get_parent_sysfs(devpath)
     if not input_dev or not parent:
-        return False
+        return None
 
     rule = f"""\
 # Hides device gamepad devices stemming from {input_dev}
@@ -62,26 +62,35 @@ def hide_gamepad(devpath: str, vid: int, pid: int):
 SUBSYSTEMS=="input", KERNELS=="{input_dev}", ATTRS{{id/vendor}}=="{vid:04x}", ATTRS{{id/product}}=="{pid:04x}", GOTO="hhd_valid"
 GOTO="hhd_end"
 LABEL="hhd_valid"
-KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", TAG="", RUN+="/bin/chmod 000 /dev/input/%k"
+KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/input/%k"
 LABEL="hhd_end"
 """  # , RUN+="/bin/chmod 000 /sys/%p"
     try:
         os.makedirs("/run/udev/rules.d/", exist_ok=True)
         with open(f"/run/udev/rules.d/95-hhd-devhide-{input_dev}.rules", "w") as f:
             f.write(rule)
-        return reload_children(parent)
+        reload_children(parent)
+        return input_dev
+    except Exception:
+        return None
+
+
+def unhide_gamepad(devpath: str, root: str | None = None):
+    try:
+        # Remove file before searching for device
+        if root is not None:
+            os.remove(f"/run/udev/rules.d/95-hhd-devhide-{root}.rules")
     except Exception:
         return False
 
-
-def unhide_gamepad(devpath: str):
     input_dev = get_gamepad_name(devpath)
     parent = get_parent_sysfs(devpath)
     if not input_dev or not parent:
         return False
 
     try:
-        os.remove(f"/run/udev/rules.d/95-hhd-devhide-{input_dev}.rules")
+        if root is None:
+            os.remove(f"/run/udev/rules.d/95-hhd-devhide-{input_dev}.rules")
         return reload_children(parent)
     except Exception:
         return False
