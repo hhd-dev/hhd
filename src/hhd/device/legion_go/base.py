@@ -165,23 +165,12 @@ def controller_loop_rest(
         ).with_settings(None, reset)
     )
 
-    match conf["swap_legion"].to(str):
-        case "disabled":
-            swap_guide = None
-        case "l_is_start":
-            swap_guide = "guide_is_start"
-        case "l_is_select":
-            swap_guide = "guide_is_select"
-        case val:
-            assert False, f"Invalid value for `swap_legion`: {val}"
-
     multiplexer = Multiplexer(
         dpad="analog_to_discrete",
         trigger="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
-        swap_guide=swap_guide,
     )
     d_uinput = UInputDevice(
         name=f"HHD Shortcuts (Legion Mode: {mode})",
