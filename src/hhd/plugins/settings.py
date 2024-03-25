@@ -725,7 +725,7 @@ def validate_config(
                         conf[k] = default
                     else:
                         del conf[k]
-            case "integer":
+            case "int" | "integer":
                 if not isinstance(v, int):
                     conf[k] = int(v)
                 if v < d["min"]:
