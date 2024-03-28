@@ -6,7 +6,7 @@ from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from threading import Condition, Thread
-from typing import Any, Mapping
+from typing import Any, Mapping, cast
 from urllib.parse import parse_qs, urlparse
 
 from hhd.plugins import (
@@ -75,6 +75,7 @@ class RestHandler(BaseHTTPRequestHandler):
     settings: HHDSettings
     cond: Condition
     conf: Config
+    info: Config
     profiles: Mapping[str, Config]
     emit: Emitter
     token: str | None
@@ -280,7 +281,11 @@ class RestHandler(BaseHTTPRequestHandler):
                     elif "poll" in params:
                         # Hang for the next update if the UI requests it.
                         self.cond.wait()
-                    self.wfile.write(json.dumps(self.conf.conf).encode())
+                    self.wfile.write(
+                        json.dumps(
+                            {**cast(dict, self.conf.conf), "info": self.info.conf}
+                        ).encode()
+                    )
             case "version":
                 self.send_json({"version": 5})
             case "sections":
@@ -377,12 +382,14 @@ class HHDHTTPServer:
         self,
         settings: HHDSettings,
         conf: Config,
+        info: Config,
         profiles: Mapping[str, Config],
         emit: Emitter,
     ):
         with self.cond:
             self.handler.settings = settings
             self.handler.conf = conf
+            self.handler.info = info
             self.handler.profiles = profiles
             self.handler.emit = emit
             self.cond.notify_all()

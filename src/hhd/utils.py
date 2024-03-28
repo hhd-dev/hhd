@@ -1,7 +1,7 @@
 import logging
 import os
 import subprocess
-from typing import NamedTuple
+from typing import NamedTuple, Literal
 import getpass
 
 from hhd.plugins import Context
@@ -135,3 +135,23 @@ def expanduser(path: str, user: int | str | Context | None = None):
 
 def fix_perms(fn: str, ctx: Context):
     os.chown(fn, ctx.euid, ctx.egid)
+
+
+DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch")
+
+
+def get_os() -> str:
+    try:
+        with open("/etc/os-release") as f:
+            os_release = f.read().strip()
+    except Exception as e:
+        logger.error(f"Could not read os information, error:\n{e}")
+        return "ukn"
+
+    for os in DISTRO_NAMES:
+        if os in os_release:
+            logger.info(f"Running under Linux distro '{os}'.")
+            return os
+
+    logger.info(f"Running under an unknown Linux distro.")
+    return "ukn"

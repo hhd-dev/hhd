@@ -26,19 +26,19 @@ from .plugins import (
 )
 from .plugins.settings import (
     Validator,
-    parse_defaults,
     get_default_state,
+    get_settings_hash,
     load_blacklist_yaml,
     load_profile_yaml,
     load_state_yaml,
     merge_settings,
+    parse_defaults,
     save_blacklist_yaml,
     save_profile_yaml,
-    get_settings_hash,
     save_state_yaml,
     validate_config,
 )
-from .utils import expanduser, fix_perms, get_context, switch_priviledge
+from .utils import expanduser, fix_perms, get_context, get_os, switch_priviledge
 
 logger = logging.getLogger(__name__)
 
@@ -136,6 +136,7 @@ def main():
     https = None
     prev_http_cfg = None
     updated = False
+    info = Config()
 
     # Check we are in a virtual environment
     # TODO: Improve
@@ -171,6 +172,9 @@ def main():
                 return
             else:
                 logger.error(f"Command '{args.command[0]}' is unknown. Ignoring...")
+
+        # Get OS Info
+        info["os"] = get_os()
 
         # Use blacklist
         blacklist_fn = join(hhd_dir, "plugins.yml")
@@ -411,7 +415,7 @@ def main():
 
                     set_log_plugin("rest")
                     https = HHDHTTPServer(localhost, port, token)
-                    https.update(settings, conf, profiles, emit)
+                    https.update(settings, conf, info, profiles, emit)
                     try:
                         https.open()
                     except Exception as e:
@@ -516,7 +520,7 @@ def main():
             # Notify that events were applied
             # Before saving to reduce delay (yaml files take 100ms :( )
             if https:
-                https.update(settings, conf, profiles, emit)
+                https.update(settings, conf, info, profiles, emit)
 
             #
             # Save loop
@@ -611,7 +615,9 @@ def main():
 
                         if not upd_beta:
                             # No beta version for the UI yet, skip updating it
-                            import urllib.request, json, stat
+                            import json
+                            import stat
+                            import urllib.request
 
                             with urllib.request.urlopen(
                                 "https://api.github.com/repos/hhd-dev/hhd-ui/releases/latest"
@@ -644,7 +650,7 @@ def main():
                                     st = os.stat(out_fn)
                                     os.chmod(out_fn, st.st_mode | stat.S_IEXEC)
                                     break
-                        
+
                         # Set updated
                         updated = True
                     else:
