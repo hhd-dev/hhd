@@ -45,7 +45,7 @@ def evdev():
                     "\n┌────────────────────────────────────────────────────────────────────────┐"
                 )
                 endcap = False
-            print(f"│ {str(categorize(ev)):>70s} │")
+            print(f"│ {str(ev):>70s} │")
         sleep(0.001)
 
 
