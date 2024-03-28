@@ -27,7 +27,12 @@ from .x11 import (
 
 logger = logging.getLogger(__name__)
 Command = Literal[
-    "close_now", "close", "open_qam", "open_expanded", "open_notification"
+    "close_now",
+    "close",
+    "open_qam",
+    "open_qam_if_closed",
+    "open_expanded",
+    "open_notification",
 ]
 Status = Literal["closed", "qam", "expanded", "notification"]
 

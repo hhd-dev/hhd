@@ -11,7 +11,13 @@ logger = logging.getLogger(__name__)
 class SpecialEvent(TypedDict):
     type: Literal["special"]
     event: Literal[
-        "guide", "guide_b", "qam_single", "qam_double", "qam_tripple", "qam_hold"
+        "guide",
+        "guide_b",
+        "qam_single",
+        "qam_predouble",
+        "qam_double",
+        "qam_tripple",
+        "qam_hold",
     ]
 
 
@@ -287,8 +293,8 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
 
 class Multiplexer:
-    QAM_HOLD_TIME = 1
-    QAM_MULTI_PRESS_DELAY = 0.175
+    QAM_HOLD_TIME = 0.5
+    QAM_MULTI_PRESS_DELAY = 0.225
     QAM_DELAY = 0.125
     REBOOT_HOLD = 4
     REBOOT_VIBRATION_STRENGTH = 0.6
@@ -348,6 +354,7 @@ class Multiplexer:
             self.qam_button = "share"
 
         self.qam_pressed = None
+        self.qam_pre_sent = False
         self.qam_released = None
         self.qam_times = 0
         self.guide_pressed = False
@@ -709,9 +716,18 @@ class Multiplexer:
 
         # Handle QAM button
         qam_apply = False
+        was_held = True
         if self.qam_pressed and curr - self.qam_pressed > self.QAM_HOLD_TIME:
             qam_apply = True
         if self.qam_released and curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY:
+            qam_apply = True
+        if self.qam_pressed and self.qam_times == 2 and not self.qam_pre_sent and self.emit:
+            # Send event instantly after double press to eat delay
+            self.emit({"type": "special", "event": "qam_predouble"})
+            self.qam_pre_sent = True
+        if self.qam_pressed and self.qam_times == 3:
+            # Send event instantly after tripple press to eat delay
+            was_held = False
             qam_apply = True
 
         if qam_apply and self.qam_released and self.qam_times == 1:
@@ -753,7 +769,7 @@ class Multiplexer:
                 ),
             )
         if qam_apply and self.emit:
-            if self.qam_pressed:
+            if self.qam_pressed and was_held:
                 self.emit({"type": "special", "event": "qam_hold"})
             else:
                 match self.qam_times:
@@ -770,6 +786,7 @@ class Multiplexer:
             logger.info(f"QAM Pressed {self.qam_times}{held}.")
             self.qam_pressed = None
             self.qam_released = None
+            self.qam_pre_sent = False
             self.qam_times = 0
 
         for s in status_events:

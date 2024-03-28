@@ -55,9 +55,14 @@ class OverlayPlugin(HHDPlugin):
                 # case "qam_single":
                 #     # Close to avoid issues with steam
                 #     cmd = "close"
+                # case "guide_b":
+                #     # Open QAM with guide_b
+                #     cmd = "open_qam"
                 case "qam_hold":
                     # Open QAM with hold for accessibility
                     cmd = "open_qam"
+                case "qam_predouble":
+                    cmd = "open_qam_if_closed"
                 case "qam_double":
                     # Preferred bind for QAM is dual press
                     cmd = "open_qam"
