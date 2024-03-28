@@ -147,7 +147,7 @@ def get_os() -> str:
 
     try:
         with open("/etc/os-release") as f:
-            os_release = f.read().strip()
+            os_release = f.read().strip().lower()
     except Exception as e:
         logger.error(f"Could not read os information, error:\n{e}")
         return "ukn"
