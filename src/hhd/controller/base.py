@@ -288,8 +288,8 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
 class Multiplexer:
     QAM_HOLD_TIME = 1
-    QAM_MULTI_PRESS_DELAY = 0.25
-    QAM_DELAY = 0.1
+    QAM_MULTI_PRESS_DELAY = 0.175
+    QAM_DELAY = 0.125
     REBOOT_HOLD = 4
     REBOOT_VIBRATION_STRENGTH = 0.6
     REBOOT_VIBRATION_ON = 0.3
