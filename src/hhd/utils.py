@@ -141,6 +141,10 @@ DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch")
 
 
 def get_os() -> str:
+    if name := os.environ.get("HHD_DISTRO", None):
+        logger.error(f"Distro override using an environment variable to '{name}'.")
+        return name
+
     try:
         with open("/etc/os-release") as f:
             os_release = f.read().strip()
@@ -148,10 +152,10 @@ def get_os() -> str:
         logger.error(f"Could not read os information, error:\n{e}")
         return "ukn"
 
-    for os in DISTRO_NAMES:
-        if os in os_release:
-            logger.info(f"Running under Linux distro '{os}'.")
-            return os
+    for name in DISTRO_NAMES:
+        if name in os_release:
+            logger.info(f"Running under Linux distro '{name}'.")
+            return name
 
     logger.info(f"Running under an unknown Linux distro.")
     return "ukn"
