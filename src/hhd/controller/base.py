@@ -725,10 +725,12 @@ class Multiplexer:
             # Send event instantly after double press to eat delay
             self.emit({"type": "special", "event": "qam_predouble"})
             self.qam_pre_sent = True
-        if self.qam_pressed and self.qam_times == 3:
-            # Send event instantly after tripple press to eat delay
-            was_held = False
-            qam_apply = True
+        # It feels weird to have this when triple and double pressing
+        # but it is faster, consider what to do with it and maybe remove.
+        # if self.qam_pressed and self.qam_times == 3:
+        #     # Send event instantly after tripple press to eat delay
+        #     was_held = False
+        #     qam_apply = True
 
         if qam_apply and self.qam_released and self.qam_times == 1:
             out.append(
