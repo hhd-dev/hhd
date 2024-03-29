@@ -4,6 +4,18 @@ settings:
   tags: [non-essential]
 
   children:
+    theme:
+      type: multiple
+      tags: [theme-selector, advanced]
+      title: "Theme"
+      hint: >-
+        Allows changing the theme in the UI.
+      default: default
+      options:
+        default: Default
+        diavolo: Diavolo
+        sunrise: Sunrise
+
     decky_deprecation:
       type: display
       tags: [hhd-version-display-decky, text]
