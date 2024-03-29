@@ -125,6 +125,8 @@ def loop_manage_overlay(
                                 hide_hhd(disp, hhd, steam, old)
                                 old = None
                                 writer.reset()
+                                # Prevent grabbing when the UI is not shown
+                                emit.grab(False)
                             shown = False
                         else:
                             if not shown:
