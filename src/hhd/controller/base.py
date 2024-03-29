@@ -886,7 +886,11 @@ class Multiplexer:
         out.extend(events)
         # Grab all events from controller if grab is on
         if self.emit and self.emit.intercept(self.unique, out):
-            return []
+            return [
+                o
+                for o in events
+                if o["type"] not in ("button", "axis") or "ts" in o.get("code", "")
+            ]
         return out
 
 
