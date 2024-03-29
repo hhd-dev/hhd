@@ -154,13 +154,12 @@ class OverlayWriter:
                         self.state[cid][code] = curr + REPEAT_INITIAL if val else None
 
         # Allow holds
-        for state in self.state.values():
-            for btn, val in list(state.items()):
-                if not val:
-                    continue
-                if val < curr:
-                    changed.append((btn, True))
-                    state[btn] = curr + REPEAT_INTERVAL
+        for btn, val in list(self.state[cid].items()):
+            if not val:
+                continue
+            if val < curr:
+                changed.append((btn, True))
+                self.state[cid][btn] = curr + REPEAT_INTERVAL
 
         # Process changed events
         cmds = ""

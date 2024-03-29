@@ -409,6 +409,7 @@ class Multiplexer:
         self.qam_times = 0
         self.guide_pressed = False
 
+        self.unique = str(time.perf_counter_ns())
         assert touchpad is None, "touchpad rewiring not supported yet"
 
     def process(self, events: Sequence[Event]):
@@ -884,7 +885,7 @@ class Multiplexer:
 
         out.extend(events)
         # Grab all events from controller if grab is on
-        if self.emit and self.emit.intercept("handheld", out):
+        if self.emit and self.emit.intercept(self.unique, out):
             return []
         return out
 
