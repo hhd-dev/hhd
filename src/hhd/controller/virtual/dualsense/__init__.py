@@ -48,6 +48,7 @@ from .const import (
 REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
 REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
 DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
+MAX_IMU_SYNC_DELAY = 2
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,10 @@ class Dualsense(Producer, Consumer):
         self.state: dict = defaultdict(lambda: 0)
         self.rumble = False
         self.touchpad_touch = False
-        self.touchpad_down = time.perf_counter()
+        curr = time.perf_counter()
+        self.touchpad_down = curr
+        self.last_imu = curr
+        self.imu_failed = False
         self.start = time.perf_counter_ns()
         self.fd = self.dev.open()
 
@@ -305,6 +309,7 @@ class Dualsense(Producer, Consumer):
         # To fix gyro to mouse in latest steam
         # only send updates when gyro sends a timestamp
         send = not self.sync_gyro
+        curr = time.perf_counter()
 
         new_rep = bytearray(self.report)
         for ev in events:
@@ -363,6 +368,7 @@ class Dualsense(Producer, Consumer):
                             new_rep[self.ofs + 35] = y >> 4
                         case "gyro_ts" | "accel_ts" | "imu_ts":
                             send = True
+                            self.last_imu = time.perf_counter()
                             new_rep[self.ofs + 27 : self.ofs + 31] = int(
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
@@ -435,7 +441,13 @@ class Dualsense(Producer, Consumer):
         #     return
         self.report = new_rep
 
-        if self.fake_timestamps:
+        # If the IMU breaks, smoothly re-enable the controller
+        failover = self.last_imu + MAX_IMU_SYNC_DELAY < curr
+        if failover and not self.imu_failed:
+            self.imu_failed = True
+            logger.error(f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync.")
+
+        if self.fake_timestamps or failover:
             new_rep[self.ofs + 27 : self.ofs + 31] = int(
                 time.perf_counter_ns() / DS5_EDGE_DELTA_TIME_NS
             ).to_bytes(8, byteorder="little", signed=False)[:4]
@@ -451,5 +463,5 @@ class Dualsense(Producer, Consumer):
 
         if self.use_bluetooth:
             sign_crc32_inplace(self.report, DS5_INPUT_CRC32_SEED)
-        if send:
+        if send or failover:
             self.dev.send_input_report(self.report)

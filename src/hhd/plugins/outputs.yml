@@ -61,9 +61,7 @@ modes:
           This option makes it so reports are sent only when there is a new
           IMU timestamp, effectively limiting the responsiveness of the
           controller to that of the IMU (e.g., for Legion Go 125hz instead of 400hz).
-          If the IMU is not working, this setting will break the controller.
-          For the two reasons above, this setting is disabled by default.
-        default: False
+        default: True
 
       flip_z:
         type: bool
@@ -113,9 +111,7 @@ modes:
           This option makes it so reports are sent only when there is a new
           IMU timestamp, effectively limiting the responsiveness of the
           controller to that of the IMU (e.g., for Legion Go 125hz instead of 400hz).
-          If the IMU is not working, this setting will break the controller.
-          For the two reasons above, this setting is disabled by default.
-        default: False
+        default: True
 
       flip_z:
         type: bool
