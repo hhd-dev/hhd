@@ -8,7 +8,7 @@ from typing import (
     TypedDict,
 )
 
-from hhd.controller import Axis, Button, Configuration, SpecialEvent
+from hhd.controller import Axis, Button, Configuration, SpecialEvent, ControllerEmitter
 
 from .conf import Config
 from .settings import HHDSettings
@@ -68,7 +68,7 @@ Event = (
 )
 
 
-class Emitter(Protocol):
+class Emitter(ControllerEmitter):
     def __call__(self, event: Event | Sequence[Event]) -> None:
         pass
 

@@ -53,6 +53,7 @@ class EmitHolder(Emitter):
     def __init__(self, condition: Condition) -> None:
         self._events = []
         self._condition = condition
+        super().__init__()
 
     def __call__(self, event: Event | Sequence[Event]) -> None:
         with self._condition:

@@ -1,7 +1,10 @@
 import logging
 import select
 import time
-from typing import Any, Literal, NamedTuple, Sequence, TypedDict, Callable
+from io import BytesIO
+from queue import Queue
+from threading import Condition, RLock
+from typing import Any, Callable, Literal, NamedTuple, Protocol, Sequence, TypedDict
 
 from .const import Axis, Button, Configuration
 
@@ -78,6 +81,53 @@ class ConfigurationEvent(TypedDict):
 
 
 Event = ButtonEvent | AxisEvent | ConfigurationEvent | RgbLedEvent | RumbleEvent
+
+GRAB_TIMEOUT = 5
+
+QueueEvent = tuple[Any, Sequence[Event]]
+
+
+class ControllerEmitter:
+
+    def __init__(self) -> None:
+        self.intercept_lock = RLock()
+        self._intercept = None
+        self._controller_cb = None
+
+    def grab(self, enable: bool):
+        with self.intercept_lock:
+            if enable:
+                self._intercept = time.perf_counter()
+            else:
+                self._intercept = None
+
+    def register_intercept(self, cb: Callable[[Any, Sequence[Event]], None]):
+        with self.intercept_lock:
+            self._controller_cb = cb
+
+    def should_intercept(self):
+        with self.intercept_lock:
+            return self._intercept is not None
+
+    def intercept(self, cid: Any, evs: Sequence[Event]):
+        with self.intercept_lock:
+            if self._intercept:
+                if self._intercept + GRAB_TIMEOUT < time.perf_counter():
+                    logger.error(
+                        f"Intercept timeout triggered, deactivating controller grab."
+                    )
+                    self.grab(False)
+                    return False
+                elif evs and self._controller_cb:
+                    self._controller_cb(cid, evs)
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
+    def __call__(self, event: SpecialEvent | Sequence[SpecialEvent]) -> None:
+        pass
 
 
 class TouchpadCorrection(NamedTuple):
@@ -323,7 +373,7 @@ class Multiplexer:
         select_reboots: bool = False,
         nintendo_mode: bool = False,
         qam_button: str | None = None,
-        emit: Callable[[SpecialEvent], None] | None = None,
+        emit: ControllerEmitter | None = None,
         imu: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
     ) -> None:
         self.swap_guide = swap_guide
@@ -721,7 +771,12 @@ class Multiplexer:
             qam_apply = True
         if self.qam_released and curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY:
             qam_apply = True
-        if self.qam_pressed and self.qam_times == 2 and not self.qam_pre_sent and self.emit:
+        if (
+            self.qam_pressed
+            and self.qam_times == 2
+            and not self.qam_pre_sent
+            and self.emit
+        ):
             # Send event instantly after double press to eat delay
             self.emit({"type": "special", "event": "qam_predouble"})
             self.qam_pre_sent = True
@@ -828,6 +883,9 @@ class Multiplexer:
                     )
 
         out.extend(events)
+        # Grab all events from controller if grab is on
+        if self.emit and self.emit.intercept("handheld", out):
+            return []
         return out
 
 

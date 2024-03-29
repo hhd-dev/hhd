@@ -22,7 +22,7 @@ class OverlayPlugin(HHDPlugin):
         try:
             from .base import OverlayService
 
-            self.ovf = OverlayService(context)
+            self.ovf = OverlayService(context, emit)
         except Exception as e:
             logger.warning(
                 f"Could not init overlay service, is python-xlib installed? Error:\n{e}"
@@ -36,7 +36,7 @@ class OverlayPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         # Or with self.enabled to require restart
-        self.enabled = self.enabled or conf["hhd.settings.overlay_enabled"].to(bool)
+        self.enabled = self.enabled or conf.get("hhd.settings.overlay_enabled", False)
 
     def notify(self, events: Sequence[Event]):
         if not self.ovf or not self.enabled:

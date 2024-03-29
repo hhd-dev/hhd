@@ -8,9 +8,10 @@ from typing import Literal, cast
 
 from Xlib import display
 
-from hhd.plugins import Context
+from hhd.plugins import Context, Emitter
 from hhd.utils import restore_priviledge, switch_priviledge
 
+from .controllers import OverlayWriter
 from .overlay import find_overlay_exe, inject_overlay
 from .x11 import (
     find_hhd,
@@ -41,22 +42,12 @@ STARTUP_MAX_DELAY = 10
 LOOP_SLEEP = 0.05
 
 
-def update_status(proc: subprocess.Popen, cmd: Command):
-    if not proc.stdin:
-        logger.warning(f"Could not update overlay because stdin not found.")
-        return False
-
-    try:
-        proc.stdin.write(f"\ncmd:{cmd}\n")
-        proc.stdin.flush()
-        return True
-    except Exception as e:
-        logger.warning(f"Could not update overlay status with error:\n{e}")
-        return False
-
-
 def loop_manage_overlay(
-    disp: display.Display, proc: subprocess.Popen, should_exit: TEvent
+    disp: display.Display,
+    proc: subprocess.Popen,
+    emit: Emitter,
+    writer: OverlayWriter,
+    should_exit: TEvent,
 ):
     try:
         status: Status = "closed"
@@ -115,25 +106,35 @@ def loop_manage_overlay(
 
             # Process system logs
             if fd_err in r:
-                l = proc.stderr.readline()[:-1]
-                if l:
+                while proc.stderr.readable():
+                    l = proc.stderr.readline()[:-1]
+                    if not l:
+                        break
                     logger.info(f"UI: {l}")
 
             # Update overlay status
             if fd_out in r:
-                cmd = proc.stdout.readline()[:-1]
-                if cmd.startswith("stat:"):
-                    status = cast(Status, cmd[5:])
-                    if status == "closed":
-                        if shown:
-                            hide_hhd(disp, hhd, steam, old)
-                            old = None
-                        shown = False
-                    else:
-                        if not shown:
-                            old, _ = update_steam_values(disp, steam, None)
-                            show_hhd(disp, hhd, steam)
-                        shown = True
+                while proc.stdout.readable():
+                    cmd = proc.stdout.readline()[:-1]
+                    if not cmd:
+                        break
+                    if cmd.startswith("stat:"):
+                        status = cast(Status, cmd[5:])
+                        if status == "closed":
+                            if shown:
+                                hide_hhd(disp, hhd, steam, old)
+                                old = None
+                                writer.reset()
+                            shown = False
+                        else:
+                            if not shown:
+                                old, _ = update_steam_values(disp, steam, None)
+                                show_hhd(disp, hhd, steam)
+                                writer.reset()
+                            shown = True
+                    elif cmd.startswith("grab:"):
+                        enable = cmd[5:]
+                        emit.grab(enable == "enable")
 
             # Sleep a bit to avoid running too often
             # Only do so if the earlier sleep was too short to avoid having
@@ -150,11 +151,12 @@ def loop_manage_overlay(
 
 
 class OverlayService:
-    def __init__(self, ctx: Context) -> None:
+    def __init__(self, ctx: Context, emit: Emitter) -> None:
         self.ctx = ctx
         self.started = False
         self.t = None
         self.should_exit = None
+        self.emit = emit
 
     def _start(self):
         # Should not be called by outsiders
@@ -188,9 +190,12 @@ class OverlayService:
         logger.debug(f"Overlay display is the folling: DISPLAY={name}")
 
         self.proc = inject_overlay(exe, name, self.ctx)
+        self.writer = OverlayWriter(self.proc.stdin)
+        self.emit.register_intercept(self.writer)
         self.should_exit = TEvent()
         self.t = Thread(
-            target=loop_manage_overlay, args=(disp, self.proc, self.should_exit)
+            target=loop_manage_overlay,
+            args=(disp, self.proc, self.emit, self.writer, self.should_exit),
         )
         self.t.start()
 
@@ -238,7 +243,7 @@ class OverlayService:
                 logger.error("Overlay subprocess is null. Should never happen.")
                 return
 
-            update_status(self.proc, cmd)
+            self.writer.write(f"\ncmd:{cmd}\n")
         except Exception as e:
             logger.error(f"Failed launching overlay with error:\n{e}")
             self.close()
