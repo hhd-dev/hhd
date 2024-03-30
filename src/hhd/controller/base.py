@@ -788,44 +788,7 @@ class Multiplexer:
         #     was_held = False
         #     qam_apply = True
 
-        if qam_apply and self.qam_released and self.qam_times == 1:
-            out.append(
-                {
-                    "type": "button",
-                    "code": "mode",
-                    "value": True,
-                },
-            )
-            self.queue.append(
-                (
-                    {
-                        "type": "button",
-                        "code": "a",
-                        "value": True,
-                    },
-                    curr + self.QAM_DELAY,
-                )
-            )
-            self.queue.append(
-                (
-                    {
-                        "type": "button",
-                        "code": "a",
-                        "value": False,
-                    },
-                    curr + 2 * self.QAM_DELAY,
-                ),
-            )
-            self.queue.append(
-                (
-                    {
-                        "type": "button",
-                        "code": "mode",
-                        "value": False,
-                    },
-                    curr + 2 * self.QAM_DELAY,
-                ),
-            )
+        send_steam_qam = qam_apply and self.qam_released and self.qam_times == 1
         if qam_apply and self.emit:
             if self.qam_pressed and was_held:
                 self.emit({"type": "special", "event": "qam_hold"})
@@ -883,9 +846,11 @@ class Multiplexer:
                         }
                     )
 
+        # Remove empty events
         for ev in events:
-            if ev['type'] != "button" or ev['code']:
+            if ev["type"] != "button" or ev["code"]:
                 out.append(ev)
+
         # Grab all events from controller if grab is on
         if self.emit and self.emit.intercept(self.unique, out):
             return [
@@ -893,6 +858,45 @@ class Multiplexer:
                 for o in events
                 if o["type"] not in ("button", "axis") or "ts" in o.get("code", "")
             ]
+        elif send_steam_qam:
+            # Send steam qam only if not intercepting
+            out.append(
+                {
+                    "type": "button",
+                    "code": "mode",
+                    "value": True,
+                },
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": "a",
+                        "value": True,
+                    },
+                    curr + self.QAM_DELAY,
+                )
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": "a",
+                        "value": False,
+                    },
+                    curr + 2 * self.QAM_DELAY,
+                ),
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": "mode",
+                        "value": False,
+                    },
+                    curr + 2 * self.QAM_DELAY,
+                ),
+            )
         return out
 
 
