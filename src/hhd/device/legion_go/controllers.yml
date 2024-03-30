@@ -19,19 +19,32 @@ children:
   imu:
     type: mode
     title: Controller Motions Device
-    default: display
-
+    default: left
     modes:
       disabled:
         type: container
         title: Disabled
+      left:
+        type: container
+        title: Left Controller
+      right:
+        type: container
+        title: Right Controller
       display:
         type: container
-        title: Display
+        title: Display [SEE HINT]
+        hint: >-
+          Using the gyro of the display unit is deprecated.
+          The controller units (after calibration) are better in every way.
+          As part of the deprecation, the rule that disabled the use of the
+          accelerometer for display autorotation was removed.
+          If you try to use the display gyroscope without this rule you will
+          get freezing.
         children:
           gyro:
             type: bool
             title: Gyroscope
+            tags: [ non-essential ]
             hint: >-
               Enables gyroscope support (.3% background CPU use)
             default: True
@@ -65,12 +78,6 @@ children:
             min: 45
             max: 120
             default: 76
-      left:
-        type: container
-        title: Left Controller [BETA]
-      right:
-        type: container
-        title: Right Controller [BETA]
 
   dual_evdev:
     type: bool

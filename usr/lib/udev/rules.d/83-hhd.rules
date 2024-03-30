@@ -1,8 +1,10 @@
+
+# NOT NEEDED ANYMORE
 # Legion go specific quirk
 # Disable accelerometer use from iio-sensor-proxy to avoid messing up the driver
 # https://askubuntu.com/questions/803845/what-process-is-responsible-for-auto-screen-rotation-i-want-to-disable-it-on-1
 # overrides /lib/udev/rules.d/80-iio-sensor-proxy.rules to disable using the accelerometer for orientation
-KERNELS=="0020:1022:*", SUBSYSTEM=="iio", TEST=="in_accel_x_raw", TEST=="in_accel_y_raw", TEST=="in_accel_z_raw", ENV{IIO_SENSOR_PROXY_TYPE}=""
+# KERNELS=="0020:1022:*", SUBSYSTEM=="iio", TEST=="in_accel_x_raw", TEST=="in_accel_y_raw", TEST=="in_accel_z_raw", ENV{IIO_SENSOR_PROXY_TYPE}=""
 
 #
 # Allow steam to access the raw controllers

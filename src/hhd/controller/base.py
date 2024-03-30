@@ -883,7 +883,9 @@ class Multiplexer:
                         }
                     )
 
-        out.extend(events)
+        for ev in events:
+            if ev['type'] != "button" or ev['code']:
+                out.append(ev)
         # Grab all events from controller if grab is on
         if self.emit and self.emit.intercept(self.unique, out):
             return [
