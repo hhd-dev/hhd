@@ -89,7 +89,7 @@ def loop_manage_overlay(
                 break
 
             start = time.perf_counter()
-            r, _, _ = select.select([fd_out, fd_err, fd_disp], [], [], GUARD_CHECK)
+            select.select([fd_out, fd_err, fd_disp], [], [], GUARD_CHECK)
 
             if proc.poll() is not None:
                 logger.warning(f"Overlay stopped (steam may have restarted). Closing.")
@@ -105,38 +105,36 @@ def loop_manage_overlay(
                     logger.warning("Steam opened, hiding it.")
 
             # Process system logs
-            if fd_err in r:
-                while proc.stderr.readable():
-                    l = proc.stderr.readline()[:-1]
-                    if not l:
-                        break
-                    logger.info(f"UI: {l}")
+            while proc.stderr.readable():
+                l = proc.stderr.readline()[:-1]
+                if not l:
+                    break
+                logger.info(f"UI: {l}")
 
             # Update overlay status
-            if fd_out in r:
-                while proc.stdout.readable():
-                    cmd = proc.stdout.readline()[:-1]
-                    if not cmd:
-                        break
-                    if cmd.startswith("stat:"):
-                        status = cast(Status, cmd[5:])
-                        if status == "closed":
-                            if shown:
-                                hide_hhd(disp, hhd, steam, old)
-                                old = None
-                                writer.reset()
-                                # Prevent grabbing when the UI is not shown
-                                emit.grab(False)
-                            shown = False
-                        else:
-                            if not shown:
-                                old, _ = update_steam_values(disp, steam, None)
-                                show_hhd(disp, hhd, steam)
-                                writer.reset()
-                            shown = True
-                    elif cmd.startswith("grab:"):
-                        enable = cmd[5:]
-                        emit.grab(enable == "enable")
+            while proc.stdout.readable():
+                cmd = proc.stdout.readline()[:-1]
+                if not cmd:
+                    break
+                if cmd.startswith("stat:"):
+                    status = cast(Status, cmd[5:])
+                    if status == "closed":
+                        if shown:
+                            hide_hhd(disp, hhd, steam, old)
+                            old = None
+                            writer.reset()
+                            # Prevent grabbing when the UI is not shown
+                            emit.grab(False)
+                        shown = False
+                    else:
+                        if not shown:
+                            old, _ = update_steam_values(disp, steam, None)
+                            show_hhd(disp, hhd, steam)
+                            writer.reset()
+                        shown = True
+                elif cmd.startswith("grab:"):
+                    enable = cmd[5:]
+                    emit.grab(enable == "enable")
 
             # Sleep a bit to avoid running too often
             # Only do so if the earlier sleep was too short to avoid having
