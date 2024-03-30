@@ -10,6 +10,7 @@ settings:
       title: "Theme"
       hint: >-
         Allows changing the theme in the UI.
+        Default is either Diavolo or your distribution's theme.
       default: default
       options:
         default: Default
