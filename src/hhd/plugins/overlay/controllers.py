@@ -171,18 +171,19 @@ class OverlayWriter:
 
         # Write them out
         if cmds:
-            with self._write_lock:
-                self.stdout.write(cmds)
-                self.stdout.flush()
+            self.write(cmds)
 
     def __call__(self, cid: int, evs: Sequence[ControllerEvent]):
         with self._write_lock:
             return self._call(cid, evs)
 
     def write(self, cmds: str):
-        with self._write_lock:
-            self.stdout.write(cmds)
-            self.stdout.flush()
+        try:
+            with self._write_lock:
+                self.stdout.write(cmds)
+                self.stdout.flush()
+        except Exception:
+            pass
 
     def reset(self):
         with self._write_lock:
