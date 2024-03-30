@@ -18,7 +18,7 @@ def gyro_fix(ev: Event, rate: int = 65):
     except KeyboardInterrupt:
         raise
     except Exception as e:
-        logger.warning(f"Gyro fix failed with error:{e}\n")
+        logger.warning(f"Gyro fix failed with error:\n{e}")
     finally:
         if g:
             g.close()
