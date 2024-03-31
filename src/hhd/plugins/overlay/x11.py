@@ -235,6 +235,12 @@ def show_hhd(display, hhd, steam):
     steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
     steam.change_property(stat_notify, Xatom.CARDINAL, 32, [0])
 
+    # Give it a bit of time before setting the touch target to avoid steam
+    # messing with it
+    display.flush()
+    display.sync()
+    time.sleep(0.1)
+
     if touch_was_set:
         r.change_property(stat_click, Xatom.CARDINAL, 32, [TARGET_TOUCH])
 
