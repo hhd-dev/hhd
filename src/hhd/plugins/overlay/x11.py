@@ -191,7 +191,7 @@ def update_steam_values(display, steam, old: CachedValues | None):
 
     def was_set(v):
         prop = steam.get_property(v, Xatom.CARDINAL, 0, 15)
-        return prop and prop.value and prop.value[0]
+        return prop and prop.value and bool(prop.value[0])
 
     new_focus = was_set(stat_focus)
     new_overlay = was_set(stat_overlay)
@@ -214,7 +214,9 @@ def update_steam_values(display, steam, old: CachedValues | None):
     )
     return out, new_focus or new_overlay or new_notify
 
+
 TARGET_TOUCH = 1
+
 
 def show_hhd(display, hhd, steam):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
@@ -252,9 +254,9 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
 
     # Restore steam
     if old:
-        if old.overlay:
-            steam.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
         if old.focus:
+            steam.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
+        if old.overlay:
             steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
         if old.notify:
             steam.change_property(stat_notify, Xatom.CARDINAL, 32, [1])
