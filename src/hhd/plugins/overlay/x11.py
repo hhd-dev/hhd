@@ -8,6 +8,7 @@ from typing import Any, NamedTuple, Sequence
 import Xlib
 from Xlib import X, Xatom, display, error
 
+from hhd.utils import switch_priviledge, restore_priviledge
 from hhd.plugins import Emitter
 
 logger = logging.getLogger(__name__)
@@ -39,16 +40,30 @@ def get_gamescope_displays():
     return out
 
 
-def get_overlay_display(displays: Sequence[str]):
+def get_overlay_display(displays: Sequence[str], ctx = None):
     """Probes the provided gamescope displays to find the overlay one."""
-    for disp in displays:
-        d = display.Display(disp)
 
-        atoms = [d.get_atom_name(v) for v in d.screen().root.list_properties()]
-        if "GAMESCOPE_FOCUSED_WINDOW" in atoms:
-            return d, disp
+    # FIXME: Fix authentication without priviledge deescalation
+    if ctx:
+        old = switch_priviledge(ctx, False)
+    else:
+        old = None
 
-        d.close()
+    try:
+        for disp in displays:
+            try:
+                d = display.Display(disp)
+
+                atoms = [d.get_atom_name(v) for v in d.screen().root.list_properties()]
+                if "GAMESCOPE_FOCUSED_WINDOW" in atoms:
+                    return d, disp
+
+                d.close()
+            except Exception:
+                pass
+    finally:
+        if old:
+            restore_priviledge(old)
 
 
 def find_win(display: display.Display, win: list[str], atoms: list[str] = []):
@@ -237,7 +252,7 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
     display.sync()
 
 
-def monitor_gamescope(emit: Emitter, should_exit: TEvent):
+def monitor_gamescope(emit: Emitter, ctx, should_exit: TEvent):
     GAMESCOPE_WAIT = 2
     GAMESCOPE_GUARD = 1
 
@@ -246,7 +261,7 @@ def monitor_gamescope(emit: Emitter, should_exit: TEvent):
     while not should_exit.is_set():
         # Wait for gamescope
         try:
-            res = get_overlay_display(get_gamescope_displays())
+            res = get_overlay_display(get_gamescope_displays(), ctx)
             if not res:
                 time.sleep(GAMESCOPE_WAIT)
                 continue

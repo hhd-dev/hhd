@@ -171,16 +171,13 @@ class OverlayService:
             return False
         logger.info(f"Found overlay executable '{exe}'")
 
-        # FIXME: Find why this command sometimes fails with user priviledges
-        switch_priviledge(self.ctx, True)
         displays = get_gamescope_displays()
         if not displays:
             logger.warning("Could not find overlay displays, gamescope is not active.")
             return False
         logger.debug(f"Found the following gamescope displays: {displays}")
-        switch_priviledge(self.ctx, False)
 
-        res = get_overlay_display(displays)
+        res = get_overlay_display(displays, self.ctx)
         if not res:
             logger.error(
                 f"Could not find overlay display in gamescope displays. This should never happen."
@@ -228,7 +225,6 @@ class OverlayService:
             # This function is called with QAM single presses and guide presses
             # do not initialize for those.
             return
-        old = switch_priviledge(self.ctx, False)
         try:
             if not self._start():
                 return
@@ -247,5 +243,3 @@ class OverlayService:
         except Exception as e:
             logger.error(f"Failed launching overlay with error:\n{e}")
             self.close()
-        finally:
-            restore_priviledge(old)
