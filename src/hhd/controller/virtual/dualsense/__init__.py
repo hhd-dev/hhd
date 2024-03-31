@@ -443,7 +443,7 @@ class Dualsense(Producer, Consumer):
 
         # If the IMU breaks, smoothly re-enable the controller
         failover = self.last_imu + MAX_IMU_SYNC_DELAY < curr
-        if failover and not self.imu_failed:
+        if self.sync_gyro and failover and not self.imu_failed:
             self.imu_failed = True
             logger.error(f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync.")
 
