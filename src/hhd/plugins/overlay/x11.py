@@ -20,6 +20,7 @@ class CachedValues(NamedTuple):
     overlay: bool
     focus: bool
     notify: bool
+    touch: int | None
 
 
 def get_gamescope_displays():
@@ -40,7 +41,7 @@ def get_gamescope_displays():
     return out
 
 
-def get_overlay_display(displays: Sequence[str], ctx = None):
+def get_overlay_display(displays: Sequence[str], ctx=None):
     """Probes the provided gamescope displays to find the overlay one."""
 
     # FIXME: Fix authentication without priviledge deescalation
@@ -182,31 +183,49 @@ def process_events(disp):
     return True
 
 
-def update_steam_values(display, steam, old):
+def update_steam_values(display, steam, old: CachedValues | None):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
     stat_overlay = display.get_atom("STEAM_OVERLAY")
     stat_notify = display.get_atom("STEAM_NOTIFICATION")
+    stat_click = display.get_atom("STEAM_TOUCH_CLICK_MODE")
 
     def was_set(v):
-        prop = steam.get_property(stat_focus, Xatom.CARDINAL, 0, 15)
+        prop = steam.get_property(v, Xatom.CARDINAL, 0, 15)
         return prop and prop.value and prop.value[0]
 
     new_focus = was_set(stat_focus)
     new_overlay = was_set(stat_overlay)
     new_notify = was_set(stat_notify)
 
+    # Use some weird logic to get previous touch value
+    # Essentially, only remember that value if it was set and different than TARGET_TOUCH
+    r = display.screen().root
+    prop = r.get_property(stat_click, Xatom.CARDINAL, 0, 15)
+    touch_was_set = prop and prop.value and prop.value[0] != TARGET_TOUCH
+    touch_val = prop.value[0] if touch_was_set else None
+    if touch_val is None and old and old.touch is not None:
+        touch_val = old.touch
+
     out = CachedValues(
-        focus=new_focus or (old and old.focus),
-        overlay=new_overlay or (old and old.overlay),
-        notify=new_notify or (old and old.notify),
+        focus=new_focus or (old.focus if old else False),
+        overlay=new_overlay or (old.overlay if old else False),
+        notify=new_notify or (old.notify if old else False),
+        touch=touch_val,
     )
     return out, new_focus or new_overlay or new_notify
 
+TARGET_TOUCH = 1
 
 def show_hhd(display, hhd, steam):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
     stat_overlay = display.get_atom("STEAM_OVERLAY")
     stat_notify = display.get_atom("STEAM_NOTIFICATION")
+    stat_click = display.get_atom("STEAM_TOUCH_CLICK_MODE")
+
+    # If steam set the touch value to something else, try to override it with 1
+    r = display.screen().root
+    prop = r.get_property(stat_click, Xatom.CARDINAL, 0, 15)
+    touch_was_set = prop and prop.value and prop.value[0] != TARGET_TOUCH
 
     hhd.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
     hhd.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
@@ -214,26 +233,18 @@ def show_hhd(display, hhd, steam):
     steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
     steam.change_property(stat_notify, Xatom.CARDINAL, 32, [0])
 
+    if touch_was_set:
+        r.change_property(stat_click, Xatom.CARDINAL, 32, [TARGET_TOUCH])
+
     display.flush()
     display.sync()
-
-
-def is_steam_shown(display, steam):
-    stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
-    stat_overlay = display.get_atom("STEAM_OVERLAY")
-    try:
-        v1 = steam.get_property(stat_focus, Xatom.CARDINAL, 0, 5).value[0]
-        v2 = steam.get_property(stat_overlay, Xatom.CARDINAL, 0, 5).value[0]
-        return bool(v1 or v2)
-    except Exception as e:
-        logger.warning(f"Could not read steam overlay status with error:\n{e}")
-        return False
 
 
 def hide_hhd(display, hhd, steam, old: CachedValues | None):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
     stat_overlay = display.get_atom("STEAM_OVERLAY")
     stat_notify = display.get_atom("STEAM_NOTIFICATION")
+    stat_click = display.get_atom("STEAM_TOUCH_CLICK_MODE")
 
     # Set values
     hhd.change_property(stat_focus, Xatom.CARDINAL, 32, [0])
@@ -247,6 +258,10 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
             steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
         if old.notify:
             steam.change_property(stat_notify, Xatom.CARDINAL, 32, [1])
+        if old.touch is not None:
+            display.screen().root.change_property(
+                stat_click, Xatom.CARDINAL, 32, [old.touch]
+            )
 
     display.flush()
     display.sync()
