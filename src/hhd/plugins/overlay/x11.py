@@ -215,7 +215,7 @@ def update_steam_values(display, steam, old: CachedValues | None):
     return out, new_focus or new_overlay or new_notify
 
 
-TARGET_TOUCH = 1
+TARGET_TOUCH = 4
 
 
 def show_hhd(display, hhd, steam):
@@ -227,7 +227,7 @@ def show_hhd(display, hhd, steam):
     # If steam set the touch value to something else, try to override it with 1
     r = display.screen().root
     prop = r.get_property(stat_click, Xatom.CARDINAL, 0, 15)
-    touch_was_set = prop and prop.value and prop.value[0] != TARGET_TOUCH
+    touch_was_set = prop and prop.value
 
     hhd.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
     hhd.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
