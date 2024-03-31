@@ -9,7 +9,6 @@ from typing import Literal, cast
 from Xlib import display
 
 from hhd.plugins import Context, Emitter
-from hhd.utils import restore_priviledge, switch_priviledge
 
 from .controllers import OverlayWriter
 from .overlay import find_overlay_exe, inject_overlay
