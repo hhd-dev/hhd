@@ -1,4 +1,5 @@
 import logging
+import os
 import select
 import subprocess
 import time
@@ -12,18 +13,9 @@ from hhd.plugins import Context, Emitter
 
 from .controllers import OverlayWriter
 from .overlay import find_overlay_exe, inject_overlay
-from .x11 import (
-    find_hhd,
-    find_steam,
-    get_gamescope_displays,
-    get_overlay_display,
-    hide_hhd,
-    prepare_hhd,
-    process_events,
-    register_changes,
-    show_hhd,
-    update_steam_values,
-)
+from .x11 import (find_hhd, find_steam, get_gamescope_displays,
+                  get_overlay_display, hide_hhd, prepare_hhd, process_events,
+                  register_changes, show_hhd, update_steam_values)
 
 logger = logging.getLogger(__name__)
 Command = Literal[
@@ -55,6 +47,8 @@ def loop_manage_overlay(
 
         fd_out = proc.stdout.fileno()
         fd_err = proc.stderr.fileno()
+        os.set_blocking(fd_out, False)
+        os.set_blocking(fd_err, False)
         fd_disp = disp.fileno()
 
         # Give electron time to warmup
@@ -104,14 +98,14 @@ def loop_manage_overlay(
                     logger.warning("Steam opened, hiding it.")
 
             # Process system logs
-            while proc.stderr.readable():
+            while True:
                 l = proc.stderr.readline()[:-1]
                 if not l:
                     break
                 logger.info(f"UI: {l}")
 
             # Update overlay status
-            while proc.stdout.readable():
+            while True:
                 cmd = proc.stdout.readline()[:-1]
                 if not cmd:
                     break
