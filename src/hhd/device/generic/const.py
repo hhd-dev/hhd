@@ -94,7 +94,6 @@ CONFS = {
         "hrtimer": True,
         "mapping": gen_gyro_state("x", False, "z", False, "y", True),
     },
-    # Ayn
     "Loki Zero": {
         "name": "Loki Zero",
         "hrtimer": True,
