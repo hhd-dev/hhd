@@ -6,10 +6,11 @@ from threading import Event as TEvent
 from typing import Any, NamedTuple, Sequence
 
 import Xlib
-from Xlib import X, Xatom, display, error
+from Xlib import XK, X, Xatom, display, error
+from Xlib.ext.xtest import fake_input
 
-from hhd.utils import switch_priviledge, restore_priviledge
 from hhd.plugins import Emitter
+from hhd.utils import restore_priviledge, switch_priviledge
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,65 @@ class CachedValues(NamedTuple):
     focus: bool
     notify: bool
     touch: int | None
+
+
+class QamHandler:
+
+    def __init__(self, ctx) -> None:
+        self.disp = None
+        self.ctx = ctx
+
+    def _register_display(self):
+        self.close()
+        try:
+            res = get_overlay_display(get_gamescope_displays(), self.ctx)
+            if not res:
+                logger.info(
+                    f"Could not find gamescope display, sending compatibility QAM."
+                )
+                return False
+            self.disp, name = res
+            logger.info(f"Registering display {name} to send QAM events to.")
+            return True
+        except Exception as e:
+            logger.info(f"Error while registering Gamescope display for QAM:\n{e}.")
+            return False
+
+    def _send_qam(self):
+        try:
+            disp = self.disp
+            if not disp:
+                return False
+            get_key = lambda k: disp.keysym_to_keycode(XK.string_to_keysym(k))
+            KCTRL = get_key("Control_L")
+            K2 = get_key("2")
+
+            fake_input(disp, X.KeyPress, KCTRL)
+            fake_input(disp, X.KeyPress, K2)
+            disp.sync()
+            fake_input(disp, X.KeyRelease, KCTRL)
+            fake_input(disp, X.KeyRelease, K2)
+            disp.sync()
+            logger.info(f"Sent QAM event directly to gamescope.")
+            return True
+        except Exception as e:
+            logger.info(
+                f"Could not send QAM to Gamescope with error:\n{e}\nSending compatibility QAM."
+            )
+            return False
+
+    def __call__(self) -> Any:
+        if self._send_qam():
+            return True
+        return self._register_display() and self._send_qam()
+
+    def close(self):
+        if self.disp:
+            try:
+                self.disp.close()
+                self.disp = None
+            except Exception:
+                pass
 
 
 def get_gamescope_displays():
@@ -235,13 +295,12 @@ def show_hhd(display, hhd, steam):
     steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
     steam.change_property(stat_notify, Xatom.CARDINAL, 32, [0])
 
-    # Give it a bit of time before setting the touch target to avoid steam
-    # messing with it
-    display.flush()
-    display.sync()
-    time.sleep(0.1)
-
     if touch_was_set:
+        # Give it a bit of time before setting the touch target to avoid steam
+        # messing with it
+        display.flush()
+        display.sync()
+        time.sleep(0.2)
         r.change_property(stat_click, Xatom.CARDINAL, 32, [TARGET_TOUCH])
 
     display.flush()

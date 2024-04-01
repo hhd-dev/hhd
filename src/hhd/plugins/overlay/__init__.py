@@ -21,8 +21,11 @@ class OverlayPlugin(HHDPlugin):
     ):
         try:
             from .base import OverlayService
+            from .x11 import QamHandler
 
             self.ovf = OverlayService(context, emit)
+            self.qam_handler = QamHandler(context)
+            emit.register_qam(self.qam_handler)
         except Exception as e:
             logger.warning(
                 f"Could not init overlay service, is python-xlib installed? Error:\n{e}"
@@ -81,6 +84,8 @@ class OverlayPlugin(HHDPlugin):
     def close(self):
         if self.ovf:
             self.ovf.close()
+        if self.qam_handler:
+            self.qam_handler.close()
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:

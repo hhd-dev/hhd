@@ -93,6 +93,17 @@ class ControllerEmitter:
         self.intercept_lock = RLock()
         self._intercept = None
         self._controller_cb = None
+        self._qam_cb = None
+
+    def send_qam(self):
+        with self.intercept_lock:
+            if self._qam_cb:
+                return self._qam_cb()
+            return False
+
+    def register_qam(self, cb: Callable[[], bool]):
+        with self.intercept_lock:
+            self._qam_cb = cb
 
     def grab(self, enable: bool):
         with self.intercept_lock:
@@ -344,7 +355,7 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
 class Multiplexer:
     QAM_HOLD_TIME = 0.5
-    QAM_MULTI_PRESS_DELAY = 0.225
+    QAM_MULTI_PRESS_DELAY = 0.2
     QAM_DELAY = 0.125
     REBOOT_HOLD = 4
     REBOOT_VIBRATION_STRENGTH = 0.6
@@ -860,43 +871,46 @@ class Multiplexer:
             ]
         elif send_steam_qam:
             # Send steam qam only if not intercepting
-            out.append(
-                {
-                    "type": "button",
-                    "code": "mode",
-                    "value": True,
-                },
-            )
-            self.queue.append(
-                (
-                    {
-                        "type": "button",
-                        "code": "a",
-                        "value": True,
-                    },
-                    curr + self.QAM_DELAY,
-                )
-            )
-            self.queue.append(
-                (
-                    {
-                        "type": "button",
-                        "code": "a",
-                        "value": False,
-                    },
-                    curr + 2 * self.QAM_DELAY,
-                ),
-            )
-            self.queue.append(
-                (
+            if not self.emit or not self.emit.send_qam():
+                # Have a fallback if gamescope is not working
+                out.append(
                     {
                         "type": "button",
                         "code": "mode",
-                        "value": False,
+                        "value": True,
                     },
-                    curr + 2 * self.QAM_DELAY,
-                ),
-            )
+                )
+                self.queue.append(
+                    (
+                        {
+                            "type": "button",
+                            "code": "a",
+                            "value": True,
+                        },
+                        curr + self.QAM_DELAY,
+                    )
+                )
+                self.queue.append(
+                    (
+                        {
+                            "type": "button",
+                            "code": "a",
+                            "value": False,
+                        },
+                        curr + 2 * self.QAM_DELAY,
+                    ),
+                )
+                self.queue.append(
+                    (
+                        {
+                            "type": "button",
+                            "code": "mode",
+                            "value": False,
+                        },
+                        curr + 2 * self.QAM_DELAY,
+                    ),
+                )
+
         return out
 
 
