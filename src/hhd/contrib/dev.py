@@ -36,7 +36,7 @@ def evdev():
         curr = perf_counter() - start
         if ev.code == 0 and ev.type == 0 and ev.value == 0:
             print(
-                f"└ SYN ─ {curr:7.3}s ────────────────────────────────────────────────────────┘"
+                f"└ SYN ─ {curr:7.3f}s ────────────────────────────────────────────────────────┘"
             )
             endcap = True
         else:
