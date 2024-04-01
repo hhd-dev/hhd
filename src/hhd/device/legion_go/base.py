@@ -33,7 +33,8 @@ from .const import (
 from .gyro_fix import GyroFixer
 from .hid import LegionHidraw, RgbCallback
 
-ERROR_DELAY = 1
+WAIT_DELAY = 1
+ERROR_DELAY = 0.2
 SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
@@ -71,12 +72,15 @@ def plugin_run(
         try:
             controller_mode = None
             pid = None
+            first = True
             while not controller_mode:
                 devs = enumerate_unique(LEN_VID)
                 if not devs:
-                    logger.error(
-                        f"Legion go controllers not found, waiting {ERROR_DELAY}s."
-                    )
+                    if first:
+                        first = False
+                        logger.warning(
+                            f"Legion go controllers not found, waiting..."
+                        )
                     time.sleep(ERROR_DELAY)
                     continue
 
