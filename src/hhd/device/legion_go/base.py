@@ -36,7 +36,7 @@ from .hid import LegionHidraw, RgbCallback
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
 LONGER_ERROR_DELAY = 3
-LONGER_ERROR_MARGIN = 3
+LONGER_ERROR_MARGIN = 1.3
 SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
@@ -61,6 +61,7 @@ def plugin_run(
     reset = others.get("reset", False)
     gyro_fixer = None
     init = time.perf_counter()
+    repeated_fail = False
 
     while not should_exit.is_set():
         if (
@@ -128,11 +129,8 @@ def plugin_run(
                     reset,
                 )
         except Exception as e:
-            sleep_time = (
-                LONGER_ERROR_DELAY
-                if init + LONGER_ERROR_MARGIN > time.perf_counter()
-                else ERROR_DELAY
-            )
+            sleep_time = LONGER_ERROR_DELAY if repeated_fail else ERROR_DELAY
+            repeated_fail = init + LONGER_ERROR_MARGIN > time.perf_counter()
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."

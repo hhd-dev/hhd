@@ -51,7 +51,7 @@ VIBRATION_OFF: Event = {
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
 LONGER_ERROR_DELAY = 3
-LONGER_ERROR_MARGIN = 3
+LONGER_ERROR_MARGIN = 1.3
 
 
 class AllyHidraw(GenericGamepadHidraw):
@@ -136,6 +136,7 @@ def plugin_run(
     conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent
 ):
     init = time.perf_counter()
+    repeated_fail = False
     while not should_exit.is_set():
         try:
             first = True
@@ -154,11 +155,8 @@ def plugin_run(
             init = time.perf_counter()
             controller_loop(conf.copy(), should_exit, updated, emit)
         except Exception as e:
-            sleep_time = (
-                LONGER_ERROR_DELAY
-                if init + LONGER_ERROR_MARGIN > time.perf_counter()
-                else ERROR_DELAY
-            )
+            sleep_time = LONGER_ERROR_DELAY if repeated_fail else ERROR_DELAY
+            repeated_fail = init + LONGER_ERROR_MARGIN > time.perf_counter()
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
