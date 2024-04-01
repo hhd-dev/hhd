@@ -35,6 +35,8 @@ from .hid import LegionHidraw, RgbCallback
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
+LONGER_ERROR_DELAY = 3
+LONGER_ERROR_MARGIN = 3
 SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
@@ -58,6 +60,7 @@ def plugin_run(
 ):
     reset = others.get("reset", False)
     gyro_fixer = None
+    init = time.perf_counter()
 
     while not should_exit.is_set():
         if (
@@ -103,6 +106,7 @@ def plugin_run(
                 logger.info("Launching emulated controller.")
                 if gyro_fixer:
                     gyro_fixer.open()
+                init = time.perf_counter()
                 controller_loop_xinput(conf_copy, should_exit, updated, emit, reset)
             else:
                 if controller_mode != "xinput":
@@ -113,6 +117,7 @@ def plugin_run(
                     logger.info(
                         f"Controllers in xinput mode but emulation is disabled."
                     )
+                init = time.perf_counter()
                 controller_loop_rest(
                     controller_mode,
                     pid if pid else 2,
@@ -123,14 +128,19 @@ def plugin_run(
                     reset,
                 )
         except Exception as e:
+            sleep_time = (
+                LONGER_ERROR_DELAY
+                if init + LONGER_ERROR_MARGIN > time.perf_counter()
+                else ERROR_DELAY
+            )
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
-                f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
+                f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             # Raise exception
             if conf.get("debug", False):
                 raise e
-            time.sleep(ERROR_DELAY)
+            time.sleep(sleep_time)
         finally:
             if gyro_fixer:
                 gyro_fixer.close()

@@ -5,16 +5,13 @@ from threading import Event as TEvent
 from typing import Literal, Sequence
 
 from hhd.controller import Axis, Event, Multiplexer, can_read
-from hhd.controller.base import Event
-from hhd.controller.lib.common import AM, BM, CM
-from hhd.controller.lib.hid import MAX_REPORT_SIZE
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import GenericGamepadEvdev
-from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
+from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
-from .hid import RgbCallback, switch_mode, Brightness
+from .hid import Brightness, RgbCallback, switch_mode
 
 ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
@@ -50,6 +47,11 @@ VIBRATION_OFF: Event = {
     "strong_magnitude": 0,
     "weak_magnitude": 0,
 }
+
+FIND_DELAY = 0.1
+ERROR_DELAY = 0.3
+LONGER_ERROR_DELAY = 3
+LONGER_ERROR_MARGIN = 3
 
 
 class AllyHidraw(GenericGamepadHidraw):
@@ -133,20 +135,38 @@ class AllyHidraw(GenericGamepadHidraw):
 def plugin_run(
     conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent
 ):
+    init = time.perf_counter()
     while not should_exit.is_set():
         try:
+            first = True
+            while True:
+                gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
+                asus_devs = enumerate_evs(vid=GAMEPAD_VID)
+                if not gamepad_devs or not asus_devs:
+                    if first:
+                        first = False
+                        logger.warning(f"Legion go controllers not found, waiting...")
+                    time.sleep(FIND_DELAY)
+                else:
+                    break
             logger.info("Launching emulated controller.")
             updated.clear()
+            init = time.perf_counter()
             controller_loop(conf.copy(), should_exit, updated, emit)
         except Exception as e:
+            sleep_time = (
+                LONGER_ERROR_DELAY
+                if init + LONGER_ERROR_MARGIN > time.perf_counter()
+                else ERROR_DELAY
+            )
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
-                f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
+                f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             # Raise exception
             if conf.get("debug", False):
                 raise e
-            time.sleep(ERROR_DELAY)
+            time.sleep(sleep_time)
 
 
 def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter):
