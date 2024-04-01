@@ -193,6 +193,18 @@ def list_evs(filter_valid: bool = False):
         return devs
 
 
+def enumerate_evs(
+    vid: int | None = None, pid: int | None = None, filter_valid: bool = False
+):
+    evs = list_evs(filter_valid)
+    return {
+        k: v
+        for k, v in evs.items()
+        if (vid is None or vid == v.get("vendor", None))
+        and (pid is None or pid == v.get("product", None))
+    }
+
+
 class GenericGamepadEvdev(Producer, Consumer):
 
     def __init__(

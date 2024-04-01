@@ -9,7 +9,7 @@ from hhd.controller import Axis, Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import AccelImu, GyroImu
 from hhd.controller.virtual.uinput import (
     HHD_PID_MOTION,
@@ -33,8 +33,8 @@ from .const import (
 from .gyro_fix import GyroFixer
 from .hid import LegionHidraw, RgbCallback
 
-WAIT_DELAY = 1
-ERROR_DELAY = 0.2
+FIND_DELAY = 0.1
+ERROR_DELAY = 0.3
 SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
@@ -74,26 +74,24 @@ def plugin_run(
             pid = None
             first = True
             while not controller_mode:
-                devs = enumerate_unique(LEN_VID)
+                devs = enumerate_evs(vid=LEN_VID)
                 if not devs:
                     if first:
                         first = False
-                        logger.warning(
-                            f"Legion go controllers not found, waiting..."
-                        )
-                    time.sleep(ERROR_DELAY)
+                        logger.warning(f"Legion go controllers not found, waiting...")
+                    time.sleep(FIND_DELAY)
                     continue
 
-                for d in devs:
-                    if d["product_id"] in LEN_PIDS:
-                        pid = d["product_id"]
+                for d in devs.values():
+                    if d.get("product", None) in LEN_PIDS:
+                        pid = d["product"]
                         controller_mode = LEN_PIDS[pid]
                         break
                 else:
                     logger.error(
                         f"Legion go controllers not found, waiting {ERROR_DELAY}s."
                     )
-                    time.sleep(ERROR_DELAY)
+                    time.sleep(FIND_DELAY)
                     continue
 
             conf_copy = conf.copy()
