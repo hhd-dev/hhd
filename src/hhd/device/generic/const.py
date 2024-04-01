@@ -94,6 +94,12 @@ CONFS = {
         "hrtimer": True,
         "mapping": gen_gyro_state("x", False, "z", False, "y", True),
     },
+    # Ayn
+    "Loki Zero": {
+        "name": "Loki Zero",
+        "hrtimer": True,
+        "mapping": gen_gyro_state("x", False, "z", False, "y", True),
+    },
     # Ayaneo
     "AIR Plus": {
         "name": "AYANEO AIR Plus",

@@ -74,7 +74,7 @@ is added to your device.
   - NEXT Lite/Pro/Advance
   - SLIDE
 - Ayn
-  - Loki Max
+  - Loki Zero/Max
 - AOKZOE
   - A1
   - A1 Pro 
