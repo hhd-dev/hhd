@@ -2,6 +2,7 @@ import glob
 import logging
 import os
 import re
+import stat
 import subprocess
 import time
 from typing import Collection, Mapping, Sequence, TypeVar, cast
@@ -149,6 +150,49 @@ def find_joystick(ev: str):
             return other
 
 
+def is_device(fn):
+    """Check if ``fn`` is a readable and writable character device."""
+
+    if not os.path.exists(fn):
+        return False
+
+    m = os.stat(fn)[stat.ST_MODE]
+    if not stat.S_ISCHR(m):
+        return False
+
+    if not os.access(fn, os.R_OK | os.W_OK):
+        return False
+
+    return True
+
+
+def list_evs(filter_valid: bool = False):
+    with open("/proc/bus/input/devices", "r") as f:
+        data = f.read()
+
+        devs = {}
+        for d in data.split("\n\n"):
+            out = {}
+            for line in d.split("\n"):
+                if not line:
+                    continue
+                match line[0]:
+                    case "I":
+                        for attr in line[3:-1].split(" "):
+                            name, val = attr.split("=")
+                            out[name.lower()] = int(val, 16)
+                    case "N":
+                        out["name"] = line[len('N: Name="') : -1]
+                    case "H":
+                        for handler in line[len("H: Handlers=") : -1].split(" "):
+                            if "event" in handler:
+                                pth = "/dev/input/" + handler
+                                if not filter_valid or is_device(pth):
+                                    devs[pth] = out
+
+        return devs
+
+
 class GenericGamepadEvdev(Producer, Consumer):
 
     def __init__(
@@ -188,14 +232,14 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.postprocess = postprocess
 
     def open(self) -> Sequence[int]:
-        for d in evdev.list_devices():
+        for d, info in list_evs(filter_valid=True).items():
+            if not matches_patterns(info.get("vendor", ""), self.vid):
+                continue
+            if not matches_patterns(info.get("product", ""), self.pid):
+                continue
+            if not matches_patterns(info.get("name", ""), self.name):
+                continue
             dev = evdev.InputDevice(d)
-            if not matches_patterns(dev.info.vendor, self.vid):
-                continue
-            if not matches_patterns(dev.info.product, self.pid):
-                continue
-            if not matches_patterns(dev.name, self.name):
-                continue
             if self.capabilities:
                 matches = True
                 dev_cap = cast(dict[int, Sequence[int]], dev.capabilities())
