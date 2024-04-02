@@ -55,16 +55,21 @@ class QamHandler:
             KCTRL = get_key("Control_L")
             K2 = get_key("2")
 
-            fake_input(disp, X.KeyPress, KCTRL)
-            fake_input(disp, X.KeyPress, K2)
+            steam = find_steam(disp)
+            if not steam:
+                logger.info(f"Could not find Steam (?). Sending compatibility QAM.")
+                return False
+
+            fake_input(disp, X.KeyPress, KCTRL, root=steam)
+            fake_input(disp, X.KeyPress, K2, root=steam)
             disp.sync()
-            fake_input(disp, X.KeyRelease, KCTRL)
-            fake_input(disp, X.KeyRelease, K2)
+            fake_input(disp, X.KeyRelease, KCTRL, root=steam)
+            fake_input(disp, X.KeyRelease, K2, root=steam)
             disp.sync()
             logger.info(f"Sent QAM event directly to gamescope.")
             return True
         except Exception as e:
-            logger.info(
+            logger.warning(
                 f"Could not send QAM to Gamescope with error:\n{e}\nSending compatibility QAM."
             )
             return False
