@@ -1,6 +1,7 @@
 from Xlib.display import Display
 
 from hhd.plugins.overlay.x11 import (
+    QamHandler,
     get_gamescope_displays,
     get_overlay_display,
     print_debug,
@@ -8,6 +9,20 @@ from hhd.plugins.overlay.x11 import (
 
 
 def gamescope_debug(args: list[str]):
+    if "qam" in args or "menu" in args:
+        open_menu = "menu" in args
+        win = "menu" if open_menu else "QAM"
+        print(f"Opening Steam {win}.")
+        c = QamHandler()
+        success = c(open_menu)
+        c.close()
+        if not success:
+            import sys
+
+            print(f"Error, could not open {win}.")
+            sys.exit(1)
+        return
+
     if not args or not args[0].startswith(":"):
         ds = get_gamescope_displays()
         print(f"Gamescope displays found: {str(ds)}")

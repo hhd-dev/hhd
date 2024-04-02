@@ -26,7 +26,7 @@ class CachedValues(NamedTuple):
 
 class QamHandler:
 
-    def __init__(self, ctx) -> None:
+    def __init__(self, ctx=None) -> None:
         self.disp = None
         self.ctx = ctx
 
@@ -46,14 +46,14 @@ class QamHandler:
             logger.info(f"Error while registering Gamescope display for QAM:\n{e}.")
             return False
 
-    def _send_qam(self):
+    def _send_qam(self, expanded=False):
         try:
             disp = self.disp
             if not disp:
                 return False
             get_key = lambda k: disp.keysym_to_keycode(XK.string_to_keysym(k))
             KCTRL = get_key("Control_L")
-            K2 = get_key("2")
+            KEY = get_key("1" if expanded else "2")
 
             steam = find_steam(disp)
             if not steam:
@@ -61,10 +61,10 @@ class QamHandler:
                 return False
 
             fake_input(disp, X.KeyPress, KCTRL, root=steam)
-            fake_input(disp, X.KeyPress, K2, root=steam)
+            fake_input(disp, X.KeyPress, KEY, root=steam)
             disp.sync()
             fake_input(disp, X.KeyRelease, KCTRL, root=steam)
-            fake_input(disp, X.KeyRelease, K2, root=steam)
+            fake_input(disp, X.KeyRelease, KEY, root=steam)
             disp.sync()
             logger.info(f"Sent QAM event directly to gamescope.")
             return True
@@ -74,10 +74,10 @@ class QamHandler:
             )
             return False
 
-    def __call__(self) -> Any:
-        if self._send_qam():
+    def __call__(self, expanded=False) -> Any:
+        if self._send_qam(expanded):
             return True
-        return self._register_display() and self._send_qam()
+        return self._register_display() and self._send_qam(expanded)
 
     def close(self):
         if self.disp:
