@@ -142,11 +142,11 @@ def plugin_run(
             first = True
             while True:
                 gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
-                asus_devs = enumerate_evs(vid=GAMEPAD_VID)
+                asus_devs = enumerate_evs(vid=ASUS_VID)
                 if not gamepad_devs or not asus_devs:
                     if first:
                         first = False
-                        logger.warning(f"Legion go controllers not found, waiting...")
+                        logger.warning(f"Ally controller not found, waiting...")
                     time.sleep(FIND_DELAY)
                 else:
                     break
