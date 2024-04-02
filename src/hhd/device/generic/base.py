@@ -8,19 +8,18 @@ import evdev
 
 from hhd.controller import Multiplexer
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import GenericGamepadEvdev
+from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.physical.rgb import LedDevice
 from hhd.controller.virtual.uinput import UInputDevice
-from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
+from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
-from .const import (
-    BTN_MAPPINGS,
-    DEFAULT_MAPPINGS,
-)
+from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS
 
-ERROR_DELAY = 1
-SELECT_TIMEOUT = 1
+FIND_DELAY = 0.1
+ERROR_DELAY = 0.3
+LONGER_ERROR_DELAY = 3
+LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
@@ -43,26 +42,23 @@ def plugin_run(
     dconf: dict,
 ):
     first = True
+    init = time.perf_counter()
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
             continue
 
-        found_gamepad = False
         try:
-            for d in evdev.list_devices():
-                dev = evdev.InputDevice(d)
-                if dev.info.vendor == GAMEPAD_VID and dev.info.product == GAMEPAD_PID:
-                    found_gamepad = True
-                    break
+            found_device = bool(enumerate_evs(vid=GAMEPAD_VID))
         except Exception:
             logger.warning("Failed finding device, skipping check.")
-            found_gamepad = True
+            time.sleep(LONGER_ERROR_DELAY)
+            found_device = True
 
-        if not found_gamepad:
+        if not found_device:
             if first:
                 logger.info("Controller not found. Waiting...")
-            time.sleep(ERROR_DELAY)
+            time.sleep(FIND_DELAY)
             first = False
             continue
 
@@ -80,17 +76,23 @@ def plugin_run(
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
+            init = time.perf_counter()
             controller_loop(conf.copy(), should_exit, updated, dconf, emit)
         except Exception as e:
+            failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
+            sleep_time = (
+                LONGER_ERROR_DELAY if repeated_fail and failed_fast else ERROR_DELAY
+            )
+            repeated_fail = failed_fast
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
-                f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
+                f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             first = True
             # Raise exception
             if conf.get("debug", False):
                 raise e
-            time.sleep(ERROR_DELAY)
+            time.sleep(sleep_time)
 
 
 def controller_loop(
