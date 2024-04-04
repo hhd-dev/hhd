@@ -1,4 +1,5 @@
 import logging
+import os
 import select
 import time
 from threading import RLock
@@ -387,6 +388,7 @@ class Multiplexer:
         emit: ControllerEmitter | None = None,
         imu: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
         params: Mapping[str, Any] = {},
+        qam_multi_tap: bool = True,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -419,6 +421,9 @@ class Multiplexer:
         self.qam_pre_sent = False
         self.qam_released = None
         self.qam_times = 0
+        self.qam_multi_tap = qam_multi_tap and not os.environ.get(
+            "HHD_QAM_MULTI_DISABLE", None
+        )
         self.guide_pressed = False
         self.steam_check = params.get("steam_check", None)
         self.steam_check_last = time.perf_counter()
@@ -801,7 +806,10 @@ class Multiplexer:
         was_held = True
         if self.qam_pressed and curr - self.qam_pressed > self.QAM_HOLD_TIME:
             qam_apply = True
-        if self.qam_released and curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY:
+        if self.qam_released and (
+            curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY
+            or not self.qam_multi_tap
+        ):
             qam_apply = True
         if (
             self.qam_pressed

@@ -281,6 +281,7 @@ def controller_loop(
             qam_button=qam_button,
             emit=emit,
             params=d_params,
+            qam_multi_tap=False,
         )
     else:
         multiplexer = Multiplexer(
@@ -289,6 +290,8 @@ def controller_loop(
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
             emit=emit,
+            params=d_params,
+            qam_multi_tap=False,
         )
 
     REPORT_FREQ_MIN = 25
