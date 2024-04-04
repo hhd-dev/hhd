@@ -175,7 +175,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
-        conf["controller_mode"], None, conf["imu"].to(bool)
+        conf["controller_mode"], None, conf["imu"].to(bool), emit=emit
     )
 
     # Imu
@@ -220,6 +220,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         swap_guide="select_is_guide" if conf["swap_armory"].to(bool) else None,
+        params=d_params,
     )
 
     REPORT_FREQ_MIN = 25

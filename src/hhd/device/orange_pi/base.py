@@ -88,6 +88,7 @@ def controller_loop(
         conf["controller_mode"],
         None,
         conf["imu"].to(bool),
+        emit=emit,
     )
 
     # Imu
@@ -132,6 +133,7 @@ def controller_loop(
         share_to_qam=conf["share_to_qam"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
+        params=d_params,
     )
 
     # d_volume_btn = UInputDevice(

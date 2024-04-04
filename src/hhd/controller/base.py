@@ -1,10 +1,8 @@
 import logging
 import select
 import time
-from io import BytesIO
-from queue import Queue
-from threading import Condition, RLock
-from typing import Any, Callable, Literal, NamedTuple, Protocol, Sequence, TypedDict
+from threading import RLock
+from typing import Any, Callable, Literal, Mapping, NamedTuple, Sequence, TypedDict
 
 from .const import Axis, Button, Configuration
 
@@ -89,11 +87,12 @@ QueueEvent = tuple[Any, Sequence[Event]]
 
 class ControllerEmitter:
 
-    def __init__(self) -> None:
+    def __init__(self, ctx=None) -> None:
         self.intercept_lock = RLock()
         self._intercept = None
         self._controller_cb = None
         self._qam_cb = None
+        self.ctx = ctx
 
     def send_qam(self):
         with self.intercept_lock:
@@ -362,6 +361,7 @@ class Multiplexer:
     REBOOT_VIBRATION_ON = 0.3
     REBOOT_VIBRATION_OFF = 0.8
     REBOOT_VIBRATION_NUM = 3
+    STEAM_CHECK_INTERVAL = 3
 
     def __init__(
         self,
@@ -386,6 +386,7 @@ class Multiplexer:
         qam_button: str | None = None,
         emit: ControllerEmitter | None = None,
         imu: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
+        params: Mapping[str, Any] = {},
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -419,6 +420,9 @@ class Multiplexer:
         self.qam_released = None
         self.qam_times = 0
         self.guide_pressed = False
+        self.steam_check = params.get("steam_check", None)
+        self.steam_check_last = time.perf_counter()
+        self.steam_check_fn = params.get("steam_check_fn", None)
 
         self.unique = str(time.perf_counter_ns())
         assert touchpad is None, "touchpad rewiring not supported yet"
@@ -429,6 +433,8 @@ class Multiplexer:
         touched = False
 
         curr = time.perf_counter()
+
+        # Send old events
         while len(self.queue) and self.queue[0][1] < curr:
             ev = self.queue.pop(0)[0]
             if ev == "reboot":
@@ -442,6 +448,20 @@ class Multiplexer:
                         logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
             elif self.select_is_held or not ev.get("from_reboot", False):
                 out.append(ev)
+
+        # Check for steam for touchpad emulation
+        if (
+            self.steam_check_fn
+            and self.steam_check is not None
+            and self.steam_check_last + Multiplexer.STEAM_CHECK_INTERVAL < curr
+        ):
+            self.steam_check_last = curr
+            if self.steam_check:
+                msg = "Gamepadui launched. Restarting controller to enable touchpad emulation."
+            else:
+                msg = "Gamepadui closed. Restarting controller to disable touchpad emulation."
+
+            assert self.steam_check_fn() == self.steam_check, msg
 
         if self.select_pressed and self.select_pressed + self.REBOOT_HOLD < curr:
             self.select_pressed = None

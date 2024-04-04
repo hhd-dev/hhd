@@ -50,10 +50,10 @@ POLL_DELAY = 2
 
 
 class EmitHolder(Emitter):
-    def __init__(self, condition: Condition) -> None:
+    def __init__(self, condition: Condition, ctx) -> None:
         self._events = []
         self._condition = condition
-        super().__init__()
+        super().__init__(ctx=ctx)
 
     def __call__(self, event: Event | Sequence[Event]) -> None:
         with self._condition:
@@ -226,7 +226,7 @@ def main():
         # Open plugins
         lock = RLock()
         cond = Condition(lock)
-        emit = EmitHolder(cond)
+        emit = EmitHolder(cond, ctx)
         for p in sorted_plugins:
             set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
             p.open(emit, ctx)

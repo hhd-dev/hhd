@@ -203,6 +203,7 @@ def controller_loop(
         conf["controller_mode"],
         conf["touchpad"] if has_touchpad else None,
         conf["imu"].to(bool),
+        emit=emit,
     )
 
     # Imu
@@ -279,6 +280,7 @@ def controller_loop(
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
             emit=emit,
+            params=d_params,
         )
     else:
         multiplexer = Multiplexer(

@@ -251,7 +251,7 @@ def controller_loop_xinput(
         and (conf["imu.display.accel"].to(bool) or conf["imu.display.gyro"].to(bool))
     )
     d_producers, d_outs, d_params = get_outputs(
-        conf["xinput"], conf["touchpad"], motion, controller_id=cidx
+        conf["xinput"], conf["touchpad"], motion, controller_id=cidx, emit=emit
     )
 
     # Imu
@@ -353,6 +353,7 @@ def controller_loop_xinput(
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         imu=simu,
+        params=d_params,
     )
 
     d_right = UInputDevice(

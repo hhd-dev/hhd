@@ -25,10 +25,21 @@ modes:
     title: Virtual
     tags: [non-essential]
     hint: >-
-      Adds an emulated touchpad. This touchpad is meant to be for desktop
-      use and has left, right click support by default, within gamescope and
-      outside of it, regardless of the "Tap to Click" setting.
+      Adds an emulated touchpad. This touchpad is meant for use in gamescope
+      and has left, right click support by default.
+      However, it causes issues in desktop mode, and it doesnt allow dragging
+      files. Therefore, it will autodisable in desktop.
+      
     children:
+      desktop_disable:
+        type: bool
+        title: Disable on Desktop
+        hint: >-
+          Touchpad emulation will automatically be disabled when not in gamemode.
+          Specifically, steam will be periodically be checked to be running in
+          gamepad mode and if not, touchpad emulation will be disabled.
+        default: True
+
       short:
         type: multiple
         title: Short Action
@@ -64,6 +75,15 @@ modes:
       Meant to be used as steam input, so short press is unassigned by
       default and long press simulates trackpad click.
     children:
+      desktop_disable:
+        type: bool
+        title: Disable on Desktop
+        hint: >-
+          Touchpad emulation will automatically be disabled when not in gamemode.
+          Specifically, steam will be periodically be checked to be running in
+          gamepad mode and if not, touchpad emulation will be disabled.
+        default: True
+
       correction:
         type: multiple
         title: Location
