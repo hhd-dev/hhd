@@ -7,15 +7,13 @@ from time import perf_counter, sleep
 from typing import cast
 
 import evdev
-from evdev import ecodes as e
 
-from hhd.utils import Context, expanduser
+from hhd.utils import Context, expanduser, is_steam_gamepad_running
 
 from .const import PowerButtonConfig
 
 logger = logging.getLogger(__name__)
 
-STEAM_PID = "~/.steam/steam.pid"
 STEAM_EXE = "~/.steam/root/ubuntu12_32/steam"
 STEAM_WAIT_DELAY = 0.5
 LONG_PRESS_DELAY = 2.0
@@ -23,27 +21,6 @@ LONG_PRESS_DELAY = 2.0
 
 def B(b: str):
     return cast(int, getattr(evdev.ecodes, b))
-
-
-def is_steam_gamescope_running(ctx: Context):
-    pid = None
-    try:
-        with open(expanduser(STEAM_PID, ctx)) as f:
-            pid = f.read().strip()
-
-        steam_cmd_path = f"/proc/{pid}/cmdline"
-        if not os.path.exists(steam_cmd_path):
-            return False
-
-        # Use this and line to determine if Steam is running in DeckUI mode.
-        with open(steam_cmd_path, "rb") as f:
-            steam_cmd = f.read()
-        is_deck_ui = b"-gamepadui" in steam_cmd
-        if not is_deck_ui:
-            return False
-    except Exception as e:
-        return False
-    return True
 
 
 def run_steam_command(command: str, ctx: Context):
@@ -140,7 +117,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
     try:
         while not should_exit.is_set():
             # Initial check for steam
-            if not is_steam_gamescope_running(perms):
+            if not is_steam_gamepad_running(perms):
                 # Close devices
                 if press_devs:
                     for d in press_devs:
@@ -153,7 +130,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event)
                     hold_dev.close()
                     hold_dev = None
                 logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamescope_running(perms):
+                while not is_steam_gamepad_running(perms):
                     if should_exit.is_set():
                         return
                     sleep(STEAM_WAIT_DELAY)
@@ -210,7 +187,7 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
         pressed_time = None
         while not should_exit.is_set():
             # Initial check for steam
-            if not is_steam_gamescope_running(perms):
+            if not is_steam_gamepad_running(perms):
                 # Close devices
                 if devs:
                     for d in devs:
@@ -220,7 +197,7 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
                         dev.close()
                         dev = None
                 logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamescope_running(perms):
+                while not is_steam_gamepad_running(perms):
                     if should_exit.is_set():
                         return
                     sleep(STEAM_WAIT_DELAY)

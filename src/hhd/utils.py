@@ -8,6 +8,8 @@ from hhd.plugins import Context
 
 logger = logging.getLogger(__name__)
 
+STEAM_PID = "~/.steam/steam.pid"
+
 
 def get_context(user: str | None) -> Context | None:
     try:
@@ -159,3 +161,24 @@ def get_os() -> str:
 
     logger.info(f"Running under an unknown Linux distro.")
     return "ukn"
+
+
+def is_steam_gamepad_running(ctx: Context):
+    pid = None
+    try:
+        with open(expanduser(STEAM_PID, ctx)) as f:
+            pid = f.read().strip()
+
+        steam_cmd_path = f"/proc/{pid}/cmdline"
+        if not os.path.exists(steam_cmd_path):
+            return False
+
+        # Use this and line to determine if Steam is running in DeckUI mode.
+        with open(steam_cmd_path, "rb") as f:
+            steam_cmd = f.read()
+        is_deck_ui = b"-gamepadui" in steam_cmd
+        if not is_deck_ui:
+            return False
+    except Exception:
+        return False
+    return True
