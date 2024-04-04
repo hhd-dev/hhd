@@ -8,11 +8,8 @@ from hhd.plugins.conf import Config
 from adjustor.core.lenovo import (
     MIN_CURVE,
     TdpMode,
-    get_fan_curve,
-    get_fast_tdp,
     get_full_fan_speed,
     get_power_light,
-    get_steady_tdp,
     get_tdp_mode,
     set_fan_curve,
     set_fast_tdp,
@@ -141,6 +138,14 @@ class LenovoDriverPlugin(HHDPlugin):
             # Check user changed values
             steady = conf["tdp.lenovo.tdp.custom.tdp"].to(int)
 
+            old_steady = steady
+            if self.enforce_limits:
+                steady = min(max(steady, 4), 30)
+            else:
+                steady = min(max(steady, 0), 50)
+            if old_steady != steady:
+                conf["tdp.lenovo.tdp.custom.tdp"] = steady
+
             steady_updated = steady and steady != self.old_conf["tdp.custom.tdp"].to(
                 int
             )
@@ -189,10 +194,15 @@ class LenovoDriverPlugin(HHDPlugin):
                 conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = v
 
         # Handle fan curve limits
-        if conf["tdp.lenovo.fan.manual.enforce_limits"].to(bool):
-            for i, v in enumerate(MIN_CURVE):
-                if conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"].to(int) < v:
-                    conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = v
+        for i, v in enumerate(MIN_CURVE):
+            val = conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"].to(int)
+            old_val = val
+            if conf["tdp.lenovo.fan.manual.enforce_limits"].to(bool) and val < v:
+                val = v
+
+            val = max(min(val, 115), 0)
+            if old_val != val:
+                conf[f"tdp.lenovo.fan.manual.st{(i + 1)*10}"] = val
 
         # Check if fan curve has changed
         # Use debounce logic on these changes
