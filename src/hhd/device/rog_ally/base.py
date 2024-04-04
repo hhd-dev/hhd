@@ -13,7 +13,6 @@ from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .hid import Brightness, RgbCallback, switch_mode
 
-ERROR_DELAY = 1
 SELECT_TIMEOUT = 1
 
 logger = logging.getLogger(__name__)
@@ -154,6 +153,7 @@ def plugin_run(
             updated.clear()
             init = time.perf_counter()
             controller_loop(conf.copy(), should_exit, updated, emit)
+            repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
             sleep_time = (

@@ -128,6 +128,7 @@ def plugin_run(
                     emit,
                     reset,
                 )
+            repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
             sleep_time = (

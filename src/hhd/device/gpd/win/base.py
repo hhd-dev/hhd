@@ -21,8 +21,11 @@ from .const import (
     GPD_WIN_DEFAULT_MAPPINGS,
 )
 
-ERROR_DELAY = 1
+ERROR_DELAY = 0.3
 SELECT_TIMEOUT = 1
+ERROR_DELAY = 0.3
+LONGER_ERROR_DELAY = 3
+LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +156,8 @@ def plugin_run(
     dconf: dict,
 ):
     first = True
+    init = time.perf_counter()
+    repeated_fail = False
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
@@ -179,17 +184,23 @@ def plugin_run(
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
+            init = time.perf_counter()
             controller_loop(conf.copy(), should_exit, updated, dconf, emit)
+            repeated_fail = False
         except Exception as e:
+            failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
+            sleep_time = (
+                LONGER_ERROR_DELAY if repeated_fail and failed_fast else ERROR_DELAY
+            )
+            repeated_fail = failed_fast
             logger.error(f"Received the following error:\n{type(e)}: {e}")
             logger.error(
-                f"Assuming controllers disconnected, restarting after {ERROR_DELAY}s."
+                f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
-            first = True
             # Raise exception
             if conf.get("debug", False):
                 raise e
-            time.sleep(ERROR_DELAY)
+            time.sleep(sleep_time)
 
 
 def controller_loop(
