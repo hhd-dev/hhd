@@ -89,6 +89,11 @@ CONFS = {
     # Onexplayer
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
     # Ayn
+    "Loki": {
+        "name": "Loki",
+        "hrtimer": True,
+        "mapping": gen_gyro_state("x", False, "z", False, "y", True),
+    },
     "Loki Max": {
         "name": "Loki Max",
         "hrtimer": True,
