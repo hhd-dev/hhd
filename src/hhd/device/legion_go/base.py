@@ -487,7 +487,7 @@ def controller_loop_xinput(
     finally:
         for d in reversed(devs):
             try:
-                d.close(True)
+                d.close(not updated.is_set())
             except Exception as e:
                 logger.error(f"Error while closing device '{d}' with exception:\n{e}")
                 if debug:

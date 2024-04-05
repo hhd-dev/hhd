@@ -231,7 +231,7 @@ def controller_loop(
     except KeyboardInterrupt:
         raise
     finally:
-        # d_vend.close(True)
+        # d_vend.close(not updated.is_set())
         try:
             d_timer.close()
         except Exception as e:
@@ -240,7 +240,7 @@ def controller_loop(
                 raise e
         for d in reversed(devs):
             try:
-                d.close(True)
+                d.close(not updated.is_set())
             except Exception as e:
                 logger.error(f"Error while closing device '{d}' with exception:\n{e}")
                 if debug:

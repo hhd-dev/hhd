@@ -324,11 +324,13 @@ class Producer:
         """Called to close the device.
 
         If `exit` is true, the program is about to
-        close. If it is false, the controller is entering power save mode because
-        it is unused. In this case, if this service is required, you may forgo
-        closing and return false. If true, it is assumed this producer is closed.
-
-        `open()` will be called again once the consumers are ready."""
+        close. If it is false, the controller may be performing a configuration
+        change.
+        
+        In the first versions of Handheld Daemon, this API was meant to be used
+        for the controller to enter power saving mode. However, it turns out
+        that steam and the kernel do not let the controller disconnect,
+        so it was repurposed to skip controller hiding."""
         return False
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:

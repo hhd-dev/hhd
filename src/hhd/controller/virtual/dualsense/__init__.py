@@ -125,10 +125,6 @@ class Dualsense(Producer, Consumer):
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
-        if not exit:
-            """This is a consumer, so we would deadlock if it was disabled."""
-            return False
-
         if self.dev:
             self.dev.send_destroy()
             self.dev.close()

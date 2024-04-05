@@ -14,7 +14,7 @@ from hhd.controller import Axis, Button, Consumer, Event, Producer, can_read
 from hhd.controller.base import Event
 from hhd.controller.const import AbsAxis, GamepadButton, KeyboardButton
 from hhd.controller.lib.common import hexify, matches_patterns
-from hhd.controller.lib.hide import hide_gamepad, unhide_all, unhide_gamepad
+from hhd.controller.lib.hide import hide_gamepad, unhide_gamepad
 
 logger = logging.getLogger(__name__)
 
@@ -309,7 +309,7 @@ class GenericGamepadEvdev(Producer, Consumer):
 
     def close(self, exit: bool) -> bool:
         if self.dev:
-            if self.hidden:
+            if self.hidden and exit:
                 unhide_gamepad(self.dev.path, self.hidden)
             self.dev.close()
             self.dev = None

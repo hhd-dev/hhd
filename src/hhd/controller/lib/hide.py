@@ -56,6 +56,11 @@ def hide_gamepad(devpath: str, vid: int, pid: int) -> str | None:
     if not input_dev or not parent:
         return None
 
+    out_fn = f"/run/udev/rules.d/95-hhd-devhide-{input_dev}.rules"
+    if os.path.exists(out_fn):
+        # Skip hiding controller on reloads
+        return input_dev
+
     rule = f"""\
 # Hides device gamepad devices stemming from {input_dev}
 # Managed by HHD, this file will be autoremoved during configuration changes.
@@ -67,7 +72,7 @@ LABEL="hhd_end"
 """  # , RUN+="/bin/chmod 000 /sys/%p"
     try:
         os.makedirs("/run/udev/rules.d/", exist_ok=True)
-        with open(f"/run/udev/rules.d/95-hhd-devhide-{input_dev}.rules", "w") as f:
+        with open(out_fn, "w") as f:
             f.write(rule)
         reload_children(parent)
         return input_dev
