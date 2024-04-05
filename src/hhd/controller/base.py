@@ -94,9 +94,12 @@ class ControllerEmitter:
         self._controller_cb = None
         self._qam_cb = None
         self.ctx = ctx
+        self.use_legacy_qam = bool(os.environ.get("HHD_LEGACY_QAM", None))
 
     def send_qam(self):
         with self.intercept_lock:
+            if self.use_legacy_qam:
+                return False
             if self._qam_cb:
                 return self._qam_cb()
             return False
