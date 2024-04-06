@@ -26,14 +26,18 @@ class CachedValues(NamedTuple):
 
 class QamHandler:
 
-    def __init__(self, ctx=None) -> None:
+    def __init__(self, ctx=None, force_disp: str | None = None) -> None:
         self.disp = None
         self.ctx = ctx
+        self.force_disp = force_disp
 
     def _register_display(self):
         self.close()
         try:
-            res = get_overlay_display(get_gamescope_displays(), self.ctx)
+            if self.force_disp:
+                res = self.force_disp
+            else:
+                res = get_overlay_display(get_gamescope_displays(), self.ctx)
             if not res:
                 logger.info(
                     f"Could not find gamescope display, sending compatibility QAM."

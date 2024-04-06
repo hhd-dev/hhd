@@ -10,10 +10,15 @@ from hhd.plugins.overlay.x11 import (
 
 def gamescope_debug(args: list[str]):
     if "qam" in args or "menu" in args:
+        force_disp = None
+        for arg in args:
+            if arg.startswith(":"):
+                force_disp = arg
+
         open_menu = "menu" in args
         win = "menu" if open_menu else "QAM"
         print(f"Opening Steam {win}.")
-        c = QamHandler()
+        c = QamHandler(force_disp=force_disp)
         success = c(open_menu)
         c.close()
         if not success:
