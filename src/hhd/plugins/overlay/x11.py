@@ -77,7 +77,11 @@ class QamHandler:
     def __call__(self, expanded=False) -> Any:
         if self._send_qam(expanded):
             return True
-        return self._register_display() and self._send_qam(expanded)
+        # Steam fails to open QAM with ctrl+2 the first time
+        # So send compatibility QAM if we have to register display
+        if self._register_display():
+            logger.info("Sending compatibility QAM as first QAM, as display was registered now.")
+        return False
 
     def close(self):
         if self.disp:
