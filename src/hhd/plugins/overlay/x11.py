@@ -26,10 +26,13 @@ class CachedValues(NamedTuple):
 
 class QamHandler:
 
-    def __init__(self, ctx=None, force_disp: str | None = None) -> None:
+    def __init__(
+        self, ctx=None, force_disp: str | None = None, compat_send: bool = True
+    ) -> None:
         self.disp = None
         self.ctx = ctx
         self.force_disp = force_disp
+        self.compat_send = compat_send
 
     def _register_display(self):
         self.close()
@@ -83,8 +86,12 @@ class QamHandler:
             return True
         # Steam fails to open QAM with ctrl+2 the first time
         # So send compatibility QAM if we have to register display
-        if self._register_display():
-            logger.info("Sending compatibility QAM as first QAM, as display was registered now.")
+        if self._register_display() and self.compat_send:
+            logger.info(
+                "Sending compatibility QAM as first QAM, as display was registered now."
+            )
+        if not self.compat_send:
+            return self._send_qam(expanded)
         return False
 
     def close(self):

@@ -18,7 +18,7 @@ def gamescope_debug(args: list[str]):
         open_menu = "menu" in args
         win = "menu" if open_menu else "QAM"
         print(f"Opening Steam {win}.")
-        c = QamHandler(force_disp=force_disp)
+        c = QamHandler(force_disp=force_disp, compat_send=False)
         success = c(open_menu)
         c.close()
         if not success:
