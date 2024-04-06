@@ -38,7 +38,7 @@ class QamHandler:
         self.close()
         try:
             if self.force_disp:
-                res = self.force_disp
+                res = display.Display(self.force_disp), self.force_disp
             else:
                 res = get_overlay_display(get_gamescope_displays(), self.ctx)
             if not res:
