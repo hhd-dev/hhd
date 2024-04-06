@@ -143,6 +143,7 @@ class OverlayWriter:
                         "y",
                         "rb",
                         "lb",
+                        "mode",
                     ):
                         continue
                     val = ev["value"]
@@ -152,6 +153,10 @@ class OverlayWriter:
                     ):
                         changed.append((code, val))
                         self.state[cid][code] = curr + REPEAT_INITIAL if val else None
+
+        # Ignore guide combos
+        if self.state[cid].get("mode", None):
+            return
 
         # Allow holds
         for btn, val in list(self.state[cid].items()):
