@@ -93,7 +93,7 @@ jobs:
         run: sed "s/REPLACE_VERSION/$(cat pyproject.toml | grep -E 'version = "[0-9\.]+"' -o | grep -E "[0-9\.]+" -o)/" adjustor.spec > ./pkg/adjustor.spec
       - name: Rename to Nobara ver
         run: >-
-          sed "s/Name:           adjustor/Name:           hhd-adjustor/" ./pkg/adjustor.spec > ./pkg/adjustor.spec
+          sed -i "s/Name:           adjustor/Name:           hhd-adjustor/" ./pkg/adjustor.spec
       - name: Publish to COPR repo
         uses: s0/git-publish-subdir-action@develop
         env:
