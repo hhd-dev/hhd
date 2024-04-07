@@ -95,7 +95,7 @@ children:
             type: display
             default: >-
               Asus hardware limits the minimum fan curve depending on TDP.
-              The minimums are 25%, 50%, and 75% for low, middle, and high TDPs.
+              The minimums are 25%, 50%, and 75% for low, medium, and high TDPs.
 
   charge_limit:
     type: multiple
@@ -112,3 +112,14 @@ children:
       p90: 90%
       p95: 95%
     default: disabled
+  
+  disclaimer:
+    title: Sleep Bug
+    type: display
+    default: >-
+      There is an Asus kernel/BIOS bug that will sometimes limit TDP to 10W
+      after sleep.
+      As the kernel driver is used, this is unfixable from within
+      Handheld Daemon (currently investigated).
+      As an alternative, use SimpleDeckyTDP with RyzenAdj after
+      disabling TDP controls from "Settings".
