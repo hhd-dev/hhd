@@ -134,6 +134,13 @@ children:
             hint: >-
               Reset to the original fan curve provided by Lenovo in BIOS V28.
 
+  charge_limit:
+    tags: [advanced]
+    type: bool
+    title: Enable Charge Limit (80%)
+    hint: >-
+      Limits device charging to 80%. Lenovo EC method. Available since BIOSv29.
+
   power_light:
     tags: [advanced]
     type: bool

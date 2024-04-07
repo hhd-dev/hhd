@@ -110,7 +110,7 @@ def set_power_light(enabled: bool):
 
 
 def get_power_light():
-    logger.info(f"Getting power light status.")
+    logger.debug(f"Getting power light status.")
     if not call(r"\_SB.GZFD.WMAF", [0, 0x01, 0x03], risky=False):
         return None
     o = read()
@@ -193,6 +193,16 @@ def get_fast_tdp():
 def get_slow_tdp():
     logger.debug(f"Retrieving slow TDP.")
     return get_feature(0x0101FF00)
+
+
+def get_charge_limit():
+    logger.debug(f"Retrieving charge limit.")
+    return get_feature(0x03010001)
+
+
+def set_charge_limit(enable: bool):
+    logger.info(f"Setting charge limit (80 %) to {enable}.")
+    return set_feature(0x03010001, enable)
 
 
 def set_steady_tdp(val: int):

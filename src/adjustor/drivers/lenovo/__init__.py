@@ -8,9 +8,11 @@ from hhd.plugins.conf import Config
 from adjustor.core.lenovo import (
     MIN_CURVE,
     TdpMode,
+    get_charge_limit,
     get_full_fan_speed,
     get_power_light,
     get_tdp_mode,
+    set_charge_limit,
     set_fan_curve,
     set_fast_tdp,
     set_full_fan_speed,
@@ -84,6 +86,7 @@ class LenovoDriverPlugin(HHDPlugin):
         if self.startup:
             conf["tdp.lenovo.ffss"] = get_full_fan_speed()
             conf["tdp.lenovo.power_light"] = get_power_light()
+            conf["tdp.lenovo.charge_limit"] = get_charge_limit()
 
         # If not old config, exit, as values can not be set
         if not self.old_conf:
@@ -104,6 +107,12 @@ class LenovoDriverPlugin(HHDPlugin):
             bool
         ):
             set_power_light(power_light)
+
+        charge_limit = conf["tdp.lenovo.charge_limit"].to(bool)
+        if charge_limit is not None and charge_limit != self.old_conf[
+            "charge_limit"
+        ].to(bool):
+            set_charge_limit(charge_limit)
 
         #
         # TDP
