@@ -32,6 +32,19 @@ MIN_CURVE = [2, 5, 17, 17, 17, 17, 17, 17]
 DEFAULT_CURVE = [5, 10, 20, 35, 55, 75, 75, 75]
 
 
+def set_charge_limit(lim: int):
+    try:
+        # FIXME: Hardcoded path, should match using another characteristic
+        with open(
+            "/sys/class/power_supply/BAT0/charge_control_end_threshold", "w"
+        ) as f:
+            f.write(f"{lim}\n")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to write battery limit with error:\n{e}")
+        return False
+
+
 def set_tdp(pretty: str, fn: str, val: int):
     logger.info(f"Setting tdp value '{pretty}' to {val} by writing to:\n{fn}")
     try:
@@ -147,6 +160,30 @@ class AsusDriverPlugin(HHDPlugin):
             return
 
         curr = time.time()
+
+        # Charge limit
+        lim = conf["tdp.asus.charge_limit"].to(str)
+        if (self.startup and lim != "disabled") or (
+            lim != self.old_conf["charge_limit"].to(str)
+        ):
+            match lim:
+                case "p65":
+                    set_charge_limit(65)
+                case "p70":
+                    set_charge_limit(70)
+                case "p80":
+                    set_charge_limit(80)
+                case "p85":
+                    set_charge_limit(85)
+                case "p90":
+                    set_charge_limit(90)
+                case "p95":
+                    set_charge_limit(95)
+                case "disabled":
+                    # Avoid writing charge limit on startup if
+                    # disabled
+                    if not self.startup:
+                        set_charge_limit(100)
 
         #
         # TDP
