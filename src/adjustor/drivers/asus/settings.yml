@@ -116,6 +116,7 @@ children:
   disclaimer:
     title: Sleep Bug
     type: display
+    tags: [ non-essential ]
     default: >-
       There is an Asus kernel/BIOS bug that will sometimes limit TDP to 10W
       after sleep.
