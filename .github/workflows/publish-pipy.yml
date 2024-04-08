@@ -24,6 +24,7 @@ jobs:
       - name: Generate mo files
         run: /
           pybabel compile -D hhd -d ./i18n
+          pybabel compile -D adjustor -d ./i18n
           cp -R ./i18n/* ./src/hhd/i18n
       - name: Build package
         run: python -m build -s
