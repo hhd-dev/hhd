@@ -223,6 +223,22 @@ def main():
             logger.error(f"No plugins started, exiting...")
             return
 
+        # Load locales
+        locales = []
+        for register in pkg_resources.iter_entry_points("hhd.i18n"):
+            locales.extend(register.resolve()())
+        locales.sort(key=lambda x: x["priority"])
+
+        if locales:
+            lstr = "Loaded the following locales:\n"
+            for locale in locales:
+                lstr += (
+                    f" - {locale['domain']} ({locale['priority']}): {locale['path']}\n"
+                )
+            logger.info(lstr[:-1])
+        else:
+            logger.info("No locales found.")
+
         # Open plugins
         lock = RLock()
         cond = Condition(lock)

@@ -4,3 +4,4 @@ venv
 dist
 .vscode
 notebooks
+*.mo

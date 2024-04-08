@@ -42,6 +42,7 @@ overlay = "hhd.plugins.overlay:autodetect"
 # display = "hhd.plugins.display:autodetect"
 
 [project.entry-points."hhd.i18n"]
+hhd = "hhd.i18n:locales"
 
 [project.entry-points."babel.extractors"]
 hhd_yaml = "hhd.contrib.i18n:extract_hhd_yaml"

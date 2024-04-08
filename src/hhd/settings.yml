@@ -4,6 +4,16 @@ settings:
   tags: [non-essential]
 
   children:
+    # language:
+    #   type: multiple
+    #   tags: [i18n, advanced]
+    #   title: Language
+    #   default: system
+    #   options:
+    #     system: English
+    #     zh: Chinese
+    #     pt: Portugese
+
     theme:
       type: multiple
       tags: [theme-selector, advanced]

@@ -109,6 +109,17 @@ class HHDAutodetect(Protocol):
         raise NotImplementedError()
 
 
+class HHDLocale(TypedDict):
+    path: str
+    domain: str
+    priority: int
+
+
+class HHDLocaleRegister(Protocol):
+    def __call__(self) -> Sequence[HHDLocale]:
+        raise NotImplementedError()
+
+
 def get_context(user: str | None) -> Context | None:
     try:
         uid = os.getuid()
