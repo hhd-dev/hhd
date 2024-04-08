@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-07 17:22+0100\n"
+"POT-Creation-Date: 2024-04-08 18:52+0200\n"
 "PO-Revision-Date: 2024-02-07 17:27+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -19,6 +19,8 @@ msgstr ""
 "Generated-By: Babel 2.14.0\n"
 
 #. Section Name for: system
+#. Setting: Language [BETA]
+#. Option: system
 #. Setting: System
 #. Field: title
 msgid "System"
@@ -35,43 +37,78 @@ msgid "Controller"
 msgstr "控制器"
 
 #. Section Name for: hhd
-msgid "About"
-msgstr "关于"
+msgid "Settings"
+msgstr ""
 
-#. Setting: Version Information
+#. Section Name for: bazzite
+msgid "Bazzite"
+msgstr ""
+
+#. Section Name for: utilities
+msgid "Utilities"
+msgstr ""
+
+#. Setting: Core Settings
 #. Field: title
-msgid "Version Information"
-msgstr "版本信息"
+msgid "Core Settings"
+msgstr ""
 
-#. Setting: Version Information
+#. Setting: Language [BETA]
+#. Field: title
+msgid "Language [BETA]"
+msgstr ""
+
+#. Setting: Language [BETA]
+#. Option: C
+msgid "English"
+msgstr ""
+
+#. Setting: Language [BETA]
+#. Option: zh
+msgid "Chinese"
+msgstr ""
+
+#. Setting: Language [BETA]
+#. Option: pt
+msgid "Portugese"
+msgstr ""
+
+#. Setting: Theme
+#. Field: title
+msgid "Theme"
+msgstr ""
+
+#. Setting: Theme
 #. Field: hint
-msgid "Handheld Daemon version manager (local install only)."
-msgstr "Handheld Daemon 版本管理 (仅本地安装)"
+msgid ""
+"Allows changing the theme in the UI. Default is either Diavolo or your "
+"distribution's theme."
+msgstr ""
 
-#. Setting: Decky Plugin Version
+#. Setting: Theme
+#. Option: default
+#. Setting: Default
 #. Field: title
-msgid "Decky Plugin Version"
-msgstr "Decky 插件版本"
+msgid "Default"
+msgstr "默认"
 
-#. Setting: Decky Plugin Version
-#. Field: hint
-msgid "Displays the Handheld Daemon Decky plugin version."
-msgstr "显示 Handheld Daemon Decky 插件版本"
+#. Setting: Theme
+#. Option: diavolo
+msgid "Diavolo"
+msgstr ""
 
-#. Setting: WARNING: This button will be removed soon, update Decky now!
+#. Setting: Theme
+#. Option: ocean
+msgid "Atlantis"
+msgstr ""
+
+#. Setting: It is no longer possible to update Decky from here. If you see
+#. this, update the Decky plugin manually.
 #. Field: title
-msgid "WARNING: This button will be removed soon, update Decky now!"
-msgstr "警告：此按钮将很快被移除，请立即更新 Decky！"
-
-#. Setting: Update Decky
-#. Field: title
-msgid "Update Decky"
-msgstr "更新 Decky"
-
-#. Setting: Update Decky
-#. Field: hint
-msgid "Updates the Decky plugin to the latest release."
-msgstr "更新 Decky 插件到最新版本"
+msgid ""
+"It is no longer possible to update Decky from here. If you see this, "
+"update the Decky plugin manually."
+msgstr ""
 
 #. Setting: Handheld Daemon Version
 #. Field: title
@@ -80,8 +117,21 @@ msgstr "Handheld Daemon 版本"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
+#. Setting: Handheld Daemon UI Version
+#. Setting: Adjustor (TDP) Version
 msgid "Displays the Handheld Daemon version."
 msgstr "显示 Handheld Daemon 版本"
+
+#. Setting: Handheld Daemon UI Version
+#. Field: title
+#, fuzzy
+msgid "Handheld Daemon UI Version"
+msgstr "Handheld Daemon 版本"
+
+#. Setting: Adjustor (TDP) Version
+#. Field: title
+msgid "Adjustor (TDP) Version"
+msgstr ""
 
 #. Setting: Update (Stable)
 #. Field: title
@@ -102,6 +152,12 @@ msgstr "更新（不稳定版）"
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
 msgstr "更新到 git 的 master 分支（仅本地安装）"
+
+#. Setting: Update Error
+#. Field: title
+#, fuzzy
+msgid "Update Error"
+msgstr "更新 Decky"
 
 #. Setting: API Configuration
 #. Field: title
@@ -155,13 +211,14 @@ msgid ""
 "authentication."
 msgstr "在 `~/.config/hhd/token` 生成一个安全令牌，用于认证"
 
-#. Setting: Handheld Controller
+#. Setting: Handheld
 #. Field: title
-msgid "Handheld Controller"
-msgstr "掌机控制器"
+msgid "Handheld"
+msgstr ""
 
-#. Setting: Handheld Controller
+#. Setting: Handheld
 #. Field: hint
+#. Setting: Orange Pi Neo
 msgid "Allows for configuring your handheld's controller to a unified output."
 msgstr "可以配置您的掌机控制器为统一设备输出"
 
@@ -195,7 +252,9 @@ msgstr "体感采样率"
 msgid ""
 "Sets the sampling frequency for the IMU. Check "
 "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
-msgstr "设置 IMU 的采样频率。检查 `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
+msgstr ""
+"设置 IMU 的采样频率。检查 "
+"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
@@ -246,9 +305,9 @@ msgstr "将 L4/R4 映射为快捷菜单键"
 
 #. Setting: Map L4/R4 to QAM.
 #. Option: disabled
-#. Setting: Swap Legion with Start/Select
 #. Setting: Disabled
 #. Field: title
+#. Setting: Swap Legion with Start/Select
 #. Setting: Short Action
 #. Setting: Hold Action
 msgid "Disabled"
@@ -288,6 +347,39 @@ msgid ""
 "X-Input mode."
 msgstr "当 Legion 控制器处于 X-Input 模式时模拟不同类型的控制器"
 
+#. Setting: Controller Motions Device
+#. Field: title
+#, fuzzy
+msgid "Controller Motions Device"
+msgstr "控制器模拟"
+
+#. Setting: Left Controller
+#. Field: title
+#, fuzzy
+msgid "Left Controller"
+msgstr "控制器"
+
+#. Setting: Right Controller
+#. Field: title
+#, fuzzy
+msgid "Right Controller"
+msgstr "GPD 控制器"
+
+#. Setting: Display [SEE HINT]
+#. Field: title
+msgid "Display [SEE HINT]"
+msgstr ""
+
+#. Setting: Display [SEE HINT]
+#. Field: hint
+msgid ""
+"Using the gyro of the display unit is deprecated. The controller units "
+"(after calibration) are better in every way. As part of the deprecation, "
+"the rule that disabled the use of the accelerometer for display "
+"autorotation was removed. If you try to use the display gyroscope without"
+" this rule you will get freezing."
+msgstr ""
+
 #. Setting: Gyroscope
 #. Field: title
 msgid "Gyroscope"
@@ -305,9 +397,8 @@ msgstr "加速度传感器"
 
 #. Setting: Accelerometer
 #. Field: hint
-msgid ""
-"Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro;  "
-"if someone asks it will be fixed)."
+#, fuzzy
+msgid "Enables accelerometer support (CURRENTLY BROKEN)."
 msgstr "启用加速度传感器支持（当前不可用，会干扰陀螺仪；后续会修复）"
 
 #. Setting: Gyro Hz
@@ -336,6 +427,18 @@ msgid ""
 "best. Low values cause a deadzone and high values will clip when moving "
 "the  Go abruptly."
 msgstr "对 Legion Go 陀螺仪应用缩放系数（因为驱动程序配置错误）。尝试不同的值以找到最佳效果。低值会导致死区，高值会在快速移动时裁剪"
+
+#. Setting: Dual Controller Motion Output (evdev)
+#. Field: title
+msgid "Dual Controller Motion Output (evdev)"
+msgstr ""
+
+#. Setting: Dual Controller Motion Output (evdev)
+#. Field: hint
+msgid ""
+"Adds two Motions evdev devices, one for each controller that can be used "
+"at the same time."
+msgstr ""
 
 #. Setting: Swap Legion with Start/Select
 #. Field: title
@@ -379,6 +482,11 @@ msgstr "按住 Select 键重启"
 msgid "Legion R to QAM"
 msgstr "Legion R 映射为快捷菜单键"
 
+#. Setting: Fix touchpad hold [BROKEN]
+#. Field: title
+msgid "Fix touchpad hold [BROKEN]"
+msgstr ""
+
 #. Setting: Enable Shortcuts Controller
 #. Field: title
 msgid "Enable Shortcuts Controller"
@@ -390,6 +498,22 @@ msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
 msgstr "在其他模式（dinput、双 dinput 和 fps）中，启用快捷控制器以恢复 Guide、QAM 和快捷功能"
+
+#. Setting: Factory Reset Controllers
+#. Field: title
+#, fuzzy
+msgid "Factory Reset Controllers"
+msgstr "Ally 控制器"
+
+#. Setting: Factory Reset Controllers
+#. Field: hint
+msgid "Resets the controllers to factory settings."
+msgstr ""
+
+#. Setting: Orange Pi Neo
+#. Field: title
+msgid "Orange Pi Neo"
+msgstr ""
 
 #. Setting: Ally Controller
 #. Field: title
@@ -412,7 +536,9 @@ msgid ""
 "Sets the sampling frequency for the IMU. 1600 requires an IMU patch. "
 "Check "
 "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
-msgstr "设置 IMU 的采样频率。1600 需要一个 IMU 补丁。检查 `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
+msgstr ""
+"设置 IMU 的采样频率。1600 需要一个 IMU 补丁。检查 "
+"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
 
 #. Setting: Led Brightness
 #. Field: title
@@ -451,15 +577,22 @@ msgstr "高"
 msgid "Map Armory to QAM."
 msgstr "将 Armory 键映射为快捷菜单建"
 
+#. Setting: Swap ROG and Start/Select
+#. Field: title
+#, fuzzy
+msgid "Swap ROG and Start/Select"
+msgstr "交换 Start/Select 按钮"
+
+#. Setting: Swap ROG and Start/Select
+#. Field: hint
+#, fuzzy
+msgid "Swaps the Armory Crate and Command center buttons with start and select."
+msgstr "交换 Legion Go 的 Start/Select 按钮"
+
 #. Setting: Motion Axis
 #. Field: title
 msgid "Motion Axis"
 msgstr "体感轴"
-
-#. Setting: Default
-#. Field: title
-msgid "Default"
-msgstr "默认"
 
 #. Setting: Default
 #. Field: hint
@@ -556,7 +689,9 @@ msgid ""
 "in apps. Back buttons are supported but steam will not detect them. If "
 "Gyroscope or Accelerometer are enabled, a Motion device will be created "
 "as well (experimental; works in Dolphin)."
-msgstr "创建一个虚拟的 `Handheld Daemon Controller` 设备，可以在应用中正常使用。支持背键，但 Steam 不会检测到它们。如果启用了陀螺仪或加速度计，还将创建一个 Motion 设备（实验性的, 在 Dolphin 中工作）"
+msgstr ""
+"创建一个虚拟的 `Handheld Daemon Controller` 设备，可以在应用中正常使用。支持背键，但 Steam "
+"不会检测到它们。如果启用了陀螺仪或加速度计，还将创建一个 Motion 设备（实验性的, 在 Dolphin 中工作）"
 
 #. Setting: Dualsense
 #. Field: title
@@ -583,20 +718,49 @@ msgid ""
 "them."
 msgstr "将设备 LED 作为到控制器 LED，允许游戏控制它们"
 
-#. Setting: Gyro to Mouse Fix
+#. Setting: Paddles to Clicks
 #. Field: title
-msgid "Gyro to Mouse Fix"
-msgstr "陀螺仪转鼠标 修复"
+#, fuzzy
+msgid "Paddles to Clicks"
+msgstr "点击左侧"
 
-#. Setting: Gyro to Mouse Fix
+#. Setting: Paddles to Clicks
 #. Field: hint
 msgid ""
-"In the latest steam update, `Gyro to Mouse [BETA]` misbehaves if a report"
-" is sent without a new imu timestamp. This option makes it so reports are"
-" sent only when there is a new gyro timestamp, effectively limiting the "
-"responsiveness of the controller to that of the IMU (e.g., for Legion Go "
-"100hz instead of 400hz). If the IMU is not working, this setting will "
-"break the controller."
+"Maps the paddles of the device to left and right touchpad clicks making "
+"them usable in Steam. If more than 2 paddles (e.g., Legion Go) uses the "
+"top ones. If extra buttons (e.g., Ayaneo, GPD), uses them instead."
+msgstr ""
+
+#. Setting: Gyro Output Sync
+#. Field: title
+msgid "Gyro Output Sync"
+msgstr ""
+
+#. Setting: Gyro Output Sync
+#. Field: hint
+msgid ""
+"Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to "
+"Mouse [BETA]`. If the same timestamp is sent in 2 reports, this causes a "
+"division by 0 and instability. This option makes it so reports are sent "
+"only when there is a new IMU timestamp, effectively limiting the "
+"responsiveness of the controller to that of the IMU. This only makes a "
+"difference for the Legion Go (125hz), as all the other handhelds are "
+"using 400hz by default."
+msgstr ""
+
+#. Setting: Invert Roll Axis
+#. Field: title
+#, fuzzy
+msgid "Invert Roll Axis"
+msgstr "X 轴反转"
+
+#. Setting: Invert Roll Axis
+#. Field: hint
+msgid ""
+"Inverts the roll (Z) axis compared to a real Dualsense controller. Useful"
+" for Steam Input, since you want it to be inverted to look left to right,"
+" but an issue in emulators."
 msgstr ""
 
 #. Setting: Bluetooth Mode
@@ -611,7 +775,9 @@ msgid ""
 "the default as it causes less issues with how apps interact with the "
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
-msgstr "模拟控制器蓝牙模式而不是 USB 模式。这是默认设置，因为它会减少应用与控制器交互的问题。但是，使用 USB 模式可以改善一些游戏中的 LED 支持。欢迎测试并反馈！"
+msgstr ""
+"模拟控制器蓝牙模式而不是 USB 模式。这是默认设置，因为它会减少应用与控制器交互的问题。但是，使用 USB 模式可以改善一些游戏中的 LED "
+"支持。欢迎测试并反馈！"
 
 #. Setting: Dualsense Edge
 #. Field: title
@@ -652,11 +818,27 @@ msgstr "虚拟"
 
 #. Setting: Virtual
 #. Field: hint
+#, fuzzy
 msgid ""
-"Adds an emulated touchpad. This touchpad is meant to be for desktop use "
-"and has left, right click support by default, within gamescope and "
-"outside of it, regardless of the \"Tap to Click\" setting."
+"Adds an emulated touchpad. This touchpad is meant for use in gamescope "
+"and has left, right click support by default. However, it causes issues "
+"in desktop mode, and it doesnt allow dragging files. Therefore, it will "
+"autodisable in desktop."
 msgstr "添加一个模拟触摸板。这个触摸板是用于桌面使用的，默认情况下在 gamescope 内外都支持左右键点击，不受“轻触点击”设置的影响"
+
+#. Setting: Disable on Desktop
+#. Field: title
+#, fuzzy
+msgid "Disable on Desktop"
+msgstr "禁用"
+
+#. Setting: Disable on Desktop
+#. Field: hint
+msgid ""
+"Touchpad emulation will automatically be disabled when not in gamemode. "
+"Specifically, steam will be periodically be checked to be running in "
+"gamepad mode and if not, touchpad emulation will be disabled."
+msgstr ""
 
 #. Setting: Short Action
 #. Field: title
@@ -699,56 +881,46 @@ msgid ""
 "long press simulates trackpad click."
 msgstr ""
 
-#. Setting: Correction Type
+#. Setting: Location
 #. Field: title
-msgid "Correction Type"
-msgstr "校正类型"
+#, fuzzy
+msgid "Location"
+msgstr "长按动作"
 
-#. Setting: Correction Type
+#. Setting: Location
 #. Field: hint
 msgid ""
-"The legion touchpad is square, whereas the DS5 one is rectangular. "
-"Therefore, it needs to be corrected. \"Contain\" maintain the whole DS5 "
-"touchpad and part of the Legion one is unused. \"Crop\" uses the full "
-"legion touchpad, and limits the area of the DS5. \"Stretch\" uses both "
-"fully (distorted). \"Crop End\" enables use in steam input as the right "
-"touchpad."
-msgstr "Legion 触摸板是正方形的，而 DS5 触摸板是长方形的。因此，需要进行校正。\"Contain\" 保持整个 DS5 触摸板，部分 Legion 触摸板未使用。\"裁切\" 使用整个 Legion 触摸板，并限制 DS5 的区域。\"拉伸\" 完整使用（拉伸）。\"Crop End\" 在 Steam 输入中启用右触摸板"
+"Controls the placement of the real touchpad to the virtual one, using "
+"what steam expects. In Steam, the \"Left\" touchpad maps to the left "
+"half, the \"Right\" touchpad maps to the right half, and \"Center\" maps "
+"to the whole touchpad. Therefore, the virtual touchpad is cropped to the "
+"left side for left, the right side for right, and expanded in the center "
+"for center. This means when set to center, half of the left touchpad is "
+"left and half of the right is right. \"Stretch\" stretches the touchpad "
+"to the whole dualsense surface."
+msgstr ""
 
-#. Setting: Correction Type
+#. Setting: Location
+#. Option: right
+#, fuzzy
+msgid "Right"
+msgstr "高"
+
+#. Setting: Location
+#. Option: center
+#, fuzzy
+msgid "Center"
+msgstr "居中裁剪"
+
+#. Setting: Location
+#. Option: left
+msgid "Left"
+msgstr ""
+
+#. Setting: Location
 #. Option: stretch
 msgid "Stretch"
 msgstr "拉伸"
-
-#. Setting: Correction Type
-#. Option: crop_center
-msgid "Crop Center"
-msgstr "居中裁剪"
-
-#. Setting: Correction Type
-#. Option: crop_start
-msgid "Crop Start"
-msgstr "左对齐裁剪"
-
-#. Setting: Correction Type
-#. Option: crop_end
-msgid "Crop End"
-msgstr "右对齐裁剪"
-
-#. Setting: Correction Type
-#. Option: contain_start
-msgid "Contain Start"
-msgstr "左对齐包含"
-
-#. Setting: Correction Type
-#. Option: contain_end
-msgid "Contain End"
-msgstr "右对齐包含"
-
-#. Setting: Correction Type
-#. Option: contain_center
-msgid "Contain Center"
-msgstr "居中包含"
 
 #. Setting: Short Action
 #. Field: hint
@@ -786,4 +958,99 @@ msgid ""
 "Sets the brightness level of a display. Only one display is supported and"
 " it is the one that was read."
 msgstr ""
+
+#. Setting: Overlay with QAM Double/Tripple press (requires restart)
+#. Field: title
+msgid "Overlay with QAM Double/Tripple press (requires restart)"
+msgstr ""
+
+#. Setting: Steam Powerbutton Handler
+#. Field: title
+msgid "Steam Powerbutton Handler"
+msgstr ""
+
+#. Setting: Steam Powerbutton Handler
+#. Field: hint
+msgid ""
+"Enables the Steam Powerbutton handler (responsible for the wink and "
+"powerbutton menu)."
+msgstr ""
+
+#~ msgid "About"
+#~ msgstr "关于"
+
+#~ msgid "Version Information"
+#~ msgstr "版本信息"
+
+#~ msgid "Handheld Daemon version manager (local install only)."
+#~ msgstr "Handheld Daemon 版本管理 (仅本地安装)"
+
+#~ msgid "Decky Plugin Version"
+#~ msgstr "Decky 插件版本"
+
+#~ msgid "Displays the Handheld Daemon Decky plugin version."
+#~ msgstr "显示 Handheld Daemon Decky 插件版本"
+
+#~ msgid "WARNING: This button will be removed soon, update Decky now!"
+#~ msgstr "警告：此按钮将很快被移除，请立即更新 Decky！"
+
+#~ msgid "Updates the Decky plugin to the latest release."
+#~ msgstr "更新 Decky 插件到最新版本"
+
+#~ msgid "Handheld Controller"
+#~ msgstr "掌机控制器"
+
+#~ msgid "Gyro to Mouse Fix"
+#~ msgstr "陀螺仪转鼠标 修复"
+
+#~ msgid ""
+#~ "In the latest steam update, `Gyro "
+#~ "to Mouse [BETA]` misbehaves if a "
+#~ "report is sent without a new imu"
+#~ " timestamp. This option makes it so"
+#~ " reports are sent only when there "
+#~ "is a new gyro timestamp, effectively "
+#~ "limiting the responsiveness of the "
+#~ "controller to that of the IMU "
+#~ "(e.g., for Legion Go 100hz instead "
+#~ "of 400hz). If the IMU is not "
+#~ "working, this setting will break the "
+#~ "controller."
+#~ msgstr ""
+
+#~ msgid "Correction Type"
+#~ msgstr "校正类型"
+
+#~ msgid ""
+#~ "The legion touchpad is square, whereas"
+#~ " the DS5 one is rectangular. "
+#~ "Therefore, it needs to be corrected. "
+#~ "\"Contain\" maintain the whole DS5 "
+#~ "touchpad and part of the Legion "
+#~ "one is unused. \"Crop\" uses the "
+#~ "full legion touchpad, and limits the "
+#~ "area of the DS5. \"Stretch\" uses "
+#~ "both fully (distorted). \"Crop End\" "
+#~ "enables use in steam input as the"
+#~ " right touchpad."
+#~ msgstr ""
+#~ "Legion 触摸板是正方形的，而 DS5 触摸板是长方形的。因此，需要进行校正。\"Contain\""
+#~ " 保持整个 DS5 触摸板，部分 Legion 触摸板未使用。\"裁切\" "
+#~ "使用整个 Legion 触摸板，并限制 DS5 的区域。\"拉伸\" "
+#~ "完整使用（拉伸）。\"Crop End\" 在 Steam 输入中启用右触摸板"
+
+#~ msgid "Crop Start"
+#~ msgstr "左对齐裁剪"
+
+#~ msgid "Crop End"
+#~ msgstr "右对齐裁剪"
+
+#~ msgid "Contain Start"
+#~ msgstr "左对齐包含"
+
+#~ msgid "Contain End"
+#~ msgstr "右对齐包含"
+
+#~ msgid "Contain Center"
+#~ msgstr "居中包含"
 

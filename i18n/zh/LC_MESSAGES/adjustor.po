@@ -1,0 +1,504 @@
+# Chinese translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-04-08 18:54+0200\n"
+"PO-Revision-Date: 2024-04-08 19:00+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh\n"
+"Language-Team: zh <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.14.0\n"
+
+#. Setting: TDP Controls
+#. Field: title
+msgid "TDP Controls"
+msgstr ""
+
+#. Setting: Enable TDP Controls [BETA]
+#. Field: title
+msgid "Enable TDP Controls [BETA]"
+msgstr ""
+
+#. Setting: Enable TDP Controls [BETA]
+#. Field: hint
+#. Setting: Enable TDP Controls
+msgid ""
+"Enables TDP management by the Handheld Daemon. While enabled, Handheld "
+"Daemon will set and maintain the TDP limits set on start-up and during "
+"other device changes (ac/dc).\n"
+"If the device crashes, TDP setting will be disabled on next startup."
+msgstr ""
+
+#. Setting: Error
+#. Field: title
+msgid "Error"
+msgstr ""
+
+#. Setting: Error
+#. Option: nowrite
+msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
+msgstr ""
+
+#. Setting: Enable TDP Controls
+#. Field: title
+msgid "Enable TDP Controls"
+msgstr ""
+
+#. Setting: Enforce Device TDP Limits
+#. Field: title
+msgid "Enforce Device TDP Limits"
+msgstr ""
+
+#. Setting: Enforce Device TDP Limits
+#. Field: hint
+msgid ""
+"When this option is on, the settings will adhere to the limits set out by"
+" the device manufacturer, subject to their availability.\n"
+"With it off, the TDP settings ranges will expand to what is logically "
+"possible for the current device (regardless of manufacturer "
+"specifications).\n"
+"All settings outside specifications will be set to system specifications "
+"after rebooting."
+msgstr ""
+
+#. Setting: Asus TDP
+#. Field: title
+msgid "Asus TDP"
+msgstr ""
+
+#. Setting: Asus TDP
+#. Field: hint
+msgid "Uses the interface of Armory Crate to set the TDP of the device."
+msgstr ""
+
+#. Setting: TDP
+#. Field: title
+msgid "TDP"
+msgstr ""
+
+#. Setting: TDP
+#. Field: hint
+msgid ""
+"Average TDP Target.\n"
+"Sets the values STAMP and Skin Power Limit to it without boost. With "
+"boost, it sets the fast value to 53/30*tdp and the slow value to "
+"43/30*tdp. Boost is recommended for desktop use."
+msgstr ""
+
+#. Setting: TDP Boost
+#. Field: title
+msgid "TDP Boost"
+msgstr ""
+
+#. Setting: TDP Boost
+#. Field: hint
+msgid "Allows the device to boost by setting appropriate slow and fast TDPs."
+msgstr ""
+
+#. Setting: Custom Fan Curve
+#. Field: title
+msgid "Custom Fan Curve"
+msgstr ""
+
+#. Setting: Custom Fan Curve
+#. Field: hint
+msgid "Allows you to set a custom fan curve."
+msgstr ""
+
+#. Setting: Disabled
+#. Field: title
+#. Setting: Charge Limit (%)
+#. Option: disabled
+msgid "Disabled"
+msgstr ""
+
+#. Setting: Disabled
+#. Field: hint
+msgid "Lets the device manage the fan curve on its own."
+msgstr ""
+
+#. Setting: Manual [BETA]
+#. Field: title
+msgid "Manual [BETA]"
+msgstr ""
+
+#. Setting: 30C
+#. Field: title
+msgid "30C"
+msgstr ""
+
+#. Setting: 30C
+#. Field: hint
+#. Setting: 40C
+#. Setting: 50C
+#. Setting: 60C
+#. Setting: 70C
+#. Setting: 80C
+#. Setting: 90C
+#. Setting: 100C
+#. Setting: 10C
+#. Setting: 20C
+msgid "Sets the speed at the named temperature."
+msgstr ""
+
+#. Setting: 40C
+#. Field: title
+msgid "40C"
+msgstr ""
+
+#. Setting: 50C
+#. Field: title
+msgid "50C"
+msgstr ""
+
+#. Setting: 60C
+#. Field: title
+msgid "60C"
+msgstr ""
+
+#. Setting: 70C
+#. Field: title
+msgid "70C"
+msgstr ""
+
+#. Setting: 80C
+#. Field: title
+msgid "80C"
+msgstr ""
+
+#. Setting: 90C
+#. Field: title
+msgid "90C"
+msgstr ""
+
+#. Setting: 100C
+#. Field: title
+msgid "100C"
+msgstr ""
+
+#. Setting: Restore Default
+#. Field: title
+msgid "Restore Default"
+msgstr ""
+
+#. Setting: Restore Default
+#. Field: hint
+msgid "Restore a default sane fan curve."
+msgstr ""
+
+#. Setting: Fan Curve Limitation
+#. Field: title
+msgid "Fan Curve Limitation"
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Field: title
+msgid "Charge Limit (%)"
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Field: hint
+msgid "Applies a charge limit to the battery, 75% and up."
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Option: p65
+msgid "65%"
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Option: p70
+msgid "70%"
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Option: p80
+msgid "80%"
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Option: p85
+msgid "85%"
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Option: p90
+msgid "90%"
+msgstr ""
+
+#. Setting: Charge Limit (%)
+#. Option: p95
+msgid "95%"
+msgstr ""
+
+#. Setting: Sleep Bug
+#. Field: title
+msgid "Sleep Bug"
+msgstr ""
+
+#. Setting: Lenovo TDP
+#. Field: title
+msgid "Lenovo TDP"
+msgstr ""
+
+#. Setting: Lenovo TDP
+#. Field: hint
+msgid "Uses the interface of Legion Space to set the TDP of the device."
+msgstr ""
+
+#. Setting: TDP Mode
+#. Field: title
+msgid "TDP Mode"
+msgstr ""
+
+#. Setting: Quiet (8W)
+#. Field: title
+msgid "Quiet (8W)"
+msgstr ""
+
+#. Setting: Balanced (15W)
+#. Field: title
+msgid "Balanced (15W)"
+msgstr ""
+
+#. Setting: Performance (20W)
+#. Field: title
+msgid "Performance (20W)"
+msgstr ""
+
+#. Setting: Custom (up to 25-30W)
+#. Field: title
+msgid "Custom (up to 25-30W)"
+msgstr ""
+
+#. Setting: TDP
+#. Field: hint
+msgid ""
+"Average TDP Target.\n"
+"Sets the values STAMP and Skin Power Limit to it. If boost is enabled, "
+"interpolates values for slow and fast TDPs  based on those used by "
+"Lenovo. If it is not, it sets the Slow limit equal to TDP and the Fast "
+"limit to +2W. Boost is recommended for desktop use."
+msgstr ""
+
+#. Setting: Set Fan to Full Speed
+#. Field: title
+msgid "Set Fan to Full Speed"
+msgstr ""
+
+#. Setting: Custom Fan Curve
+#. Field: hint
+msgid ""
+"Allows you to set a custom fan curve. This fan curve is only officially "
+"supported on custom mode, but you can nevertheless use it in other power "
+"modes. This fan curve needs to be reapplied and is reapplied every time "
+"you switch  TDP modes."
+msgstr ""
+
+#. Setting: Disabled
+#. Field: hint
+msgid ""
+"Lets Legion GO manage the curve on its own. Setting this option will "
+"cause a mode change to reset the fan curve."
+msgstr ""
+
+#. Setting: 10C
+#. Field: title
+msgid "10C"
+msgstr ""
+
+#. Setting: 20C
+#. Field: title
+msgid "20C"
+msgstr ""
+
+#. Setting: Enforce Windows Minimums
+#. Field: title
+msgid "Enforce Windows Minimums"
+msgstr ""
+
+#. Setting: Enforce Windows Minimums
+#. Field: hint
+msgid "Enforce the minimum fan curve from Legion Space."
+msgstr ""
+
+#. Setting: Restore Default
+#. Field: hint
+msgid "Reset to the original fan curve provided by Lenovo in BIOS V28."
+msgstr ""
+
+#. Setting: Enable Charge Limit (80%)
+#. Field: title
+msgid "Enable Charge Limit (80%)"
+msgstr ""
+
+#. Setting: Enable Charge Limit (80%)
+#. Field: hint
+msgid "Limits device charging to 80%. Lenovo EC method. Available since BIOSv29."
+msgstr ""
+
+#. Setting: Enable Power Light
+#. Field: title
+msgid "Enable Power Light"
+msgstr ""
+
+#. Setting: TDP Settings
+#. Field: title
+msgid "TDP Settings"
+msgstr ""
+
+#. Setting: TDP
+#. Field: hint
+msgid "Controls all Ryzen SMU settings through preset curves."
+msgstr ""
+
+#. Setting: Advanced Configurator
+#. Field: title
+msgid "Advanced Configurator"
+msgstr ""
+
+#. Setting: Apply Settings
+#. Field: title
+msgid "Apply Settings"
+msgstr ""
+
+#. Setting: TDP Status
+#. Field: title
+msgid "TDP Status"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Field: title
+msgid "Platform Profile"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Option: disabled
+msgid "Not Set"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Option: low-power
+msgid "Low Power"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Option: cool
+msgid "Cool"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Option: quiet
+msgid "Quiet"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Option: balanced
+msgid "Balanced"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Option: balanced-performance
+msgid "Balanced Performance"
+msgstr ""
+
+#. Setting: Platform Profile
+#. Option: performance
+msgid "Performance"
+msgstr ""
+
+#. Setting: Standard Parameters
+#. Field: title
+msgid "Standard Parameters"
+msgstr ""
+
+#. Setting: Standard Parameters
+#. Field: hint
+msgid ""
+"Standard TDP parameters for Ryzen processors. All need to be set to "
+"properly control the TDP of the device.\n"
+"Ryzen processors have 2 modes: STTv2 and STAPM (legacy). AMD suggests to"
+"  manufacturers to use STTv2, which makes the Legion Go the only device "
+"to  offer the STAPM alternative through a BIOS setting.\n"
+"In STTv2, the device will keep boosting until the \"skin\" of the device "
+"(hottest user accessible spot) reaches a manufacturer set temperature. "
+"Then, the device will use the Skin Temp TDP limit. In STAPM, the device "
+"averages the TDP values from the 1-3 previous minutes and keeps that "
+"value under the STAPM TDP limit. Either mode ignores the other mode's "
+"limit (STAPM limit does nothing on STT and Skin Temp Limit does nothing "
+"on STAPM), so both should be set.\n"
+"The Fast and Slow limits control boosting behavior. The Fast TDP limit is"
+" the actual max TDP value of the device. Then,the Slow TDP limit averages"
+" the last 10-20s of TDP values and keeps the value below it."
+msgstr ""
+
+#. Setting: Fast TDP Limit
+#. Field: title
+msgid "Fast TDP Limit"
+msgstr ""
+
+#. Setting: Slow TDP Limit
+#. Field: title
+msgid "Slow TDP Limit"
+msgstr ""
+
+#. Setting: Skin Temp TDP Limit
+#. Field: title
+msgid "Skin Temp TDP Limit"
+msgstr ""
+
+#. Setting: STAPM TDP Limit
+#. Field: title
+msgid "STAPM TDP Limit"
+msgstr ""
+
+#. Setting: Advanced Parameters
+#. Field: title
+msgid "Advanced Parameters"
+msgstr ""
+
+#. Setting: Advanced Parameters
+#. Field: hint
+msgid ""
+"The Advanced Parameters below control boosting behavior and need to be "
+"adjusted per device depending on its cooling system. They mostly affect "
+"boosting behavior, which is important for desktop use.\n"
+"The exception is the Temp Target (TCTL), which controls the max "
+"temperature of the CPU die. On most devices, it can safely be raised up "
+"to 100C.  However, if a temperature spike makes the chip reach 105C, it "
+"will enter a thermal protection mode, which is 5W, for a couple of "
+"minutes.\n"
+"The integration times for Slow TDP and STAPM influence how many previous "
+"TDP values the CPU will average to calculate its current Slow and STAPM  "
+"TDP values."
+msgstr ""
+
+#. Setting: Temp Target (TCTL)
+#. Field: title
+msgid "Temp Target (TCTL)"
+msgstr ""
+
+#. Setting: Slow Limit Integration Time
+#. Field: title
+msgid "Slow Limit Integration Time"
+msgstr ""
+
+#. Setting: STAPM Limit Integration Time
+#. Field: title
+msgid "STAPM Limit Integration Time"
+msgstr ""
+
+#. Setting: Enable Advanced Parameters
+#. Field: title
+msgid "Enable Advanced Parameters"
+msgstr ""
+
