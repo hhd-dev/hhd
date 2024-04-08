@@ -6,4 +6,7 @@ def _(arg: str):
 
 
 def locales() -> list[HHDLocale]:
-    return [{"dir": get_relative_fn("./"), "domain": "hhd", "priority": 10}]
+    return [
+        {"dir": get_relative_fn("./"), "domain": "hhd", "priority": 10},
+        {"dir": get_relative_fn("./"), "domain": "adjustor", "priority": 20},
+    ]

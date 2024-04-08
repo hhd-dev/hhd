@@ -227,7 +227,7 @@ def main():
         locales = []
         for register in pkg_resources.iter_entry_points("hhd.i18n"):
             locales.extend(register.resolve()())
-        locales.sort(key=lambda x: x["priority"])
+        locales.sort(key=lambda x: x["priority"], reverse=True)
 
         if locales:
             lstr = "Loaded the following locales:\n"
