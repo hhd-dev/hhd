@@ -6,7 +6,7 @@ settings:
   children:
     language:
       type: multiple
-      tags: [i18n, advanced]
+      tags: [i18n, non-essential, language]
       title: Language [BETA]
       default: system
       options:
