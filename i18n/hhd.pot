@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-02-07 17:22+0100\n"
+"POT-Creation-Date: 2024-04-08 18:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,8 @@ msgstr ""
 "Generated-By: Babel 2.14.0\n"
 
 #. Section Name for: system
+#. Setting: Language [BETA]
+#. Option: system
 #. Setting: System
 #. Field: title
 msgid "System"
@@ -34,42 +36,77 @@ msgid "Controller"
 msgstr ""
 
 #. Section Name for: hhd
-msgid "About"
+msgid "Settings"
 msgstr ""
 
-#. Setting: Version Information
+#. Section Name for: bazzite
+msgid "Bazzite"
+msgstr ""
+
+#. Section Name for: utilities
+msgid "Utilities"
+msgstr ""
+
+#. Setting: Core Settings
 #. Field: title
-msgid "Version Information"
+msgid "Core Settings"
 msgstr ""
 
-#. Setting: Version Information
+#. Setting: Language [BETA]
+#. Field: title
+msgid "Language [BETA]"
+msgstr ""
+
+#. Setting: Language [BETA]
+#. Option: C
+msgid "English"
+msgstr ""
+
+#. Setting: Language [BETA]
+#. Option: zh
+msgid "Chinese"
+msgstr ""
+
+#. Setting: Language [BETA]
+#. Option: pt
+msgid "Portugese"
+msgstr ""
+
+#. Setting: Theme
+#. Field: title
+msgid "Theme"
+msgstr ""
+
+#. Setting: Theme
 #. Field: hint
-msgid "Handheld Daemon version manager (local install only)."
+msgid ""
+"Allows changing the theme in the UI. Default is either Diavolo or your "
+"distribution's theme."
 msgstr ""
 
-#. Setting: Decky Plugin Version
+#. Setting: Theme
+#. Option: default
+#. Setting: Default
 #. Field: title
-msgid "Decky Plugin Version"
+msgid "Default"
 msgstr ""
 
-#. Setting: Decky Plugin Version
-#. Field: hint
-msgid "Displays the Handheld Daemon Decky plugin version."
+#. Setting: Theme
+#. Option: diavolo
+msgid "Diavolo"
 msgstr ""
 
-#. Setting: WARNING: This button will be removed soon, update Decky now!
+#. Setting: Theme
+#. Option: ocean
+msgid "Atlantis"
+msgstr ""
+
+#. Setting: It is no longer possible to update Decky from here. If you see
+#. this, update the Decky plugin manually.
 #. Field: title
-msgid "WARNING: This button will be removed soon, update Decky now!"
-msgstr ""
-
-#. Setting: Update Decky
-#. Field: title
-msgid "Update Decky"
-msgstr ""
-
-#. Setting: Update Decky
-#. Field: hint
-msgid "Updates the Decky plugin to the latest release."
+msgid ""
+"It is no longer possible to update Decky from here. If you see this, "
+"update the Decky plugin manually."
 msgstr ""
 
 #. Setting: Handheld Daemon Version
@@ -79,7 +116,19 @@ msgstr ""
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
+#. Setting: Handheld Daemon UI Version
+#. Setting: Adjustor (TDP) Version
 msgid "Displays the Handheld Daemon version."
+msgstr ""
+
+#. Setting: Handheld Daemon UI Version
+#. Field: title
+msgid "Handheld Daemon UI Version"
+msgstr ""
+
+#. Setting: Adjustor (TDP) Version
+#. Field: title
+msgid "Adjustor (TDP) Version"
 msgstr ""
 
 #. Setting: Update (Stable)
@@ -100,6 +149,11 @@ msgstr ""
 #. Setting: Update (Unstable)
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
+msgstr ""
+
+#. Setting: Update Error
+#. Field: title
+msgid "Update Error"
 msgstr ""
 
 #. Setting: API Configuration
@@ -154,13 +208,14 @@ msgid ""
 "authentication."
 msgstr ""
 
-#. Setting: Handheld Controller
+#. Setting: Handheld
 #. Field: title
-msgid "Handheld Controller"
+msgid "Handheld"
 msgstr ""
 
-#. Setting: Handheld Controller
+#. Setting: Handheld
 #. Field: hint
+#. Setting: Orange Pi Neo
 msgid "Allows for configuring your handheld's controller to a unified output."
 msgstr ""
 
@@ -245,9 +300,9 @@ msgstr ""
 
 #. Setting: Map L4/R4 to QAM.
 #. Option: disabled
-#. Setting: Swap Legion with Start/Select
 #. Setting: Disabled
 #. Field: title
+#. Setting: Swap Legion with Start/Select
 #. Setting: Short Action
 #. Setting: Hold Action
 msgid "Disabled"
@@ -287,6 +342,36 @@ msgid ""
 "X-Input mode."
 msgstr ""
 
+#. Setting: Controller Motions Device
+#. Field: title
+msgid "Controller Motions Device"
+msgstr ""
+
+#. Setting: Left Controller
+#. Field: title
+msgid "Left Controller"
+msgstr ""
+
+#. Setting: Right Controller
+#. Field: title
+msgid "Right Controller"
+msgstr ""
+
+#. Setting: Display [SEE HINT]
+#. Field: title
+msgid "Display [SEE HINT]"
+msgstr ""
+
+#. Setting: Display [SEE HINT]
+#. Field: hint
+msgid ""
+"Using the gyro of the display unit is deprecated. The controller units "
+"(after calibration) are better in every way. As part of the deprecation, "
+"the rule that disabled the use of the accelerometer for display "
+"autorotation was removed. If you try to use the display gyroscope without"
+" this rule you will get freezing."
+msgstr ""
+
 #. Setting: Gyroscope
 #. Field: title
 msgid "Gyroscope"
@@ -304,9 +389,7 @@ msgstr ""
 
 #. Setting: Accelerometer
 #. Field: hint
-msgid ""
-"Enables accelerometer support (CURRENTLY BROKEN; interferes with gyro;  "
-"if someone asks it will be fixed)."
+msgid "Enables accelerometer support (CURRENTLY BROKEN)."
 msgstr ""
 
 #. Setting: Gyro Hz
@@ -334,6 +417,18 @@ msgid ""
 "misconfigured by the driver). Try different values to see what works "
 "best. Low values cause a deadzone and high values will clip when moving "
 "the  Go abruptly."
+msgstr ""
+
+#. Setting: Dual Controller Motion Output (evdev)
+#. Field: title
+msgid "Dual Controller Motion Output (evdev)"
+msgstr ""
+
+#. Setting: Dual Controller Motion Output (evdev)
+#. Field: hint
+msgid ""
+"Adds two Motions evdev devices, one for each controller that can be used "
+"at the same time."
 msgstr ""
 
 #. Setting: Swap Legion with Start/Select
@@ -378,6 +473,11 @@ msgstr ""
 msgid "Legion R to QAM"
 msgstr ""
 
+#. Setting: Fix touchpad hold [BROKEN]
+#. Field: title
+msgid "Fix touchpad hold [BROKEN]"
+msgstr ""
+
 #. Setting: Enable Shortcuts Controller
 #. Field: title
 msgid "Enable Shortcuts Controller"
@@ -388,6 +488,21 @@ msgstr ""
 msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
+msgstr ""
+
+#. Setting: Factory Reset Controllers
+#. Field: title
+msgid "Factory Reset Controllers"
+msgstr ""
+
+#. Setting: Factory Reset Controllers
+#. Field: hint
+msgid "Resets the controllers to factory settings."
+msgstr ""
+
+#. Setting: Orange Pi Neo
+#. Field: title
+msgid "Orange Pi Neo"
 msgstr ""
 
 #. Setting: Ally Controller
@@ -450,14 +565,19 @@ msgstr ""
 msgid "Map Armory to QAM."
 msgstr ""
 
+#. Setting: Swap ROG and Start/Select
+#. Field: title
+msgid "Swap ROG and Start/Select"
+msgstr ""
+
+#. Setting: Swap ROG and Start/Select
+#. Field: hint
+msgid "Swaps the Armory Crate and Command center buttons with start and select."
+msgstr ""
+
 #. Setting: Motion Axis
 #. Field: title
 msgid "Motion Axis"
-msgstr ""
-
-#. Setting: Default
-#. Field: title
-msgid "Default"
 msgstr ""
 
 #. Setting: Default
@@ -582,20 +702,47 @@ msgid ""
 "them."
 msgstr ""
 
-#. Setting: Gyro to Mouse Fix
+#. Setting: Paddles to Clicks
 #. Field: title
-msgid "Gyro to Mouse Fix"
+msgid "Paddles to Clicks"
 msgstr ""
 
-#. Setting: Gyro to Mouse Fix
+#. Setting: Paddles to Clicks
 #. Field: hint
 msgid ""
-"In the latest steam update, `Gyro to Mouse [BETA]` misbehaves if a report"
-" is sent without a new imu timestamp. This option makes it so reports are"
-" sent only when there is a new gyro timestamp, effectively limiting the "
-"responsiveness of the controller to that of the IMU (e.g., for Legion Go "
-"100hz instead of 400hz). If the IMU is not working, this setting will "
-"break the controller."
+"Maps the paddles of the device to left and right touchpad clicks making "
+"them usable in Steam. If more than 2 paddles (e.g., Legion Go) uses the "
+"top ones. If extra buttons (e.g., Ayaneo, GPD), uses them instead."
+msgstr ""
+
+#. Setting: Gyro Output Sync
+#. Field: title
+msgid "Gyro Output Sync"
+msgstr ""
+
+#. Setting: Gyro Output Sync
+#. Field: hint
+msgid ""
+"Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to "
+"Mouse [BETA]`. If the same timestamp is sent in 2 reports, this causes a "
+"division by 0 and instability. This option makes it so reports are sent "
+"only when there is a new IMU timestamp, effectively limiting the "
+"responsiveness of the controller to that of the IMU. This only makes a "
+"difference for the Legion Go (125hz), as all the other handhelds are "
+"using 400hz by default."
+msgstr ""
+
+#. Setting: Invert Roll Axis
+#. Field: title
+msgid "Invert Roll Axis"
+msgstr ""
+
+#. Setting: Invert Roll Axis
+#. Field: hint
+msgid ""
+"Inverts the roll (Z) axis compared to a real Dualsense controller. Useful"
+" for Steam Input, since you want it to be inverted to look left to right,"
+" but an issue in emulators."
 msgstr ""
 
 #. Setting: Bluetooth Mode
@@ -652,9 +799,23 @@ msgstr ""
 #. Setting: Virtual
 #. Field: hint
 msgid ""
-"Adds an emulated touchpad. This touchpad is meant to be for desktop use "
-"and has left, right click support by default, within gamescope and "
-"outside of it, regardless of the \"Tap to Click\" setting."
+"Adds an emulated touchpad. This touchpad is meant for use in gamescope "
+"and has left, right click support by default. However, it causes issues "
+"in desktop mode, and it doesnt allow dragging files. Therefore, it will "
+"autodisable in desktop."
+msgstr ""
+
+#. Setting: Disable on Desktop
+#. Field: title
+msgid "Disable on Desktop"
+msgstr ""
+
+#. Setting: Disable on Desktop
+#. Field: hint
+msgid ""
+"Touchpad emulation will automatically be disabled when not in gamemode. "
+"Specifically, steam will be periodically be checked to be running in "
+"gamepad mode and if not, touchpad emulation will be disabled."
 msgstr ""
 
 #. Setting: Short Action
@@ -698,55 +859,42 @@ msgid ""
 "long press simulates trackpad click."
 msgstr ""
 
-#. Setting: Correction Type
+#. Setting: Location
 #. Field: title
-msgid "Correction Type"
+msgid "Location"
 msgstr ""
 
-#. Setting: Correction Type
+#. Setting: Location
 #. Field: hint
 msgid ""
-"The legion touchpad is square, whereas the DS5 one is rectangular. "
-"Therefore, it needs to be corrected. \"Contain\" maintain the whole DS5 "
-"touchpad and part of the Legion one is unused. \"Crop\" uses the full "
-"legion touchpad, and limits the area of the DS5. \"Stretch\" uses both "
-"fully (distorted). \"Crop End\" enables use in steam input as the right "
-"touchpad."
+"Controls the placement of the real touchpad to the virtual one, using "
+"what steam expects. In Steam, the \"Left\" touchpad maps to the left "
+"half, the \"Right\" touchpad maps to the right half, and \"Center\" maps "
+"to the whole touchpad. Therefore, the virtual touchpad is cropped to the "
+"left side for left, the right side for right, and expanded in the center "
+"for center. This means when set to center, half of the left touchpad is "
+"left and half of the right is right. \"Stretch\" stretches the touchpad "
+"to the whole dualsense surface."
 msgstr ""
 
-#. Setting: Correction Type
+#. Setting: Location
+#. Option: right
+msgid "Right"
+msgstr ""
+
+#. Setting: Location
+#. Option: center
+msgid "Center"
+msgstr ""
+
+#. Setting: Location
+#. Option: left
+msgid "Left"
+msgstr ""
+
+#. Setting: Location
 #. Option: stretch
 msgid "Stretch"
-msgstr ""
-
-#. Setting: Correction Type
-#. Option: crop_center
-msgid "Crop Center"
-msgstr ""
-
-#. Setting: Correction Type
-#. Option: crop_start
-msgid "Crop Start"
-msgstr ""
-
-#. Setting: Correction Type
-#. Option: crop_end
-msgid "Crop End"
-msgstr ""
-
-#. Setting: Correction Type
-#. Option: contain_start
-msgid "Contain Start"
-msgstr ""
-
-#. Setting: Correction Type
-#. Option: contain_end
-msgid "Contain End"
-msgstr ""
-
-#. Setting: Correction Type
-#. Option: contain_center
-msgid "Contain Center"
 msgstr ""
 
 #. Setting: Short Action
@@ -784,5 +932,22 @@ msgstr ""
 msgid ""
 "Sets the brightness level of a display. Only one display is supported and"
 " it is the one that was read."
+msgstr ""
+
+#. Setting: Overlay with QAM Double/Tripple press (requires restart)
+#. Field: title
+msgid "Overlay with QAM Double/Tripple press (requires restart)"
+msgstr ""
+
+#. Setting: Steam Powerbutton Handler
+#. Field: title
+msgid "Steam Powerbutton Handler"
+msgstr ""
+
+#. Setting: Steam Powerbutton Handler
+#. Field: hint
+msgid ""
+"Enables the Steam Powerbutton handler (responsible for the wink and "
+"powerbutton menu)."
 msgstr ""
 

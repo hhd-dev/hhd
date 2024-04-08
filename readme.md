@@ -482,11 +482,14 @@ The override setting also displays the make and model of your device, which
 are required to add the mappings to Handheld Daemon.
 
 ### Localizing Handheld Daemon
-You can find `pot` and `po` files for Handheld Daemon under the  `i18n` directory.
+You can find `pot` and `po` files for Handheld Daemon under the `i18n` directory.
 You can clone/download this repository and open the `./i18n` directory.
-Then, just copy the `template.pot` file into `<your_locale>/LC_MESSAGES/messages.po`
+Then, just copy the `*.pot` files into `<your_locale>/LC_MESSAGES/*.po`
 and begin translating with your favorite text editor, or by using
 tool such as [Lokalize](https://apps.kde.org/lokalize/).
+
+As far as your locale goes, unless you have a good reason to, skip the territory
+code (e.g., `el` instead of `el_GR`).
 
 The files can be updated for a new version with the following commands:
 ```bash
@@ -497,12 +500,18 @@ python -m venv venv
 pip install babel
 pip install -e .
 
-# Generate POT file
-pybabel extract --no-location -F i18n/babel.cfg -o i18n/template.pot src/hhd
-# Update current pot files
-pybabel update -i i18n/template.pot -d i18n -D hhd
-# Generate PO files for your language (essentially a copy with a header change)
-pybabel init -i i18n/template.pot -l el_gr -d i18n -D hhd
+# Regenerate POT files
+pybabel extract --no-location -F i18n/babel.cfg -o i18n/hhd.pot src/hhd
+# Assuming adjustor is in an adjacent directory
+pybabel extract --no-location -F i18n/babel.cfg -o i18n/adjustor.pot ../adjustor/src/adjustor
+
+# Generate PO files for your language if they do not exist
+pybabel init -i i18n/hhd.pot -d i18n -D hhd -l YOUR_LANG
+pybabel init -i i18n/adjustor.pot -d i18n -D adjustor -l YOUR_LANG
+
+# Update current PO files for your language
+pybabel update -i i18n/hhd.pot -d i18n -D hhd -l YOUR_LANG
+pybabel update -i i18n/adjustor.pot -d i18n -D adjustor -l YOUR_LANG
 ```
 
 ### Creating a Local Repo version
