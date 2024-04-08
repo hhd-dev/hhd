@@ -1,7 +1,6 @@
 type: container
 title: Advanced Configurator
 tags: [advanced, expert]
-hint: >-
 children:
   apply:
     type: action
