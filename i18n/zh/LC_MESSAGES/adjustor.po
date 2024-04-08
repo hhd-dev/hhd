@@ -27,12 +27,12 @@ msgstr ""
 #. Setting: TDP Controls
 #. Field: title
 msgid "TDP Controls"
-msgstr ""
+msgstr "TDP 控制"
 
 #. Setting: Enable TDP Controls [BETA]
 #. Field: title
 msgid "Enable TDP Controls [BETA]"
-msgstr ""
+msgstr "启用 TDP 控制 [BETA]"
 
 #. Setting: Enable TDP Controls [BETA]
 #. Field: hint
@@ -43,26 +43,28 @@ msgid ""
 "other device changes (ac/dc).\n"
 "If the device crashes, TDP setting will be disabled on next startup."
 msgstr ""
+"启用 Handheld Daemon 的 TDP 管理。启用后, Handheld Daemon 将在启动时和其他设备更改 (ac/dc) 时设置和维护 TDP 限制。\n"
+"如果设备崩溃, TDP 设置将在下次启动时禁用。"
 
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "错误"
 
 #. Setting: Error
 #. Option: nowrite
 msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
-msgstr ""
+msgstr "无法写入 ACPI Call 文件。TDP 控制需要 ACPI Call。"
 
 #. Setting: Enable TDP Controls
 #. Field: title
 msgid "Enable TDP Controls"
-msgstr ""
+msgstr "启用 TDP 控制"
 
 #. Setting: Enforce Device TDP Limits
 #. Field: title
 msgid "Enforce Device TDP Limits"
-msgstr ""
+msgstr "强制使用设备 TDP 限制"
 
 #. Setting: Enforce Device TDP Limits
 #. Field: hint
@@ -75,6 +77,9 @@ msgid ""
 "All settings outside specifications will be set to system specifications "
 "after rebooting."
 msgstr ""
+"当此选项打开时, 设置将遵守设备制造商规定的限制, 但要视其可用性而定。\n"
+"关闭时, TDP 设置范围将扩展到当前设备逻辑上可能的范围 (不考虑制造商规格)。\n"
+"重新启动后, 所有超出规格的设置将被设置为系统规格。"
 
 #. Setting: Asus TDP
 #. Field: title
@@ -84,7 +89,7 @@ msgstr ""
 #. Setting: Asus TDP
 #. Field: hint
 msgid "Uses the interface of Armory Crate to set the TDP of the device."
-msgstr ""
+msgstr "使用 Armory Crate 的接口设置设备的 TDP。"
 
 #. Setting: TDP
 #. Field: title
@@ -99,6 +104,9 @@ msgid ""
 "boost, it sets the fast value to 53/30*tdp and the slow value to "
 "43/30*tdp. Boost is recommended for desktop use."
 msgstr ""
+"平均 TDP 目标。\n"
+"设置 STAMP 和 Skin Power Limit 的值, 不使用 boost。"
+"使用 boost 时, 将 fast 值设置为 53/30*tdp, 将 slow 值设置为 43/30*tdp。建议在桌面使用时启用 boost。"
 
 #. Setting: TDP Boost
 #. Field: title
@@ -108,39 +116,39 @@ msgstr ""
 #. Setting: TDP Boost
 #. Field: hint
 msgid "Allows the device to boost by setting appropriate slow and fast TDPs."
-msgstr ""
+msgstr "允许设备通过设置适当的 slow 和 fast TDP 值来提升性能。"
 
 #. Setting: Custom Fan Curve
 #. Field: title
 msgid "Custom Fan Curve"
-msgstr ""
+msgstr "自定义风扇曲线"
 
 #. Setting: Custom Fan Curve
 #. Field: hint
 msgid "Allows you to set a custom fan curve."
-msgstr ""
+msgstr "设置自定义风扇曲线。"
 
 #. Setting: Disabled
 #. Field: title
 #. Setting: Charge Limit (%)
 #. Option: disabled
 msgid "Disabled"
-msgstr ""
+msgstr "禁用"
 
 #. Setting: Disabled
 #. Field: hint
 msgid "Lets the device manage the fan curve on its own."
-msgstr ""
+msgstr "让设备自行管理风扇曲线。"
 
 #. Setting: Manual [BETA]
 #. Field: title
 msgid "Manual [BETA]"
-msgstr ""
+msgstr "手动 [BETA]"
 
 #. Setting: 30C
 #. Field: title
 msgid "30C"
-msgstr ""
+msgstr "30°C"
 
 #. Setting: 30C
 #. Field: hint
@@ -154,67 +162,67 @@ msgstr ""
 #. Setting: 10C
 #. Setting: 20C
 msgid "Sets the speed at the named temperature."
-msgstr ""
+msgstr "设置在指定温度下的风扇速度。"
 
 #. Setting: 40C
 #. Field: title
 msgid "40C"
-msgstr ""
+msgstr "40°C"
 
 #. Setting: 50C
 #. Field: title
 msgid "50C"
-msgstr ""
+msgstr "50°C"
 
 #. Setting: 60C
 #. Field: title
 msgid "60C"
-msgstr ""
+msgstr "60°C"
 
 #. Setting: 70C
 #. Field: title
 msgid "70C"
-msgstr ""
+msgstr "70°C"
 
 #. Setting: 80C
 #. Field: title
 msgid "80C"
-msgstr ""
+msgstr "80°C"
 
 #. Setting: 90C
 #. Field: title
 msgid "90C"
-msgstr ""
+msgstr "90°C"
 
 #. Setting: 100C
 #. Field: title
 msgid "100C"
-msgstr ""
+msgstr "100°C"
 
 #. Setting: Restore Default
 #. Field: title
 msgid "Restore Default"
-msgstr ""
+msgstr "恢复默认"
 
 #. Setting: Restore Default
 #. Field: hint
 msgid "Restore a default sane fan curve."
-msgstr ""
+msgstr "恢复默认的风扇曲线"
 
 #. Setting: Fan Curve Limitation
 #. Field: title
 msgid "Fan Curve Limitation"
-msgstr ""
+msgstr "风扇曲线限制"
 
 #. Setting: Charge Limit (%)
 #. Field: title
 msgid "Charge Limit (%)"
-msgstr ""
+msgstr "充电限制 (%)"
 
 #. Setting: Charge Limit (%)
 #. Field: hint
 msgid "Applies a charge limit to the battery, 75% and up."
-msgstr ""
+msgstr "对电池应用充电限制, 65% 及以上。"
 
 #. Setting: Charge Limit (%)
 #. Option: p65
@@ -249,7 +257,7 @@ msgstr ""
 #. Setting: Sleep Bug
 #. Field: title
 msgid "Sleep Bug"
-msgstr ""
+msgstr "睡眠问题"
 
 #. Setting: Lenovo TDP
 #. Field: title
@@ -259,7 +267,7 @@ msgstr ""
 #. Setting: Lenovo TDP
 #. Field: hint
 msgid "Uses the interface of Legion Space to set the TDP of the device."
-msgstr ""
+msgstr "使用 Legion Space 的接口设置设备的 TDP。"
 
 #. Setting: TDP Mode
 #. Field: title
@@ -269,22 +277,22 @@ msgstr ""
 #. Setting: Quiet (8W)
 #. Field: title
 msgid "Quiet (8W)"
-msgstr ""
+msgstr "安静 (8W)"
 
 #. Setting: Balanced (15W)
 #. Field: title
 msgid "Balanced (15W)"
-msgstr ""
+msgstr "平衡 (15W)"
 
 #. Setting: Performance (20W)
 #. Field: title
 msgid "Performance (20W)"
-msgstr ""
+msgstr "性能 (20W)"
 
 #. Setting: Custom (up to 25-30W)
 #. Field: title
 msgid "Custom (up to 25-30W)"
-msgstr ""
+msgstr "自定义 (最高 25-30W)"
 
 #. Setting: TDP
 #. Field: hint
@@ -295,11 +303,14 @@ msgid ""
 "Lenovo. If it is not, it sets the Slow limit equal to TDP and the Fast "
 "limit to +2W. Boost is recommended for desktop use."
 msgstr ""
+"平均 TDP 目标。\n"
+"设置 STAMP 和 Skin Power Limit 的值。如果启用了 boost, 则根据联想使用的值插值计算出 slow 和 fast TDP 的值。"
+"如果没有启用, 则将 Slow 限制设置为 TDP, 将 Fast 限制设置为 +2W。建议在桌面使用时启用 boost。"
 
 #. Setting: Set Fan to Full Speed
 #. Field: title
 msgid "Set Fan to Full Speed"
-msgstr ""
+msgstr "将风扇设置为最大速度"
 
 #. Setting: Custom Fan Curve
 #. Field: hint
@@ -309,6 +320,8 @@ msgid ""
 "modes. This fan curve needs to be reapplied and is reapplied every time "
 "you switch  TDP modes."
 msgstr ""
+"允许您设置自定义风扇曲线。此风扇曲线仅在自定义模式下得到官方支持, 但您仍然可以在其他电源模式下使用。"
+"此风扇曲线需要重新应用, 并且在切换 TDP 模式时重新应用。"
 
 #. Setting: Disabled
 #. Field: hint
@@ -320,12 +333,12 @@ msgstr ""
 #. Setting: 10C
 #. Field: title
 msgid "10C"
-msgstr ""
+msgstr "10°C"
 
 #. Setting: 20C
 #. Field: title
 msgid "20C"
-msgstr ""
+msgstr "20°C"
 
 #. Setting: Enforce Windows Minimums
 #. Field: title
@@ -335,97 +348,97 @@ msgstr ""
 #. Setting: Enforce Windows Minimums
 #. Field: hint
 msgid "Enforce the minimum fan curve from Legion Space."
-msgstr ""
+msgstr "强制执行来自 Legion Space 的最低风扇曲线。"
 
 #. Setting: Restore Default
 #. Field: hint
 msgid "Reset to the original fan curve provided by Lenovo in BIOS V28."
-msgstr ""
+msgstr "重置为 BIOS V28 中由联想提供的原始风扇曲线。"
 
 #. Setting: Enable Charge Limit (80%)
 #. Field: title
 msgid "Enable Charge Limit (80%)"
-msgstr ""
+msgstr "启用充电限制 (80%)"
 
 #. Setting: Enable Charge Limit (80%)
 #. Field: hint
 msgid "Limits device charging to 80%. Lenovo EC method. Available since BIOSv29."
-msgstr ""
+msgstr "将设备充电限制在 80%。联想 EC 方法。自 BIOSv29 起可用。"
 
 #. Setting: Enable Power Light
 #. Field: title
 msgid "Enable Power Light"
-msgstr ""
+msgstr "启用电源指示灯"
 
 #. Setting: TDP Settings
 #. Field: title
 msgid "TDP Settings"
-msgstr ""
+msgstr "TDP 设置"
 
 #. Setting: TDP
 #. Field: hint
 msgid "Controls all Ryzen SMU settings through preset curves."
-msgstr ""
+msgstr "通过预设曲线控制所有 Ryzen SMU 设置。"
 
 #. Setting: Advanced Configurator
 #. Field: title
 msgid "Advanced Configurator"
-msgstr ""
+msgstr "高级配置"
 
 #. Setting: Apply Settings
 #. Field: title
 msgid "Apply Settings"
-msgstr ""
+msgstr "应用设置"
 
 #. Setting: TDP Status
 #. Field: title
 msgid "TDP Status"
-msgstr ""
+msgstr "TDP 状态"
 
 #. Setting: Platform Profile
 #. Field: title
 msgid "Platform Profile"
-msgstr ""
+msgstr "平台配置"
 
 #. Setting: Platform Profile
 #. Option: disabled
 msgid "Not Set"
-msgstr ""
+msgstr "未设置"
 
 #. Setting: Platform Profile
 #. Option: low-power
 msgid "Low Power"
-msgstr ""
+msgstr "低功耗"
 
 #. Setting: Platform Profile
 #. Option: cool
 msgid "Cool"
-msgstr ""
+msgstr "凉爽"
 
 #. Setting: Platform Profile
 #. Option: quiet
 msgid "Quiet"
-msgstr ""
+msgstr "安静"
 
 #. Setting: Platform Profile
 #. Option: balanced
 msgid "Balanced"
-msgstr ""
+msgstr "均衡"
 
 #. Setting: Platform Profile
 #. Option: balanced-performance
 msgid "Balanced Performance"
-msgstr ""
+msgstr "平衡性能"
 
 #. Setting: Platform Profile
 #. Option: performance
 msgid "Performance"
-msgstr ""
+msgstr "性能"
 
 #. Setting: Standard Parameters
 #. Field: title
 msgid "Standard Parameters"
-msgstr ""
+msgstr "标准参数"
 
 #. Setting: Standard Parameters
 #. Field: hint
@@ -506,5 +519,5 @@ msgstr ""
 #. Setting: Enable Advanced Parameters
 #. Field: title
 msgid "Enable Advanced Parameters"
-msgstr ""
+msgstr "启用高级参数"
 
