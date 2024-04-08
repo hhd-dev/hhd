@@ -24,9 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install build babel
       - name: Generate mo files
-        run: pybabel compile -D hhd -d ./i18n
-      - name: Copy mo files
-        run: cp -R ./i18n/* ./src/hhd/i18n
+        run: /
+          pybabel compile -D hhd -d ./i18n
+          cp -R ./i18n/* ./src/hhd/i18n
       - name: Build package
         run: python -m build -s
       - name: Publish package

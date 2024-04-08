@@ -110,7 +110,7 @@ class HHDAutodetect(Protocol):
 
 
 class HHDLocale(TypedDict):
-    path: str
+    dir: str
     domain: str
     priority: int
 

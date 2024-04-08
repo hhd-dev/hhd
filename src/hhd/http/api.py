@@ -6,16 +6,19 @@ from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from socketserver import ThreadingMixIn
 from threading import Condition, Thread
-from typing import Any, Mapping, cast
+from typing import Any, Mapping, Sequence, cast
 from urllib.parse import parse_qs, urlparse
 
 from hhd.plugins import (
     Config,
     Emitter,
+    HHDLocale,
     HHDSettings,
     get_relative_fn,
     load_relative_yaml,
 )
+
+from .i18n import translate, translate_ver
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +81,7 @@ class RestHandler(BaseHTTPRequestHandler):
     info: Config
     profiles: Mapping[str, Config]
     emit: Emitter
+    locales: Sequence[HHDLocale]
     token: str | None
 
     def set_response(self, code: int, headers: dict[str, str] = {}):
@@ -255,7 +259,7 @@ class RestHandler(BaseHTTPRequestHandler):
             case "profile":
                 self.handle_profile(segments[3:], params, content)
             case "settings":
-                v = self.conf.get("version", "")
+                v = translate_ver(self.conf)
                 self.set_response_ok({"Version": v})
                 with self.cond:
                     s = dict(deepcopy(self.settings))
@@ -267,6 +271,7 @@ class RestHandler(BaseHTTPRequestHandler):
                         }
                     except Exception as e:
                         logger.error(f"Error while writing version hash to response.")
+                    s = translate(s, self.conf, self.locales)
                     self.wfile.write(json.dumps(s).encode())
             case "state":
                 self.set_response_ok()
@@ -281,11 +286,10 @@ class RestHandler(BaseHTTPRequestHandler):
                     elif "poll" in params:
                         # Hang for the next update if the UI requests it.
                         self.cond.wait()
-                    self.wfile.write(
-                        json.dumps(
-                            {**cast(dict, self.conf.conf), "info": self.info.conf}
-                        ).encode()
-                    )
+                    out = {**cast(dict, self.conf.conf), "info": self.info.conf}
+                    out["version"] = translate_ver(self.conf)
+                    out = translate(out, self.conf, self.locales)
+                    self.wfile.write(json.dumps(out).encode())
             case "version":
                 self.send_json({"version": 5})
             case "sections":
@@ -385,6 +389,7 @@ class HHDHTTPServer:
         info: Config,
         profiles: Mapping[str, Config],
         emit: Emitter,
+        locales: Sequence[HHDLocale],
     ):
         with self.cond:
             self.handler.settings = settings
@@ -392,6 +397,7 @@ class HHDHTTPServer:
             self.handler.info = info
             self.handler.profiles = profiles
             self.handler.emit = emit
+            self.handler.locales = locales
             self.cond.notify_all()
 
     def open(self):

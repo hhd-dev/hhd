@@ -233,7 +233,7 @@ def main():
             lstr = "Loaded the following locales:\n"
             for locale in locales:
                 lstr += (
-                    f" - {locale['domain']} ({locale['priority']}): {locale['path']}\n"
+                    f" - {locale['domain']} ({locale['priority']}): {locale['dir']}\n"
                 )
             logger.info(lstr[:-1])
         else:
@@ -432,7 +432,7 @@ def main():
 
                     set_log_plugin("rest")
                     https = HHDHTTPServer(localhost, port, token)
-                    https.update(settings, conf, info, profiles, emit)
+                    https.update(settings, conf, info, profiles, emit, locales)
                     try:
                         https.open()
                     except Exception as e:
@@ -537,7 +537,7 @@ def main():
             # Notify that events were applied
             # Before saving to reduce delay (yaml files take 100ms :( )
             if https:
-                https.update(settings, conf, info, profiles, emit)
+                https.update(settings, conf, info, profiles, emit, locales)
 
             #
             # Save loop
