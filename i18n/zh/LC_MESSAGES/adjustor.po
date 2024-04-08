@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-04-08 18:54+0200\n"
+"POT-Creation-Date: 2024-04-08 19:36+0200\n"
 "PO-Revision-Date: 2024-04-08 19:00+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -17,6 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.14.0\n"
+
+msgid "Due to a suspected crash, auto-start was disabled."
+msgstr ""
+
+msgid "TDP Controls can not be enabled while other TDP plugins are installed."
+msgstr ""
 
 #. Setting: TDP Controls
 #. Field: title
