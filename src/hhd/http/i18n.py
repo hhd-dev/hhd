@@ -53,10 +53,10 @@ def trn_dict(d: Mapping, trn: GNUTranslations):
     for k, v in d.items():
         if isinstance(v, dict):
             out[k] = trn_dict(v, trn)
-        elif isinstance(v, str):
+        elif isinstance(v, str) and v:
             out[k] = trn.gettext(v)
         elif isinstance(v, list):
-            out[k] = [trn.gettext(l) if isinstance(l, str) else l for l in v]
+            out[k] = [trn.gettext(l) if l and isinstance(l, str) else l for l in v]
         else:
             out[k] = v
     return out
