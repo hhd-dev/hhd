@@ -1,16 +1,18 @@
 import logging
 import os
-from threading import Event as TEvent, Thread
+from threading import Event as TEvent
+from threading import Thread
 from typing import Sequence
 
-from hhd.utils import expanduser
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
 from hhd.plugins.plugin import Emitter
+from hhd.utils import expanduser
 
 from adjustor.core.acpi import check_perms, initialize
 from adjustor.core.const import CPU_DATA, DEV_DATA, ROG_ALLY_PP_MAP
 
+from .i18n import _
 from .utils import exists_sentinel, install_sentinel, remove_sentinel
 
 logger = logging.getLogger(__name__)
@@ -55,7 +57,7 @@ class AdjustorInitPlugin(HHDPlugin):
             conf["hhd.settings.tdp_enable"] = False
         if self.safe_mode:
             logger.warning(f"Due to a sentinel error, auto-start is disabled.")
-            conf["tdp.tdp.tdp_error"] = (
+            conf["tdp.tdp.tdp_error"] = _(
                 "Due to a suspected crash, auto-start was disabled."
             )
             conf["hhd.settings.tdp_enable"] = False
@@ -68,9 +70,8 @@ class AdjustorInitPlugin(HHDPlugin):
 
         for name, path in CONFLICTING_PLUGINS.items():
             if os.path.exists(expanduser(path, self.context)):
-                err = (
-                    f'Found plugin "{name}" at the following path:\n{path}\n'
-                    + "TDP Controls can not be enabled while other TDP plugins are installed."
+                err = f'Found plugin "{name}" at the following path:\n{path}\n' + _(
+                    "TDP Controls can not be enabled while other TDP plugins are installed."
                 )
                 conf["tdp.tdp.tdp_error"] = err
                 conf["hhd.settings.tdp_enable"] = False
@@ -169,8 +170,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
-    from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.asus import AsusDriverPlugin
+    from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
 
     drivers = []
