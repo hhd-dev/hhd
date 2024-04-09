@@ -35,6 +35,7 @@ DEFAULT_CURVE = [5, 10, 20, 35, 55, 75, 75, 75]
 def set_charge_limit(lim: int):
     try:
         # FIXME: Hardcoded path, should match using another characteristic
+        logger.info(f"Setting charge limit to {lim:d} %.")
         with open(
             "/sys/class/power_supply/BAT0/charge_control_end_threshold", "w"
         ) as f:
