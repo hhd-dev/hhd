@@ -13,7 +13,7 @@ settings:
         system: System
         C: English
         zh: Chinese
-        pt: Portugese
+        # pt: Portugese
 
     theme:
       type: multiple
