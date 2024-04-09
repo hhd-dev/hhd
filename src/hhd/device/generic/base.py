@@ -43,6 +43,7 @@ def plugin_run(
 ):
     first = True
     init = time.perf_counter()
+    repeated_fail = False
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
