@@ -432,7 +432,7 @@ def main():
 
                     set_log_plugin("rest")
                     https = HHDHTTPServer(localhost, port, token)
-                    https.update(settings, conf, info, profiles, emit, locales)
+                    https.update(settings, conf, info, profiles, emit, locales, ctx)
                     try:
                         https.open()
                     except Exception as e:
@@ -537,7 +537,7 @@ def main():
             # Notify that events were applied
             # Before saving to reduce delay (yaml files take 100ms :( )
             if https:
-                https.update(settings, conf, info, profiles, emit, locales)
+                https.update(settings, conf, info, profiles, emit, locales, ctx)
 
             #
             # Save loop

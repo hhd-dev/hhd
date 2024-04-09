@@ -1,11 +1,29 @@
 import copy
 import os
+import subprocess
 from gettext import GNUTranslations, find
 from typing import Mapping, Sequence, cast
 
-from hhd.plugins import Config, HHDLocale, HHDSettings
+from hhd.plugins import Config, Context, HHDLocale, HHDSettings
 
 _translations = {}
+
+
+def get_user_lang(ctx: Context):
+    if not ctx:
+        return None
+    try:
+        out = subprocess.check_output(
+            ["sh", "-l", "-c", "locale"],
+            env={},
+            user=ctx.euid,
+            group=ctx.egid,
+        )
+        for ln in out.decode().split("\n"):
+            if "LANG" in ln:
+                return ln.strip().split("=")[-1]
+    except Exception:
+        return None
 
 
 def translate_ver(conf: Config, lang: str | None = None):

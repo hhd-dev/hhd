@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, urlparse
 
 from hhd.plugins import (
     Config,
+    Context,
     Emitter,
     HHDLocale,
     HHDSettings,
@@ -18,7 +19,7 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 
-from .i18n import translate, translate_ver
+from .i18n import get_user_lang, translate, translate_ver
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +83,8 @@ class RestHandler(BaseHTTPRequestHandler):
     profiles: Mapping[str, Config]
     emit: Emitter
     locales: Sequence[HHDLocale]
+    ctx: Context
+    user_lang: str | None
     token: str | None
 
     def set_response(self, code: int, headers: dict[str, str] = {}):
@@ -239,7 +242,7 @@ class RestHandler(BaseHTTPRequestHandler):
     def v1_endpoint(self, content: Any | None):
         segments, params = parse_path(self.path)
         langs = params.get("lang", params.get("locale", None))
-        lang = langs[0] if langs else None
+        lang = langs[0] if langs else self.user_lang
 
         if not segments:
             return self.send_not_found(f"Empty path.")
@@ -296,7 +299,7 @@ class RestHandler(BaseHTTPRequestHandler):
             case "version":
                 self.send_json({"version": 5})
             case "sections":
-                self.send_json(SECTIONS)
+                self.send_json(translate(SECTIONS, self.conf, self.locales, lang=lang))
             case other:
                 self.send_not_found(f"Command '{other}' not supported.")
 
@@ -393,6 +396,7 @@ class HHDHTTPServer:
         profiles: Mapping[str, Config],
         emit: Emitter,
         locales: Sequence[HHDLocale],
+        ctx: Context,
     ):
         with self.cond:
             self.handler.settings = settings
@@ -401,6 +405,8 @@ class HHDHTTPServer:
             self.handler.profiles = profiles
             self.handler.emit = emit
             self.handler.locales = locales
+            self.handler.ctx = ctx
+            self.handler.user_lang = get_user_lang(ctx)
             self.cond.notify_all()
 
     def open(self):
