@@ -22,6 +22,13 @@ def get_user_lang(ctx: Context):
         for ln in out.decode().split("\n"):
             if "LANG" in ln:
                 return ln.strip().split("=")[-1]
+        # Alternative:
+        # return subprocess.check_output(
+        #     ["sh", "-l", "-c", "echo $LANG"],
+        #     env={},
+        #     user=ctx.euid,
+        #     group=ctx.egid,
+        # ).decode()
     except Exception:
         return None
 
