@@ -242,7 +242,7 @@ class RestHandler(BaseHTTPRequestHandler):
     def v1_endpoint(self, content: Any | None):
         segments, params = parse_path(self.path)
         langs = params.get("lang", params.get("locale", None))
-        lang = langs[0] if langs else self.user_lang
+        lang = langs[0] if langs else None
 
         if not segments:
             return self.send_not_found(f"Empty path.")
@@ -277,7 +277,7 @@ class RestHandler(BaseHTTPRequestHandler):
                         }
                     except Exception as e:
                         logger.error(f"Error while writing version hash to response.")
-                    s = translate(s, self.conf, self.locales, lang=lang)
+                    s = translate(s, self.conf, self.locales, lang=lang, user_lang=self.user_lang)
                     self.wfile.write(json.dumps(s).encode())
             case "state":
                 self.set_response_ok()
@@ -293,13 +293,13 @@ class RestHandler(BaseHTTPRequestHandler):
                         # Hang for the next update if the UI requests it.
                         self.cond.wait()
                     out = {**cast(dict, self.conf.conf), "info": self.info.conf}
-                    out["version"] = translate_ver(self.conf, lang=lang)
-                    out = translate(out, self.conf, self.locales, lang=lang)
+                    out["version"] = translate_ver(self.conf, lang=lang, user_lang=self.user_lang)
+                    out = translate(out, self.conf, self.locales, lang=lang, user_lang=self.user_lang)
                     self.wfile.write(json.dumps(out).encode())
             case "version":
                 self.send_json({"version": 5})
             case "sections":
-                self.send_json(translate(SECTIONS, self.conf, self.locales, lang=lang))
+                self.send_json(translate(SECTIONS, self.conf, self.locales, lang=lang, user_lang=self.user_lang))
             case other:
                 self.send_not_found(f"Command '{other}' not supported.")
 

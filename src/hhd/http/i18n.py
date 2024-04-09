@@ -26,17 +26,26 @@ def get_user_lang(ctx: Context):
         return None
 
 
-def translate_ver(conf: Config, lang: str | None = None):
+def translate_ver(conf: Config, lang: str | None = None, user_lang: str | None = None):
     v = conf.get("version", "")
 
     if not lang:
         lang = conf.get("hhd.settings.language", "")
+    if lang == "system" and user_lang:
+        lang = user_lang
     return v + "-" + lang
 
 
-def get_mo_files(conf: Config, locales: Sequence[HHDLocale], lang: str | None = None):
+def get_mo_files(
+    conf: Config,
+    locales: Sequence[HHDLocale],
+    lang: str | None = None,
+    user_lang: str | None = None,
+):
     if not lang:
         lang = conf.get("hhd.settings.language", "")
+    if lang == "system" and user_lang:
+        lang = user_lang
     if lang and lang != "system":
         languages = [lang]
     else:
@@ -48,8 +57,13 @@ def get_mo_files(conf: Config, locales: Sequence[HHDLocale], lang: str | None = 
     return fns
 
 
-def translation(conf: Config, locales: Sequence[HHDLocale], lang: str | None = None):
-    mofiles = get_mo_files(conf, locales, lang)
+def translation(
+    conf: Config,
+    locales: Sequence[HHDLocale],
+    lang: str | None = None,
+    user_lang: str | None = None,
+):
+    mofiles = get_mo_files(conf, locales, lang, user_lang)
     result = None
     for mofile in mofiles:
         key = (GNUTranslations, os.path.abspath(mofile))
@@ -81,9 +95,13 @@ def trn_dict(d: Mapping, trn: GNUTranslations):
 
 
 def translate(
-    d: Mapping, conf: Config, locales: Sequence[HHDLocale], lang: str | None = None
+    d: Mapping,
+    conf: Config,
+    locales: Sequence[HHDLocale],
+    lang: str | None = None,
+    user_lang: str | None = None,
 ):
-    trn = translation(conf, locales, lang)
+    trn = translation(conf, locales, lang, user_lang)
     base = d
     if trn:
         base = trn_dict(base, trn)
