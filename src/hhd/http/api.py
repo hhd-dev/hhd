@@ -265,7 +265,7 @@ class RestHandler(BaseHTTPRequestHandler):
             case "profile":
                 self.handle_profile(segments[3:], params, content)
             case "settings":
-                v = translate_ver(self.conf)
+                v = translate_ver(self.conf, lang=lang, user_lang=self.user_lang)
                 self.set_response_ok({"Version": v})
                 with self.cond:
                     s = dict(deepcopy(self.settings))
