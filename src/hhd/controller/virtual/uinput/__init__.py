@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class UInputDevice(Consumer, Producer):
-
     def __init__(
         self,
         capabilities=GAMEPAD_CAPABILITIES,

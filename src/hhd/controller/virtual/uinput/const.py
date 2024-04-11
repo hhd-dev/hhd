@@ -488,6 +488,15 @@ MOTION_AXIS_MAP: dict[Axis, AX] = {
     "gyro_z": AX(B("ABS_RZ"), 1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
 }
 
+MOTION_AXIS_MAP_FLIP_Z: dict[Axis, AX] = {
+    "accel_x": AX(B("ABS_X"), 8192 / 9.8, bounds=(-32768, 32768)),
+    "accel_y": AX(B("ABS_Y"), 8192 / 9.8, bounds=(-32768, 32768)),
+    "accel_z": AX(B("ABS_Z"), 8192 / 9.8, bounds=(-32768, 32768)),
+    "gyro_x": AX(B("ABS_RX"), 1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
+    "gyro_y": AX(B("ABS_RY"), 1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
+    "gyro_z": AX(B("ABS_RZ"), -1024 * 180 / 3.14, bounds=(-2097152, 2097152)),
+}
+
 MOTION_LEFT_AXIS_MAP: dict[Axis, AX] = {
     "left_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore
 }

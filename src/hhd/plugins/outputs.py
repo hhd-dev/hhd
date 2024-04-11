@@ -7,6 +7,7 @@ from ..controller.virtual.uinput import (
     HHD_PID_MOTION,
     HHD_PID_TOUCHPAD,
     MOTION_AXIS_MAP,
+    MOTION_AXIS_MAP_FLIP_Z,
     MOTION_CAPABILITIES,
     MOTION_INPUT_PROPS,
     TOUCHPAD_AXIS_MAP,
@@ -109,7 +110,11 @@ def get_outputs(
                         bus=0x03,
                         capabilities=MOTION_CAPABILITIES,
                         btn_map={},
-                        axis_map=MOTION_AXIS_MAP,
+                        axis_map=(
+                            MOTION_AXIS_MAP_FLIP_Z
+                            if conf["uinput.flip_z"].to(bool)
+                            else MOTION_AXIS_MAP
+                        ),
                         output_imu_timestamps=True,
                         input_props=MOTION_INPUT_PROPS,
                         ignore_cmds=True,
