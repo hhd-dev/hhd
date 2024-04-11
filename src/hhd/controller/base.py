@@ -329,7 +329,7 @@ class Producer:
         If `exit` is true, the program is about to
         close. If it is false, the controller may be performing a configuration
         change.
-        
+
         In the first versions of Handheld Daemon, this API was meant to be used
         for the controller to enter power saving mode. However, it turns out
         that steam and the kernel do not let the controller disconnect,
@@ -433,6 +433,7 @@ class Multiplexer:
         self.steam_check = params.get("steam_check", None)
         self.steam_check_last = time.perf_counter()
         self.steam_check_fn = params.get("steam_check_fn", None)
+        self.nintendo_qam = params.get("nintendo_qam", False)
 
         self.unique = str(time.perf_counter_ns())
         assert touchpad is None, "touchpad rewiring not supported yet"
@@ -917,7 +918,7 @@ class Multiplexer:
                     (
                         {
                             "type": "button",
-                            "code": "a",
+                            "code": "b" if self.nintendo_qam else "a",
                             "value": True,
                         },
                         curr + self.QAM_DELAY,
@@ -927,7 +928,7 @@ class Multiplexer:
                     (
                         {
                             "type": "button",
-                            "code": "a",
+                            "code": "b" if self.nintendo_qam else "a",
                             "value": False,
                         },
                         curr + 2 * self.QAM_DELAY,

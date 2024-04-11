@@ -15,6 +15,30 @@ HHD_PID_TOUCHPAD = 0x04
 HHD_PID_MOTION = 0x11
 HHD_PID_VENDOR = 0x7000
 
+CONTROLLER_THEMES: dict[str, tuple[int, int, str]] = {
+    "hhd": (0x5335, 0x0001, "Handheld Daemon Controller"),
+    # Sony
+    "ps3": (0x054C, 0x0268, "DualShock 3"),
+    "ps4": (0x054C, 0x05C4, "DualShock 4"),
+    "ps5": (0x054C, 0x0CE6, "DualSense"),
+    "ps5e": (0x054C, 0x0DF2, "DualSense Edge"),
+    # Microsoft
+    "xbox_360": (0x045E, 0x028F, "Xbox 360"),
+    "xbox_one": (0x045E, 0x02D1, "Xbox One"),
+    "xbox_one_elite": (0x045E, 0x02E3, "Xbox Elite"),
+    "xbox_sx": (0x045E, 0x0B12, "Xbox Series X"),
+    # Nintendo
+    "joycon_left": (0x057E, 0x2006, "JoyCon Left"),
+    "joycon_right": (0x057E, 0x2007, "JoyCon Right"),
+    "joycon_pair": (0x057E, 0x2008, "JoyCon Pair"),
+    "joycon_grip": (0x057E, 0x200E, "JoyCon Grip"),
+    "switch_pro": (0x057E, 0x2009, "Switch Pro"),
+    # Valve
+    "steam_deck": (0x28DE, 0x1205, "Steam Deck"),
+    "steam_controller": (0x28DE, 0x1202, "Steam Controller"),
+    "steam_input": (0x28DE, 0x11FF, "Steam Input"),
+}
+
 
 def B(b: str | Sequence[str], num: int | None = None):
     if num is not None:

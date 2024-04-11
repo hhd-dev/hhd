@@ -7,7 +7,6 @@ from typing import Sequence
 
 from hhd.controller import Axis, Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer, TouchpadAction
-from hhd.controller.lib.hid import enumerate_unique
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import AccelImu, GyroImu
@@ -359,7 +358,8 @@ def controller_loop_xinput(
 
     d_right = UInputDevice(
         name="Handheld Daemon Controller Right Motion Sensors",
-        phys="phys-hhd-main",
+        phys="phys-hhd-lgo-right",
+        uniq="phys-hhd-lgo-right",
         capabilities=MOTION_CAPABILITIES,
         pid=HHD_PID_MOTION,
         btn_map={},
@@ -370,7 +370,8 @@ def controller_loop_xinput(
     )
     d_left = UInputDevice(
         name="Handheld Daemon Controller Left Motion Sensors",
-        phys="phys-hhd-main",
+        phys="phys-hhd-lgo-left",
+        uniq="phys-hhd-lgo-left",
         capabilities=MOTION_CAPABILITIES,
         pid=HHD_PID_MOTION,
         btn_map={},

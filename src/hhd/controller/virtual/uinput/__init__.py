@@ -22,6 +22,7 @@ class UInputDevice(Consumer, Producer):
         axis_map: dict[Axis, AX] = GAMEPAD_AXIS_MAP,
         vid: int = HHD_VID,
         pid: int = HHD_PID_GAMEPAD,
+        bus: int = 0x03,
         name: str = "Handheld Daemon Controller",
         phys: str = "phys-hhd-gamepad",
         output_imu_timestamps: str | bool = False,
@@ -37,6 +38,7 @@ class UInputDevice(Consumer, Producer):
         self.name = name
         self.vid = vid
         self.pid = pid
+        self.bus = bus
         self.phys = phys
         self.uniq = uniq
         self.output_imu_timestamps = output_imu_timestamps
@@ -56,6 +58,7 @@ class UInputDevice(Consumer, Producer):
                 name=self.name,
                 vendor=self.vid,
                 product=self.pid,
+                bustype=self.bus,
                 phys=self.phys,
                 input_props=self.input_props,
                 uniq=self.uniq,  # type: ignore
@@ -69,6 +72,7 @@ class UInputDevice(Consumer, Producer):
                 name=self.name,
                 vendor=self.vid,
                 product=self.pid,
+                bustype=self.bus,
                 phys=self.phys,
                 input_props=self.input_props,
             )

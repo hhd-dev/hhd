@@ -12,6 +12,7 @@ from ..controller.virtual.uinput import (
     TOUCHPAD_AXIS_MAP,
     TOUCHPAD_BUTTON_MAP,
     TOUCHPAD_CAPABILITIES,
+    CONTROLLER_THEMES,
     UInputDevice,
 )
 from .plugin import is_steam_gamepad_running
@@ -25,6 +26,7 @@ def get_outputs(
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
+    nintendo_qam = False
 
     controller = conf["mode"].to(str)
     desktop_disable = False
@@ -85,21 +87,48 @@ def get_outputs(
             producers.append(d)
             consumers.append(d)
         case "uinput":
-            d = UInputDevice(phys="phys-hhd-main", uniq="phys-hhd-main")
+            theme = conf["uinput.theme"].to(str)
+            if theme == "other":
+                theme = conf["uinput.other_themes"].to(str)
+            nintendo_qam = "switch" in theme or "joy" in theme
+            vid, pid, name = CONTROLLER_THEMES[theme]
+            bus = 0x03 if theme == "hhd" else 0x06
+            addr = "phys-hhd-main"
+            if controller_id:
+                addr = f"phys-hhd-{controller_id:02d}"
+            d = UInputDevice(name=name, vid=vid, pid=pid, phys=addr, uniq=addr)
             producers.append(d)
             consumers.append(d)
             if motion:
-                d = UInputDevice(
-                    name="Handheld Daemon Controller Motion Sensors",
-                    phys="phys-hhd-main",
-                    uniq="phys-hhd-main",
-                    capabilities=MOTION_CAPABILITIES,
-                    btn_map={},
-                    axis_map=MOTION_AXIS_MAP,
-                    output_imu_timestamps=True,
-                    input_props=MOTION_INPUT_PROPS,
-                    ignore_cmds=True,
-                )
+                if "xbox" in theme:
+                    d = UInputDevice(
+                        name=f"Handheld Daemon Motion Sensors",
+                        pid=HHD_PID_MOTION,
+                        phys="phys-hhd-imu",
+                        uniq="phys-hhd-imu",
+                        bus=0x03,
+                        capabilities=MOTION_CAPABILITIES,
+                        btn_map={},
+                        axis_map=MOTION_AXIS_MAP,
+                        output_imu_timestamps=True,
+                        input_props=MOTION_INPUT_PROPS,
+                        ignore_cmds=True,
+                    )
+                else:
+                    d = UInputDevice(
+                        name=f"{name} Motion Sensors",
+                        vid=vid,
+                        pid=pid,
+                        phys=addr,
+                        uniq=addr,
+                        bus=bus,
+                        capabilities=MOTION_CAPABILITIES,
+                        btn_map={},
+                        axis_map=MOTION_AXIS_MAP,
+                        output_imu_timestamps=True,
+                        input_props=MOTION_INPUT_PROPS,
+                        ignore_cmds=True,
+                    )
                 producers.append(d)
                 consumers.append(d)
         case _:
@@ -129,6 +158,7 @@ def get_outputs(
             "is_dual": False,
             "steam_check": steam_check,
             "steam_check_fn": lambda: emit and is_steam_gamepad_running(emit.ctx),
+            "nintendo_qam": nintendo_qam,
         },
     )
 
