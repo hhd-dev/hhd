@@ -129,7 +129,11 @@ def get_outputs(
                         bus=bus,
                         capabilities=MOTION_CAPABILITIES,
                         btn_map={},
-                        axis_map=MOTION_AXIS_MAP,
+                        axis_map=(
+                            MOTION_AXIS_MAP_FLIP_Z
+                            if conf["uinput.flip_z"].to(bool)
+                            else MOTION_AXIS_MAP
+                        ),
                         output_imu_timestamps=True,
                         input_props=MOTION_INPUT_PROPS,
                         ignore_cmds=True,
