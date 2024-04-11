@@ -85,15 +85,15 @@ def get_outputs(
             producers.append(d)
             consumers.append(d)
         case "uinput":
-            d = UInputDevice(phys="phys-hhd-main")
+            d = UInputDevice(phys="phys-hhd-main", uniq="phys-hhd-main")
             producers.append(d)
             consumers.append(d)
             if motion:
                 d = UInputDevice(
                     name="Handheld Daemon Controller Motion Sensors",
                     phys="phys-hhd-main",
+                    uniq="phys-hhd-main",
                     capabilities=MOTION_CAPABILITIES,
-                    pid=HHD_PID_MOTION,
                     btn_map={},
                     axis_map=MOTION_AXIS_MAP,
                     output_imu_timestamps=True,

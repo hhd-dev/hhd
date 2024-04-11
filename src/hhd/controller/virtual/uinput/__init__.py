@@ -8,18 +8,9 @@ from hhd.controller.base import Consumer, Event, Producer, can_read
 from hhd.controller.const import Axis, Button
 
 from .const import *
+from .monkey import *
 
 logger = logging.getLogger(__name__)
-
-
-# Monkey patch Uinput device to avoid issues
-# _find_device() may crash when controllers
-# disconnect. We dont use the produced device anyway.
-def _patch(*args, **kwargs):
-    pass
-
-
-UInput._find_device = _patch
 
 
 class UInputDevice(Consumer, Producer):
@@ -37,6 +28,7 @@ class UInputDevice(Consumer, Producer):
         output_timestamps: bool = False,
         input_props: Sequence[int] = [],
         ignore_cmds: bool = False,
+        uniq: str | None = None,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -46,6 +38,7 @@ class UInputDevice(Consumer, Producer):
         self.vid = vid
         self.pid = pid
         self.phys = phys
+        self.uniq = uniq
         self.output_imu_timestamps = output_imu_timestamps
         self.output_timestamps = output_timestamps
         self.ofs = 0
@@ -57,14 +50,29 @@ class UInputDevice(Consumer, Producer):
 
     def open(self) -> Sequence[int]:
         logger.info(f"Opening virtual device '{self.name}'.")
-        self.dev = UInput(
-            events=self.capabilities,
-            name=self.name,
-            vendor=self.vid,
-            product=self.pid,
-            phys=self.phys,
-            input_props=self.input_props,
-        )
+        try:
+            self.dev = UInput(
+                events=self.capabilities,
+                name=self.name,
+                vendor=self.vid,
+                product=self.pid,
+                phys=self.phys,
+                input_props=self.input_props,
+                uniq=self.uniq,  # type: ignore
+            )
+        except Exception as e:
+            logger.error(
+                f"Monkey patch probably failed. Could not create evdev device with uniq:\n{e}"
+            )
+            self.dev = UInput(
+                events=self.capabilities,
+                name=self.name,
+                vendor=self.vid,
+                product=self.pid,
+                phys=self.phys,
+                input_props=self.input_props,
+            )
+
         self.touchpad_aspect = 1
         self.touch_id = 1
         self.fd = self.dev.fd
