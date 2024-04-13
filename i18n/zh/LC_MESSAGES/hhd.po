@@ -573,12 +573,12 @@ msgstr "将 Armory 键映射为快捷菜单建"
 #. Setting: Swap ROG and Start/Select
 #. Field: title
 msgid "Swap ROG and Start/Select"
-msgstr "交换 Start/Select 按钮"
+msgstr "交换 ROG Start/Select 按钮"
 
 #. Setting: Swap ROG and Start/Select
 #. Field: hint
 msgid "Swaps the Armory Crate and Command center buttons with start and select."
-msgstr "交换 Legion Go 的 Start/Select 按钮"
+msgstr "交换 Armory Crate/Command center 与 Start/Select 按钮"
 
 #. Setting: Motion Axis
 #. Field: title
