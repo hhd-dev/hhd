@@ -139,16 +139,14 @@ def plugin_run(
     while not should_exit.is_set():
         try:
             first = True
-            while True:
-                gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
-                asus_devs = enumerate_evs(vid=ASUS_VID)
-                if not gamepad_devs or not asus_devs:
-                    if first:
-                        first = False
-                        logger.warning(f"Ally controller not found, waiting...")
-                    time.sleep(FIND_DELAY)
-                else:
-                    break
+            gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
+            if not gamepad_devs:
+                if first:
+                    first = False
+                    logger.warning(f"Ally controller not found, waiting...")
+                time.sleep(FIND_DELAY)
+                continue
+
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
