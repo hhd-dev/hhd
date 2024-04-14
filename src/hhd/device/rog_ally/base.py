@@ -7,7 +7,7 @@ from typing import Literal, Sequence
 from hhd.controller import Axis, Event, Multiplexer, can_read
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
+from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_unique
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
@@ -140,7 +140,8 @@ def plugin_run(
         try:
             first = True
             gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
-            if not gamepad_devs:
+            nkey_devs = enumerate_unique(vid=ASUS_VID)
+            if not gamepad_devs or not nkey_devs:
                 if first:
                     first = False
                     logger.warning(f"Ally controller not found, waiting...")
