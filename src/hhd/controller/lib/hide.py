@@ -1,5 +1,6 @@
 import subprocess
 import os
+# import re
 
 
 def get_syspath(devpath: str):
@@ -31,6 +32,7 @@ def get_parent_sysfs(devpath: str):
         return None
 
     return syspath[: syspath.rindex("/")]
+    # return syspath.split("/input/")[0]
 
 
 def reload_children(parent: str):
@@ -69,7 +71,18 @@ GOTO="hhd_end"
 LABEL="hhd_valid"
 KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/input/%k"
 LABEL="hhd_end"
-"""  # , RUN+="/bin/chmod 000 /sys/%p"
+"""
+
+#     # Hide usb xinput, be very careful to only match that usb
+#     if "/" in parent:
+#         usb_root = parent[parent.rindex("/") + 1 :]
+#         if re.match(r"\d-+\d+", usb_root) or re.match(r"\d+-\d+:\d+\.\d+", usb_root):
+#             rule += f"""
+# # Hides the Xinput/Hidraw input node so that certain games that access it directly.
+# SUBSYSTEMS=="usb", ATTRS{{idVendor}}=="{vid:04x}", ATTRS{{idProduct}}=="{pid:04x}",\
+#  KERNEL=="{usb_root}", TAG-="uaccess", GROUP="root", MODE="000"
+# """
+
     try:
         os.makedirs("/run/udev/rules.d/", exist_ok=True)
         with open(out_fn, "w") as f:
