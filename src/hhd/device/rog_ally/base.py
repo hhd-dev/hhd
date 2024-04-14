@@ -136,9 +136,9 @@ def plugin_run(
 ):
     init = time.perf_counter()
     repeated_fail = False
+    first = True
     while not should_exit.is_set():
         try:
-            first = True
             gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
             nkey_devs = enumerate_unique(vid=ASUS_VID)
             if not gamepad_devs or not nkey_devs:
@@ -154,6 +154,7 @@ def plugin_run(
             controller_loop(conf.copy(), should_exit, updated, emit)
             repeated_fail = False
         except Exception as e:
+            first = True
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
             sleep_time = (
                 LONGER_ERROR_DELAY if repeated_fail and failed_fast else ERROR_DELAY
