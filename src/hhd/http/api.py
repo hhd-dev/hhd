@@ -406,7 +406,9 @@ class HHDHTTPServer:
             self.handler.emit = emit
             self.handler.locales = locales
             self.handler.ctx = ctx
-            self.handler.user_lang = get_user_lang(ctx)
+            if not hasattr(self.handler, "user_lang"):
+                # Only load user lang once to avoid weirdness
+                self.handler.user_lang = get_user_lang(ctx)
             self.cond.notify_all()
 
     def open(self):
