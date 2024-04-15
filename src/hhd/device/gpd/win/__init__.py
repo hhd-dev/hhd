@@ -19,7 +19,6 @@ from .const import GPD_WIN_MAX_2_2023_MAPPINGS, GPD_WIN_DEFAULT_MAPPINGS
 GPD_CONFS = {
     "G1618-04": {"name": "GPD Win 4", "hrtimer": True},
     "G1617-01": {"name": "GPD Win Mini", "touchpad": True},
-    # TODO: GPD Win Max has multiple product names, switch to partial match
     "G1619-04": {
         "name": "GPD Win Max 2 2023 (04)",
         "hrtimer": True,
@@ -144,12 +143,12 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         if dconf:
             return [GpdWinControllersPlugin(dmi, dconf)]
 
-    # Perform dmi agnostic detection
-    GPD_WIN_VID = 0x2F24
-    GPD_WIN_PID = 0x0135
     try:
-        if len(enumerate_unique(GPD_WIN_VID, GPD_WIN_PID)):
+        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
+            vendor = f.read().strip().lower()
+        if vendor == "gpd":
             return [GpdWinControllersPlugin(dmi, get_default_config(dmi))]
     except Exception:
         pass
+
     return []
