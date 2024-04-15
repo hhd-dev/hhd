@@ -8,7 +8,7 @@ from hhd.controller.base import Consumer, Event, Producer, can_read
 from hhd.controller.const import Axis, Button
 
 from .const import *
-from .monkey import *
+from .monkey import UInputMonkey
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class UInputDevice(Consumer, Producer):
     def open(self) -> Sequence[int]:
         logger.info(f"Opening virtual device '{self.name}'.")
         try:
-            self.dev = UInput(
+            self.dev = UInputMonkey(
                 events=self.capabilities,
                 name=self.name,
                 vendor=self.vid,
@@ -60,7 +60,7 @@ class UInputDevice(Consumer, Producer):
                 bustype=self.bus,
                 phys=self.phys,
                 input_props=self.input_props,
-                uniq=self.uniq,  # type: ignore
+                uniq=self.uniq,
             )
         except Exception as e:
             logger.error(
