@@ -127,10 +127,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Fallback to chassis vendor for aya
     try:
-        with open("/sys/class/dmi/id/board_vendor") as f:
+        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
             vendor = f.read().lower().strip()
 
-        if "ayaneo" in vendor:
+        if "aya" in vendor:
             return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYA"))]
     except Exception:
         return []
