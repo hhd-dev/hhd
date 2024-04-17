@@ -24,10 +24,12 @@ modes:
     children:
       theme:
         type: multiple
-        title: Controller Theme [BETA]
+        title: Controller Theme [ALPHA]
         hint: >-
           Changes how the controller appears to the System and Steam. Changes the
           VID/PID of the controller to match the IsJoystick SDL cases.
+          You need to configure the variable `SDL_GAMECONTROLLERCONFIG` for the 
+          extra buttons to work (or use Steam's Setup Input).
         default: hhd
         options:
           hhd: Handheld Daemon
