@@ -127,6 +127,11 @@ CONFS = {
         **AYA_DEFAULT_CONF,
         "mapping": gen_gyro_state("z", False, "x", False, "y", False),
     },
+    "AYA NEO FOUNDER": {"name": "AYA NEO FOUNDER", **AYA_DEFAULT_CONF},
+    "AYA NEO 2021": {"name": "AYA NEO 2021", **AYA_DEFAULT_CONF},
+    "AYANEO 2021": {"name": "AYANEO 2021", **AYA_DEFAULT_CONF},
+    "AYANEO 2021 Pro": {"name": "AYANEO 2021 Pro", **AYA_DEFAULT_CONF},
+    "AYANEO 2021 Pro Retro Power": {"name": "AYANEO 2021 Pro Retro Power", **AYA_DEFAULT_CONF},
 }
 
 
