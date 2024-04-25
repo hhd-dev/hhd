@@ -127,6 +127,7 @@ CONFS = {
         **AYA_DEFAULT_CONF,
         "mapping": gen_gyro_state("z", False, "x", False, "y", False),
     },
+    "AYA NEO FOUNDER": {"name": "AYA NEO FOUNDER", **AYA_DEFAULT_CONF},
 }
 
 
