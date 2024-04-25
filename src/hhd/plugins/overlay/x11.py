@@ -23,6 +23,7 @@ class CachedValues(NamedTuple):
     notify: bool
     touch: int | None
 
+QAM_DELAY = 0.15
 
 class QamHandler:
 
@@ -73,6 +74,7 @@ class QamHandler:
             fake_input(disp, X.KeyPress, KCTRL)  # , root=steam)
             fake_input(disp, X.KeyPress, KEY)  # , root=steam)
             disp.sync()
+            time.sleep(QAM_DELAY)
             fake_input(disp, X.KeyRelease, KCTRL)  # , root=steam)
             fake_input(disp, X.KeyRelease, KEY)  # , root=steam)
             disp.sync()
