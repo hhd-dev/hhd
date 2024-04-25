@@ -42,19 +42,19 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         "AOKZOE A1",
         "AOKZOE A1 AR07",
         type="hold_emitted",
-        phys=["LNXPWRBN"],
+        phys=["LNXPWRBN", "PNP0C0C"],
     ),
     PBC(
         "AOKZOE A1 Pro",
         "AOKZOE A1 Pro",
         type="hold_emitted",
-        phys=["LNXPWRBN"],
+        phys=["LNXPWRBN", "PNP0C0C"],
     ),
     PBC(
         "ONEXPLAYER Mini Pro",
         "ONEXPLAYER Mini Pro",
         type="hold_emitted",
-        phys=["LNXPWRBN"],
+        phys=["LNXPWRBN", "PNP0C0C"],
     ),
 ]
 
