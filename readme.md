@@ -106,10 +106,12 @@ curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | sh
 You can use this script on NobaraOS (after uninstalling the built-in Handheld Daemon/HandyGCCS).
 ChimeraOS up to 45-1 is not supported due to general instability (uninstall HandyGCCS if you do).
 This does not work and is not needed on Bazzite, see [here](#bazzite).
-For non-gaming distros, see [here](./kernel.md) for a partial list of kernel 
-patches.
 
-You can also install the Decky plugin (decky required):
+> [!IMPORTANT]  
+> For non-gaming distros, see [here](./kernel.md) for a partial list of kernel 
+> patches. This includes `acpi_call` for TDP on devices other than the Ally.
+
+You can also install the Decky plugin (optional; decky required):
 ([instructions](https://github.com/SteamDeckHomebrew/decky-loader#-installation)):
 ```bash
 curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
