@@ -114,7 +114,7 @@ def controller_loop(
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
-        # grab=True,
+        grab=False,
         btn_map=dconf.get("at_mapping", AT_BTN_MAPPINGS),
     )
 
@@ -122,7 +122,7 @@ def controller_loop(
         vid=GAMEPAD_VIDS,
         pid=GAMEPAD_PIDS,
         required=False,
-        # grab=True,
+        grab=False,
         capabilities={EC("EV_KEY"): [EC("KEY_F16")]},
         btn_map=dconf.get("gamepad_mapping", GAMEPAD_BTN_MAPPINGS),
     )
