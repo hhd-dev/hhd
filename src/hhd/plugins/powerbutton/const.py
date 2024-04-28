@@ -26,18 +26,19 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("GPD Win Max 2 2023", "G1619-05"),
     PBC("OrangePi G1621-02/G1621-02", "G1621-02"),
     PBC("OrangePi NEO-01/NEO-01", "NEO-01"),
-    PBC(
-        "Steam Deck LCD",
-        "Jupiter",
-        type="hold_emitted",
-        phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
-    ),
-    PBC(
-        "Steam Deck OLED",
-        "Galileo",
-        type="hold_emitted",
-        phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
-    ),
+    # breaks volume buttons, use the valve original script and hope steam inhibits systemd
+    # PBC(
+    #     "Steam Deck LCD",
+    #     "Jupiter",
+    #     type="hold_emitted",
+    #     phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
+    # ),
+    # PBC(
+    #     "Steam Deck OLED",
+    #     "Galileo",
+    #     type="hold_emitted",
+    #     phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
+    # ),
     PBC(
         "AOKZOE A1",
         "AOKZOE A1 AR07",
