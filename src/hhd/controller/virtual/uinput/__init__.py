@@ -166,7 +166,9 @@ class UInputDevice(Consumer, Producer):
         if wrote and self.output_timestamps:
             # We have timestamps with ns accuracy.
             # Evdev expects us accuracy
-            ts = (time.perf_counter_ns() // 1000) % (2**32)
+            # ts should be uint32, but python store it as signed int.
+            # So we make it uint32 in hex.
+            ts = (time.perf_counter_ns() // 1000 + 2**31) % (2**32) - 2**31
             self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
 
         if wrote:
