@@ -139,7 +139,7 @@ class UInputDevice(Consumer, Producer):
                     ) or ev["code"] == self.output_imu_timestamps:
                         # We have timestamps with ns accuracy.
                         # Evdev expects us accuracy
-                        ts = (ev["value"] // 1000) % (2**32)
+                        ts = (ev["value"] // 1000) % (2**31)
                         self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
                         wrote[key] = ts
                 case "button":
@@ -172,7 +172,7 @@ class UInputDevice(Consumer, Producer):
         if wrote and self.output_timestamps:
             # We have timestamps with ns accuracy.
             # Evdev expects us accuracy
-            ts = (time.perf_counter_ns() // 1000) % (2**32)
+            ts = (time.perf_counter_ns() // 1000) % (2**31)
             self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
 
         if wrote and (not self.output_imu_timestamps or ts):
