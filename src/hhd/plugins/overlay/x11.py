@@ -24,6 +24,9 @@ class CachedValues(NamedTuple):
     touch: int | None
 
 
+QAM_DELAY = 0.35
+
+
 class QamHandler:
 
     def __init__(
@@ -73,6 +76,7 @@ class QamHandler:
             fake_input(disp, X.KeyPress, KCTRL)  # , root=steam)
             fake_input(disp, X.KeyPress, KEY)  # , root=steam)
             disp.sync()
+            time.sleep(QAM_DELAY)
             fake_input(disp, X.KeyRelease, KCTRL)  # , root=steam)
             fake_input(disp, X.KeyRelease, KEY)  # , root=steam)
             disp.sync()
@@ -150,10 +154,11 @@ def get_overlay_display(displays: Sequence[str], ctx=None):
             restore_priviledge(old)
 
 
-def find_win(display: display.Display, win: list[str], atoms: list[str] = []):
+def find_wins(display: display.Display, win: list[str], atoms: list[str] = []):
     n = display.get_atom("WM_CLASS")
     a_ids = [display.get_atom(a, only_if_exists=True) for a in atoms]
 
+    wins = []
     for w in display.screen().root.query_tree().children:
         # Check the window has the proper class
         v = w.get_property(n, Xatom.STRING, 0, 50)
@@ -174,7 +179,13 @@ def find_win(display: display.Display, win: list[str], atoms: list[str] = []):
                 found = False
 
         if found:
-            return w
+            wins.append(w)
+    return wins
+
+
+def find_win(display: display.Display, win: list[str], atoms: list[str] = []):
+    out = find_wins(display, win, atoms)
+    return out[0] if out else None
 
 
 def register_changes(display, win):
