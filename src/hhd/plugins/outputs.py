@@ -19,6 +19,8 @@ from ..controller.virtual.uinput import (
 from .plugin import is_steam_gamepad_running
 from .utils import load_relative_yaml
 
+from .powerbutton import longpress
+
 logger = logging.getLogger(__name__)
 
 
@@ -28,6 +30,9 @@ def get_outputs(
     producers = []
     consumers = []
     nintendo_qam = False
+
+    # Hack: Powerbutton long press consumer 
+    consumers.append(longpress.instance)
 
     controller = conf["mode"].to(str)
     desktop_disable = False
