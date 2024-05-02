@@ -83,6 +83,8 @@ is added to your device.
   - GEEK, GEEK 1S 
   - NEXT Lite/Pro/Advance
   - SLIDE
+  - 2021 Standard/Pro/Pro Retro Power
+  - NEO 2021/Founder
 - Ayn
   - Loki Zero/Max
 - AOKZOE
