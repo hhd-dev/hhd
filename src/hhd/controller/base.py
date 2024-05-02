@@ -94,7 +94,7 @@ class ControllerEmitter:
         self._controller_cb = None
         self._qam_cb = None
         self.ctx = ctx
-        self.use_legacy_qam = bool(os.environ.get("HHD_QAM_LEGACY", None))
+        self.use_legacy_qam = not bool(os.environ.get("HHD_QAM_GAMESCOPE", None))
 
     def send_qam(self):
         with self.intercept_lock:
