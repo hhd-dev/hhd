@@ -83,7 +83,7 @@ def decode_axis(buff: bytes, t: AM):
             o = int.from_bytes(
                 buff[t.loc >> 3 : (t.loc >> 3) + 1], t.order, signed=False
             ) - (1 << 7)
-            s = (1 << 7) - 1
+            s = (1 << 7)
         case _:
             assert False, f"Invalid formatting {t.type}."
 
