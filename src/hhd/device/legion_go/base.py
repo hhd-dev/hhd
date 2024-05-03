@@ -509,6 +509,7 @@ class SelectivePassthrough(Producer, Consumer):
 
         self.forward_buttons = forward_buttons
         self.passthrough = passthrough
+        self.pressed_time = None
 
         self.to_disable_btn = set()
         self.to_disable_axis = set()
@@ -523,10 +524,16 @@ class SelectivePassthrough(Producer, Consumer):
         evs: Sequence[Event] = self.parent.produce(fds)
 
         out = []
-        prev_state = self.state
+        curr = time.perf_counter()
+        passthrough = self.pressed_time and (curr - self.pressed_time < 1)
+
         for ev in evs:
-            if ev["type"] == "button" and ev["code"] in self.forward_buttons:
-                self.state = ev.get("value", False)
+            if (
+                ev["type"] == "button"
+                and ev["code"] in self.forward_buttons
+                and ev.get("value", False)
+            ):
+                self.pressed_time = curr
 
             if ev["type"] == "configuration":
                 out.append(ev)
@@ -538,26 +545,11 @@ class SelectivePassthrough(Producer, Consumer):
                 out.append(ev)
             elif "touchpad" in ev["code"]:
                 out.append(ev)
-            elif ev["type"] == "button" and self.state:
-                self.to_disable_btn.add(ev["code"])
-            elif ev["type"] == "axis" and self.state:
-                self.to_disable_axis.add(ev["code"])
 
-        if self.state:
+        if passthrough:
             # If mode is pressed, forward all events
             return evs
-        elif prev_state:
-            # If prev_state, meaning the user released the mode or share button
-            # turn off all buttons that were pressed during it
-            for btn in self.to_disable_btn:
-                out.append({"type": "button", "code": btn, "value": False})
-            self.to_disable_btn = set()
-            for axis in self.to_disable_axis:
-                out.append({"type": "axis", "code": axis, "value": 0})
-            self.to_disable_axis = set()
-            return out
         else:
-            # Otherwise, just return the standard buttons
             return out
 
     def consume(self, events: Sequence[Event]):
