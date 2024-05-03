@@ -281,7 +281,7 @@ KeyboardButton = Literal[
 ]
 
 Axis = AbsAxis | RelAxis
-Button = GamepadButton | KeyboardButton | MouseButton
+Button = Literal[""] | GamepadButton | KeyboardButton | MouseButton
 
 Configuration = Literal[
     # Misc

@@ -26,6 +26,7 @@ class OverlayPlugin(HHDPlugin):
             self.ovf = OverlayService(context, emit)
             self.qam_handler = QamHandler(context)
             emit.register_qam(self.qam_handler)
+            self.emit = emit
         except Exception as e:
             logger.warning(
                 f"Could not init overlay service, is python-xlib installed? Error:\n{e}"
@@ -40,15 +41,17 @@ class OverlayPlugin(HHDPlugin):
     def update(self, conf: Config):
         # Or with self.enabled to require restart
         self.enabled = self.enabled or conf.get("hhd.settings.overlay_enabled", False)
+        self.emit.set_simple_qam(not self.enabled)
 
     def notify(self, events: Sequence[Event]):
-        if not self.ovf or not self.enabled:
+        if not self.ovf:
             return
 
         for ev in events:
             if ev["type"] != "special":
                 continue
 
+            override_enable = False
             match ev["event"]:
                 # We can listen to steam and mute it
                 # So we can ignore QAM and Guide presses
@@ -69,13 +72,16 @@ class OverlayPlugin(HHDPlugin):
                 case "qam_double":
                     # Preferred bind for QAM is dual press
                     cmd = "open_qam"
+                case "overlay":
+                    override_enable = True
+                    cmd = "open_qam"
                 case "qam_tripple":
                     # Allow opening expanded menu with tripple press
                     cmd = "open_expanded"
                 case _:
                     cmd = None
 
-            if cmd:
+            if cmd and (self.enabled or override_enable):
                 init = "close" not in cmd
                 if init:
                     logger.info(f"Executing overlay command: '{cmd}'")

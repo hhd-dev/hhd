@@ -31,6 +31,16 @@ modes:
           Inverts the roll (Z) axis compared to a real Dualsense controller.
           Useful for Steam Input, since you want it to be inverted to look
           left to right, but an issue in emulators.
+
+      noob_mode:
+        type: bool
+        title: Paddles as Keyboard/Overlay
+        tags: [non-essential]
+        default: True
+        hint: >-
+          Makes the left paddle bring up a keyboard and the right paddle bring
+          up the overlay.
+
       theme:
         type: multiple
         title: Controller Theme [BETA]

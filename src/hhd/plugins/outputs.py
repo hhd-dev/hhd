@@ -61,6 +61,7 @@ def get_outputs(
 
     uses_touch = False
     uses_leds = False
+    noob_mode = False
     flip_z = False
     match controller:
         case "dualsense_edge":
@@ -112,6 +113,7 @@ def get_outputs(
                 button_map = XBOX_ELITE_BUTTON_MAP
                 bus = 0x03
             else:
+                noob_mode = conf.get("uinput.noob_mode", False)
                 theme = conf["uinput.theme"].to(str)
                 nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
                 flip_z = conf["uinput.flip_z"].to(bool)
@@ -220,6 +222,7 @@ def get_outputs(
             "nintendo_qam": nintendo_qam,
             "uses_motion": motion,
             "uses_dual_motion": dual_motion,
+            "noob_mode": noob_mode
         },
     )
 

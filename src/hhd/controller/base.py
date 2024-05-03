@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 DEBUG_MODE = bool(os.environ.get("HHD_DEBUG", False))
 
+
 class SpecialEvent(TypedDict):
     type: Literal["special"]
     event: Literal[
@@ -21,6 +22,7 @@ class SpecialEvent(TypedDict):
         "qam_double",
         "qam_tripple",
         "qam_hold",
+        "overlay",
     ]
 
 
@@ -96,14 +98,23 @@ class ControllerEmitter:
         self._qam_cb = None
         self.ctx = ctx
         self.use_legacy_qam = not bool(os.environ.get("HHD_QAM_GAMESCOPE", None))
+        self._simple_qam = False
 
     def send_qam(self):
         with self.intercept_lock:
-            if self.use_legacy_qam:
+            if self.use_legacy_qam or self._simple_qam:
                 return False
             if self._qam_cb:
                 return self._qam_cb()
             return False
+
+    def set_simple_qam(self, val: bool):
+        with self.intercept_lock:
+            self._simple_qam = val
+
+    def simple_qam(self):
+        with self.intercept_lock:
+            return self._simple_qam
 
     def register_qam(self, cb: Callable[[], bool]):
         with self.intercept_lock:
@@ -362,7 +373,7 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 class Multiplexer:
     QAM_HOLD_TIME = 0.5
     QAM_MULTI_PRESS_DELAY = 0.2
-    QAM_DELAY = 0.125
+    QAM_DELAY = 0.15
     REBOOT_HOLD = 4
     REBOOT_VIBRATION_STRENGTH = 0.6
     REBOOT_VIBRATION_ON = 0.3
@@ -423,13 +434,17 @@ class Multiplexer:
         if share_to_qam:
             self.qam_button = "share"
 
+        self.noob_mode = params.get("noob_mode", False)
         self.qam_pressed = None
         self.qam_pre_sent = False
         self.qam_released = None
         self.qam_times = 0
-        self.qam_multi_tap = qam_multi_tap and not os.environ.get(
-            "HHD_QAM_MULTI_DISABLE", None
+        self.qam_multi_tap = (
+            qam_multi_tap
+            and not os.environ.get("HHD_QAM_MULTI_DISABLE", None)
+            and not (self.emit and self.emit.simple_qam())
         )
+        self.qam_invalidated = False
         self.guide_pressed = False
         self.steam_check = params.get("steam_check", None)
         self.steam_check_last = time.perf_counter()
@@ -541,6 +556,17 @@ class Multiplexer:
             self.touchpad_down = None
 
         for ev in events:
+            if ev["code"] in (
+                "rt",
+                "lt",
+                "hat_x",
+                "hat_y",
+                "ls_x",
+                "ls_y",
+                "rs_x",
+                "rs_y",
+            ):
+                self.qam_invalidated = True
             match ev["type"]:
                 case "axis":
                     match self.imu:
@@ -698,17 +724,103 @@ class Multiplexer:
                         if ev["value"]:
                             self.emit({"type": "special", "event": "guide"})
 
+                    if self.noob_mode and ev["code"] == "extra_l1" and ev["value"]:
+                        ev["code"] = ""  # type: ignore
+                        out.append(
+                            {
+                                "type": "button",
+                                "code": "mode",
+                                "value": True,
+                            },
+                        )
+                        self.queue.append(
+                            (
+                                {
+                                    "type": "button",
+                                    "code": "y" if self.nintendo_qam else "x",
+                                    "value": True,
+                                },
+                                curr + self.QAM_DELAY,
+                            )
+                        )
+                        self.queue.append(
+                            (
+                                {
+                                    "type": "button",
+                                    "code": "y" if self.nintendo_qam else "x",
+                                    "value": False,
+                                },
+                                curr + 2 * self.QAM_DELAY,
+                            ),
+                        )
+                        self.queue.append(
+                            (
+                                {
+                                    "type": "button",
+                                    "code": "mode",
+                                    "value": False,
+                                },
+                                curr + 2 * self.QAM_DELAY,
+                            ),
+                        )
+
+                    if self.noob_mode and ev["code"] == "extra_r1" and ev["value"]:
+                        ev["code"] = ""
+                        if self.emit:
+                            self.emit({"type": "special", "event": "overlay"})
+
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore
-                        if ev["value"]:
-                            self.qam_times += 1
-                            self.qam_pressed = curr
-                            self.qam_released = None
+                        if self.qam_multi_tap:
+                            if ev["value"]:
+                                self.qam_times += 1
+                                self.qam_pressed = curr
+                                self.qam_released = None
+                            else:
+                                # Only apply if qam_pressed was not yanked
+                                if self.qam_pressed:
+                                    self.qam_released = curr
+                                self.qam_pressed = None
                         else:
-                            # Only apply if qam_pressed was not yanked
-                            if self.qam_pressed:
-                                self.qam_released = curr
-                            self.qam_pressed = None
+                            if ev["value"]:
+                                out.append(
+                                    {
+                                        "type": "button",
+                                        "code": "mode",
+                                        "value": True,
+                                    },
+                                )
+                                self.qam_invalidated = False
+                            elif not self.qam_invalidated:
+                                out.append(
+                                    {
+                                        "type": "button",
+                                        "code": "b" if self.nintendo_qam else "a",
+                                        "value": True,
+                                    }
+                                )
+                                self.queue.append(
+                                    (
+                                        {
+                                            "type": "button",
+                                            "code": "b" if self.nintendo_qam else "a",
+                                            "value": False,
+                                        },
+                                        curr + self.QAM_DELAY,
+                                    ),
+                                )
+                                self.queue.append(
+                                    (
+                                        {
+                                            "type": "button",
+                                            "code": "mode",
+                                            "value": False,
+                                        },
+                                        curr + self.QAM_DELAY,
+                                    ),
+                                )
+                    else:
+                        self.qam_invalidated = True
 
                     if ev["code"] == "touchpad_right":
                         match self.touchpad_right:
@@ -808,54 +920,6 @@ class Multiplexer:
                 self.touchpad_y,
             )
 
-        # Handle QAM button
-        qam_apply = False
-        was_held = True
-        if self.qam_pressed and curr - self.qam_pressed > self.QAM_HOLD_TIME:
-            qam_apply = True
-        if self.qam_released and (
-            curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY
-            or not self.qam_multi_tap
-        ):
-            qam_apply = True
-        if (
-            self.qam_pressed
-            and self.qam_times == 2
-            and not self.qam_pre_sent
-            and self.emit
-        ):
-            # Send event instantly after double press to eat delay
-            self.emit({"type": "special", "event": "qam_predouble"})
-            self.qam_pre_sent = True
-        # It feels weird to have this when triple and double pressing
-        # but it is faster, consider what to do with it and maybe remove.
-        # if self.qam_pressed and self.qam_times == 3:
-        #     # Send event instantly after tripple press to eat delay
-        #     was_held = False
-        #     qam_apply = True
-
-        send_steam_qam = qam_apply and self.qam_released and self.qam_times == 1
-        if qam_apply and self.emit:
-            if self.qam_pressed and was_held:
-                self.emit({"type": "special", "event": "qam_hold"})
-            else:
-                match self.qam_times:
-                    case 0:
-                        pass
-                    case 1:
-                        self.emit({"type": "special", "event": "qam_single"})
-                    case 2:
-                        self.emit({"type": "special", "event": "qam_double"})
-                    case _:
-                        self.emit({"type": "special", "event": "qam_tripple"})
-        if qam_apply:
-            held = " then held" if self.qam_pressed else ""
-            logger.info(f"QAM Pressed {self.qam_times}{held}.")
-            self.qam_pressed = None
-            self.qam_released = None
-            self.qam_pre_sent = False
-            self.qam_times = 0
-
         for s in status_events:
             match s:
                 case "battery":
@@ -896,6 +960,49 @@ class Multiplexer:
         for ev in events:
             if ev["type"] != "button" or ev["code"]:
                 out.append(ev)
+
+        # Handle QAM button
+        # Below is the multitap implementation
+        # If it was disabled, the code is a NO-OP
+        qam_apply = False
+        was_held = True
+        if self.qam_pressed and curr - self.qam_pressed > self.QAM_HOLD_TIME:
+            qam_apply = True
+        if self.qam_released and (
+            curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY
+        ):
+            qam_apply = True
+        if (
+            self.qam_pressed
+            and self.qam_times == 2
+            and not self.qam_pre_sent
+            and self.emit
+        ):
+            # Send event instantly after double press to eat delay
+            self.emit({"type": "special", "event": "qam_predouble"})
+            self.qam_pre_sent = True
+
+        send_steam_qam = qam_apply and self.qam_released and self.qam_times == 1
+        if qam_apply and self.emit:
+            if self.qam_pressed and was_held:
+                self.emit({"type": "special", "event": "qam_hold"})
+            else:
+                match self.qam_times:
+                    case 0:
+                        pass
+                    case 1:
+                        self.emit({"type": "special", "event": "qam_single"})
+                    case 2:
+                        self.emit({"type": "special", "event": "qam_double"})
+                    case _:
+                        self.emit({"type": "special", "event": "qam_tripple"})
+        if qam_apply:
+            held = " then held" if self.qam_pressed else ""
+            logger.info(f"QAM Pressed {self.qam_times}{held}.")
+            self.qam_pressed = None
+            self.qam_released = None
+            self.qam_pre_sent = False
+            self.qam_times = 0
 
         # Grab all events from controller if grab is on
         if self.emit and self.emit.intercept(self.unique, out):
