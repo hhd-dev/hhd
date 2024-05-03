@@ -4,6 +4,8 @@ from typing import Any, Mapping, Sequence
 from ..controller.base import Consumer, Producer
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
+    HHD_PID_MOTION,
+    HHD_VID,
     HHD_PID_TOUCHPAD,
     MOTION_AXIS_MAP,
     MOTION_AXIS_MAP_FLIP_Z,
@@ -164,8 +166,8 @@ def get_outputs(
         bus = 0x06
         d = UInputDevice(
             name=f"Handheld Daemon Left Motion",
-            vid=0x057E,
-            pid=0x2009,
+            vid=HHD_VID,
+            pid=HHD_PID_MOTION,
             phys=addr,
             uniq=addr,
             bus=bus,
@@ -176,8 +178,8 @@ def get_outputs(
         consumers.append(d)
         d = UInputDevice(
             name=f"Handheld Daemon Left Motion Sensors",
-            vid=0x057E,
-            pid=0x2009,
+            vid=HHD_VID,
+            pid=HHD_PID_MOTION,
             phys=addr,
             uniq=addr,
             bus=bus,
