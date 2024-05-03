@@ -5,7 +5,7 @@ import time
 from threading import Event as TEvent
 from typing import Sequence
 
-from hhd.controller import Axis, Button, Consumer, Event, Producer
+from hhd.controller import Button, Consumer, Event, Producer, DEBUG_MODE
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
@@ -130,7 +130,7 @@ def plugin_run(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             # Raise exception
-            if conf.get("debug", False):
+            if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
         finally:
@@ -148,7 +148,7 @@ def controller_loop_rest(
     emit: Emitter,
     reset: bool,
 ):
-    debug = conf.get("debug", False)
+    debug = DEBUG_MODE
     shortcuts_enabled = conf["shortcuts"].to(bool)
     # FIXME: Sleep when shortcuts are disabled instead of polling raw interface
     if shortcuts_enabled:
@@ -216,7 +216,7 @@ def controller_loop_rest(
 def controller_loop_xinput(
     conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, reset: bool
 ):
-    debug = conf.get("debug", False)
+    debug = DEBUG_MODE
 
     # Output
     dimu = conf["imu.mode"].to(str)

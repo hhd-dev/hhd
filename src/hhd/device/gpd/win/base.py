@@ -7,13 +7,13 @@ from typing import Sequence
 
 import evdev
 
-from hhd.controller import Axis, Event, Multiplexer, can_read
+from hhd.controller import DEBUG_MODE, Event, Multiplexer, can_read
 from hhd.controller.base import Event, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
-from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
+from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
 from .const import (
     GPD_TOUCHPAD_AXIS_MAP,
@@ -198,7 +198,7 @@ def plugin_run(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             # Raise exception
-            if conf.get("debug", False):
+            if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
 
@@ -206,7 +206,7 @@ def plugin_run(
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
 ):
-    debug = conf.get("debug", False)
+    debug = DEBUG_MODE
     has_touchpad = dconf.get("touchpad", False)
 
     # Output

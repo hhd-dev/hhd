@@ -9,6 +9,7 @@ from .const import Axis, Button, Configuration
 
 logger = logging.getLogger(__name__)
 
+DEBUG_MODE = bool(os.environ.get("HHD_DEBUG", False))
 
 class SpecialEvent(TypedDict):
     type: Literal["special"]

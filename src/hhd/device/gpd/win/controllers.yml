@@ -53,12 +53,3 @@ children:
       l4: "L4"
       r4: "R4"
     default: r4
-
-  debug:
-    type: bool
-    title: Debug
-    tags: [advanced, expert]
-    hint: >-
-      Output controller events to the console (high CPU use) and raises exceptions
-      (HHD will crash on errors).
-    default: False

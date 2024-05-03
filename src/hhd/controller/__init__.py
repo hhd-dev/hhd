@@ -10,6 +10,7 @@ from .base import (
     correct_touchpad,
     SpecialEvent,
     ControllerEmitter,
+    DEBUG_MODE,
 )
 from .const import Axis, Button, Configuration
 
@@ -28,4 +29,5 @@ __all__ = [
     "Multiplexer",
     "SpecialEvent",
     "ControllerEmitter",
+    "DEBUG_MODE",
 ]

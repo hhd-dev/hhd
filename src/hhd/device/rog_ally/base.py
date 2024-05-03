@@ -2,9 +2,9 @@ import logging
 import select
 import time
 from threading import Event as TEvent
-from typing import Literal, Sequence
+from typing import Sequence
 
-from hhd.controller import Axis, Event, Multiplexer, can_read
+from hhd.controller import Axis, Event, Multiplexer, can_read, DEBUG_MODE
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_unique
@@ -165,13 +165,13 @@ def plugin_run(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             # Raise exception
-            if conf.get("debug", False):
+            if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
 
 
 def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter):
-    debug = conf.get("debug", False)
+    debug = DEBUG_MODE
 
     # Output
     d_producers, d_outs, d_params = get_outputs(

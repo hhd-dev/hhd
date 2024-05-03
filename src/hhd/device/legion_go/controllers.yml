@@ -105,12 +105,3 @@ children:
     tags: [ non-essential ]
     hint: >-
       Resets the controllers to factory settings.
-
-  debug:
-    type: bool
-    title: Debug
-    tags: [advanced, expert]
-    hint: >-
-      Output controller events to the console (high CPU use) and raises exceptions
-      (HHD will crash on errors).
-    default: False
