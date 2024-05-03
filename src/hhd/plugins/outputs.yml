@@ -186,25 +186,25 @@ modes:
           Test and report back!
         default: True
 
-  joycon_pair:
-    type: container
-    tags: [xbox_elite]
-    title: JoyCon Pair
-    hint: >-
-      Allows for gyro (one-sided) and paddles. Steam has weird glyphs but 0 games
-      support nintendo glyphs.
-    children:
-      nintendo_qam:
-        type: bool
-        title: Nintendo QAM Fix
-        tags: [non-essential]
-        default: True
-      flip_z:
-        type: bool
-        title: Invert Roll Axis
-        tags: [non-essential]
-        default: True
-        hint: >-
-          Inverts the roll (Z) axis compared to a real Dualsense controller.
-          Useful for Steam Input, since you want it to be inverted to look
-          left to right, but an issue in emulators.
+  # joycon_pair:
+  #   type: container
+  #   tags: [xbox_elite]
+  #   title: JoyCon Pair
+  #   hint: >-
+  #     Allows for gyro (one-sided) and paddles. Steam has weird glyphs but 0 games
+  #     support nintendo glyphs.
+  #   children:
+  #     nintendo_qam:
+  #       type: bool
+  #       title: Nintendo QAM Fix
+  #       tags: [non-essential]
+  #       default: True
+  #     flip_z:
+  #       type: bool
+  #       title: Invert Roll Axis
+  #       tags: [non-essential]
+  #       default: True
+  #       hint: >-
+  #         Inverts the roll (Z) axis compared to a real Dualsense controller.
+  #         Useful for Steam Input, since you want it to be inverted to look
+  #         left to right, but an issue in emulators.

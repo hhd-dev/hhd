@@ -4,7 +4,6 @@ from typing import Any, Mapping, Sequence
 from ..controller.base import Consumer, Producer
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
-    HHD_PID_MOTION,
     HHD_PID_TOUCHPAD,
     MOTION_AXIS_MAP,
     MOTION_AXIS_MAP_FLIP_Z,
@@ -16,6 +15,8 @@ from ..controller.virtual.uinput import (
     CONTROLLER_THEMES,
     MOTION_LEFT_AXIS_MAP,
     MOTION_LEFT_AXIS_MAP_FLIP_Z,
+    XBOX_ELITE_BUTTON_MAP,
+    GAMEPAD_BUTTON_MAP,
     UInputDevice,
 )
 from .plugin import is_steam_gamepad_running
@@ -81,7 +82,7 @@ def get_outputs(
             producers.append(d)
             consumers.append(d)
         case "dualsense":
-            flip_z = conf["flip_z.flip_z"].to(bool)
+            flip_z = conf["dualsense.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense.led_support", False)
             d = Dualsense(
@@ -99,21 +100,37 @@ def get_outputs(
             producers.append(d)
             consumers.append(d)
         case "uinput" | "xbox_elite" | "joycon_pair":
+            version = 1
             if controller == "joycon_pair":
                 theme = "joycon_pair"
                 nintendo_qam = conf["joycon_pair.nintendo_qam"].to(bool)
+                button_map = GAMEPAD_BUTTON_MAP
+                bus = 0x06
+                version = 0
             elif controller == "xbox_elite":
                 theme = "xbox_one_elite"
+                button_map = XBOX_ELITE_BUTTON_MAP
+                bus = 0x03
             else:
                 theme = conf["uinput.theme"].to(str)
                 nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
                 flip_z = conf["uinput.flip_z"].to(bool)
+                button_map = GAMEPAD_BUTTON_MAP
+                bus = 0x03 if theme == "hhd" else 0x06
             vid, pid, name = CONTROLLER_THEMES[theme]
-            bus = 0x03 if theme == "hhd" else 0x06
             addr = "phys-hhd-main"
             if controller_id:
                 addr = f"phys-hhd-{controller_id:02d}"
-            d = UInputDevice(name=name, vid=vid, pid=pid, phys=addr, uniq=addr)
+            d = UInputDevice(
+                name=name,
+                vid=vid,
+                pid=pid,
+                phys=addr,
+                uniq=addr,
+                btn_map=button_map,
+                bus=bus,
+                version=version,
+            )
             producers.append(d)
             consumers.append(d)
             # Deactivate motion if using an xbox theme
@@ -126,6 +143,7 @@ def get_outputs(
                     phys=addr,
                     uniq=addr,
                     bus=bus,
+                    version=version,
                     capabilities=MOTION_CAPABILITIES,
                     btn_map={},
                     axis_map=(MOTION_AXIS_MAP_FLIP_Z if flip_z else MOTION_AXIS_MAP),

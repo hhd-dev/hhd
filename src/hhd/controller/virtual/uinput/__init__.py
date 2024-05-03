@@ -29,6 +29,7 @@ class UInputDevice(Consumer, Producer):
         input_props: Sequence[int] = [],
         ignore_cmds: bool = False,
         uniq: str | None = None,
+        version: int = 1,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -46,6 +47,7 @@ class UInputDevice(Consumer, Producer):
         self.sys_ofs = 0
         self.input_props = input_props
         self.ignore_cmds = ignore_cmds
+        self.version = version
 
         self.rumble: Event | None = None
 
@@ -57,6 +59,7 @@ class UInputDevice(Consumer, Producer):
                 name=self.name,
                 vendor=self.vid,
                 product=self.pid,
+                version=self.version,
                 bustype=self.bus,
                 phys=self.phys,
                 input_props=self.input_props,
@@ -72,6 +75,7 @@ class UInputDevice(Consumer, Producer):
                 vendor=self.vid,
                 product=self.pid,
                 bustype=self.bus,
+                version=self.version,
                 phys=self.phys,
                 input_props=self.input_props,
             )
