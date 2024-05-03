@@ -1,7 +1,7 @@
 import logging
 from typing import TYPE_CHECKING, Any, Sequence
 
-from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml, Event
+from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +13,7 @@ class OverlayPlugin(HHDPlugin):
         self.log = "ovrl"
         self.ovf = None
         self.enabled = False
+        self.has_executable = False
 
     def open(
         self,
@@ -21,9 +22,11 @@ class OverlayPlugin(HHDPlugin):
     ):
         try:
             from .base import OverlayService
+            from .overlay import find_overlay_exe
             from .x11 import QamHandler
 
             self.ovf = OverlayService(context, emit)
+            self.has_executable = bool(find_overlay_exe(context))
             self.qam_handler = QamHandler(context)
             emit.register_qam(self.qam_handler)
             self.emit = emit
@@ -41,7 +44,7 @@ class OverlayPlugin(HHDPlugin):
     def update(self, conf: Config):
         # Or with self.enabled to require restart
         self.enabled = self.enabled or conf.get("hhd.settings.overlay_enabled", False)
-        self.emit.set_simple_qam(not self.enabled)
+        self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
     def notify(self, events: Sequence[Event]):
         if not self.ovf:
