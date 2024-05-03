@@ -500,6 +500,9 @@ MOTION_AXIS_MAP_FLIP_Z: dict[Axis, AX] = {
 MOTION_LEFT_AXIS_MAP: dict[Axis, AX] = {
     "left_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore
 }
+MOTION_LEFT_AXIS_MAP_FLIP_Z: dict[Axis, AX] = {
+    "left_" + k: v for k, v in MOTION_AXIS_MAP_FLIP_Z.items()  # type: ignore
+}
 
 MOTION_RIGHT_AXIS_MAP: dict[Axis, AX] = {
     "right_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore

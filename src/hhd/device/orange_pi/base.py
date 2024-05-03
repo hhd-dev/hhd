@@ -90,6 +90,7 @@ def controller_loop(
         conf["imu"].to(bool),
         emit=emit,
     )
+    motion = d_params.get("uses_motion", True) and conf.get("imu", True)
 
     # Imu
     d_imu = CombinedImu(
@@ -156,7 +157,7 @@ def controller_loop(
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
-    if conf["imu"].to(bool):
+    if motion:
         REPORT_FREQ_MAX = max(REPORT_FREQ_MAX, conf["imu_hz"].to(float))
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
@@ -176,7 +177,7 @@ def controller_loop(
     try:
         # d_vend.open()
         prepare(d_xinput)
-        if conf.get("imu", False):
+        if motion:
             start_imu = True
             if dconf.get("hrtimer", False):
                 start_imu = d_timer.open()

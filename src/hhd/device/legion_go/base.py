@@ -9,16 +9,7 @@ from hhd.controller import Axis, Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
-from hhd.controller.physical.imu import AccelImu, GyroImu
-from hhd.controller.virtual.uinput import (
-    HHD_PID_MOTION,
-    HHD_PID_VENDOR,
-    MOTION_CAPABILITIES,
-    MOTION_INPUT_PROPS,
-    MOTION_LEFT_AXIS_MAP,
-    MOTION_RIGHT_AXIS_MAP,
-    UInputDevice,
-)
+from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
 from .const import (
@@ -234,51 +225,31 @@ def controller_loop_xinput(
         case "left":
             simu = "left_to_main"
             cidx = 1
-        case "right":
+        case "right" | "both":
             simu = "right_to_main"
             cidx = 2
         case _:
             simu = None
             cidx = 0
 
-    dual_evdev = conf["dual_evdev"].to(bool)
     fix_hold = (
         conf["touchpad_hold"].to(bool)
         and conf["touchpad.mode"].to(TouchpadAction) == "controller"
     )
-    motion = dimu != "disabled" or (
-        dimu == "display"
-        and (conf["imu.display.accel"].to(bool) or conf["imu.display.gyro"].to(bool))
-    )
     d_producers, d_outs, d_params = get_outputs(
-        conf["xinput"], conf["touchpad"], motion, controller_id=cidx, emit=emit
+        conf["xinput"],
+        conf["touchpad"],
+        dimu != "disabled",
+        controller_id=cidx,
+        emit=emit,
+        dual_motion=dimu == "both",
     )
-
-    # Imu
-    d_accel = AccelImu()
-    # Legion go has a bit lower sensitivity than it should
-    GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-        "anglvel_x": (
-            "gyro_z",
-            "anglvel",
-            conf["imu.display.gyro_scaling"].to(int),
-            None,
-        ),
-        "anglvel_y": (
-            "gyro_x",
-            "anglvel",
-            conf["imu.display.gyro_scaling"].to(int),
-            None,
-        ),
-        "anglvel_z": (
-            "gyro_y",
-            "anglvel",
-            conf["imu.display.gyro_scaling"].to(int),
-            None,
-        ),
-        "timestamp": ("imu_ts", None, 1, None),
-    }
-    d_gyro = GyroImu(map=GYRO_MAPPINGS, legion_fix=True)
+    motion = d_params.get("uses_motion", True)
+    dual_motion = d_params.get("uses_dual_motion", True)
+    if not dual_motion and dimu == "both":
+        dimu = "right"
+    if not motion:
+        dimu = "disabled"
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
@@ -311,7 +282,7 @@ def controller_loop_xinput(
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=RgbCallback(),
             required=True,
-        ).with_settings("both" if dual_evdev else dimu, reset, fix_hold)
+        ).with_settings(dimu, reset, fix_hold)
     )
 
     # Mute keyboard shortcuts, mute
@@ -356,31 +327,6 @@ def controller_loop_xinput(
         params=d_params,
     )
 
-    d_right = UInputDevice(
-        name="Handheld Daemon Controller Right Motion Sensors",
-        phys="phys-hhd-lgo-right",
-        uniq="phys-hhd-lgo-right",
-        capabilities=MOTION_CAPABILITIES,
-        pid=HHD_PID_MOTION,
-        btn_map={},
-        axis_map=MOTION_RIGHT_AXIS_MAP,
-        output_imu_timestamps="right_imu_ts",
-        input_props=MOTION_INPUT_PROPS,
-        ignore_cmds=True,
-    )
-    d_left = UInputDevice(
-        name="Handheld Daemon Controller Left Motion Sensors",
-        phys="phys-hhd-lgo-left",
-        uniq="phys-hhd-lgo-left",
-        capabilities=MOTION_CAPABILITIES,
-        pid=HHD_PID_MOTION,
-        btn_map={},
-        axis_map=MOTION_LEFT_AXIS_MAP,
-        output_imu_timestamps="left_imu_ts",
-        input_props=MOTION_INPUT_PROPS,
-        ignore_cmds=True,
-    )
-
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 500
 
@@ -400,11 +346,6 @@ def controller_loop_xinput(
 
     try:
         prepare(d_xinput)
-        if motion and dimu == "display":
-            if conf.get("imu.display.accel", False):
-                prepare(d_accel)
-            if conf.get("imu.display.gyro", False):
-                prepare(d_gyro)
         prepare(d_shortcuts)
         if d_params["uses_touch"]:
             if fix_hold:
@@ -416,9 +357,6 @@ def controller_loop_xinput(
         prepare(d_raw)
         for d in d_producers:
             prepare(d)
-        if dual_evdev:
-            prepare(d_left)
-            prepare(d_right)
 
         ts_count: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
         ts_last: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
@@ -461,11 +399,6 @@ def controller_loop_xinput(
                     # 8ms per count
                     ts_count[ev["code"]] += diff * 8_000_000
                     ev["value"] = ts_count[ev["code"]]
-
-            # Process dual evdev first to avoid multiplexing it
-            if dual_evdev:
-                d_left.consume(evs)
-                d_right.consume(evs)
 
             evs = multiplexer.process(evs)
             if evs:

@@ -177,6 +177,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
     d_producers, d_outs, d_params = get_outputs(
         conf["controller_mode"], None, conf["imu"].to(bool), emit=emit
     )
+    motion = d_params.get("uses_motion", True)
 
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS, gyro_scale="0.000266")
@@ -226,7 +227,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
-    if conf["imu"].to(bool):
+    if motion:
         REPORT_FREQ_MAX = max(REPORT_FREQ_MAX, conf["imu_hz"].to(float))
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
@@ -246,7 +247,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
     try:
         d_vend.open()
         prepare(d_xinput)
-        if conf.get("imu", False):
+        if motion:
             if d_timer.open():
                 prepare(d_imu)
         prepare(d_kbd_1)
