@@ -561,10 +561,10 @@ class Multiplexer:
                 "lt",
                 "hat_x",
                 "hat_y",
-                "ls_x",
-                "ls_y",
-                "rs_x",
-                "rs_y",
+                # "ls_x",
+                # "ls_y",
+                # "rs_x",
+                # "rs_y",
             ):
                 self.qam_invalidated = True
             match ev["type"]:
