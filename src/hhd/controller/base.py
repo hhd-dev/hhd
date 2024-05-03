@@ -444,7 +444,6 @@ class Multiplexer:
             and not os.environ.get("HHD_QAM_MULTI_DISABLE", None)
             and not (self.emit and self.emit.simple_qam())
         )
-        self.qam_invalidated = False
         self.guide_pressed = False
         self.steam_check = params.get("steam_check", None)
         self.steam_check_last = time.perf_counter()
@@ -556,17 +555,6 @@ class Multiplexer:
             self.touchpad_down = None
 
         for ev in events:
-            if ev["code"] in (
-                "rt",
-                "lt",
-                "hat_x",
-                "hat_y",
-                # "ls_x",
-                # "ls_y",
-                # "rs_x",
-                # "rs_y",
-            ):
-                self.qam_invalidated = True
             match ev["type"]:
                 case "axis":
                     match self.imu:
@@ -790,14 +778,15 @@ class Multiplexer:
                                         "value": True,
                                     },
                                 )
-                                self.qam_invalidated = False
-                            elif not self.qam_invalidated:
-                                out.append(
-                                    {
-                                        "type": "button",
-                                        "code": "b" if self.nintendo_qam else "a",
-                                        "value": True,
-                                    }
+                                self.queue.append(
+                                    (
+                                        {
+                                            "type": "button",
+                                            "code": "b" if self.nintendo_qam else "a",
+                                            "value": True,
+                                        },
+                                        curr + self.QAM_DELAY,
+                                    ),
                                 )
                                 self.queue.append(
                                     (
@@ -806,7 +795,7 @@ class Multiplexer:
                                             "code": "b" if self.nintendo_qam else "a",
                                             "value": False,
                                         },
-                                        curr + self.QAM_DELAY,
+                                        curr + 2 * self.QAM_DELAY,
                                     ),
                                 )
                                 self.queue.append(
@@ -816,11 +805,9 @@ class Multiplexer:
                                             "code": "mode",
                                             "value": False,
                                         },
-                                        curr + self.QAM_DELAY,
+                                        curr + 2 * self.QAM_DELAY,
                                     ),
                                 )
-                    else:
-                        self.qam_invalidated = True
 
                     if ev["code"] == "touchpad_right":
                         match self.touchpad_right:
