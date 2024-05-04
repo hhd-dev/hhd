@@ -20,7 +20,6 @@ from .const import (
     LGO_TOUCHPAD_AXIS_MAP,
     LGO_TOUCHPAD_BUTTON_MAP,
 )
-from .gyro_fix import GyroFixer
 from .hid import LegionHidraw, RgbCallback
 
 FIND_DELAY = 0.1
@@ -49,20 +48,10 @@ def plugin_run(
     others: dict,
 ):
     reset = others.get("reset", False)
-    gyro_fixer = None
     init = time.perf_counter()
     repeated_fail = False
 
     while not should_exit.is_set():
-        if (
-            conf["imu.mode"].to(str) == "display"
-            and (gyro_fix := conf.get("imu.display.gyro_fix", False))
-            and conf["imu.display.gyro"].to(bool)
-        ):
-            gyro_fixer = GyroFixer(int(gyro_fix) if int(gyro_fix) > 10 else 100)
-        else:
-            gyro_fixer = None
-
         try:
             controller_mode = None
             pid = None
@@ -95,8 +84,6 @@ def plugin_run(
                 and conf["xinput.mode"].to(str) != "disabled"
             ):
                 logger.info("Launching emulated controller.")
-                if gyro_fixer:
-                    gyro_fixer.open()
                 init = time.perf_counter()
                 controller_loop_xinput(conf_copy, should_exit, updated, emit, reset)
             else:
@@ -133,9 +120,6 @@ def plugin_run(
             if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
-        finally:
-            if gyro_fixer:
-                gyro_fixer.close()
         reset = False
 
 
