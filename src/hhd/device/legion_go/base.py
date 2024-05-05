@@ -154,7 +154,7 @@ def controller_loop_rest(
     )
 
     multiplexer = Multiplexer(
-        dpad="analog_to_discrete",
+        dpad="both",
         trigger="analog_to_discrete",
         share_to_qam=conf["share_to_qam"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
@@ -297,7 +297,7 @@ def controller_loop_xinput(
     multiplexer = Multiplexer(
         swap_guide=swap_guide,
         trigger="analog_to_discrete",
-        dpad="analog_to_discrete",
+        dpad="both",
         led="main_to_sides",
         status="both_to_main",
         share_to_qam=conf["share_to_qam"].to(bool),
