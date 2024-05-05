@@ -375,7 +375,12 @@ class Multiplexer:
             None | Literal["guide_is_start", "guide_is_select", "select_is_guide"]
         ) = None,
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
-        dpad: None | Literal["analog_to_discrete"] = None,
+        dpad: (
+            None
+            | Literal["analog_to_discrete"]
+            | Literal["discrete_to_analog"]
+            | Literal["both"]
+        ) = None,
         led: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
         touchpad: (
             None | Literal["left_to_main", "right_to_main", "main_to_sides"]
@@ -610,7 +615,9 @@ class Multiplexer:
                             }
                         )
 
-                    if self.dpad == "analog_to_discrete" and ev["code"] in (
+                    if (
+                        self.dpad == "analog_to_discrete" or self.dpad == "both"
+                    ) and ev["code"] in (
                         "hat_x",
                         "hat_y",
                     ):
@@ -618,7 +625,7 @@ class Multiplexer:
                             {
                                 "type": "button",
                                 "code": (
-                                    "dpad_up" if ev["code"] == "hat_y" else "dpad_right"
+                                    "dpad_down" if ev["code"] == "hat_y" else "dpad_right"
                                 ),
                                 "value": ev["value"] > 0.5,
                             }
@@ -627,7 +634,7 @@ class Multiplexer:
                             {
                                 "type": "button",
                                 "code": (
-                                    "dpad_down"
+                                    "dpad_up"
                                     if ev["code"] == "hat_y"
                                     else "dpad_left"
                                 ),
@@ -695,6 +702,40 @@ class Multiplexer:
                         self.guide_pressed = ev["value"]
                         if ev["value"]:
                             self.emit({"type": "special", "event": "guide"})
+                        
+                    if (
+                        self.dpad == "discrete_to_analog" or self.dpad == "both"
+                    ) and ev["code"] in (
+                        "dpad_up",
+                        "dpad_down",
+                        "dpad_left",
+                        "dpad_right",
+                    ):
+                        # FIXME: To be done properly you'd need to save the previous
+                        # state so that if going from -1 to 1 in one go it would be
+                        # preserved. Since this is only used for the legion go
+                        # passthrough that is not an issue.
+                        match ev["code"]:
+                            case "dpad_up":
+                                code = "hat_y"
+                                val = -1
+                            case "dpad_down":
+                                code = "hat_y"
+                                val = 1
+                            case "dpad_right":
+                                code = "hat_x"
+                                val = 1
+                            case "dpad_left":
+                                code = "hat_x"
+                                val = -1
+
+                        out.append(
+                            {
+                                "type": "axis",
+                                "code": code,
+                                "value": ev["value"] * val,
+                            }
+                        )
 
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore
