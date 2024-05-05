@@ -90,4 +90,4 @@ def hidraw():
         hz = f"{1/(curr - prev):6.1f} Hz" if curr != prev else "   NaN Hz"
         prev = curr
         print(f"{i:6d}: {curr:8.4f}s ({hz})", d.read().hex())
-        sleep(0.001)
+        sleep(0.0005)
