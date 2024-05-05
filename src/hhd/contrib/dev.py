@@ -30,14 +30,17 @@ def evdev():
         print("\nYou may continue.")
     print()
 
-    endcap = False
+    endcap = True
     start = perf_counter()
+    prev = 0
     for ev in d.read_loop():
         curr = perf_counter() - start
+        hz = f"{1/(curr - prev):6.1f} Hz" if curr != prev else "   NaN Hz"
         if ev.code == 0 and ev.type == 0 and ev.value == 0:
             print(
-                f"└ SYN ─ {curr:7.3f}s ────────────────────────────────────────────────────────┘"
+                f"└ SYN ─ {curr:7.3f}s ─ {hz} ────────────────────────────────────────────┘"
             )
+            prev = curr
             endcap = True
         else:
             if endcap:
@@ -52,7 +55,7 @@ def evdev():
 def hidraw():
     from hhd.controller.lib.hid import enumerate_unique, Device
     from hhd.controller.lib.common import hexify
-    from time import sleep, time
+    from time import sleep, time, perf_counter
 
     print("Available Devices with the Current Permissions")
     avail = []
@@ -80,7 +83,11 @@ def hidraw():
     d = Device(path=sel)
     print(f"Selected device `{str(sel)}`.")
 
-    start = time()
+    start = perf_counter()
+    prev = 0
     for i in range(100000000):
-        print(f"{i:6d}: {time() - start:8.4f}", d.read().hex())
+        curr = perf_counter() - start
+        hz = f"{1/(curr - prev):6.1f} Hz" if curr != prev else "   NaN Hz"
+        prev = curr
+        print(f"{i:6d}: {curr:8.4f}s ({hz})", d.read().hex())
         sleep(0.001)
