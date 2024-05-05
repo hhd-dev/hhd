@@ -252,6 +252,10 @@ class IioReader(Producer):
         )
 
         if not dev:
+            logger.error(
+                "IMU not found for this device, gyro will not work.\n"
+                + "You need to install the IMU driver for your device, see the readme."
+            )
             return []
 
         self.buf = None
@@ -485,6 +489,7 @@ class HrtimerTrigger(IioReader):
             return False
 
         self.old_triggers = {}
+        found = False
         for d in self.devices:
             s, _ = find_sensor(d)
             if not s:
@@ -498,6 +503,15 @@ class HrtimerTrigger(IioReader):
                 self.old_triggers[trig_fn] = (f.read(), buff_fn)
             with open(trig_fn, "w") as f:
                 f.write(f"hhd")
+            found = True
+
+        if not found:
+            self.close()
+            logger.error(
+                "IMU not found for this device, gyro will not work.\n"
+                + "You need to install the IMU driver for your device, see the readme."
+            )
+            return False
 
         return True
 
