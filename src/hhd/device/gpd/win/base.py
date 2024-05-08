@@ -269,13 +269,19 @@ def controller_loop(
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
 
-    match conf["l4r4_to_qam"].to(str):
+    match conf["l4r4"].to(str):
         case "l4":
             qam_button = "extra_l1"
+            l4r4_enabled = True
         case "r4":
             qam_button = "extra_r1"
+            l4r4_enabled = True
+        case "disabled":
+            qam_button = None
+            l4r4_enabled = False
         case _:
             qam_button = None
+            l4r4_enabled = True
 
     if has_touchpad:
         touch_actions = (
@@ -337,7 +343,8 @@ def controller_loop(
                 prepare(d_imu)
         if has_touchpad and d_params["uses_touch"]:
             prepare(d_touch)
-        prepare(d_kbd_1)
+        if l4r4_enabled:
+            prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
 
