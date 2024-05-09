@@ -44,21 +44,13 @@ children:
       Swaps A with B and X with Y.
     default: False
 
-  l4r4_to_qam:
+  l4r4:
     type: multiple
     tags: [ non-essential ]
-    title: Map L4/R4 to QAM.
+    title: L4/R4 Mapping
     options:
       disabled: "Disabled"
-      l4: "L4"
-      r4: "R4"
-    default: r4
-
-  debug:
-    type: bool
-    title: Debug
-    tags: [advanced, expert]
-    hint: >-
-      Output controller events to the console (high CPU use) and raises exceptions
-      (HHD will crash on errors).
-    default: False
+      generic: "Generic"
+      l4: "L4 is QAM"
+      r4: "R4 is QAM"
+    default: disabled

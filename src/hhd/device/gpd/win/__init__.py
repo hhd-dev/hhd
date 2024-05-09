@@ -17,6 +17,11 @@ from hhd.controller.lib.hid import enumerate_unique
 from .const import GPD_WIN_MAX_2_2023_MAPPINGS, GPD_WIN_DEFAULT_MAPPINGS
 
 GPD_CONFS = {
+    "G1618-03": {  # Old model, has no gyro/touchpad
+        "name": "GPD Win 3",
+        "touchpad": False,
+        "hrtimer": False,
+    },
     "G1618-04": {"name": "GPD Win 4", "hrtimer": True},
     "G1617-01": {"name": "GPD Win Mini", "touchpad": True},
     "G1619-04": {

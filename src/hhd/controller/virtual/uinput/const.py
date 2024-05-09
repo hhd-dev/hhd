@@ -30,7 +30,7 @@ CONTROLLER_THEMES: dict[str, tuple[int, int, str]] = {
     # Nintendo
     "joycon_left": (0x057E, 0x2006, "JoyCon Left"),
     "joycon_right": (0x057E, 0x2007, "JoyCon Right"),
-    "joycon_pair": (0x057E, 0x2008, "JoyCon Pair"),
+    "joycon_pair": (0x057E, 0x2008, "Nintendo Switch Combined Joy-Cons"),
     "joycon_grip": (0x057E, 0x200E, "JoyCon Grip"),
     "switch_pro": (0x057E, 0x2009, "Switch Pro"),
     # Valve
@@ -57,28 +57,6 @@ class AX(NamedTuple):
 
 
 logger = logging.getLogger(__name__)
-
-GAMEPAD_BTN_CAPABILITIES = {
-    B("EV_KEY"): [
-        B("BTN_TL"),
-        B("BTN_TR"),
-        B("BTN_SELECT"),
-        B("BTN_START"),
-        B("BTN_MODE"),
-        B("BTN_THUMBL"),
-        B("BTN_THUMBR"),
-        B("BTN_A"),
-        B("BTN_B"),
-        B("BTN_X"),
-        B("BTN_Y"),
-        B("BTN_TRIGGER_HAPPY1"),
-        B("BTN_TRIGGER_HAPPY2"),
-        B("BTN_TRIGGER_HAPPY3"),
-        B("BTN_TRIGGER_HAPPY4"),
-        B("BTN_TRIGGER_HAPPY5"),
-        B("BTN_TRIGGER_HAPPY6"),
-    ]
-}
 
 GAMEPAD_CAPABILITIES = {
     # B("EV_SYN", 0): [
@@ -439,9 +417,7 @@ TOUCHPAD_CAPABILITIES = {
     ],
     B("EV_MSC", 4): [B("MSC_TIMESTAMP", 5)],
 }
-
-
-GAMEPAD_BUTTON_MAP: dict[Button, int] = {
+GAMEPAD_BASE_BUTTON_MAP: dict[Button, int] = {
     # Gamepad
     "a": B("BTN_A"),
     "b": B("BTN_B"),
@@ -459,6 +435,10 @@ GAMEPAD_BUTTON_MAP: dict[Button, int] = {
     # Misc
     "mode": B("BTN_MODE"),
     "share": B("BTN_TRIGGER_HAPPY20"),
+}
+
+GAMEPAD_BUTTON_MAP: dict[Button, int] = {
+    **GAMEPAD_BASE_BUTTON_MAP,
     # Back buttons
     "extra_l1": B("BTN_TRIGGER_HAPPY1"),
     "extra_r1": B("BTN_TRIGGER_HAPPY2"),
@@ -467,6 +447,16 @@ GAMEPAD_BUTTON_MAP: dict[Button, int] = {
     "extra_l3": B("BTN_TRIGGER_HAPPY5"),
     "extra_r3": B("BTN_TRIGGER_HAPPY6"),
 }
+
+XBOX_ELITE_BUTTON_MAP: dict[Button, int] = {
+    **GAMEPAD_BASE_BUTTON_MAP,
+    # Back buttons
+    "extra_l1": B("BTN_TRIGGER_HAPPY7"),
+    "extra_r1": B("BTN_TRIGGER_HAPPY5"),
+    "extra_l2": B("BTN_TRIGGER_HAPPY8"),
+    "extra_r2": B("BTN_TRIGGER_HAPPY6"),
+}
+
 
 GAMEPAD_AXIS_MAP: dict[Axis, AX] = {
     "ls_x": AX(B("ABS_X"), 2**15 - 1),
@@ -499,6 +489,9 @@ MOTION_AXIS_MAP_FLIP_Z: dict[Axis, AX] = {
 
 MOTION_LEFT_AXIS_MAP: dict[Axis, AX] = {
     "left_" + k: v for k, v in MOTION_AXIS_MAP.items()  # type: ignore
+}
+MOTION_LEFT_AXIS_MAP_FLIP_Z: dict[Axis, AX] = {
+    "left_" + k: v for k, v in MOTION_AXIS_MAP_FLIP_Z.items()  # type: ignore
 }
 
 MOTION_RIGHT_AXIS_MAP: dict[Axis, AX] = {

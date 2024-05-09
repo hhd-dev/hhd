@@ -5,6 +5,7 @@ from ..controller.base import Consumer, Producer
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
     HHD_PID_MOTION,
+    HHD_VID,
     HHD_PID_TOUCHPAD,
     MOTION_AXIS_MAP,
     MOTION_AXIS_MAP_FLIP_Z,
@@ -14,6 +15,10 @@ from ..controller.virtual.uinput import (
     TOUCHPAD_BUTTON_MAP,
     TOUCHPAD_CAPABILITIES,
     CONTROLLER_THEMES,
+    MOTION_LEFT_AXIS_MAP,
+    MOTION_LEFT_AXIS_MAP_FLIP_Z,
+    XBOX_ELITE_BUTTON_MAP,
+    GAMEPAD_BUTTON_MAP,
     UInputDevice,
 )
 from .plugin import is_steam_gamepad_running
@@ -25,7 +30,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_outputs(
-    conf, touch_conf, motion: bool = False, *, controller_id: int = 0, emit=None
+    conf,
+    touch_conf,
+    motion: bool = False,
+    *,
+    controller_id: int = 0,
+    emit=None,
+    dual_motion: bool = False,
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -57,8 +68,11 @@ def get_outputs(
 
     uses_touch = False
     uses_leds = False
+    noob_mode = False
+    flip_z = False
     match controller:
         case "dualsense_edge":
+            flip_z = conf["dualsense_edge.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense_edge.led_support", False)
             d = Dualsense(
@@ -70,12 +84,13 @@ def get_outputs(
                 fake_timestamps=not motion,
                 sync_gyro=conf["dualsense_edge.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=False,
-                flip_z=conf["dualsense_edge.flip_z"].to(bool),
+                flip_z=flip_z,
                 controller_id=controller_id,
             )
             producers.append(d)
             consumers.append(d)
         case "dualsense":
+            flip_z = conf["dualsense.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense.led_support", False)
             d = Dualsense(
@@ -87,66 +102,105 @@ def get_outputs(
                 fake_timestamps=not motion,
                 sync_gyro=conf["dualsense.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=conf["dualsense.paddles_to_clicks"].to(bool),
-                flip_z=conf["dualsense.flip_z"].to(bool),
+                flip_z=flip_z,
                 controller_id=controller_id,
             )
             producers.append(d)
             consumers.append(d)
-        case "uinput":
-            theme = conf["uinput.theme"].to(str)
-            if theme == "other":
-                theme = conf["uinput.other_themes"].to(str)
-            nintendo_qam = "switch" in theme or "joy" in theme
+        case "uinput" | "xbox_elite" | "joycon_pair":
+            version = 1
+            if controller == "joycon_pair":
+                theme = "joycon_pair"
+                nintendo_qam = conf["joycon_pair.nintendo_qam"].to(bool)
+                button_map = GAMEPAD_BUTTON_MAP
+                bus = 0x06
+                version = 0
+            elif controller == "xbox_elite":
+                theme = "xbox_one_elite"
+                button_map = XBOX_ELITE_BUTTON_MAP
+                bus = 0x03
+            else:
+                noob_mode = conf.get("uinput.noob_mode", False)
+                theme = conf["uinput.theme"].to(str)
+                nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
+                flip_z = conf["uinput.flip_z"].to(bool)
+                button_map = GAMEPAD_BUTTON_MAP
+                bus = 0x03 if theme == "hhd" else 0x06
             vid, pid, name = CONTROLLER_THEMES[theme]
-            bus = 0x03 if theme == "hhd" else 0x06
             addr = "phys-hhd-main"
             if controller_id:
                 addr = f"phys-hhd-{controller_id:02d}"
-            d = UInputDevice(name=name, vid=vid, pid=pid, phys=addr, uniq=addr)
+            d = UInputDevice(
+                name=name,
+                vid=vid,
+                pid=pid,
+                phys=addr,
+                uniq=addr,
+                btn_map=button_map,
+                bus=bus,
+                version=version,
+            )
             producers.append(d)
             consumers.append(d)
+            # Deactivate motion if using an xbox theme
+            motion = "xbox" not in theme and motion
             if motion:
-                if "xbox" in theme:
-                    d = UInputDevice(
-                        name=f"Handheld Daemon Motion Sensors",
-                        pid=HHD_PID_MOTION,
-                        phys="phys-hhd-imu",
-                        uniq="phys-hhd-imu",
-                        bus=0x03,
-                        capabilities=MOTION_CAPABILITIES,
-                        btn_map={},
-                        axis_map=(
-                            MOTION_AXIS_MAP_FLIP_Z
-                            if conf["uinput.flip_z"].to(bool)
-                            else MOTION_AXIS_MAP
-                        ),
-                        output_imu_timestamps=True,
-                        input_props=MOTION_INPUT_PROPS,
-                        ignore_cmds=True,
-                    )
-                else:
-                    d = UInputDevice(
-                        name=f"{name} Motion Sensors",
-                        vid=vid,
-                        pid=pid,
-                        phys=addr,
-                        uniq=addr,
-                        bus=bus,
-                        capabilities=MOTION_CAPABILITIES,
-                        btn_map={},
-                        axis_map=(
-                            MOTION_AXIS_MAP_FLIP_Z
-                            if conf["uinput.flip_z"].to(bool)
-                            else MOTION_AXIS_MAP
-                        ),
-                        output_imu_timestamps=True,
-                        input_props=MOTION_INPUT_PROPS,
-                        ignore_cmds=True,
-                    )
+                d = UInputDevice(
+                    name=f"{name} Motion Sensors",
+                    vid=vid,
+                    pid=pid,
+                    phys=addr,
+                    uniq=addr,
+                    bus=bus,
+                    version=version,
+                    capabilities=MOTION_CAPABILITIES,
+                    btn_map={},
+                    axis_map=(MOTION_AXIS_MAP_FLIP_Z if flip_z else MOTION_AXIS_MAP),
+                    output_imu_timestamps=True,
+                    input_props=MOTION_INPUT_PROPS,
+                    ignore_cmds=True,
+                )
                 producers.append(d)
                 consumers.append(d)
         case _:
             raise RuntimeError(f"Invalid controller type: '{controller}'.")
+
+    dual_motion = motion and dual_motion
+    if dual_motion:
+        addr = "phys-hhd-left-motion"
+        bus = 0x06
+        d = UInputDevice(
+            name=f"Handheld Daemon Left Motion",
+            vid=HHD_VID,
+            pid=HHD_PID_MOTION,
+            phys=addr,
+            uniq=addr,
+            bus=bus,
+            axis_map={},
+            btn_map={},
+        )
+        producers.append(d)
+        consumers.append(d)
+        d = UInputDevice(
+            name=f"Handheld Daemon Left Motion Sensors",
+            vid=HHD_VID,
+            pid=HHD_PID_MOTION,
+            phys=addr,
+            uniq=addr,
+            bus=bus,
+            capabilities=MOTION_CAPABILITIES,
+            btn_map={},
+            axis_map=(
+                MOTION_LEFT_AXIS_MAP_FLIP_Z
+                if conf["uinput.flip_z"].to(bool)
+                else MOTION_LEFT_AXIS_MAP
+            ),
+            output_imu_timestamps="left_imu_ts",
+            input_props=MOTION_INPUT_PROPS,
+            ignore_cmds=True,
+        )
+        producers.append(d)
+        consumers.append(d)
 
     if touchpad == "emulation" and steam_check is not False:
         d = UInputDevice(
@@ -173,6 +227,9 @@ def get_outputs(
             "steam_check": steam_check,
             "steam_check_fn": lambda: emit and is_steam_gamepad_running(emit.ctx),
             "nintendo_qam": nintendo_qam,
+            "uses_motion": motion,
+            "uses_dual_motion": dual_motion,
+            "noob_mode": noob_mode
         },
     )
 

@@ -47,12 +47,3 @@ children:
     title: Map share buttom to QAM.
     tags: [advanced]
     default: True
-
-  debug:
-    type: bool
-    title: Debug
-    tags: [advanced, expert, non-essential]
-    hint: >-
-      Output controller events to the console (high CPU use) and raises exceptions
-      (HHD will crash on errors).
-    default: False

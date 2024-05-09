@@ -7,13 +7,13 @@ from typing import Sequence
 
 import evdev
 
-from hhd.controller import Axis, Event, Multiplexer, can_read
+from hhd.controller import DEBUG_MODE, Event, Multiplexer, can_read
 from hhd.controller.base import Event, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
-from hhd.plugins import Config, Context, Emitter, get_outputs, get_gyro_state
+from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
 from .const import (
     GPD_TOUCHPAD_AXIS_MAP,
@@ -198,7 +198,7 @@ def plugin_run(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             # Raise exception
-            if conf.get("debug", False):
+            if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
 
@@ -206,7 +206,7 @@ def plugin_run(
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
 ):
-    debug = conf.get("debug", False)
+    debug = DEBUG_MODE
     has_touchpad = dconf.get("touchpad", False)
 
     # Output
@@ -216,6 +216,7 @@ def controller_loop(
         conf["imu"].to(bool),
         emit=emit,
     )
+    motion = d_params.get("uses_motion", True)
 
     # Imu
     d_imu = CombinedImu(
@@ -268,13 +269,19 @@ def controller_loop(
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
 
-    match conf["l4r4_to_qam"].to(str):
+    match conf["l4r4"].to(str):
         case "l4":
             qam_button = "extra_l1"
+            l4r4_enabled = True
         case "r4":
             qam_button = "extra_r1"
+            l4r4_enabled = True
+        case "disabled":
+            qam_button = None
+            l4r4_enabled = False
         case _:
             qam_button = None
+            l4r4_enabled = True
 
     if has_touchpad:
         touch_actions = (
@@ -308,7 +315,7 @@ def controller_loop(
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
-    if conf["imu"].to(bool):
+    if motion:
         REPORT_FREQ_MAX = max(REPORT_FREQ_MAX, conf["imu_hz"].to(float))
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
@@ -328,7 +335,7 @@ def controller_loop(
     try:
         d_vend.open()
         prepare(d_xinput)
-        if conf.get("imu", False):
+        if motion:
             start_imu = True
             if dconf.get("hrtimer", False):
                 start_imu = d_timer.open()
@@ -336,7 +343,8 @@ def controller_loop(
                 prepare(d_imu)
         if has_touchpad and d_params["uses_touch"]:
             prepare(d_touch)
-        prepare(d_kbd_1)
+        if l4r4_enabled:
+            prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
 

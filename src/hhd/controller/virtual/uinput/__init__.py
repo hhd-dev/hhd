@@ -29,6 +29,7 @@ class UInputDevice(Consumer, Producer):
         input_props: Sequence[int] = [],
         ignore_cmds: bool = False,
         uniq: str | None = None,
+        version: int = 1,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -46,6 +47,7 @@ class UInputDevice(Consumer, Producer):
         self.sys_ofs = 0
         self.input_props = input_props
         self.ignore_cmds = ignore_cmds
+        self.version = version
 
         self.rumble: Event | None = None
 
@@ -57,6 +59,7 @@ class UInputDevice(Consumer, Producer):
                 name=self.name,
                 vendor=self.vid,
                 product=self.pid,
+                version=self.version,
                 bustype=self.bus,
                 phys=self.phys,
                 input_props=self.input_props,
@@ -72,6 +75,7 @@ class UInputDevice(Consumer, Producer):
                 vendor=self.vid,
                 product=self.pid,
                 bustype=self.bus,
+                version=self.version,
                 phys=self.phys,
                 input_props=self.input_props,
             )
@@ -99,8 +103,14 @@ class UInputDevice(Consumer, Producer):
         if not self.dev:
             return
 
-        wrote = False
-        for ev in events:
+        wrote = {}
+        ts = 0
+        for ev in reversed(events):
+            key = (ev["type"], ev["code"])
+            if key in wrote:
+                # skip duplicate events that were caused due to a delay
+                # only keep the last button value by iterating reversed
+                continue
             match ev["type"]:
                 case "axis":
                     if ev["code"] in self.axis_map:
@@ -115,7 +125,7 @@ class UInputDevice(Consumer, Producer):
                         if ax.bounds:
                             val = min(max(val, ax.bounds[0]), ax.bounds[1])
                         self.dev.write(B("EV_ABS"), ax.id, val)
-                        wrote = True
+                        wrote[key] = val
 
                         if ev["code"] == "touchpad_x":
                             self.dev.write(B("EV_ABS"), B("ABS_MT_POSITION_X"), val)
@@ -133,9 +143,9 @@ class UInputDevice(Consumer, Producer):
                     ) or ev["code"] == self.output_imu_timestamps:
                         # We have timestamps with ns accuracy.
                         # Evdev expects us accuracy
-                        ts = (ev["value"] // 1000) % (2**32)
+                        ts = (ev["value"] // 1000) % (2**31)
                         self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
-                        wrote = True
+                        wrote[key] = ts
                 case "button":
                     if ev["code"] in self.btn_map:
                         if ev["code"] == "touchpad_touch":
@@ -157,7 +167,7 @@ class UInputDevice(Consumer, Producer):
                             self.btn_map[ev["code"]],
                             1 if ev["value"] else 0,
                         )
-                        wrote = True
+                        wrote[key] = ev["value"]
 
                 case "configuration":
                     if ev["code"] == "touchpad_aspect_ratio":
@@ -166,10 +176,10 @@ class UInputDevice(Consumer, Producer):
         if wrote and self.output_timestamps:
             # We have timestamps with ns accuracy.
             # Evdev expects us accuracy
-            ts = (time.perf_counter_ns() // 1000) % (2**32)
+            ts = (time.perf_counter_ns() // 1000) % (2**31)
             self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
 
-        if wrote:
+        if wrote and (not self.output_imu_timestamps or ts):
             self.dev.syn()
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:

@@ -4,9 +4,8 @@ import select
 import time
 from threading import Event as TEvent
 
-import evdev
 
-from hhd.controller import Multiplexer
+from hhd.controller import Multiplexer, DEBUG_MODE
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
@@ -92,7 +91,7 @@ def plugin_run(
             )
             first = True
             # Raise exception
-            if conf.get("debug", False):
+            if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
 
@@ -100,12 +99,13 @@ def plugin_run(
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
 ):
-    debug = conf.get("debug", False)
+    debug = DEBUG_MODE
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
         conf["controller_mode"], None, conf["imu"].to(bool), emit=emit
     )
+    motion = d_params.get("uses_motion", True)
 
     # Imu
     d_imu = CombinedImu(
@@ -161,7 +161,7 @@ def controller_loop(
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
-    if conf["imu"].to(bool):
+    if motion:
         REPORT_FREQ_MAX = max(REPORT_FREQ_MAX, conf["imu_hz"].to(float))
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
@@ -181,7 +181,7 @@ def controller_loop(
     try:
         # d_vend.open()
         prepare(d_xinput)
-        if conf.get("imu", False):
+        if motion:
             start_imu = True
             if dconf.get("hrtimer", False):
                 start_imu = d_timer.open()

@@ -74,12 +74,3 @@ children:
     hint: >-
       Swaps the Armory Crate and Command center buttons with start and select.
     default: False
-
-  debug:
-    type: bool
-    title: Debug
-    tags: [advanced]
-    hint: >-
-      Output controller events to the console (high CPU use) and raises exceptions
-      (HHD will crash on errors).
-    default: False

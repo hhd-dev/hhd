@@ -30,62 +30,12 @@ children:
       right:
         type: container
         title: Right Controller
-      display:
+      both:
         type: container
-        title: Display [SEE HINT]
+        title: Both Controllers
         hint: >-
-          Using the gyro of the display unit is deprecated.
-          The controller units (after calibration) are better in every way.
-          As part of the deprecation, the rule that disabled the use of the
-          accelerometer for display autorotation was removed.
-          If you try to use the display gyroscope without this rule you will
-          get freezing.
-        children:
-          gyro:
-            type: bool
-            title: Gyroscope
-            tags: [ non-essential ]
-            hint: >-
-              Enables gyroscope support (.3% background CPU use)
-            default: True
-          accel:
-            type: bool
-            title: Accelerometer
-            tags: [advanced, expert]
-            hint: >-
-              Enables accelerometer support (CURRENTLY BROKEN).
-            default: False
-          gyro_fix:
-            type: discrete
-            title: Gyro Hz
-            tags: [ non-essential ]
-            hint: >-
-              Adds polling to the legion go gyroscope, to fix the low polling rate
-              (required for gyroscope support). Set to 0 to disable.
-              Due to hardware limitations, there is a marginal difference above
-              100hz.
-            options: [0, 40, 60, 75, 100, 125, 200, 300]
-            default: 100
-          gyro_scaling:
-            type: int
-            title: Gyro Scale
-            tags: [ non-essential ]
-            hint: >-
-              Applies a scaling factor to the legion go gyroscope (since it is misconfigured
-              by the driver). Try different values to see what works best.
-              Low values cause a deadzone and high values will clip when moving the 
-              Go abruptly.
-            min: 45
-            max: 120
-            default: 76
-
-  dual_evdev:
-    type: bool
-    title: Dual Controller Motion Output (evdev)
-    default: False
-    hint: >-
-      Adds two Motions evdev devices, one for each controller that can be used
-      at the same time.
+          The main controller uses the right controller's motion sensor, and a 
+          secondary controller is created for the left controller's motion sensor.
 
   swap_legion:
     type: multiple
@@ -155,12 +105,3 @@ children:
     tags: [ non-essential ]
     hint: >-
       Resets the controllers to factory settings.
-
-  debug:
-    type: bool
-    title: Debug
-    tags: [advanced, expert]
-    hint: >-
-      Output controller events to the console (high CPU use) and raises exceptions
-      (HHD will crash on errors).
-    default: False
