@@ -19,7 +19,7 @@ mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
 python3 -m venv --system-site-packages venv
 source venv/bin/activate
-pip install --upgrade hhd adjustor
+pip3 install --upgrade hhd adjustor
 
 # Install udev rules and create a service file
 sudo mkdir -p /etc/udev/rules.d/
