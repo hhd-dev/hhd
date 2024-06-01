@@ -27,6 +27,7 @@ settings:
         default: Default
         diavolo: Diavolo
         ocean: Atlantis
+        vapor: Vapor
 
     decky_deprecation:
       type: display
