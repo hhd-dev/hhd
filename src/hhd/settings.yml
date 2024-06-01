@@ -7,7 +7,7 @@ settings:
     language:
       type: multiple
       tags: [i18n, non-essential, language]
-      title: Language [BETA]
+      title: Language
       default: system
       options:
         system: System

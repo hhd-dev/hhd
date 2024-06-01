@@ -23,7 +23,7 @@ msgstr ""
 "X-Generator: Gtranslator 45.3\n"
 
 #. Section Name for: system
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: system
 #. Setting: System
 #. Field: title
@@ -57,22 +57,22 @@ msgstr "Utilidades"
 msgid "Core Settings"
 msgstr "Configurações Principais"
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Field: title
-msgid "Language [BETA]"
-msgstr "Idioma [BETA]"
+msgid "Language"
+msgstr "Idioma"
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: C
 msgid "English"
 msgstr "Inglês"
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: zh
 msgid "Chinese"
 msgstr "Chinês"
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: pt
 msgid "Portugese"
 msgstr "Português"

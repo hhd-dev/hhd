@@ -30,12 +30,12 @@ msgstr ""
 msgid "TDP Controls"
 msgstr "Controles de TDP"
 
-#. Setting: Enable TDP Controls [BETA]
+#. Setting: Enable TDP Controls
 #. Field: title
-msgid "Enable TDP Controls [BETA]"
-msgstr "Habilitar Controles de TDP [BETA]"
+msgid "Enable TDP Controls"
+msgstr "Habilitar Controles de TDP"
 
-#. Setting: Enable TDP Controls [BETA]
+#. Setting: Enable TDP Controls
 #. Field: hint
 #. Setting: Enable TDP Controls
 msgid ""
@@ -155,10 +155,10 @@ msgstr "Desabilitado"
 msgid "Lets the device manage the fan curve on its own."
 msgstr "Deixa o dispositivo gerenciar a curva da ventoinha por si próprio."
 
-#. Setting: Manual [BETA]
+#. Setting: Manual
 #. Field: title
-msgid "Manual [BETA]"
-msgstr "Manual [BETA]"
+msgid "Manual"
+msgstr "Manual"
 
 #. Setting: 30C
 #. Field: title

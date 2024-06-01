@@ -18,7 +18,7 @@ msgstr ""
 "Generated-By: Babel 2.14.0\n"
 
 #. Section Name for: system
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: system
 #. Setting: System
 #. Field: title
@@ -52,22 +52,22 @@ msgstr ""
 msgid "Core Settings"
 msgstr ""
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Field: title
-msgid "Language [BETA]"
+msgid "Language"
 msgstr ""
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: C
 msgid "English"
 msgstr ""
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: zh
 msgid "Chinese"
 msgstr ""
 
-#. Setting: Language [BETA]
+#. Setting: Language
 #. Option: pt
 msgid "Portugese"
 msgstr ""
