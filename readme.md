@@ -102,7 +102,7 @@ The touchpad will not work for devices not on the supported list.
 ## Installation Instructions
 Use the following script to install Handheld Daemon or find your OS [here](#os-install):
 ```bash
-curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | sh
+curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | bash
 ```
 
 You can use this script on NobaraOS (after uninstalling the built-in Handheld Daemon/HandyGCCS).
@@ -116,13 +116,13 @@ This does not work and is not needed on Bazzite, see [here](#bazzite).
 You can also install the Decky plugin (optional; decky required):
 ([instructions](https://github.com/SteamDeckHomebrew/decky-loader#-installation)):
 ```bash
-curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
+curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | bash
 ```
 
 ### Uninstall
 We are sorry to see you go, use the following to uninstall:
 ```bash
-curl -L https://github.com/hhd-dev/hhd/raw/master/uninstall.sh | sh
+curl -L https://github.com/hhd-dev/hhd/raw/master/uninstall.sh | bash
 ```
 
 ### Using an older version
