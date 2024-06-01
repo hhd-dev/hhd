@@ -26,3 +26,6 @@ ATTRS{id/vendor}=="5335", MODE="0666", TAG+="uaccess"
 # The following rule is required for the Dualsense evdev to be used from userspace
 # (e.g., Dolphin) 
 SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="*Motion Sensors", MODE="0666", TAG+="uaccess"
+
+# Enable xpad for the MSI Claw
+ATTRS{idVendor}=="0db0", ATTRS{idProduct}=="1901", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 0db0 1901 > /sys/bus/usb/drivers/xpad/new_id'"
