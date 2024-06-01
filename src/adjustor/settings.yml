@@ -3,7 +3,7 @@ tdp:
   type: container
   children:
     tdp_enable:
-      title: Enable TDP Controls [BETA]
+      title: Enable TDP Controls
       type: action
       tags: [ non-essential ]
       hint: >-
