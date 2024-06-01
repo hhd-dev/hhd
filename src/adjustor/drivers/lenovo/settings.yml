@@ -69,7 +69,7 @@ children:
           a mode change to reset the fan curve.
       manual:
         type: container
-        title: Manual [BETA]
+        title: Manual
         tags: [ non-essential ]
         children:
 

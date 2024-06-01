@@ -40,7 +40,7 @@ children:
           Lets the device manage the fan curve on its own.
       manual:
         type: container
-        title: Manual [BETA]
+        title: Manual
         tags: [ non-essential ]
         children:
 
