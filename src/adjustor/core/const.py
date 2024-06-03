@@ -21,6 +21,8 @@ ALIB_PARAMS = {
 }
 
 ALIB_PARAMS_7040: dict[str, AlibParams] = ALIB_PARAMS
+ALIB_PARAMS_6040: dict[str, AlibParams] = ALIB_PARAMS
+ALIB_PARAMS_8040: dict[str, AlibParams] = ALIB_PARAMS
 
 DEV_PARAMS_7040: dict[str, DeviceParams] = {
     "stapm_limit": D(0, 4, 15, 30, 40),
@@ -34,10 +36,8 @@ DEV_PARAMS_7040: dict[str, DeviceParams] = {
     "temp_target": D(60, 70, 85, 90, 100),
 }
 
-ALIB_PARAMS_6040: dict[str, AlibParams] = ALIB_PARAMS
 DEV_PARAMS_6040: dict[str, DeviceParams] = DEV_PARAMS_7040
 DEV_PARAMS_8040: dict[str, DeviceParams] = DEV_PARAMS_7040
-
 DEV_PARAMS_LEGO = DEV_PARAMS_7040
 
 DEV_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams], bool]] = {
@@ -48,10 +48,10 @@ DEV_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams], bool]]
 CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
     "AMD Ryzen Z1 Extreme": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     "AMD Ryzen Z1": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
-    "AMD Ryzen 7 7840U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     # GPD Win 4
     # model name    : AMD Ryzen 7 6800U with Radeon Graphics
     # 28W works fine, 30W is pushing it
     "AMD Ryzen 7 6800U": (DEV_PARAMS_6040, ALIB_PARAMS_6040),
-    "AMD Ryzen 7 8840U": (DEV_PARAMS_6040, ALIB_PARAMS_6040),
+    "AMD Ryzen 7 7840U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
+    "AMD Ryzen 7 8840U": (DEV_PARAMS_8040, ALIB_PARAMS_8040),
 }
