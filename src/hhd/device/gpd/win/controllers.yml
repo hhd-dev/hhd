@@ -50,7 +50,7 @@ children:
     title: L4/R4 Mapping
     options:
       disabled: "Disabled"
-      generic: "Generic"
+      generic: "Paddles"
       l4: "L4 is QAM"
       r4: "R4 is QAM"
-    default: disabled
+    default: r4
