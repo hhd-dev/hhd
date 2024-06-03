@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 # Runs a new handheld daemon version until reboot
 sudo systemctl stop hhd@$(whoami)
+sudo systemctl stop hhd_local@$(whoami)
 sudo pkill hhd
 
 rm -rf ~/.local/share/hhd
