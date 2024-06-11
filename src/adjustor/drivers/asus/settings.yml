@@ -113,14 +113,14 @@ children:
       p95: 95%
     default: disabled
   
-  disclaimer:
-    title: Sleep Bug
-    type: display
-    tags: [ non-essential ]
-    default: >-
-      There is an Asus kernel/BIOS bug that will sometimes limit TDP to 10W
-      after sleep.
-      As the kernel driver is used, this is unfixable from within
-      Handheld Daemon (currently investigated).
-      As an alternative, use SimpleDeckyTDP with RyzenAdj after
-      disabling TDP controls from "Settings".
+  # disclaimer:
+  #   title: Sleep Bug
+  #   type: display
+  #   tags: [ non-essential ]
+  #   default: >-
+  #     There is an Asus kernel/BIOS bug that will sometimes limit TDP to 10W
+  #     after sleep.
+  #     As the kernel driver is used, this is unfixable from within
+  #     Handheld Daemon (currently investigated).
+  #     As an alternative, use SimpleDeckyTDP with RyzenAdj after
+  #     disabling TDP controls from "Settings".
