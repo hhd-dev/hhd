@@ -121,7 +121,7 @@ def get_outputs(
                 bus = 0x03
             else:
                 noob_mode = conf.get("uinput.noob_mode", False)
-                theme = conf["uinput.theme"].to(str)
+                theme = conf.get("uinput.theme", "hhd")
                 nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
                 flip_z = conf["uinput.flip_z"].to(bool)
                 button_map = GAMEPAD_BUTTON_MAP

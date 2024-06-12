@@ -41,34 +41,34 @@ modes:
           Makes the left paddle bring up a keyboard and the right paddle bring
           up the overlay.
 
-      theme:
-        type: multiple
-        title: Controller Theme [BETA]
-        tags: [advanced, expert]
-        hint: >-
-          Changes how the controller appears to the System and Steam. Changes the
-          VID/PID of the controller to match the IsJoystick SDL cases.
-          You need to configure the variable `SDL_GAMECONTROLLERCONFIG` for the 
-          extra buttons to work (or use Steam's Setup Input).
-        default: hhd
-        options:
-          hhd: Handheld Daemon
-          xbox_one_elite: Xbox Elite (Paddles)
-          joycon_pair: Joycon Pair (Gyro, Paddles)
-          switch_pro: Switch Pro (Gyro)
-          xbox_360: Xbox 360 (Compatibility)
-          ps3: DualShock 3
-          ps4: DualShock 4
-          ps5: DualSense
-          ps5e: Dualsense Edge
-          xbox_one: Xbox One
-          xbox_sx: Xbox Series X
-          joycon_left: Joycon Left
-          joycon_right: Joycon Right
-          joycon_grip: Joycon Grip
-          # steam_deck: Steam Deck
-          # steam_controller: Steam Controller
-          steam_input: Steam Virtual Gamepad
+      # theme:
+      #   type: multiple
+      #   title: Controller Theme [BETA]
+      #   tags: [advanced, expert]
+      #   hint: >-
+      #     Changes how the controller appears to the System and Steam. Changes the
+      #     VID/PID of the controller to match the IsJoystick SDL cases.
+      #     You need to configure the variable `SDL_GAMECONTROLLERCONFIG` for the 
+      #     extra buttons to work (or use Steam's Setup Input).
+      #   default: hhd
+      #   options:
+      #     hhd: Handheld Daemon
+      #     xbox_one_elite: Xbox Elite (Paddles)
+      #     joycon_pair: Joycon Pair (Gyro, Paddles)
+      #     switch_pro: Switch Pro (Gyro)
+      #     xbox_360: Xbox 360 (Compatibility)
+      #     ps3: DualShock 3
+      #     ps4: DualShock 4
+      #     ps5: DualSense
+      #     ps5e: Dualsense Edge
+      #     xbox_one: Xbox One
+      #     xbox_sx: Xbox Series X
+      #     joycon_left: Joycon Left
+      #     joycon_right: Joycon Right
+      #     joycon_grip: Joycon Grip
+      #     # steam_deck: Steam Deck
+      #     # steam_controller: Steam Controller
+      #     steam_input: Steam Virtual Gamepad
       nintendo_qam:
         type: bool
         title: Nintendo QAM Fix
