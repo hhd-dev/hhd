@@ -158,7 +158,7 @@ class Dualsense(Producer, Consumer):
         self.touchpad_down = curr
         self.last_imu = curr
         self.imu_failed = False
-        self.start = time.perf_counter_ns()
+        self.start = time.perf_counter()
 
         logger.info(
             f"Starting '{(DS5_EDGE_NAME if self.edge_mode else DS5_NAME).decode()}'."
@@ -167,7 +167,7 @@ class Dualsense(Producer, Consumer):
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
-        if self.cache and self.start + MIN_TIME_FOR_CACHE * 1e9 < time.perf_counter_ns():
+        if self.cache and time.perf_counter() - self.start > MIN_TIME_FOR_CACHE:
             # Only cache if the controller ran for at least 5 seconds, to avoid the 
             # hid node being the reason for the crash
             self.cache = False

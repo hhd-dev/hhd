@@ -1,6 +1,9 @@
-from threading import Condition, Thread, RLock
+from threading import Condition, Thread, Event
+import time
 
-CACHE_TIMEOUT = 5
+CACHE_TIMEOUT = 10
+UPDATE_FREQ = 25
+UPDATE_T = 1 / UPDATE_FREQ
 
 
 class ControllerCache:
@@ -8,10 +11,23 @@ class ControllerCache:
         self._t = None
         self._cond = Condition()
         self._cached = None
+        self._should_exit = Event()
 
     def _close_cached(self):
         with self._cond:
-            self._cond.wait(CACHE_TIMEOUT)
+            start = time.perf_counter()
+            while (
+                time.perf_counter() - start < CACHE_TIMEOUT
+                and not self._should_exit.is_set()
+            ):
+                self._cond.wait(UPDATE_T)
+                # Send fake event to not break everything
+                if self._cached:
+                    self._cached.produce([self._cached.fd])
+                    self._cached.consume([])
+                else:
+                    # Exit if cached became null during sleep
+                    break
             if self._cached:
                 self._cached.close(True)
                 self._cached = None
@@ -20,6 +36,7 @@ class ControllerCache:
         tmp = None
         with self._cond:
             if self._t:
+                self._should_exit.set()
                 self._cond.notify_all()
                 tmp = self._t
                 self._t = None
@@ -28,6 +45,7 @@ class ControllerCache:
 
         with self._cond:
             self._cached = c
+            self._should_exit.clear()
             self._t = Thread(target=self._close_cached)
             self._t.start()
 
@@ -35,6 +53,7 @@ class ControllerCache:
         with self._cond:
             tmp = self._cached
             self._cached = None
+            self._should_exit.set()
             self._cond.notify_all()
             tmp2 = self._t
             self._t = None
@@ -47,4 +66,5 @@ class ControllerCache:
             if self._cached:
                 self._cached.close(True)
                 self._cached = None
+            self._should_exit.set()
             self._cond.notify_all()
