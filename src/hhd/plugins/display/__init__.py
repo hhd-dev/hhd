@@ -70,7 +70,7 @@ class DisplayPlugin(HHDPlugin):
 
         curr = None
         try:
-            requested = conf["system.display.brightness"].to(int | None)
+            requested = conf["system.display.brightness"].to(int)
 
             curr = int(
                 int(read_sysfs(self.display, "brightness", None))
