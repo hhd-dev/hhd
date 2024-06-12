@@ -126,7 +126,11 @@ class Dualsense(Producer, Consumer):
                     self.fd = self.dev.fd
             else:
                 cached.close(True)
-
+        name = (
+            (DS5_EDGE_NAME if self.edge_mode else DS5_NAME)
+            if not self.left_motion
+            else DS5_NAME_LEFT
+        )
         if not self.dev:
             self.dev = UhidDevice(
                 vid=DS5_VENDOR,
@@ -134,11 +138,7 @@ class Dualsense(Producer, Consumer):
                 bus=BUS_BLUETOOTH if self.use_bluetooth else BUS_USB,
                 version=DS5_EDGE_VERSION,
                 country=DS5_EDGE_COUNTRY,
-                name=(
-                    (DS5_EDGE_NAME if self.edge_mode else DS5_NAME)
-                    if not self.left_motion
-                    else DS5_NAME_LEFT
-                ),
+                name=name,
                 report_descriptor=(
                     DS5_EDGE_DESCRIPTOR_BT
                     if self.use_bluetooth
@@ -160,15 +160,13 @@ class Dualsense(Producer, Consumer):
         self.imu_failed = False
         self.start = time.perf_counter()
 
-        logger.info(
-            f"Starting '{(DS5_EDGE_NAME if self.edge_mode else DS5_NAME).decode()}'."
-        )
+        logger.info(f"Starting '{name.decode()}'.")
         assert self.fd
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
         if self.cache and time.perf_counter() - self.start > MIN_TIME_FOR_CACHE:
-            # Only cache if the controller ran for at least 5 seconds, to avoid the 
+            # Only cache if the controller ran for at least 5 seconds, to avoid the
             # hid node being the reason for the crash
             self.cache = False
             logger.warning(
@@ -362,11 +360,11 @@ class Dualsense(Producer, Consumer):
 
         new_rep = bytearray(self.report)
         for ev in events:
+            code = ev["code"]
             match ev["type"]:
                 case "axis":
-                    if not self.enable_touchpad and ev["code"].startswith("touchpad"):
+                    if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
-                    code = ev["code"]
                     if self.left_motion:
                         # Only left keep imu events for left motion
                         if (
@@ -377,17 +375,17 @@ class Dualsense(Producer, Consumer):
                             code = code.replace("left_", "")
                         else:
                             continue
-                    if ev["code"] in self.axis_map:
-                        if self.flip_z and ev["code"] == "gyro_z":
+                    if code in self.axis_map:
+                        if self.flip_z and code == "gyro_z":
                             ev["value"] = -ev["value"]
                         try:
-                            encode_axis(new_rep, self.axis_map[ev["code"]], ev["value"])
+                            encode_axis(new_rep, self.axis_map[code], ev["value"])
                         except Exception:
                             logger.warning(
                                 f"Encoding '{ev['code']}' with {ev['value']} overflowed."
                             )
                     # DPAD is weird
-                    match ev["code"]:
+                    match code:
                         case "hat_x":
                             self.state["hat_x"] = ev["value"]
                             patch_dpad_val(
@@ -433,16 +431,16 @@ class Dualsense(Producer, Consumer):
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
-                    if not self.enable_touchpad and ev["code"].startswith("touchpad"):
+                    if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
-                    if self.paddles_to_clicks and (ev["code"] == "extra_l1"):
+                    if self.paddles_to_clicks and (code == "extra_l1"):
                         # Place finger on correct place and click
                         new_rep[self.ofs + 33] = 0x80
                         new_rep[self.ofs + 34] = 0x01
                         new_rep[self.ofs + 35] = 0x20
                         # Replace code with click
                         ev = {**ev, "code": "touchpad_left"}
-                    if self.paddles_to_clicks and (ev["code"] == "extra_r1"):
+                    if self.paddles_to_clicks and (code == "extra_r1"):
                         # Place finger on correct place and click
                         new_rep[self.ofs + 33] = 0x00
                         new_rep[self.ofs + 34] = 0x06
@@ -450,20 +448,20 @@ class Dualsense(Producer, Consumer):
                         # Replace code with click
                         ev = {**ev, "code": "touchpad_left"}
 
-                    if ev["code"] in self.btn_map:
-                        set_button(new_rep, self.btn_map[ev["code"]], ev["value"])
+                    if code in self.btn_map:
+                        set_button(new_rep, self.btn_map[code], ev["value"])
 
                     # Fix touchpad click requiring touch
-                    if ev["code"] == "touchpad_touch":
+                    if code == "touchpad_touch":
                         self.touchpad_touch = ev["value"]
-                    if ev["code"] == "touchpad_left":
+                    if code == "touchpad_left":
                         set_button(
                             new_rep,
                             self.btn_map["touchpad_touch"],
                             ev["value"] or self.touchpad_touch,
                         )
                     # Also add right click
-                    if ev["code"] == "touchpad_right":
+                    if code == "touchpad_right":
                         set_button(
                             new_rep,
                             self.btn_map["touchpad_touch"],
@@ -476,7 +474,7 @@ class Dualsense(Producer, Consumer):
                         )
 
                 case "configuration":
-                    match ev["code"]:
+                    match code:
                         case "touchpad_aspect_ratio":
                             self.aspect_ratio = cast(float, ev["value"])
                             self.touch_correction = correct_touchpad(

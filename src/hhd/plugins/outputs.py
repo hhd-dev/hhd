@@ -181,6 +181,7 @@ def get_outputs(
             flip_z=flip_z,
             controller_id=5,
             cache=True,
+            left_motion=True,
         )
         producers.append(d)
         consumers.append(d)
