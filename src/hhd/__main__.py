@@ -712,6 +712,16 @@ def main():
                 set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
                 p.close()
 
+        try:
+            logger.info("Closing cached controllers.")
+            from hhd.controller.virtual.dualsense import Dualsense
+            from hhd.controller.virtual.uinput import UInputDevice
+
+            UInputDevice.close_cached()
+            Dualsense.close_cached()
+        except Exception as e:
+            logger.error("Could not close cached controllers with error:\n{e}")
+
     if updated:
         # Use error code to restart service
         sys.exit(-1)

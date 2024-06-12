@@ -81,6 +81,7 @@ def get_outputs(
                 paddles_to_clicks=False,
                 flip_z=flip_z,
                 controller_id=controller_id,
+                cache=True,
             )
             producers.append(d)
             consumers.append(d)
@@ -99,6 +100,7 @@ def get_outputs(
                 paddles_to_clicks=conf["dualsense.paddles_to_clicks"].to(bool),
                 flip_z=flip_z,
                 controller_id=controller_id,
+                cache=True,
             )
             producers.append(d)
             consumers.append(d)
@@ -134,6 +136,7 @@ def get_outputs(
                 btn_map=button_map,
                 bus=bus,
                 version=version,
+                cache=True,
             )
             producers.append(d)
             consumers.append(d)
@@ -154,6 +157,8 @@ def get_outputs(
                     output_imu_timestamps=True,
                     input_props=MOTION_INPUT_PROPS,
                     ignore_cmds=True,
+                    cache=True,
+                    motions_device=True,
                 )
                 producers.append(d)
                 consumers.append(d)
@@ -162,37 +167,17 @@ def get_outputs(
 
     dual_motion = motion and dual_motion
     if dual_motion:
-        addr = "phys-hhd-left-motion"
-        bus = 0x06
-        d = UInputDevice(
-            name=f"Handheld Daemon Left Motion",
-            vid=HHD_VID,
-            pid=HHD_PID_MOTION,
-            phys=addr,
-            uniq=addr,
-            bus=bus,
-            axis_map={},
-            btn_map={},
-        )
-        producers.append(d)
-        consumers.append(d)
-        d = UInputDevice(
-            name=f"Handheld Daemon Left Motion Sensors",
-            vid=HHD_VID,
-            pid=HHD_PID_MOTION,
-            phys=addr,
-            uniq=addr,
-            bus=bus,
-            capabilities=MOTION_CAPABILITIES,
-            btn_map={},
-            axis_map=(
-                MOTION_LEFT_AXIS_MAP_FLIP_Z
-                if conf["uinput.flip_z"].to(bool)
-                else MOTION_LEFT_AXIS_MAP
-            ),
-            output_imu_timestamps="left_imu_ts",
-            input_props=MOTION_INPUT_PROPS,
-            ignore_cmds=True,
+        d = Dualsense(
+            edge_mode=False,
+            use_bluetooth=True,
+            enable_touchpad=False,
+            enable_rgb=False,
+            fake_timestamps=False,
+            sync_gyro=True,
+            paddles_to_clicks=False,
+            flip_z=flip_z,
+            controller_id=5,
+            cache=True,
         )
         producers.append(d)
         consumers.append(d)
@@ -224,7 +209,7 @@ def get_outputs(
             "nintendo_qam": nintendo_qam,
             "uses_motion": motion,
             "uses_dual_motion": dual_motion,
-            "noob_mode": noob_mode
+            "noob_mode": noob_mode,
         },
     )
 

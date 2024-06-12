@@ -9,11 +9,20 @@ from hhd.controller.const import Axis, Button
 
 from .const import *
 from .monkey import UInputMonkey
+from hhd.controller.lib.ccache import ControllerCache
 
 logger = logging.getLogger(__name__)
 
+_cache = ControllerCache()
+_cache_motions = ControllerCache()
+
 
 class UInputDevice(Consumer, Producer):
+    @staticmethod
+    def close_cached():
+        _cache.close()
+        _cache_motions.close()
+
     def __init__(
         self,
         capabilities=GAMEPAD_CAPABILITIES,
@@ -30,6 +39,8 @@ class UInputDevice(Consumer, Producer):
         ignore_cmds: bool = False,
         uniq: str | None = None,
         version: int = 1,
+        cache: bool = False,
+        motions_device: bool = False,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -48,37 +59,64 @@ class UInputDevice(Consumer, Producer):
         self.input_props = input_props
         self.ignore_cmds = ignore_cmds
         self.version = version
+        self.cache = cache
+        self.motions_device = motions_device
 
         self.rumble: Event | None = None
 
     def open(self) -> Sequence[int]:
         logger.info(f"Opening virtual device '{self.name}'.")
-        try:
-            self.dev = UInputMonkey(
-                events=self.capabilities,
-                name=self.name,
-                vendor=self.vid,
-                product=self.pid,
-                version=self.version,
-                bustype=self.bus,
-                phys=self.phys,
-                input_props=self.input_props,
-                uniq=self.uniq,
-            )
-        except Exception as e:
-            logger.error(
-                f"Monkey patch probably failed. Could not create evdev device with uniq:\n{e}"
-            )
-            self.dev = UInput(
-                events=self.capabilities,
-                name=self.name,
-                vendor=self.vid,
-                product=self.pid,
-                bustype=self.bus,
-                version=self.version,
-                phys=self.phys,
-                input_props=self.input_props,
-            )
+        self.dev = None
+
+        cached = cast(
+            UInputDevice | None,
+            _cache_motions.get() if self.motions_device else _cache.get(),
+        )
+        if cached:
+            if (
+                self.capabilities == cached.capabilities
+                and self.name == cached.name
+                and self.vid == cached.vid
+                and self.pid == cached.pid
+                and self.bus == cached.bus
+                and self.phys == cached.phys
+                and self.input_props == cached.input_props
+                and self.uniq == cached.uniq
+            ):
+                logger.warning(
+                    f"Using cached controller node for {'left motions device' if self.motions_device else 'controller'}."
+                )
+                self.dev = cached.dev
+            else:
+                cached.close(True)
+
+        if not self.dev:
+            try:
+                self.dev = UInputMonkey(
+                    events=self.capabilities,
+                    name=self.name,
+                    vendor=self.vid,
+                    product=self.pid,
+                    version=self.version,
+                    bustype=self.bus,
+                    phys=self.phys,
+                    input_props=self.input_props,
+                    uniq=self.uniq,
+                )
+            except Exception as e:
+                logger.error(
+                    f"Monkey patch probably failed. Could not create evdev device with uniq:\n{e}"
+                )
+                self.dev = UInput(
+                    events=self.capabilities,
+                    name=self.name,
+                    vendor=self.vid,
+                    product=self.pid,
+                    bustype=self.bus,
+                    version=self.version,
+                    phys=self.phys,
+                    input_props=self.input_props,
+                )
 
         self.touchpad_aspect = 1
         self.touch_id = 1
@@ -92,11 +130,20 @@ class UInputDevice(Consumer, Producer):
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
-        if self.dev:
+        if self.cache:
+            self.cache = False
+            logger.warning(
+                f"Caching {'left motions device' if self.motions_device else 'controller'} to avoid reconnection."
+            )
+            if self.motions_device:
+                _cache_motions.add(self)
+            else:
+                _cache.add(self)
+        elif self.dev:
             self.dev.close()
-        self.dev = None
-        self.input = None
-        self.fd = None
+            self.dev = None
+            self.input = None
+            self.fd = None
         return True
 
     def consume(self, events: Sequence[Event]):

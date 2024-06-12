@@ -155,7 +155,6 @@ class ControllerEmitter:
     def __call__(self, event: SpecialEvent | Sequence[SpecialEvent]) -> None:
         pass
 
-
 class TouchpadCorrection(NamedTuple):
     x_mult: float = 1
     x_ofs: float = 0

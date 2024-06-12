@@ -9,6 +9,7 @@ DS5_EDGE_VERSION = 256
 DS5_EDGE_COUNTRY = 0
 DS5_NAME = b"Sony Interactive Entertainment DualSense Wireless Controller"
 DS5_EDGE_NAME = b"Sony Interactive Entertainment DualSense Edge Wireless Controller"
+DS5_NAME_LEFT = b"Handheld Daemon Left Motions Device"
 
 DS5_EDGE_MIN_REPORT_FREQ = 25
 DS5_EDGE_MAX_REPORT_FREQ = 1000

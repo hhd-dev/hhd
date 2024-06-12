@@ -1,7 +1,7 @@
 import logging
 import time
 from collections import defaultdict
-from typing import Literal, NamedTuple, Sequence, cast
+from typing import Sequence, cast
 
 from hhd.controller import (
     Consumer,
@@ -12,6 +12,7 @@ from hhd.controller import (
 )
 from hhd.controller.lib.common import encode_axis, set_button
 from hhd.controller.lib.uhid import BUS_BLUETOOTH, BUS_USB, UhidDevice
+from hhd.controller.lib.ccache import ControllerCache
 
 from .const import (
     DS5_BT_AXIS_MAP,
@@ -38,6 +39,7 @@ from .const import (
     DS5_PRODUCT,
     DS5_USB_AXIS_MAP,
     DS5_USB_BTN_MAP,
+    DS5_NAME_LEFT,
     DS5_VENDOR,
     patch_dpad_val,
     prefill_ds5_report,
@@ -52,8 +54,16 @@ MAX_IMU_SYNC_DELAY = 2
 
 logger = logging.getLogger(__name__)
 
+_cache = ControllerCache()
+_cache_left = ControllerCache()
+
 
 class Dualsense(Producer, Consumer):
+    @staticmethod
+    def close_cached():
+        _cache.close()
+        _cache_left.close()
+
     def __init__(
         self,
         touchpad_method: TouchpadCorrectionType = "crop_end",
@@ -66,6 +76,8 @@ class Dualsense(Producer, Consumer):
         flip_z: bool = True,
         paddles_to_clicks: bool = False,
         controller_id: int = 0,
+        left_motion: bool = False,
+        cache: bool = False,
     ) -> None:
         self.available = False
         self.report = None
@@ -81,6 +93,8 @@ class Dualsense(Producer, Consumer):
         self.flip_z = flip_z
         self.paddles_to_clicks = paddles_to_clicks
         self.controller_id = controller_id
+        self.left_motion = left_motion
+        self.cache = cache
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -91,19 +105,43 @@ class Dualsense(Producer, Consumer):
     def open(self) -> Sequence[int]:
         self.available = False
         self.report = bytearray(prefill_ds5_report(self.use_bluetooth))
-        self.dev = UhidDevice(
-            vid=DS5_VENDOR,
-            pid=DS5_EDGE_PRODUCT if self.edge_mode else DS5_PRODUCT,
-            bus=BUS_BLUETOOTH if self.use_bluetooth else BUS_USB,
-            version=DS5_EDGE_VERSION,
-            country=DS5_EDGE_COUNTRY,
-            name=DS5_EDGE_NAME if self.edge_mode else DS5_NAME,
-            report_descriptor=(
-                DS5_EDGE_DESCRIPTOR_BT
-                if self.use_bluetooth
-                else DS5_EDGE_DESCRIPTOR_USB
-            ),
+
+        cached = cast(
+            Dualsense | None, _cache_left.get() if self.left_motion else _cache.get()
         )
+
+        # Use cached controller to avoid disconnects
+        self.dev = None
+        if cached:
+            if (
+                self.edge_mode == cached.edge_mode
+                and self.use_bluetooth == cached.use_bluetooth
+            ):
+                logger.warning(
+                    f"Using cached controller node for Dualsense {'left motions device' if self.left_motion else 'controller'}."
+                )
+                self.dev = cached.dev
+            else:
+                cached.close(True)
+
+        if not self.dev:
+            self.dev = UhidDevice(
+                vid=DS5_VENDOR,
+                pid=DS5_EDGE_PRODUCT if self.edge_mode else DS5_PRODUCT,
+                bus=BUS_BLUETOOTH if self.use_bluetooth else BUS_USB,
+                version=DS5_EDGE_VERSION,
+                country=DS5_EDGE_COUNTRY,
+                name=(
+                    (DS5_EDGE_NAME if self.edge_mode else DS5_NAME)
+                    if not self.left_motion
+                    else DS5_NAME_LEFT
+                ),
+                report_descriptor=(
+                    DS5_EDGE_DESCRIPTOR_BT
+                    if self.use_bluetooth
+                    else DS5_EDGE_DESCRIPTOR_USB
+                ),
+            )
 
         self.touch_correction = correct_touchpad(
             DS5_EDGE_TOUCH_WIDTH, DS5_EDGE_TOUCH_HEIGHT, 1, self.touchpad_method
@@ -125,7 +163,16 @@ class Dualsense(Producer, Consumer):
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
-        if self.dev:
+        if self.cache:
+            self.cache = False
+            logger.warning(
+                f"Caching Dualsense {'left motions device' if self.left_motion else 'controller'} to avoid reconnection."
+            )
+            if self.left_motion:
+                _cache_left.add(self)
+            else:
+                _cache.add(self)
+        elif self.dev:
             self.dev.send_destroy()
             self.dev.close()
             self.dev = None
@@ -313,6 +360,17 @@ class Dualsense(Producer, Consumer):
                 case "axis":
                     if not self.enable_touchpad and ev["code"].startswith("touchpad"):
                         continue
+                    code = ev["code"]
+                    if self.left_motion:
+                        # Only left keep imu events for left motion
+                        if (
+                            "left_gyro_" in code
+                            or "left_accel_" in code
+                            or "left_imu_" in code
+                        ):
+                            code = code.replace("left_", "")
+                        else:
+                            continue
                     if ev["code"] in self.axis_map:
                         if self.flip_z and ev["code"] == "gyro_z":
                             ev["value"] = -ev["value"]
@@ -441,7 +499,9 @@ class Dualsense(Producer, Consumer):
         failover = self.last_imu + MAX_IMU_SYNC_DELAY < curr
         if self.sync_gyro and failover and not self.imu_failed:
             self.imu_failed = True
-            logger.error(f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync.")
+            logger.error(
+                f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync."
+            )
 
         if self.fake_timestamps or failover:
             new_rep[self.ofs + 27 : self.ofs + 31] = int(
