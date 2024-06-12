@@ -21,10 +21,18 @@ class ControllerCache:
                 and not self._should_exit.is_set()
             ):
                 self._cond.wait(UPDATE_T)
-                # Send fake event to not break everything
                 if self._cached:
+                    # Send fake events to keep everyone happy
+                    # Both steam and kernel
                     self._cached.produce([self._cached.fd])
-                    self._cached.consume([])
+                    ctime = time.perf_counter_ns()
+                    self._cached.consume(
+                        [
+                            {"type": "axis", "code": "left_imu_ts", "value": ctime},
+                            {"type": "axis", "code": "right_imu_ts", "value": ctime},
+                            {"type": "axis", "code": "imu_ts", "value": ctime},
+                        ]
+                    )
                 else:
                     # Exit if cached became null during sleep
                     break
