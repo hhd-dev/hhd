@@ -57,9 +57,9 @@ def get_outputs(
     )
     match steam_check:
         case True:
-            logger.info("Gamepadui active. Launching touchpad emulation.")
+            logger.info("Gamepadui active. Activating touchpad emulation.")
         case False:
-            logger.info("Gamepadui closed. Activating touchpad emulation.")
+            logger.info("Gamepadui closed. Disabling touchpad emulation.")
 
     uses_touch = False
     uses_leds = False
