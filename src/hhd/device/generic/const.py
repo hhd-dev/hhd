@@ -88,6 +88,12 @@ CONFS = {
     "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
     # Onexplayer
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
+    "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", "hrtimer": True},
+    "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", "hrtimer": True},
+    "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", "hrtimer": True},
+    "ONEXPLAYER 2 ARP23": {"name": "ONEXPLAYER 2", "hrtimer": True},
+    "ONEXPLAYER 2 PRO ARP23": {"name": "ONEXPLAYER 2 PRO", "hrtimer": True},
+    "ONEXPLAYER 2 PRO ARP23 EVA-01": {"name": "ONEXPLAYER 2 PRO", "hrtimer": True},
     # Ayn
     "Loki MiniPro": {
         "name": "Loki MiniPro",
