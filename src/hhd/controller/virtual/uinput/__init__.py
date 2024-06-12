@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 _cache = ControllerCache()
 _cache_motions = ControllerCache()
 
+MIN_TIME_FOR_CACHE = 2
 
 class UInputDevice(Consumer, Producer):
     @staticmethod
@@ -56,6 +57,7 @@ class UInputDevice(Consumer, Producer):
         self.output_timestamps = output_timestamps
         self.ofs = 0
         self.sys_ofs = 0
+        self.start = 0
         self.input_props = input_props
         self.ignore_cmds = ignore_cmds
         self.version = version
@@ -121,6 +123,7 @@ class UInputDevice(Consumer, Producer):
         self.touchpad_aspect = 1
         self.touch_id = 1
         self.fd = self.dev.fd
+        self.start = time.perf_counter_ns()
 
         if self.ignore_cmds:
             # Do not wake up if we ignore to save utilization
@@ -130,7 +133,10 @@ class UInputDevice(Consumer, Producer):
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
-        if self.cache:
+        if (
+            self.cache
+            and self.start + MIN_TIME_FOR_CACHE * 1e9 < time.perf_counter_ns()
+        ):
             self.cache = False
             logger.warning(
                 f"Caching {'left motions device' if self.motions_device else 'controller'} to avoid reconnection."

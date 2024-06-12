@@ -67,6 +67,7 @@ def get_outputs(
     flip_z = False
     match controller:
         case "dualsense_edge":
+            UInputDevice.close_cached()
             flip_z = conf["dualsense_edge.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense_edge.led_support", False)
@@ -86,6 +87,7 @@ def get_outputs(
             producers.append(d)
             consumers.append(d)
         case "dualsense":
+            UInputDevice.close_cached()
             flip_z = conf["dualsense.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense.led_support", False)
@@ -105,6 +107,7 @@ def get_outputs(
             producers.append(d)
             consumers.append(d)
         case "uinput" | "xbox_elite" | "joycon_pair":
+            Dualsense.close_cached()
             version = 1
             if controller == "joycon_pair":
                 theme = "joycon_pair"

@@ -51,6 +51,7 @@ REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
 REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
 DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
 MAX_IMU_SYNC_DELAY = 2
+MIN_TIME_FOR_CACHE = 2
 
 logger = logging.getLogger(__name__)
 
@@ -121,6 +122,8 @@ class Dualsense(Producer, Consumer):
                     f"Using cached controller node for Dualsense {'left motions device' if self.left_motion else 'controller'}."
                 )
                 self.dev = cached.dev
+                if self.dev and self.dev.fd:
+                    self.fd = self.dev.fd
             else:
                 cached.close(True)
 
@@ -142,6 +145,7 @@ class Dualsense(Producer, Consumer):
                     else DS5_EDGE_DESCRIPTOR_USB
                 ),
             )
+            self.fd = self.dev.open()
 
         self.touch_correction = correct_touchpad(
             DS5_EDGE_TOUCH_WIDTH, DS5_EDGE_TOUCH_HEIGHT, 1, self.touchpad_method
@@ -155,15 +159,17 @@ class Dualsense(Producer, Consumer):
         self.last_imu = curr
         self.imu_failed = False
         self.start = time.perf_counter_ns()
-        self.fd = self.dev.open()
 
         logger.info(
             f"Starting '{(DS5_EDGE_NAME if self.edge_mode else DS5_NAME).decode()}'."
         )
+        assert self.fd
         return [self.fd]
 
     def close(self, exit: bool) -> bool:
-        if self.cache:
+        if self.cache and self.start + MIN_TIME_FOR_CACHE * 1e9 < time.perf_counter_ns():
+            # Only cache if the controller ran for at least 5 seconds, to avoid the 
+            # hid node being the reason for the crash
             self.cache = False
             logger.warning(
                 f"Caching Dualsense {'left motions device' if self.left_motion else 'controller'} to avoid reconnection."

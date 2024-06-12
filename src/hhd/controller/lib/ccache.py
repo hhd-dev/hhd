@@ -13,7 +13,7 @@ class ControllerCache:
         with self._cond:
             self._cond.wait(CACHE_TIMEOUT)
             if self._cached:
-                self._cached.close()
+                self._cached.close(True)
                 self._cached = None
 
     def add(self, c):
@@ -44,5 +44,7 @@ class ControllerCache:
 
     def close(self):
         with self._cond:
-            self._cached = None
+            if self._cached:
+                self._cached.close(True)
+                self._cached = None
             self._cond.notify_all()
