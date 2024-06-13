@@ -298,6 +298,11 @@ def main():
                 settings = merge_settings(
                     [*[p.settings() for p in sorted_plugins], hhd_settings]
                 )
+                # Force general settings to be last
+                if "hhd" in settings:
+                    settings = dict(settings)
+                    tmp = settings.pop("hhd")
+                    settings["hhd"] = tmp
                 shash = get_settings_hash(settings)
 
                 # State
