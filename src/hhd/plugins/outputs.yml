@@ -26,6 +26,13 @@ modes:
       #     Inverts the roll (Z) axis compared to a real Dualsense controller.
       #     Useful for Steam Input, since you want it to be inverted to look
       #     left to right, but an issue in emulators.
+      info:
+        type: display
+        # title: Capabilities
+        default: |
+          Simple Xbox controller. 
+          Universal compatibility.
+          Extra buttons are shortcuts.
 
       noob_mode:
         type: bool
@@ -73,20 +80,27 @@ modes:
     type: container
     tags: [xbox_elite]
     title: Xbox Elite
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        default: |
+          Extra buttons in Steam Input.
 
   #
-  # Dual Sense 5
+  # Dualsense 5
   #
   dualsense:
     type: container
     tags: [lgc_emulation_dualsense, dualsense, non-essential]
     title: Dualsense
-    hint: >-
-      Emulates the Dualsense Sony controller from the Playstation 5.
-      Since this controller does not have paddles, the paddles are mapped
-      to left and right touchpad clicks.
 
     children:
+      info:
+        type: display
+        # title: Capabilities
+        default: |
+          Touchpad, gyro, and RGB support. Extra buttons are touchpad clicks.
       led_support:
         type: bool
         title: LED Support
@@ -143,12 +157,15 @@ modes:
     type: container
     tags: [lgc_emulation_dualsense_edge, dualsense_edge, non-essential]
     title: Dualsense Edge
-    hint: >-
-      Emulates the expensive Dualsense Sony controller which enables paddle support.
-      The edge controller is a bit obscure, so some games might not
-      support it correctly.
 
     children:
+      info:
+        type: display
+        # title: Capabilities
+        default: |
+          Extra buttons, gyro, RGB, and touchpad support.
+          Certain games have issues.
+
       led_support:
         type: bool
         title: LED Support
