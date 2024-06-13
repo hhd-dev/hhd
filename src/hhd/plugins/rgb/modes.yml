@@ -8,7 +8,7 @@ disabled:
 solid:
   type: container
   title: Solid
-  tags: [ non-essential ]
+  tags: [ non-essential, rgb ]
   hint: >-
     Maintains the LEDs at a solid color.
 
@@ -44,7 +44,7 @@ solid:
 pulse:
   type: container
   title: Pulse
-  tags: [ non-essential ]
+  tags: [ non-essential, rgb ]
   hint: >-
     Slowly pulses the LEDs as a prespecified color.
   children:
@@ -66,7 +66,7 @@ pulse:
 rainbow:
   type: container
   title: Rainbow
-  tags: [ non-essential ]
+  tags: [ non-essential, rainbow ]
   hint: >-
     Cycles through the different colors.
   children:
@@ -78,7 +78,7 @@ rainbow:
 spiral:
   type: container
   title: Spiral
-  tags: [ non-essential ]
+  tags: [ non-essential, spiral ]
   hint: >-
     Creates an RGB spiral around the stick.
   children:
