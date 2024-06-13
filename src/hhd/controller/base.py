@@ -198,13 +198,16 @@ class ControllerEmitter:
             self._evs = []
             return tmp
 
-    def set_capabilities(self, cap: ControllerCapabilities | None):
+    def set_capabilities(self, cid, cap: ControllerCapabilities | None):
         with self.intercept_lock:
             self._cap = cap
+            self.cid = cid
 
-    def get_capabilities(self) -> ControllerCapabilities | None:
+    def get_capabilities(self) -> dict[str, ControllerCapabilities]:
         with self.intercept_lock:
-            return self._cap
+            if self._cap:
+                return {self.cid: self._cap}
+            return {}
 
     def __call__(self, event: SpecialEvent | Sequence[SpecialEvent]) -> None:
         pass
@@ -523,7 +526,7 @@ class Multiplexer:
                     "controller": uses_rgb,
                     "zones": rgb_zones,
                 }
-            self.emit.set_capabilities({"buttons": {}, "rgb": rgb})
+            self.emit.set_capabilities(self.unique, {"buttons": {}, "rgb": rgb})
 
     def process(self, events: Sequence[Event]):
         out: list[Event] = []

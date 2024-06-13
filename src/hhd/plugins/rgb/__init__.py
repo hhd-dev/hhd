@@ -54,6 +54,7 @@ class RgbPlugin(HHDPlugin):
         self.init_count = 0
         self.init_last = 0
         self.init = True
+        self.uniq = None
 
         self.prev = None
 
@@ -115,8 +116,17 @@ class RgbPlugin(HHDPlugin):
                 self.modes = None
                 self.emit({"type": "settings"})
             return
+        
+        # Check controller id and force setting the leds if it changed.
+        # This will reset the led color after suspend or after exitting
+        # dualsense emulation.
+        uniq = next(iter(cap))
+        ccap = cap[uniq]
+        if uniq != self.uniq:
+            self.prev = None
+            self.uniq = uniq
 
-        rgb = cap["rgb"]
+        rgb = ccap["rgb"]
         refresh_settings = False
         if rgb:
             # Refresh on initial load
