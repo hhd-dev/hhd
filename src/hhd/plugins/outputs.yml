@@ -16,21 +16,16 @@ modes:
     type: container
     tags: [uinput]
     title: Xbox
-    hint: >-
-      Creates a virtual `Handheld Daemon Controller` that can be used normally
-      in apps. Back buttons are supported but steam will not detect them.
-      If Gyroscope or Accelerometer are enabled, a Motion device will be
-      created as well (experimental; works in Dolphin).
     children:
-      flip_z:
-        type: bool
-        title: Invert Roll Axis
-        tags: [non-essential]
-        default: True
-        hint: >-
-          Inverts the roll (Z) axis compared to a real Dualsense controller.
-          Useful for Steam Input, since you want it to be inverted to look
-          left to right, but an issue in emulators.
+      # flip_z:
+      #   type: bool
+      #   title: Invert Roll Axis
+      #   tags: [non-essential]
+      #   default: True
+      #   hint: >-
+      #     Inverts the roll (Z) axis compared to a real Dualsense controller.
+      #     Useful for Steam Input, since you want it to be inverted to look
+      #     left to right, but an issue in emulators.
 
       noob_mode:
         type: bool

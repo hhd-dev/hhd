@@ -123,9 +123,11 @@ def get_outputs(
                 bus = 0x03
             else:
                 noob_mode = conf.get("uinput.noob_mode", False)
-                theme = conf.get("uinput.theme", "hhd")
+                # theme = conf.get("uinput.theme", "hhd")
+                theme = 'hhd'
                 nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
-                flip_z = conf["uinput.flip_z"].to(bool)
+                # flip_z = conf["uinput.flip_z"].to(bool)
+                flip_z = False
                 button_map = GAMEPAD_BUTTON_MAP
                 bus = 0x03 if theme == "hhd" else 0x06
             vid, pid, name = CONTROLLER_THEMES[theme]
@@ -146,7 +148,7 @@ def get_outputs(
             producers.append(d)
             consumers.append(d)
             # Deactivate motion if using an xbox theme
-            motion = "xbox" not in theme and motion
+            motion = (theme != "hhd" and "xbox" not in theme) and motion
             if motion:
                 d = UInputDevice(
                     name=f"{name} Motion Sensors",
@@ -234,9 +236,11 @@ def get_outputs_config(
     if not has_leds:
         del s["modes"]["dualsense"]["children"]["led_support"]
         del s["modes"]["dualsense_edge"]["children"]["led_support"]
-
-    if default_device:
-        s["default"] = default_device
+    
+    # Set xbox as default for now
+    s['default'] = 'uinput'
+    # if default_device:
+    #     s["default"] = default_device
     if start_disabled:
         s["default"] = "disabled"
     return s
