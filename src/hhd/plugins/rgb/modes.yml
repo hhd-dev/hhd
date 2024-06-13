@@ -51,7 +51,7 @@ pulse:
     <<: *hsb
     speed: &speed
       type: int
-      tags: [saturation, rgb]
+      tags: [speed, rgb]
       title: Speed
       min: 0
       max: 100
