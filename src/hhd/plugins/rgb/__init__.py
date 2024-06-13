@@ -197,7 +197,7 @@ class RgbPlugin(HHDPlugin):
                     info["saturation"].to(int),
                     info["brightness"].to(int),
                 )
-                logger.info(f"Setting LEDs to solid color R:{r:03d} G:{g:03d} B:{b:03d}.")
+                logger.info(f"Setting LEDs to solid color R:{r:3d} G:{g:3d} B:{b:3d}.")
                 ev = {
                     "type": "led",
                     "code": "main",
@@ -214,7 +214,7 @@ class RgbPlugin(HHDPlugin):
                     info["saturation"].to(int),
                     info["brightness"].to(int),
                 )
-                logger.info(f"Setting LEDs to pulsing R:{r:03d} G:{g:03d} B:{b:03d}. Speed: {info["speed"].to(int)}%.")
+                logger.info(f"Setting LEDs to pulsing R:{r:3d} G:{g:3d} B:{b:3d}. Speed: {info["speed"].to(int)}%.")
                 ev = {
                     "type": "led",
                     "code": "main",
