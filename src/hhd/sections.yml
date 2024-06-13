@@ -1,6 +1,7 @@
 sections:
   system: System
   tdp: TDP
+  rgb: RGB
   controllers: Controller
   hhd: Settings
   bazzite: Bazzite

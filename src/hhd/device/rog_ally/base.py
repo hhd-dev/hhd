@@ -175,7 +175,12 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
-        conf["controller_mode"], None, conf["imu"].to(bool), emit=emit
+        conf["controller_mode"],
+        None,
+        conf["imu"].to(bool),
+        emit=emit,
+        rgb_modes=["solid", "pulse", "rainbow", "spiral"],
+        rgb_zones="quad",
     )
     motion = d_params.get("uses_motion", True)
 

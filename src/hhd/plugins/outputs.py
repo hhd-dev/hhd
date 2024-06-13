@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Mapping, Sequence
 
-from ..controller.base import Consumer, Producer
+from ..controller.base import Consumer, Producer, RgbMode, RgbZones
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
     HHD_PID_MOTION,
@@ -35,6 +35,8 @@ def get_outputs(
     controller_id: int = 0,
     emit=None,
     dual_motion: bool = False,
+    rgb_modes: Sequence[RgbMode] | None = None,
+    rgb_zones: RgbZones = "mono",
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -206,7 +208,9 @@ def get_outputs(
         consumers,
         {
             "uses_touch": uses_touch,
-            "uses_leds": uses_leds,
+            "rgb_used": uses_leds,
+            "rgb_modes": rgb_modes,
+            "rgb_zones": rgb_zones,
             "is_dual": False,
             "steam_check": steam_check,
             "steam_check_fn": lambda: emit and is_steam_gamepad_running(emit.ctx),

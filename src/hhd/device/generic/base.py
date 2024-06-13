@@ -9,7 +9,7 @@ from hhd.controller import Multiplexer, DEBUG_MODE
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
-from hhd.controller.physical.rgb import LedDevice
+from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
@@ -103,7 +103,11 @@ def controller_loop(
 
     # Output
     d_producers, d_outs, d_params = get_outputs(
-        conf["controller_mode"], None, conf["imu"].to(bool), emit=emit
+        conf["controller_mode"],
+        None,
+        conf["imu"].to(bool),
+        emit=emit,
+        rgb_modes=["disabled", "solid"] if is_led_supported() else None,
     )
     motion = d_params.get("uses_motion", True)
 

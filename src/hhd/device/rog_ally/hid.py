@@ -91,13 +91,17 @@ def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
 
 
 def rgb_set(
-    side: Literal["main", "left", "right"],
+    side: str,
     mode: RgbMode,
     red: int,
     green: int,
     blue: int,
 ):
     match side:
+        case "left_left" | "left_right" | "right_left" | "right_right":
+            return [
+                rgb_command(side, mode, red, green, blue),
+            ]
         case "left":
             return [
                 rgb_command("left_left", mode, red, green, blue),
@@ -122,11 +126,11 @@ def process_events(events: Sequence[Event]):
     mode = None
     for ev in events:
         if ev["type"] == "led":
-            if ev["mode"] == "disable":
+            if ev["mode"] == "disabled":
                 cmds.extend(rgb_set(ev["code"], "solid", 0, 0, 0))
             else:
                 match ev["mode"]:
-                    case "blinking":
+                    case "pulse":
                         mode = "pulse"
                     case "rainbow":
                         mode = "dynamic"

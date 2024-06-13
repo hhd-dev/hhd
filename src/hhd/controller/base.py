@@ -35,6 +35,14 @@ class RumbleEvent(TypedDict):
     weak_magnitude: float
 
 
+RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral"]
+
+# Mono is a single zone (main only)
+# Dual has per side RGB
+# Quad has two zones per stick (Ally)
+RgbZones = Literal["mono", "dual", "quad"]
+
+
 class RgbLedEvent(TypedDict):
     """Inspired by new controllers with RGB leds, especially below the buttons.
 
@@ -42,16 +50,27 @@ class RgbLedEvent(TypedDict):
 
     type: Literal["led"]
 
-    # The led
-    code: Literal["main", "left", "right"]
+    # Controls the LED zone. Main sets all zones.
+    # Left all left zones, right all right zones.
+    # One and Two are used for quad zone control and three is used for per side 3 zones.
+    # The third zone would be on the bumpers, such as on the Ayn Loki, if it
+    # supported per zone RGB.
+    code: Literal[
+        "main",
+        "left",
+        "right",
+        "left_left",
+        "left_right",
+        "right_left",
+        "right_right",
+    ]
 
     # Various lighting modes supported by the led.
-    mode: Literal["disable", "solid", "blinking", "rainbow", "spiral"]
+    mode: RgbMode
 
     # Brightness range is from 0 to 1
     # If the response device does not support brightness control, it shall
-    # convert the rgb color to hue, assume saturation is 1, and derive a new
-    # RGB value from the brightness below
+    # devide the rgb values by the brightness and round.
     brightness: float
 
     # The speed the led should blink if supported by the led
@@ -82,6 +101,17 @@ class ConfigurationEvent(TypedDict):
     value: Any
 
 
+class RgbCapabilities(TypedDict):
+    modes: Sequence[RgbMode] | None
+    controller: bool
+    zones: RgbZones
+
+
+class ControllerCapabilities(TypedDict):
+    buttons: dict  # TODO
+    rgb: RgbCapabilities | None
+
+
 Event = ButtonEvent | AxisEvent | ConfigurationEvent | RgbLedEvent | RumbleEvent
 
 GRAB_TIMEOUT = 5
@@ -99,6 +129,8 @@ class ControllerEmitter:
         self.ctx = ctx
         self.use_legacy_qam = not bool(os.environ.get("HHD_QAM_GAMESCOPE", None))
         self._simple_qam = False
+        self._cap = None
+        self._evs = []
 
     def send_qam(self):
         with self.intercept_lock:
@@ -152,8 +184,31 @@ class ControllerEmitter:
             else:
                 return False
 
+    def inject(self, ev: Sequence[Event] | Event):
+        if not isinstance(ev, Sequence):
+            ev = [ev]
+        with self.intercept_lock:
+            self._evs.extend(ev)
+
+    def inject_recv(self):
+        with self.intercept_lock:
+            if not self._evs:
+                return []
+            tmp = self._evs
+            self._evs = []
+            return tmp
+
+    def set_capabilities(self, cap: ControllerCapabilities | None):
+        with self.intercept_lock:
+            self._cap = cap
+
+    def get_capabilities(self) -> ControllerCapabilities | None:
+        with self.intercept_lock:
+            return self._cap
+
     def __call__(self, event: SpecialEvent | Sequence[SpecialEvent]) -> None:
         pass
+
 
 class TouchpadCorrection(NamedTuple):
     x_mult: float = 1
@@ -457,6 +512,19 @@ class Multiplexer:
         self.unique = str(time.perf_counter_ns())
         assert touchpad is None, "touchpad rewiring not supported yet"
 
+        uses_rgb: bool = params.get("rgb_used", False)
+        rgb_modes: Sequence[RgbMode] | None = params.get("rgb_modes", None)
+        rgb_zones: RgbZones = params.get("rgb_zones", "mono")
+        if self.emit:
+            rgb = None
+            if rgb_modes:
+                rgb: RgbCapabilities | None = {
+                    "modes": rgb_modes,
+                    "controller": uses_rgb,
+                    "zones": rgb_zones,
+                }
+            self.emit.set_capabilities({"buttons": {}, "rgb": rgb})
+
     def process(self, events: Sequence[Event]):
         out: list[Event] = []
         status_events = set()
@@ -640,7 +708,9 @@ class Multiplexer:
                             {
                                 "type": "button",
                                 "code": (
-                                    "dpad_down" if ev["code"] == "hat_y" else "dpad_right"
+                                    "dpad_down"
+                                    if ev["code"] == "hat_y"
+                                    else "dpad_right"
                                 ),
                                 "value": ev["value"] > 0.5,
                             }
@@ -649,9 +719,7 @@ class Multiplexer:
                             {
                                 "type": "button",
                                 "code": (
-                                    "dpad_up"
-                                    if ev["code"] == "hat_y"
-                                    else "dpad_left"
+                                    "dpad_up" if ev["code"] == "hat_y" else "dpad_left"
                                 ),
                                 "value": ev["value"] < -0.5,
                             }
@@ -757,7 +825,7 @@ class Multiplexer:
                                 curr + 2 * self.QAM_DELAY,
                             ),
                         )
-                        
+
                     if (
                         self.dpad == "discrete_to_analog" or self.dpad == "both"
                     ) and ev["code"] in (
@@ -1080,6 +1148,9 @@ class Multiplexer:
                     ),
                 )
 
+        if self.emit:
+            evs = self.emit.inject_recv()
+            out.extend(evs)
         return out
 
 

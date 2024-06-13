@@ -38,6 +38,7 @@ gpd_win = "hhd.device.gpd.win:autodetect"
 orange_pi = "hhd.device.orange_pi:autodetect"
 generic = "hhd.device.generic:autodetect"
 powerbuttond = "hhd.plugins.powerbutton:autodetect"
+rgb = "hhd.plugins.rgb:autodetect"
 overlay = "hhd.plugins.overlay:autodetect"
 # display = "hhd.plugins.display:autodetect"
 

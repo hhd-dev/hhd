@@ -191,9 +191,9 @@ class RgbCallback:
             reps = None
             mode = None
             match ev["mode"]:
-                case "disable":
+                case "disabled":
                     pass
-                case "blinking":
+                case "pulse":
                     mode = "pulse"
                 case "rainbow":
                     mode = "dynamic"
