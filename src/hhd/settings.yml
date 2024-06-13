@@ -28,6 +28,13 @@ settings:
         diavolo: Diavolo
         ocean: Atlantis
         vapor: Vapor
+      
+    reset:
+      type: action
+      tags: [ reset-button ]
+      title: Reset Settings
+      hint: >-
+        Resets all Handheld Daemon settings.
 
     decky_deprecation:
       type: display

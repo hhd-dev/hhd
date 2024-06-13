@@ -266,6 +266,7 @@ def main():
         # Monitor config files for changes
         should_initialize = TEvent()
         initial_run = True
+        reset = False
         should_exit = TEvent()
         signal.signal(signal.SIGPOLL, notifier(should_initialize, cond))
         signal.signal(signal.SIGINT, notifier(should_exit, cond))
@@ -300,15 +301,21 @@ def main():
                 shash = get_settings_hash(settings)
 
                 # State
-                new_conf = load_state_yaml(state_fn, settings)
-                if not new_conf:
-                    if conf.conf:
-                        logger.warning(f"Using previous configuration.")
-                    else:
-                        logger.info(f"Using default configuration.")
-                        conf = get_default_state(settings)
+                if reset:
+                    logger.warning(f"Resetting settings.")
+                    conf = get_default_state(settings)
+                    conf.updated = True
+                    reset = False
                 else:
-                    conf = new_conf
+                    new_conf = load_state_yaml(state_fn, settings)
+                    if not new_conf:
+                        if conf.conf:
+                            logger.warning(f"Using previous configuration.")
+                        else:
+                            logger.info(f"Using default configuration.")
+                            conf = get_default_state(settings)
+                    else:
+                        conf = new_conf
 
                 from importlib.metadata import version
 
@@ -502,10 +509,10 @@ def main():
                     [*[p.settings() for p in sorted_plugins], hhd_settings]
                 )
                 # Force general settings to be last
-                if 'hhd' in settings:
+                if "hhd" in settings:
                     settings = dict(settings)
                     tmp = settings.pop("hhd")
-                    settings['hhd'] = tmp
+                    settings["hhd"] = tmp
                 shash = get_settings_hash(settings)
 
                 # Add new defaults
@@ -697,6 +704,12 @@ def main():
                     and not emit.has_events()
                 ):
                     cond.wait(timeout=POLL_DELAY)
+
+            # Check reset
+            if conf['hhd.settings.reset'].to(bool):
+                conf["hhd.settings.reset"] = False
+                should_initialize.set()
+                reset = True
 
         set_log_plugin("main")
         logger.info(f"Received interrupt or updated. Stopping plugins and exiting.")
