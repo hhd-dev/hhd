@@ -16,6 +16,20 @@ logger = logging.getLogger(__name__)
 DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch")
 
 
+def get_distro_color():
+    match get_os():
+        case "manjaro":
+            return 115
+        case "bazzite":
+            return 265
+        case "arch":
+            return 195
+        case "ubuntu":
+            return 340
+        case _:
+            return 30
+
+
 def get_os() -> str:
     if name := os.environ.get("HHD_DISTRO", None):
         logger.error(f"Distro override using an environment variable to '{name}'.")

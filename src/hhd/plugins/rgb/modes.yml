@@ -12,8 +12,8 @@ solid:
   hint: >-
     Maintains the LEDs at a solid color.
 
-  children:
-    hue: &hue
+  children: &hsb
+    hue:
       type: int
       tags: [hue, rgb]
       title: Hue
@@ -21,8 +21,8 @@ solid:
       max: 360
       step: 5
       unit: '°'
-      default: 50
-    saturation: &saturation
+      default: 30
+    saturation:
       type: int
       tags: [saturation, rgb]
       title: Saturation
@@ -39,7 +39,7 @@ solid:
       max: 100
       step: 10
       unit: '%'
-      default: 100
+      default: 50
 
 pulse:
   type: container
@@ -48,10 +48,7 @@ pulse:
   hint: >-
     Slowly pulses the LEDs as a prespecified color.
   children:
-    hue:
-      <<: *hue
-    saturation:
-      <<: *saturation
+    <<: *hsb
     speed: &speed
       type: int
       tags: [saturation, rgb]
@@ -59,9 +56,7 @@ pulse:
       min: 0
       max: 100
       unit: '%'
-      default: 100
-    brightness:
-      <<: *brightness
+      default: 50
 
 rainbow:
   type: container

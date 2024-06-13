@@ -1,9 +1,10 @@
 import time
 import logging
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import Sequence
 
 from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml
 from hhd.controller import Event
+from hhd.utils import get_distro_color
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +87,11 @@ class RgbPlugin(HHDPlugin):
             for mode in self.modes:
                 if mode in modes:
                     supported[mode] = modes[mode]
+
+            # Set a sane default color
+            dc = get_distro_color()
+            for rgb_mode in ("solid", "pulse"):
+                supported[rgb_mode]['children']['hue']['default'] = dc
 
             # Add supported modes
             base["rgb"]["handheld"]["children"]["mode"]["modes"] = supported
