@@ -55,8 +55,7 @@ class UInputDevice(Consumer, Producer):
         self.uniq = uniq
         self.output_imu_timestamps = output_imu_timestamps
         self.output_timestamps = output_timestamps
-        self.ofs = 0
-        self.sys_ofs = 0
+        self.last_imu_ts = 0
         self.start = 0
         self.input_props = input_props
         self.ignore_cmds = ignore_cmds
@@ -193,6 +192,7 @@ class UInputDevice(Consumer, Producer):
                     ) or ev["code"] == self.output_imu_timestamps:
                         # We have timestamps with ns accuracy.
                         # Evdev expects us accuracy
+                        self.last_imu_ts = ev["value"]
                         ts = (ev["value"] // 1000) % (2**31)
                         self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
                         wrote[key] = ts

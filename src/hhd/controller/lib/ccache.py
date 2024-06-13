@@ -16,16 +16,25 @@ class ControllerCache:
     def _close_cached(self):
         with self._cond:
             start = time.perf_counter()
-            while (
-                time.perf_counter() - start < CACHE_TIMEOUT
-                and not self._should_exit.is_set()
-            ):
+            curr = time.perf_counter()
+            while curr - start < CACHE_TIMEOUT and not self._should_exit.is_set():
                 self._cond.wait(UPDATE_T)
+                next = time.perf_counter()
                 if self._cached:
                     # Send fake events to keep everyone happy
                     # Both steam and kernel
                     self._cached.produce([self._cached.fd])
-                    ctime = time.perf_counter_ns()
+                    # Bridge timestamps to prevent jump after the error
+                    # when disconnecting and reconnecting the controller
+                    # provided the imu timestamp does not break after reloading
+                    # Use .95 to prevent racing ahead of the IMU ts
+                    if hasattr(self._cached, "last_imu_ts"):
+                        ctime = getattr(self._cached, "last_imu_ts") + int(
+                            (next - curr) * 0.95 * 1e9
+                        )
+                    else:
+                        ctime = int(next * 1e9)
+
                     self._cached.consume(
                         [
                             {"type": "axis", "code": "left_imu_ts", "value": ctime},
@@ -36,6 +45,7 @@ class ControllerCache:
                 else:
                     # Exit if cached became null during sleep
                     break
+                curr = next
             if self._cached:
                 self._cached.close(True)
                 self._cached = None

@@ -96,6 +96,7 @@ class Dualsense(Producer, Consumer):
         self.controller_id = controller_id
         self.left_motion = left_motion
         self.cache = cache
+        self.last_imu_ts = 0
 
         self.ofs = (
             DS5_INPUT_REPORT_BT_OFS if use_bluetooth else DS5_INPUT_REPORT_USB_OFS
@@ -427,6 +428,7 @@ class Dualsense(Producer, Consumer):
                         case "gyro_ts" | "accel_ts" | "imu_ts":
                             send = True
                             self.last_imu = time.perf_counter()
+                            self.last_imu_ts = ev['value']
                             new_rep[self.ofs + 27 : self.ofs + 31] = int(
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]

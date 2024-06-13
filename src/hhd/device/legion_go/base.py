@@ -23,7 +23,7 @@ from .const import (
 from .hid import LegionHidraw, RgbCallback
 
 FIND_DELAY = 0.1
-ERROR_DELAY = 0.3
+ERROR_DELAY = 0.5
 LONGER_ERROR_DELAY = 3
 LONGER_ERROR_MARGIN = 1.3
 SELECT_TIMEOUT = 1
@@ -56,7 +56,7 @@ def plugin_run(
             controller_mode = None
             pid = None
             first = True
-            while not controller_mode:
+            while not controller_mode and not should_exit.is_set():
                 devs = enumerate_evs(vid=LEN_VID)
                 if not devs:
                     if first:
@@ -74,8 +74,12 @@ def plugin_run(
                     logger.error(
                         f"Legion go controllers not found, waiting {ERROR_DELAY}s."
                     )
-                    time.sleep(FIND_DELAY)
+                    time.sleep(ERROR_DELAY)
                     continue
+            
+            if not controller_mode:
+                # If should_exit was set controller_mode will be null
+                continue
 
             conf_copy = conf.copy()
             updated.clear()
