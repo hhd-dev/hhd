@@ -16,7 +16,7 @@ RGB_MIN_INTERVAL = 0.05
 def hsb_to_rgb(h: int, s: int | float, v: int | float):
     # https://www.rapidtables.com/convert/color/hsv-to-rgb.html
     if h >= 360:
-        h = 259
+        h = 359
     s = s / 100
     v = v / 100
 
@@ -202,7 +202,7 @@ class RgbPlugin(HHDPlugin):
         # Get event info
         mode = rgb_conf["mode"].to(str)
         if mode in rgb_conf:
-            info = rgb_conf[mode]
+            info = cast(dict, rgb_conf[mode].conf)
         else:
             info = {}
         ev: Event | None = None
@@ -217,27 +217,24 @@ class RgbPlugin(HHDPlugin):
         blue = 0
 
         log = f"Setting RGB to mode '{mode}'"
-
         for cap in self.modes[cast(RgbMode, mode)]:
             match cap:
                 case "color":
                     red, green, blue = hsb_to_rgb(
-                        info["hue"].to(int),
-                        info["saturation"].to(int),
-                        info["brightness"].to(int),
+                        info["hue"],
+                        info["saturation"],
+                        info["brightness"],
                     )
-                    log += f" with color: {red}, {green}, {blue}"
+                    log += f" with color: {red:3d}, {green:3d}, {blue:3d}"
                 case "brightness":
-                    log += f", brightness: {info['brightness'].to(int)}"
-                    brightness = info["brightness"].to(int) / 100
+                    log += f", brightness: {info['brightness']}"
+                    brightness = info["brightness"] / 100
                 case "speed":
-                    log += f", speed: {info['speed'].to(int)}"
-                    speed = info["speed"].to(int) / 100
+                    log += f", speed: {info['speed']}"
+                    speed = info["speed"] / 100
                 case "level":
-                    log += f", level: {info['level'].to(str)}"
-                    level = cast(
-                        Literal["low", "medium", "high"], info["level"].to(str)
-                    )
+                    log += f", level: {info['level']}"
+                    level = cast(Literal["low", "medium", "high"], info["level"])
         log += "."
         logger.info(log)
 

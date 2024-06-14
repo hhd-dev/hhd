@@ -1,21 +1,21 @@
 disabled:
   type: container
   title: "Off"
-  tags: [ non-essential ]
+  tags: [ non-essential, rgb, disabled ]
   hint: >-
     Turns the LEDs off.
 
 solid:
   type: container
   title: Solid
-  tags: [ non-essential, rgb ]
+  tags: [ non-essential, rgb, solid ]
   hint: >-
     Maintains the LEDs at a solid color.
 
 pulse:
   type: container
   title: Pulse
-  tags: [ non-essential, rgb ]
+  tags: [ non-essential, rgb, pulse ]
   hint: >-
     Slowly pulses the LEDs as a prespecified color.
 
