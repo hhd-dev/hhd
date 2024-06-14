@@ -96,9 +96,8 @@ class RgbPlugin(HHDPlugin):
             for mode, caps in self.modes.items():
                 if mode in modes:
                     m = modes[mode]
+                    m["children"] = {}
                     for cap in caps:
-                        if "children" not in m:
-                            m["children"] = {}
                         m["children"].update(capabilities[cap])
                         if cap == "color":
                             m["children"]["hue"]["default"] = dc
@@ -202,7 +201,10 @@ class RgbPlugin(HHDPlugin):
 
         # Get event info
         mode = rgb_conf["mode"].to(str)
-        info = rgb_conf[mode]
+        if mode in rgb_conf:
+            info = rgb_conf[mode]
+        else:
+            info = {}
         ev: Event | None = None
         if not self.modes or mode not in self.modes:
             return
