@@ -2,6 +2,7 @@ rgb:
   handheld:
     type: container
     title: RGB Settings
+    tags: [ hide-title ]
     children:
       mode:
         type: mode

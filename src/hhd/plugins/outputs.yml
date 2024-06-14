@@ -29,6 +29,7 @@ modes:
       info:
         type: display
         # title: Capabilities
+        tags: [non-essential]
         default: |
           Simple Xbox controller. 
           Universal compatibility.
@@ -84,6 +85,7 @@ modes:
       info:
         type: display
         # title: Capabilities
+        tags: [non-essential]
         default: |
           Extra buttons in Steam Input.
 
@@ -99,6 +101,7 @@ modes:
       info:
         type: display
         # title: Capabilities
+        tags: [non-essential]
         default: |
           Touchpad, gyro, and RGB support. Extra buttons are touchpad clicks.
       led_support:
@@ -162,6 +165,7 @@ modes:
       info:
         type: display
         # title: Capabilities
+        tags: [non-essential]
         default: |
           Extra buttons, gyro, RGB, and touchpad support.
           Certain games have issues.
