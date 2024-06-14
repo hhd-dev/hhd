@@ -36,6 +36,7 @@ class RumbleEvent(TypedDict):
 
 
 RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral"]
+RgbSettings = Literal["color", "brightness", "speed", "level"]
 
 # Mono is a single zone (main only)
 # Dual has per side RGB
@@ -72,6 +73,9 @@ class RgbLedEvent(TypedDict):
     # If the response device does not support brightness control, it shall
     # devide the rgb values by the brightness and round.
     brightness: float
+    # For the Ally, has three brightness levels 
+    # (and a forth off, use disabled mode for that)
+    level: Literal["low", "medium", "high"]
 
     # The speed the led should blink if supported by the led
     speed: float
@@ -102,7 +106,7 @@ class ConfigurationEvent(TypedDict):
 
 
 class RgbCapabilities(TypedDict):
-    modes: Sequence[RgbMode] | None
+    modes: dict[RgbMode, Sequence[RgbSettings]] | None
     controller: bool
     zones: RgbZones
 
@@ -516,7 +520,9 @@ class Multiplexer:
         assert touchpad is None, "touchpad rewiring not supported yet"
 
         uses_rgb: bool = params.get("rgb_used", False)
-        rgb_modes: Sequence[RgbMode] | None = params.get("rgb_modes", None)
+        rgb_modes: dict[RgbMode, Sequence[RgbSettings]] | None = params.get(
+            "rgb_modes", None
+        )
         rgb_zones: RgbZones = params.get("rgb_zones", "mono")
         if self.emit:
             rgb = None

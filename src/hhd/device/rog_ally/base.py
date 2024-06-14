@@ -179,7 +179,13 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
         None,
         conf["imu"].to(bool),
         emit=emit,
-        rgb_modes=["solid", "pulse", "rainbow", "spiral"],
+        rgb_modes={
+            "disabled": [],
+            "solid": ["color"],
+            "pulse": ["color", "speed"],
+            "rainbow": ["level", "speed"],
+            "spiral": ["level", "speed"],
+        },
         rgb_zones="quad",
     )
     motion = d_params.get("uses_motion", True)
@@ -205,7 +211,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
         usage_page=[0xFF31],
         usage=[0x0080],
         required=True,
-        callback=RgbCallback(conf["led_brightness"].to(Brightness)),
+        callback=RgbCallback(),
     )
 
     # Grab shortcut keyboards

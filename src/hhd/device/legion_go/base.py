@@ -231,7 +231,13 @@ def controller_loop_xinput(
         controller_id=cidx,
         emit=emit,
         dual_motion=dimu == "both",
-        rgb_modes=["solid", "pulse", "rainbow", "spiral"],
+        rgb_modes={
+            "disabled": [],
+            "solid": ["color"],
+            "pulse": ["color", "speed"],
+            "rainbow": ["brightness", "speed"],
+            "spiral": ["brightness", "speed"],
+        },
     )
     motion = d_params.get("uses_motion", True)
     dual_motion = d_params.get("uses_dual_motion", True)

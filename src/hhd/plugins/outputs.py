@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Mapping, Sequence
 
-from ..controller.base import Consumer, Producer, RgbMode, RgbZones
+from ..controller.base import Consumer, Producer, RgbMode, RgbZones, RgbSettings
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
     HHD_PID_MOTION,
@@ -35,7 +35,7 @@ def get_outputs(
     controller_id: int = 0,
     emit=None,
     dual_motion: bool = False,
-    rgb_modes: Sequence[RgbMode] | None = None,
+    rgb_modes: Mapping[RgbMode, Sequence[RgbSettings]] | None = None,
     rgb_zones: RgbZones = "mono",
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
@@ -124,7 +124,7 @@ def get_outputs(
             else:
                 noob_mode = conf.get("uinput.noob_mode", False)
                 # theme = conf.get("uinput.theme", "hhd")
-                theme = 'hhd'
+                theme = "hhd"
                 nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
                 # flip_z = conf["uinput.flip_z"].to(bool)
                 flip_z = False
@@ -236,9 +236,9 @@ def get_outputs_config(
     if not has_leds:
         del s["modes"]["dualsense"]["children"]["led_support"]
         del s["modes"]["dualsense_edge"]["children"]["led_support"]
-    
+
     # Set xbox as default for now
-    s['default'] = 'uinput'
+    s["default"] = "uinput"
     # if default_device:
     #     s["default"] = default_device
     if start_disabled:

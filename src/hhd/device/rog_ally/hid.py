@@ -16,7 +16,7 @@ from .const import (
 )
 
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
-RgbMode = Literal["solid", "pulse", "dynamic", "spiral"]
+RgbMode = Literal["disabled", "solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
 Brightness = Literal["off", "low", "medium", "high"]
 
@@ -36,7 +36,11 @@ def rgb_set_brightness(brightness: Brightness):
     return buf([0x5A, 0xBA, 0xC5, 0xC4, c])
 
 
-def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
+def rgb_command(
+    zone: Zone, mode: RgbMode, speed: float, red: int, green: int, blue: int
+):
+    c_speed = int(speed * (0xF5 - 0xE1) + 0xE1)
+
     match mode:
         case "solid":
             # Static
@@ -80,7 +84,7 @@ def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
             red,
             green,
             blue,
-            0x00,  # speed
+            c_speed if mode != "solid" else 0x00,
             0x00,  # direction
             0x00,  # breathing
             red,
@@ -93,6 +97,7 @@ def rgb_command(zone: Zone, mode: RgbMode, red: int, green: int, blue: int):
 def rgb_set(
     side: str,
     mode: RgbMode,
+    speed: float,
     red: int,
     green: int,
     blue: int,
@@ -100,21 +105,21 @@ def rgb_set(
     match side:
         case "left_left" | "left_right" | "right_left" | "right_right":
             return [
-                rgb_command(side, mode, red, green, blue),
+                rgb_command(side, mode, speed, red, green, blue),
             ]
         case "left":
             return [
-                rgb_command("left_left", mode, red, green, blue),
-                rgb_command("left_right", mode, red, green, blue),
+                rgb_command("left_left", mode, speed, red, green, blue),
+                rgb_command("left_right", mode, speed, red, green, blue),
             ]
         case "right":
             return [
-                rgb_command("right_right", mode, red, green, blue),
-                rgb_command("right_left", mode, red, green, blue),
+                rgb_command("right_right", mode, speed, red, green, blue),
+                rgb_command("right_left", mode, speed, red, green, blue),
             ]
         case _:
             return [
-                rgb_command("all", mode, red, green, blue),
+                rgb_command("all", mode, speed, red, green, blue),
             ]
 
 
@@ -124,39 +129,51 @@ INIT_EVERY_S = 10
 def process_events(events: Sequence[Event]):
     cmds = []
     mode = None
+    br_cmd = None
     for ev in events:
         if ev["type"] == "led":
             if ev["mode"] == "disabled":
-                cmds.extend(rgb_set(ev["code"], "solid", 0, 0, 0))
+                cmds.extend(rgb_set_brightness("off"))
             else:
                 match ev["mode"]:
                     case "pulse":
                         mode = "pulse"
+                        set_level = False
                     case "rainbow":
                         mode = "dynamic"
+                        set_level = False
                     case "solid":
                         mode = "solid"
+                        set_level = True
                     case "spiral":
                         mode = "spiral"
+                        set_level = True
                     case _:
                         assert False, f"Mode '{ev['mode']}' not supported."
+
+                if set_level:
+                    br_cmd = rgb_set_brightness(ev["level"])
 
                 cmds.extend(
                     rgb_set(
                         ev["code"],
                         mode,
+                        ev["speed"],
                         ev["red"],
                         ev["green"],
                         ev["blue"],
                     )
                 )
+
+    # Set brightness once per update
+    if br_cmd:
+        cmds.insert(0, br_cmd)
     return cmds, mode
 
 
 class RgbCallback:
-    def __init__(self, brightness: Brightness) -> None:
+    def __init__(self) -> None:
         self.prev_mode = None
-        self.brightness: Brightness = brightness
 
     def __call__(self, dev: Device, events: Sequence[Event]):
         cmds, mode = process_events(events)
@@ -170,7 +187,7 @@ class RgbCallback:
             cmds = [
                 RGB_INIT_1,
                 RGB_INIT_2,
-                rgb_set_brightness(self.brightness),
+                rgb_set_brightness("high"),
                 *cmds,
                 RGB_APPLY,
                 RGB_SET,

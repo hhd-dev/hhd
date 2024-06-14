@@ -32,7 +32,7 @@ def get_distro_color():
 
 def get_os() -> str:
     if name := os.environ.get("HHD_DISTRO", None):
-        logger.error(f"Distro override using an environment variable to '{name}'.")
+        logger.warning(f"Distro override using an environment variable to '{name}'.")
         return name
 
     try:

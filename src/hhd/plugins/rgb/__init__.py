@@ -1,9 +1,9 @@
-import time
 import logging
-from typing import Sequence
+import time
+from typing import Sequence, cast, Literal
 
+from hhd.controller import Event, RgbMode
 from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml
-from hhd.controller import Event
 from hhd.utils import get_distro_color
 
 logger = logging.getLogger(__name__)
@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 RGB_SET_TIMES = 3
 RGB_SET_INTERVAL = 7
 RGB_MIN_INTERVAL = 0.05
+
 
 def hsb_to_rgb(h: int, s: int | float, v: int | float):
     # https://www.rapidtables.com/convert/color/hsv-to-rgb.html
@@ -80,19 +81,28 @@ class RgbPlugin(HHDPlugin):
             return base
 
         if self.controller:
+            # Remove RGB settings because the controller has control
             del base["rgb"]["handheld"]["children"]["mode"]
         else:
+            # Remove disclaimer
             del base["rgb"]["handheld"]["children"]["controller"]
             modes = load_relative_yaml("modes.yml")
-            supported = {}
-            for mode in self.modes:
-                if mode in modes:
-                    supported[mode] = modes[mode]
+            capabilities = load_relative_yaml("capabilities.yml")
 
             # Set a sane default color
             dc = get_distro_color()
-            for rgb_mode in ("solid", "pulse"):
-                supported[rgb_mode]['children']['hue']['default'] = dc
+
+            supported = {}
+            for mode, caps in self.modes.items():
+                if mode in modes:
+                    m = modes[mode]
+                    for cap in caps:
+                        if "children" not in m:
+                            m["children"] = {}
+                        m["children"].update(capabilities[cap])
+                        if cap == "color":
+                            m["children"]["hue"]["default"] = dc
+                    supported[mode] = m
 
             # Add supported modes
             base["rgb"]["handheld"]["children"]["mode"]["modes"] = supported
@@ -116,7 +126,7 @@ class RgbPlugin(HHDPlugin):
                 self.modes = None
                 self.emit({"type": "settings"})
             return
-        
+
         # Check controller id and force setting the leds if it changed.
         # This will reset the led color after suspend or after exitting
         # dualsense emulation.
@@ -181,7 +191,7 @@ class RgbPlugin(HHDPlugin):
             )
         elif self.prev and self.prev == rgb_conf:
             return
-        
+
         # Avoid setting the LEDs too fast.
         curr = time.perf_counter()
         if curr - self.last_set < RGB_MIN_INTERVAL:
@@ -194,69 +204,52 @@ class RgbPlugin(HHDPlugin):
         mode = rgb_conf["mode"].to(str)
         info = rgb_conf[mode]
         ev: Event | None = None
-        match mode:
-            case "disabled":
-                logger.info(f"Disabling LEDs.")
-                ev = {
-                    "type": "led",
-                    "code": "main",
-                    "mode": "disabled",
-                    "brightness": 0,
-                    "speed": 0,
-                    "red": 0,
-                    "green": 0,
-                    "blue": 0,
-                }
-            case "solid":
-                r, g, b = hsb_to_rgb(
-                    info["hue"].to(int),
-                    info["saturation"].to(int),
-                    info["brightness"].to(int),
-                )
-                logger.info(f"Setting LEDs to solid color R:{r:3d} G:{g:3d} B:{b:3d}.")
-                ev = {
-                    "type": "led",
-                    "code": "main",
-                    "mode": "solid",
-                    "brightness": 1,
-                    "speed": 1,
-                    "red": r,
-                    "green": g,
-                    "blue": b,
-                }
-            case "pulse":
-                r, g, b = hsb_to_rgb(
-                    info["hue"].to(int),
-                    info["saturation"].to(int),
-                    info["brightness"].to(int),
-                )
-                logger.info(f"Setting LEDs to pulsing R:{r:3d} G:{g:3d} B:{b:3d}. Speed: {info["speed"].to(int)}%.")
-                ev = {
-                    "type": "led",
-                    "code": "main",
-                    "mode": "pulse",
-                    "brightness": 1,
-                    "speed": info["speed"].to(int) / 100,
-                    "red": r,
-                    "green": g,
-                    "blue": b,
-                }
-            case "rainbow" | "spiral":
-                logger.info(f"Setting LEDs to '{mode}'. Speed: {info["speed"].to(int)}%.")
-                ev = {
-                    "type": "led",
-                    "code": "main",
-                    "mode": mode,
-                    "brightness": info["brightness"].to(int) / 100,
-                    "speed": info["speed"].to(int) / 100,
-                    "red": 0,
-                    "green": 0,
-                    "blue": 0,
-                }
-            case _:
-                # Cant log otherwise it will spam the log
-                return
+        if not self.modes or mode not in self.modes:
+            return
 
+        brightness = 1
+        level = "high"
+        speed = 1
+        red = 0
+        green = 0
+        blue = 0
+
+        log = f"Setting RGB to mode '{mode}'"
+
+        for cap in self.modes[cast(RgbMode, mode)]:
+            match cap:
+                case "color":
+                    red, green, blue = hsb_to_rgb(
+                        info["hue"].to(int),
+                        info["saturation"].to(int),
+                        info["brightness"].to(int),
+                    )
+                    log += f" with color: {red}, {green}, {blue}"
+                case "brightness":
+                    log += f", brightness: {info['brightness'].to(int)}"
+                    brightness = info["brightness"].to(int) / 100
+                case "speed":
+                    log += f", speed: {info['speed'].to(int)}"
+                    speed = info["speed"].to(int) / 100
+                case "level":
+                    log += f", level: {info['level'].to(str)}"
+                    level = cast(
+                        Literal["low", "medium", "high"], info["level"].to(str)
+                    )
+        log += "."
+        logger.info(log)
+
+        ev = {
+            "type": "led",
+            "code": "main",
+            "mode": cast(RgbMode, mode),
+            "brightness": brightness,
+            "level": level,
+            "speed": speed,
+            "red": red,
+            "green": green,
+            "blue": blue,
+        }
         self.emit.inject(ev)
 
 

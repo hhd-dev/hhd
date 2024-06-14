@@ -288,6 +288,7 @@ class Dualsense(Producer, Consumer):
                                 # "brightness": led_brightness / 63
                                 # if led_brightness
                                 # else 1,
+                                "level": "high",
                                 "brightness": 1,
                                 "speed": 0,
                                 "red": red,

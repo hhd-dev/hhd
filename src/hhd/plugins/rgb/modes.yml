@@ -12,51 +12,12 @@ solid:
   hint: >-
     Maintains the LEDs at a solid color.
 
-  children: &hsb
-    hue:
-      type: int
-      tags: [hue, rgb]
-      title: Hue
-      min: 0
-      max: 360
-      step: 5
-      unit: '°'
-      default: 30
-    saturation:
-      type: int
-      tags: [saturation, rgb]
-      title: Saturation
-      min: 0
-      max: 100
-      step: 10
-      unit: '%'
-      default: 100
-    brightness: &brightness
-      type: int
-      tags: [brightness, rgb]
-      title: Brightness
-      min: 0
-      max: 100
-      step: 10
-      unit: '%'
-      default: 50
-
 pulse:
   type: container
   title: Pulse
   tags: [ non-essential, rgb ]
   hint: >-
     Slowly pulses the LEDs as a prespecified color.
-  children:
-    <<: *hsb
-    speed: &speed
-      type: int
-      tags: [speed, rgb]
-      title: Speed
-      min: 0
-      max: 100
-      unit: '%'
-      default: 50
 
 rainbow:
   type: container
@@ -64,11 +25,6 @@ rainbow:
   tags: [ non-essential, rainbow ]
   hint: >-
     Cycles through the different colors.
-  children:
-    speed:
-      <<: *speed
-    brightness:
-      <<: *brightness
 
 spiral:
   type: container
@@ -76,10 +32,5 @@ spiral:
   tags: [ non-essential, spiral ]
   hint: >-
     Creates an RGB spiral around the stick.
-  children:
-    speed:
-      <<: *speed 
-    brightness:
-      <<: *brightness
 
 

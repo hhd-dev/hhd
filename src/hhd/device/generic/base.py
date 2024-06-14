@@ -107,7 +107,7 @@ def controller_loop(
         None,
         conf["imu"].to(bool),
         emit=emit,
-        rgb_modes=["disabled", "solid"] if is_led_supported() else None,
+        rgb_modes={"disabled": [], "solid": ["color"]} if is_led_supported() else None,
     )
     motion = d_params.get("uses_motion", True)
 

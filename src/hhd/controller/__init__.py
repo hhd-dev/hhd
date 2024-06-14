@@ -11,6 +11,8 @@ from .base import (
     SpecialEvent,
     ControllerEmitter,
     DEBUG_MODE,
+    RgbMode,
+    RgbCapabilities,
 )
 from .const import Axis, Button, Configuration
 
@@ -30,4 +32,6 @@ __all__ = [
     "SpecialEvent",
     "ControllerEmitter",
     "DEBUG_MODE",
+    "RgbMode",
+    "RgbCapabilities",
 ]
