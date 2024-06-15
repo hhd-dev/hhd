@@ -13,7 +13,6 @@ from adjustor.core.acpi import check_perms, initialize
 from adjustor.core.const import CPU_DATA, DEV_DATA, ROG_ALLY_PP_MAP
 
 from .i18n import _
-from .utils import exists_sentinel, install_sentinel, remove_sentinel
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +36,6 @@ class AdjustorInitPlugin(HHDPlugin):
 
     def open(self, emit: Emitter, context: Context):
         self.context = context
-        if exists_sentinel() or not install_sentinel():
-            self.safe_mode = True
 
     def settings(self):
         if self.enabled and not self.failed:
@@ -96,9 +93,6 @@ class AdjustorInitPlugin(HHDPlugin):
         self.init = True
         conf["hhd.settings.tdp_enable"] = True
         conf["tdp.tdp.tdp_error"] = ""
-
-    def close(self):
-        remove_sentinel()
 
 
 class AdjustorPlugin(HHDPlugin):
