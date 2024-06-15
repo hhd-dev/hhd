@@ -493,6 +493,8 @@ def main():
                         pass
                     case "acpi":
                         pass
+                    case "tdp":
+                        pass
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")
 

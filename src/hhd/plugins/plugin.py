@@ -33,6 +33,11 @@ class PowerEvent(TypedDict):
     event: Literal["ac", "dc", "tdp", "battery"]
 
 
+class TdpEvent(TypedDict):
+    type: Literal["tdp"]
+    tdp: int
+
+
 class ProfileEvent(TypedDict):
     type: Literal["profile"]
     name: str
@@ -66,6 +71,7 @@ Event = (
     | SettingsEvent
     | SpecialEvent
     | PowerEvent
+    | TdpEvent
 )
 
 
@@ -258,7 +264,7 @@ def is_steam_gamepad_running(ctx: Context | None, gamepadui: bool = True):
         steam_cmd_path = f"/proc/{pid}/cmdline"
         if not os.path.exists(steam_cmd_path):
             return False
-        
+
         # The command line is irrelevant if we just want to know if Steam is running.
         if not gamepadui:
             return True
