@@ -44,7 +44,7 @@ def loop_process_events(emit: Emitter, should_exit: TEvent):
 
                     if matches:
                         if etype != "battery":
-                            emit({"type": "acpi", "event": etype})
+                            emit({"type": "acpi", "event": etype}) # type: ignore
                         found = True
                         break
 

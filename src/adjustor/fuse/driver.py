@@ -27,18 +27,16 @@ from __future__ import print_function
 import fcntl
 import io
 import os
-import select
 import socket
 import sys
 from errno import *  # type: ignore
 from stat import *  # type: ignore
-from threading import Event, Lock, Thread
+from threading import Lock
 
 import fuse
 from fuse import Fuse
 
-from .utils import FUSE_MOUNT_SOCKET
-
+FUSE_MOUNT_SOCKET = "/run/hhd-tdp/socket"
 TIMEOUT = 1
 PACK_SIZE = 1024
 fuse.fuse_python_api = (0, 2)
@@ -82,17 +80,6 @@ def flag2mode(flags):
         m = m.replace("w", "a", 1)
 
     return m
-
-
-def connection_handler(sock: socket.socket, obj, lock: Lock, should_exit: Event):
-    while not should_exit.is_set():
-        r, w, x = select.select([sock], [], [], 0.5)
-        if not r:
-            continue
-
-        conn, _ = sock.accept()
-        with lock:
-            obj.conn = conn
 
 
 class Xmp(Fuse):
@@ -168,173 +155,180 @@ class Xmp(Fuse):
         os.chdir(self.root)
 
     def main(self, *a, **kw):
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind(FUSE_MOUNT_SOCKET)
+        sock.listen(10)
 
-        self.file_class = self.XmpFile
+        self.file_class = XmpFile
+        XmpFile.h = Handler(sock)
 
-        return Fuse.main(self, *a, **kw)
+        code = Fuse.main(self, *a, **kw)
+        sock.close()
+        return code
 
-    class XmpFile(object):
-        _lock: Lock
-        conn: socket.socket | None = None
 
-        def __init__(self, path, flags, *mode):
-            self.path = path
-            if "power1_cap" in path or "power2_cap" in path:
-                print(f"GPU Attribute access: {path} {flags} {mode}")
+class Handler:
+    def __init__(self, sock: socket.socket):
+        self.sock = sock
+        self.conn = None
 
-                with self._lock:
-                    # Receive file contents from hhd
-                    endpoint = path.split("/")[-1]
-                    if not self.conn:
-                        raise RuntimeError(
-                            "No active connection. Can not access GPU attributes."
-                        )
+    def get_conn(self):
+        try:
+            self.sock.settimeout(0.05)
+            conn, _ = self.sock.accept()
+            print("New connection: " + str(conn))
+            if self.conn:
+                self.conn.close()
+            self.conn = conn
+        except socket.timeout as e:
+            pass
+        return self.conn
 
-                    cmd = f"cmd:get:{endpoint}\n".encode()
-                    self.conn.settimeout(TIMEOUT)
-                    self.conn.send(cmd + bytes(PACK_SIZE - len(cmd)))
-                    self.conn.settimeout(TIMEOUT)
-                    resp = self.conn.recv(PACK_SIZE)
-                    assert resp.startswith(
-                        b"ack:"
-                    ), f"Unexpected response from server: {resp}"
-                    contents = resp[4:]
 
-                self.file = io.BytesIO(contents)
-                self.fd = -1
-                self.virtual = True
-            else:
-                self.file = os.fdopen(
-                    os.open("." + path, flags, *mode), flag2mode(flags)
+class XmpFile:
+    h: Handler
+
+    def __init__(self, path, flags, *mode):
+        self.path = path
+        if "power1_cap" in path or "power2_cap" in path:
+            print(f"GPU Attribute access: {path} {flags} {mode}")
+
+            # Receive file contents from hhd
+            endpoint = path.split("/")[-1]
+            conn = self.h.get_conn()
+            if not conn:
+                raise RuntimeError(
+                    "No active connection. Can not access GPU attributes."
                 )
-                self.fd = self.file.fileno()
-                self.virtual = False
 
-            self.wrote = False
-            if hasattr(os, "pread") and not self.virtual:
-                self.iolock = None
-            else:
-                self.iolock = Lock()
+            cmd = f"cmd:get:{endpoint}\n".encode()
+            conn.settimeout(TIMEOUT)
+            conn.send(cmd + bytes(PACK_SIZE - len(cmd)))
+            resp = b""
+            while not resp or not resp.startswith(b"ack:"):
+                conn.settimeout(TIMEOUT)
+                resp = conn.recv(PACK_SIZE)
+            contents = resp[4:]
 
-        def read(self, length, offset):
-            if self.iolock:
-                self.iolock.acquire()
-                try:
-                    self.file.seek(offset)
-                    return self.file.read(length)
-                finally:
-                    self.iolock.release()
-            else:
-                return os.pread(self.fd, length, offset)
+            self.file = io.BytesIO(contents)
+            self.fd = -1
+            self.virtual = True
+        else:
+            self.file = os.fdopen(os.open("." + path, flags, *mode), flag2mode(flags))
+            self.fd = self.file.fileno()
+            self.virtual = False
 
-        def write(self, buf, offset):
-            self.wrote = True
-            if self.iolock:
-                self.iolock.acquire()
-                try:
-                    self.file.seek(offset)
-                    self.file.write(buf)
-                    return len(buf)
-                finally:
-                    self.iolock.release()
-            else:
-                return os.pwrite(self.fd, buf, offset)
+        self.wrote = False
+        if hasattr(os, "pread") and not self.virtual:
+            self.iolock = None
+        else:
+            self.iolock = Lock()
 
-        def release(self, flags):
-            if self.virtual and self.wrote:
-                with self._lock:
-                    # Send file contents to hhd
-                    endpoint = self.path.split("/")[-1]
-                    if not self.conn:
-                        raise RuntimeError(
-                            "No active connection. Can not access GPU attributes."
-                        )
+    def read(self, length, offset):
+        if self.iolock:
+            self.iolock.acquire()
+            try:
+                self.file.seek(offset)
+                return self.file.read(length)
+            finally:
+                self.iolock.release()
+        else:
+            return os.pread(self.fd, length, offset)
 
-                    cmd = f"cmd:set:{endpoint}:".encode()
-                    self.file.seek(0)
-                    contents = self.file.read()
-                    if b"\0" in contents:
-                        contents = contents[:contents.index(b"\0")]
-                    if len(contents) + len(cmd) + 1 > PACK_SIZE:
-                        raise ValueError(f"Contents too large to send:\n{contents}")
-                    stcmd = (
-                        cmd
-                        + contents
-                        + b"\n"
-                        + bytes(PACK_SIZE - len(cmd) - len(contents) - 1)
-                    )
-                    self.conn.settimeout(TIMEOUT)
-                    self.conn.send(stcmd)
-                    self.conn.settimeout(TIMEOUT)
-                    resp = self.conn.recv(1024).decode().strip()
-                    assert resp.startswith(
-                        "ack"
-                    ), f"Unexpected response from server: {resp}"
-            self.file.close()
+    def write(self, buf, offset):
+        self.wrote = True
+        if self.iolock:
+            self.iolock.acquire()
+            try:
+                self.file.seek(offset)
+                self.file.write(buf)
+                return len(buf)
+            finally:
+                self.iolock.release()
+        else:
+            return os.pwrite(self.fd, buf, offset)
 
-        def _fflush(self):
-            if "w" in self.file.mode or "a" in self.file.mode:
-                self.file.flush()
+    def release(self, flags):
+        if self.virtual and self.wrote:
+            # Send file contents to hhd
+            endpoint = self.path.split("/")[-1]
+            conn = self.h.get_conn()
+            if not conn:
+                raise RuntimeError(
+                    "No active connection. Can not access GPU attributes."
+                )
 
-        def fsync(self, isfsyncfile):
-            if self.virtual:
-                return
-            self._fflush()
-            if isfsyncfile and hasattr(os, "fdatasync"):
-                os.fdatasync(self.fd)
-            else:
-                os.fsync(self.fd)
+            cmd = f"cmd:set:{endpoint}:".encode()
+            self.file.seek(0)
+            contents = self.file.read()
+            if b"\0" in contents:
+                contents = contents[: contents.index(b"\0")]
+            if len(contents) + len(cmd) + 1 > PACK_SIZE:
+                raise ValueError(f"Contents too large to send:\n{contents}")
+            stcmd = (
+                cmd + contents + b"\n" + bytes(PACK_SIZE - len(cmd) - len(contents) - 1)
+            )
+            conn.settimeout(TIMEOUT)
+            conn.send(stcmd)
+            resp = b""
+            while not resp or not resp.startswith(b"ack\n"):
+                conn.settimeout(TIMEOUT)
+                resp = conn.recv(1024).strip()
+        self.file.close()
 
-        def flush(self):
-            if self.virtual:
-                return
-            self._fflush()
-            # cf. xmp_flush() in fusexmp_fh.c
-            os.close(os.dup(self.fd))
+    def _fflush(self):
+        if "w" in self.file.mode or "a" in self.file.mode:
+            self.file.flush()
 
-        def fgetattr(self):
-            if self.virtual:
-                return VirtualStat()
-            return os.fstat(self.fd)
+    def fsync(self, isfsyncfile):
+        if self.virtual:
+            return
+        self._fflush()
+        if isfsyncfile and hasattr(os, "fdatasync"):
+            os.fdatasync(self.fd)
+        else:
+            os.fsync(self.fd)
 
-        def ftruncate(self, len):
-            self.file.truncate(len)
+    def flush(self):
+        if self.virtual:
+            return
+        self._fflush()
+        # cf. xmp_flush() in fusexmp_fh.c
+        os.close(os.dup(self.fd))
 
-        def lock(self, cmd, owner, **kw):
-            if self.virtual:
-                return -EINVAL
-            op = {
-                fcntl.F_UNLCK: fcntl.LOCK_UN,
-                fcntl.F_RDLCK: fcntl.LOCK_SH,
-                fcntl.F_WRLCK: fcntl.LOCK_EX,
-            }[kw["l_type"]]
-            if cmd == fcntl.F_GETLK:
-                return -EOPNOTSUPP
-            elif cmd == fcntl.F_SETLK:
-                if op != fcntl.LOCK_UN:
-                    op |= fcntl.LOCK_NB
-            elif cmd == fcntl.F_SETLKW:
-                pass
-            else:
-                return -EINVAL
+    def fgetattr(self):
+        if self.virtual:
+            return VirtualStat()
+        return os.fstat(self.fd)
 
-            fcntl.lockf(self.fd, op, kw["l_start"], kw["l_len"])
+    def ftruncate(self, len):
+        self.file.truncate(len)
+
+    def lock(self, cmd, owner, **kw):
+        if self.virtual:
+            return -EINVAL
+        op = {
+            fcntl.F_UNLCK: fcntl.LOCK_UN,
+            fcntl.F_RDLCK: fcntl.LOCK_SH,
+            fcntl.F_WRLCK: fcntl.LOCK_EX,
+        }[kw["l_type"]]
+        if cmd == fcntl.F_GETLK:
+            return -EOPNOTSUPP
+        elif cmd == fcntl.F_SETLK:
+            if op != fcntl.LOCK_UN:
+                op |= fcntl.LOCK_NB
+        elif cmd == fcntl.F_SETLKW:
+            pass
+        else:
+            return -EINVAL
+
+        fcntl.lockf(self.fd, op, kw["l_start"], kw["l_len"])
 
 
 def main():
     sock = None
-    t = None
-    should_exit = Event()
     try:
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        os.remove(FUSE_MOUNT_SOCKET)
-        sock.bind(FUSE_MOUNT_SOCKET)
-        sock.listen(1)
-
-        lock = Lock()
-        should_exit = Event()
-
         server = Xmp(
             version="%prog " + fuse.__version__, usage="", dash_s_do="setsingle"
         )
@@ -345,12 +339,6 @@ def main():
             help="GPU device private bind mount point",
         )
         server.parse(values=server, errex=1)
-        server.XmpFile._lock = lock
-
-        t = Thread(
-            target=connection_handler, args=(sock, server.XmpFile, lock, should_exit)
-        )
-        t.start()
 
         try:
             if server.fuse_args.mount_expected():
@@ -363,9 +351,6 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
-        if t:
-            should_exit.set()
-            t.join()
         if sock:
             sock.close()
 

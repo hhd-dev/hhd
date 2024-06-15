@@ -1,11 +1,11 @@
 import logging
-import time
-from typing import cast
 import os
+import time
+from typing import Sequence
 
-from hhd.plugins import Context, HHDPlugin, load_relative_yaml
-from hhd.plugins.conf import Config
-from adjustor.core.platform import get_platform_choices, set_platform_profile
+from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
+
+from adjustor.core.platform import set_platform_profile
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +123,7 @@ class AsusDriverPlugin(HHDPlugin):
 
         self.queue_fan = None
         self.queue_tdp = None
+        self.new_tdp = None
 
     def settings(self):
         if not self.enabled:
@@ -198,7 +199,12 @@ class AsusDriverPlugin(HHDPlugin):
             pass
 
         # Check user changed values
-        steady = conf["tdp.asus.tdp"].to(int)
+        if self.new_tdp:
+            steady = self.new_tdp
+            self.new_tdp = None
+            conf["tdp.asus.tdp"] = steady
+        else:
+            steady = conf["tdp.asus.tdp"].to(int)
 
         steady_updated = steady and steady != self.old_conf["tdp"].to(int)
 
@@ -301,6 +307,11 @@ class AsusDriverPlugin(HHDPlugin):
 
         if self.startup:
             self.startup = False
+
+    def notify(self, events: Sequence[Event]):
+        for ev in events:
+            if ev["type"] == "tdp":
+                self.new_tdp = ev["tdp"]
 
     def close(self):
         pass

@@ -1,11 +1,12 @@
 import logging
 import time
 
-from hhd.plugins import Context, HHDPlugin, load_relative_yaml
+from hhd.plugins import Context, HHDPlugin, load_relative_yaml, Event
 from hhd.plugins.conf import Config
 
 from adjustor.core.alib import AlibParams, DeviceParams, alib
 from adjustor.core.platform import get_platform_choices, set_platform_profile
+from typing import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ class SmuQamPlugin(HHDPlugin):
 
         self.old_tdp = None
         self.old_boost = None
+        self.new_tdp = None
         self.is_set = False
         self.lims = self.dev.get("skin_limit", self.dev.get("stapm_limit", None))
 
@@ -97,7 +99,13 @@ class SmuQamPlugin(HHDPlugin):
             return
 
         curr = time.time()
-        new_tdp = conf["tdp.qam.tdp"].to(int)
+        if self.new_tdp:
+            new_tdp = self.new_tdp
+            self.new_tdp = None
+            conf["tdp.qam.tdp"] = new_tdp
+        else:
+            new_tdp = conf["tdp.qam.tdp"].to(int)
+
         if self.startup and self.lims:
             _, smin, _, smax, _ = self.lims
             if smin and new_tdp < smin:
@@ -312,6 +320,11 @@ class SmuDriverPlugin(HHDPlugin):
             conf["tdp.smu.status"] = "Set"
         else:
             conf["tdp.smu.status"] = "Not Set"
+
+    def notify(self, events: Sequence[Event]):
+        for ev in events:
+            if ev["type"] == "tdp":
+                self.new_tdp = ev["tdp"]
 
     def close(self):
         pass

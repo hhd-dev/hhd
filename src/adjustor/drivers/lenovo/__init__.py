@@ -1,8 +1,8 @@
 import logging
 import time
-from typing import cast
+from typing import Sequence, cast
 
-from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
+from hhd.plugins import Context, Event, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
 
 from adjustor.core.lenovo import (
@@ -42,6 +42,7 @@ class LenovoDriverPlugin(HHDPlugin):
 
         self.queue_fan = None
         self.queue_tdp = None
+        self.new_tdp = None
 
     def settings(self):
         if not self.enabled:
@@ -119,7 +120,22 @@ class LenovoDriverPlugin(HHDPlugin):
         #
 
         # Update tdp mode if user changed through the app
-        mode = conf["tdp.lenovo.tdp.mode"].to(str)
+        new_tdp = self.new_tdp
+        self.new_tdp = None
+        if new_tdp:
+            # For TDP values received from steam, set the appropriate
+            # mode to get a better experience.
+            if new_tdp == 8:
+                mode = "quiet"
+            elif new_tdp == 15:
+                mode = "balanced"
+            elif new_tdp == 20:
+                mode = "performance"
+            else:
+                mode = "custom"
+            conf["tdp.lenovo.tdp.mode"] = mode
+        else:
+            mode = conf["tdp.lenovo.tdp.mode"].to(str)
         if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
             set_tdp_mode(cast(TdpMode, mode))
             tdp_reset = True
@@ -146,6 +162,9 @@ class LenovoDriverPlugin(HHDPlugin):
         if new_mode == "custom":
             # Check user changed values
             steady = conf["tdp.lenovo.tdp.custom.tdp"].to(int)
+            if new_tdp:
+                steady = new_tdp
+                conf["tdp.lenovo.tdp.custom.tdp"] = steady
 
             old_steady = steady
             if self.enforce_limits:
@@ -242,6 +261,11 @@ class LenovoDriverPlugin(HHDPlugin):
 
         if self.startup:
             self.startup = False
+
+    def notify(self, events: Sequence[Event]):
+        for ev in events:
+            if ev["type"] == "tdp":
+                self.new_tdp = ev["tdp"]
 
     def close(self):
         pass

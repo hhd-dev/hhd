@@ -96,15 +96,21 @@ class AdjustorInitPlugin(HHDPlugin):
 
 
 class AdjustorPlugin(HHDPlugin):
-    def __init__(self) -> None:
+    def __init__(self, min_tdp: int, default_tdp: int, max_tdp: int) -> None:
         self.name = f"adjustor_main"
         self.priority = 80
         self.log = "adjs"
         self.enabled = False
         self.enfoce_limits = True
+        self.fuse_mount = False
 
         self.t = None
+        self.t_sys = None
         self.should_exit = None
+
+        self.min_tdp = min_tdp
+        self.default_tdp = default_tdp
+        self.max_tdp = max_tdp
 
     def settings(self) -> HHDSettings:
         out = {"hhd": {"settings": load_relative_yaml("settings.yml")["hhd"]}}
@@ -113,28 +119,47 @@ class AdjustorPlugin(HHDPlugin):
         return out
 
     def _start(self):
-        if self.should_exit or self.t:
+        if self.should_exit:
             return
-        try:
-            from .events import loop_process_events
+        self.should_exit = TEvent()
+        if not self.t:
+            try:
+                from .events import loop_process_events
 
-            self.should_exit = TEvent()
-            self.t = Thread(
-                target=loop_process_events, args=(self.emit, self.should_exit)
-            )
-            self.t.start()
-        except Exception as e:
-            logger.warning(
-                f"Could not init ACPI event handling. Is pyroute2 installed?"
-            )
+                self.t = Thread(
+                    target=loop_process_events, args=(self.emit, self.should_exit)
+                )
+                self.t.start()
+            except Exception as e:
+                logger.warning(
+                    f"Could not init ACPI event handling. Is pyroute2 installed?"
+                )
+
+        if self.fuse_mount and not self.t_sys:
+            logger.info("Starting FUSE mount for /sys.")
+            from .fuse import prepare_tdp_mount, start_tdp_client
+
+            stat = prepare_tdp_mount()
+            if stat:
+                self.t_sys = start_tdp_client(
+                    self.should_exit,
+                    self.emit,
+                    self.min_tdp,
+                    self.default_tdp,
+                    self.max_tdp,
+                )
 
     def _stop(self):
-        if not self.should_exit or not self.t:
+        if not self.should_exit:
             return
         self.should_exit.set()
-        self.t.join()
+        if self.t:
+            self.t.join()
+            self.t = None
+        if self.t_sys:
+            self.t_sys.join()
+            self.t_sys = None
         self.should_exit = None
-        self.t = None
 
     def open(
         self,
@@ -148,6 +173,7 @@ class AdjustorPlugin(HHDPlugin):
         new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         if new_enabled != self.enabled or new_enforce_limits != self.enfoce_limits:
             self.emit({"type": "settings"})
+        self.fuse_mount = conf["hhd.settings.fuse_mount"].to(bool)
         self.enabled = new_enabled
         self.enfoce_limits = new_enforce_limits
 
@@ -176,6 +202,14 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     use_acpi_call = False
     drivers_matched = False
+
+    # FIXME: Switch to per device
+    # But all devices use the same values
+    # pretty much
+    min_tdp = 4
+    default_tdp = 15
+    max_tdp = 30
+
     if prod == "83E1":
         drivers.append(LenovoDriverPlugin())
         drivers_matched = True
@@ -229,5 +263,5 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     return [
         *drivers,
         AdjustorInitPlugin(use_acpi_call=use_acpi_call),
-        AdjustorPlugin(),
+        AdjustorPlugin(min_tdp, default_tdp, max_tdp),
     ]
