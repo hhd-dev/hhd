@@ -798,7 +798,9 @@ class Multiplexer:
 
                     if self.noob_mode and ev["code"] == "extra_l1" and ev["value"]:
                         ev["code"] = ""  # type: ignore
-                        if not self.open_steam_kbd(True):
+                        if self.open_steam_kbd(True):
+                            logger.info(f"Opened steam keyboard directly.")
+                        else:
                             logger.warning(f"Could not open steam keyboard directly. Sending chord.")
                             out.append(
                                 {
