@@ -18,6 +18,7 @@ classifiers = [
 dependencies = [
   "rich>=13.5.2",
   "pyroute2>=0.7.3",
+  "fuse-python>=1.0.7",
 ]
 
 [project.urls]
