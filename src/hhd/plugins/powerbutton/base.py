@@ -8,40 +8,18 @@ from typing import cast
 
 import evdev
 
-from hhd.utils import Context, expanduser, is_steam_gamepad_running
+from hhd.utils import Context, is_steam_gamepad_running, run_steam_command
 
 from .const import PowerButtonConfig
 
 logger = logging.getLogger(__name__)
 
-STEAM_EXE = "~/.steam/root/ubuntu12_32/steam"
 STEAM_WAIT_DELAY = 0.5
 LONG_PRESS_DELAY = 2.0
 
 
 def B(b: str):
     return cast(int, getattr(evdev.ecodes, b))
-
-
-def run_steam_command(command: str, ctx: Context):
-    global home_path
-    try:
-        if ctx.euid != ctx.uid:
-            result = subprocess.run(
-                [
-                    "su",
-                    ctx.name,
-                    "-c",
-                    f"{expanduser(STEAM_EXE, ctx)} -ifrunning {command}",
-                ]
-            )
-        else:
-            result = subprocess.run([expanduser(STEAM_EXE, ctx), "-ifrunning", command])
-
-        return result.returncode == 0
-    except Exception as e:
-        logger.error(f"Received error when running steam command `{command}`\n{e}")
-    return False
 
 
 def register_power_buttons(b: PowerButtonConfig) -> list[evdev.InputDevice]:

@@ -8,6 +8,7 @@ from hhd.plugins.plugin import (
     get_context,
     is_steam_gamepad_running,
     restore_priviledge,
+    run_steam_command,
     switch_priviledge,
 )
 
@@ -60,4 +61,5 @@ __all__ = [
     "switch_priviledge",
     "get_context",
     "Context",
+    "run_steam_command",
 ]

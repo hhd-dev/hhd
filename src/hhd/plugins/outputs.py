@@ -21,7 +21,7 @@ from ..controller.virtual.uinput import (
     GAMEPAD_BUTTON_MAP,
     UInputDevice,
 )
-from .plugin import is_steam_gamepad_running
+from .plugin import is_steam_gamepad_running, run_steam_command
 from .utils import load_relative_yaml
 
 logger = logging.getLogger(__name__)
@@ -216,6 +216,11 @@ def get_outputs(
             "is_dual": False,
             "steam_check": steam_check,
             "steam_check_fn": lambda: emit and is_steam_gamepad_running(emit.ctx),
+            "steam_kbd": lambda open: emit
+            and is_steam_gamepad_running(emit.ctx, False)
+            and run_steam_command(
+                f"steam://{'open' if open else 'close'}/keyboard", emit.ctx
+            ),
             "nintendo_qam": nintendo_qam,
             "uses_motion": motion,
             "uses_dual_motion": dual_motion,

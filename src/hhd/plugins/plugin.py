@@ -12,6 +12,7 @@ from .settings import HHDSettings
 logger = logging.getLogger(__name__)
 
 STEAM_PID = "~/.steam/steam.pid"
+STEAM_EXE = "~/.steam/root/ubuntu12_32/steam"
 
 
 class Context(NamedTuple):
@@ -248,7 +249,7 @@ def fix_perms(fn: str, ctx: Context):
     os.chown(fn, ctx.euid, ctx.egid)
 
 
-def is_steam_gamepad_running(ctx: Context | None):
+def is_steam_gamepad_running(ctx: Context | None, gamepadui: bool = True):
     pid = None
     try:
         with open(expanduser(STEAM_PID, ctx)) as f:
@@ -257,6 +258,10 @@ def is_steam_gamepad_running(ctx: Context | None):
         steam_cmd_path = f"/proc/{pid}/cmdline"
         if not os.path.exists(steam_cmd_path):
             return False
+        
+        # The command line is irrelevant if we just want to know if Steam is running.
+        if not gamepadui:
+            return True
 
         # Use this and line to determine if Steam is running in DeckUI mode.
         with open(steam_cmd_path, "rb") as f:
@@ -267,3 +272,24 @@ def is_steam_gamepad_running(ctx: Context | None):
     except Exception:
         return False
     return True
+
+
+def run_steam_command(command: str, ctx: Context):
+    global home_path
+    try:
+        if ctx.euid != ctx.uid:
+            result = subprocess.run(
+                [
+                    "su",
+                    ctx.name,
+                    "-c",
+                    f"{expanduser(STEAM_EXE, ctx)} -ifrunning {command}",
+                ]
+            )
+        else:
+            result = subprocess.run([expanduser(STEAM_EXE, ctx), "-ifrunning", command])
+
+        return result.returncode == 0
+    except Exception as e:
+        logger.error(f"Received error when running steam command `{command}`\n{e}")
+    return False

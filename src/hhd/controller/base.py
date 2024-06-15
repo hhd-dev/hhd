@@ -73,7 +73,7 @@ class RgbLedEvent(TypedDict):
     # If the response device does not support brightness control, it shall
     # devide the rgb values by the brightness and round.
     brightness: float
-    # For the Ally, has three brightness levels 
+    # For the Ally, has three brightness levels
     # (and a forth off, use disabled mode for that)
     level: Literal["low", "medium", "high"]
 
@@ -515,6 +515,7 @@ class Multiplexer:
         self.steam_check_last = time.perf_counter()
         self.steam_check_fn = params.get("steam_check_fn", None)
         self.nintendo_qam = params.get("nintendo_qam", False)
+        self.open_steam_kbd = params.get("steam_kbd", lambda open: False)
 
         self.unique = str(time.perf_counter_ns())
         assert touchpad is None, "touchpad rewiring not supported yet"
@@ -797,43 +798,45 @@ class Multiplexer:
 
                     if self.noob_mode and ev["code"] == "extra_l1" and ev["value"]:
                         ev["code"] = ""  # type: ignore
-                        out.append(
-                            {
-                                "type": "button",
-                                "code": "mode",
-                                "value": True,
-                            },
-                        )
-                        self.queue.append(
-                            (
-                                {
-                                    "type": "button",
-                                    "code": "y" if self.nintendo_qam else "x",
-                                    "value": True,
-                                },
-                                curr + self.QAM_DELAY,
-                            )
-                        )
-                        self.queue.append(
-                            (
-                                {
-                                    "type": "button",
-                                    "code": "y" if self.nintendo_qam else "x",
-                                    "value": False,
-                                },
-                                curr + 2 * self.QAM_DELAY,
-                            ),
-                        )
-                        self.queue.append(
-                            (
+                        if not self.open_steam_kbd(True):
+                            logger.warning(f"Could not open steam keyboard directly. Sending chord.")
+                            out.append(
                                 {
                                     "type": "button",
                                     "code": "mode",
-                                    "value": False,
+                                    "value": True,
                                 },
-                                curr + 2 * self.QAM_DELAY,
-                            ),
-                        )
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "y" if self.nintendo_qam else "x",
+                                        "value": True,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                )
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "y" if self.nintendo_qam else "x",
+                                        "value": False,
+                                    },
+                                    curr + 2 * self.QAM_DELAY,
+                                ),
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "mode",
+                                        "value": False,
+                                    },
+                                    curr + 2 * self.QAM_DELAY,
+                                ),
+                            )
 
                     if (
                         self.dpad == "discrete_to_analog" or self.dpad == "both"
