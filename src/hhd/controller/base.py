@@ -36,7 +36,7 @@ class RumbleEvent(TypedDict):
 
 
 RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral"]
-RgbSettings = Literal["color", "brightness", "speed", "level"]
+RgbSettings = Literal["color", "brightness", "speed", "level", "direction"]
 
 # Mono is a single zone (main only)
 # Dual has per side RGB

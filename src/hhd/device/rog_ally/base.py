@@ -184,7 +184,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
             "solid": ["color"],
             "pulse": ["color", "speed"],
             "rainbow": ["level", "speed"],
-            "spiral": ["level", "speed"],
+            "spiral": ["level", "speed", "direction"],
         },
         rgb_zones="quad",
     )
