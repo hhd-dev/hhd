@@ -209,7 +209,7 @@ class RgbCallback:
         if not cmds:
             return
         logger.warning(
-            f"Running RGB commands:\n{'\n'.join([cmd[:cmd.index(b'\0') if 0 in cmd else -1].hex() for cmd in cmds])}"
+            f"Running RGB commands:\n{'\n'.join([cmd[:20].hex() for cmd in cmds])}"
         )
         for r in cmds:
             dev.write(r)

@@ -237,7 +237,7 @@ class RgbPlugin(HHDPlugin):
                     log += f", level: {info['level']}"
                     level = cast(Literal["low", "medium", "high"], info["level"])
                 case "direction":
-                    log += f", direction: {info['level']}"
+                    log += f", direction: {info['direction']}"
                     direction = cast(Literal["left", "right"], info["direction"])
         log += "."
         logger.info(log)
