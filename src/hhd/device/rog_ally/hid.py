@@ -133,7 +133,7 @@ INIT_EVERY_S = 10
 def process_events(events: Sequence[Event], prev_mode: str | None):
     cmds = []
     mode = None
-    br_cmd = None
+    br_cmd = rgb_set_brightness("high")
     init = False
     for ev in events:
         if ev["type"] == "led":
