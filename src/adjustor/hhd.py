@@ -29,22 +29,65 @@ class AdjustorInitPlugin(HHDPlugin):
         self.log = "adji"
         self.init = False
         self.failed = False
-        self.safe_mode = False
+        self.has_decky = False
         self.enabled = False
         self.action_enabled = False
         self.use_acpi_call = use_acpi_call
 
     def open(self, emit: Emitter, context: Context):
         self.context = context
+        self.emit = emit
 
     def settings(self):
         if self.enabled and not self.failed:
             self.action_enabled = False
             return {}
         self.action_enabled = True
-        return {"tdp": {"tdp": load_relative_yaml("settings.yml")["tdp"]}}
+        sets = {"tdp": {"tdp": load_relative_yaml("settings.yml")["tdp"]}}
+        if not self.has_decky:
+            del sets["tdp"]["tdp"]["children"]["decky_info"]
+            del sets["tdp"]["tdp"]["children"]["decky_remove"]
+        return sets
 
     def update(self, conf: Config):
+        if (
+            self.action_enabled
+            and self.has_decky
+            and conf["tdp.tdp.decky_remove"].to(bool)
+        ):
+            # Preparation
+            logger.warning("Removing Decky plugins")
+            conf["tdp.tdp.decky_remove"] = False
+            conf["hhd.settings.tdp_enable"] = True
+            self.has_decky = False
+            self.failed = False
+
+            move_path = expanduser("~/homebrew/plugins/hhd-disabled", self.context)
+            if os.path.exists(move_path):
+                logger.warning(f"Removing old backup path: '{move_path}'")
+                os.system(f"rm -rf {move_path}")
+            os.makedirs(
+                move_path,
+                exist_ok=True,
+            )
+            for name, ppath in CONFLICTING_PLUGINS.items():
+                path = expanduser(ppath, self.context)
+                if os.path.exists(path):
+                    new_path = os.path.join(move_path, name)
+                    logger.warning(
+                        f"Moving plugin '{name}' from:\n{path}\nto:\n{new_path}"
+                    )
+                    os.rename(path, new_path)
+
+            logger.warning("Restarting Decky.")
+            try:
+                os.system("systemctl restart plugin_loader")
+            except Exception as e:
+                logger.error(f"Failed to restart Decky:\n{e}")
+
+            # TDP controls are already enabled.
+            logger.warning(f"Enabling TDP controls.")
+
         if self.action_enabled and conf["tdp.tdp.tdp_enable"].to(bool):
             conf["tdp.tdp.tdp_enable"] = False
             conf["hhd.settings.tdp_enable"] = True
@@ -52,13 +95,6 @@ class AdjustorInitPlugin(HHDPlugin):
         old_enabled = conf["hhd.settings.tdp_enable"].to(bool)
         if self.failed:
             conf["hhd.settings.tdp_enable"] = False
-        if self.safe_mode:
-            logger.warning(f"Due to a sentinel error, auto-start is disabled.")
-            conf["tdp.tdp.tdp_error"] = _(
-                "Due to a suspected crash, auto-start was disabled."
-            )
-            conf["hhd.settings.tdp_enable"] = False
-            self.safe_mode = False
 
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
 
@@ -67,9 +103,11 @@ class AdjustorInitPlugin(HHDPlugin):
 
         for name, path in CONFLICTING_PLUGINS.items():
             if os.path.exists(expanduser(path, self.context)):
-                err = f'Found plugin "{name}" at the following path:\n{path}\n' + _(
-                    "TDP Controls can not be enabled while other TDP plugins are installed."
+                err = f'Found "{name}" at:\n{path}\n' + _(
+                    "TDP Controls can not be enabled."
                 )
+                self.emit({"type": "settings"})
+                self.has_decky = True
                 conf["tdp.tdp.tdp_error"] = err
                 conf["hhd.settings.tdp_enable"] = False
                 logger.error(err)

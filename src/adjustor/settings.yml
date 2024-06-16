@@ -6,6 +6,7 @@ tdp:
       title: Enable TDP Controls
       type: action
       tags: [ non-essential ]
+      default: True
       hint: >-
         Enables TDP management by the Handheld Daemon.
         While enabled, Handheld Daemon will set and maintain the TDP limits set
@@ -19,6 +20,27 @@ tdp:
       tags: [ error, non-essential ]
       options: 
         nowrite: Can not write to ACPI Call file. ACPI Call is required for TDP.
+
+    decky_info:
+      title: TDP Capabilities
+      type: display
+      tags: [ non-essential ]
+      default: >
+        Handheld Daemon supports the TDP slider in Steam and can use its per
+        game profiles now. For the Legion Go and Ally, it also supports custom
+        fan curves and battery limits.
+        Consider it, unless you prefer Decky.
+        (Powercontrol supports fan curves for GPD and Ayaneo devices)
+
+    decky_remove:
+      title: Disable Decky TDP Plugins
+      type: action
+      tags: [ verify, non-essential ]
+      hint: >-
+        Disables Decky TDP plugins (Powercontrol, SimpleDeckyTDP) by moving
+        them from ~/homebrew/plugins to ~/homebrew/plugins/hhd-disabled.
+        Then, restarts Decky. This might cause Steam to restart.
+        Move them back and reboot to re-enable.
 
 hhd:
   type: container
