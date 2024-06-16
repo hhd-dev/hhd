@@ -134,6 +134,7 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
                 send_cmd(b"ack\n")
     except Exception as e:
         logger.error(f"Error while communicating with FUSE server. Exiting.\n{e}")
+    finally:
         if sock:
             sock.close()
 

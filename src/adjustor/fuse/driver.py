@@ -216,30 +216,24 @@ class XmpFile:
                         )
                     conn.settimeout(TIMEOUT)
                     conn.send(cmd + bytes(PACK_SIZE - len(cmd)))
+
+                    resp = b"/"
+                    while resp and not resp.startswith(b"ack:"):
+                        conn.settimeout(TIMEOUT)
+                        resp = conn.recv(PACK_SIZE)
+                    contents = resp[4:]
+                    XmpFile.cache[endpoint] = contents
                     break
                 except Exception as e:
-                    if i and endpoint in self.cache:
-                        raise
-                    contents = self.cache[endpoint]
+                    if i:
+                        if endpoint in XmpFile.cache:
+                            print("No connection available. Using cached value.")
+                            contents = XmpFile.cache[endpoint]
+                        else:
+                            print("Socket failed, could not serve request.")
+                            raise
 
-            try:
-                if not conn:
-                    raise RuntimeError(
-                        "No active connection. Can not access GPU attributes."
-                    )
-                resp = b""
-                while not resp or not resp.startswith(b"ack:"):
-                    conn.settimeout(TIMEOUT)
-                    resp = conn.recv(PACK_SIZE)
-                contents = resp[4:]
-                self.cache[endpoint] = contents
-            except Exception as e:
-                if endpoint in self.cache:
-                    print(f"Error. Using cached value.\n{e}")
-                    contents = self.cache[endpoint]
-                else:
-                    raise
-
+            assert contents
             self.file = io.BytesIO(contents)
             self.fd = -1
             self.virtual = True
@@ -279,32 +273,40 @@ class XmpFile:
             return os.pwrite(self.fd, buf, offset)
 
     def release(self, flags):
-        if self.virtual and self.wrote:
-            # Send file contents to hhd
-            endpoint = self.path.split("/")[-1]
-            conn = self.h.get_conn()
-            if not conn:
-                raise RuntimeError(
-                    "No active connection. Can not access GPU attributes."
-                )
+        try:
+            if self.virtual and self.wrote:
+                # Send file contents to hhd
+                endpoint = self.path.split("/")[-1]
+                conn = self.h.get_conn()
+                if not conn:
+                    raise RuntimeError(
+                        "No active connection. Can not access GPU attributes."
+                    )
 
-            cmd = f"cmd:set:{endpoint}:".encode()
-            self.file.seek(0)
-            contents = self.file.read()
-            if b"\0" in contents:
-                contents = contents[: contents.index(b"\0")]
-            if len(contents) + len(cmd) + 1 > PACK_SIZE:
-                raise ValueError(f"Contents too large to send:\n{contents}")
-            stcmd = (
-                cmd + contents + b"\n" + bytes(PACK_SIZE - len(cmd) - len(contents) - 1)
-            )
-            conn.settimeout(TIMEOUT)
-            conn.send(stcmd)
-            resp = b""
-            while not resp or not resp.startswith(b"ack\n"):
+                cmd = f"cmd:set:{endpoint}:".encode()
+                self.file.seek(0)
+                contents = self.file.read()
+                if b"\0" in contents:
+                    contents = contents[: contents.index(b"\0")]
+                if len(contents) + len(cmd) + 1 > PACK_SIZE:
+                    raise ValueError(f"Contents too large to send:\n{contents}")
+                stcmd = (
+                    cmd
+                    + contents
+                    + b"\n"
+                    + bytes(PACK_SIZE - len(cmd) - len(contents) - 1)
+                )
                 conn.settimeout(TIMEOUT)
-                resp = conn.recv(1024).strip()
-        self.file.close()
+                conn.send(stcmd)
+                resp = b""
+                while resp and not resp.startswith(b"ack\n"):
+                    conn.settimeout(TIMEOUT)
+                    resp = conn.recv(1024).strip()
+        except Exception as e:
+            print(f"Error sending file contents to hhd. Error:\n{e}")
+            raise
+        finally:
+            self.file.close()
 
     def _fflush(self):
         if "w" in self.file.mode or "a" in self.file.mode:
