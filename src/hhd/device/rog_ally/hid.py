@@ -140,6 +140,7 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
             if ev["initialize"]:
                 init = True
             if ev["mode"] == "disabled":
+                mode = "disabled"
                 br_cmd = rgb_set_brightness("off")
                 # cmds.extend(rgb_set(ev["code"], "solid", "left", 0, 0, 0, 0))
             else:
