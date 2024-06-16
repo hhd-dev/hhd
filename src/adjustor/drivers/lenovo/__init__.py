@@ -24,8 +24,8 @@ from adjustor.core.lenovo import (
 
 logger = logging.getLogger(__name__)
 
-APPLY_DELAY = 2.2
-TDP_DELAY = 0.2
+APPLY_DELAY = 0.5
+TDP_DELAY = 0
 
 
 class LenovoDriverPlugin(HHDPlugin):
