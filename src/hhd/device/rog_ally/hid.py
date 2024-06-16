@@ -40,6 +40,7 @@ def rgb_command(
     zone: Zone, mode: RgbMode, direction, speed: float, red: int, green: int, blue: int
 ):
     c_speed = int(speed * (0xF5 - 0xE1) + 0xE1)
+    c_direction = 0x00
 
     match mode:
         case "solid":
@@ -54,6 +55,8 @@ def rgb_command(
         case "spiral":
             # Rainbow
             c_mode = 0x03
+            if direction == "left":
+                c_direction = 0x01
         # case "adsf":
         #     # Strobing
         #     c_mode = 0x0A
@@ -74,11 +77,6 @@ def rgb_command(
             c_zone = 0x04
         case _:
             c_zone = 0x00
-
-    if direction == "right":
-        c_direction = 0x01
-    else:
-        c_direction = 0x00
 
     return buf(
         [
