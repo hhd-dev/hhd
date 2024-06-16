@@ -46,18 +46,12 @@ def rgb_command(
         case "solid":
             # Static
             c_mode = 0x00
-        case "pulse":
-            # Breathing
-            c_mode = 0x01
+        # case "breathing":
+        #     # Breathing
+        #     c_mode = 0x01
         case "dynamic":
             # Color cycle
             c_mode = 0x02
-        # case "broken": # :(
-        #     # Rainbow
-        #     c_mode = 0x03
-        #     red = 255
-        #     green = 255
-        #     blue = 255
         case "spiral":
             # Wave
             c_mode = 0x03
@@ -66,11 +60,11 @@ def rgb_command(
             blue = 255
             if direction == "left":
                 c_direction = 0x01
-        # case "adsf":
-        #     # Strobing
-        #     c_mode = 0x0A
+        case "pulse":
+            # Strobing
+            c_mode = 0x0A
         # case "asdf":
-        #     # Direct (?)
+        #     # Direct/Aura
         #     c_mode = 0xFF
         case _:
             c_mode = 0x00
@@ -99,9 +93,9 @@ def rgb_command(
             c_speed if mode != "solid" else 0x00,
             c_direction,
             0x00,  # breathing
-            red,
-            green,
-            blue,
+            # red, # these only affect the breathing mode
+            # green,
+            # blue,
         ]
     )
 
