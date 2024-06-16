@@ -91,7 +91,7 @@ class Xmp(Fuse):
     def getattr(self, path):
         if "power1_cap" in path or "power2_cap" in path:
             # Stub attributes for power1_cap and power2_cap
-            return os.lstat("./pp_dpm_fclk")
+            return VirtualStat()
         return os.lstat("." + path)
 
     def readlink(self, path):
@@ -101,7 +101,9 @@ class Xmp(Fuse):
         for e in os.listdir("." + path):
             yield fuse.Direntry(e)
 
-        if path == "/":
+        if path == "/" or (
+            path.startswith("/hwmon/hwmon") and len(path.split("/")) <= 4
+        ):
             for e in VIRTUAL_FILES:
                 yield fuse.Direntry(e)
 

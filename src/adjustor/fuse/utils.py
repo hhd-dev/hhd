@@ -5,7 +5,7 @@ from threading import Event, Thread
 
 logger = logging.getLogger(__name__)
 
-TDP_MOUNT = "/run/hhd-tdp/card"
+TDP_MOUNT = "/run/hhd-tdp/hwmon"
 FUSE_MOUNT_SOCKET = "/run/hhd-tdp/socket"
 
 
@@ -31,7 +31,7 @@ def find_igpu():
             )
             continue
 
-        pth = os.path.realpath(os.path.join("/sys/class/hwmon", hw, "device"))
+        pth = os.path.realpath(os.path.join("/sys/class/hwmon", hw))
         logger.info(f'Found iGPU at "{pth}"')
         return pth
 
