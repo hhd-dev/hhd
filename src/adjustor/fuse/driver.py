@@ -162,6 +162,7 @@ class Xmp(Fuse):
 
         self.file_class = XmpFile
         XmpFile.h = Handler(sock)
+        XmpFile.cache = {}
 
         code = Fuse.main(self, *a, **kw)
         sock.close()
@@ -190,6 +191,7 @@ class Handler:
 
 class XmpFile:
     h: Handler
+    cache: dict[str, bytes]
 
     def __init__(self, path, flags, *mode):
         self.path = path
@@ -199,6 +201,7 @@ class XmpFile:
             # Receive file contents from hhd
             endpoint = path.split("/")[-1]
             cmd = f"cmd:get:{endpoint}\n".encode()
+            contents = None
             for i in range(2):
                 # For the first read, do not peak at accept
                 # If the connection fails, try once more
@@ -215,18 +218,27 @@ class XmpFile:
                     conn.send(cmd + bytes(PACK_SIZE - len(cmd)))
                     break
                 except Exception as e:
-                    if i:
+                    if i and endpoint in self.cache:
                         raise
+                    contents = self.cache[endpoint]
 
-            if not conn:
-                raise RuntimeError(
-                    "No active connection. Can not access GPU attributes."
-                )
-            resp = b""
-            while not resp or not resp.startswith(b"ack:"):
-                conn.settimeout(TIMEOUT)
-                resp = conn.recv(PACK_SIZE)
-            contents = resp[4:]
+            try:
+                if not conn:
+                    raise RuntimeError(
+                        "No active connection. Can not access GPU attributes."
+                    )
+                resp = b""
+                while not resp or not resp.startswith(b"ack:"):
+                    conn.settimeout(TIMEOUT)
+                    resp = conn.recv(PACK_SIZE)
+                contents = resp[4:]
+                self.cache[endpoint] = contents
+            except Exception as e:
+                if endpoint in self.cache:
+                    print(f"Error. Using cached value.\n{e}")
+                    contents = self.cache[endpoint]
+                else:
+                    raise
 
             self.file = io.BytesIO(contents)
             self.fd = -1
