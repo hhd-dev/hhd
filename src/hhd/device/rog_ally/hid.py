@@ -198,6 +198,7 @@ class RgbCallback:
 
     def __call__(self, dev: Device, events: Sequence[Event]):
         cmds, mode = process_events(events, self.prev_mode)
+        logger.warning(f"Running RGB commands:\n{'\n'.join(map(str, cmds))}")
         self.prev_mode = mode
         if not cmds:
             return
