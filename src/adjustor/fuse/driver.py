@@ -173,7 +173,9 @@ class Handler:
         self.sock = sock
         self.conn = None
 
-    def get_conn(self):
+    def get_conn(self, retry: bool = False):
+        if not retry and self.conn:
+            return self.conn
         try:
             self.sock.settimeout(0.05)
             conn, _ = self.sock.accept()
@@ -196,15 +198,30 @@ class XmpFile:
 
             # Receive file contents from hhd
             endpoint = path.split("/")[-1]
-            conn = self.h.get_conn()
+            cmd = f"cmd:get:{endpoint}\n".encode()
+            for i in range(2):
+                # For the first read, do not peak at accept
+                # If the connection fails, try once more
+                # after looking at the accept queue.
+                # If it does not work, fail the request.
+                # For the rest of the requests, do not check the queue.
+                try:
+                    conn = self.h.get_conn(bool(i))
+                    if not conn:
+                        raise RuntimeError(
+                            "No active connection. Can not access GPU attributes."
+                        )
+                    conn.settimeout(TIMEOUT)
+                    conn.send(cmd + bytes(PACK_SIZE - len(cmd)))
+                    break
+                except Exception as e:
+                    if i:
+                        raise
+
             if not conn:
                 raise RuntimeError(
                     "No active connection. Can not access GPU attributes."
                 )
-
-            cmd = f"cmd:get:{endpoint}\n".encode()
-            conn.settimeout(TIMEOUT)
-            conn.send(cmd + bytes(PACK_SIZE - len(cmd)))
             resp = b""
             while not resp or not resp.startswith(b"ack:"):
                 conn.settimeout(TIMEOUT)
