@@ -291,7 +291,7 @@ class Dualsense(Producer, Consumer):
                                 "initialize": False,
                                 "level": "high",
                                 "brightness": 1,
-                                "direction": "forward",
+                                "direction": "left",
                                 "speed": 0,
                                 "red": red,
                                 "blue": blue,

@@ -37,7 +37,7 @@ def rgb_set_brightness(brightness: Brightness):
 
 
 def rgb_command(
-    zone: Zone, mode: RgbMode, speed: float, red: int, green: int, blue: int
+    zone: Zone, mode: RgbMode, direction, speed: float, red: int, green: int, blue: int
 ):
     c_speed = int(speed * (0xF5 - 0xE1) + 0xE1)
 
@@ -75,6 +75,11 @@ def rgb_command(
         case _:
             c_zone = 0x00
 
+    if direction == "right":
+        c_direction = 0x01
+    else:
+        c_direction = 0x00
+
     return buf(
         [
             0x5A,
@@ -85,7 +90,7 @@ def rgb_command(
             green,
             blue,
             c_speed if mode != "solid" else 0x00,
-            0x00,  # direction
+            c_direction,
             0x00,  # breathing
             red,
             green,
@@ -97,6 +102,7 @@ def rgb_command(
 def rgb_set(
     side: str,
     mode: RgbMode,
+    direction: str,
     speed: float,
     red: int,
     green: int,
@@ -105,21 +111,21 @@ def rgb_set(
     match side:
         case "left_left" | "left_right" | "right_left" | "right_right":
             return [
-                rgb_command(side, mode, speed, red, green, blue),
+                rgb_command(side, mode, direction, speed, red, green, blue),
             ]
         case "left":
             return [
-                rgb_command("left_left", mode, speed, red, green, blue),
-                rgb_command("left_right", mode, speed, red, green, blue),
+                rgb_command("left_left", mode, direction, speed, red, green, blue),
+                rgb_command("left_right", mode, direction, speed, red, green, blue),
             ]
         case "right":
             return [
-                rgb_command("right_right", mode, speed, red, green, blue),
-                rgb_command("right_left", mode, speed, red, green, blue),
+                rgb_command("right_right", mode, direction, speed, red, green, blue),
+                rgb_command("right_left", mode, direction, speed, red, green, blue),
             ]
         case _:
             return [
-                rgb_command("all", mode, speed, red, green, blue),
+                rgb_command("all", mode, direction, speed, red, green, blue),
             ]
 
 
@@ -161,6 +167,7 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
                     rgb_set(
                         ev["code"],
                         mode,
+                        ev["direction"],
                         ev["speed"],
                         ev["red"],
                         ev["green"],
