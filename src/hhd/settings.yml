@@ -31,7 +31,7 @@ settings:
       
     reset:
       type: action
-      tags: [ reset-button ]
+      tags: [ reset-button, verify ]
       title: Reset Settings
       hint: >-
         Resets all Handheld Daemon settings.

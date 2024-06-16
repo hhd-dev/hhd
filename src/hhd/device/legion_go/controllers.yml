@@ -102,6 +102,6 @@ children:
   factory_reset:
     type: action
     title: Factory Reset Controllers
-    tags: [ non-essential ]
+    tags: [ non-essential, verify ]
     hint: >-
       Resets the controllers to factory settings.
