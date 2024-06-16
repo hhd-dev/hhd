@@ -142,7 +142,7 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
             if ev["initialize"]:
                 init = True
             if ev["mode"] == "disabled":
-                cmds.extend(rgb_set_brightness("off"))
+                br_cmd = rgb_set_brightness("off")
             else:
                 match ev["mode"]:
                     case "pulse":
