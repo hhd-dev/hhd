@@ -50,6 +50,7 @@ class RgbLedEvent(TypedDict):
     Instead of code, this event type exposes multiple properties, including mode."""
 
     type: Literal["led"]
+    initialize: bool
 
     # Controls the LED zone. Main sets all zones.
     # Left all left zones, right all right zones.
@@ -76,6 +77,7 @@ class RgbLedEvent(TypedDict):
     # For the Ally, has three brightness levels
     # (and a forth off, use disabled mode for that)
     level: Literal["low", "medium", "high"]
+    direction: Literal["left", "right"]
 
     # The speed the led should blink if supported by the led
     speed: float
@@ -565,9 +567,9 @@ class Multiplexer:
         ):
             self.steam_check_last = curr
             if self.steam_check:
-                msg = "Gamepadui launched. Restarting controller to enable touchpad emulation."
-            else:
                 msg = "Gamepadui closed. Restarting controller to disable touchpad emulation."
+            else:
+                msg = "Gamepadui launched. Restarting controller to enable touchpad emulation."
 
             assert self.steam_check_fn() == self.steam_check, msg
 
@@ -801,7 +803,9 @@ class Multiplexer:
                         if self.open_steam_kbd(True):
                             logger.info(f"Opened steam keyboard directly.")
                         else:
-                            logger.warning(f"Could not open steam keyboard directly. Sending chord.")
+                            logger.warning(
+                                f"Could not open steam keyboard directly. Sending chord."
+                            )
                             out.append(
                                 {
                                     "type": "button",

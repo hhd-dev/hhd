@@ -126,12 +126,15 @@ def rgb_set(
 INIT_EVERY_S = 10
 
 
-def process_events(events: Sequence[Event]):
+def process_events(events: Sequence[Event], prev_mode: str | None):
     cmds = []
     mode = None
     br_cmd = None
+    init = False
     for ev in events:
         if ev["type"] == "led":
+            if ev["initialize"]:
+                init = True
             if ev["mode"] == "disabled":
                 cmds.extend(rgb_set_brightness("off"))
             else:
@@ -168,6 +171,19 @@ def process_events(events: Sequence[Event]):
     # Set brightness once per update
     if br_cmd:
         cmds.insert(0, br_cmd)
+    elif mode != prev_mode:
+        init = True
+        cmds.insert(0, rgb_set_brightness("high"))
+
+    if init:
+        cmds = [
+            RGB_INIT_1,
+            RGB_INIT_2,
+            *cmds,
+            RGB_APPLY,
+            RGB_SET,
+        ]
+
     return cmds, mode
 
 
@@ -176,23 +192,10 @@ class RgbCallback:
         self.prev_mode = None
 
     def __call__(self, dev: Device, events: Sequence[Event]):
-        cmds, mode = process_events(events)
+        cmds, mode = process_events(events, self.prev_mode)
+        self.prev_mode = mode
         if not cmds:
             return
-
-        if mode != self.prev_mode:
-            self.prev_mode = mode
-            # Init on start or when the mode
-            # changes
-            cmds = [
-                RGB_INIT_1,
-                RGB_INIT_2,
-                rgb_set_brightness("high"),
-                *cmds,
-                RGB_APPLY,
-                RGB_SET,
-            ]
-
         for r in cmds:
             dev.write(r)
 

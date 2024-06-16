@@ -288,8 +288,10 @@ class Dualsense(Producer, Consumer):
                                 # "brightness": led_brightness / 63
                                 # if led_brightness
                                 # else 1,
+                                "initialize": False,
                                 "level": "high",
                                 "brightness": 1,
+                                "direction": "forward",
                                 "speed": 0,
                                 "red": red,
                                 "blue": blue,
@@ -429,7 +431,7 @@ class Dualsense(Producer, Consumer):
                         case "gyro_ts" | "accel_ts" | "imu_ts":
                             send = True
                             self.last_imu = time.perf_counter()
-                            self.last_imu_ts = ev['value']
+                            self.last_imu_ts = ev["value"]
                             new_rep[self.ofs + 27 : self.ofs + 31] = int(
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]

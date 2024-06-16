@@ -211,6 +211,7 @@ class RgbPlugin(HHDPlugin):
 
         brightness = 1
         level = "high"
+        direction = "left"
         speed = 1
         red = 0
         green = 0
@@ -235,13 +236,18 @@ class RgbPlugin(HHDPlugin):
                 case "level":
                     log += f", level: {info['level']}"
                     level = cast(Literal["low", "medium", "high"], info["level"])
+                case "direction":
+                    log += f", direction: {info['level']}"
+                    direction = cast(Literal["left", "right"], info["direction"])
         log += "."
         logger.info(log)
 
         ev = {
             "type": "led",
+            "initialize": True,  # Always initialize, saves problems on the ally
             "code": "main",
             "mode": cast(RgbMode, mode),
+            "direction": direction,
             "brightness": brightness,
             "level": level,
             "speed": speed,
