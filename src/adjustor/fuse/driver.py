@@ -238,6 +238,7 @@ class XmpFile:
             self.fd = -1
             self.virtual = True
         else:
+            # print(f"GPU Attribute access: {path} {flags} {mode}")
             self.file = os.fdopen(os.open("." + path, flags, *mode), flag2mode(flags))
             self.fd = self.file.fileno()
             self.virtual = False
@@ -303,8 +304,7 @@ class XmpFile:
                     conn.settimeout(TIMEOUT)
                     resp = conn.recv(1024).strip()
         except Exception as e:
-            print(f"Error sending file contents to hhd. Error:\n{e}")
-            raise
+            print(f"Error sending file contents to hhd. Closing properly. Error:\n{e}")
         finally:
             self.file.close()
 
