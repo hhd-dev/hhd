@@ -52,9 +52,12 @@ def rgb_command(
         case "dynamic":
             # Color cycle
             c_mode = 0x02
-        case "spiral":
+        case "broken": # :()
             # Rainbow
             c_mode = 0x03
+        case "spiral":
+            # Wave
+            c_mode = 0x04
             if direction == "left":
                 c_direction = 0x01
         # case "adsf":
