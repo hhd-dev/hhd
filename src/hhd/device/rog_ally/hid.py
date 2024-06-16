@@ -133,7 +133,7 @@ INIT_EVERY_S = 10
 def process_events(events: Sequence[Event], prev_mode: str | None):
     cmds = []
     mode = None
-    br_cmd = rgb_set_brightness("high")
+    br_cmd = None
     init = False
     for ev in events:
         if ev["type"] == "led":
@@ -141,6 +141,7 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
                 init = True
             if ev["mode"] == "disabled":
                 br_cmd = rgb_set_brightness("off")
+                # cmds.extend(rgb_set(ev["code"], "solid", "left", 0, 0, 0, 0))
             else:
                 match ev["mode"]:
                     case "pulse":
@@ -180,11 +181,10 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
         return [], None
 
     # Set brightness once per update
-    if br_cmd:
-        cmds.insert(0, br_cmd)
-    elif mode != prev_mode:
+    if mode != prev_mode:
         init = True
-        cmds.insert(0, rgb_set_brightness("high"))
+        if not br_cmd:
+            br_cmd = rgb_set_brightness("high")
 
     if init:
         cmds = [
@@ -195,6 +195,8 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
             RGB_APPLY,
         ]
 
+    if br_cmd:
+        cmds.insert(0, br_cmd)
     return cmds, mode
 
 
@@ -208,9 +210,9 @@ class RgbCallback:
             self.prev_mode = mode
         if not cmds:
             return
-        # logger.warning(
-        #     f"Running RGB commands:\n{'\n'.join([cmd[:20].hex() for cmd in cmds])}"
-        # )
+        logger.warning(
+            f"Running RGB commands:\n{'\n'.join([cmd[:20].hex() for cmd in cmds])}"
+        )
         for r in cmds:
             dev.write(r)
 
