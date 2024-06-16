@@ -191,8 +191,8 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
             RGB_INIT_1,
             RGB_INIT_2,
             *cmds,
-            RGB_APPLY,
             RGB_SET,
+            RGB_APPLY,
         ]
 
     return cmds, mode
@@ -208,9 +208,9 @@ class RgbCallback:
             self.prev_mode = mode
         if not cmds:
             return
-        logger.warning(
-            f"Running RGB commands:\n{'\n'.join([cmd[:20].hex() for cmd in cmds])}"
-        )
+        # logger.warning(
+        #     f"Running RGB commands:\n{'\n'.join([cmd[:20].hex() for cmd in cmds])}"
+        # )
         for r in cmds:
             dev.write(r)
 
