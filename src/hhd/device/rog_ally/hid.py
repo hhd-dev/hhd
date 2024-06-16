@@ -173,6 +173,12 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
                     )
                 )
 
+    if not mode or (not cmds and mode != "disabled"):
+        # Avoid sending init commands without a mode.
+        # The exception being the disabled mode, which just sets the led
+        # brightness.
+        return []
+
     # Set brightness once per update
     if br_cmd:
         cmds.insert(0, br_cmd)
