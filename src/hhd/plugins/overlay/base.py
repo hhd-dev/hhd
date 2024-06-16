@@ -12,10 +12,25 @@ from Xlib import display
 from hhd.plugins import Context, Emitter
 
 from .controllers import OverlayWriter
-from .overlay import find_overlay_exe, inject_overlay
-from .x11 import (find_hhd, find_steam, get_gamescope_displays,
-                  get_overlay_display, hide_hhd, prepare_hhd, process_events,
-                  register_changes, show_hhd, update_steam_values)
+from .overlay import (
+    find_overlay_exe,
+    inject_overlay,
+    launch_overlay_de,
+)
+from .x11 import (
+    find_hhd,
+    find_steam,
+    find_x11_auth,
+    find_x11_display,
+    get_gamescope_displays,
+    get_overlay_display,
+    hide_hhd,
+    prepare_hhd,
+    process_events,
+    register_changes,
+    show_hhd,
+    update_steam_values,
+)
 
 logger = logging.getLogger(__name__)
 Command = Literal[
@@ -150,6 +165,7 @@ class OverlayService:
         self.t = None
         self.should_exit = None
         self.emit = emit
+        self.proc_de = None
 
     def _start(self):
         # Should not be called by outsiders
@@ -177,7 +193,7 @@ class OverlayService:
             )
             return False
         disp, name = res
-        logger.debug(f"Overlay display is the folling: DISPLAY={name}")
+        logger.debug(f"Overlay display is the following: DISPLAY={name}")
 
         self.proc = inject_overlay(exe, name, self.ctx)
         self.writer = OverlayWriter(self.proc.stdin)
@@ -192,6 +208,40 @@ class OverlayService:
         self.started = True
         logger.info("Overlay launched.")
         return True
+
+    def _open_de(self):
+        # Allow opening the overlay in desktop
+        # wayland only, somewhat hardcoded.
+
+        # Allow minimizing and maximizing.
+        if self.proc_de and self.proc_de.poll() is None:
+            stdin = self.proc_de.stdin
+            if stdin:
+                logger.info(
+                    "Overlay is running in the Desktop environment. Toggling visibility."
+                )
+                stdin.write("cmd:toggle-visibility\n")
+                stdin.flush()
+            return True
+
+        # Launch the overlay
+        auth = find_x11_auth(self.ctx)
+        if not auth:
+            logger.warning("Could not find X11 authority file.")
+            return False
+        logger.info(f"Found X11 authority file:\n'{auth}'")
+        disp = find_x11_display(self.ctx)
+        if not disp:
+            logger.warning(
+                "Tried to find a wayland display to launch the overlay as an application and could not find it."
+            )
+            return False
+        logger.info(f"Launching hhd-ui in display: {disp}")
+        exe = find_overlay_exe(self.ctx)
+        if not exe:
+            return False
+        self.proc_de = launch_overlay_de(exe, disp, auth, self.ctx)
+        return self.proc_de.poll() is None
 
     def close(self):
         if self.should_exit and self.t:
@@ -219,7 +269,9 @@ class OverlayService:
             # do not initialize for those.
             return
         try:
-            if not self._start():
+            if (self.proc_de and self.proc_de.poll() is None) or not self._start():
+                # Try to open in desktop mode
+                self._open_de()
                 return
             if not self.is_healthy():
                 logger.warning(f"Overlay service died, attempting to restart.")

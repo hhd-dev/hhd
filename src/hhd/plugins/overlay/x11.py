@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import time
 from select import select
@@ -9,7 +10,7 @@ import Xlib
 from Xlib import XK, X, Xatom, display, error
 from Xlib.ext.xtest import fake_input
 
-from hhd.plugins import Emitter
+from hhd.plugins import Context, Emitter
 from hhd.utils import restore_priviledge, switch_priviledge
 
 logger = logging.getLogger(__name__)
@@ -108,6 +109,20 @@ class QamHandler:
                 self.disp = None
             except Exception:
                 pass
+
+
+def find_x11_auth(ctx: Context):
+    # TODO: Fix hardcoding runtime dir
+    LOCATION = f"/run/user/{ctx.euid}"
+    for fn in sorted(os.listdir(LOCATION)):
+        if fn.startswith("xauth_"):
+            return os.path.join(LOCATION, fn)
+
+
+def find_x11_display(ctx: Context):
+    for fn in sorted(os.listdir(X11_DIR)):
+        if fn and os.stat(X11_DIR + fn).st_uid == ctx.euid:
+            return ":" + fn[1:].decode()
 
 
 def get_gamescope_displays():

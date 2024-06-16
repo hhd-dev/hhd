@@ -43,18 +43,33 @@ def inject_overlay(fn: str, display: str, ctx: Context):
     return out
 
 
-def get_overlay_version(fn: str, ctx: Context):
-    return (
-        subprocess.run(
-            [fn, "--version"],
-            env={"HOME": expanduser("~", ctx)},
-            text=True,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            user=ctx.euid,
-            group=ctx.egid,
-            timeout=5,
-        )
-        .stdout.strip()
+def launch_overlay_de(fn: str, display: str, auth: str, ctx: Context):
+    out = subprocess.Popen(
+        [fn],
+        env={
+            "HOME": expanduser("~", ctx),
+            "XAUTHORITY": auth,
+            "DISPLAY": display,
+        },
+        text=True,
+        stdin=subprocess.PIPE,
+        # stdout=subprocess.DEVNULL,
+        # stderr=subprocess.DEVNULL,
+        user=ctx.euid,
+        group=ctx.egid,
     )
+    return out
+
+
+def get_overlay_version(fn: str, ctx: Context):
+    return subprocess.run(
+        [fn, "--version"],
+        env={"HOME": expanduser("~", ctx)},
+        text=True,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        user=ctx.euid,
+        group=ctx.egid,
+        timeout=5,
+    ).stdout.strip()
