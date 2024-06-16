@@ -177,7 +177,7 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
         # Avoid sending init commands without a mode.
         # The exception being the disabled mode, which just sets the led
         # brightness.
-        return []
+        return [], None
 
     # Set brightness once per update
     if br_cmd:
@@ -204,7 +204,8 @@ class RgbCallback:
 
     def __call__(self, dev: Device, events: Sequence[Event]):
         cmds, mode = process_events(events, self.prev_mode)
-        self.prev_mode = mode
+        if mode:
+            self.prev_mode = mode
         if not cmds:
             return
         logger.warning(
