@@ -50,6 +50,7 @@ def launch_overlay_de(fn: str, display: str, auth: str, ctx: Context):
             "HOME": expanduser("~", ctx),
             "XAUTHORITY": auth,
             "DISPLAY": display,
+            "HHD_MANAGED": "1",
         },
         text=True,
         stdin=subprocess.PIPE,
