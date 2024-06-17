@@ -2,7 +2,7 @@ import logging
 import time
 from typing import Sequence, cast, Literal
 
-from hhd.controller import Event, RgbMode
+from hhd.controller import Event, RgbMode, DEBUG_MODE
 from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml
 from hhd.utils import get_distro_color
 
@@ -98,9 +98,13 @@ class RgbPlugin(HHDPlugin):
                     m = modes[mode]
                     m["children"] = {}
                     for cap in caps:
-                        m["children"].update(capabilities[cap])
+                        m["children"].update(
+                            {k: dict(v) for k, v in capabilities[cap].items()}
+                        )
                         if cap == "color":
                             m["children"]["hue"]["default"] = dc
+                    for c in m["children"].values():
+                        c["tags"] = sorted(set(c.get("tags", []) + m.get("tags", [])))
                     supported[mode] = m
 
             # Add supported modes
@@ -120,6 +124,24 @@ class RgbPlugin(HHDPlugin):
 
     def update(self, conf: Config):
         cap = self.emit.get_capabilities()
+
+        if DEBUG_MODE:
+            cap = {
+                "_dbg": {
+                    "rgb": {
+                        "controller": False,
+                        "modes": {
+                            "disabled": [],
+                            "solid": ["color"],
+                            "pulse": ["color", "speed", "speedd"],
+                            "duality": ["dual", "speedd"],
+                            "rainbow": ["brightness", "speed", "speedd"],
+                            "spiral": ["brightness", "speed", "speedd", "direction"],
+                        },
+                    }
+                }
+            }
+
         if not cap:
             if self.modes:
                 self.modes = None
@@ -210,12 +232,17 @@ class RgbPlugin(HHDPlugin):
             return
 
         brightness = 1
-        level = "high"
+        brightnessd = "high"
+        speedd = "high"
         direction = "left"
         speed = 1
         red = 0
         green = 0
         blue = 0
+        red2 = 0
+        green2 = 0
+        blue2 = 0
+        color2_set = False
 
         log = f"Setting RGB to mode '{mode}'"
         for cap in self.modes[cast(RgbMode, mode)]:
@@ -227,20 +254,43 @@ class RgbPlugin(HHDPlugin):
                         info["brightness"],
                     )
                     log += f" with color: {red:3d}, {green:3d}, {blue:3d}"
+                case "dual":
+                    red, green, blue = hsb_to_rgb(
+                        info["hue"],
+                        info["saturation"],
+                        info["brightness"],
+                    )
+                    color2_set = True
+                    red2, green2, blue2 = hsb_to_rgb(
+                        info["hue2"],
+                        info["saturation"],
+                        info["brightness"],
+                    )
+                    log += f" with colors: {red:3d}, {green:3d}, {blue:3d} and {red2:3d}, {green2:3d}, {blue2:3d}"
                 case "brightness":
                     log += f", brightness: {info['brightness']}"
                     brightness = info["brightness"] / 100
                 case "speed":
                     log += f", speed: {info['speed']}"
                     speed = info["speed"] / 100
-                case "level":
-                    log += f", level: {info['level']}"
-                    level = cast(Literal["low", "medium", "high"], info["level"])
+                case "brightnessd":
+                    log += f", brightness: {info['brightnessd']}"
+                    brightnessd = cast(
+                        Literal["low", "medium", "high"], info["brightnessd"]
+                    )
+                case "speedd":
+                    log += f", speed: {info['speedd']}"
+                    brightnessd = cast(Literal["low", "medium", "high"], info["speedd"])
                 case "direction":
                     log += f", direction: {info['direction']}"
                     direction = cast(Literal["left", "right"], info["direction"])
         log += "."
         logger.info(log)
+
+        if not color2_set:
+            red2 = red
+            green2 = green
+            blue2 = blue
 
         ev = {
             "type": "led",
@@ -249,11 +299,15 @@ class RgbPlugin(HHDPlugin):
             "mode": cast(RgbMode, mode),
             "direction": direction,
             "brightness": brightness,
-            "level": level,
+            "brightnessd": brightnessd,
             "speed": speed,
+            "speedd": speedd,
             "red": red,
             "green": green,
             "blue": blue,
+            "red2": red2,
+            "green2": green2,
+            "blue2": blue2,
         }
         self.emit.inject(ev)
 

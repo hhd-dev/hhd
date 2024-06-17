@@ -184,48 +184,51 @@ class RgbCallback:
         self.prev_mode = None
 
     def __call__(self, dev: Device, events: Sequence[Event]):
-        for ev in events:
-            if ev["type"] != "led":
-                continue
+        try:
+            for ev in events:
+                if ev["type"] != "led":
+                    continue
 
-            reps = None
-            mode = None
-            match ev["mode"]:
-                case "disabled":
-                    pass
-                case "pulse":
-                    mode = "pulse"
-                case "rainbow":
-                    mode = "dynamic"
-                case "solid":
-                    if ev["red"] or ev["green"] or ev["blue"]:
-                        mode = "solid"
-                    else:
-                        # Disable if brightness is 0
-                        mode = None
-                case "spiral":
-                    mode = "spiral"
-                case _:
-                    pass
+                reps = None
+                mode = None
+                match ev["mode"]:
+                    case "disabled":
+                        pass
+                    case "pulse":
+                        mode = "pulse"
+                    case "rainbow":
+                        mode = "dynamic"
+                    case "solid":
+                        if ev["red"] or ev["green"] or ev["blue"]:
+                            mode = "solid"
+                        else:
+                            # Disable if brightness is 0
+                            mode = None
+                    case "spiral":
+                        mode = "spiral"
+                    case _:
+                        pass
 
-            if mode:
-                reps = rgb_multi_load_settings(
-                    mode,
-                    0x03,
-                    ev["red"],
-                    ev["green"],
-                    ev["blue"],
-                    ev["brightness"],
-                    ev["speed"],
-                    self.prev_mode != mode,
-                )
-                # Only init sparingly, to speed up execution
-                self.prev_mode = mode
-            else:
-                reps = rgb_multi_disable()
+                if mode:
+                    reps = rgb_multi_load_settings(
+                        mode,
+                        0x03,
+                        ev["red"],
+                        ev["green"],
+                        ev["blue"],
+                        ev["brightness"],
+                        ev["speed"],
+                        self.prev_mode != mode,
+                    )
+                    # Only init sparingly, to speed up execution
+                    self.prev_mode = mode
+                else:
+                    reps = rgb_multi_disable()
 
-            for r in reps:
-                dev.write(r)
+                for r in reps:
+                    dev.write(r)
+        except Exception as e:
+            logger.error(f"Error while setting RGB:\n{e}")
 
 
 class LegionHidraw(GenericGamepadHidraw):

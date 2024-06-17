@@ -35,12 +35,15 @@ class RumbleEvent(TypedDict):
     weak_magnitude: float
 
 
-RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral"]
-RgbSettings = Literal["color", "brightness", "speed", "level", "direction"]
+RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral", "duality"]
+RgbSettings = Literal[
+    "color", "brightness", "speed", "brightnessd", "speedd", "direction", "dual"
+]
 
 # Mono is a single zone (main only)
 # Dual has per side RGB
 # Quad has two zones per stick (Ally)
+# TODO: This code needs to be refactored
 RgbZones = Literal["mono", "dual", "quad"]
 
 
@@ -74,19 +77,25 @@ class RgbLedEvent(TypedDict):
     # If the response device does not support brightness control, it shall
     # devide the rgb values by the brightness and round.
     brightness: float
-    # For the Ally, has three brightness levels
-    # (and a forth off, use disabled mode for that)
-    level: Literal["low", "medium", "high"]
-    direction: Literal["left", "right"]
 
     # The speed the led should blink if supported by the led
     speed: float
+
+    # For the Ally, has three brightness levels
+    # (and a forth off, use disabled mode for that)
+    brightnessd: Literal["low", "medium", "high"]
+    speedd: Literal["low", "medium", "high"]
+    direction: Literal["left", "right"]
 
     # Color values for the led, may be ommited depending on the mode, by being
     # set to 0
     red: int
     green: int
     blue: int
+
+    red2: int
+    green2: int
+    blue2: int
 
 
 class ButtonEvent(TypedDict):

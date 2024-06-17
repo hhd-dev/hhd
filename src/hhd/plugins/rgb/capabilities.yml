@@ -1,66 +1,95 @@
 color:
-  hue:
+  hue: &hue
     type: int
     tags: [hue, rgb]
     title: Hue
     min: 0
     max: 360
     step: 5
-    unit: '°'
+    unit: "°"
     default: 30
-  saturation:
+  saturation: &saturation
     type: int
     tags: [saturation, rgb]
     title: Saturation
     min: 0
     max: 100
     step: 10
-    unit: '%'
+    unit: "%"
     default: 100
-  brightness:
+  brightness: &brightness
     type: int
     tags: [brightness, rgb]
     title: Brightness
     min: 0
     max: 100
     step: 10
-    unit: '%'
+    unit: "%"
     default: 50
+
+dual:
+  hue:
+    <<: *hue
+    default: 60
+  hue2:
+    <<: *hue
+    title: Secondary
+    tags: [hue2, rgb]
+  saturation:
+    <<: *saturation
+  brightness:
+    <<: *brightness
+
 speed:
   speed:
     type: int
-    tags: [speed, rgb]
+    tags: [speed]
     title: Speed
     min: 0
     max: 100
-    unit: '%'
+    unit: "%"
     default: 50
-brightness:
-  brightness:
-    type: int
-    tags: [brightness, rgb]
-    title: Brightness
-    min: 0
-    max: 100
-    step: 10
-    unit: '%'
-    default: 50
-level:
-  level:
+
+speedd:
+  speedd:
     type: multiple
-    title: Brightness
-    tags: [ non-essential ]
+    title: Speed
+    tags: [non-essential, ordinal]
     options:
       # off: "Off"
       low: "Low"
       medium: "Medium"
       high: "High"
     default: medium
+
+brightness:
+  brightness:
+    type: int
+    tags: [brightness]
+    title: Brightness
+    min: 0
+    max: 100
+    step: 10
+    unit: "%"
+    default: 50
+
+brightnessd:
+  brightnessd:
+    type: multiple
+    title: Brightness
+    tags: [non-essential, ordinal]
+    options:
+      # off: "Off"
+      low: "Low"
+      medium: "Medium"
+      high: "High"
+    default: medium
+
 direction:
   direction:
     type: multiple
     title: Direction
-    tags: [ non-essential ]
+    tags: [non-essential]
     options:
       left: "Left"
       right: "Right"

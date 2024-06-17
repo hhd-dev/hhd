@@ -2,6 +2,7 @@ import logging
 from typing import Literal, Sequence
 
 from hhd.controller import Event
+from hhd.controller.base import RgbMode
 from hhd.controller.lib.hid import Device
 import time
 
@@ -16,7 +17,6 @@ from .const import (
 )
 
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
-RgbMode = Literal["disabled", "solid", "pulse", "dynamic", "spiral"]
 GamepadMode = Literal["default", "mouse", "macro"]
 Brightness = Literal["off", "low", "medium", "high"]
 
@@ -37,19 +37,29 @@ def rgb_set_brightness(brightness: Brightness):
 
 
 def rgb_command(
-    zone: Zone, mode: RgbMode, direction, speed: float, red: int, green: int, blue: int
+    zone: Zone,
+    mode: RgbMode,
+    direction,
+    speed: str,
+    red: int,
+    green: int,
+    blue: int,
+    o_red: int,
+    o_green: int,
+    o_blue: int,
 ):
-    c_speed = int(speed * (0xF5 - 0xE1) + 0xE1)
     c_direction = 0x00
+    set_speed = True
 
     match mode:
         case "solid":
             # Static
             c_mode = 0x00
-        # case "breathing":
-        #     # Breathing
-        #     c_mode = 0x01
-        case "dynamic":
+            set_speed = False
+        case "pulse":
+            # Strobing
+            c_mode = 0x0A
+        case "rainbow":
             # Color cycle
             c_mode = 0x02
         case "spiral":
@@ -60,14 +70,25 @@ def rgb_command(
             blue = 255
             if direction == "left":
                 c_direction = 0x01
-        case "pulse":
-            # Strobing
-            c_mode = 0x0A
-        # case "asdf":
+        case "duality":
+            # Breathing
+            c_mode = 0x01
+        # case "direct":
         #     # Direct/Aura
         #     c_mode = 0xFF
+        # Should be used for dualsense emulation/ambilight stuffs
         case _:
             c_mode = 0x00
+
+    c_speed = 0xE1
+    if set_speed:
+        match speed:
+            case "low":
+                c_speed = 0xE1
+            case "medium":
+                c_speed = 0xEB
+            case _:  # "high"
+                c_speed = 0xF5
 
     match zone:
         case "left_left":
@@ -93,9 +114,9 @@ def rgb_command(
             c_speed if mode != "solid" else 0x00,
             c_direction,
             0x00,  # breathing
-            # red, # these only affect the breathing mode
-            # green,
-            # blue,
+            o_red,  # these only affect the breathing mode
+            o_green,
+            o_blue,
         ]
     )
 
@@ -104,29 +125,80 @@ def rgb_set(
     side: str,
     mode: RgbMode,
     direction: str,
-    speed: float,
+    speed: str,
     red: int,
     green: int,
     blue: int,
+    red2: int,
+    green2: int,
+    blue2: int,
 ):
     match side:
         case "left_left" | "left_right" | "right_left" | "right_right":
             return [
-                rgb_command(side, mode, direction, speed, red, green, blue),
+                rgb_command(
+                    side, mode, direction, speed, red, green, blue, red2, green2, blue2
+                ),
             ]
         case "left":
             return [
-                rgb_command("left_left", mode, direction, speed, red, green, blue),
-                rgb_command("left_right", mode, direction, speed, red, green, blue),
+                rgb_command(
+                    "left_left",
+                    mode,
+                    direction,
+                    speed,
+                    red,
+                    green,
+                    blue,
+                    red2,
+                    green2,
+                    blue2,
+                ),
+                rgb_command(
+                    "left_right",
+                    mode,
+                    direction,
+                    speed,
+                    red,
+                    green,
+                    blue,
+                    red2,
+                    green2,
+                    blue2,
+                ),
             ]
         case "right":
             return [
-                rgb_command("right_right", mode, direction, speed, red, green, blue),
-                rgb_command("right_left", mode, direction, speed, red, green, blue),
+                rgb_command(
+                    "right_right",
+                    mode,
+                    direction,
+                    speed,
+                    red,
+                    green,
+                    blue,
+                    red2,
+                    green2,
+                    blue2,
+                ),
+                rgb_command(
+                    "right_left",
+                    mode,
+                    direction,
+                    speed,
+                    red,
+                    green,
+                    blue,
+                    red2,
+                    green2,
+                    blue2,
+                ),
             ]
         case _:
             return [
-                rgb_command("all", mode, direction, speed, red, green, blue),
+                rgb_command(
+                    "all", mode, direction, speed, red, green, blue, red2, green2, blue2
+                ),
             ]
 
 
@@ -152,7 +224,10 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
                         mode = "pulse"
                         set_level = False
                     case "rainbow":
-                        mode = "dynamic"
+                        mode = "rainbow"
+                        set_level = False
+                    case "duality":
+                        mode = "duality"
                         set_level = False
                     case "solid":
                         mode = "solid"
@@ -164,17 +239,20 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
                         assert False, f"Mode '{ev['mode']}' not supported."
 
                 if set_level:
-                    br_cmd = rgb_set_brightness(ev["level"])
+                    br_cmd = rgb_set_brightness(ev["brightnessd"])
 
                 cmds.extend(
                     rgb_set(
                         ev["code"],
                         mode,
                         ev["direction"],
-                        ev["speed"],
+                        ev["speedd"],
                         ev["red"],
                         ev["green"],
                         ev["blue"],
+                        ev["red2"],
+                        ev["green2"],
+                        ev["blue2"],
                     )
                 )
 

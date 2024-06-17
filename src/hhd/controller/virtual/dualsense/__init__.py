@@ -289,13 +289,17 @@ class Dualsense(Producer, Consumer):
                                 # if led_brightness
                                 # else 1,
                                 "initialize": False,
-                                "level": "high",
-                                "brightness": 1,
                                 "direction": "left",
                                 "speed": 0,
+                                "brightness": 1,
+                                "speedd": "high",
+                                "brightnessd": "high",
                                 "red": red,
                                 "blue": blue,
                                 "green": green,
+                                "red2": red,
+                                "blue2": blue,
+                                "green2": green,
                             }
                         )
                     # elif (rep[39] & 2) and (rep[42] & 2):

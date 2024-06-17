@@ -33,4 +33,9 @@ spiral:
   hint: >-
     Creates an RGB spiral around the stick.
 
-
+duality:
+  type: container
+  title: Duality
+  tags: [ non-essential, rgb, duality ]
+  hint: >-
+    Alternates between two colors.
