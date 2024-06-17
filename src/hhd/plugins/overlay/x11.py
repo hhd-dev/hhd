@@ -115,7 +115,12 @@ def find_x11_auth(ctx: Context):
     # TODO: Fix hardcoding runtime dir
     LOCATION = f"/run/user/{ctx.euid}"
     for fn in sorted(os.listdir(LOCATION)):
-        if fn.startswith("xauth_"):
+        if (
+            # KDE
+            fn.startswith("xauth_")
+            # GNOME
+            or fn.startswith(".mutter-Xwaylandauth.")
+        ):
             return os.path.join(LOCATION, fn)
 
 
