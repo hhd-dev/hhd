@@ -19,8 +19,6 @@ def find_igpu():
             if "amdgpu" not in f.read():
                 continue
 
-        logger.info(f'Found AMD GPU at "/sys/class/hwmon/{hw}"')
-
         if not os.path.exists(f"/sys/class/hwmon/{hw}/device"):
             logger.error(f'No device symlink found for "{hw}"')
             continue
@@ -32,7 +30,6 @@ def find_igpu():
             continue
 
         pth = os.path.realpath(os.path.join("/sys/class/hwmon", hw))
-        logger.info(f'Found iGPU at "{pth}"')
         return pth
 
     logger.error("No iGPU found. Binding TDP attributes will not be possible.")
@@ -42,6 +39,7 @@ def find_igpu():
 def prepare_tdp_mount(debug: bool = False):
     try:
         gpu = find_igpu()
+        logger.info(f"Found GPU at:\n'{gpu}'")
         if not gpu:
             return False
 
@@ -108,7 +106,7 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
                 data = sock.recv(1024)
             except socket.timeout:
                 continue
-            
+
             # FIXME: Steam uses the default value on boot
             # Use 0 for now to make sure it does not override user settings.
             default_tdp = 0
@@ -121,7 +119,9 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
                         logger.info(f"Received TDP value {tdp} from /sys.")
                         set_tdp(tdp)
                     else:
-                        logger.info("Received TDP value 0 from /sys. Assuming its the default value and ignoring.")
+                        logger.info(
+                            "Received TDP value 0 from /sys. Assuming its the default value and ignoring."
+                        )
                 except:
                     logger.error(f"Failed process TDP value, received:\n{data}")
                 send_cmd(b"ack\n")

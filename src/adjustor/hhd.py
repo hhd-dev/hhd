@@ -231,6 +231,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     from .drivers.asus import AsusDriverPlugin
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
+    from .drivers.amd import AmdGPUPlugin
 
     drivers = []
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
@@ -302,4 +303,5 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         *drivers,
         AdjustorInitPlugin(use_acpi_call=use_acpi_call),
         AdjustorPlugin(min_tdp, default_tdp, max_tdp),
+        AmdGPUPlugin(),
     ]

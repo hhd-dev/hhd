@@ -1,0 +1,42 @@
+title: GPU Settings
+type: container
+tags: [ hide-title ]
+children:
+  level:
+    type: mode
+    title: GPU Frequency
+    hint: >-
+      Pins the GPU to a certain frequency.
+      Helps in certain games that are CPU or GPU heavy
+      by shifting power to or from the GPU.
+      Has a minor effect.
+    default: auto
+    modes:
+      auto:
+        type: container
+        title: Auto
+        hint: >-
+          Lets the GPU manage its own frequency.
+      manual:
+        type: container
+        title: Manual
+        hint: >-
+          Sets the GPU frequency manually.
+        children:
+          frequency:
+            title: Frequency
+            unit: MHz
+            type: int
+            min: 300
+            max: 2000
+            step: 100
+            default: 1000
+
+  cpu_boost:
+    type: bool
+    title: CPU Boost
+    default: True
+    hint: >-
+      Enables or disables the CPU boost frequencies.
+      Disabling lowers total consumption by 2W with 
+      minimal performance impact.
