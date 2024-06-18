@@ -6,7 +6,7 @@ modes:
   hidden:
     type: container
     tags: [lgc_emulation_disabled]
-    title: Disabled
+    title: Hidden
     hint: >-
       Disables the controller. Handheld Daemon overlay will still work in gamemode.
   #
