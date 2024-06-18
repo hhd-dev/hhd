@@ -68,6 +68,10 @@ def get_outputs(
     noob_mode = False
     flip_z = False
     match controller:
+        case "hidden":
+            # NOOP
+            UInputDevice.close_cached()
+            Dualsense.close_cached()
         case "dualsense_edge":
             UInputDevice.close_cached()
             flip_z = conf["dualsense_edge.flip_z"].to(bool)

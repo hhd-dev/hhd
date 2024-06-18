@@ -3,12 +3,12 @@ modes:
   #
   # No emulation
   #
-  disabled:
+  hidden:
     type: container
     tags: [lgc_emulation_disabled]
     title: Disabled
     hint: >-
-      Does not modify the default controller.
+      Disables the controller. Handheld Daemon overlay will still work in gamemode.
   #
   # evdev through uinput
   #
@@ -211,6 +211,13 @@ modes:
           However, using USB mode can improve LED support (?) in some games.
           Test and report back!
         default: True
+
+  disabled:
+    type: container
+    tags: [lgc_emulation_disabled, expert, non-essential]
+    title: Paused
+    hint: >-
+      Disables the controller. Handheld Daemon overlay will still work in gamemode.
 
   # joycon_pair:
   #   type: container
