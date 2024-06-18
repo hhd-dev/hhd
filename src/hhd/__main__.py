@@ -590,15 +590,16 @@ def main():
                             f"Failed removing profile {name} at:\n{fn}\nWith error:\n{e}"
                         )
 
-            # Add template config
-            if save_profile_yaml(
-                join(profile_dir, "_template.yml"),
-                settings,
-                templates.get("_template", None),
-                shash,
-            ):
-                fix_perms(join(profile_dir, "_template.yml"), ctx)
-                saved = True
+            # Causes unnecessary writes, is not used anyway.
+            # # Add template config
+            # if save_profile_yaml(
+            #     join(profile_dir, "_template.yml"),
+            #     settings,
+            #     templates.get("_template", None),
+            #     shash,
+            # ):
+            #     fix_perms(join(profile_dir, "_template.yml"), ctx)
+            #     saved = True
 
             if not has_new and saved:
                 # We triggered the interrupt, clear
