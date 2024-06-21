@@ -388,7 +388,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                 if e.type == B("EV_KEY"):
                     if e.code in self.btn_map:
                         # Only 1 is valid for press (look at sysrq)
-                        if e.code == B("KEY_LEFT_META") and e.value:
+                        if e.code == B("KEY_LEFTMETA") and e.value:
                             # start requires special handling
                             # If it exists on the button map, it may
                             # also be used for other shortcuts.
