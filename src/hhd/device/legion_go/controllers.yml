@@ -37,17 +37,13 @@ children:
           The main controller uses the right controller's motion sensor, and a 
           secondary controller is created for the left controller's motion sensor.
 
-  swap_legion:
-    type: multiple
+  swap_legion_v2:
+    type: bool
     title: Swap Legion with Start/Select
     tags: [ non-essential ]
     hint: >-
-      Swaps the legion buttons with start select.
-    options:
-      disabled: "Disabled"
-      l_is_start: "Left is Start"
-      l_is_select: "Left is Select"
-    default: disabled
+      Swaps the legion buttons with start/select.
+    default: False
   
   nintendo_mode:
     type: bool

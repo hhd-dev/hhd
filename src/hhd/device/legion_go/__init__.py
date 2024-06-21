@@ -51,6 +51,12 @@ class LegionControllersPlugin(HHDPlugin):
         reset = conf["controllers.legion_go.factory_reset"].to(bool)
         conf["controllers.legion_go.factory_reset"] = False
 
+        # Migrate old setting
+        val = conf.get("controllers.legion_go.swap_legion", None)
+        if val and val != "disabled":
+            conf["controllers.legion_go.swap_legion"] = None
+            conf["controllers.legion_go.swap_legion_v2"] = True
+
         if new_conf == self.prev:
             return
         if self.prev is None:

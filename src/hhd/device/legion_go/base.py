@@ -154,7 +154,9 @@ def controller_loop_rest(
             axis_map=LGO_RAW_INTERFACE_AXIS_MAP,
             btn_map=LGO_RAW_INTERFACE_BTN_MAP,
             required=True,
-        ).with_settings(None, reset)
+        ).with_settings(
+            gyro=None, reset=reset, swap_legion=conf["swap_legion_v2"].to(bool)
+        )
     )
 
     multiplexer = Multiplexer(
@@ -277,7 +279,12 @@ def controller_loop_xinput(
             config_map=LGO_RAW_INTERFACE_CONFIG_MAP,
             callback=RgbCallback(),
             required=True,
-        ).with_settings(dimu, reset, fix_hold)
+        ).with_settings(
+            gyro=dimu,
+            reset=reset,
+            use_touchpad=fix_hold,
+            swap_legion=conf["swap_legion_v2"].to(bool),
+        )
     )
 
     # Mute keyboard shortcuts, mute
@@ -290,23 +297,12 @@ def controller_loop_xinput(
         required=True,
     )
 
-    match conf["swap_legion"].to(str):
-        case "disabled":
-            swap_guide = None
-        case "l_is_start":
-            swap_guide = "guide_is_start"
-        case "l_is_select":
-            swap_guide = "guide_is_select"
-        case val:
-            assert False, f"Invalid value for `swap_legion`: {val}"
-
     touch_actions = (
         conf["touchpad.controller"]
         if conf["touchpad.mode"].to(TouchpadAction) == "controller"
         else conf["touchpad.emulation"]
     )
     multiplexer = Multiplexer(
-        swap_guide=swap_guide,
         trigger="analog_to_discrete",
         dpad="both",
         led="main_to_sides",

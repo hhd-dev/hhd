@@ -144,6 +144,10 @@ def controller_factory_reset():
     ]
 
 
+def controller_legion_swap(enabled):
+    return [to_bytes(f"0506 69 0401 {'02' if enabled else '01'} 01")]
+
+
 def rgb_multi_load_settings(
     mode: RgbMode,
     profile: Literal[1, 2, 3],
@@ -232,7 +236,13 @@ class RgbCallback:
 
 
 class LegionHidraw(GenericGamepadHidraw):
-    def with_settings(self, gyro: str | None, reset: bool, use_touchpad: bool = False):
+    def with_settings(
+        self,
+        gyro: str | None,
+        reset: bool,
+        use_touchpad: bool = False,
+        swap_legion: bool = False,
+    ):
         self.gyro = gyro
         self.reset = reset
         self.use_touchpad = use_touchpad
@@ -241,6 +251,7 @@ class LegionHidraw(GenericGamepadHidraw):
         self.old_y = 0
         self.touch_changed = None
         self.touchpad_init = True
+        self.swap_legion = swap_legion
         return self
 
     def open(self):
@@ -252,14 +263,18 @@ class LegionHidraw(GenericGamepadHidraw):
 
         cmds = []
 
+        if self.reset:
+            logger.warning(f"Factory Resetting controllers")
+            cmds.extend(controller_factory_reset())
         gyro_active = self.gyro in ("left", "right", "both")
         if self.gyro in ("left", "both") or (not gyro_active and self.use_touchpad):
             cmds.extend(controller_enable_gyro("left"))
         if self.gyro in ("right", "both"):
             cmds.extend(controller_enable_gyro("right"))
-        if self.reset:
-            logger.warning(f"Factory Resetting controllers")
-            cmds.extend(controller_factory_reset())
+        # Use the built in controller option
+        # so windows works the same
+        cmds.extend(controller_legion_swap(self.swap_legion))
+        print(cmds)
 
         for r in cmds:
             self.dev.write(r)
@@ -268,6 +283,17 @@ class LegionHidraw(GenericGamepadHidraw):
 
     def produce(self, fds: Sequence[int]):
         out = super().produce(fds)
+
+        if self.swap_legion:
+            # windows swap legion option
+            # is weird. QAM would be the top button
+            # swap them around
+            for ev in out:
+                if ev["code"] == "mode":
+                    ev["code"] = "share"
+                elif ev["code"] == "share":
+                    ev["code"] = "mode"
+
         # TODO: Cleanup
         # Or remove, since this option is problematic
         # If removing, remove the produce function completely
