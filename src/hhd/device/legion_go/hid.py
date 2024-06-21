@@ -274,7 +274,6 @@ class LegionHidraw(GenericGamepadHidraw):
         # Use the built in controller option
         # so windows works the same
         cmds.extend(controller_legion_swap(self.swap_legion))
-        print(cmds)
 
         for r in cmds:
             self.dev.write(r)
