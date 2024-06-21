@@ -32,6 +32,11 @@ BTN_MAPPINGS: dict[int, str] = {
     # B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
 }
 
+AMBERNIC_MAPPINGS: dict[int, str] = {
+    B("KEY_LEFTMETA"): "share",
+    B("KEY_G"): "mode",
+}
+
 AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
     "accel_y": ("accel_x", "accel", -1, None),
@@ -137,7 +142,12 @@ CONFS = {
     "AYA NEO 2021": {"name": "AYA NEO 2021", **AYA_DEFAULT_CONF},
     "AYANEO 2021": {"name": "AYANEO 2021", **AYA_DEFAULT_CONF},
     "AYANEO 2021 Pro": {"name": "AYANEO 2021 Pro", **AYA_DEFAULT_CONF},
-    "AYANEO 2021 Pro Retro Power": {"name": "AYANEO 2021 Pro Retro Power", **AYA_DEFAULT_CONF},
+    "AYANEO 2021 Pro Retro Power": {
+        "name": "AYANEO 2021 Pro Retro Power",
+        **AYA_DEFAULT_CONF,
+    },
+    # Ambernic
+    "Win600": {"name": "Ambernic Win600", "btn_mapping": AMBERNIC_MAPPINGS},
 }
 
 

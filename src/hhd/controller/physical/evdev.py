@@ -242,6 +242,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.hidden = None
         self.queue = []
         self.postprocess = postprocess
+        self.start_pressed = None
 
     def open(self) -> Sequence[int]:
         for d, info in list_evs(filter_valid=True).items():
@@ -359,6 +360,15 @@ class GenericGamepadEvdev(Producer, Consumer):
             if curr >= t:
                 out.append(ev)
                 self.queue.pop(0)
+        if self.start_pressed and curr - self.start_pressed > 0.07:
+            self.start_pressed = None
+            out.append(
+                {
+                    "type": "button",
+                    "code": self.btn_map[B("KEY_LEFTMETA")],
+                    "value": True,
+                }
+            )
 
         if not self.dev or not self.fd in fds:
             return out
@@ -378,7 +388,14 @@ class GenericGamepadEvdev(Producer, Consumer):
                 if e.type == B("EV_KEY"):
                     if e.code in self.btn_map:
                         # Only 1 is valid for press (look at sysrq)
-                        if e.value == 0 or e.value == 1:
+                        if e.code == B("KEY_LEFT_META") and e.value:
+                            # start requires special handling
+                            # If it exists on the button map, it may
+                            # also be used for other shortcuts.
+                            # So we have to wait a bit to see if it is
+                            # a standalone press
+                            self.start_pressed = curr
+                        elif e.value == 0 or e.value == 1:
                             out.append(
                                 {
                                     "type": "button",
@@ -386,6 +403,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                                     "value": bool(e.value),
                                 }
                             )
+                            self.start_pressed = None
                 elif e.type == B("EV_ABS"):
                     if e.code in self.axis_map:
                         ax = self.axis_map[e.code]
