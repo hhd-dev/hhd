@@ -80,6 +80,9 @@ def prepare_tdp_mount(debug: bool = False):
 def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
     import socket
 
+    CLIENT_TIMEOUT_WAIT = 0.3
+    CLIENT_MAX_CMD_T = 0.05
+
     # Sleep until the socket is created
     sock = None
     try:
@@ -91,7 +94,7 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
                 sock.connect(FUSE_MOUNT_SOCKET)
                 break
             except Exception as e:
-                pass
+                time.sleep(CLIENT_TIMEOUT_WAIT)
 
         logger.info(f"Connected to TDP socket.")
 
@@ -105,6 +108,7 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
                 sock.settimeout(0.5)
                 data = sock.recv(1024)
             except socket.timeout:
+                time.sleep(CLIENT_TIMEOUT_WAIT)
                 continue
 
             # FIXME: Steam uses the default value on boot
@@ -138,6 +142,7 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
                     send_cmd(b"ack:" + str(tdp).encode() + b"000000\n")
             else:
                 send_cmd(b"ack\n")
+            time.sleep(CLIENT_MAX_CMD_T)
     except Exception as e:
         logger.error(f"Error while communicating with FUSE server. Exiting.\n{e}")
     finally:
