@@ -27,6 +27,7 @@ class AmdGPUPlugin(HHDPlugin):
         self.old_freq = None
         self.supports_boost = False
         self.old_boost = None
+        self.logged_boost = False
 
     def settings(self):
         if not self.enabled:
@@ -48,10 +49,13 @@ class AmdGPUPlugin(HHDPlugin):
 
         self.supports_boost = status.cpu_boost is not None
         if self.supports_boost:
-            logger.info(f"CPU Boost toggling is supported.")
+            if not self.logged_boost:
+                logger.info(f"CPU Boost toggling is supported.")
         else:
-            logger.warning(f"CPU Boost toggling is not supported.")
+            if not self.logged_boost:
+                logger.warning(f"CPU Boost toggling is not supported.")
             del sets["children"]["cpu_boost"]
+        self.logged_boost = True
         return {"tdp": {"amd_gpu": sets}}
 
     def open(
