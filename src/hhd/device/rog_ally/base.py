@@ -182,7 +182,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
         rgb_modes={
             "disabled": [],
             "solid": ["color"],
-            "pulse": ["color"],
+            "pulse": ["color", "speedd"],
             "duality": ["dual", "speedd"],
             "rainbow": ["brightnessd"],  # , "speedd" # TODO: Figure out why
             # "spiral": ["brightnessd", "speedd", "direction"], # TODO: Figure out why
