@@ -58,7 +58,14 @@ def rgb_command(
             set_speed = False
         case "pulse":
             # Strobing
-            c_mode = 0x0A
+            # c_mode = 0x0A
+            # Spiral is agressive
+            # Use breathing instead
+            # Breathing
+            c_mode = 0x01
+            o_red = 0
+            o_green = 0
+            o_blue = 0
         case "rainbow":
             # Color cycle
             c_mode = 0x02
