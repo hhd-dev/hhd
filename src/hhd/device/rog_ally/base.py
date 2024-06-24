@@ -184,8 +184,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
             "solid": ["color"],
             "pulse": ["color"],
             "duality": ["dual", "speedd"],
-            "rainbow": ["brightnessd", "speedd"],
-            "spiral": ["brightnessd", "speedd", "direction"],
+            "rainbow": ["brightnessd"],  # , "speedd" # TODO: Figure out why
+            # "spiral": ["brightnessd", "speedd", "direction"], # TODO: Figure out why
         },
         rgb_zones="quad",
     )
