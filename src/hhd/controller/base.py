@@ -1,6 +1,7 @@
 import logging
 import os
 import select
+import random
 import time
 from threading import RLock
 from typing import Any, Callable, Literal, Mapping, NamedTuple, Sequence, TypedDict
@@ -1128,7 +1129,13 @@ class Multiplexer:
 
         # Grab all events from controller if grab is on
         if self.emit and self.emit.intercept(self.unique, out):
-            return [
+            accel = random.random() * 10
+            fake_accel = [
+                {"type": "axis", "code": "accel_x", "value": accel},
+                {"type": "axis", "code": "left_accel_x", "value": accel},
+                {"type": "axis", "code": "right_accel_x", "value": accel},
+            ]
+            return fake_accel + [
                 o
                 for o in events
                 if o["type"] not in ("button", "axis") or "ts" in o.get("code", "")

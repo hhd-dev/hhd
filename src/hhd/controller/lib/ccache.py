@@ -1,5 +1,6 @@
 from threading import Condition, Thread, Event
 import time
+import random
 
 CACHE_TIMEOUT = 10
 UPDATE_FREQ = 25
@@ -35,11 +36,18 @@ class ControllerCache:
                     else:
                         ctime = int(next * 1e9)
 
+                    # Send a lot of noise to the accel value to avoid
+                    # steam recalibrating. Only RPCS3 and dolphin might
+                    # have an issue with this.
+                    accel = random.random() * 10
                     self._cached.consume(
                         [
                             {"type": "axis", "code": "left_imu_ts", "value": ctime},
                             {"type": "axis", "code": "right_imu_ts", "value": ctime},
                             {"type": "axis", "code": "imu_ts", "value": ctime},
+                            {"type": "axis", "code": "accel_x", "value": accel},
+                            {"type": "axis", "code": "left_accel_x", "value": accel},
+                            {"type": "axis", "code": "right_accel_x", "value": accel},
                         ]
                     )
                 else:
