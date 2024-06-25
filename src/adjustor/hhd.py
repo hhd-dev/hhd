@@ -70,6 +70,13 @@ class AdjustorInitPlugin(HHDPlugin):
                 move_path,
                 exist_ok=True,
             )
+
+            logger.warning("Stopping Decky.")
+            try:
+                os.system("systemctl stop plugin_loader")
+            except Exception as e:
+                logger.error(f"Failed to restart Decky:\n{e}")
+
             for name, ppath in CONFLICTING_PLUGINS.items():
                 path = expanduser(ppath, self.context)
                 if os.path.exists(path):
@@ -81,7 +88,7 @@ class AdjustorInitPlugin(HHDPlugin):
 
             logger.warning("Restarting Decky.")
             try:
-                os.system("systemctl restart plugin_loader")
+                os.system("systemctl start plugin_loader")
             except Exception as e:
                 logger.error(f"Failed to restart Decky:\n{e}")
 
@@ -104,7 +111,7 @@ class AdjustorInitPlugin(HHDPlugin):
         for name, path in CONFLICTING_PLUGINS.items():
             if os.path.exists(expanduser(path, self.context)):
                 err = f'Found "{name}" at:\n{path}\n' + _(
-                    "TDP Controls can not be enabled."
+                    "Disable Decky TDP plugins using the button below to continue."
                 )
                 self.emit({"type": "settings"})
                 self.has_decky = True

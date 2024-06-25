@@ -54,4 +54,5 @@ CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
     "AMD Ryzen 7 6800U": (DEV_PARAMS_6040, ALIB_PARAMS_6040),
     "AMD Ryzen 7 7840U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     "AMD Ryzen 7 8840U": (DEV_PARAMS_8040, ALIB_PARAMS_8040),
+    # AMD Athlon Silver 3050e (Win600, will it support tdp?)
 }
