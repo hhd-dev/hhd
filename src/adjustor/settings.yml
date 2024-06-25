@@ -8,11 +8,9 @@ tdp:
       tags: [ non-essential ]
       default: True
       hint: >-
-        Enables TDP management by the Handheld Daemon.
+        Enables TDP management by Handheld Daemon.
         While enabled, Handheld Daemon will set and maintain the TDP limits set
         on start-up and during other device changes (ac/dc).
-
-        If the device crashes, TDP setting will be disabled on next startup.
 
     tdp_error:
       title: Error
