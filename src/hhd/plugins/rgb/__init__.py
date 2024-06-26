@@ -67,6 +67,14 @@ class RgbPlugin(HHDPlugin):
         self.started = False
         self.emit = emit
 
+    def notify(self, events):
+        for ev in events:
+            # Certain ayaneo devices reset LEDs when being
+            # plugged in
+            if ev["type"] == "acpi" and ev["event"] in ("ac", "dc"):
+                self.init = True
+                self.init_count = RGB_SET_TIMES - 1
+
     def settings(self):
         if not self.modes:
             self.loaded = False

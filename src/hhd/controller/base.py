@@ -547,7 +547,7 @@ class Multiplexer:
                 }
             self.emit.set_capabilities(self.unique, {"buttons": {}, "rgb": rgb})
 
-    def process(self, events: Sequence[Event]):
+    def process(self, events: Sequence[Event]) -> Sequence[Event]:
         out: list[Event] = []
         status_events = set()
         touched = False
@@ -1130,7 +1130,7 @@ class Multiplexer:
         # Grab all events from controller if grab is on
         if self.emit and self.emit.intercept(self.unique, out):
             accel = random.random() * 10
-            fake_accel = [
+            fake_accel: Sequence[Event] = [
                 {"type": "axis", "code": "accel_x", "value": accel},
                 {"type": "axis", "code": "left_accel_x", "value": accel},
                 {"type": "axis", "code": "right_accel_x", "value": accel},
