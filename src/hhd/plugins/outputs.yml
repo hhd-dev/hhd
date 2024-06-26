@@ -121,6 +121,23 @@ modes:
         tags: [non-essential]
         default: |
           Touchpad, gyro, and RGB support. Extra buttons are touchpad clicks.
+
+      paddles_as:
+        type: multiple
+        title: Extra buttons as
+        hint: >-
+          Changes the behavior of the extra buttons.
+          Left button is Keyboard, right button is Overlay.
+          Or they can be left/right touchpad clicks.
+          For the legion go, top buttons are shortcuts, bottom are
+          touchpad clicks.
+        options:
+          noob: Keyboard/Overlay
+          touchpad: Touchpad Clicks
+          both: Shortctus + Touchpad Clicks
+          disabled: Disabled
+        default: noob
+
       led_support:
         type: bool
         title: LED Support
@@ -128,18 +145,6 @@ modes:
           Passes through the LEDs to the controller, which allows games
           to control them.
         default: True
-
-      paddles_as:
-        type: multiple
-        title: Extra buttons as
-        hint: >-
-          Changes the behavior of the extra buttons.
-        options:
-          noob: Keyboard/Overlay
-          touchpad: Touchpad Clicks
-          both: Shortctus + Touchpad Clicks
-          disabled: Disabled
-        default: noob
 
       sync_gyro:
         type: bool
