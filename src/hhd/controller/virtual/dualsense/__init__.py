@@ -1,7 +1,7 @@
 import logging
 import time
 from collections import defaultdict
-from typing import Sequence, cast
+from typing import Sequence, cast, Literal
 
 from hhd.controller import (
     Consumer,
@@ -75,7 +75,7 @@ class Dualsense(Producer, Consumer):
         enable_rgb: bool = True,
         sync_gyro: bool = False,
         flip_z: bool = True,
-        paddles_to_clicks: bool = False,
+        paddles_to_clicks: Literal["disabled", "top", "bottom"] = "disabled",
         controller_id: int = 0,
         left_motion: bool = False,
         cache: bool = False,
@@ -442,20 +442,26 @@ class Dualsense(Producer, Consumer):
                 case "button":
                     if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
-                    if self.paddles_to_clicks and (code == "extra_l1"):
+                    if (self.paddles_to_clicks == "top" and code == "extra_l1") or (
+                        self.paddles_to_clicks == "bottom" and code == "extra_l2"
+                    ):
                         # Place finger on correct place and click
                         new_rep[self.ofs + 33] = 0x80
                         new_rep[self.ofs + 34] = 0x01
                         new_rep[self.ofs + 35] = 0x20
                         # Replace code with click
                         ev = {**ev, "code": "touchpad_left"}
-                    if self.paddles_to_clicks and (code == "extra_r1"):
+                        code = "touchpad_left"
+                    if (self.paddles_to_clicks == "top" and code == "extra_r1") or (
+                        self.paddles_to_clicks == "bottom" and code == "extra_r2"
+                    ):
                         # Place finger on correct place and click
                         new_rep[self.ofs + 33] = 0x00
                         new_rep[self.ofs + 34] = 0x06
                         new_rep[self.ofs + 35] = 0x20
                         # Replace code with click
                         ev = {**ev, "code": "touchpad_left"}
+                        code = "touchpad_left"
 
                     if code in self.btn_map:
                         set_button(new_rep, self.btn_map[code], ev["value"])
