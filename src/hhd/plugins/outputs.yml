@@ -9,6 +9,15 @@ modes:
     title: Hidden
     hint: >-
       Disables the controller. Handheld Daemon overlay will still work in gamemode.
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Disables the built-in controller.
+          External controllers will be slot 1.
+          Overlay will still work.
   #
   # evdev through uinput
   #
@@ -216,8 +225,13 @@ modes:
     type: container
     tags: [lgc_emulation_disabled, expert, non-essential]
     title: Paused
-    hint: >-
-      Disables the controller. Handheld Daemon overlay will still work in gamemode.
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Pauses controller emulation.
 
   # joycon_pair:
   #   type: container
