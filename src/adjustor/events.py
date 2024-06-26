@@ -9,8 +9,8 @@ from pyroute2 import AcpiEventSocket  # type: ignore
 logger = logging.getLogger(__name__)
 
 EVENT_MATCHES: Sequence[tuple[dict[str, Any], str]] = [
-    ({"device_class": "ac_adapter", "data": 0}, "dc"),
-    ({"device_class": "ac_adapter", "data": 256}, "ac"),
+    ({"device_class": b"ac_adapter", "data": 0}, "dc"),
+    ({"device_class": b"ac_adapter", "data": 256}, "ac"),
     ({"device_class": b"battery"}, "battery"),
     # Legion GO TDP event
     ({"bus_id": b"D320289E-8FEA-"}, "tdp"),
