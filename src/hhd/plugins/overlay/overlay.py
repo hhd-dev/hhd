@@ -54,8 +54,8 @@ def launch_overlay_de(fn: str, display: str, auth: str, ctx: Context):
         },
         text=True,
         stdin=subprocess.PIPE,
-        # stdout=subprocess.DEVNULL,
-        # stderr=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         user=ctx.euid,
         group=ctx.egid,
     )

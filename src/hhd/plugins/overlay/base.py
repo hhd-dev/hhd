@@ -48,6 +48,58 @@ STARTUP_MAX_DELAY = 10
 LOOP_SLEEP = 0.05
 
 
+def loop_manage_desktop(
+    proc: subprocess.Popen,
+    emit: Emitter,
+    writer: OverlayWriter,
+    should_exit: TEvent,
+):
+    try:
+        assert proc.stderr and proc.stdout
+
+        fd_out = proc.stdout.fileno()
+        fd_err = proc.stderr.fileno()
+        os.set_blocking(fd_out, False)
+        os.set_blocking(fd_err, False)
+
+        while not should_exit.is_set():
+            start = time.perf_counter()
+            select.select([fd_out, fd_err], [], [], GUARD_CHECK)
+
+            if proc.poll() is not None:
+                logger.warning(f"Overlay stopped (steam may have restarted). Closing.")
+                return
+
+            # Process system logs
+            while True:
+                l = proc.stderr.readline()[:-1]
+                if not l:
+                    break
+                logger.info(f"UI: {l}")
+
+            # Update overlay status
+            while True:
+                cmd = proc.stdout.readline()[:-1]
+                if not cmd:
+                    break
+                elif cmd.startswith("grab:"):
+                    enable = cmd[5:] == "enable"
+                    emit.grab(enable)
+                    if not enable:
+                        writer.reset()
+
+            elapsed = time.perf_counter() - start
+            if elapsed < LOOP_SLEEP:
+                time.sleep(LOOP_SLEEP - elapsed)
+    except Exception as e:
+        logger.warning(f"The overlay process ended with an exception:\n{e}")
+    finally:
+        logger.info(f"Stopping overlay process.")
+        proc.kill()
+        proc.wait()
+        emit.grab(False)
+
+
 def loop_manage_overlay(
     disp: display.Display,
     proc: subprocess.Popen,
@@ -156,6 +208,7 @@ def loop_manage_overlay(
         logger.info(f"Stopping overlay process.")
         proc.kill()
         proc.wait()
+        emit.grab(False)
 
 
 class OverlayService:
@@ -165,9 +218,9 @@ class OverlayService:
         self.t = None
         self.should_exit = None
         self.emit = emit
-        self.proc_de = None
+        self.proc = None
 
-    def _start(self):
+    def _open_overlay(self):
         # Should not be called by outsiders
         # requires special permissions and error handling by update
         if self.started:
@@ -212,16 +265,7 @@ class OverlayService:
     def _open_de(self):
         # Allow opening the overlay in desktop
         # wayland only, somewhat hardcoded.
-
-        # Allow minimizing and maximizing.
-        if self.proc_de and self.proc_de.poll() is None:
-            stdin = self.proc_de.stdin
-            if stdin:
-                logger.info(
-                    "Overlay is running in the Desktop environment. Toggling visibility."
-                )
-                stdin.write("cmd:toggle-visibility\n")
-                stdin.flush()
+        if self.started:
             return True
 
         # Launch the overlay
@@ -240,8 +284,21 @@ class OverlayService:
         exe = find_overlay_exe(self.ctx)
         if not exe:
             return False
-        self.proc_de = launch_overlay_de(exe, disp, auth, self.ctx)
-        return self.proc_de.poll() is None
+        self.proc = launch_overlay_de(exe, disp, auth, self.ctx)
+
+        # Start a managing thread
+        self.writer = OverlayWriter(self.proc.stdin)
+        self.emit.register_intercept(self.writer)
+        self.should_exit = TEvent()
+        self.t = Thread(
+            target=loop_manage_desktop,
+            args=(self.proc, self.emit, self.writer, self.should_exit),
+        )
+        self.t.start()
+        self.started = True
+        self.started_de = True
+
+        return self.proc.poll() is None
 
     def close(self):
         if self.should_exit and self.t:
@@ -269,16 +326,19 @@ class OverlayService:
             # do not initialize for those.
             return
         try:
-            if (self.proc_de and self.proc_de.poll() is None) or not self._start():
-                # Try to open in desktop mode
+            ret = self._open_overlay()
+            if not ret:
                 self._open_de()
-                return
             if not self.is_healthy():
                 logger.warning(f"Overlay service died, attempting to restart.")
                 self.close()
-                if not self._start():
-                    logger.warning(f"Restarting overlay failed.")
-                    return
+
+                ret = self._open_overlay()
+                if not ret:
+                    ret = self._open_de()
+                if not ret:
+                    logger.error("Failed to start hhd-ui.")
+                return
 
             if not self.proc:
                 logger.error("Overlay subprocess is null. Should never happen.")
