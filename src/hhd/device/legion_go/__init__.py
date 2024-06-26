@@ -41,7 +41,7 @@ class LegionControllersPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         base = {"controllers": {"legion_go": load_relative_yaml("controllers.yml")}}
         base["controllers"]["legion_go"]["children"]["xinput"].update(
-            get_outputs_config()
+            get_outputs_config(extra_buttons='quad')
         )
         base["controllers"]["legion_go"]["children"]["touchpad"] = get_touchpad_config()
         return base

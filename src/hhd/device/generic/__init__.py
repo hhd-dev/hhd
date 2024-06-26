@@ -48,6 +48,7 @@ class GenericControllersPlugin(HHDPlugin):
                 can_disable=True,
                 has_leds=is_led_supported(),
                 start_disabled=self.dconf.get("untested", False),
+                extra_buttons=self.dconf.get("extra_buttons", "dual"),
             )
         )
 

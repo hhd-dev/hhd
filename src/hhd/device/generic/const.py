@@ -104,16 +104,19 @@ CONFS = {
         "name": "Loki MiniPro",
         "hrtimer": True,
         "mapping": gen_gyro_state("x", False, "z", False, "y", True),
+        "extra_buttons": "none",
     },
     "Loki Max": {
         "name": "Loki Max",
         "hrtimer": True,
         "mapping": gen_gyro_state("x", False, "z", False, "y", True),
+        "extra_buttons": "none",
     },
     "Loki Zero": {
         "name": "Loki Zero",
         "hrtimer": True,
         "mapping": gen_gyro_state("x", False, "z", False, "y", True),
+        "extra_buttons": "none",
     },
     # Ayaneo
     "AIR Plus": {
@@ -147,7 +150,11 @@ CONFS = {
         **AYA_DEFAULT_CONF,
     },
     # Ambernic
-    "Win600": {"name": "Ambernic Win600", "btn_mapping": AMBERNIC_MAPPINGS},
+    "Win600": {
+        "name": "Ambernic Win600",
+        "btn_mapping": AMBERNIC_MAPPINGS,
+        "extra_buttons": "none",
+    },
 }
 
 

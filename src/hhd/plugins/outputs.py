@@ -249,7 +249,7 @@ def get_outputs_config(
     has_leds: bool = True,
     start_disabled: bool = False,
     default_device: str | None = None,
-    extra_buttons: Literal["none", "dual", "quad"] = "quad",
+    extra_buttons: Literal["none", "dual", "quad"] = "dual",
 ):
     s = load_relative_yaml("outputs.yml")
     if not can_disable:
