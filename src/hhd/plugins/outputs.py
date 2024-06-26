@@ -72,6 +72,7 @@ def get_outputs(
             # NOOP
             UInputDevice.close_cached()
             Dualsense.close_cached()
+            noob_mode = conf.get("uinput.noob_mode", False)
         case "dualsense_edge":
             UInputDevice.close_cached()
             flip_z = conf["dualsense_edge.flip_z"].to(bool)
