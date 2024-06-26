@@ -18,6 +18,14 @@ modes:
           Disables the built-in controller.
           External controllers will be slot 1.
           Overlay will still work.
+      noob_mode:
+        type: bool
+        title: Extra buttons as Keyboard/Overlay
+        tags: [non-essential]
+        default: True
+        hint: >-
+          Makes the left paddle bring up a keyboard and the right paddle bring
+          up the overlay.
   #
   # evdev through uinput
   #
@@ -46,7 +54,7 @@ modes:
 
       noob_mode:
         type: bool
-        title: Paddles as Keyboard/Overlay
+        title: Extra buttons as Keyboard/Overlay
         tags: [non-essential]
         default: True
         hint: >-
@@ -121,15 +129,17 @@ modes:
           to control them.
         default: True
 
-      paddles_to_clicks:
-        type: bool
-        title: Paddles to Clicks
+      paddles_as:
+        type: multiple
+        title: Extra buttons as
         hint: >-
-          Maps the paddles of the device to left and right touchpad clicks
-          making them usable in Steam.
-          If more than 2 paddles (e.g., Legion Go) uses the top ones.
-          If extra buttons (e.g., Ayaneo, GPD), uses them instead.
-        default: True
+          Changes the behavior of the extra buttons.
+        options:
+          noob: Keyboard/Overlay
+          touchpad: Touchpad Clicks
+          both: Shortctus + Touchpad Clicks
+          disabled: Disabled
+        default: noob
 
       sync_gyro:
         type: bool

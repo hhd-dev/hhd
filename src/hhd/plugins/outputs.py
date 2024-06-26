@@ -1,24 +1,24 @@
 import logging
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Sequence, Literal
 
-from ..controller.base import Consumer, Producer, RgbMode, RgbZones, RgbSettings
+from ..controller.base import Consumer, Producer, RgbMode, RgbSettings, RgbZones
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
+    CONTROLLER_THEMES,
+    GAMEPAD_BUTTON_MAP,
     HHD_PID_MOTION,
-    HHD_VID,
     HHD_PID_TOUCHPAD,
+    HHD_VID,
     MOTION_AXIS_MAP,
     MOTION_AXIS_MAP_FLIP_Z,
     MOTION_CAPABILITIES,
     MOTION_INPUT_PROPS,
+    MOTION_LEFT_AXIS_MAP,
+    MOTION_LEFT_AXIS_MAP_FLIP_Z,
     TOUCHPAD_AXIS_MAP,
     TOUCHPAD_BUTTON_MAP,
     TOUCHPAD_CAPABILITIES,
-    CONTROLLER_THEMES,
-    MOTION_LEFT_AXIS_MAP,
-    MOTION_LEFT_AXIS_MAP_FLIP_Z,
     XBOX_ELITE_BUTTON_MAP,
-    GAMEPAD_BUTTON_MAP,
     UInputDevice,
 )
 from .plugin import is_steam_gamepad_running, run_steam_command
@@ -72,7 +72,7 @@ def get_outputs(
             # NOOP
             UInputDevice.close_cached()
             Dualsense.close_cached()
-            noob_mode = conf.get("uinput.noob_mode", False)
+            noob_mode = conf.get("hidden.noob_mode", False)
         case "dualsense_edge":
             UInputDevice.close_cached()
             flip_z = conf["dualsense_edge.flip_z"].to(bool)
@@ -86,7 +86,7 @@ def get_outputs(
                 enable_rgb=uses_leds,
                 fake_timestamps=not motion,
                 sync_gyro=conf["dualsense_edge.sync_gyro"].to(bool) and motion,
-                paddles_to_clicks=False,
+                paddles_to_clicks="disabled",
                 flip_z=flip_z,
                 controller_id=controller_id,
                 cache=True,
@@ -98,6 +98,16 @@ def get_outputs(
             flip_z = conf["dualsense.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense.led_support", False)
+            paddles_as = conf.get("dualsense.paddles_as", "noob")
+            noob_mode = paddles_as in ("noob", "both")
+
+            if paddles_as == "both":
+                paddles_to_clicks = "bottom"
+            elif paddles_as == "touchpad":
+                paddles_to_clicks = "top"
+            else:
+                paddles_to_clicks = "disabled"
+
             d = Dualsense(
                 touchpad_method=correction,
                 edge_mode=False,
@@ -106,7 +116,7 @@ def get_outputs(
                 enable_rgb=uses_leds,
                 fake_timestamps=not motion,
                 sync_gyro=conf["dualsense.sync_gyro"].to(bool) and motion,
-                paddles_to_clicks=conf["dualsense.paddles_to_clicks"].to(bool),
+                paddles_to_clicks=paddles_to_clicks,
                 flip_z=flip_z,
                 controller_id=controller_id,
                 cache=True,
@@ -186,7 +196,7 @@ def get_outputs(
             enable_rgb=False,
             fake_timestamps=False,
             sync_gyro=True,
-            paddles_to_clicks=False,
+            paddles_to_clicks="disabled",
             flip_z=flip_z,
             controller_id=5,
             cache=True,
@@ -239,6 +249,7 @@ def get_outputs_config(
     has_leds: bool = True,
     start_disabled: bool = False,
     default_device: str | None = None,
+    extra_buttons: Literal["none", "dual", "quad"] = "quad",
 ):
     s = load_relative_yaml("outputs.yml")
     if not can_disable:
@@ -246,6 +257,15 @@ def get_outputs_config(
     if not has_leds:
         del s["modes"]["dualsense"]["children"]["led_support"]
         del s["modes"]["dualsense_edge"]["children"]["led_support"]
+
+    if extra_buttons == "none":
+        del s["modes"]["dualsense"]["children"]["paddles_as"]
+        del s["modes"]["uinput"]["children"]["noob_mode"]
+        del s["modes"]["hidden"]["children"]["noob_mode"]
+        del s['modes']['dualsense_edge']
+        del s["modes"]["xbox_elite"]
+    elif extra_buttons == "dual":
+        del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
 
     # Set xbox as default for now
     s["default"] = "uinput"
