@@ -266,6 +266,7 @@ def get_outputs_config(
         del s["modes"]["xbox_elite"]
     elif extra_buttons == "dual":
         del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
+        s["modes"]["dualsense"]["children"]["paddles_as"]["default"] = "noob"
 
     # Set xbox as default for now
     s["default"] = "uinput"
