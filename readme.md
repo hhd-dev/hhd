@@ -35,10 +35,12 @@ web app ([hhd.dev](https://hhd.dev)) and desktop app
 - Xbox Elite emulation
   - No weird glyphs
   - Back button support
-- Complete SDL UInput Emulation
+- Extra buttons as:
+  - Steam Keyboard + Overlay Shortcuts
+  - Left/Right Touchpad clicks in Dualsense mode (supported by Steam + Dualsense Games)
+- Complete SDL UInput Emulation (currently disabled, see https://github.com/libsdl-org/SDL/issues/9688 )
   - Joycon (Left, Right, Pair), Switch Pro, Dualsense (Edge), Xbox One, Xbox Series X, Xbox 360
   - Gyro + Paddles for all SDL apps 
-  - Dual Evdev Motion Controllers for Legion Go
 - Virtual Touchpad Emulation
   - Fixes left and right clicks within gamemode when using the device touchpad.
 - Power Button plugin for Big Picture/Steam Deck Mode
@@ -48,9 +50,9 @@ web app ([hhd.dev](https://hhd.dev)) and desktop app
   - For ROG Ally and Legion Go: 
     - TDP, Fan Curves, Charge Limiting the Asus and Lenovo way
     - Asus: Kernel Driver
-    - Lenovo: acpi_call while the kernel driver is being developed
+    - Lenovo: `acpi_call` while the kernel driver is being developed
   - For Other Devices without firmware TDP controls:
-    - acpi_call + AMD's official manufacturer TDP ACPI bindings
+    - `acpi_call` + AMD's official manufacturer TDP ACPI bindings
     - Ayaneo, Ayn, GPD, OneXPlayer
 - Configuration:
   - Fully Featured Gamemode (Gamescope) Overlay
@@ -87,10 +89,15 @@ is added to your device.
   - NEO 2021/Founder
 - Ayn
   - Loki Zero/Max
-- AOKZOE
-  - A1 Normal/Pro (No LEDs)
-- Onexplayer
+- AOKZOE (No LEDs)
+  - A1 Normal/Pro
+- Onexplayer (No LEDs)
   - Mini Pro
+  - F1, F1 EVA-01
+  - mini A07
+  - 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
+- Ambernic
+  - Win600 (no keyboard button yet)
 
 In addition, Handheld Daemon will attempt to work on Ayaneo, Ayn, Onexplayer, and 
 GPD Win devices that have not been verified to work 
@@ -98,6 +105,7 @@ GPD Win devices that have not been verified to work
 If everything works and you fix the gyro axis for your device, open an issue
 so that your device can be added to the supported list.
 The touchpad will not work for devices not on the supported list.
+Help is needed for OneXPlayer/AOKZOE LED Support.
 
 ## Installation Instructions
 Use the following script to install Handheld Daemon or find your OS [here](#os-install):
