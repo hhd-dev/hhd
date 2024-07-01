@@ -60,7 +60,7 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: update to '${{ github.event.release.name }}'
           allow_empty_commits: false
-          ssh_keyscan_types: rsa,dsa,ecdsa,ed25519
+          ssh_keyscan_types: rsa,ecdsa,ed25519
           updpkgsums: true
 
   deploy_copr:
