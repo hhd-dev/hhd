@@ -517,10 +517,9 @@ class Multiplexer:
         self.qam_pre_sent = False
         self.qam_released = None
         self.qam_times = 0
-        self.qam_multi_tap = (
-            qam_multi_tap
-            and not os.environ.get("HHD_QAM_MULTI_DISABLE", None)
-            and not (self.emit and self.emit.simple_qam())
+        self.qam_multi_tap = qam_multi_tap
+        self.qam_simple = os.environ.get("HHD_QAM_MULTI_DISABLE", None) or (
+            self.emit and self.emit.simple_qam()
         )
         self.guide_pressed = False
         self.steam_check = params.get("steam_check", None)
@@ -895,7 +894,7 @@ class Multiplexer:
 
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore
-                        if self.qam_multi_tap:
+                        if not self.qam_simple:
                             if ev["value"]:
                                 self.qam_times += 1
                                 self.qam_pressed = curr
@@ -1089,12 +1088,18 @@ class Multiplexer:
         # If it was disabled, the code is a NO-OP
         qam_apply = False
         was_held = True
+        # Apply hold
         if self.qam_pressed and curr - self.qam_pressed > self.QAM_HOLD_TIME:
             qam_apply = True
+        # Apply double tap
         if self.qam_released and (
             curr - self.qam_released > self.QAM_MULTI_PRESS_DELAY
         ):
             qam_apply = True
+        # Apply if double tap disabled
+        if not self.qam_multi_tap and self.qam_released:
+            qam_apply = True
+
         if (
             self.qam_pressed
             and self.qam_times == 2
