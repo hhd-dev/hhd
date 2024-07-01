@@ -36,6 +36,7 @@ from threading import Lock
 import fuse
 from fuse import Fuse
 
+FUSE_MOUNT_DIR = "/run/hhd-tdp/"
 FUSE_MOUNT_SOCKET = "/run/hhd-tdp/socket"
 TIMEOUT = 1
 PACK_SIZE = 1024
@@ -157,6 +158,7 @@ class Xmp(Fuse):
         os.chdir(self.root)
 
     def main(self, *a, **kw):
+        os.makedirs(FUSE_MOUNT_DIR, exist_ok=True)
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(FUSE_MOUNT_SOCKET)
