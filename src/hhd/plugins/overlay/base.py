@@ -20,8 +20,10 @@ from .overlay import (
 from .x11 import (
     find_hhd,
     find_steam,
+    make_hhd_not_focusable,
     find_x11_auth,
     find_x11_display,
+    does_steam_exist,
     get_gamescope_displays,
     get_overlay_display,
     hide_hhd,
@@ -131,6 +133,7 @@ def loop_manage_overlay(
 
         hhd = find_hhd(disp)
         steam = find_steam(disp)
+        steam_exists = does_steam_exist(disp)
         old = None
         shown = False
 
@@ -144,8 +147,8 @@ def loop_manage_overlay(
             if not hhd:
                 logger.error(f"UI Window not found, exitting overlay.")
                 break
-            if not steam:
-                logger.error(f"Steam window not found, exitting overlay.")
+            if not steam and steam_exists:
+                logger.error(f"Steam window not found but steam is active, exitting overlay.")
                 break
 
             start = time.perf_counter()
@@ -158,11 +161,16 @@ def loop_manage_overlay(
             # If steam tries to appear while the overlay is active
             # yank its focus
             process_events(disp)
-            if shown:
+            if steam and shown:
                 old, was_shown = update_steam_values(disp, steam, old)
                 if was_shown:
                     show_hhd(disp, hhd, steam)
                     logger.warning("Steam opened, hiding it.")
+            
+            # If we are running on a headless session
+            # make sure hhd cant be focused
+            if not steam and not shown:
+                make_hhd_not_focusable(disp)
 
             # Process system logs
             while True:
@@ -188,7 +196,8 @@ def loop_manage_overlay(
                         shown = False
                     else:
                         if not shown:
-                            old, _ = update_steam_values(disp, steam, None)
+                            if steam:
+                                old, _ = update_steam_values(disp, steam, None)
                             show_hhd(disp, hhd, steam)
                             writer.reset()
                         shown = True

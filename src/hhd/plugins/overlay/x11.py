@@ -222,6 +222,10 @@ def find_steam(display: display.Display):
     return find_win(display, ["steamwebhelper", "steam"])
 
 
+def does_steam_exist(display: display.Display):
+    return find_win(display, ["steamwebhelper"]) or find_win(display, ["steam"])
+
+
 def print_data(display: display.Display):
     for w in (find_hhd(display), find_steam(display), display.screen().root):
         if not w:
@@ -280,6 +284,7 @@ def prepare_hhd(display, hhd):
     hhd.change_property(display.get_atom("STEAM_GAME"), Xatom.CARDINAL, 32, [5335])
     hhd.change_property(display.get_atom("STEAM_NOTIFICATION"), Xatom.CARDINAL, 32, [0])
     hhd.change_property(display.get_atom("STEAM_BIGPICTURE"), Xatom.CARDINAL, 32, [1])
+    hhd.change_property(display.get_atom("GAMESCOPE_NO_FOCUS"), Xatom.CARDINAL, 32, [1])
     display.flush()
     display.sync()
 
@@ -345,9 +350,10 @@ def show_hhd(display, hhd, steam):
 
     hhd.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
     hhd.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
-    steam.change_property(stat_focus, Xatom.CARDINAL, 32, [0])
-    steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
-    steam.change_property(stat_notify, Xatom.CARDINAL, 32, [0])
+    if steam:
+        steam.change_property(stat_focus, Xatom.CARDINAL, 32, [0])
+        steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
+        steam.change_property(stat_notify, Xatom.CARDINAL, 32, [0])
 
     if touch_was_set:
         # Give it a bit of time before setting the touch target to avoid steam
@@ -372,7 +378,7 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
     hhd.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
 
     # Restore steam
-    if old:
+    if steam and old:
         if old.focus:
             steam.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
         if old.overlay:
@@ -386,6 +392,49 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
 
     display.flush()
     display.sync()
+
+
+def make_hhd_not_focusable(display):
+    stat_focused = display.get_atom("GAMESCOPECTRL_BASELAYER_APPID")
+    stat_focusable = display.get_atom("GAMESCOPE_FOCUSABLE_APPS")
+
+    focusable = display.screen().root.get_property(
+        stat_focusable, Xatom.CARDINAL, 0, 50
+    )
+    curr = display.screen().root.get_property(stat_focused, Xatom.CARDINAL, 0, 50)
+
+    if not focusable or not focusable.value:
+        # Cannot print here or the logs will be swarmed
+        # There should always be something here
+        return
+
+    # Check whether we should write focusable apps to hide hhd
+    write_focus = False
+    if not curr or not curr.value:
+        write_focus = True
+    else:
+        for i in focusable.value:
+            if i == 5335:
+                # skip hhd
+                continue
+            found = False
+            for j in curr.value:
+                if i == j:
+                    found = True
+                    break
+            if not found:
+                write_focus = True
+                break
+
+    # Hide HHD
+    if write_focus:
+        new_focus = [v for v in focusable.value if v != 5335]
+        logger.info(f"Hiding Handheld Daemon from gamescope. Setting focusable apps to: {new_focus}")
+        display.screen().root.change_property(
+            stat_focused, Xatom.CARDINAL, 32, new_focus
+        )
+        display.flush()
+        display.sync()
 
 
 def monitor_gamescope(emit: Emitter, ctx, should_exit: TEvent):
