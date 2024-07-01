@@ -166,6 +166,11 @@ class SmuQamPlugin(HHDPlugin):
         self.old_tdp = new_tdp
         self.old_boost = new_boost
 
+    def notify(self, events: Sequence[Event]):
+        for ev in events:
+            if ev["type"] == "tdp":
+                self.new_tdp = ev["tdp"]
+
     def close(self):
         pass
 
@@ -320,11 +325,6 @@ class SmuDriverPlugin(HHDPlugin):
             conf["tdp.smu.status"] = "Set"
         else:
             conf["tdp.smu.status"] = "Not Set"
-
-    def notify(self, events: Sequence[Event]):
-        for ev in events:
-            if ev["type"] == "tdp":
-                self.new_tdp = ev["tdp"]
 
     def close(self):
         pass
