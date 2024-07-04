@@ -807,52 +807,6 @@ class Multiplexer:
                         if ev["value"]:
                             self.emit({"type": "special", "event": "guide"})
 
-                    if self.noob_mode and ev["code"] == "extra_l1" and ev["value"]:
-                        ev["code"] = ""  # type: ignore
-                        if self.open_steam_kbd(True):
-                            logger.info(f"Opened steam keyboard directly.")
-                        else:
-                            logger.warning(
-                                f"Could not open steam keyboard directly. Sending chord."
-                            )
-                            out.append(
-                                {
-                                    "type": "button",
-                                    "code": "mode",
-                                    "value": True,
-                                },
-                            )
-                            self.queue.append(
-                                (
-                                    {
-                                        "type": "button",
-                                        "code": "y" if self.nintendo_qam else "x",
-                                        "value": True,
-                                    },
-                                    curr + self.QAM_DELAY,
-                                )
-                            )
-                            self.queue.append(
-                                (
-                                    {
-                                        "type": "button",
-                                        "code": "y" if self.nintendo_qam else "x",
-                                        "value": False,
-                                    },
-                                    curr + 2 * self.QAM_DELAY,
-                                ),
-                            )
-                            self.queue.append(
-                                (
-                                    {
-                                        "type": "button",
-                                        "code": "mode",
-                                        "value": False,
-                                    },
-                                    curr + 2 * self.QAM_DELAY,
-                                ),
-                            )
-
                     if (
                         self.dpad == "discrete_to_analog" or self.dpad == "both"
                     ) and ev["code"] in (
@@ -886,11 +840,6 @@ class Multiplexer:
                                 "value": ev["value"] * val,
                             }
                         )
-
-                    if self.noob_mode and ev["code"] == "extra_r1" and ev["value"]:
-                        ev["code"] = ""
-                        if self.emit:
-                            self.emit({"type": "special", "event": "overlay"})
 
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore
@@ -943,6 +892,57 @@ class Multiplexer:
                                         curr + 2 * self.QAM_DELAY,
                                     ),
                                 )
+
+                    if self.noob_mode and ev["code"] == "extra_l1" and ev["value"]:
+                        ev["code"] = ""  # type: ignore
+                        if self.open_steam_kbd(True):
+                            logger.info(f"Opened steam keyboard directly.")
+                        else:
+                            logger.warning(
+                                f"Could not open steam keyboard directly. Sending chord."
+                            )
+                            out.append(
+                                {
+                                    "type": "button",
+                                    "code": "mode",
+                                    "value": True,
+                                },
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "y" if self.nintendo_qam else "x",
+                                        "value": True,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                )
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "y" if self.nintendo_qam else "x",
+                                        "value": False,
+                                    },
+                                    curr + 2 * self.QAM_DELAY,
+                                ),
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "mode",
+                                        "value": False,
+                                    },
+                                    curr + 2 * self.QAM_DELAY,
+                                ),
+                            )
+
+                    if self.noob_mode and ev["code"] == "extra_r1" and ev["value"]:
+                        ev["code"] = ""
+                        if self.emit:
+                            self.emit({"type": "special", "event": "overlay"})
 
                     if ev["code"] == "touchpad_right":
                         match self.touchpad_right:
