@@ -24,7 +24,7 @@ class AmdGPUPlugin(HHDPlugin):
     ) -> None:
         self.name = f"adjustor_ppd"
         self.priority = 8
-        self.log = "appd"
+        self.log = "agpu"
         self.core_available = False
         self.core_enabled = False
         self.enabled = False
@@ -87,7 +87,10 @@ class AmdGPUPlugin(HHDPlugin):
 
         if self.ppd_conflict:
             self.initialized = False
-            return {"tdp": {"ppd": sets["conflict"]}, "hhd": {"settings": sets["core"]}}
+            return {
+                "tdp": {"amd_energy": sets["conflict"]},
+                "hhd": {"settings": sets["core"]},
+            }
 
         self.initialized = True
         freq = sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
@@ -120,7 +123,10 @@ class AmdGPUPlugin(HHDPlugin):
             ]
 
         self.logged_boost = True
-        return {"tdp": {"ppd": sets["enabled"]}, "hhd": {"settings": sets["core"]}}
+        return {
+            "tdp": {"amd_energy": sets["enabled"]},
+            "hhd": {"settings": sets["core"]},
+        }
 
     def open(
         self,
@@ -129,24 +135,29 @@ class AmdGPUPlugin(HHDPlugin):
     ):
         self.emit = emit
 
+    def notify(self, events):
+        for event in events:
+            if event["type"] == "energy":
+                self.target = event["status"]
+
     def update(self, conf: Config):
         self.core_enabled = conf["hhd.settings.tdp_enable"].to(bool)
         if not self.core_enabled or not self.core_available:
             return
 
-        enabled = conf["hhd.settings.ppd_enable"].to(bool)
+        enabled = conf["hhd.settings.amd_energy_enable"].to(bool)
         if enabled != self.enabled:
             self.emit({"type": "settings"})
         self.enabled = enabled
 
-        if self.ppd_conflict and conf.get("tdp.ppd.enable", False):
-            conf["tdp.ppd.enable"] = False
+        if self.ppd_conflict and conf.get("tdp.amd_energy.enable", False):
+            conf["tdp.amd_energy.enable"] = False
             self.emit({"type": "settings"})
 
         if not self.initialized:
             return
 
-        if conf["tdp.ppd.mode.mode"].to(str) == "auto":
+        if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
             if self.target == self.old_target:
                 return
             self.old_target = self.target
@@ -180,8 +191,10 @@ class AmdGPUPlugin(HHDPlugin):
             self.old_epp = None
         else:
             self.old_target = None
-            new_gpu = conf["tdp.ppd.mode.manual.gpu_freq.mode"].to(str)
-            new_freq = conf["tdp.ppd.mode.manual.gpu_freq.manual.frequency"].to(int)
+            new_gpu = conf["tdp.amd_energy.mode.manual.gpu_freq.mode"].to(str)
+            new_freq = conf["tdp.amd_energy.mode.manual.gpu_freq.manual.frequency"].to(
+                int
+            )
             if new_gpu != self.old_gpu or new_freq != self.old_freq:
                 self.old_gpu = new_gpu
                 self.old_freq = new_freq
@@ -195,7 +208,7 @@ class AmdGPUPlugin(HHDPlugin):
                     logger.error(f"Failed to set GPU mode:\n{e}")
 
             if self.supports_boost:
-                new_boost = conf["tdp.ppd.mode.manual.cpu_boost"].to(bool)
+                new_boost = conf["tdp.amd_energy.mode.manual.cpu_boost"].to(bool)
                 if new_boost != self.old_boost:
                     self.old_boost = new_boost
                     try:
@@ -204,7 +217,7 @@ class AmdGPUPlugin(HHDPlugin):
                         logger.error(f"Failed to set CPU boost:\n{e}")
 
             if self.supports_epp:
-                new_epp = conf["tdp.ppd.mode.manual.cpu_pref"].to(str)
+                new_epp = conf["tdp.amd_energy.mode.manual.cpu_pref"].to(str)
                 if new_epp != self.old_epp:
                     self.old_epp = new_epp
                     try:

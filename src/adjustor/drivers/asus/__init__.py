@@ -124,6 +124,7 @@ class AsusDriverPlugin(HHDPlugin):
         self.queue_fan = None
         self.queue_tdp = None
         self.new_tdp = None
+        self.old_target = None
 
     def settings(self):
         if not self.enabled:
@@ -143,7 +144,7 @@ class AsusDriverPlugin(HHDPlugin):
         emit,
         context: Context,
     ):
-        pass
+        self.emit = emit
 
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -190,6 +191,7 @@ class AsusDriverPlugin(HHDPlugin):
         #
         # TDP
         #
+        new_target = None
 
         # Reset fan curve on mode change
         # Has to happen before setting the stdp, ftdp values, in case
@@ -230,10 +232,13 @@ class AsusDriverPlugin(HHDPlugin):
                 steady = 5
             if steady < 13:
                 set_platform_profile("quiet")
+                new_target = "power"
             elif steady < 20:
                 set_platform_profile("balanced")
+                new_target = "balanced"
             else:
                 set_platform_profile("performance")
+                new_target = "performance"
 
             self.queue_tdp = None
             if boost:
@@ -250,6 +255,10 @@ class AsusDriverPlugin(HHDPlugin):
                 set_tdp("slow", STDP_FN, steady)
                 time.sleep(TDP_DELAY)
                 set_tdp("steady", CTDP_FN, steady)
+
+        if new_target and new_target != self.old_target:
+            self.old_target = new_target
+            self.emit({"type": "energy", "status": new_target})
 
         # Handle fan curve resets
         if conf["tdp.asus.fan.manual.reset"].to(bool):

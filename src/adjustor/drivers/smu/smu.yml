@@ -28,6 +28,15 @@ children:
       balanced-performance: Balanced Performance
       performance: Performance
 
+  energy_policy:
+    type: multiple
+    title: Energy Policy
+    default: balanced
+    options:
+      power: Power
+      balanced: Balanced
+      performance: Performance
+
   std:
     tags: [advanced]
     type: container
@@ -95,14 +104,6 @@ children:
         step: 1
         unit: W
         default: 15
-
-      # acdc:
-      #   type: multiple
-      #   title: Energy Policy Override
-      #   options:
-      #     disabled: Disabled
-      #     power_saving: Battery
-      #     max_performance: Plugged In
 
   adv:
     tags: [advanced]

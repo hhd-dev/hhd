@@ -1,8 +1,13 @@
 from .alib import A, D, DeviceParams, AlibParams
 
-ROG_ALLY_PP_MAP = [
+PLATFORM_PROFILE_MAP = [
     ("low-power", 0),
     ("quiet", 0),
+    ("balanced", 13),
+    ("performance", 20),
+]
+ENERGY_MAP = [
+    ("power", 0),
     ("balanced", 13),
     ("performance", 20),
 ]

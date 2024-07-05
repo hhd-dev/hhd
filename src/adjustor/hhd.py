@@ -10,7 +10,7 @@ from hhd.plugins.plugin import Emitter
 from hhd.utils import expanduser
 
 from adjustor.core.acpi import check_perms, initialize
-from adjustor.core.const import CPU_DATA, DEV_DATA, ROG_ALLY_PP_MAP
+from adjustor.core.const import CPU_DATA, DEV_DATA, PLATFORM_PROFILE_MAP, ENERGY_MAP
 
 from .i18n import _
 
@@ -280,7 +280,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         )
         drivers.append(
             SmuQamPlugin(
-                dev, ROG_ALLY_PP_MAP if pp_enable else None, init_tdp=not prod == "83E1"
+                dev,
+                PLATFORM_PROFILE_MAP if pp_enable else None,
+                ENERGY_MAP,
+                init_tdp=not prod == "83E1",
             ),
         )
         drivers_matched = True
@@ -297,7 +300,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                     )
                 )
                 drivers.append(
-                    SmuQamPlugin(dev, ROG_ALLY_PP_MAP),
+                    SmuQamPlugin(dev, PLATFORM_PROFILE_MAP, ENERGY_MAP),
                 )
                 use_acpi_call = True
                 break

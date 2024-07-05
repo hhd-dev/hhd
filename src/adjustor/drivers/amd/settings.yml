@@ -14,6 +14,8 @@ enabled:
           hint: >-
             Handheld Daemon will manage the energy management settings.
             This includes CPU governor, CPU boost, GPU frequency, and CPU power preferences.
+            At low TDPs, the CPU will be tuned down and at other TDPs, it will
+            use balanced settings.
         manual:
           type: container
           title: Manual
@@ -89,7 +91,7 @@ conflict:
 core:
   type: container
   children:
-    ppd_enable:
+    amd_energy_enable:
       title: Enable energy management
       type: bool
       default: True

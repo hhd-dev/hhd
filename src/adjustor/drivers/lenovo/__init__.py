@@ -43,6 +43,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.queue_fan = None
         self.queue_tdp = None
         self.new_tdp = None
+        self.old_target = None
 
     def settings(self):
         if not self.enabled:
@@ -64,7 +65,7 @@ class LenovoDriverPlugin(HHDPlugin):
         emit,
         context: Context,
     ):
-        pass
+        self.emit = emit
 
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -120,6 +121,7 @@ class LenovoDriverPlugin(HHDPlugin):
         #
 
         # Update tdp mode if user changed through the app
+        new_target = None
         new_tdp = self.new_tdp
         self.new_tdp = None
         if new_tdp:
@@ -157,6 +159,16 @@ class LenovoDriverPlugin(HHDPlugin):
                 time.sleep(TDP_DELAY)
                 set_tdp_mode(tdp_mode)
                 tdp_reset = True
+
+        # Handle EPP for presets
+        if tdp_reset and new_mode != "custom":
+            match new_mode:
+                case "quiet":
+                    new_target = "power"
+                case "balanced":
+                    new_target = "balanced"
+                case "performance":
+                    new_target = "performance"
 
         # In custom mode, re-apply settings with debounce
         if new_mode == "custom":
@@ -208,6 +220,19 @@ class LenovoDriverPlugin(HHDPlugin):
                     set_slow_tdp(steady)
                     time.sleep(TDP_DELAY)
                     set_fast_tdp(steady)
+
+                # Handle EPP for custom mode
+                if steady < 12:
+                    new_target = "power"
+                elif steady <= 20:
+                    new_target = "balanced"
+                else:
+                    new_target = "performance"
+
+        # Handle EPP application
+        if new_target and new_target != self.old_target:
+            self.old_target = new_target
+            self.emit({"type": "energy", "status": new_target})
 
         # Fan curve stuff
         # If tdp reset, so was the curve

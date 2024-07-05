@@ -20,6 +20,7 @@ class SmuQamPlugin(HHDPlugin):
         self,
         dev: dict[str, DeviceParams],
         pp_map: list[tuple[str, int]] | None,
+        energy_map: list[tuple[str, int]] | None,
         init_tdp: bool = True,
     ) -> None:
         self.name = f"adjustor_smu_qam"
@@ -45,6 +46,7 @@ class SmuQamPlugin(HHDPlugin):
         # startup
         self.init_tdp = init_tdp
 
+        self.energy_map = energy_map
         if pp_map:
             self.pps = get_platform_choices() or []
             if self.pps:
@@ -141,6 +143,13 @@ class SmuQamPlugin(HHDPlugin):
                         pp = npp
                 conf["tdp.smu.platform_profile"] = pp
 
+            if self.energy_map:
+                ep = self.energy_map[0][0]
+                for nep, tdp in self.energy_map:
+                    if tdp < new_tdp:
+                        ep = nep
+                conf["tdp.smu.energy_policy"] = ep
+
             if new_boost:
                 try:
                     fmax = self.dev["fast_limit"].smax
@@ -193,6 +202,7 @@ class SmuDriverPlugin(HHDPlugin):
         self.dev = dev
         self.cpu = cpu
 
+        self.old_target = None
         self.check_pp = platform_profile
         self.has_pp = False
         self.old_pp = None
@@ -261,7 +271,7 @@ class SmuDriverPlugin(HHDPlugin):
         emit,
         context: Context,
     ):
-        pass
+        self.emit = emit
 
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -308,9 +318,13 @@ class SmuDriverPlugin(HHDPlugin):
             if self.has_pp:
                 cpp = conf["tdp.smu.platform_profile"].to(str)
                 if cpp != "disabled":
-                    logger.info(f"Setting platform profile to '{cpp}'")
                     set_platform_profile(cpp)
                     time.sleep(PP_DELAY)
+
+            new_target = conf["tdp.smu.energy_policy"].to(str)
+            if new_target != self.old_target:
+                self.old_target = new_target
+                self.emit({"type": "energy", "status": new_target})  # type: ignore
 
             alib(
                 new_vals,
