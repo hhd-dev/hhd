@@ -489,11 +489,7 @@ def main():
                             conf.update(profiles[ev["name"]].conf)
                     case "state":
                         conf.update(ev["config"].conf)
-                    case "special":
-                        pass
-                    case "acpi":
-                        pass
-                    case "tdp":
+                    case "special" | "acpi" | "tdp" | "ppd" | "energy":
                         pass
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")

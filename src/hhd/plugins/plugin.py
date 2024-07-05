@@ -54,6 +54,11 @@ class ConfigEvent(TypedDict):
     config: Config
 
 
+class EnergyEvent(TypedDict):
+    type: Literal["ppd", "energy"]
+    status: Literal["power", "balanced", "performance"]
+
+
 class InputEvent(TypedDict):
     type: Literal["input"]
     controller_id: int
