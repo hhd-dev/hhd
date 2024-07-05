@@ -77,6 +77,7 @@ Event = (
     | SpecialEvent
     | PowerEvent
     | TdpEvent
+    | EnergyEvent
 )
 
 
