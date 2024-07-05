@@ -16,7 +16,7 @@ from hhd.utils import restore_priviledge, switch_priviledge
 logger = logging.getLogger(__name__)
 
 X11_DIR = b"/tmp/.X11-unix/"
-
+HHD_ID = 5335
 
 class CachedValues(NamedTuple):
     overlay: bool
@@ -281,7 +281,7 @@ def print_debug(display: display.Display, args: list[str] = []):
 
 
 def prepare_hhd(display, hhd):
-    hhd.change_property(display.get_atom("STEAM_GAME"), Xatom.CARDINAL, 32, [5335])
+    hhd.change_property(display.get_atom("STEAM_GAME"), Xatom.CARDINAL, 32, [HHD_ID])
     hhd.change_property(display.get_atom("STEAM_NOTIFICATION"), Xatom.CARDINAL, 32, [0])
     hhd.change_property(display.get_atom("STEAM_BIGPICTURE"), Xatom.CARDINAL, 32, [1])
     hhd.change_property(display.get_atom("GAMESCOPE_NO_FOCUS"), Xatom.CARDINAL, 32, [1])
@@ -414,7 +414,7 @@ def make_hhd_not_focusable(display):
         write_focus = True
     else:
         for i in focusable.value:
-            if i == 5335:
+            if i == HHD_ID:
                 # skip hhd
                 continue
             found = False
@@ -428,7 +428,7 @@ def make_hhd_not_focusable(display):
 
     # Hide HHD
     if write_focus:
-        new_focus = [v for v in focusable.value if v != 5335]
+        new_focus = [v for v in focusable.value if v != HHD_ID]
         logger.info(f"Hiding Handheld Daemon from gamescope. Setting focusable apps to: {new_focus}")
         display.screen().root.change_property(
             stat_focused, Xatom.CARDINAL, 32, new_focus
