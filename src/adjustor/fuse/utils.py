@@ -16,7 +16,7 @@ def find_igpu():
             continue
         if not os.path.exists(f"/sys/class/hwmon/{hw}/name"):
             continue
-        with open(f"/sys/class/hwmon/{hw}/name") as f:
+        with open(f"/sys/class/hwmon/{hw}/name", 'r') as f:
             if "amdgpu" not in f.read():
                 continue
 

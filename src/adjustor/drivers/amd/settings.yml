@@ -1,42 +1,100 @@
-title: GPU Settings
-type: container
-tags: [ hide-title ]
-children:
-  level:
-    type: mode
-    title: GPU Frequency
-    hint: >-
-      Pins the GPU to a certain frequency.
-      Helps in certain games that are CPU or GPU heavy
-      by shifting power to or from the GPU.
-      Has a minor effect.
-    default: auto
-    modes:
-      auto:
-        type: container
-        title: Auto
-        hint: >-
-          Lets the GPU manage its own frequency.
-      manual:
-        type: container
-        title: Manual
-        hint: >-
-          Sets the GPU frequency manually.
-        children:
-          frequency:
-            title: Frequency
-            unit: MHz
-            type: int
-            min: 300
-            max: 2000
-            step: 100
-            default: 1000
+enabled:
+  title: Energy Management
+  type: container
+  tags: [ hide-title ]
+  children:
+    mode:
+      type: mode
+      title: Energy Management
+      default: auto
+      modes:
+        auto:
+          type: container
+          title: Auto
+          hint: >-
+            Handheld Daemon will manage the energy management settings.
+            This includes CPU governor, CPU boost, GPU frequency, and CPU power preferences.
+        manual:
+          type: container
+          title: Manual
+          hint: >-
+            Allows you to set the energy management settings manually.
+          children:
+            cpu_pref:
+              type: multiple
+              title: CPU Power
+              hint: >-
+                Sets the energy performance preference for the CPU.
+                Keep on balanced for good performance on all TDPs.
+                Options map to `power`, `balance_power`, `balance_performance`.
+                Performance is not recommended and is not included.
+              default: balance_power
+              options:
+                power: Low
+                balance_power: Balanced
+                balance_performance: High
+            cpu_boost:
+              type: bool
+              title: CPU Boost
+              default: True
+              hint: >-
+                Enables or disables the CPU boost frequencies.
+                Disabling lowers total consumption by 2W with 
+                minimal performance impact.
+            gpu_freq:
+              type: mode
+              title: GPU Frequency
+              hint: >-
+                Pins the GPU to a certain frequency.
+                Helps in certain games that are CPU or GPU heavy
+                by shifting power to or from the GPU.
+                Has a minor effect.
+              default: auto
+              modes:
+                auto:
+                  type: container
+                  title: Auto
+                  hint: >-
+                    Lets the GPU manage its own frequency.
+                manual:
+                  type: container
+                  title: Manual
+                  hint: >-
+                    Sets the GPU frequency manually.
+                  children:
+                    frequency:
+                      title: Frequency
+                      unit: MHz
+                      type: int
+                      min: 300
+                      max: 2000
+                      step: 100
+                      default: 1000
 
-  cpu_boost:
-    type: bool
-    title: CPU Boost
-    default: True
-    hint: >-
-      Enables or disables the CPU boost frequencies.
-      Disabling lowers total consumption by 2W with 
-      minimal performance impact.
+conflict:
+  title: Energy Management
+  type: container
+  tags: [ hide-title, non-essential ]
+  children:
+    enable_error:
+      title: Conflict Detected
+      type: display
+      default: >-
+        Energy Management can not be enabled while PPD or TuneD are enabled.
+        `systemctl disable --now tuned` or `power-profile-daemon`.
+    enable:
+      title: Enable Energy Management
+      type: action
+      tags: [ non-essential ]
+core:
+  type: container
+  children:
+    ppd_enable:
+      title: Enable energy management
+      type: bool
+      default: True
+      hint: >-
+        Handheld daemon will manage the power preferences for the system,
+        including Governor, Boost, GPU frequency, and EPP.
+        In addition, Handheld daemon will launch a PPD service to replace
+        PPD's role in the system. 

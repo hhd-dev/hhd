@@ -1,6 +1,7 @@
 import logging
 import os
 from typing import Literal, NamedTuple
+from typing import Sequence
 
 from adjustor.fuse.utils import find_igpu
 
@@ -9,6 +10,16 @@ GPU_FREQUENCY_PATH = "device/pp_od_clk_voltage"
 GPU_LEVEL_PATH = "device/power_dpm_force_performance_level"
 CPU_BOOST_PATH = "/sys/devices/system/cpu/amd_pstate/cpb_boost"
 
+CPU_PATH = "/sys/devices/system/cpu/"
+CPU_PREFIX = "cpu"
+BOOST_FN = "cpufreq/amdboost"
+EPP_AVAILABLE_FN = "cpufreq/energy_performance_available_preferences"
+EPP_FN = "cpufreq/energy_performance_preference"
+GOVERNOR_FN = "cpufreq/scaling_governor"
+
+EPP_MODES = ("performance", "balance_performance", "balance_power", "power")
+EppStatus = Literal["performance", "balance_performance", "balance_power", "power"]
+
 
 class GPUStatus(NamedTuple):
     mode: Literal["auto", "manual", "unknown"]
@@ -16,6 +27,8 @@ class GPUStatus(NamedTuple):
     freq_min: int
     freq_max: int
     cpu_boost: bool | None
+    epp_avail: Sequence[EppStatus] | None
+    epp: EppStatus | None
 
 
 def get_igpu_status():
@@ -26,6 +39,9 @@ def get_igpu_status():
     freq_min = None
     freq_max = None
     freq = None
+
+    epp_avail = None
+    epp = None
 
     with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "r") as f:
         for line in f.readlines():
@@ -44,11 +60,29 @@ def get_igpu_status():
         else:
             mode = "unknown"
 
-    if os.path.exists(CPU_BOOST_PATH):
+    cpu_boost_fn = os.path.join(CPU_PATH, CPU_PREFIX + "0", BOOST_FN)
+    if os.path.exists(cpu_boost_fn):
+        with open(cpu_boost_fn, "r") as f:
+            cpu_boost = f.read().strip() == "1"
+    elif os.path.exists(CPU_BOOST_PATH):
         with open(CPU_BOOST_PATH, "r") as f:
             cpu_boost = f.read().strip() == "1"
     else:
         cpu_boost = None
+
+    epp_avail_fn = os.path.join(CPU_PATH, CPU_PREFIX + "0", EPP_AVAILABLE_FN)
+    if os.path.exists(epp_avail_fn):
+        with open(epp_avail_fn, "r") as f:
+            epp_avail: Sequence[EppStatus] | None = [
+                p for p in f.read().strip().split() if p in EPP_MODES
+            ]
+
+    epp_fn = os.path.join(CPU_PATH, CPU_PREFIX + "0", EPP_FN)
+    if os.path.exists(epp_fn):
+        with open(epp_fn, "r") as f:
+            tmp = f.read().strip().split()
+            if tmp in EPP_MODES:
+                epp = tmp
 
     if freq and freq_min and freq_max and mode:
         return GPUStatus(
@@ -57,6 +91,8 @@ def get_igpu_status():
             freq_min=freq_min,
             freq_max=freq_max,
             cpu_boost=cpu_boost,
+            epp_avail=epp_avail,
+            epp=epp,
         )
     return None
 
@@ -83,9 +119,33 @@ def set_gpu_manual(freq: int):
             f.write(cmd)
 
 
+def set_per_cpu(fn: str, value: str):
+    for dir in os.listdir(CPU_PATH):
+        if not dir.startswith(CPU_PREFIX):
+            continue
+        # Make sure CPU# is a number
+        try:
+            int(dir[len(CPU_PREFIX) :])
+        except ValueError:
+            continue
+        with open(os.path.join(CPU_PATH, dir, fn), "w") as f:
+            f.write(value)
+
+
 def set_cpu_boost(enable: bool):
     logger.info(f"{'Enabling' if enable else 'Disabling'} CPU boost.")
-    if not os.path.exists(CPU_BOOST_PATH):
-        return None
-    with open(CPU_BOOST_PATH, "w") as f:
-        f.write("1" if enable else "0")
+    if os.path.exists(CPU_BOOST_PATH):
+        with open(CPU_BOOST_PATH, "w") as f:
+            f.write("1" if enable else "0")
+    elif os.path.exists(os.path.join(CPU_PATH, CPU_PREFIX + "0", BOOST_FN)):
+        set_per_cpu(BOOST_FN, "1" if enable else "0")
+
+
+def set_epp_mode(mode: EppStatus):
+    logger.info(f"Setting EPP mode to '{mode}'.")
+    set_per_cpu(EPP_FN, mode)
+
+
+def set_powersave_governor():
+    logger.info("Setting CPU governor to 'powersave'.")
+    set_per_cpu(GOVERNOR_FN, "powersave")
