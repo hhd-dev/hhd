@@ -1,6 +1,6 @@
 Name:           adjustor
 Version:        REPLACE_VERSION
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Adjustor, a userspace program for managing the TDP of handheld devices.
 
 License:        GPL-3.0-or-later
@@ -33,8 +33,8 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 
 %install
 %{python3} -m installer --destdir="%{buildroot}" dist/*.whl
-mkdir -p %{buildroot}%{_datarootdir}/dbus-1/system.d
-install -m644 usr/share/dbus-1/system.d/hhd-net.hadess.PowerProfiles.conf %{buildroot}%{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
+# mkdir -p %{buildroot}%{_datarootdir}/dbus-1/system.d
+# install -m644 usr/share/dbus-1/system.d/hhd-net.hadess.PowerProfiles.conf %{buildroot}%{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
 
 %files
 %doc readme.md
@@ -42,4 +42,4 @@ install -m644 usr/share/dbus-1/system.d/hhd-net.hadess.PowerProfiles.conf %{buil
 %{_bindir}/adj
 %{_bindir}/%{name}*
 %{python3_sitelib}/%{name}*
-%{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
+# %{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
