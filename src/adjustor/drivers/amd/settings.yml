@@ -25,6 +25,7 @@ enabled:
             cpu_pref:
               type: multiple
               title: CPU Power
+              tags: [ordinal]
               hint: >-
                 Sets the energy performance preference for the CPU.
                 Keep on balanced for good performance on all TDPs.
@@ -38,6 +39,7 @@ enabled:
             cpu_min_freq:
               type: multiple
               title: CPU Minimum Frequency
+              tags: [ordinal]
               default: min
               options:
                 min: 400MHz
@@ -45,6 +47,7 @@ enabled:
             cpu_boost:
               type: multiple
               title: CPU Boost
+              tags: [ordinal]
               default: enabled
               hint: >-
                 Enables or disables the CPU boost frequencies.
