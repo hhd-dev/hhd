@@ -5,6 +5,7 @@ import sys
 from threading import Event as TEvent
 from threading import Thread
 from typing import Literal
+import time
 
 from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
@@ -19,6 +20,8 @@ from adjustor.fuse.gpu import (
 )
 
 logger = logging.getLogger(__name__)
+
+APPLY_DELAY = 0.5
 
 
 def _ppd_client(emit, proc):
@@ -66,6 +69,7 @@ class AmdGPUPlugin(HHDPlugin):
         self.proc = None
         self.t = None
 
+        self.queue = None
         self.old_ppd = False
         self.old_gpu = None
         self.old_freq = None
@@ -212,32 +216,35 @@ class AmdGPUPlugin(HHDPlugin):
                 self.close()
 
         if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
-            if self.target == self.old_target:
-                return
-            self.old_target = self.target
+            curr = time.perf_counter()
+            if self.target != self.old_target:
+                self.old_target = self.target
+                self.queue = curr + APPLY_DELAY
 
-            logger.info(f"Handling energy settings for power profile '{self.target}'.")
-            match self.target:
-                case "balanced" | "performance":
-                    try:
-                        set_gpu_auto()
-                        if self.supports_boost:
-                            set_cpu_boost(True)
-                        if self.supports_epp:
-                            set_powersave_governor()
-                            set_epp_mode("balance_power")
-                    except Exception as e:
-                        logger.error(f"Failed to set mode:\n{e}")
-                case _:
-                    try:
-                        set_gpu_auto()
-                        if self.supports_boost:
-                            set_cpu_boost(False)
-                        if self.supports_epp:
-                            set_powersave_governor()
-                            set_epp_mode("power")
-                    except Exception as e:
-                        logger.error(f"Failed to set mode:\n{e}")
+            if self.queue is not None and curr >= self.queue:
+                self.queue = None
+                logger.info(f"Handling energy settings for power profile '{self.target}'.")
+                match self.target:
+                    case "balanced" | "performance":
+                        try:
+                            set_gpu_auto()
+                            if self.supports_boost:
+                                set_cpu_boost(True)
+                            if self.supports_epp:
+                                set_powersave_governor()
+                                set_epp_mode("balance_power")
+                        except Exception as e:
+                            logger.error(f"Failed to set mode:\n{e}")
+                    case _:
+                        try:
+                            set_gpu_auto()
+                            if self.supports_boost:
+                                set_cpu_boost(False)
+                            if self.supports_epp:
+                                set_powersave_governor()
+                                set_epp_mode("power")
+                        except Exception as e:
+                            logger.error(f"Failed to set mode:\n{e}")
 
             self.old_gpu = None
             self.old_freq = None
