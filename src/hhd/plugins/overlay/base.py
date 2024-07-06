@@ -139,7 +139,7 @@ def loop_manage_overlay(
 
         if hhd:
             logger.info(f"UI window found in gamescope, starting handler.")
-            prepare_hhd(disp, hhd)
+            prepare_hhd(disp, hhd, steam)
         if steam:
             register_changes(disp, steam)
 
