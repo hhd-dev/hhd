@@ -111,16 +111,17 @@ class AmdGPUPlugin(HHDPlugin):
             out = subprocess.check_output(
                 [
                     "systemctl",
-                    "list-unit-files",
+                    "list-units",
+                    "-t",
+                    "service",
+                    "--full",
+                    "--all",
                     "--plain",
                     "--no-legend",
                 ]
             )
             for line in out.decode().splitlines():
-                line = line.lower()
-                if (
-                    "power-profiles-daemon" in line or "tuned" in line
-                ) and "masked" not in line:
+                if "power-profiles-daemon" in line or "tuned" in line.lower():
                     self.ppd_conflict = True
                     break
         except Exception as e:
