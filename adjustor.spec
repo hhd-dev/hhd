@@ -19,6 +19,8 @@ Requires:       python3
 Requires:       python3-rich
 Requires:       python3-yaml
 Requires:       python3-pyroute2
+Requires:       python3-gobject
+Requires:       python-fuse
 
 %description
 Handheld Daemon is a project that aims to provide utilities for managing handheld devices. With features ranging from TDP controls, to controller remappings, and gamescope session management. This will be done through a plugin system and an HTTP(/d-bus?) daemon, which will expose the settings of the plugins in a UI agnostic way.
@@ -31,6 +33,8 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 
 %install
 %{python3} -m installer --destdir="%{buildroot}" dist/*.whl
+mkdir -p %{buildroot}%{_datarootdir}/dbus-1/system.d
+install -m644 usr/share/dbus-1/system.d/hhd-net.hadess.PowerProfiles.conf %{buildroot}%{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
 
 %files
 %doc readme.md
@@ -38,3 +42,4 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 %{_bindir}/adj
 %{_bindir}/%{name}*
 %{python3_sitelib}/%{name}*
+%{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
