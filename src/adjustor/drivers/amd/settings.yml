@@ -35,14 +35,24 @@ enabled:
                 power: Low
                 balance_power: Balanced
                 balance_performance: High
+            cpu_min_freq:
+              type: multiple
+              title: CPU Minimum Frequency
+              default: min
+              options:
+                min: 400MHz
+                nonlinear: 1GHz
             cpu_boost:
-              type: bool
+              type: multiple
               title: CPU Boost
-              default: True
+              default: enabled
               hint: >-
                 Enables or disables the CPU boost frequencies.
                 Disabling lowers total consumption by 2W with 
                 minimal performance impact.
+              options:
+                disabled: Disabled
+                enabled: Enabled
             gpu_freq:
               type: mode
               title: GPU Frequency

@@ -17,6 +17,12 @@ EPP_AVAILABLE_FN = "cpufreq/energy_performance_available_preferences"
 EPP_FN = "cpufreq/energy_performance_preference"
 GOVERNOR_FN = "cpufreq/scaling_governor"
 
+CPU_FREQ_DRIVER_MIN_FN = "cpufreq/cpuinfo_min_freq"
+CPU_FREQ_DRIVER_MAX_FN = "cpufreq/cpuinfo_max_freq"
+CPU_FREQ_NONLINEAR_MIN_FN = "cpufreq/amd_pstate_lowest_nonlinear_freq"
+CPU_FREQ_MAX_FN = "cpufreq/scaling_max_freq"
+CPU_FREQ_MIN_FN = "cpufreq/scaling_min_freq"
+
 EPP_MODES = ("performance", "balance_performance", "balance_power", "power")
 EppStatus = Literal["performance", "balance_performance", "balance_power", "power"]
 
@@ -119,6 +125,15 @@ def set_gpu_manual(freq: int):
             f.write(cmd)
 
 
+def read_from_cpu0(fn: str):
+    with open(os.path.join(CPU_PATH, CPU_PREFIX + "0", fn), "r") as f:
+        return f.read().strip()
+
+
+def is_in_cpu0(fn: str):
+    return os.path.exists(os.path.join(CPU_PATH, CPU_PREFIX + "0", fn))
+
+
 def set_per_cpu(fn: str, value: str):
     for dir in os.listdir(CPU_PATH):
         if not dir.startswith(CPU_PREFIX):
@@ -149,3 +164,24 @@ def set_epp_mode(mode: EppStatus):
 def set_powersave_governor():
     logger.info("Setting CPU governor to 'powersave'.")
     set_per_cpu(GOVERNOR_FN, "powersave")
+
+
+def can_use_nonlinear():
+    return is_in_cpu0(CPU_FREQ_NONLINEAR_MIN_FN)
+
+
+def set_frequency_scaling(nonlinear: bool):
+    if nonlinear:
+        min_freq = read_from_cpu0(CPU_FREQ_NONLINEAR_MIN_FN)
+    else:
+        min_freq = read_from_cpu0(CPU_FREQ_DRIVER_MIN_FN)
+    max_freq = read_from_cpu0(CPU_FREQ_DRIVER_MAX_FN)
+
+    try:
+        logger.info(
+            f"Setting CPU frequency scaling to [{int(min_freq)/1e6:.3f} GHz, {int(max_freq)/1e6:.3f} GHz]{' (nonlinear)' if nonlinear else ''}."
+        )
+    except Exception:
+        pass
+    set_per_cpu(CPU_FREQ_MIN_FN, min_freq)
+    set_per_cpu(CPU_FREQ_MAX_FN, max_freq)

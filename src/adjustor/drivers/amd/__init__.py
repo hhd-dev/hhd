@@ -17,6 +17,8 @@ from adjustor.fuse.gpu import (
     set_gpu_auto,
     set_gpu_manual,
     set_powersave_governor,
+    can_use_nonlinear,
+    set_frequency_scaling,
 )
 
 logger = logging.getLogger(__name__)
@@ -76,6 +78,7 @@ class AmdGPUPlugin(HHDPlugin):
         self.old_boost = None
         self.old_epp = None
         self.old_target = None
+        self.old_min_freq = None
         self.target: Literal["power", "balanced", "performance"] = "balanced"
 
         self.logged_boost = False
@@ -147,6 +150,12 @@ class AmdGPUPlugin(HHDPlugin):
             if not self.logged_boost:
                 logger.warning(f"CPU Boost toggling is not supported.")
             del sets["enabled"]["children"]["mode"]["manual"]["children"]["cpu_boost"]
+
+        self.supports_nonlinear = can_use_nonlinear()
+        if not self.supports_nonlinear:
+            del sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
+                "cpu_min_freq"
+            ]
 
         self.supports_epp = status.epp_avail is not None
         if self.supports_epp:
@@ -223,33 +232,43 @@ class AmdGPUPlugin(HHDPlugin):
 
             if self.queue is not None and curr >= self.queue:
                 self.queue = None
-                logger.info(f"Handling energy settings for power profile '{self.target}'.")
-                match self.target:
-                    case "balanced" | "performance":
-                        try:
+                logger.info(
+                    f"Handling energy settings for power profile '{self.target}'."
+                )
+                try:
+                    match self.target:
+                        case "balanced":
                             set_gpu_auto()
                             if self.supports_boost:
                                 set_cpu_boost(True)
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("balance_power")
-                        except Exception as e:
-                            logger.error(f"Failed to set mode:\n{e}")
-                    case _:
-                        try:
+                            set_frequency_scaling(nonlinear=False)
+                        case "performance":
+                            set_gpu_auto()
+                            if self.supports_boost:
+                                set_cpu_boost(True)
+                            if self.supports_epp:
+                                set_powersave_governor()
+                                set_epp_mode("balance_power")
+                            set_frequency_scaling(nonlinear=True)
+                        case _:  # power
                             set_gpu_auto()
                             if self.supports_boost:
                                 set_cpu_boost(False)
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("power")
-                        except Exception as e:
-                            logger.error(f"Failed to set mode:\n{e}")
+                            set_frequency_scaling(False)
+                except Exception as e:
+                    logger.error(f"Failed to set mode:\n{e}")
 
             self.old_gpu = None
             self.old_freq = None
             self.old_boost = None
             self.old_epp = None
+            self.old_min_freq = None
         else:
             self.old_target = None
             new_gpu = conf["tdp.amd_energy.mode.manual.gpu_freq.mode"].to(str)
@@ -273,7 +292,7 @@ class AmdGPUPlugin(HHDPlugin):
                 if new_boost != self.old_boost:
                     self.old_boost = new_boost
                     try:
-                        set_cpu_boost(new_boost)
+                        set_cpu_boost(new_boost == "enabled")
                     except Exception as e:
                         logger.error(f"Failed to set CPU boost:\n{e}")
 
@@ -287,6 +306,15 @@ class AmdGPUPlugin(HHDPlugin):
                         set_epp_mode(new_epp)  # type: ignore
                     except Exception as e:
                         logger.error(f"Failed to set EPP mode:\n{e}")
+
+            if self.supports_nonlinear:
+                new_min_freq = conf["tdp.amd_energy.mode.manual.cpu_min_freq"].to(int)
+                if new_min_freq != self.old_min_freq:
+                    self.old_min_freq = new_min_freq
+                    try:
+                        set_frequency_scaling(nonlinear=new_min_freq == "nonlinear")
+                    except Exception as e:
+                        logger.error(f"Failed to set minimum CPU frequency:\n{e}")
 
     def close(self):
         if self.proc is not None:
