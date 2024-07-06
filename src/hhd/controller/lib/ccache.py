@@ -2,23 +2,24 @@ from threading import Condition, Thread, Event
 import time
 import random
 
-CACHE_TIMEOUT = 10
+CACHE_TIMEOUT = 20
 UPDATE_FREQ = 25
 UPDATE_T = 1 / UPDATE_FREQ
 
 
 class ControllerCache:
-    def __init__(self) -> None:
+    def __init__(self, cache_timeout=CACHE_TIMEOUT) -> None:
         self._t = None
         self._cond = Condition()
         self._cached = None
         self._should_exit = Event()
+        self.cache_timeout = cache_timeout
 
     def _close_cached(self):
         with self._cond:
             start = time.perf_counter()
             curr = time.perf_counter()
-            while curr - start < CACHE_TIMEOUT and not self._should_exit.is_set():
+            while curr - start < self.cache_timeout and not self._should_exit.is_set():
                 self._cond.wait(UPDATE_T)
                 next = time.perf_counter()
                 if self._cached:
