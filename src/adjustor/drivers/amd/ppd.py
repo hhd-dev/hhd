@@ -16,9 +16,9 @@ LEGACY_PATH = "/net/hadess/PowerProfiles"
 XML_PATH = "power-profiles-daemon.dbus.xml.in"
 
 SUPPORTED_PROFILES = {
-    "performance": "performance",
-    "balanced": "balanced",
     "power-saver": "power",
+    "balanced": "balanced",
+    "performance": "performance",
 }
 SUPPORTED_PROFILES_REVERSE = {v: k for k, v in SUPPORTED_PROFILES.items()}
 
@@ -76,12 +76,22 @@ def create_interface(legacy: bool):
         def GetAll(self, interface_name, sender=None):
             if interface_name == iface(legacy):
                 return {
-                    "Actions": dbus.Array(self.actions, signature="s"),
+                    "Actions": ["trickle_charge"],
                     "ActiveProfile": self.profile,
                     "ActiveProfileHolds": dbus.Array(self.profile_holds, signature="u"),
                     "PerformanceDegraded": "",
                     "PerformanceInhibited": "",
-                    "Profiles": [{"Profile": p} for p in SUPPORTED_PROFILES],
+                    "Profiles": [
+                        {
+                            "Profile": dbus.String(p, variant_level=1),
+                            "CpuDriver": dbus.String("amd_pstate", variant_level=1),
+                            "PlatformDriver": dbus.String(
+                                "platform_profile", variant_level=1
+                            ),
+                            "Driver": dbus.String("multiple", variant_level=1),
+                        }
+                        for p in SUPPORTED_PROFILES
+                    ],
                     "Version": "0.21",
                 }
             else:
