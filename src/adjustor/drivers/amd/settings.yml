@@ -11,6 +11,7 @@ enabled:
         auto:
           type: container
           title: Auto
+          tags: [ non-essential ]
           hint: >-
             Handheld Daemon will manage the energy management settings.
             This includes CPU governor, CPU boost, GPU frequency, and CPU power preferences.
@@ -19,6 +20,7 @@ enabled:
         manual:
           type: container
           title: Manual
+          tags: [ non-essential ]
           hint: >-
             Allows you to set the energy management settings manually.
           children:
@@ -115,7 +117,7 @@ core:
         PPD's role in the system. 
 
     amd_energy_ppd:
-      title: Enable PPD Emulation (KDE Power)
+      title: Enable PPD Emulation (KDE/Gnome Power)
       type: bool
       default: True
       hint: >-
