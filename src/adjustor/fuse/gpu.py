@@ -12,7 +12,7 @@ CPU_BOOST_PATH = "/sys/devices/system/cpu/amd_pstate/cpb_boost"
 
 CPU_PATH = "/sys/devices/system/cpu/"
 CPU_PREFIX = "cpu"
-BOOST_FN = "cpufreq/amdboost"
+BOOST_FN = "cpufreq/boost"
 EPP_AVAILABLE_FN = "cpufreq/energy_performance_available_preferences"
 EPP_FN = "cpufreq/energy_performance_preference"
 GOVERNOR_FN = "cpufreq/scaling_governor"
