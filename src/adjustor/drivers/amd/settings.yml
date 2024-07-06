@@ -119,6 +119,6 @@ core:
     amd_energy_ppd:
       title: Enable PPD Emulation (KDE/Gnome Power)
       type: bool
-      default: True
+      default: False
       hint: >-
         Enable PPD service to manage the power preferences for the system.
