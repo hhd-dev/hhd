@@ -43,6 +43,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.queue_fan = None
         self.queue_tdp = None
         self.new_tdp = None
+        self.new_mode = None
         self.old_target = None
 
     def settings(self):
@@ -124,6 +125,8 @@ class LenovoDriverPlugin(HHDPlugin):
         new_target = None
         new_tdp = self.new_tdp
         self.new_tdp = None
+        new_mode = self.new_mode
+        self.new_mode = None
         if new_tdp:
             # For TDP values received from steam, set the appropriate
             # mode to get a better experience.
@@ -136,6 +139,8 @@ class LenovoDriverPlugin(HHDPlugin):
             else:
                 mode = "custom"
             conf["tdp.lenovo.tdp.mode"] = mode
+        elif new_mode:
+            mode = new_mode
         else:
             mode = conf["tdp.lenovo.tdp.mode"].to(str)
         if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
@@ -291,6 +296,14 @@ class LenovoDriverPlugin(HHDPlugin):
         for ev in events:
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
+            if ev["type"] == "ppd":
+                match ev["status"]:
+                    case "power":
+                        self.new_mode = "quiet"
+                    case "balanced":
+                        self.new_mode = "balanced"
+                    case "performance":
+                        self.new_mode = "performance"
 
     def close(self):
         pass

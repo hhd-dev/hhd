@@ -83,7 +83,7 @@ conflict:
       type: display
       default: >-
         Energy Management can not be enabled while PPD or TuneD are enabled.
-        `systemctl disable --now tuned` or `power-profile-daemon`.
+        `systemctl disable --now power-profile-daemon` or `tuned`.
     enable:
       title: Enable Energy Management
       type: action
@@ -100,3 +100,10 @@ core:
         including Governor, Boost, GPU frequency, and EPP.
         In addition, Handheld daemon will launch a PPD service to replace
         PPD's role in the system. 
+
+    amd_energy_ppd:
+      title: Enable PPD Emulation (KDE Power)
+      type: bool
+      default: True
+      hint: >-
+        Enable PPD service to manage the power preferences for the system.

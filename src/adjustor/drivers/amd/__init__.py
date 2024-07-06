@@ -1,20 +1,51 @@
 import logging
+import os
+import subprocess
+import sys
+from threading import Event as TEvent
+from threading import Thread
+from typing import Literal
 
 from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
-import subprocess
-from typing import Literal
 
 from adjustor.fuse.gpu import (
     get_igpu_status,
-    set_gpu_auto,
-    set_gpu_manual,
     set_cpu_boost,
     set_epp_mode,
+    set_gpu_auto,
+    set_gpu_manual,
     set_powersave_governor,
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _ppd_client(emit, proc):
+    os.set_blocking(proc.stdin.fileno(), False)
+
+    while True:
+        if proc.poll() is not None:
+            break
+        line = proc.stdout.readline().decode().strip()
+        if not line:
+            break
+        if line not in ("power", "balanced", "performance"):
+            logger.error(f"Invalid PPD mode: {line}")
+            continue
+        emit({"type": "ppd", "status": line})
+
+
+def _open_ppd_server(emit):
+    logger.info("Launching PPD server.")
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "adjustor.drivers.amd.ppd"],
+        stdout=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+    )
+    t = Thread(target=_ppd_client, args=(emit, proc))
+    t.start()
+    return proc, t
 
 
 class AmdGPUPlugin(HHDPlugin):
@@ -32,6 +63,10 @@ class AmdGPUPlugin(HHDPlugin):
         self.initialized = False
         self.supports_boost = False
 
+        self.proc = None
+        self.t = None
+
+        self.old_ppd = False
         self.old_gpu = None
         self.old_freq = None
         self.old_boost = None
@@ -139,6 +174,13 @@ class AmdGPUPlugin(HHDPlugin):
         for event in events:
             if event["type"] == "energy":
                 self.target = event["status"]
+                try:
+                    if self.proc and self.proc.stdin:
+                        self.proc.stdin.write(f"{self.target}\n".encode())
+                        self.proc.stdin.flush()
+                except Exception as e:
+                    logger.error(f"Failed to send PPD mode:\n{e}")
+                    self.close()
 
     def update(self, conf: Config):
         self.core_enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -156,6 +198,18 @@ class AmdGPUPlugin(HHDPlugin):
 
         if not self.initialized:
             return
+
+        new_ppd = conf["hhd.settings.amd_energy_ppd"].to(bool)
+        if new_ppd != self.old_ppd:
+            self.old_ppd = new_ppd
+            if new_ppd:
+                try:
+                    self.proc, self.t = _open_ppd_server(self.emit)
+                except Exception as e:
+                    logger.error(f"Failed to open PPD server:\n{e}")
+                    self.close()
+            else:
+                self.close()
 
         if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
             if self.target == self.old_target:
@@ -228,4 +282,9 @@ class AmdGPUPlugin(HHDPlugin):
                         logger.error(f"Failed to set EPP mode:\n{e}")
 
     def close(self):
-        pass
+        if self.proc is not None:
+            self.proc.terminate()
+            self.proc.wait()
+        if self.t is not None:
+            self.t.join()
+            self.t = None

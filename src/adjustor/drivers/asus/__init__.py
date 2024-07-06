@@ -321,6 +321,15 @@ class AsusDriverPlugin(HHDPlugin):
         for ev in events:
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
+            if ev["type"] == "ppd":
+                # TODO: Replace with power modes after refactor
+                match ev["status"]:
+                    case "power":
+                        self.new_tdp = 8
+                    case "balanced":
+                        self.new_tdp = 15
+                    case "performance":
+                        self.new_tdp = 25
 
     def close(self):
         pass
