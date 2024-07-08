@@ -121,6 +121,8 @@ class AmdGPUPlugin(HHDPlugin):
                 ]
             )
             for line in out.decode().splitlines():
+                if "not-found" in line.lower():
+                    continue
                 if "power-profiles-daemon" in line or "tuned" in line.lower():
                     self.ppd_conflict = True
                     break
