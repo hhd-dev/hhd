@@ -151,7 +151,7 @@ class AmdGPUPlugin(HHDPlugin):
         else:
             if not self.logged_boost:
                 logger.warning(f"CPU Boost toggling is not supported.")
-            del sets["enabled"]["children"]["mode"]["manual"]["children"]["cpu_boost"]
+            del sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"]["cpu_boost"]
 
         self.supports_nonlinear = can_use_nonlinear()
         if not self.supports_nonlinear:
