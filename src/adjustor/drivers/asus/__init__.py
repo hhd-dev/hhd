@@ -13,7 +13,8 @@ APPLY_DELAY = 1.5
 TDP_DELAY = 0.2
 MIN_TDP_START = 7
 MAX_TDP_START = 30
-MAX_TDP = 54
+# FIXME: add AC/DC values
+MAX_TDP = 35
 
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
 STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
@@ -26,6 +27,17 @@ FAN_CURVE_NAME = "asus_custom_fan_curve"
 # [40 45 55 63 68 74 74 74]
 # [10 20 66 86 132 188 188 188] / 2.55
 # [ 4  8  ]
+
+# Unplugged values
+#       STAPM Slow Fast
+# perf  25 30 35
+# bal   15 20 25
+# power 10 14 17
+#
+# Plugged in values
+# perf  30 43 53
+# bal   15 20 25
+# power 10 14 17
 
 POINTS = [30, 40, 50, 60, 70, 80, 90, 100]
 MIN_CURVE = [2, 5, 17, 17, 17, 17, 17, 17]
@@ -242,10 +254,11 @@ class AsusDriverPlugin(HHDPlugin):
 
             self.queue_tdp = None
             if boost:
+                # TODO: Use different boost values depending on whether plugged in
                 time.sleep(TDP_DELAY)
-                set_tdp("fast", FTDP_FN, min(MAX_TDP, int(steady * 53 / 30)))
+                set_tdp("fast", FTDP_FN, min(MAX_TDP, int(steady * 35 / 25)))
                 time.sleep(TDP_DELAY)
-                set_tdp("slow", STDP_FN, min(MAX_TDP, int(steady * 43 / 30)))
+                set_tdp("slow", STDP_FN, min(MAX_TDP, int(steady * 30 / 25)))
                 time.sleep(TDP_DELAY)
                 set_tdp("steady", CTDP_FN, steady)
             else:
