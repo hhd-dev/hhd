@@ -4,13 +4,13 @@ import time
 from threading import Event as TEvent
 from typing import Sequence
 
-from hhd.controller import Axis, Event, Multiplexer, can_read, DEBUG_MODE
+from hhd.controller import DEBUG_MODE, Axis, Event, Multiplexer, can_read
+from hhd.controller.physical.evdev import DINPUT_AXIS_POSTPROCESS, AbsAxis
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import (
+    GamepadButton,
     GenericGamepadEvdev,
     enumerate_evs,
-    GamepadButton,
-    AbsAxis,
     to_map,
 )
 from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_unique
@@ -272,6 +272,7 @@ def controller_loop(
             # name=["Generic X-Box pad"],
             capabilities={EC("EV_KEY"): [EC("BTN_A")]},
             required=True,
+            postprocess=DINPUT_AXIS_POSTPROCESS,
             hide=True,
         )
     else:
