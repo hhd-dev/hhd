@@ -18,7 +18,8 @@ SELECT_TIMEOUT = 1
 logger = logging.getLogger(__name__)
 
 ASUS_VID = 0x0B05
-ASUS_KBD_PID = 0x1ABE
+ALLY_PID = 0x1ABE
+ALLY_X_PID = 0x1B4C
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
@@ -208,7 +209,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
     # Vendor
     d_vend = AllyHidraw(
         vid=[ASUS_VID],
-        pid=[ASUS_KBD_PID],
+        pid=[ALLY_PID, ALLY_X_PID],
         usage_page=[0xFF31],
         usage=[0x0080],
         required=True,
@@ -218,7 +219,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
     # Grab shortcut keyboards
     d_kbd_1 = GenericGamepadEvdev(
         vid=[ASUS_VID],
-        pid=[ASUS_KBD_PID],
+        pid=[ALLY_PID, ALLY_X_PID],
         capabilities={EC("EV_KEY"): [EC("KEY_F23")]},
         required=False,
         grab=False,
