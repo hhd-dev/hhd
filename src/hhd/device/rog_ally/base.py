@@ -6,7 +6,13 @@ from typing import Sequence
 
 from hhd.controller import Axis, Event, Multiplexer, can_read, DEBUG_MODE
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
+from hhd.controller.physical.evdev import (
+    GenericGamepadEvdev,
+    enumerate_evs,
+    GamepadButton,
+    AbsAxis,
+    to_map,
+)
 from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_unique
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs
@@ -52,6 +58,58 @@ FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
 LONGER_ERROR_DELAY = 3
 LONGER_ERROR_MARGIN = 1.3
+
+# TODO: Work with upstream on the xpad (?) driver
+# LB = BTN_WEST
+# RB = BTN_Z
+# X = BTN_C
+# A = BTN_SOUTH
+# B = BTN_EAST
+# Y = BTN_NORTH
+# Start (Menu) = BTN_TR
+# Select (View) = BTN_TL
+# RT = ABS_RZ
+# LT = ABS_Z
+# L3 = BTN_TL2
+# R3 = BTN_TR2
+ALLY_X_BUTTON_MAP: dict[int, GamepadButton] = to_map(
+    {
+        # Gamepad
+        "a": [EC("BTN_SOUTH")],
+        "b": [EC("BTN_EAST")],
+        "x": [EC("BTN_C")],
+        "y": [EC("BTN_NORTH")],
+        # Sticks
+        "ls": [EC("BTN_TL2")],
+        "rs": [EC("BTN_TR2")],
+        # Bumpers
+        "lb": [EC("BTN_WEST")],
+        "rb": [EC("BTN_TL")],
+        # Select
+        "start": [EC("BTN_TR")],
+        "select": [EC("BTN_TL")],
+        # Misc
+        # "mode": [EC("BTN_MODE")],
+    }
+)
+
+ALLY_X_AXIS_MAP: dict[int, AbsAxis] = to_map(
+    {
+        # Sticks
+        # Values should range from -1 to 1
+        "ls_x": [EC("ABS_X")],
+        "ls_y": [EC("ABS_Y")],
+        "rs_x": [EC("ABS_RX")],
+        "rs_y": [EC("ABS_RY")],
+        # Triggers
+        # Values should range from -1 to 1
+        "rt": [EC("ABS_RZ")],
+        "lt": [EC("ABS_Z")],
+        # Hat, implemented as axis. Either -1, 0, or 1
+        "hat_x": [EC("ABS_HAT0X")],
+        "hat_y": [EC("ABS_HAT0Y")],
+    }
+)
 
 
 class AllyHidraw(GenericGamepadHidraw):
@@ -133,7 +191,12 @@ class AllyHidraw(GenericGamepadHidraw):
 
 
 def plugin_run(
-    conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent, ally_x: bool
+    conf: Config,
+    emit: Emitter,
+    context: Context,
+    should_exit: TEvent,
+    updated: TEvent,
+    ally_x: bool,
 ):
     init = time.perf_counter()
     repeated_fail = False
@@ -172,7 +235,9 @@ def plugin_run(
             time.sleep(sleep_time)
 
 
-def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool):
+def controller_loop(
+    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool
+):
     debug = DEBUG_MODE
 
     # Output
@@ -187,7 +252,7 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
             "pulse": ["color", "speedd"],
             "duality": ["dual", "speedd"],
             "rainbow": ["brightnessd"],  # , "speedd" # TODO: Figure out why
-            "spiral": ["brightnessd", "speedd", "direction"], # TODO: Figure out why
+            "spiral": ["brightnessd", "speedd", "direction"],  # TODO: Figure out why
         },
         rgb_zones="quad",
     )
@@ -202,6 +267,8 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
         d_xinput = GenericGamepadEvdev(
             vid=[ASUS_VID],
             pid=[ALLY_X_PID],
+            btn_map=ALLY_X_BUTTON_MAP,
+            axis_map=ALLY_X_AXIS_MAP,
             # name=["Generic X-Box pad"],
             capabilities={EC("EV_KEY"): [EC("BTN_A")]},
             required=True,
