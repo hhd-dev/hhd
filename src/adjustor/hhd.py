@@ -261,7 +261,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         drivers_matched = True
         use_acpi_call = True
 
-    if "ROG Ally RC71L" in prod or bool(os.environ.get("HHD_ADJ_DEBUG")):
+    if "ROG Ally RC71L" in prod or "ROG Ally X RC72L" or bool(os.environ.get("HHD_ADJ_DEBUG")):
         drivers.append(AsusDriverPlugin())
         drivers_matched = True
 
