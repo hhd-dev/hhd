@@ -84,7 +84,7 @@ ALLY_X_BUTTON_MAP: dict[int, GamepadButton] = to_map(
         "rs": [EC("BTN_TR2")],
         # Bumpers
         "lb": [EC("BTN_WEST")],
-        "rb": [EC("BTN_TL")],
+        "rb": [EC("BTN_Z")],
         # Select
         "start": [EC("BTN_TR")],
         "select": [EC("BTN_TL")],
@@ -103,8 +103,8 @@ ALLY_X_AXIS_MAP: dict[int, AbsAxis] = to_map(
         "rs_y": [EC("ABS_RY")],
         # Triggers
         # Values should range from -1 to 1
-        "rt": [EC("ABS_RZ")],
-        "lt": [EC("ABS_Z")],
+        "rt": [EC("ABS_Z")],
+        "lt": [EC("ABS_RZ")],
         # Hat, implemented as axis. Either -1, 0, or 1
         "hat_x": [EC("ABS_HAT0X")],
         "hat_y": [EC("ABS_HAT0Y")],
