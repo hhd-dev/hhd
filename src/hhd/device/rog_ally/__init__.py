@@ -17,12 +17,13 @@ class RogAllyControllersPlugin(HHDPlugin):
     priority = 18
     log = "ally"
 
-    def __init__(self) -> None:
+    def __init__(self, ally_x: bool = False) -> None:
         self.t = None
         self.should_exit = None
         self.updated = Event()
         self.started = False
         self.t = None
+        self.ally_x = ally_x
 
     def open(
         self,
@@ -63,7 +64,7 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.should_exit = Event()
         self.t = Thread(
             target=plugin_run,
-            args=(conf, self.emit, self.context, self.should_exit, self.updated),
+            args=(conf, self.emit, self.context, self.should_exit, self.updated, self.ally_x),
         )
         self.t.start()
 
@@ -93,6 +94,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     # Ally X
     # ROG Ally X RC72LA_RC72LA_000123206
     if "ROG Ally X RC72" in dmi:
-        return [RogAllyControllersPlugin()]
+        return [RogAllyControllersPlugin(ally_x=True)]
 
     return []

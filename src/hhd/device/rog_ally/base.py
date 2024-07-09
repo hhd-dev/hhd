@@ -133,7 +133,7 @@ class AllyHidraw(GenericGamepadHidraw):
 
 
 def plugin_run(
-    conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent
+    conf: Config, emit: Emitter, context: Context, should_exit: TEvent, updated: TEvent, ally_x: bool
 ):
     init = time.perf_counter()
     repeated_fail = False
@@ -142,7 +142,8 @@ def plugin_run(
         try:
             gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
             nkey_devs = enumerate_unique(vid=ASUS_VID)
-            if not gamepad_devs or not nkey_devs:
+            # Ally X uses dinput (?)
+            if (not gamepad_devs and not ally_x) or not nkey_devs:
                 if first:
                     first = False
                     logger.warning(f"Ally controller not found, waiting...")
@@ -152,7 +153,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, emit)
+            controller_loop(conf.copy(), should_exit, updated, emit, ally_x)
             repeated_fail = False
         except Exception as e:
             first = True
@@ -171,7 +172,7 @@ def plugin_run(
             time.sleep(sleep_time)
 
 
-def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter):
+def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool):
     debug = DEBUG_MODE
 
     # Output
@@ -197,14 +198,24 @@ def controller_loop(conf: Config, should_exit: TEvent, updated: TEvent, emit: Em
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
     # Inputs
-    d_xinput = GenericGamepadEvdev(
-        vid=[GAMEPAD_VID],
-        pid=[GAMEPAD_PID],
-        # name=["Generic X-Box pad"],
-        capabilities={EC("EV_KEY"): [EC("BTN_A")]},
-        required=True,
-        hide=True,
-    )
+    if ally_x:
+        d_xinput = GenericGamepadEvdev(
+            vid=[ASUS_VID],
+            pid=[ALLY_X_PID],
+            # name=["Generic X-Box pad"],
+            capabilities={EC("EV_KEY"): [EC("BTN_A")]},
+            required=True,
+            hide=True,
+        )
+    else:
+        d_xinput = GenericGamepadEvdev(
+            vid=[GAMEPAD_VID],
+            pid=[GAMEPAD_PID],
+            # name=["Generic X-Box pad"],
+            capabilities={EC("EV_KEY"): [EC("BTN_A")]},
+            required=True,
+            hide=True,
+        )
 
     # Vendor
     d_vend = AllyHidraw(
