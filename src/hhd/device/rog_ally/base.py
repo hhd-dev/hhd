@@ -216,12 +216,11 @@ class AllyXHidraw(GenericGamepadHidraw):
             "0d 0f 00 00 31 31 ff 00 eb"
             cmd = bytes(
                 [
-                    0x0D,
                     0x0F,
                     0x00,
                     0x00,
-                    int(ev["strong_magnitude"] * 100),
-                    int(ev["weak_magnitude"] * 100),
+                    min(100, int(ev["strong_magnitude"] * 100)),
+                    min(100, int(ev["weak_magnitude"] * 100)),
                     0xFF,
                     0x00,
                     0xEB,
