@@ -422,6 +422,8 @@ def controller_loop(
 
             d_vend.consume(evs)
             d_xinput.consume(evs)
+            if d_allyx:
+                d_allyx.consume(evs)
 
             for d in d_outs:
                 d.consume(evs)
