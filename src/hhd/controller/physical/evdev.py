@@ -273,6 +273,7 @@ class GenericGamepadEvdev(Producer, Consumer):
             self.ranges = {
                 a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
             }
+            self.supports_vibration = B("EV_FF") in dev.capabilities()
             self.fd = dev.fd
             self.started = True
             self.effect_id = -1
@@ -324,6 +325,9 @@ class GenericGamepadEvdev(Producer, Consumer):
         for ev in events:
             match ev["type"]:
                 case "rumble":
+                    if not self.supports_vibration:
+                        continue
+
                     # Erase old effect
                     if self.effect_id != -1:
                         self.dev.erase_effect(self.effect_id)
