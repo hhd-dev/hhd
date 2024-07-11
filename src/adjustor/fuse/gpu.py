@@ -153,8 +153,11 @@ def set_cpu_boost(enable: bool):
         with open(CPU_BOOST_PATH, "w") as f:
             f.write("1" if enable else "0")
     elif os.path.exists(os.path.join(CPU_PATH, CPU_PREFIX + "0", BOOST_FN)):
-        set_per_cpu(BOOST_FN, "1" if enable else "0")
-
+        try:
+            set_per_cpu(BOOST_FN, "1" if enable else "0")
+        except Exception:
+            # Graceful fallback to older scaler
+            set_per_cpu(BOOST_FN, "enabled" if enable else "disabled")
 
 def set_epp_mode(mode: EppStatus):
     logger.info(f"Setting EPP mode to '{mode}'.")
