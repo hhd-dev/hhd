@@ -190,6 +190,43 @@ class AllyHidraw(GenericGamepadHidraw):
         return out
 
 
+class AllyXHidraw(GenericGamepadHidraw):
+    def open(self) -> Sequence[int]:
+        # Drop all events
+        return []
+
+    def consume(self, events: Sequence[Event]) -> None:
+        if not self.dev:
+            return
+
+        for ev in events:
+            if ev["type"] != "rumble":
+                continue
+
+            if ev["code"] != "main":
+                logger.warning(
+                    f"Received rumble event with unsupported side: {ev['code']}"
+                )
+                continue
+
+            "0d 0f 00 00 31 31 ff 00 eb"
+            self.dev.write(
+                bytes(
+                    [
+                        0x0D,
+                        0x0F,
+                        0x00,
+                        0x00,
+                        int(ev["strong_magnitude"] * 100),
+                        int(ev["weak_magnitude"] * 100),
+                        0xFF,
+                        0x00,
+                        0xEB,
+                    ]
+                )
+            )
+
+
 def plugin_run(
     conf: Config,
     emit: Emitter,
@@ -275,6 +312,7 @@ def controller_loop(
             postprocess=DINPUT_AXIS_POSTPROCESS,
             hide=True,
         )
+        d_allyx = AllyXHidraw()
     else:
         d_xinput = GenericGamepadEvdev(
             vid=[GAMEPAD_VID],
@@ -284,6 +322,7 @@ def controller_loop(
             required=True,
             hide=True,
         )
+        d_allyx = None
 
     # Vendor
     d_vend = AllyHidraw(
@@ -339,6 +378,8 @@ def controller_loop(
     try:
         d_vend.open()
         prepare(d_xinput)
+        if d_allyx:
+            prepare(d_allyx)
         if motion:
             if d_timer.open():
                 prepare(d_imu)
