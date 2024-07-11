@@ -310,7 +310,7 @@ REMAP_DPAD_LR_MOUSE = buf(
         0x00,
         0x00,
         0x00,
-        0x02, # xpad_mode_wasd? Length?
+        0x02, # Length
         0x82, # KB_META
         0x23, # KB_D
         0x00,
@@ -334,7 +334,7 @@ REMAP_DPAD_LR_MOUSE = buf(
         0x00,
         0x00,
         0x00,
-        0x02, # xpad_mode_wasd? Length?
+        0x02, # Length
         0x82, # KB_META
         0x0D, # KB_TAB
         0x00,
