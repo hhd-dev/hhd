@@ -191,6 +191,9 @@ class AllyHidraw(GenericGamepadHidraw):
 
 
 class AllyXHidraw(GenericGamepadHidraw):
+    """Ally X uses a Windows driver to inject gyro, much like hhd :).
+    Therefore, it is not xinput, and needs a vendor command for vibration."""
+
     def open(self) -> Sequence[int]:
         # Drop all events
         return []
