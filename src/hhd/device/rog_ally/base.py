@@ -319,7 +319,13 @@ def controller_loop(
             postprocess=DINPUT_AXIS_POSTPROCESS,
             hide=True,
         )
-        d_allyx = AllyXHidraw()
+        d_allyx = AllyXHidraw(
+            vid=[ASUS_VID],
+            pid=[ALLY_X_PID],
+            usage_page=[0x0F],
+            usage=[0x21],
+            required=True,
+        )
     else:
         d_xinput = GenericGamepadEvdev(
             vid=[GAMEPAD_VID],
