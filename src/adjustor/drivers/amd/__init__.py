@@ -241,30 +241,30 @@ class AmdGPUPlugin(HHDPlugin):
                     match self.target:
                         case "balanced":
                             set_gpu_auto()
-                            if self.supports_boost:
-                                set_cpu_boost(True)
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("balance_power")
                             set_frequency_scaling(nonlinear=False)
-                        case "performance":
-                            set_gpu_auto()
                             if self.supports_boost:
                                 set_cpu_boost(True)
+                        case "performance":
+                            set_gpu_auto()
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("balance_power")
                             set_frequency_scaling(nonlinear=True)
+                            if self.supports_boost:
+                                set_cpu_boost(True)
                         case _:  # power
                             set_gpu_auto()
-                            if self.supports_boost:
-                                set_cpu_boost(False)
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("power")
                             set_frequency_scaling(False)
+                            if self.supports_boost:
+                                set_cpu_boost(False)
                 except Exception as e:
-                    logger.error(f"Failed to set mode:\n{e}")
+                    logger.error(f"Failed to set energy mode:\n{e}")
 
             self.old_gpu = None
             self.old_freq = None
