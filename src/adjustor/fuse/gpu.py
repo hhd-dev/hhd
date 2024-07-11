@@ -152,7 +152,7 @@ def set_cpu_boost(enable: bool):
     if os.path.exists(CPU_BOOST_PATH):
         with open(CPU_BOOST_PATH, "w") as f:
             f.write("1" if enable else "0")
-    elif os.path.exists(os.path.join(CPU_PATH, CPU_PREFIX + "0", BOOST_FN)):
+    elif is_in_cpu0(BOOST_FN):
         set_per_cpu(BOOST_FN, "1" if enable else "0")
 
 
