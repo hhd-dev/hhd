@@ -352,6 +352,10 @@ def controller_loop_xinput(
         ts_count: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
         ts_last: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
 
+        from collections import deque
+
+        avg = deque(maxlen=50)
+
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
@@ -390,6 +394,12 @@ def controller_loop_xinput(
                     # 8ms per count
                     ts_count[ev["code"]] += diff * 8_000_000
                     ev["value"] = ts_count[ev["code"]]
+                if ev["type"] == "axis" and "gyro" in ev["code"]:
+                    v = ev["value"]
+                    if (abs(v / 0.001065) // 1) in (254, 255):
+                        # Legion go controllers have a bug where they will
+                        # randomly output 254 or 255. If that happens, drop event
+                        ev['code'] = "" # type: ignore
 
             evs = multiplexer.process(evs)
             if evs:
