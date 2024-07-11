@@ -214,9 +214,6 @@ class AllyXHidraw(GenericGamepadHidraw):
                 continue
 
             "0d 0f 00 00 31 31 ff 00 eb"
-            logger.info(
-                f"Setting rumble to {ev['strong_magnitude']} / {ev['weak_magnitude']}"
-            )
             cmd = bytes(
                 [
                     0x0D,
@@ -230,7 +227,6 @@ class AllyXHidraw(GenericGamepadHidraw):
                     0xEB,
                 ]
             )
-            logger.info(f"Sending command: {cmd.hex()}")
             self.dev.write(cmd)
 
 
