@@ -144,6 +144,7 @@ def set_per_cpu(fn: str, value: str):
         except ValueError:
             continue
         with open(os.path.join(CPU_PATH, dir, fn), "w") as f:
+            logger.info(os.path.join(CPU_PATH, dir, fn))
             f.write(value)
 
 
