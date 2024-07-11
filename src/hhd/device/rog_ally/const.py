@@ -116,20 +116,20 @@ REMAP_DPAD_UD = buf(
         # 1 = Gamepad
         # 2 = Keyboard
         # 3 = Mouse
-        # 4 = Multiple Keys? Same as 2?
+        # 4 = Key combo, Keyboard
         # 5 = Media
 
         0x01, # btn_block start / Key Group
-        PAD_DPAD_UP, # xpad_mode_game
-        0x00, # xpad_mode_wasd
-        0x00, # xpad_mode_mouse
-        0x00, # All modes?
-        0x00, # Key combo length?
-        0x00, # Key combo key
-        0x00, # Key combo key
-        0x00, # Key combo key
-        0x00, # Key combo key?
-        0x00, # Key combo key?
+        PAD_DPAD_UP, # Xbox Keycode
+        0x00, # Keyboard Keycode
+        0x00, # Media Keycode
+        0x00, # Mouse Keycode
+        0x00, # Combo length
+        0x00, # Combo Keycode
+        0x00, # Combo Keycode
+        0x00, # Combo Keycode
+        0x00, # Combo Keycode
+        0x00, # Combo Keycode
 
         0x05, # btn_block start
         0x00,
@@ -144,9 +144,9 @@ REMAP_DPAD_UD = buf(
         0x00,
 
         0x01, # btn_block start
-        PAD_DPAD_DOWN, # xpad_mode_game
-        0x00, # xpad_mode_wasd
-        0x00, # xpad_mode_mouse
+        PAD_DPAD_DOWN,
+        0x00,
+        0x00,
         0x00,
         0x00,
         0x00,
@@ -160,7 +160,7 @@ REMAP_DPAD_UD = buf(
         0x00,
         0x00,
         0x00,
-        0x03, # xpad_mode_mouse? Length?
+        0x03, # Length
         0x8C, # KB_LCTL
         0x88, # KB_LSHIFT
         0x76, # KB_ESC
@@ -218,7 +218,7 @@ REMAP_DPAD_UD_MOUSE = buf(
         0x00,
         0x00,
         0x00,
-        0x03, # xpad_mode_mouse? Length?
+        0x03, # Length
         0x8C, # KB_LCTL
         0x88, # KB_LSHIFT
         0x76, # KB_ESC
@@ -252,7 +252,7 @@ REMAP_DPAD_LR = buf(
         0x00,
         0x00,
         0x00,
-        0x02, # xpad_mode_wasd? Length?
+        0x02, # Length
         0x82, # KB_META
         0x23, # KB_D
         0x00,
@@ -276,7 +276,7 @@ REMAP_DPAD_LR = buf(
         0x00,
         0x00,
         0x00,
-        0x02, # xpad_mode_wasd? Length?
+        0x02, # Length
         0x82, # KB_META
         0x0D, # KB_TAB
         0x00,
@@ -1136,9 +1136,9 @@ COMMIT_RESET = [
             xpad_cmd_set_js_dz,
             0x04, # Length
             0x00, # Left Inner
-            0x64, # Left Outer
+            0x40, # Left Outer
             0x00, # Right Inner
-            0x64  # Right Outer
+            0x40  # Right Outer
         ]
     ),
     buf(
@@ -1148,9 +1148,9 @@ COMMIT_RESET = [
             xpad_cmd_set_tr_dz,
             0x04, # Length
             0x00, # Left Inner
-            0x64, # Left Outer
+            0x40, # Left Outer
             0x00, # Right Inner
-            0x64  # Right Outer
+            0x40  # Right Outer
         ]
     ),
 ]
