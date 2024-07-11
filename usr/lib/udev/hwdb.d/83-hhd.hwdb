@@ -6,7 +6,7 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnAYANEO:*
   KEYBOARD_KEY_68=f17
   KEYBOARD_KEY_69=f18
 
-## OrangePi G1621-02/NEO-01 (OrangePi Neo) (to be placed to /usr/lib/udev/hwdb.d/)
+# OrangePi G1621-02/NEO-01 (OrangePi Neo)
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnG1621-02:*
   KEYBOARD_KEY_64=f15
   KEYBOARD_KEY_65=f16
@@ -18,3 +18,14 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnG1621-02:*
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
   KEYBOARD_KEY_66=f15
   KEYBOARD_KEY_67=f16
+
+# MSI Claw
+# From systemd / by ChimeraOS team
+# Systemd will have it by default in the future. Until then, have it here.
+# From then on, have it as a reference.
+# The convention is for F15 to be left and F16 to be right, as was used for Ayaneo
+# and OrangePi (From ChimeraOS themselves no less). 
+# ChimeraOS breaks this convention here.
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClawA1M:*
+  KEYBOARD_KEY_b9=f15     # Right Face Button
+  KEYBOARD_KEY_ba=f16     # Left Face Button

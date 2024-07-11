@@ -37,6 +37,11 @@ AMBERNIC_MAPPINGS: dict[int, str] = {
     B("KEY_G"): "mode",
 }
 
+MSI_CLAW_MAPPINGS = {
+    B("KEY_F15"): "share",
+    B("KEY_F16"): "mode",
+}
+
 AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
     "accel_y": ("accel_x", "accel", -1, None),
@@ -154,6 +159,13 @@ CONFS = {
         "name": "Ambernic Win600",
         "btn_mapping": AMBERNIC_MAPPINGS,
         "extra_buttons": "none",
+    },
+    # MSI Claw
+    "Claw A1M": {
+        "name": "MSI Claw (1st gen)",
+        # "hrtimer": True, Uses sensor fusion garbage? From intel? Will need custom work
+        "extra_buttons": "none",
+        "btn_mapping": MSI_CLAW_MAPPINGS,
     },
 }
 
