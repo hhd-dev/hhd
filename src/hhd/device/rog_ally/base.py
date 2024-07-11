@@ -195,6 +195,7 @@ class AllyXHidraw(GenericGamepadHidraw):
     Therefore, it is not xinput, and needs a vendor command for vibration."""
 
     def open(self) -> Sequence[int]:
+        super().open()
         # Drop all events
         return []
 
@@ -213,21 +214,24 @@ class AllyXHidraw(GenericGamepadHidraw):
                 continue
 
             "0d 0f 00 00 31 31 ff 00 eb"
-            self.dev.write(
-                bytes(
-                    [
-                        0x0D,
-                        0x0F,
-                        0x00,
-                        0x00,
-                        int(ev["strong_magnitude"] * 100),
-                        int(ev["weak_magnitude"] * 100),
-                        0xFF,
-                        0x00,
-                        0xEB,
-                    ]
-                )
+            logger.info(
+                f"Setting rumble to {ev['strong_magnitude']} / {ev['weak_magnitude']}"
             )
+            cmd = bytes(
+                [
+                    0x0D,
+                    0x0F,
+                    0x00,
+                    0x00,
+                    int(ev["strong_magnitude"] * 100),
+                    int(ev["weak_magnitude"] * 100),
+                    0xFF,
+                    0x00,
+                    0xEB,
+                ]
+            )
+            logger.info(f"Sending command: {cmd.hex()}")
+            self.dev.write(cmd)
 
 
 def plugin_run(
