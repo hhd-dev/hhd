@@ -331,6 +331,7 @@ def controller_loop(
             capabilities={EC("EV_KEY"): [EC("BTN_A")]},
             required=True,
             hide=True,
+            postprocess={},  # remove calibration as its supported by the GUI
         )
         d_allyx = None
 
