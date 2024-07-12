@@ -277,5 +277,20 @@ def get_outputs_config(
     return s
 
 
-def get_limits_config():
-    return load_relative_yaml("limits.yml")
+def get_limits_config(
+    s_min: int = 5, s_max: int = 100, t_min: int = 5, t_max: int = 100
+):
+    s = load_relative_yaml("limits.yml")
+    lims = s["modes"]["manual"]["children"]
+    
+    lims["ls_min"]["default"] = s_min
+    lims["ls_max"]["default"] = s_max
+    lims["rs_min"]["default"] = s_min
+    lims["rs_max"]["default"] = s_max
+
+    lims["rt_min"]["default"] = t_min
+    lims["rt_max"]["default"] = t_max
+    lims["lt_min"]["default"] = t_min
+    lims["lt_max"]["default"] = t_max
+
+    return s

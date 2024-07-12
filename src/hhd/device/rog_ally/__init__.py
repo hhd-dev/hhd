@@ -40,7 +40,12 @@ class RogAllyControllersPlugin(HHDPlugin):
         base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
             get_outputs_config(can_disable=False)
         )
-        base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config()
+        base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config(
+            s_min=0,
+            s_max=0x40,
+            t_min=0,
+            t_max=0x40,
+        )
         return base
 
     def update(self, conf: Config):
