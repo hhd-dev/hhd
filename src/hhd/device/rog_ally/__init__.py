@@ -8,6 +8,7 @@ from hhd.plugins import (
     HHDPlugin,
     load_relative_yaml,
     get_outputs_config,
+    get_limits_config,
 )
 from hhd.plugins.settings import HHDSettings
 
@@ -39,6 +40,7 @@ class RogAllyControllersPlugin(HHDPlugin):
         base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
             get_outputs_config(can_disable=False)
         )
+        base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config()
         return base
 
     def update(self, conf: Config):
@@ -64,7 +66,14 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.should_exit = Event()
         self.t = Thread(
             target=plugin_run,
-            args=(conf, self.emit, self.context, self.should_exit, self.updated, self.ally_x),
+            args=(
+                conf,
+                self.emit,
+                self.context,
+                self.should_exit,
+                self.updated,
+                self.ally_x,
+            ),
         )
         self.t.start()
 
@@ -85,7 +94,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         # Different variants of the ally can have an additional _RC71L or not
         dmi = f.read().strip()
-    
+
     # First gen ally
     # ROG Ally RC71L_Action or something else
     if "ROG Ally RC71L" in dmi:

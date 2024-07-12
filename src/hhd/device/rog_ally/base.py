@@ -335,6 +335,9 @@ def controller_loop(
         d_allyx = None
 
     # Vendor
+    kconf = {}
+    if conf["limits.mode"].to(str) == "manual":
+        kconf = conf["limits.manual"].to(dict)
     d_vend = AllyHidraw(
         vid=[ASUS_VID],
         pid=[ALLY_PID, ALLY_X_PID],
@@ -342,6 +345,7 @@ def controller_loop(
         usage=[0x0080],
         required=True,
         callback=RgbCallback(),
+        kconf=kconf,
     )
 
     # Grab shortcut keyboards

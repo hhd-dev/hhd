@@ -60,3 +60,5 @@ children:
     hint: >-
       Swaps the Armory Crate and Command center buttons with start and select.
     default: False
+
+  limits:

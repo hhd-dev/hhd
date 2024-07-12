@@ -262,7 +262,7 @@ def get_outputs_config(
         del s["modes"]["dualsense"]["children"]["paddles_as"]
         del s["modes"]["uinput"]["children"]["noob_mode"]
         del s["modes"]["hidden"]["children"]["noob_mode"]
-        del s['modes']['dualsense_edge']
+        del s["modes"]["dualsense_edge"]
         del s["modes"]["xbox_elite"]
     elif extra_buttons == "dual":
         del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
@@ -275,3 +275,7 @@ def get_outputs_config(
     if start_disabled:
         s["default"] = "disabled"
     return s
+
+
+def get_limits_config():
+    return load_relative_yaml("limits.yml")

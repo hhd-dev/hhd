@@ -1,18 +1,17 @@
 from .conf import Config
+from .inputs import gen_gyro_state, get_gyro_config, get_gyro_state, get_touchpad_config
+from .outputs import get_limits_config, get_outputs, get_outputs_config
 from .plugin import (
-    HHDAutodetect,
-    HHDPlugin,
     Context,
     Emitter,
     Event,
+    HHDAutodetect,
     HHDLocale,
     HHDLocaleRegister,
+    HHDPlugin,
 )
 from .settings import HHDSettings
 from .utils import get_relative_fn, load_relative_yaml
-from .outputs import get_outputs_config, get_outputs
-from .inputs import get_touchpad_config, get_gyro_config, get_gyro_state, gen_gyro_state
-
 
 __all__ = [
     "Config",
@@ -32,4 +31,5 @@ __all__ = [
     "gen_gyro_state",
     "HHDLocale",
     "HHDLocaleRegister",
+    "get_limits_config",
 ]
