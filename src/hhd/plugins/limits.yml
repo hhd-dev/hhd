@@ -26,7 +26,7 @@ modes:
         unit: "%"
         min: 0
         max: 100
-        step: 5
+        step: 20
 
       ls_min: &s_min
         type: int
