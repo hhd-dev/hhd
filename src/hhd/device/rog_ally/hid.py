@@ -306,14 +306,14 @@ class RgbCallback:
             dev.write(r)
 
 
-def switch_mode(dev: Device, mode: GamepadMode):
+def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
     match mode:
         case "default":
-            cmds = COMMANDS_GAME
+            cmds = COMMANDS_GAME(kconf)
         # case "macro":
         #     cmds = MODE_MACRO
         case "mouse":
-            cmds = COMMANDS_MOUSE
+            cmds = COMMANDS_MOUSE(kconf)
         case _:
             assert False, f"Mode '{mode}' not supported."
 

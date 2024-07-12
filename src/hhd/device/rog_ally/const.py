@@ -1069,7 +1069,7 @@ REMAP_TRIGGERS_MOUSE = buf(
 
 FLUSH_BUFFER = buf([FEATURE_KBD_REPORT_ID, 0xD1, xpad_cmd_check_ready, 0x01])
 
-COMMIT_RESET = [
+COMMIT_RESET = lambda kconf: [
     buf(
         [
             FEATURE_KBD_REPORT_ID,
@@ -1086,8 +1086,8 @@ COMMIT_RESET = [
             0xD1,
             xpad_cmd_set_vibe_intensity,
             0x02,  # Length
-            0x64,  # Left Intensity
-            0x64,  # Right Intensity
+            kconf.get("vibration_left", kconf.get("vibration", 0x64)),
+            kconf.get("vibration_right", kconf.get("vibration", 0x64)),
         ]
     ),
     buf(
@@ -1096,10 +1096,10 @@ COMMIT_RESET = [
             0xD1,
             xpad_cmd_set_js_dz,
             0x04,  # Length
-            0x00,  # Left Inner
-            0x40,  # Left Outer
-            0x00,  # Right Inner
-            0x40,  # Right Outer
+            kconf.get("ls_min", 0x00),  # Left Inner
+            kconf.get("ls_max", 0x40),  # Left Outer
+            kconf.get("rs_min", 0x00),  # Right Inner
+            kconf.get("rs_max", 0x40),  # Right Outer
         ]
     ),
     buf(
@@ -1108,15 +1108,15 @@ COMMIT_RESET = [
             0xD1,
             xpad_cmd_set_tr_dz,
             0x04,  # Length
-            0x00,  # Left Inner
-            0x40,  # Left Outer
-            0x00,  # Right Inner
-            0x40,  # Right Outer
+            kconf.get("lt_min", 0x00),  # Left Inner
+            kconf.get("lt_max", 0x40),  # Left Outer
+            kconf.get("rt_min", 0x00),  # Right Inner
+            kconf.get("rt_max", 0x40),  # Right Outer
         ]
     ),
 ]
 
-COMMANDS_GAME = [
+COMMANDS_GAME = lambda kconf: [
     MODE_GAME,
     FLUSH_BUFFER,
     REMAP_DPAD_LR,
@@ -1136,10 +1136,10 @@ COMMANDS_GAME = [
     REMAP_M1M2_F17F18,
     FLUSH_BUFFER,
     REMAP_TRIGGERS,
-    *COMMIT_RESET,
+    *COMMIT_RESET(kconf),
 ]
 
-COMMANDS_MOUSE = [
+COMMANDS_MOUSE = lambda kconf: [
     MODE_MOUSE,
     FLUSH_BUFFER,
     REMAP_DPAD_UD_MOUSE,
@@ -1159,7 +1159,7 @@ COMMANDS_MOUSE = [
     REMAP_M1M2_F17F18,
     FLUSH_BUFFER,
     REMAP_TRIGGERS_MOUSE,
-    *COMMIT_RESET,
+    *COMMIT_RESET(kconf),
 ]
 
 RGB_APPLY = buf([FEATURE_KBD_REPORT_ID, 0xB4])

@@ -113,15 +113,16 @@ ALLY_X_AXIS_MAP: dict[int, AbsAxis] = to_map(
 
 
 class AllyHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, kconf={}, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.kconf = kconf
 
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
         if self.dev:
             logger.info(f"Switching Ally Controllers to gamepad mode.")
-            switch_mode(self.dev, "default")
+            switch_mode(self.dev, "default", self.kconf)
 
         self.mouse_mode = False
         return a
@@ -172,12 +173,12 @@ class AllyHidraw(GenericGamepadHidraw):
                     # right hold
                     # Mode switch
                     if self.mouse_mode:
-                        switch_mode(self.dev, "default")
+                        switch_mode(self.dev, "default", self.kconf)
                         self.mouse_mode = False
                         out.append(VIBRATION_ON)
                         self.queue.append((VIBRATION_OFF, curr + VIBRATION_DELAY))
                     else:
-                        switch_mode(self.dev, "mouse")
+                        switch_mode(self.dev, "mouse", self.kconf)
                         self.mouse_mode = True
                         out.append(VIBRATION_ON)
                         self.queue.append((VIBRATION_OFF, curr + VIBRATION_DELAY))
