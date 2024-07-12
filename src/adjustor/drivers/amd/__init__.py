@@ -151,7 +151,9 @@ class AmdGPUPlugin(HHDPlugin):
         else:
             if not self.logged_boost:
                 logger.warning(f"CPU Boost toggling is not supported.")
-            del sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"]["cpu_boost"]
+            del sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
+                "cpu_boost"
+            ]
 
         self.supports_nonlinear = can_use_nonlinear()
         if not self.supports_nonlinear:
@@ -244,25 +246,25 @@ class AmdGPUPlugin(HHDPlugin):
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("balance_power")
-                            set_frequency_scaling(nonlinear=False)
                             if self.supports_boost:
                                 set_cpu_boost(True)
+                            set_frequency_scaling(nonlinear=False)
                         case "performance":
                             set_gpu_auto()
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("balance_power")
-                            set_frequency_scaling(nonlinear=True)
                             if self.supports_boost:
                                 set_cpu_boost(True)
+                            set_frequency_scaling(nonlinear=True)
                         case _:  # power
                             set_gpu_auto()
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("power")
-                            set_frequency_scaling(False)
                             if self.supports_boost:
                                 set_cpu_boost(False)
+                            set_frequency_scaling(nonlinear=False)
                 except Exception as e:
                     logger.error(f"Failed to set energy mode:\n{e}")
 
@@ -295,6 +297,15 @@ class AmdGPUPlugin(HHDPlugin):
                     self.old_boost = new_boost
                     try:
                         set_cpu_boost(new_boost == "enabled")
+                        # Set frequency scaling again, as max frequency
+                        # changes depending on whether boost is supported
+                        if self.supports_nonlinear:
+                            set_frequency_scaling(
+                                nonlinear=conf[
+                                    "tdp.amd_energy.mode.manual.cpu_min_freq"
+                                ].to(str)
+                                == "nonlinear"
+                            )
                     except Exception as e:
                         logger.error(f"Failed to set CPU boost:\n{e}")
 
@@ -310,7 +321,7 @@ class AmdGPUPlugin(HHDPlugin):
                         logger.error(f"Failed to set EPP mode:\n{e}")
 
             if self.supports_nonlinear:
-                new_min_freq = conf["tdp.amd_energy.mode.manual.cpu_min_freq"].to(int)
+                new_min_freq = conf["tdp.amd_energy.mode.manual.cpu_min_freq"].to(str)
                 if new_min_freq != self.old_min_freq:
                     self.old_min_freq = new_min_freq
                     try:
