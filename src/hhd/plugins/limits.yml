@@ -69,3 +69,9 @@ modes:
       rt_max:
         <<: *s_max
         title: Right Trigger Maximum
+
+      reset:
+        type: action
+        title: Reset to Default
+        hint: >-
+          Reset all values to default.

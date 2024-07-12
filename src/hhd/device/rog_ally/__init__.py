@@ -9,8 +9,16 @@ from hhd.plugins import (
     load_relative_yaml,
     get_outputs_config,
     get_limits_config,
+    fix_limits,
 )
 from hhd.plugins.settings import HHDSettings
+
+LIMIT_DEFAULTS = {
+    "s_min": 0,
+    "s_max": 0x40,
+    "t_min": 0,
+    "t_max": 0x40,
+}
 
 
 class RogAllyControllersPlugin(HHDPlugin):
@@ -41,14 +49,13 @@ class RogAllyControllersPlugin(HHDPlugin):
             get_outputs_config(can_disable=False)
         )
         base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config(
-            s_min=0,
-            s_max=0x40,
-            t_min=0,
-            t_max=0x40,
+            LIMIT_DEFAULTS
         )
         return base
 
     def update(self, conf: Config):
+        fix_limits(conf, "controllers.rog_ally.limits", LIMIT_DEFAULTS)
+
         new_conf = conf["controllers.rog_ally"]
         if new_conf == self.prev:
             return
@@ -110,4 +117,4 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if "ROG Ally X RC72" in dmi:
         return [RogAllyControllersPlugin(ally_x=True)]
 
-    return []
+    return [RogAllyControllersPlugin(ally_x=True)]

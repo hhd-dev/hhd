@@ -277,20 +277,55 @@ def get_outputs_config(
     return s
 
 
-def get_limits_config(
-    s_min: int = 5, s_max: int = 100, t_min: int = 5, t_max: int = 100
-):
+def get_limits_config(defaults: dict[str, int] = {}):
     s = load_relative_yaml("limits.yml")
     lims = s["modes"]["manual"]["children"]
-    
-    lims["ls_min"]["default"] = s_min
-    lims["ls_max"]["default"] = s_max
-    lims["rs_min"]["default"] = s_min
-    lims["rs_max"]["default"] = s_max
 
-    lims["rt_min"]["default"] = t_min
-    lims["rt_max"]["default"] = t_max
-    lims["lt_min"]["default"] = t_min
-    lims["lt_max"]["default"] = t_max
+    lims["ls_min"]["default"] = defaults.get("s_min", 0)
+    lims["ls_max"]["default"] = defaults.get("s_max", 95)
+    lims["rs_min"]["default"] = defaults.get("s_min", 0)
+    lims["rs_max"]["default"] = defaults.get("s_max", 95)
+
+    lims["rt_min"]["default"] = defaults.get("t_min", 0)
+    lims["rt_max"]["default"] = defaults.get("t_max", 95)
+    lims["lt_min"]["default"] = defaults.get("t_min", 0)
+    lims["lt_max"]["default"] = defaults.get("t_max", 95)
 
     return s
+
+
+def get_limits(conf):
+    if conf["mode"].to(str) != "manual":
+        return {}
+
+    kconf = conf["manual"]
+    for set in ("ls", "rs", "lt", "rt"):
+        if kconf[f"{set}_min"].to(int) > kconf[f"{set}_max"].to(int):
+            kconf[f"{set}_min"] = kconf[f"{set}_max"].to(int)
+    return kconf.to(dict)
+
+
+def fix_limits(conf, prefix: str, defaults: dict[str, int] = {}):
+    if conf[f"{prefix}.mode"].to(str) != "manual":
+        return {}
+
+    # Make sure min < max
+    for set in ("ls", "rs", "lt", "rt"):
+        if conf[f"{prefix}.manual.{set}_min"].to(int) > conf[
+            f"{prefix}.manual.{set}_max"
+        ].to(int):
+            conf[f"{prefix}.manual.{set}_min"] = conf[f"{prefix}.manual.{set}_max"].to(
+                int
+            )
+
+    # Allow reseting limits
+    if conf[f"{prefix}.manual.reset"].to(bool):
+        for set in ("l", "r"):
+            for comp in ("t", "s"):
+                conf[f"{prefix}.manual.{set}{comp}_min"] = defaults.get(
+                    f"{comp}_min", 0
+                )
+                conf[f"{prefix}.manual.{set}{comp}_max"] = defaults.get(
+                    f"{comp}_max", 95
+                )
+        conf[f"{prefix}.manual.reset"] = False

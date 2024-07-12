@@ -15,7 +15,7 @@ from hhd.controller.physical.evdev import (
 )
 from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_unique
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
-from hhd.plugins import Config, Context, Emitter, get_outputs
+from hhd.plugins import Config, Context, Emitter, get_outputs, get_limits
 
 from .hid import Brightness, RgbCallback, switch_mode
 
@@ -335,9 +335,7 @@ def controller_loop(
         d_allyx = None
 
     # Vendor
-    kconf = {}
-    if conf["limits.mode"].to(str) == "manual":
-        kconf = conf["limits.manual"].to(dict)
+    kconf = get_limits(conf["limits"])
     d_vend = AllyHidraw(
         vid=[ASUS_VID],
         pid=[ALLY_PID, ALLY_X_PID],

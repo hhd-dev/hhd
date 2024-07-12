@@ -1,6 +1,12 @@
 from .conf import Config
 from .inputs import gen_gyro_state, get_gyro_config, get_gyro_state, get_touchpad_config
-from .outputs import get_limits_config, get_outputs, get_outputs_config
+from .outputs import (
+    fix_limits,
+    get_limits,
+    get_limits_config,
+    get_outputs,
+    get_outputs_config,
+)
 from .plugin import (
     Context,
     Emitter,
@@ -32,4 +38,6 @@ __all__ = [
     "HHDLocale",
     "HHDLocaleRegister",
     "get_limits_config",
+    "get_limits",
+    "fix_limits",
 ]
