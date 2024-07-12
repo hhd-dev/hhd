@@ -144,15 +144,18 @@ def set_per_cpu(fn: str, value: str):
         except ValueError:
             continue
         with open(os.path.join(CPU_PATH, dir, fn), "w") as f:
-            logger.info(os.path.join(CPU_PATH, dir, fn))
             f.write(value)
 
 
 def set_cpu_boost(enable: bool):
     logger.info(f"{'Enabling' if enable else 'Disabling'} CPU boost.")
     if os.path.exists(CPU_BOOST_PATH):
-        with open(CPU_BOOST_PATH, "w") as f:
-            f.write("1" if enable else "0")
+        try:
+            with open(CPU_BOOST_PATH, "w") as f:
+                f.write("1" if enable else "0")
+        except Exception:
+            with open(CPU_BOOST_PATH, "w") as f:
+                f.write("enabled" if enable else "disabled")
     elif is_in_cpu0(BOOST_FN):
         set_per_cpu(BOOST_FN, "1" if enable else "0")
 
