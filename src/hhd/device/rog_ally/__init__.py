@@ -14,9 +14,9 @@ from hhd.plugins import (
 from hhd.plugins.settings import HHDSettings
 
 LIMIT_DEFAULTS = {
-    "s_min": 0,
+    "s_min": 5,
     "s_max": 0x40,
-    "t_min": 0,
+    "t_min": 5,
     "t_max": 0x40,
 }
 
