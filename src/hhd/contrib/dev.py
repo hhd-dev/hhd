@@ -30,7 +30,10 @@ def evdev(dev: str | None):
     else:
         sel =    None
         while sel not in avail:
-            sel = input("Enter device path (/dev/input/event# or #): ")
+            try:
+                sel = input("Enter device path (/dev/input/event# or #): ")
+            except EOFError:
+                return
             try:
                 sel = f"/dev/input/event{int(sel)}"
             except Exception as e:
@@ -121,9 +124,9 @@ def hidraw(dev: str | None):
         avail.append(d["path"])
         n = int(d["path"].decode().split("hidraw")[1])
         infos[n] = (
-            f" - {d['path'].decode():13s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}:"
+            f" - {d['path'].decode():13s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}"
             + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
-            + f" Names '{d['manufacturer_string']}': '{d['product_string']}'"
+            + f" Names: '{d['manufacturer_string']}': '{d['product_string']}'"
         )
     print("\n".join([infos[k] for k in sorted(infos)]))
 
@@ -140,7 +143,10 @@ def hidraw(dev: str | None):
     else:
         sel = None
         while sel not in avail:
-            sel = input("Enter device path (/dev/hidraw# or #): ")
+            try:
+                sel = input("Enter device path (/dev/hidraw# or #): ")
+            except EOFError:
+                return
             try:
                 sel = f"/dev/hidraw{int(sel)}".encode()
             except Exception:
