@@ -1218,3 +1218,11 @@ def config_rgb(boot: bool, charging: bool) -> bytes:
 # 5a d0 01 0c 00 repeatedly (ally responds with data)
 # 5a d0 06 01 02
 # 5a d0 03 02 20
+
+# Aura mode
+# Init / turn off
+# 5a c0 00 01 <- this might fix some issues with leds being stuck
+# Turn on (after init)
+# 5a bc
+# Then commands
+# 5ad1080cff0000ff0000ff0000ff0000
