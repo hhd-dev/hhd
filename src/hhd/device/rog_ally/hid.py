@@ -1,10 +1,10 @@
 import logging
+import time
 from typing import Literal, Sequence
 
 from hhd.controller import Event
 from hhd.controller.base import RgbMode
 from hhd.controller.lib.hid import Device
-import time
 
 from .const import (
     COMMANDS_GAME,
@@ -14,6 +14,7 @@ from .const import (
     RGB_INIT_2,
     RGB_SET,
     buf,
+    config_rgb,
 )
 
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
@@ -72,9 +73,9 @@ def rgb_command(
         case "spiral":
             # Wave
             c_mode = 0x03
-            red = 255
-            green = 255
-            blue = 255
+            red = 0
+            green = 0
+            blue = 0
             if direction == "left":
                 c_direction = 0x01
         case "duality":
@@ -212,7 +213,9 @@ def rgb_set(
 INIT_EVERY_S = 10
 
 
-def process_events(events: Sequence[Event], prev_mode: str | None):
+def process_events(
+    events: Sequence[Event], prev_mode: str | None, rgb_boot: bool, rgb_charging: bool
+):
     cmds = []
     mode = None
     br_cmd = None
@@ -279,6 +282,7 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
         cmds = [
             RGB_INIT_1,
             RGB_INIT_2,
+            config_rgb(rgb_boot, rgb_charging),
             *cmds,
             RGB_SET,
             RGB_APPLY,
@@ -290,11 +294,15 @@ def process_events(events: Sequence[Event], prev_mode: str | None):
 
 
 class RgbCallback:
-    def __init__(self) -> None:
+    def __init__(self, rgb_boot: bool, rgb_charging: bool) -> None:
         self.prev_mode = None
+        self.rgb_boot = rgb_boot
+        self.rgb_charging = rgb_charging
 
     def __call__(self, dev: Device, events: Sequence[Event]):
-        cmds, mode = process_events(events, self.prev_mode)
+        cmds, mode = process_events(
+            events, self.prev_mode, self.rgb_boot, self.rgb_charging
+        )
         if mode:
             self.prev_mode = mode
         if not cmds:

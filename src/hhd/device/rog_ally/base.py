@@ -343,7 +343,9 @@ def controller_loop(
         usage_page=[0xFF31],
         usage=[0x0080],
         required=True,
-        callback=RgbCallback(),
+        callback=RgbCallback(
+            conf.get("rgb_boot", False), conf.get("rgb_charging", False)
+        ),
         kconf=kconf,
     )
 

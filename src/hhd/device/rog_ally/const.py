@@ -57,7 +57,6 @@ PAD_VIEW = 0x11
 PAD_MENU = 0x12
 PAD_XBOX = 0x13
 
-
 MODE_GAME = buf([FEATURE_KBD_REPORT_ID, 0xD1, xpad_cmd_set_mode, 0x01, xpad_mode_game])
 
 MODE_MOUSE = buf(
@@ -1165,10 +1164,10 @@ COMMANDS_MOUSE = lambda kconf: [
 RGB_APPLY = buf([FEATURE_KBD_REPORT_ID, 0xB4])
 RGB_SET = buf([FEATURE_KBD_REPORT_ID, 0xB5])
 
-RGB_INIT_1 = buf([0x5D, 0xB9])
+RGB_INIT_1 = buf([FEATURE_KBD_REPORT_ID, 0xB9])
 RGB_INIT_2 = buf(
     [
-        0x5D,
+        FEATURE_KBD_REPORT_ID,
         0x41,
         0x53,
         0x55,
@@ -1185,3 +1184,37 @@ RGB_INIT_2 = buf(
         0x2E,
     ]
 )
+
+
+# RGB on when
+# "5a d1 09 01 0f <- val bit"
+# 0f: all on
+# 00: all off
+# 09 (08 + 01): boot/shutdown
+# 02: awake
+# 04: charging sleep
+def config_rgb(boot: bool, charging: bool) -> bytes:
+    # Always while awake, users can toggle RGB settings for that
+    val = 0x02
+    if boot:
+        val += 0x09
+    if charging:
+        val += 0x04
+    return buf(
+        [
+            FEATURE_KBD_REPORT_ID,
+            0xD1,
+            0x09,
+            0x01,
+            val,
+        ]
+    )
+
+
+# Calibration
+# 5a d0 is the main command group
+# For left trigger ally executes:
+# 5a d0 06 01 01
+# 5a d0 01 0c 00 repeatedly (ally responds with data)
+# 5a d0 06 01 02
+# 5a d0 03 02 20
