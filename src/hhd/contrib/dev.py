@@ -15,7 +15,7 @@ def evdev(dev: str | None):
     print("Available Devices with the Current Permissions")
     avail = list_devices()
     for d in avail:
-        print(InputDevice(d))
+        print(f" - {str(InputDevice(d))}")
     print()
 
     if dev:
@@ -121,7 +121,7 @@ def hidraw(dev: str | None):
         avail.append(d["path"])
         n = int(d["path"].decode().split("hidraw")[1])
         infos[n] = (
-            f"{d['path'].decode():15s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}:"
+            f" - {d['path'].decode():13s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}:"
             + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
             + f" Names '{d['manufacturer_string']}': '{d['product_string']}'"
         )
