@@ -20,11 +20,11 @@ def main():
             case "evdev":
                 from .dev import evdev
 
-                evdev()
+                evdev(cmds[1] if len(cmds) > 1 else None)
             case "hidraw":
                 from .dev import hidraw
 
-                hidraw()
+                hidraw(cmds[1] if len(cmds) > 1 else None)
             case "gamescope":
                 from .gs import gamescope_debug
 
