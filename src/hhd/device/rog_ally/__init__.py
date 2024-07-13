@@ -117,4 +117,4 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if "ROG Ally X RC72" in dmi:
         return [RogAllyControllersPlugin(ally_x=True)]
 
-    return [RogAllyControllersPlugin(ally_x=True)]
+    return []
