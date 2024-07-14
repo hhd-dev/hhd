@@ -1132,6 +1132,10 @@ class Multiplexer:
             self.qam_pre_sent = False
             self.qam_times = 0
 
+        if self.emit:
+            evs = self.emit.inject_recv()
+            out.extend(evs)
+
         # Grab all events from controller if grab is on
         if self.emit and self.emit.intercept(self.unique, out):
             accel = random.random() * 10
@@ -1142,7 +1146,7 @@ class Multiplexer:
             ]
             return fake_accel + [
                 o
-                for o in events
+                for o in out
                 if o["type"] not in ("button", "axis") or "ts" in o.get("code", "")
             ]
         elif send_steam_qam:
@@ -1186,10 +1190,6 @@ class Multiplexer:
                         curr + 2 * self.QAM_DELAY,
                     ),
                 )
-
-        if self.emit:
-            evs = self.emit.inject_recv()
-            out.extend(evs)
         return out
 
 
