@@ -271,9 +271,8 @@ class LegionHidraw(GenericGamepadHidraw):
             cmds.extend(controller_enable_gyro("left"))
         if self.gyro in ("right", "both"):
             cmds.extend(controller_enable_gyro("right"))
-        # Use the built in controller option
-        # so windows works the same
-        cmds.extend(controller_legion_swap(self.swap_legion))
+        # Always disable legion swap and use our version
+        cmds.extend(controller_legion_swap(False))
 
         for r in cmds:
             self.dev.write(r)
@@ -282,16 +281,6 @@ class LegionHidraw(GenericGamepadHidraw):
 
     def produce(self, fds: Sequence[int]):
         out = super().produce(fds)
-
-        if self.swap_legion:
-            # windows swap legion option
-            # is weird. QAM would be the top button
-            # swap them around
-            for ev in out:
-                if ev["code"] == "mode":
-                    ev["code"] = "share"
-                elif ev["code"] == "share":
-                    ev["code"] = "mode"
 
         # TODO: Cleanup
         # Or remove, since this option is problematic
@@ -341,6 +330,8 @@ class LegionHidraw(GenericGamepadHidraw):
         # in case they use battery
         cmds.extend(controller_disable_gyro("left"))
         cmds.extend(controller_disable_gyro("right"))
+        # Restore the windows legion swap version for continuity
+        cmds.extend(controller_legion_swap(self.swap_legion))
         for r in cmds:
             self.dev.write(r)
 

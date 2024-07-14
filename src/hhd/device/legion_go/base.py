@@ -243,6 +243,7 @@ def controller_loop_xinput(
     )
     motion = d_params.get("uses_motion", True)
     dual_motion = d_params.get("uses_dual_motion", True)
+    swap_legion = conf["swap_legion_v2"].to(bool)
     if not dual_motion and dimu == "both":
         dimu = "right"
     if not motion:
@@ -283,7 +284,7 @@ def controller_loop_xinput(
             gyro=dimu,
             reset=reset,
             use_touchpad=fix_hold,
-            swap_legion=conf["swap_legion_v2"].to(bool),
+            swap_legion=swap_legion,
         )
     )
 
@@ -308,6 +309,7 @@ def controller_loop_xinput(
         led="main_to_sides",
         status="both_to_main",
         share_to_qam=conf["share_to_qam"].to(bool),
+        swap_guide="guide_is_select" if swap_legion else None,
         touchpad_short=touch_actions["short"].to(TouchpadAction),
         touchpad_right=touch_actions["hold"].to(TouchpadAction),
         select_reboots=conf["select_reboots"].to(bool),
@@ -395,7 +397,7 @@ def controller_loop_xinput(
                     if (abs(v / 0.001065) // 1) in (254, 255):
                         # Legion go controllers have a bug where they will
                         # randomly output 254 or 255. If that happens, drop event
-                        ev['code'] = "" # type: ignore
+                        ev["code"] = ""  # type: ignore
 
             evs = multiplexer.process(evs)
             if evs:
