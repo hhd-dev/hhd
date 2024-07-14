@@ -4,6 +4,15 @@ Adjustor currently allows for TDP control of all AMD Handhelds past generation
 6### (support is added manually).
 Intel is not currently supported.
 For installation and usage, see the [main readme](https://github.com/hhd-dev/hhd).
+Adjustor supports all handhelds in the Handheld Daemon supported list,
+except intel handhelds and older prior to 6XXX AMD handhelds.
+
+> [!IMPORTANT]
+> Adjustor supports per-device TDP values but its database is not fully featured
+> yet, with a fallback to 0-30W for missing devices
+> that use the ALIB driver. Use common sense while on battery and reference
+> your manufacturer's spec sheet. Open an issue so your device can have correct
+> limits.
 
 ## TDP Control
 For the ROG Ally, Ally X and Legion Go that have an ACPI/EC implementation for 
@@ -87,7 +96,7 @@ is no official way of setting TDP on demand, either on Linux or Windows, with
 TDP remaining to what is set on the BIOS level.
 Vendors that offer this functionality without an ACPI implementation
 (such as Ayaneo), use RyzenAdj on Windows (can be seen on the Ayaneo Space directory).
-This is unfortunate, as RyzenAdj does not hold a lock while performing
+This is not ideal, as RyzenAdj does not hold a lock while performing
 SMU calls, and may perform them at the same time as the GPU driver which can
 confuse it and cause a kernel panic.
 We have recorded crashes with it both on Windows and Linux with implementations 
