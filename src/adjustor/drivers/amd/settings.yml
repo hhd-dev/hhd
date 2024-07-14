@@ -1,7 +1,7 @@
 enabled:
   title: Energy Management
   type: container
-  tags: [ hide-title ]
+  tags: [ hide-title, non-essential ]
   children:
     mode:
       type: mode
