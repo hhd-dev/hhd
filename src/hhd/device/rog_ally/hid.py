@@ -227,7 +227,11 @@ def process_events(
             if ev["mode"] == "disabled":
                 mode = "disabled"
                 br_cmd = rgb_set_brightness("off")
-                # cmds.extend(rgb_set(ev["code"], "solid", "left", 0, 0, 0, 0))
+                # Certain RGB modes (e.g., rainbow) do not support being set to
+                # off. So switch the mode to solid without a color.
+                cmds.extend(
+                    rgb_set(ev["code"], "solid", "left", "low", 0, 0, 0, 0, 0, 0)
+                )
             else:
                 match ev["mode"]:
                     case "pulse":
