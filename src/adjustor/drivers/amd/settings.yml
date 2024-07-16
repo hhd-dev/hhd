@@ -89,13 +89,13 @@ enabled:
                       default: 1000
             sched:
               type: multiple
-              title: Scheduler
+              title: Custom Scheduler
               hint: >-
                 Allows attaching a scheduler to the kernel sched_ext.
                 Schedulers need to be installed.
                 "Kernel" .
               options:
-                disabled: Kernel
+                disabled: Disabled
                 scx_lavd: LAVD
                 scx_bpfland: bpfland 
                 scx_rusty: rusty
