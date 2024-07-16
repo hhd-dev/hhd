@@ -181,22 +181,24 @@ class AmdGPUPlugin(HHDPlugin):
 
         self.avail_scheds = {}
         avail_pretty = {}
-        for sched, pretty in sets["enabled"]["children"]["mode"]["modes"]["manual"][
-            "children"
-        ]["sched"]["options"].items():
-            if sched == "disabled":
-                avail_pretty[sched] = pretty
-                continue
+        kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state")
+        if kernel_supports:
+            for sched, pretty in sets["enabled"]["children"]["mode"]["modes"]["manual"][
+                "children"
+            ]["sched"]["options"].items():
+                if sched == "disabled":
+                    avail_pretty[sched] = pretty
+                    continue
 
-            exe = shutil.which(sched)
-            if exe:
-                self.avail_scheds[sched] = exe
-                avail_pretty[sched] = pretty
+                exe = shutil.which(sched)
+                if exe:
+                    self.avail_scheds[sched] = exe
+                    avail_pretty[sched] = pretty
 
         if self.avail_scheds:
-            sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
-                "sched"
-            ]["options"] = avail_pretty
+            sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"]["sched"][
+                "options"
+            ] = avail_pretty
         else:
             del sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
                 "sched"
