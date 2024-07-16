@@ -41,12 +41,24 @@ DEV_PARAMS_7040: dict[str, DeviceParams] = {
     "temp_target": D(60, 70, 85, 90, 100),
 }
 
+DEV_PARAMS_NEO: dict[str, DeviceParams] = {
+    "stapm_limit": D(0, 4, 15, 28, 35),
+    "skin_limit": D(0, 4, 15, 28, 35),
+    "slow_limit": D(0, 4, 20, 32, 37),
+    "fast_limit": D(0, 4, 25, 35, 40),
+    # Times
+    "slow_time": D(5, 5, 10, 10, 10),
+    "stapm_time": D(100, 100, 100, 200, 200),
+    # Temp
+    "temp_target": D(60, 70, 85, 90, 100),
+}
+
 DEV_PARAMS_6040: dict[str, DeviceParams] = DEV_PARAMS_7040
 DEV_PARAMS_8040: dict[str, DeviceParams] = DEV_PARAMS_7040
 DEV_PARAMS_LEGO = DEV_PARAMS_7040
 
 DEV_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams], bool]] = {
-    "NEO-01": (DEV_PARAMS_7040, ALIB_PARAMS_7040, False),
+    "NEO-01": (DEV_PARAMS_NEO, ALIB_PARAMS_7040, False),
     "83E1": (DEV_PARAMS_LEGO, ALIB_PARAMS_7040, False),
 }
 
