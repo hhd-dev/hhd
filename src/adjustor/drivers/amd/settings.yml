@@ -87,6 +87,19 @@ enabled:
                       max: 2000
                       step: 100
                       default: 1000
+            sched:
+              type: multiple
+              title: Scheduler
+              hint: >-
+                Allows attaching a scheduler to the kernel sched_ext.
+                Schedulers need to be installed.
+                "Kernel" .
+              options:
+                disabled: Kernel
+                scx_lavd: LAVD
+                scx_bpfland: bpfland 
+                scx_rusty: rusty
+              default: disabled
 
 conflict:
   title: Energy Management

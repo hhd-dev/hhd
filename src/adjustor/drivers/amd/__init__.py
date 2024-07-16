@@ -2,10 +2,11 @@ import logging
 import os
 import subprocess
 import sys
-from threading import Event as TEvent
 from threading import Thread
 from typing import Literal
+import shutil
 import time
+import signal
 
 from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
@@ -67,14 +68,18 @@ class AmdGPUPlugin(HHDPlugin):
         self.ppd_conflict = False
         self.initialized = False
         self.supports_boost = False
+        self.supports_sched = False
+        self.avail_scheds = {}
 
         self.proc = None
         self.t = None
 
         self.queue = None
+        self.sched_proc = None
         self.old_ppd = False
         self.old_gpu = None
         self.old_freq = None
+        self.old_sched = "disabled"
         self.old_boost = None
         self.old_epp = None
         self.old_target = None
@@ -174,6 +179,29 @@ class AmdGPUPlugin(HHDPlugin):
                 "cpu_pref"
             ]
 
+        self.avail_scheds = {}
+        avail_pretty = {}
+        for sched, pretty in sets["enabled"]["children"]["mode"]["modes"]["manual"][
+            "children"
+        ]["sched"]["options"].items():
+            if sched == "disabled":
+                avail_pretty[sched] = pretty
+                continue
+
+            exe = shutil.which(sched)
+            if exe:
+                self.avail_scheds[sched] = exe
+                avail_pretty[sched] = pretty
+
+        if self.avail_scheds:
+            sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
+                "sched"
+            ]["options"] = avail_pretty
+        else:
+            del sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
+                "sched"
+            ]
+
         self.logged_boost = True
         return {
             "tdp": {"amd_energy": sets["enabled"]},
@@ -197,7 +225,7 @@ class AmdGPUPlugin(HHDPlugin):
                         self.proc.stdin.flush()
                 except Exception as e:
                     logger.error(f"Failed to send PPD mode:\n{e}")
-                    self.close()
+                    self.close_ppd()
 
     def update(self, conf: Config):
         self.core_enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -224,9 +252,9 @@ class AmdGPUPlugin(HHDPlugin):
                     self.proc, self.t = _open_ppd_server(self.emit)
                 except Exception as e:
                     logger.error(f"Failed to open PPD server:\n{e}")
-                    self.close()
+                    self.close_ppd()
             else:
-                self.close()
+                self.close_ppd()
 
         if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
             curr = time.perf_counter()
@@ -239,6 +267,8 @@ class AmdGPUPlugin(HHDPlugin):
                 logger.info(
                     f"Handling energy settings for power profile '{self.target}'."
                 )
+                # Unless it is set manually, use the default scheduler.
+                self.close_sched()
                 try:
                     match self.target:
                         case "balanced":
@@ -329,10 +359,43 @@ class AmdGPUPlugin(HHDPlugin):
                     except Exception as e:
                         logger.error(f"Failed to set minimum CPU frequency:\n{e}")
 
-    def close(self):
+            if self.avail_scheds:
+                # Check health and print error
+                if self.sched_proc and self.sched_proc.poll():
+                    err = self.sched_proc.poll()
+                    self.sched_proc = None
+                    logger.error(
+                        f"Scheduler from sched_ext '{self.old_sched}' closed with error code: {err}"
+                    )
+
+                new_sched = conf.get("tdp.amd_energy.mode.manual.sched", "disabled")
+                if new_sched != self.old_sched:
+                    self.close_sched()
+                    self.old_sched = new_sched
+                    if new_sched and new_sched != "disabled":
+                        logger.info(f"Starting sched_ext scheduler '{new_sched}'")
+                        self.sched_proc = subprocess.Popen(
+                            self.avail_scheds[new_sched],
+                            stderr=subprocess.DEVNULL,
+                            stdout=subprocess.DEVNULL,
+                        )
+
+    def close_ppd(self):
         if self.proc is not None:
-            self.proc.terminate()
+            self.proc.send_signal(signal.SIGINT)
             self.proc.wait()
+            self.proc = None
         if self.t is not None:
             self.t.join()
             self.t = None
+
+    def close_sched(self):
+        if self.sched_proc is not None:
+            logger.info(f"Closing sched_ext scheduler '{self.old_sched}'.")
+            self.sched_proc.send_signal(signal.SIGINT)
+            self.sched_proc.wait()
+            self.sched_proc = None
+
+    def close(self):
+        self.close_ppd()
+        self.close_sched()
