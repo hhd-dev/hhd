@@ -274,6 +274,18 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     if not drivers_matched and prod in DEV_DATA:
         dev, cpu, pp_enable = DEV_DATA[prod]
+
+        try:
+            # Set values for the steam slider
+            if dev["skin_limit"].smin:
+                min_tdp = dev["skin_limit"].smin
+            if dev["skin_limit"].default:
+                default_tdp = dev["skin_limit"].default
+            if dev["skin_limit"].smax:
+                max_tdp = dev["skin_limit"].smax
+        except Exception as e:
+            logger.error(f"Failed to get TDP limits for {prod}:\n{e}")
+
         pp_enable |= bool(os.environ.get("HHD_ADJ_DEBUG"))
         drivers.append(
             SmuDriverPlugin(
