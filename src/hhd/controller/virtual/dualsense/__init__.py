@@ -118,6 +118,7 @@ class Dualsense(Producer, Consumer):
             if (
                 self.edge_mode == cached.edge_mode
                 and self.use_bluetooth == cached.use_bluetooth
+                and self.controller_id == cached.controller_id
             ):
                 logger.warning(
                     f"Using cached controller node for Dualsense {'left motions device' if self.left_motion else 'controller'}."
