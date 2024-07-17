@@ -267,19 +267,8 @@ class GenericGamepadEvdev(Producer, Consumer):
                 if not matches:
                     continue
 
-            self.dev = dev
-            if self.grab:
-                self.dev.grab()
-            self.ranges = {
-                a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
-            }
-            self.supports_vibration = B("EV_FF") in dev.capabilities()
-            self.fd = dev.fd
-            self.started = True
-            self.effect_id = -1
-            self.queue = []
-
-            # Run after init to avoid having leftover rules
+            # hide_gamepad will destroy the current fds, so run it before
+            # creating the final device
             if self.hide:
                 # Check we are root
                 if not os.getuid():
@@ -292,6 +281,27 @@ class GenericGamepadEvdev(Producer, Consumer):
                     logger.warning(
                         f"Not running as root, device '{dev.name}' could not be hid."
                     )
+
+            try:
+                # Close the previous device
+                # Will have been destroyed by hiding
+                dev.close()
+                self.dev = evdev.InputDevice(d)
+                if self.grab:
+                    self.dev.grab()
+                self.ranges = {
+                    a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
+                }
+                self.supports_vibration = B("EV_FF") in dev.capabilities()
+                self.fd = dev.fd
+                self.started = True
+                self.effect_id = -1
+                self.queue = []
+            except Exception as e:
+                # Prevent leftover rules in case of error
+                if self.hidden:
+                    unhide_gamepad(d, self.hidden)
+                raise e
 
             return [self.fd]
 

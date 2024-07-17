@@ -1,6 +1,11 @@
 import subprocess
 import os
-# import re
+import logging
+
+from .ioctl import EVIOCREVOKEALL
+from fcntl import ioctl
+
+logger = logging.getLogger(__name__)
 
 
 def get_syspath(devpath: str):
@@ -73,21 +78,37 @@ KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", TA
 LABEL="hhd_end"
 """
 
-#     # Hide usb xinput, be very careful to only match that usb
-#     if "/" in parent:
-#         usb_root = parent[parent.rindex("/") + 1 :]
-#         if re.match(r"\d-+\d+", usb_root) or re.match(r"\d+-\d+:\d+\.\d+", usb_root):
-#             rule += f"""
-# # Hides the Xinput/Hidraw input node so that certain games that access it directly.
-# SUBSYSTEMS=="usb", ATTRS{{idVendor}}=="{vid:04x}", ATTRS{{idProduct}}=="{pid:04x}",\
-#  KERNEL=="{usb_root}", TAG-="uaccess", GROUP="root", MODE="000"
-# """
+    #     # Hide usb xinput, be very careful to only match that usb
+    #     if "/" in parent:
+    #         usb_root = parent[parent.rindex("/") + 1 :]
+    #         if re.match(r"\d-+\d+", usb_root) or re.match(r"\d+-\d+:\d+\.\d+", usb_root):
+    #             rule += f"""
+    # # Hides the Xinput/Hidraw input node so that certain games that access it directly.
+    # SUBSYSTEMS=="usb", ATTRS{{idVendor}}=="{vid:04x}", ATTRS{{idProduct}}=="{pid:04x}",\
+    #  KERNEL=="{usb_root}", TAG-="uaccess", GROUP="root", MODE="000"
+    # """
 
     try:
+        # Add udev rules to strip the device perms from the system
         os.makedirs("/run/udev/rules.d/", exist_ok=True)
         with open(out_fn, "w") as f:
             f.write(rule)
+        # Reload the rules for that device to make it owned by root
         reload_children(parent)
+
+        # Now that only we can access the device, revoke open fds
+        # fd = None
+        # try:
+        #     fd = os.open(devpath, os.O_RDONLY)
+        #     ioctl(fd, EVIOCREVOKEALL, 0)
+        # except Exception:
+        #     logger.exception(
+        #         "Failed to run EVIOCREVOKEALL. Games may remember the controller."
+        #     )
+        # finally:
+        #     if fd:
+        #         os.close(fd)
+
         return input_dev
     except Exception:
         return None
