@@ -2,7 +2,7 @@ import subprocess
 import os
 import logging
 
-from .ioctl import EVIOCREVOKEALL
+from .ioctl import EVIOCREVOKEALL, JSIOCREVOKEALL
 from fcntl import ioctl
 
 logger = logging.getLogger(__name__)
@@ -97,17 +97,29 @@ LABEL="hhd_end"
         reload_children(parent)
 
         # Now that only we can access the device, revoke open fds
-        # fd = None
-        # try:
-        #     fd = os.open(devpath, os.O_RDONLY)
-        #     ioctl(fd, EVIOCREVOKEALL, 0)
-        # except Exception:
-        #     logger.exception(
-        #         "Failed to run EVIOCREVOKEALL. Games may remember the controller."
-        #     )
-        # finally:
-        #     if fd:
-        #         os.close(fd)
+        # Custom kernel feature. NOOP if it fails.
+        try:
+            for fn in os.listdir("/sys/" + parent):
+                if fn.startswith("event"):
+                    ioc = EVIOCREVOKEALL
+                elif fn.startswith("js"):
+                    ioc = JSIOCREVOKEALL
+                else:
+                    continue
+
+                fd = None
+                try:
+                    dev = os.path.join("/dev/input", fn)
+                    fd = os.open(dev, os.O_RDONLY)
+                    ioctl(fd, ioc, 0)
+                    logger.info(f"Revoked access to device '{dev}'.")
+                finally:
+                    if fd:
+                        os.close(fd)
+        except Exception as e:
+            logger.exception(
+                f"Failed to run EV/JSIOCREVOKEALL. Games may remember the controller. Error:\n{e}"
+            )
 
         return input_dev
     except Exception:
