@@ -293,7 +293,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                     a: (i.min, i.max) for a, i in self.dev.capabilities().get(B("EV_ABS"), [])  # type: ignore
                 }
                 self.supports_vibration = B("EV_FF") in dev.capabilities()
-                self.fd = dev.fd
+                self.fd = self.dev.fd
                 self.started = True
                 self.effect_id = -1
                 self.queue = []
