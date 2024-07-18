@@ -1164,26 +1164,29 @@ COMMANDS_MOUSE = lambda kconf: [
 RGB_APPLY = buf([FEATURE_KBD_REPORT_ID, 0xB4])
 RGB_SET = buf([FEATURE_KBD_REPORT_ID, 0xB5])
 
-RGB_INIT_1 = buf([FEATURE_KBD_REPORT_ID, 0xB9])
-RGB_INIT_2 = buf(
-    [
-        FEATURE_KBD_REPORT_ID,
-        0x41,
-        0x53,
-        0x55,
-        0x53,
-        0x20,
-        0x54,
-        0x65,
-        0x63,
-        0x68,
-        0x2E,
-        0x49,
-        0x6E,
-        0x63,
-        0x2E,
-    ]
-)
+RGB_INIT = [
+    buf([FEATURE_KBD_REPORT_ID, 0xB9]),
+    buf(
+        [
+            FEATURE_KBD_REPORT_ID,
+            0x41,
+            0x53,
+            0x55,
+            0x53,
+            0x20,
+            0x54,
+            0x65,
+            0x63,
+            0x68,
+            0x2E,
+            0x49,
+            0x6E,
+            0x63,
+            0x2E,
+        ]
+    ),
+    buf([FEATURE_KBD_REPORT_ID, 0x05, 0x20, 0x31, 0x00, 0x08]),
+]
 
 
 # RGB on when
