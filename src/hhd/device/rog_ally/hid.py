@@ -10,8 +10,7 @@ from .const import (
     COMMANDS_GAME,
     COMMANDS_MOUSE,
     RGB_APPLY,
-    RGB_INIT_1,
-    RGB_INIT_2,
+    RGB_INIT,
     RGB_SET,
     buf,
     config_rgb,
@@ -284,8 +283,7 @@ def process_events(
 
     if init:
         cmds = [
-            RGB_INIT_1,
-            RGB_INIT_2,
+            *RGB_INIT,
             config_rgb(rgb_boot, rgb_charging),
             *cmds,
             RGB_SET,
