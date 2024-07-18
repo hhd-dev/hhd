@@ -96,6 +96,8 @@ LABEL="hhd_end"
         # Reload the rules for that device to make it owned by root
         reload_children(parent)
 
+        return input_dev
+
         # Now that only we can access the device, revoke open fds
         # Custom kernel feature. NOOP if it fails.
         try:
