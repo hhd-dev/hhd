@@ -89,7 +89,7 @@ class OverlayPlugin(HHDPlugin):
 
             if kbd or touch or ctrl or disable_touch:
                 logger.info(
-                    f"Starting shortcut loop with kbd: {kbd}, touch: {touch}, ctrl: {ctrl}."
+                    f"Starting shortcut loop with kbd: {kbd}, touch: {touch}, ctrl: {ctrl}, disable_touch: {disable_touch}."
                 )
                 self.short_should_exit = TEvent()
                 self.short_t = Thread(

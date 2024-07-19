@@ -182,9 +182,8 @@ def process_touch(emit, state, ev, val):
         state["start_y"] = 0
         state["last_x"] = 0
         state["last_y"] = 0
-        if state["disable_touch"] and state.get("grabbed", False):
-            state["grabbed"] = False
-            state["dev"].ungrab()
+        if state["disable_touch"] and state.get("grab", False):
+            state["grab"] = False
         return
 
     start_time = state.get("start_time", 0)
@@ -227,18 +226,15 @@ def process_touch(emit, state, ev, val):
     if not last_x or not last_y:
         return
 
-    # Grab once, and only if we are within limits
     if (
         state["disable_touch"]
-        and not state.get("grabbed", False)
         and (
             start_x < GESTURE_LIM
             or start_x > 1 - GESTURE_LIM
             or start_y > 1 - GESTURE_LIM
         )
     ):
-        state["grabbed"] = True
-        state["dev"].grab()
+        state["grab"] = True
 
     # Calculate the distance
     dx = last_x - start_x
@@ -272,9 +268,7 @@ def process_touch(emit, state, ev, val):
         state["start_y"] = 0
         state["last_x"] = 0
         state["last_y"] = 0
-        if state["disable_touch"] and state.get("grabbed", False):
-            state["grabbed"] = False
-            state["dev"].ungrab()
+        state["grab"] = False
 
 
 def process_kbd(emit, state, _, val):
@@ -502,9 +496,6 @@ def device_shortcut_loop(
                             "max_x": max_x,
                             "max_y": max_y,
                             "portrait": portrait,
-                            "disable_touch": gesture_disable_touch
-                            and not disable_touchscreens,
-                            "dev": dev,
                         }
                     )
                 if cand["is_controller"]:
