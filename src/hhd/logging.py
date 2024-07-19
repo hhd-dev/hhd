@@ -60,6 +60,8 @@ class PluginLogRender:
         omit_repeated_times: bool = True,
         level_width=8,
         plugin_width=5,
+        print_time=True,
+        print_path=True,
     ) -> None:
         from rich.style import Style
 
@@ -68,6 +70,8 @@ class PluginLogRender:
         self.level_width = level_width
         self._last_time = None
         self.plugin_width = plugin_width
+        self.print_time = print_time
+        self.print_path = print_path
 
     def __call__(
         self,
@@ -87,7 +91,8 @@ class PluginLogRender:
 
         output = Table.grid(padding=(0, 1))
         output.expand = True
-        output.add_column(style="log.time")
+        if self.print_time:
+            output.add_column(style="log.time")
         match plugin:
             case "main":
                 color = "magenta"
@@ -99,37 +104,39 @@ class PluginLogRender:
         output.add_column(style="log.level", width=self.level_width)
 
         output.add_column(ratio=1, style="log.message", overflow="fold")
-        # output.add_column(style="log.path")
+        if self.print_path:
+            output.add_column(style="log.path")
 
         row = []
-        log_time = log_time or console.get_datetime()
-        time_format = time_format or self.time_format
-        if callable(time_format):
-            log_time_display = time_format(log_time)
-        else:
-            log_time_display = Text(log_time.strftime(time_format))
-        if log_time_display == self._last_time and self.omit_repeated_times:
-            row.append(Text(" " * len(log_time_display)))
-        else:
-            row.append(log_time_display)
-            self._last_time = log_time_display
+        if self.print_time:
+            log_time = log_time or console.get_datetime()
+            time_format = time_format or self.time_format
+            if callable(time_format):
+                log_time_display = time_format(log_time)
+            else:
+                log_time_display = Text(log_time.strftime(time_format))
+            if log_time_display == self._last_time and self.omit_repeated_times:
+                row.append(Text(" " * len(log_time_display)))
+            else:
+                row.append(log_time_display)
+                self._last_time = log_time_display
         row.append(plugin.upper() if plugin else "")
         row.append(level)
 
         # Find plugin
         row.append(Renderables(renderables))
-        # if path:
-        #     path_text = Text()
-        #     path_text.append(
-        #         path, style=f"link file://{link_path}" if link_path else ""
-        #     )
-        #     if line_no:
-        #         path_text.append(":")
-        #         path_text.append(
-        #             f"{line_no}",
-        #             style=f"link file://{link_path}#{line_no}" if link_path else "",
-        #         )
-        #     row.append(path_text)
+        if path and self.print_path:
+            path_text = Text()
+            path_text.append(
+                path, style=f"link file://{link_path}" if link_path else ""
+            )
+            if line_no:
+                path_text.append(":")
+                path_text.append(
+                    f"{line_no}",
+                    style=f"link file://{link_path}#{line_no}" if link_path else "",
+                )
+            row.append(path_text)
 
         output.add_row(*row)
         return output
@@ -197,9 +204,16 @@ def setup_logger(
     if log_dir:
         log_dir = expanduser(log_dir, ctx)
 
+    # Do not print time when running as a systemd service
+    is_systemd = bool(os.environ.get("JOURNAL_STREAM", None))
+
     install()
     handlers = []
-    handlers.append(PluginRichHandler(PluginLogRender()))
+    handlers.append(
+        PluginRichHandler(
+            PluginLogRender(print_time=not is_systemd, print_path=not is_systemd)
+        )
+    )
     if log_dir:
         os.makedirs(log_dir, exist_ok=True)
         if ctx:
