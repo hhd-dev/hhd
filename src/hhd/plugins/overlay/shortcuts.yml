@@ -1,5 +1,6 @@
 controller:
   type: container
+  tags: [non-essential]
   title: "All Controllers"
   children:
     xbox_b:
@@ -15,6 +16,7 @@ controller:
       default: hhd_qam
 keyboard:
   type: container
+  tags: [non-essential]
   title: "Keyboard (Gaming Only)"
   children:
     meta_press:
@@ -29,6 +31,7 @@ keyboard:
       default: steam_expanded
 touchscreen:
   type: container
+  tags: [non-essential]
   title: "Touchscreen"
   children:
     bottom:

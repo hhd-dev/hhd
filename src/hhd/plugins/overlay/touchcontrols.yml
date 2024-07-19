@@ -1,7 +1,6 @@
 touchscreen:
   type: container
-  tags: [no-title]
-  title: "Touchscreen Control"
+  title: "Touchscreen"
   children:
     disable:
       type: bool
