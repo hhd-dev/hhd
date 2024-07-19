@@ -56,8 +56,4 @@ touchscreen:
       title: "← Swipe Right Side (Bottom)"
       options: *shortcuts
       default: steam_qam
-    disable_touch:
-      type: bool
-      title: "Deactivate touch during gestures"
-      default: True
     

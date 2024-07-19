@@ -9,6 +9,8 @@ from threading import Event as TEvent
 from threading import RLock
 from typing import Any, Callable, Sequence
 
+from hhd.controller.virtual.uinput.monkey import UInputMonkey, UInput
+
 from evdev import InputDevice, list_devices
 
 from hhd.controller import Event as ControllerEvent
@@ -182,8 +184,7 @@ def process_touch(emit, state, ev, val):
         state["start_y"] = 0
         state["last_x"] = 0
         state["last_y"] = 0
-        if state["disable_touch"] and state.get("grab", False):
-            state["grab"] = False
+        state["grab"] = False
         return
 
     start_time = state.get("start_time", 0)
@@ -226,14 +227,7 @@ def process_touch(emit, state, ev, val):
     if not last_x or not last_y:
         return
 
-    if (
-        state["disable_touch"]
-        and (
-            start_x < GESTURE_LIM
-            or start_x > 1 - GESTURE_LIM
-            or start_y > 1 - GESTURE_LIM
-        )
-    ):
+    if start_x < GESTURE_LIM or start_x > 1 - GESTURE_LIM or start_y > 1 - GESTURE_LIM:
         state["grab"] = True
 
     # Calculate the distance
@@ -405,7 +399,6 @@ def device_shortcut_loop(
     controllers: bool = True,
     touchscreens: bool = True,
     disable_touchscreens: bool = False,
-    gesture_disable_touch: bool = True,
 ):
     blacklist = set()
     last_check = 0

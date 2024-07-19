@@ -102,7 +102,6 @@ class OverlayPlugin(HHDPlugin):
                         ctrl,
                         touch,
                         disable_touch,
-                        conf["shortcuts.touchscreen.disable_touch"].to(bool),
                     ),
                 )
                 self.short_t.start()
