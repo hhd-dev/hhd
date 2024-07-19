@@ -1050,11 +1050,6 @@ class Multiplexer:
                                 status_events.add("is_attached")
                             case "is_connected_left" | "is_connected_right":
                                 status_events.add("is_connected")
-                    if ev["code"] == "steam":
-                        if ev["value"]:
-                            send_steam_expand = True
-                        else:
-                            send_steam_qam = True
 
         if touched:
             self.touchpad_down = (
@@ -1131,9 +1126,7 @@ class Multiplexer:
             self.emit({"type": "special", "event": "qam_predouble"})
             self.qam_pre_sent = True
 
-        send_steam_qam = (
-            send_steam_qam or qam_apply and self.qam_released and self.qam_times == 1
-        )
+        send_steam_qam = qam_apply and self.qam_released and self.qam_times == 1
         if qam_apply and self.emit:
             if self.qam_pressed and was_held:
                 self.emit({"type": "special", "event": "qam_hold"})
@@ -1157,6 +1150,13 @@ class Multiplexer:
 
         if self.emit:
             evs = self.emit.inject_recv()
+            # Handle special case for steam
+            for ev in evs:
+                if ev["type"] == "configuration" and ev["code"] == "steam":
+                    if ev["value"]:
+                        send_steam_expand = True
+                    else:
+                        send_steam_qam = True
             out.extend(evs)
 
         # Grab all events from controller if grab is on
