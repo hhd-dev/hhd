@@ -36,16 +36,6 @@ touchscreen:
       title: "↑ Swipe Up"
       options: *shortcuts
       default: keyboard
-    left_top:
-      type: multiple
-      title: "→ Swipe Left Side (Top)"
-      options: *shortcuts
-      default: hhd_expanded
-    left_bottom:
-      type: multiple
-      title: "→ Swipe Left Side (Bottom)"
-      options: *shortcuts
-      default: steam_expanded
     right_top:
       type: multiple
       title: "← Swipe Right Side (Top)"
@@ -56,4 +46,14 @@ touchscreen:
       title: "← Swipe Right Side (Bottom)"
       options: *shortcuts
       default: steam_qam
+    left_top:
+      type: multiple
+      title: "→ Swipe Left Side (Top)"
+      options: *shortcuts
+      default: hhd_expanded
+    left_bottom:
+      type: multiple
+      title: "→ Swipe Left Side (Bottom)"
+      options: *shortcuts
+      default: steam_expanded
     
