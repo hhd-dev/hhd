@@ -26,7 +26,6 @@ class OverlayPlugin(HHDPlugin):
         self.short_should_exit = None
         self.old_touch = False
         self.short_t = None
-        self.init = True
         self.has_executable = False
 
     def open(
@@ -100,7 +99,7 @@ class OverlayPlugin(HHDPlugin):
                     args=(
                         self.emit,
                         self.short_should_exit,
-                        self.init,
+                        False,
                         kbd,
                         ctrl,
                         touch,
@@ -108,7 +107,6 @@ class OverlayPlugin(HHDPlugin):
                     ),
                 )
                 self.short_t.start()
-                self.init = False
                 self.old_touch = disable_touch
             else:
                 logger.info("No shortcuts enabled, not starting shortcut loop.")
