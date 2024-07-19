@@ -3,6 +3,8 @@ def buf(x):
 
 
 FEATURE_KBD_REPORT_ID = 0x5A
+FEATURE_KBD_LED_REPORT_ID1 = 0x5D
+FEATURE_KBD_LED_REPORT_ID2 = 0x5E
 
 xpad_mode_game = 0x01
 xpad_mode_wasd = 0x02
@@ -1164,11 +1166,10 @@ COMMANDS_MOUSE = lambda kconf: [
 RGB_APPLY = buf([FEATURE_KBD_REPORT_ID, 0xB4])
 RGB_SET = buf([FEATURE_KBD_REPORT_ID, 0xB5])
 
-RGB_INIT = [
-    buf([FEATURE_KBD_REPORT_ID, 0xB9]),
+RGB_PKEY_INIT = lambda key: [
     buf(
         [
-            FEATURE_KBD_REPORT_ID,
+            key,
             0x41,
             0x53,
             0x55,
@@ -1185,7 +1186,13 @@ RGB_INIT = [
             0x2E,
         ]
     ),
-    buf([FEATURE_KBD_REPORT_ID, 0x05, 0x20, 0x31, 0x00, 0x08]),
+    buf([key, 0x05, 0x20, 0x31, 0x00, 0x08]),
+]
+
+RGB_INIT = [
+    buf([FEATURE_KBD_REPORT_ID, 0xB9]),
+    *RGB_PKEY_INIT(FEATURE_KBD_LED_REPORT_ID1),
+    *RGB_PKEY_INIT(FEATURE_KBD_LED_REPORT_ID2),
 ]
 
 
