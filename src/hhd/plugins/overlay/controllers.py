@@ -70,6 +70,7 @@ REPEAT_INTERVAL = 0.2
 GESTURE_TIME = 0.4
 GESTURE_LIM = 0.1
 GESTURE_LEN = 0.09
+GESTURE_TOP_RATIO = 0.3
 
 XBOX_B_MAX_PRESS = 0.3
 KBD_HOLD_DELAY = 0.8
@@ -240,13 +241,13 @@ def process_touch(emit, state, ev, val):
 
     handled = False
     if start_x < GESTURE_LIM and dx > GESTURE_LEN:
-        semi = "top" if start_y < 0.5 else "bottom"
+        semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
         logger.info(f"Gesture: Right {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_right_{semi}"})
         handled = True
     elif start_x > 1 - GESTURE_LIM and dx < -GESTURE_LEN:
-        semi = "top" if start_y < 0.5 else "bottom"
+        semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
         logger.info(f"Gesture: Left {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_left_{semi}"})
