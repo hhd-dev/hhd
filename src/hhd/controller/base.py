@@ -25,7 +25,7 @@ class SpecialEvent(TypedDict):
         "qam_tripple",
         "qam_hold",
         "qam_external",
-        "kbd_meta_single",
+        "kbd_meta_press",
         # "kbd_meta_double",
         "kbd_meta_hold",
         "swipe_left_top",

@@ -73,7 +73,7 @@ GESTURE_LEN = 0.02
 GESTURE_TOP_RATIO = 0.33
 
 XBOX_B_MAX_PRESS = 0.3
-KBD_HOLD_DELAY = 0.8
+KBD_HOLD_DELAY = 0.55
 
 
 def grab_buttons(fd: int, typ: int, btns: dict[int, str] | None):
@@ -279,7 +279,7 @@ def process_kbd(emit, state, _, val):
         state["last_pressed"] = curr
     else:
         if pressed_n:
-            emit({"type": "special", "event": "kbd_meta_single"})
+            emit({"type": "special", "event": "kbd_meta_press"})
         state["last_pressed"] = 0
 
 
