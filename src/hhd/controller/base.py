@@ -23,6 +23,15 @@ class SpecialEvent(TypedDict):
         "qam_double",
         "qam_tripple",
         "qam_hold",
+        "qam_external",
+        "kbd_meta_single",
+        # "kbd_meta_double",
+        "kbd_meta_hold",
+        "swipe_left_top",
+        "swipe_left_bottom",
+        "swipe_right_top",
+        "swipe_right_bottom",
+        "swipe_bottom",
         "overlay",
     ]
 

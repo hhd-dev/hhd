@@ -1,5 +1,6 @@
 import ctypes
 import logging
+import os
 import select
 import struct
 import time
@@ -18,6 +19,7 @@ from hhd.plugins import Context
 
 logger = logging.getLogger(__name__)
 
+REFRESH_INTERVAL = 0.1
 MONITOR_INTERVAL = 2
 OVERLAY_BUTTON_MAP: dict[int, str] = to_map(
     {
@@ -63,13 +65,20 @@ KEYBOARD_WAKE_KEY: dict[int, str] = to_map(
 REPEAT_INITIAL = 0.5
 REPEAT_INTERVAL = 0.2
 
+GESTURE_TIME = 0.3
+GESTURE_LIM = 0.1
+GESTURE_LEN = 0.1
+
+XBOX_B_MAX_PRESS = 0.3
+KBD_HOLD_DELAY = 0.8
+
 
 def grab_buttons(fd: int, typ: int, btns: dict[int, str] | None):
     if btns:
         b_len = max((max(btns) >> 3) + 1, 8)
         mask = bytearray(b_len)
         for b in btns:
-            mask[b >> 3] = 1 << (b & 0x07)
+            mask[b >> 3] |= 1 << (b & 0x07)
     else:
         mask = bytes([])
         b_len = 0
@@ -91,8 +100,8 @@ def find_devices(current: dict[str, Any] = {}):
             continue
 
         # Skip HHD devices
-        if "hhd" in dev.get("phys", ""):
-            continue
+        # if "hhd" in dev.get("phys", ""):
+        #     continue
 
         abs = dev.get("byte", {}).get("abs", bytes())
         keys = dev.get("byte", {}).get("key", bytes())
@@ -145,23 +154,146 @@ def find_devices(current: dict[str, Any] = {}):
     return out
 
 
-def process_events(dev, evs):
-    print(f"{dev['pretty']}:\n{evs}")
+def process_touch(emit, state, ev, val):
+    print(state)
 
 
-def monitor_devices(emit=None, should_exit=None):
+def process_kbd(emit, state, _, val):
+    # Skip repeats
+    if val == 2:
+        return
+
+    pressed_n = state.get("pressed_n", 0)
+
+    curr = time.time()
+    if val:
+        state["pressed_n"] = pressed_n + 1
+        state["last_pressed"] = curr
+    else:
+        if pressed_n:
+            emit({"type": "special", "event": "kbd_meta_single"})
+        state["last_pressed"] = 0
+
+
+def refresh_kbd(emit, state):
+    pressed_n = state.get("pressed_n", 0)
+    last_pressed = state.get("last_pressed", 0)
+    # last_release = state.get("last_release", 0)
+    curr = time.time()
+
+    if pressed_n and last_pressed and curr - last_pressed > KBD_HOLD_DELAY:
+        if emit:
+            emit({"type": "special", "event": "kbd_meta_hold"})
+        state["pressed_n"] = 0
+        state["last_pressed"] = 0
+
+
+def process_ctrl(emit, state, ev, val):
+    # Here, we capture the shortcut xbox+b
+    # This is a shortcut that is used by steam
+    # but only when it is held, so we can use
+    # it if its a shortpress
+    if ev == "mode":
+        state["mode"] = val
+        return
+
+    if ev != "b":
+        return
+
+    # Mode needs to be pressed
+    if not state.get("mode", None):
+        return
+
+    if val:
+        state["b"] = time.time()
+    else:
+        if state.get("b", None) and time.time() - state["b"] < XBOX_B_MAX_PRESS:
+            logger.info("Xbox+B pressed")
+            if emit:
+                emit({"type": "special", "event": "qam_external"})
+        state["b"] = None
+
+
+def process_events(emit, dev, evs):
+    # Some nice logging to make things easier
+    if os.environ.get("HHD_DEBUG", None):
+        log = ""
+        if dev["is_touchscreen"]:
+            for ev in evs:
+                if ev.type != B("EV_ABS"):
+                    continue
+                code = ev.code
+                if code not in TOUCH_WAKE_AXIS:
+                    continue
+                log += f"\n - {TOUCH_WAKE_AXIS[code]}: {ev.value}"
+        elif dev["is_controller"]:
+            for ev in evs:
+                if ev.type != B("EV_KEY"):
+                    continue
+                code = ev.code
+                if code not in CONTROLLER_WAKE_BUTTON:
+                    continue
+                log += f"\n - {CONTROLLER_WAKE_BUTTON[code]}: {ev.value}"
+        elif dev["is_keyboard"]:
+            for ev in evs:
+                if ev.type != B("EV_KEY"):
+                    continue
+                code = ev.code
+                if code not in KEYBOARD_WAKE_KEY:
+                    continue
+                if ev.value == 2:
+                    continue
+                log += f"\n - {KEYBOARD_WAKE_KEY[code]}: {ev.value}"
+        if log:
+            logger.info(f"'{dev['pretty']}':{log}")
+
+    for ev in evs:
+        # The evs list is SYN, however, for gestures do we really care?
+        # We can also do some ugly prefiltering here, so that the
+        # inner functions are prettier
+        if ev.type == B("EV_SYN"):
+            continue
+        if dev["is_touchscreen"]:
+            if ev.type != B("EV_ABS"):
+                continue
+            if ev.code not in TOUCH_WAKE_AXIS:
+                continue
+            process_touch(emit, dev["state_touch"], TOUCH_WAKE_AXIS[ev.code], ev.value)
+        if dev["is_controller"]:
+            if ev.type != B("EV_KEY"):
+                continue
+            if ev.code not in CONTROLLER_WAKE_BUTTON:
+                continue
+            process_ctrl(
+                emit, dev["state_ctrl"], CONTROLLER_WAKE_BUTTON[ev.code], ev.value
+            )
+        if dev["is_keyboard"]:
+            if ev.type != B("EV_KEY"):
+                continue
+            if ev.code not in KEYBOARD_WAKE_KEY:
+                continue
+            process_kbd(emit, dev["state_kbd"], KEYBOARD_WAKE_KEY[ev.code], ev.value)
+
+
+def refresh_events(emit, dev):
+    # if dev["is_touchscreen"]:
+    #     refresh_touch(emit, dev["state_touch"])
+    # if dev["is_controller"]:
+    #     refresh_ctrl(emit, dev["state_ctrl"])
+    if dev["is_keyboard"]:
+        refresh_kbd(emit, dev["state_kbd"])
+
+
+def monitor_devices(emit=None, should_exit=None, init=True):
     blacklist = set()
     last_check = 0
-    # FIXME: Maybe set to true? Will cause errors as it will compete
-    # with controller emulation on startup
-    init = False
     devs = {}
     while not should_exit or not should_exit.is_set():
         if devs:
             # Wait for events
             try:
-                select.select(
-                    [d["dev"].fd for d in devs.values()], [], [], MONITOR_INTERVAL
+                r, _, _ = select.select(
+                    [d["dev"].fd for d in devs.values()], [], [], REFRESH_INTERVAL
                 )
             except Exception:
                 pass
@@ -174,9 +306,12 @@ def monitor_devices(emit=None, should_exit=None):
         # Process events
         for name, dev in list(devs.items()):
             d = dev["dev"]
+            refresh_events(emit, dev)
+            if not d.fd in r:
+                continue
             try:
                 while can_read(d.fd):
-                    process_events(dev, list(d.read()))
+                    process_events(emit, dev, list(d.read()))
             except Exception as e:
                 logger.error(
                     f"Device '{dev['pretty']}' has error. Removing. Error:\n{e}"
@@ -212,14 +347,30 @@ def monitor_devices(emit=None, should_exit=None):
                 # Mute MSC events as they will wake us up
                 grab_buttons(dev.fd, B("EV_MSC"), {})
 
-                devs[name] = {"dev": dev, **cand}
+                devs[name] = {
+                    "dev": dev,
+                    **cand,
+                    "state_touch": {},
+                    "state_ctrl": {},
+                    "state_kbd": {},
+                }
                 caps = []
                 if cand["is_touchscreen"]:
                     caps.append("Touchscreen")
+                    max_x = dev.absinfo(B("ABS_MT_POSITION_X")).max
+                    max_y = dev.absinfo(B("ABS_MT_POSITION_Y")).max
+                    portrait = max_x < max_y
+                    devs[name]["state_touch"].update(
+                        {
+                            "max_x": max_x,
+                            "max_y": max_y,
+                            "portrait": portrait,
+                        }
+                    )
                 if cand["is_controller"]:
-                    caps.append("Touchscreen")
+                    caps.append("Controller")
                 if cand["is_keyboard"]:
-                    caps.append("Touchscreen")
+                    caps.append("Keyboard")
                 log += f"\n - '{cand['pretty']}' ({', '.join(caps)})"
             except Exception as e:
                 logger.error(f"Failed to open device '{cand['pretty']}'. Error:\n{e}")

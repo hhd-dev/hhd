@@ -77,21 +77,21 @@ def evdev(dev: str | None):
         hz = f"{1/(curr - prev):6.1f} Hz" if curr != prev else "   NaN Hz"
         if ev.code == 0 and ev.type == 0 and ev.value == 0:
             print(
-                f"└ SYN ─ {curr:7.3f}s ─ {hz} ─────────────────────────────────┘"
+                f"└ SYN ─ {curr:7.3f}s ─ {hz} ─────────────────────────────────────┘"
             )
             prev = curr
             endcap = True
         else:
             if endcap:
                 print(
-                    "\n┌─────────────────────────────────────────────────────────────┐"
+                    "\n┌─────────────────────────────────────────────────────────────────┐"
                 )
                 endcap = False
 
             evstr = (
                 f"{ev.timestamp() - ofs:7.3f}s /"
                 + f" {getattr(ecodes, "EV")[ev.type]:>6s} ({ev.type:03d}) /"
-                + f" {RV(ev.type, ev.code):>17s} ({ev.code:03d}):"
+                + f" {RV(ev.type, ev.code):>21s} ({ev.code:03d}):"
             )
 
             if ev.type == B("EV_KEY"):
