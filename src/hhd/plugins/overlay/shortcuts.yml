@@ -7,7 +7,7 @@ controller:
       title: "Xbox + B (Press)"
       options: &shortcuts
         disabled: "Disabled"
-        keyboard: Keyboard
+        keyboard: Steam Keyboard
         steam_qam: "Steam Side Menu"
         steam_expanded: "Steam Overlay"
         hhd_qam: "HHD Side Menu"

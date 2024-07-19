@@ -165,6 +165,7 @@ class OverlayPlugin(HHDPlugin):
                         logger.info("Opening steam expanded.")
                         self.emit.open_steam(True)
                     case "keyboard":
+                        logger.info("Opening keyboard.")
                         open_steam_kbd(self.emit, True)
 
             if cmd and (self.enabled or override_enable):
