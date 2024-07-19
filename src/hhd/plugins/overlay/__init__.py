@@ -1,6 +1,7 @@
 import logging
 from threading import Event as TEvent
 from threading import Thread
+import time
 from typing import Sequence
 
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
@@ -9,6 +10,8 @@ from ..plugin import open_steam_kbd
 from .controllers import device_shortcut_loop
 
 logger = logging.getLogger(__name__)
+
+SHORTCUT_RELOAD_DELAY = 2
 
 
 class OverlayPlugin(HHDPlugin):
@@ -22,6 +25,7 @@ class OverlayPlugin(HHDPlugin):
         self.old_shortcuts = None
         self.short_should_exit = None
         self.old_touch = False
+        self.queue_reload = None
         self.short_t = None
         self.init = True
         self.has_executable = False
@@ -71,6 +75,13 @@ class OverlayPlugin(HHDPlugin):
             or self.old_shortcuts != conf["shortcuts"]
             or self.old_touch != disable_touch
         ):
+            self.queue_reload = time.perf_counter()
+            if self.old_shortcuts and self.old_touch == disable_touch:
+                # Add delay only after shortcuts change
+                self.queue_reload += SHORTCUT_RELOAD_DELAY
+
+        if self.queue_reload and time.perf_counter() > self.queue_reload:
+            self.queue_reload = None
             self.old_shortcuts = conf["shortcuts"].copy()
             self._close_short()
 
