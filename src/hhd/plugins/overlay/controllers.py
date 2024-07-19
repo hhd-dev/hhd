@@ -65,9 +65,9 @@ KEYBOARD_WAKE_KEY: dict[int, str] = to_map(
 REPEAT_INITIAL = 0.5
 REPEAT_INTERVAL = 0.2
 
-GESTURE_TIME = 0.3
+GESTURE_TIME = 0.4
 GESTURE_LIM = 0.1
-GESTURE_LEN = 0.1
+GESTURE_LEN = 0.09
 
 XBOX_B_MAX_PRESS = 0.3
 KBD_HOLD_DELAY = 0.8
@@ -155,7 +155,97 @@ def find_devices(current: dict[str, Any] = {}):
 
 
 def process_touch(emit, state, ev, val):
-    print(state)
+    # Check if the gesture should be kept
+    invalidated = False
+    if ev == "slot" and val:
+        # Second finger, remove the gesture
+        invalidated = True
+    elif ev == "id" and val == -1:
+        # Finger removed, remove the gesture
+        invalidated = True
+        # This is the only time we remove the
+        # start_time as well, so gestures can resume.
+        state["start_time"] = 0
+
+    if invalidated:
+        state["start_x"] = 0
+        state["start_y"] = 0
+        state["last_x"] = 0
+        state["last_y"] = 0
+        return
+
+    start_time = state.get("start_time", 0)
+    if start_time and time.time() - start_time > GESTURE_TIME:
+        # User took too long, stop processing gestures
+        # until finger is released
+        return
+
+    # Swap names around to avoid
+    # Confusion with portrait displays
+    if state["portrait"]:
+        if ev == "x":
+            ev = "y"
+            max_ev = state["max_x"]
+        elif ev == "y":
+            ev = "x"
+            max_ev = state["max_y"]
+    else:
+        max_ev = state[f"max_{ev}"]
+
+    if ev not in ("x", "y"):
+        return
+
+    if not start_time:
+        state["start_time"] = time.time()
+
+    # Save old values
+    v = val / max_ev
+    state[f"start_{ev}"] = state[f"start_{ev}"] if state.get(f"start_{ev}", 0) else v
+    state[f"last_{ev}"] = v
+
+    # Begin handler
+    start_x = state.get("start_x", 0)
+    start_y = state.get("start_y", 0)
+    last_x = state.get("last_x", 0)
+    last_y = state.get("last_y", 0)
+
+    if not start_x or not start_y:
+        return
+    if not last_x or not last_y:
+        return
+
+    # Calculate the distance
+    dx = last_x - start_x
+    dy = last_y - start_y
+
+    # logger.info(
+    #     f"{start_x:.2f}:{start_y:.2f} -> {last_x:.2f}:{last_y:.2f} = ({dx:5.2f}, {dy:5.2f})"
+    # )
+
+    handled = False
+    if start_x < GESTURE_LIM and dx > GESTURE_LEN:
+        semi = "top" if start_y < 0.5 else "bottom"
+        logger.info(f"Gesture: Right {semi.capitalize()} swipe.")
+        if emit:
+            emit({"type": "special", "event": f"swipe_right_{semi}"})
+        handled = True
+    elif start_x > 1 - GESTURE_LIM and dx < -GESTURE_LEN:
+        semi = "top" if start_y < 0.5 else "bottom"
+        logger.info(f"Gesture: Left {semi.capitalize()} swipe.")
+        if emit:
+            emit({"type": "special", "event": f"swipe_left_{semi}"})
+        handled = True
+    elif start_y > 1 - GESTURE_LIM and dy < -GESTURE_LEN:
+        logger.info("Gesture: Bottom swipe.")
+        if emit:
+            emit({"type": "special", "event": "swipe_bottom"})
+        handled = True
+
+    if handled:
+        state["start_x"] = 0
+        state["start_y"] = 0
+        state["last_x"] = 0
+        state["last_y"] = 0
 
 
 def process_kbd(emit, state, _, val):
