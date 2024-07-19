@@ -6,7 +6,7 @@ from typing import Sequence
 
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
-from ..plugin import open_steam_kbd
+from ..plugin import open_steam_kbd, is_steam_gamepad_running
 from .controllers import device_shortcut_loop
 
 logger = logging.getLogger(__name__)
@@ -130,8 +130,11 @@ class OverlayPlugin(HHDPlugin):
                     section = "touchscreen"
                     cmd = None
                 case gesture if gesture.startswith("kbd_"):
-                    side = gesture[len("kbd_") :]
-                    section = "keyboard"
+                    if is_steam_gamepad_running(self.emit.ctx, True):
+                        # Only allow kbd shortcuts while steam is in big
+                        # picture mode
+                        side = gesture[len("kbd_") :]
+                        section = "keyboard"
                     cmd = None
                 case "qam_external":
                     side = "xbox_b"
