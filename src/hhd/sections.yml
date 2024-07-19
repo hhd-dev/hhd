@@ -4,5 +4,6 @@ sections:
   rgb: RGB
   controllers: Controller
   hhd: Settings
+  shortcuts: Shortcuts
   bazzite: Bazzite
   utilities: Utilities

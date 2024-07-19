@@ -103,6 +103,11 @@ def find_devices(current: dict[str, Any] = {}):
         # if "hhd" in dev.get("phys", ""):
         #     continue
 
+        # Skip Steam virtual devices
+        # Vendor=28de Product=11ff
+        if dev.get("vendor", 0) == 0x28de and dev.get("product", 0) == 0x11ff:
+            continue
+
         abs = dev.get("byte", {}).get("abs", bytes())
         keys = dev.get("byte", {}).get("key", bytes())
 
@@ -374,7 +379,14 @@ def refresh_events(emit, dev):
         refresh_kbd(emit, dev["state_kbd"])
 
 
-def monitor_devices(emit=None, should_exit=None, init=True):
+def device_shortcut_loop(
+    emit=None,
+    should_exit=None,
+    init=True,
+    keyboard: bool = True,
+    controllers: bool = True,
+    touchscreens: bool = True,
+):
     blacklist = set()
     last_check = 0
     devs = {}

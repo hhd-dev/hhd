@@ -1,0 +1,59 @@
+controller:
+  type: container
+  title: "All Controllers"
+  children:
+    xbox_b:
+      type: multiple
+      title: "Xbox + B (Press)"
+      options: &shortcuts
+        disabled: "Disabled"
+        keyboard: Keyboard
+        steam_qam: "Steam Side Menu"
+        steam_expanded: "Steam Overlay"
+        hhd_qam: "HHD Side Menu"
+        hhd_expanded: "HHD Overlay"
+      default: hhd_qam
+keyboard:
+  type: container
+  title: "Keyboard (Gaming Only)"
+  children:
+    meta_press:
+      type: multiple
+      title: "Start (Meta) Press"
+      options: *shortcuts
+      default: steam_qam
+    meta_hold:
+      type: multiple
+      title: "Start (Meta) Hold"
+      options: *shortcuts
+      default: steam_expanded
+touchscreen:
+  type: container
+  title: "Touchscreen"
+  children:
+    bottom:
+      type: multiple
+      title: "↑ Swipe Up"
+      options: *shortcuts
+      default: keyboard
+    left_top:
+      type: multiple
+      title: "→ Swipe Left Side (Top)"
+      options: *shortcuts
+      default: hhd_expanded
+    left_bottom:
+      type: multiple
+      title: "→ Swipe Left Side (Bottom)"
+      options: *shortcuts
+      default: steam_expanded
+    right_top:
+      type: multiple
+      title: "← Swipe Right Side (Top)"
+      options: *shortcuts
+      default: hhd_qam
+    right_bottom:
+      type: multiple
+      title: "← Swipe Right Side (Bottom)"
+      options: *shortcuts
+      default: steam_qam
+    

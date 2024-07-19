@@ -1,8 +1,9 @@
 import logging
 import os
-import select
 import random
+import select
 import time
+from collections import deque
 from threading import RLock
 from typing import Any, Callable, Literal, Mapping, NamedTuple, Sequence, TypedDict
 
@@ -155,15 +156,19 @@ class ControllerEmitter:
         self.use_legacy_qam = not bool(os.environ.get("HHD_QAM_GAMESCOPE", None))
         self._simple_qam = False
         self._cap = None
-        self._evs = []
+        self._evs = deque(maxlen=100)
 
-    def send_qam(self):
+    def send_qam(self, expanded: bool = False):
         with self.intercept_lock:
             if self.use_legacy_qam or self._simple_qam:
                 return False
             if self._qam_cb:
-                return self._qam_cb()
+                return self._qam_cb(expanded)
             return False
+
+    def open_steam(self, expanded: bool = False):
+        if not self.send_qam(expanded):
+            self.inject({"type": "configuration", "code": "steam", "value": expanded})
 
     def set_simple_qam(self, val: bool):
         with self.intercept_lock:
@@ -173,7 +178,7 @@ class ControllerEmitter:
         with self.intercept_lock:
             return self._simple_qam
 
-    def register_qam(self, cb: Callable[[], bool]):
+    def register_qam(self, cb: Callable[..., bool]):
         with self.intercept_lock:
             self._qam_cb = cb
 
@@ -220,7 +225,7 @@ class ControllerEmitter:
             if not self._evs:
                 return []
             tmp = self._evs
-            self._evs = []
+            self._evs = deque(maxlen=100)
             return tmp
 
     def set_capabilities(self, cid, cap: ControllerCapabilities | None):
@@ -559,6 +564,8 @@ class Multiplexer:
         out: list[Event] = []
         status_events = set()
         touched = False
+        send_steam_qam = False
+        send_steam_expand = False
 
         curr = time.perf_counter()
 
@@ -1043,6 +1050,11 @@ class Multiplexer:
                                 status_events.add("is_attached")
                             case "is_connected_left" | "is_connected_right":
                                 status_events.add("is_connected")
+                    if ev["code"] == "steam":
+                        if ev["value"]:
+                            send_steam_expand = True
+                        else:
+                            send_steam_qam = True
 
         if touched:
             self.touchpad_down = (
@@ -1119,7 +1131,9 @@ class Multiplexer:
             self.emit({"type": "special", "event": "qam_predouble"})
             self.qam_pre_sent = True
 
-        send_steam_qam = qam_apply and self.qam_released and self.qam_times == 1
+        send_steam_qam = (
+            send_steam_qam or qam_apply and self.qam_released and self.qam_times == 1
+        )
         if qam_apply and self.emit:
             if self.qam_pressed and was_held:
                 self.emit({"type": "special", "event": "qam_hold"})
@@ -1199,6 +1213,24 @@ class Multiplexer:
                         curr + 2 * self.QAM_DELAY,
                     ),
                 )
+        elif send_steam_expand:
+            out.append(
+                {
+                    "type": "button",
+                    "code": "mode",
+                    "value": True,
+                },
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": "mode",
+                        "value": False,
+                    },
+                    curr + self.QAM_DELAY,
+                )
+            )
         return out
 
 

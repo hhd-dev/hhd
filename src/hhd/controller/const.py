@@ -299,4 +299,6 @@ Configuration = Literal[
     "is_connected_right",
     "is_attached_left",
     "is_attached_right",
+    # Commands
+    "steam",
 ]

@@ -3,5 +3,5 @@ type: container
 children:
   overlay_enabled:
     type: bool
-    title: "Overlay with QAM Double/Tripple press (requires restart)"
+    title: "Shortcut Support + Side Button double press (Requires Restart)"
     default: True

@@ -305,3 +305,13 @@ def run_steam_command(command: str, ctx: Context):
     except Exception as e:
         logger.error(f"Received error when running steam command `{command}`\n{e}")
     return False
+
+
+def open_steam_kbd(emit, open: bool = True):
+    return (
+        emit
+        and is_steam_gamepad_running(emit.ctx, False)
+        and run_steam_command(
+            f"steam://{'open' if open else 'close'}/keyboard", emit.ctx
+        )
+    )
