@@ -93,7 +93,12 @@ def grab_buttons(fd: int, typ: int, btns: dict[int, str] | None):
     # print(bytes(mask).hex())
 
 
-def find_devices(current: dict[str, Any] = {}):
+def find_devices(
+    current: dict[str, Any] = {},
+    keyboard: bool = True,
+    controllers: bool = True,
+    touchscreens: bool = True,
+):
     out = {}
     for name, dev in list_evs(True).items():
         if name in current:
@@ -105,14 +110,14 @@ def find_devices(current: dict[str, Any] = {}):
 
         # Skip Steam virtual devices
         # Vendor=28de Product=11ff
-        if dev.get("vendor", 0) == 0x28de and dev.get("product", 0) == 0x11ff:
+        if dev.get("vendor", 0) == 0x28DE and dev.get("product", 0) == 0x11FF:
             continue
 
         abs = dev.get("byte", {}).get("abs", bytes())
         keys = dev.get("byte", {}).get("key", bytes())
 
         # Touchscreen is complicated. Should have BTN_TOUCH but not BTN_TOOL_FINGER
-        is_touchscreen = True
+        is_touchscreen = touchscreens
         major = B("BTN_TOUCH") >> 3
         minor = B("BTN_TOUCH") & 0x07
         if len(keys) <= major or not keys[major] & (1 << minor):
@@ -129,7 +134,7 @@ def find_devices(current: dict[str, Any] = {}):
                 is_touchscreen = False
                 break
 
-        is_controller = True
+        is_controller = controllers
         for cap in CONTROLLER_WAKE_BUTTON:
             major = cap >> 3
             minor = cap & 0x07
@@ -139,7 +144,7 @@ def find_devices(current: dict[str, Any] = {}):
 
         # Avoid laptop keyboards, as they emit left meta on power button hold
         # FIXME: will prevent using laptop keyboards to bring up the menu
-        is_keyboard = not dev.get("name", "").startswith("AT Translated")
+        is_keyboard = keyboard and not dev.get("name", "").startswith("AT Translated")
         for cap in KEYBOARD_WAKE_KEY:
             major = cap >> 3
             minor = cap & 0x07
@@ -177,6 +182,9 @@ def process_touch(emit, state, ev, val):
         state["start_y"] = 0
         state["last_x"] = 0
         state["last_y"] = 0
+        if state["disable_touch"] and state.get("grabbed", False):
+            state["grabbed"] = False
+            state["dev"].ungrab()
         return
 
     start_time = state.get("start_time", 0)
@@ -219,6 +227,19 @@ def process_touch(emit, state, ev, val):
     if not last_x or not last_y:
         return
 
+    # Grab once, and only if we are within limits
+    if (
+        state["disable_touch"]
+        and not state.get("grabbed", False)
+        and (
+            start_x < GESTURE_LIM
+            or start_x > 1 - GESTURE_LIM
+            or start_y > 1 - GESTURE_LIM
+        )
+    ):
+        state["grabbed"] = True
+        state["dev"].grab()
+
     # Calculate the distance
     dx = last_x - start_x
     dy = last_y - start_y
@@ -251,6 +272,9 @@ def process_touch(emit, state, ev, val):
         state["start_y"] = 0
         state["last_x"] = 0
         state["last_y"] = 0
+        if state["disable_touch"] and state.get("grabbed", False):
+            state["grabbed"] = False
+            state["dev"].ungrab()
 
 
 def process_kbd(emit, state, _, val):
@@ -386,6 +410,8 @@ def device_shortcut_loop(
     keyboard: bool = True,
     controllers: bool = True,
     touchscreens: bool = True,
+    disable_touchscreens: bool = False,
+    gesture_disable_touch: bool = True,
 ):
     blacklist = set()
     last_check = 0
@@ -432,12 +458,21 @@ def device_shortcut_loop(
 
         # Add new devices
         log = ""
-        for name, cand in find_devices(devs).items():
+        for name, cand in find_devices(
+            devs,
+            keyboard=keyboard,
+            touchscreens=touchscreens or disable_touchscreens,
+            controllers=controllers,
+        ).items():
             if cand["hash"] in blacklist:
                 continue
 
             try:
                 dev = InputDevice(name)
+
+                if cand["is_touchscreen"] and disable_touchscreens:
+                    # Grab touchscreen if requested
+                    dev.grab()
 
                 # Add event filter to avoid CPU use
                 # We can just merge the filters, as each device type will have
@@ -467,6 +502,9 @@ def device_shortcut_loop(
                             "max_x": max_x,
                             "max_y": max_y,
                             "portrait": portrait,
+                            "disable_touch": gesture_disable_touch
+                            and not disable_touchscreens,
+                            "dev": dev,
                         }
                     )
                 if cand["is_controller"]:

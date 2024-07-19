@@ -21,6 +21,7 @@ class OverlayPlugin(HHDPlugin):
         self.initialized = False
         self.old_shortcuts = None
         self.short_should_exit = None
+        self.old_touch = False
         self.short_t = None
         self.init = True
         self.has_executable = False
@@ -53,6 +54,7 @@ class OverlayPlugin(HHDPlugin):
         if self.enabled:
             self.initialized = True
             set["shortcuts"] = load_relative_yaml("shortcuts.yml")
+            set["controllers"] = load_relative_yaml("touchcontrols.yml")
         return set
 
     def update(self, conf: Config):
@@ -63,8 +65,11 @@ class OverlayPlugin(HHDPlugin):
         self.enabled = self.enabled or new_enabled
         self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
+        disable_touch = conf.get("controllers.touchscreen.disable", False)
         if self.initialized and (
-            not self.old_shortcuts or self.old_shortcuts != conf["shortcuts"]
+            not self.old_shortcuts
+            or self.old_shortcuts != conf["shortcuts"]
+            or self.old_touch != disable_touch
         ):
             self.old_shortcuts = conf["shortcuts"].copy()
             self._close_short()
@@ -82,7 +87,7 @@ class OverlayPlugin(HHDPlugin):
                 )
             ctrl = conf.get("shortcuts.controller.xbox_b", "disabled") != "disabled"
 
-            if kbd or touch or ctrl:
+            if kbd or touch or ctrl or disable_touch:
                 logger.info(
                     f"Starting shortcut loop with kbd: {kbd}, touch: {touch}, ctrl: {ctrl}."
                 )
@@ -96,10 +101,13 @@ class OverlayPlugin(HHDPlugin):
                         kbd,
                         ctrl,
                         touch,
+                        disable_touch,
+                        conf["shortcuts.touchscreen.disable_touch"].to(bool),
                     ),
                 )
                 self.short_t.start()
                 self.init = False
+                self.old_touch = disable_touch
             else:
                 logger.info("No shortcuts enabled, not starting shortcut loop.")
 

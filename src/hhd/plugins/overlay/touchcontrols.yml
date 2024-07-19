@@ -1,0 +1,8 @@
+touchscreen:
+  type: container
+  tags: [no-title]
+  title: "Touchscreen Control"
+  children:
+    disable:
+      type: bool
+      title: "Disable Touchscreen (Until Restart)"
