@@ -1,19 +1,24 @@
 import ctypes
+import logging
+import select
 import struct
 import time
 from fcntl import ioctl
 from threading import Event as TEvent
 from threading import RLock
-from typing import Callable, Sequence, cast
+from typing import Any, Callable, Sequence
 
-from evdev import InputDevice, ecodes, list_devices
+from evdev import InputDevice, list_devices
 
 from hhd.controller import Event as ControllerEvent
-from hhd.controller import SpecialEvent
+from hhd.controller import can_read
 from hhd.controller.lib.ioctl import EVIOCGMASK, EVIOCSMASK
-from hhd.controller.physical.evdev import B, to_map
+from hhd.controller.physical.evdev import B, list_evs, to_map
 from hhd.plugins import Context
 
+logger = logging.getLogger(__name__)
+
+MONITOR_INTERVAL = 2
 OVERLAY_BUTTON_MAP: dict[int, str] = to_map(
     {
         "a": [B("BTN_A")],
@@ -33,49 +38,195 @@ OVERLAY_AXIS_MAP: dict[int, str] = to_map(
     }
 )
 
-WAKE_BUTTON_MAP: dict[int, str] = to_map(
+CONTROLLER_WAKE_BUTTON: dict[int, str] = to_map(
     {
         "mode": [B("BTN_MODE")],
         "b": [B("BTN_B")],
     }
 )
-WAKE_AXIS_MAP = {}
+
+TOUCH_WAKE_AXIS: dict[int, str] = to_map(
+    {
+        "slot": [B("ABS_MT_SLOT")],
+        "x": [B("ABS_MT_POSITION_X")],
+        "y": [B("ABS_MT_POSITION_Y")],
+        "id": [B("ABS_MT_TRACKING_ID")],
+    }
+)
+
+KEYBOARD_WAKE_KEY: dict[int, str] = to_map(
+    {
+        "meta": [B("KEY_LEFTMETA")],
+    }
+)
 
 REPEAT_INITIAL = 0.5
 REPEAT_INTERVAL = 0.2
 
 
-def grab_buttons(fd: int, typ: int, btns: dict[int, str]):
-    b_len = max((max(btns) >> 3) + 1, 8)
-    mask = bytearray(b_len)
-    for b in btns:
-        mask[b // 8] = 1 << (b % 8)
+def grab_buttons(fd: int, typ: int, btns: dict[int, str] | None):
+    if btns:
+        b_len = max((max(btns) >> 3) + 1, 8)
+        mask = bytearray(b_len)
+        for b in btns:
+            mask[b >> 3] = 1 << (b & 0x07)
+    else:
+        mask = bytes([])
+        b_len = 0
 
     c_mask = ctypes.create_string_buffer(bytes(mask))
     data = struct.pack("@ I I L", typ, b_len, ctypes.addressof(c_mask))
+    # Before
+    # print(bytes(mask).hex())
     ioctl(fd, EVIOCSMASK, data)
+    # After
     # ioctl(fd, EVIOCGMASK, data)
+    # print(bytes(mask).hex())
 
 
-def monitor_controllers(
-    grab: TEvent,
-    should_exit: TEvent,
-    ctx: Context,
-    emit: Callable[[SpecialEvent], None],
-    callback: Callable[[SpecialEvent], None],
-):
-    controllers = {}
-    grabbed = None
+def find_devices(current: dict[str, Any] = {}):
+    out = {}
+    for name, dev in list_evs(True).items():
+        if name in current:
+            continue
 
-    while not should_exit.is_set():
-        curr = time.perf_counter()
+        # Skip HHD devices
+        if "hhd" in dev.get("phys", ""):
+            continue
 
-        for path in list_devices():
-            if path in controllers:
+        abs = dev.get("byte", {}).get("abs", bytes())
+        keys = dev.get("byte", {}).get("key", bytes())
+
+        # Touchscreen is complicated. Should have BTN_TOUCH but not BTN_TOOL_FINGER
+        is_touchscreen = True
+        major = B("BTN_TOUCH") >> 3
+        minor = B("BTN_TOUCH") & 0x07
+        if len(keys) <= major or not keys[major] & (1 << minor):
+            is_touchscreen = False
+        major = B("BTN_TOOL_FINGER") >> 3
+        minor = B("BTN_TOOL_FINGER") & 0x07
+        if len(keys) > major and keys[major] & (1 << minor):
+            is_touchscreen = False
+
+        for cap in TOUCH_WAKE_AXIS:
+            major = cap >> 3
+            minor = cap & 0x07
+            if len(abs) <= major or not abs[major] & (1 << minor):
+                is_touchscreen = False
+                break
+
+        is_controller = True
+        for cap in CONTROLLER_WAKE_BUTTON:
+            major = cap >> 3
+            minor = cap & 0x07
+            if len(keys) <= major or not keys[major] & (1 << minor):
+                is_controller = False
+                break
+
+        # Avoid laptop keyboards, as they emit left meta on power button hold
+        # FIXME: will prevent using laptop keyboards to bring up the menu
+        is_keyboard = not dev.get("name", "").startswith("AT Translated")
+        for cap in KEYBOARD_WAKE_KEY:
+            major = cap >> 3
+            minor = cap & 0x07
+            if len(keys) <= major or not keys[major] & (1 << minor):
+                is_keyboard = False
+                break
+
+        if is_touchscreen or is_controller or is_keyboard:
+            out[name] = {
+                "is_touchscreen": is_touchscreen,
+                "is_controller": is_controller,
+                "is_keyboard": is_keyboard,
+                "pretty": dev.get("name", ""),
+                "hash": dev.get("hash", ""),
+            }
+
+    return out
+
+
+def process_events(dev, evs):
+    print(f"{dev['pretty']}:\n{evs}")
+
+
+def monitor_devices(emit=None, should_exit=None):
+    blacklist = set()
+    last_check = 0
+    # FIXME: Maybe set to true? Will cause errors as it will compete
+    # with controller emulation on startup
+    init = False
+    devs = {}
+    while not should_exit or not should_exit.is_set():
+        if devs:
+            # Wait for events
+            try:
+                select.select(
+                    [d["dev"].fd for d in devs.values()], [], [], MONITOR_INTERVAL
+                )
+            except Exception:
+                pass
+        elif not init:
+            # If no devices, wait for a bit
+            # Except on first run
+            time.sleep(MONITOR_INTERVAL)
+        init = False
+
+        # Process events
+        for name, dev in list(devs.items()):
+            d = dev["dev"]
+            try:
+                while can_read(d.fd):
+                    process_events(dev, list(d.read()))
+            except Exception as e:
+                logger.error(
+                    f"Device '{dev['pretty']}' has error. Removing. Error:\n{e}"
+                )
+                blacklist.add(dev["hash"])
+                del devs[name]
+                try:
+                    d.close()
+                except Exception:
+                    pass
+
+        # Avoid spamming proc
+        curr = time.time()
+        if curr - last_check < MONITOR_INTERVAL:
+            continue
+
+        # Add new devices
+        log = ""
+        for name, cand in find_devices(devs).items():
+            if cand["hash"] in blacklist:
                 continue
-            dev = InputDevice(path)
 
-        time.sleep(2)
+            try:
+                dev = InputDevice(name)
+
+                # Add event filter to avoid CPU use
+                # We can just merge the filters, as each device type will have
+                # different event codes
+                grab_buttons(
+                    dev.fd, B("EV_KEY"), {**CONTROLLER_WAKE_BUTTON, **KEYBOARD_WAKE_KEY}
+                )
+                grab_buttons(dev.fd, B("EV_ABS"), TOUCH_WAKE_AXIS)
+                # Mute MSC events as they will wake us up
+                grab_buttons(dev.fd, B("EV_MSC"), {})
+
+                devs[name] = {"dev": dev, **cand}
+                caps = []
+                if cand["is_touchscreen"]:
+                    caps.append("Touchscreen")
+                if cand["is_controller"]:
+                    caps.append("Touchscreen")
+                if cand["is_keyboard"]:
+                    caps.append("Touchscreen")
+                log += f"\n - '{cand['pretty']}' ({', '.join(caps)})"
+            except Exception as e:
+                logger.error(f"Failed to open device '{cand['pretty']}'. Error:\n{e}")
+                blacklist.add(cand["hash"])
+
+        if log:
+            logger.info(f"Found new shortcut devices:{log}")
 
 
 AXIS_LIMIT = 0.5

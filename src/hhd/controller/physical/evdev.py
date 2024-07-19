@@ -173,6 +173,7 @@ def list_evs(filter_valid: bool = False):
         devs = {}
         for d in data.split("\n\n"):
             out = {}
+            out["hash"] = hash(d)
             for line in d.split("\n"):
                 if not line:
                     continue
@@ -183,6 +184,20 @@ def list_evs(filter_valid: bool = False):
                             out[name.lower()] = int(val, 16)
                     case "N":
                         out["name"] = line[len('N: Name="') : -1]
+                    case "B":
+                        if "byte" not in out:
+                            out["byte"] = {}
+                        head, raw = line[3:].split("=")
+                        arr = bytearray()
+                        for x in raw.split(" "):
+                            if not x:
+                                continue
+                            arr.extend(int(x, 16).to_bytes(8, "big"))
+                        # Array is stacked using big endianness, so
+                        # we reverse it to little endian
+                        out["byte"][head.lower()] = bytes(reversed(arr))
+                    case "P":
+                        out["phys"] = line[len('P: Phys="') : -1]
                     case "H":
                         for handler in line[len("H: Handlers=") : -1].split(" "):
                             if "event" in handler:
