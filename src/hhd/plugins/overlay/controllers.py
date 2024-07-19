@@ -231,28 +231,24 @@ def process_touch(emit, state, ev, val):
     if start_x < GESTURE_LIM or start_x > 1 - GESTURE_LIM or start_y > 1 - GESTURE_LIM:
         state["grab"] = True
 
-    # Calculate the distance
-    dx = last_x - start_x
-    dy = last_y - start_y
-
     # logger.info(
     #     f"{start_x:.2f}:{start_y:.2f} -> {last_x:.2f}:{last_y:.2f} = ({dx:5.2f}, {dy:5.2f})"
     # )
 
     handled = False
-    if start_x < GESTURE_LIM and dx > GESTURE_LEN:
+    if start_x < GESTURE_LIM and last_x > GESTURE_LEN + GESTURE_LIM:
         semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
         logger.info(f"Gesture: Right {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_right_{semi}"})
         handled = True
-    elif start_x > 1 - GESTURE_LIM and dx < -GESTURE_LEN:
+    elif start_x > 1 - GESTURE_LIM and last_x < 1 - GESTURE_LEN - GESTURE_LIM:
         semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
         logger.info(f"Gesture: Left {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_left_{semi}"})
         handled = True
-    elif start_y > 1 - GESTURE_LIM and dy < -GESTURE_LEN:
+    elif start_y > 1 - GESTURE_LIM and last_y < 1 - GESTURE_LEN - GESTURE_LIM:
         logger.info("Gesture: Bottom swipe.")
         if emit:
             emit({"type": "special", "event": "swipe_bottom"})
