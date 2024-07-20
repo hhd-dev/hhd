@@ -5,9 +5,9 @@ import select
 import struct
 import time
 from fcntl import ioctl
-from threading import Event as TEvent
+from .const import get_touchscreen_quirk
 from threading import RLock
-from typing import Any, Callable, Sequence
+from typing import Any, Sequence
 
 from hhd.controller.virtual.uinput.monkey import UInputMonkey, UInput
 
@@ -15,9 +15,8 @@ from evdev import InputDevice
 
 from hhd.controller import Event as ControllerEvent
 from hhd.controller import can_read
-from hhd.controller.lib.ioctl import EVIOCGMASK, EVIOCSMASK
+from hhd.controller.lib.ioctl import EVIOCSMASK
 from hhd.controller.physical.evdev import B, list_evs, to_map
-from hhd.plugins import Context
 
 logger = logging.getLogger(__name__)
 
@@ -271,6 +270,11 @@ def process_touch(emit, state, ev, val):
     else:
         max_ev = state[f"max_{ev}"]
 
+    if state["flip_x"] and ev == "x":
+        val = max_ev - val
+    if state["flip_y"] and ev == "y":
+        val = max_ev - val
+
     if not start_time:
         state["start_time"] = time.time()
 
@@ -472,6 +476,7 @@ def device_shortcut_loop(
     controllers: bool = True,
     touchscreens: bool = True,
     disable_touchscreens: bool = False,
+    touch_correction: dict | None = None,
 ):
     blacklist = set()
     last_check = 0
@@ -553,15 +558,39 @@ def device_shortcut_loop(
                 }
                 caps = []
                 if cand["is_touchscreen"]:
-                    caps.append("Touchscreen")
                     max_x = dev.absinfo(B("ABS_MT_POSITION_X")).max
                     max_y = dev.absinfo(B("ABS_MT_POSITION_Y")).max
+
+                    # Default quirks
                     portrait = max_x < max_y
+                    flip_x = False
+                    flip_y = False
+
+                    quirk, pretty = get_touchscreen_quirk(
+                        vid=dev.info.vendor, pid=dev.info.product
+                    )
+                    if touch_correction:
+                        portrait = touch_correction.get("portrait", False)
+                        flip_x = touch_correction.get("flip_x", False)
+                        flip_y = touch_correction.get("flip_y", False)
+                        caps.append(
+                            f"Touchscreen[manual, portrait={portrait}, x={flip_x}, y={flip_y}]"
+                        )
+                    elif quirk:
+                        portrait = quirk.portrait
+                        flip_x = quirk.flip_x
+                        flip_y = quirk.flip_y
+                        caps.append(f"Touchscreen[{pretty}]")
+                    else:
+                        caps.append(f"Touchscreen[auto, portrait={portrait}]")
+
                     devs[name]["state_touch"].update(
                         {
                             "max_x": max_x,
                             "max_y": max_y,
                             "portrait": portrait,
+                            "flip_x": flip_x,
+                            "flip_y": flip_y,
                         }
                     )
                 if cand["is_controller"]:

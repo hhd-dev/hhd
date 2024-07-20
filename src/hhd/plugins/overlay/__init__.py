@@ -7,6 +7,7 @@ from typing import Sequence
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
 from ..plugin import open_steam_kbd, is_steam_gamepad_running
+from .const import get_system_info, get_touchscreen_quirk
 from .controllers import device_shortcut_loop, QamHandlerKeyboard
 
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ class OverlayPlugin(HHDPlugin):
         self.initialized = False
         self.old_shortcuts = None
         self.short_should_exit = None
+        self.has_correction = True
         self.old_touch = False
         self.short_t = None
         self.has_executable = False
@@ -67,6 +69,20 @@ class OverlayPlugin(HHDPlugin):
             self.initialized = True
             set["shortcuts"] = load_relative_yaml("shortcuts.yml")
             set["controllers"] = load_relative_yaml("touchcontrols.yml")
+
+            if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
+                "HHD_ALLOW_CORRECTION", None
+            ):
+                # For devices with a dmi match, hide orientation correction
+                self.has_correction = False
+                del set["shortcuts"]["touchscreen"]["children"]["orientation"]
+            else:
+                self.has_correction = True
+                set["shortcuts"]["touchscreen"]["children"]["orientation"]["modes"][
+                    "manual"
+                ]["children"]["dmi"]["default"] = " - ".join(
+                    map(lambda x: f'"{x}"', get_system_info())
+                )
         return set
 
     def update(self, conf: Config):
@@ -109,6 +125,13 @@ class OverlayPlugin(HHDPlugin):
                     f"Starting shortcut loop with kbd: {kbd}, touch: {touch}, ctrl: {ctrl}, disable_touch: {disable_touch}."
                 )
                 self.short_should_exit = TEvent()
+                touch_correction = (
+                    conf.get("shortcuts.touchscreen.orientation.manual", None)
+                    if self.has_correction
+                    and conf.get("shortcuts.touchscreen.orientation.mode", "auto")
+                    == "manual"
+                    else None
+                )
                 self.short_t = Thread(
                     target=device_shortcut_loop,
                     args=(
@@ -119,6 +142,7 @@ class OverlayPlugin(HHDPlugin):
                         ctrl,
                         touch,
                         disable_touch,
+                        touch_correction,
                     ),
                 )
                 self.short_t.start()

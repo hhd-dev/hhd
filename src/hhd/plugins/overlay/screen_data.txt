@@ -1,0 +1,93 @@
+
+
+# Legion go
+I: Bus=0018 Vendor=0603 Product=f001 Version=0100
+N: Name="NVTK0603:00 0603:F001"
+P: Phys=i2c-NVTK0603:00
+S: Sysfs=/devices/platform/AMDI0010:03/i2c-0/i2c-NVTK0603:00/0018:0603:F001.000E/input/input27
+U: Uniq=
+H: Handlers=event13 mouse4 
+B: PROP=2
+B: EV=1b
+B: KEY=400 0 0 0 0 0
+B: ABS=673800001000003
+B: MSC=20
+
+# V3 Tablet
+/sys/class/dmi/id/bios_date:
+04/10/2024
+/sys/class/dmi/id/bios_release:
+5.29
+/sys/class/dmi/id/bios_vendor:
+American Megatrends International, LLC.
+/sys/class/dmi/id/bios_version:
+1.05
+/sys/class/dmi/id/board_asset_tag:
+Default string
+/sys/class/dmi/id/board_name:
+HPPAC
+/sys/class/dmi/id/board_serial:
+FPPAC884019B1051917
+/sys/class/dmi/id/board_vendor:
+Shenzhen Meigao Electronic Equipment Co.,Ltd
+/sys/class/dmi/id/board_version:
+Default string
+/sys/class/dmi/id/chassis_asset_tag:
+Default string
+/sys/class/dmi/id/chassis_serial:
+Default string
+/sys/class/dmi/id/chassis_type:
+32
+/sys/class/dmi/id/chassis_vendor:
+Default string
+/sys/class/dmi/id/chassis_version:
+Default string
+/sys/class/dmi/id/ec_firmware_release:
+8.8
+
+I: Bus=0018 Vendor=222a Product=550d Version=0100
+N: Name="PNP0C50:00 222A:550D"
+P: Phys=i2c-PNP0C50:00
+S: Sysfs=/devices/platform/AMDI0010:00/i2c-0/i2c-PNP0C50:00/0018:222A:550D.0004/input/input20
+U: Uniq=
+H: Handlers=mouse1 event7
+B: PROP=2
+B: EV=b
+B: KEY=400 0 0 0 0 0
+B: ABS=260800000000003
+ 
+I: Bus=0018 Vendor=222a Product=550d Version=0100
+N: Name="PNP0C50:00 222A:550D Stylus"
+P: Phys=i2c-PNP0C50:00
+S: Sysfs=/devices/platform/AMDI0010:00/i2c-0/i2c-PNP0C50:00/0018:222A:550D.0004/input/input21
+U: Uniq=
+H: Handlers=mouse2 event9
+B: PROP=2
+B: EV=1b
+B: KEY=1c03 0 0 0 0 0
+B: ABS=1000d000003
+B: MSC=11
+ 
+I: Bus=0018 Vendor=222a Product=550d Version=0100
+N: Name="PNP0C50:00 222A:550D UNKNOWN"
+P: Phys=i2c-PNP0C50:00
+S: Sysfs=/devices/platform/AMDI0010:00/i2c-0/i2c-PNP0C50:00/0018:222A:550D.0004/input/input22
+U: Uniq=
+H: Handlers=event11
+B: PROP=0
+B: EV=1b
+B: KEY=1 0 0 0 0
+B: ABS=10000000000
+B: MSC=10
+ 
+I: Bus=0018 Vendor=222a Product=550d Version=0100
+N: Name="PNP0C50:00 222A:550D Mouse"
+P: Phys=i2c-PNP0C50:00
+S: Sysfs=/devices/platform/AMDI0010:00/i2c-0/i2c-PNP0C50:00/0018:222A:550D.0004/input/input24
+U: Uniq=
+H: Handlers=mouse4 event12 js2
+B: PROP=0
+B: EV=1b
+B: KEY=1f0000 0 0 0 0
+B: ABS=3
+B: MSC=10

@@ -44,6 +44,35 @@ touchscreen:
       title: "→ Swipe Left Side (Bottom)"
       options: *shortcuts
       default: steam_expanded
+
+    orientation:
+      type: mode
+      title: "Orientation Correction"
+      default: auto
+      modes:
+        auto:
+          title: "Auto"
+          type: container
+        manual:
+          title: "Manual"
+          type: container
+          children:
+            dmi:
+              type: display
+              title: "Device"
+              tags: [slim]
+            portrait:
+              type: bool
+              title: "Portrait"
+              default: false
+            flip_x:
+              type: bool
+              title: "Flip Left-Right"
+              default: false
+            flip_y:
+              type: bool
+              title: "Flip Top-Bottom"
+              default: false
 keyboard:
   type: container
   tags: [non-essential]
