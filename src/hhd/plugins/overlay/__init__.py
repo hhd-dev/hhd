@@ -78,6 +78,11 @@ class OverlayPlugin(HHDPlugin):
         self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
         disable_touch = conf.get("controllers.touchscreen.disable", False)
+        if disable_touch is None:
+            # Initialize value since there is no default
+            disable_touch = False
+            conf["controllers.touchscreen.disable"] = False
+
         if self.initialized and (
             not self.old_shortcuts
             or self.old_shortcuts != conf["shortcuts"]
