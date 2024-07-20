@@ -303,18 +303,15 @@ def process_touch(emit, state, ev, val):
     handled = False
     if start_x < GESTURE_START and last_x > GESTURE_END:
         semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
-        logger.info(f"Gesture: Right {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_right_{semi}"})
         handled = True
     elif start_x > 1 - GESTURE_START and last_x < 1 - GESTURE_END:
         semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
-        logger.info(f"Gesture: Left {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_left_{semi}"})
         handled = True
     elif start_y > 1 - GESTURE_START and last_y < 1 - GESTURE_END:
-        logger.info("Gesture: Bottom swipe.")
         if emit:
             emit({"type": "special", "event": "swipe_bottom"})
         handled = True
