@@ -92,8 +92,7 @@ enabled:
               title: Custom Scheduler
               hint: >-
                 Allows attaching a scheduler to the kernel sched_ext.
-                Schedulers need to be installed.
-                "Kernel" .
+                Schedulers need to be installed and kernel needs to support sched_ext.
               options:
                 disabled: Disabled
                 scx_lavd: LAVD
