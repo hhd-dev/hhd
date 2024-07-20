@@ -73,11 +73,15 @@ If you do take the time, please open an issue with the correct mapping so it
 is added to your device.
 
 - Legion Go
-- ROG Ally
-- GPD Win 
+- Asus ROG
+  - Ally
+  - Ally X
+- GPD Win (Both 2023/2024)
   - Win 4 (No LEDs)
   - Win Mini
-  - Win Max 2 2023
+  - Win Max 2
+- MSI
+  - Claw A1M (only front buttons)
 - Ayaneo
   - Air Standard/Plus/Pro
   - 1S/1S Limited
@@ -94,7 +98,7 @@ is added to your device.
 - Onexplayer (No LEDs)
   - Mini Pro
   - F1, F1 EVA-01
-  - mini A07
+  - Mini A07
   - 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
 - Ambernic
   - Win600 (no keyboard button yet)
