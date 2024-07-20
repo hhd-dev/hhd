@@ -255,6 +255,10 @@ def process_touch(emit, state, ev, val):
         # until finger is released
         return
 
+    # After this point, we only use coordinates
+    if ev not in ("x", "y"):
+        return
+
     # Swap names around to avoid
     # Confusion with portrait displays
     if state["portrait"]:
@@ -266,9 +270,6 @@ def process_touch(emit, state, ev, val):
             max_ev = state["max_y"]
     else:
         max_ev = state[f"max_{ev}"]
-
-    if ev not in ("x", "y"):
-        return
 
     if not start_time:
         state["start_time"] = time.time()
