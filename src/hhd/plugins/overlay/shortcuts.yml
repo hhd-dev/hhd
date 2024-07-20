@@ -29,6 +29,16 @@ keyboard:
       title: "Start (Meta) Hold"
       options: *shortcuts
       default: steam_expanded
+    ctrl_3:
+      type: multiple
+      title: "Ctrl + 3"
+      options: *shortcuts
+      default: hhd_expanded
+    ctrl_4:
+      type: multiple
+      title: "Ctrl + 4"
+      options: *shortcuts
+      default: hhd_qam
 touchscreen:
   type: container
   tags: [non-essential]

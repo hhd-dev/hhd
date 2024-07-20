@@ -61,6 +61,9 @@ TOUCH_WAKE_AXIS: dict[int, str] = to_map(
 KEYBOARD_WAKE_KEY: dict[int, str] = to_map(
     {
         "meta": [B("KEY_LEFTMETA")],
+        "ctrl": [B("KEY_LEFTCTRL")],
+        "3": [B("KEY_3")],
+        "4": [B("KEY_4")],
     }
 )
 
@@ -324,9 +327,22 @@ def process_touch(emit, state, ev, val):
         state["grab"] = False
 
 
-def process_kbd(emit, state, _, val):
+def process_kbd(emit, state, ev, val):
+    if ev == "ctrl":
+        state["ctrl"] = val
+        return
+    if ev == "3" and val and state.get("ctrl", 0):
+        if emit:
+            emit({"type": "special", "event": "kbd_ctrl_3"})
+    if ev == "4" and val and state.get("ctrl", 0):
+        if emit:
+            emit({"type": "special", "event": "kbd_ctrl_4"})
+
     # Skip repeats
     if val == 2:
+        return
+
+    if not ev == "meta":
         return
 
     pressed_n = state.get("pressed_n", 0)

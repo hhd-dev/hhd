@@ -165,6 +165,7 @@ class OverlayPlugin(HHDPlugin):
                     cmd = None
 
             if section and side and self.old_shortcuts:
+                logger.info(f"Gesture: {ev['event']}, side: {side}, section: {section}")
                 cmd_raw = self.old_shortcuts.get(f"{section}.{side}", "disabled")
                 cmd = None
                 match cmd_raw:
