@@ -20,6 +20,9 @@ from adjustor.core.lenovo import (
     set_slow_tdp,
     set_steady_tdp,
     set_tdp_mode,
+    get_bios_version,
+    get_power_light_v1,
+    set_power_light_v1,
 )
 
 logger = logging.getLogger(__name__)
@@ -40,6 +43,10 @@ class LenovoDriverPlugin(HHDPlugin):
         self.old_conf = None
         self.fan_curve_set = False
 
+        bios_version = get_bios_version()
+        logger.info(f"Lenovo BIOS version: {bios_version}")
+        self.power_light_v2 = bios_version >= 35
+
         self.queue_fan = None
         self.queue_tdp = None
         self.new_tdp = None
@@ -55,6 +62,8 @@ class LenovoDriverPlugin(HHDPlugin):
 
         self.initialized = True
         out = {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
+        if not self.power_light_v2:
+            del out["tdp"]["lenovo"]["children"]["power_light_sleep"]
         if not self.enforce_limits:
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"]["children"][
                 "tdp"
@@ -88,7 +97,12 @@ class LenovoDriverPlugin(HHDPlugin):
         tdp_reset = self.startup
         if self.startup:
             conf["tdp.lenovo.ffss"] = get_full_fan_speed()
-            conf["tdp.lenovo.power_light"] = get_power_light()
+            if self.power_light_v2:
+                conf["tdp.lenovo.power_light"] = get_power_light(suspend=False)
+                conf["tdp.lenovo.power_light_sleep"] = get_power_light(suspend=True)
+            else:
+                conf["tdp.lenovo.power_light"] = get_power_light_v1()
+
             conf["tdp.lenovo.charge_limit"] = get_charge_limit()
 
         # If not old config, exit, as values can not be set
@@ -109,7 +123,17 @@ class LenovoDriverPlugin(HHDPlugin):
         if power_light is not None and power_light != self.old_conf["power_light"].to(
             bool
         ):
-            set_power_light(power_light)
+            if self.power_light_v2:
+                set_power_light(power_light, suspend=False)
+            else:
+                set_power_light_v1(power_light)
+        if self.power_light_v2:
+            power_light_sleep = conf["tdp.lenovo.power_light_sleep"].to(bool)
+            if (
+                power_light_sleep != self.old_conf["power_light_sleep"].to(bool)
+                and power_light_sleep is not None
+            ):
+                set_power_light(power_light_sleep, suspend=True)
 
         charge_limit = conf["tdp.lenovo.charge_limit"].to(bool)
         if charge_limit is not None and charge_limit != self.old_conf[

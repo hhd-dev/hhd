@@ -104,12 +104,12 @@ def set_fan_curve(arr: Sequence[int], lim: Sequence[int] | None = None):
     )
 
 
-def set_power_light(enabled: bool):
+def set_power_light_v1(enabled: bool):
     logger.debug(f"Setting power light status.")
     return call(r"\_SB.GZFD.WMAF", [0, 0x02, bytes([0x03, int(enabled), 0x00])])
 
 
-def get_power_light():
+def get_power_light_v1():
     logger.debug(f"Getting power light status.")
     if not call(r"\_SB.GZFD.WMAF", [0, 0x01, 0x03], risky=False):
         return None
@@ -117,6 +117,42 @@ def get_power_light():
     if isinstance(o, bytes) and len(o) == 2:
         return bool(o[0])
     return None
+
+
+def set_power_light(enabled: bool, suspend: bool = False):
+    logger.debug(f"Setting power light status.")
+    if enabled:
+        if suspend:
+            cb = 0x03
+        else:
+            cb = 0x02
+    else:
+        cb = 0x01
+    return call(
+        r"\_SB.GZFD.WMAF",
+        [0, 0x02, bytes([0x024 if suspend else 0x04, 0x00, cb])],
+    )
+
+
+def get_power_light(suspend: bool = False):
+    logger.debug(f"Getting power light status.")
+    if not call(r"\_SB.GZFD.WMAF", [0, 0x01, 0x024 if suspend else 0x04], risky=False):
+        return None
+    o = read()
+    if isinstance(o, bytes) and len(o) == 2:
+        return o[1] == (0x03 if suspend else 0x02)
+    return None
+
+
+def get_bios_version():
+    raw = None
+    try:
+        with open("/sys/class/dmi/id/bios_version") as f:
+            raw = f.read()
+        return int(raw.replace("N3CN", "").split("WW")[0].strip())
+    except Exception as e:
+        logger.error(f"Failed to get BIOS version from '{raw}' with error:\n{e}")
+        return 1
 
 
 def get_feature(id: int):
