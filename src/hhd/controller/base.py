@@ -153,15 +153,12 @@ class ControllerEmitter:
         self._controller_cb = None
         self._qam_cb = None
         self.ctx = ctx
-        self.use_legacy_qam = not bool(os.environ.get("HHD_QAM_GAMESCOPE", None))
         self._simple_qam = False
         self._cap = None
         self._evs = deque(maxlen=100)
 
     def send_qam(self, expanded: bool = False):
         with self.intercept_lock:
-            if self.use_legacy_qam or self._simple_qam:
-                return False
             if self._qam_cb:
                 return self._qam_cb(expanded)
             return False

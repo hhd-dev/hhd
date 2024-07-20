@@ -11,7 +11,7 @@ from typing import Any, Callable, Sequence
 
 from hhd.controller.virtual.uinput.monkey import UInputMonkey, UInput
 
-from evdev import InputDevice, list_devices
+from evdev import InputDevice
 
 from hhd.controller import Event as ControllerEvent
 from hhd.controller import can_read
@@ -74,6 +74,62 @@ GESTURE_TOP_RATIO = 0.33
 
 XBOX_B_MAX_PRESS = 0.3
 KBD_HOLD_DELAY = 0.5
+
+
+class QamHandlerKeyboard:
+    def __init__(self) -> None:
+        self.uinput = None
+
+    def _open(self):
+        if self.uinput:
+            return True
+
+        args = {
+            "events": {
+                B("EV_KEY"): [
+                    B("KEY_LEFTCTRL"),
+                    B("KEY_1"),
+                    B("KEY_2"),
+                ]
+            },
+            "name": "Handheld Daemon Steam Events",
+            "phys": "phys-hhd-qam",
+        }
+        try:
+            self.uinput = UInputMonkey(**args)
+            return True
+        except Exception:
+            try:
+                self.uinput = UInput(**args)
+                return True
+            except Exception as e:
+                pass
+        return False
+
+    def __call__(self, expanded=False) -> Any:
+        if not self._open():
+            return False
+        if not self.uinput:
+            return False
+
+        try:
+            btn = B("KEY_1") if expanded else B("KEY_2")
+            self.uinput.write(B("EV_KEY"), B("KEY_LEFTCTRL"), 1)
+            self.uinput.write(B("EV_KEY"), btn, 1)
+            self.uinput.syn()
+            time.sleep(0.05)
+            self.uinput.write(B("EV_KEY"), btn, 0)
+            self.uinput.write(B("EV_KEY"), B("KEY_LEFTCTRL"), 0)
+            self.uinput.syn()
+            return True
+        except Exception as e:
+            logger.error(f"Could not send keyboard event. Error:\n{e}")
+            return False
+
+    def close(self):
+        if self.uinput:
+            self.uinput.close()
+            self.uinput = None
 
 
 def grab_buttons(fd: int, typ: int, btns: dict[int, str] | None):

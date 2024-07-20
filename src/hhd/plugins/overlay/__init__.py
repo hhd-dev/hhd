@@ -1,13 +1,13 @@
 import logging
 from threading import Event as TEvent
 from threading import Thread
-import time
+import os
 from typing import Sequence
 
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
 from ..plugin import open_steam_kbd, is_steam_gamepad_running
-from .controllers import device_shortcut_loop
+from .controllers import device_shortcut_loop, QamHandlerKeyboard
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +36,22 @@ class OverlayPlugin(HHDPlugin):
         try:
             from .base import OverlayService
             from .overlay import find_overlay_exe
-            from .x11 import QamHandler
+            from .x11 import QamHandlerGamescope
 
             self.ovf = OverlayService(context, emit)
             self.has_executable = bool(find_overlay_exe(context))
-            self.qam_handler = QamHandler(context)
-            emit.register_qam(self.qam_handler)
+
+            if bool(os.environ.get("HHD_QAM_KEYBOARD", None)):
+                # Sends the events as ctrl+1, ctrl+2
+                self.qam_handler = QamHandlerKeyboard()
+            elif bool(os.environ.get("HHD_QAM_GAMESCOPE", None)):
+                # Sends X11 events to gamescope. Stopped working after libei
+                self.qam_handler = QamHandlerGamescope(context)
+            else:
+                self.qam_handler = None
+
+            if self.qam_handler:
+                emit.register_qam(self.qam_handler)
             self.emit = emit
         except Exception as e:
             logger.warning(

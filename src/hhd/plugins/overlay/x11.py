@@ -29,8 +29,7 @@ class CachedValues(NamedTuple):
 QAM_DELAY = 0.35
 
 
-class QamHandler:
-
+class QamHandlerGamescope:
     def __init__(
         self, ctx=None, force_disp: str | None = None, compat_send: bool = True
     ) -> None:
