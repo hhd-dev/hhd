@@ -68,8 +68,10 @@ REPEAT_INITIAL = 0.5
 REPEAT_INTERVAL = 0.2
 
 GESTURE_TIME = 0.4
-GESTURE_LIM = 0.03
-GESTURE_LEN = 0.02
+# Inspired by Ruineka's old
+# gamescope gestures (pre 3.14)
+GESTURE_END = 0.03
+GESTURE_START = 0.02
 GESTURE_TOP_RATIO = 0.33
 
 XBOX_B_MAX_PRESS = 0.3
@@ -284,7 +286,11 @@ def process_touch(emit, state, ev, val):
     if not last_x or not last_y:
         return
 
-    if start_x < GESTURE_LIM or start_x > 1 - GESTURE_LIM or start_y > 1 - GESTURE_LIM:
+    if (
+        start_x < GESTURE_START
+        or start_x > 1 - GESTURE_START
+        or start_y > 1 - GESTURE_START
+    ):
         state["grab"] = True
 
     # logger.info(
@@ -292,19 +298,19 @@ def process_touch(emit, state, ev, val):
     # )
 
     handled = False
-    if start_x < GESTURE_LIM and last_x > GESTURE_LEN + GESTURE_LIM:
+    if start_x < GESTURE_START and last_x > GESTURE_END:
         semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
         logger.info(f"Gesture: Right {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_right_{semi}"})
         handled = True
-    elif start_x > 1 - GESTURE_LIM and last_x < 1 - GESTURE_LEN - GESTURE_LIM:
+    elif start_x > 1 - GESTURE_START and last_x < 1 - GESTURE_END:
         semi = "top" if start_y < GESTURE_TOP_RATIO else "bottom"
         logger.info(f"Gesture: Left {semi.capitalize()} swipe.")
         if emit:
             emit({"type": "special", "event": f"swipe_left_{semi}"})
         handled = True
-    elif start_y > 1 - GESTURE_LIM and last_y < 1 - GESTURE_LEN - GESTURE_LIM:
+    elif start_y > 1 - GESTURE_START and last_y < 1 - GESTURE_END:
         logger.info("Gesture: Bottom swipe.")
         if emit:
             emit({"type": "special", "event": "swipe_bottom"})
