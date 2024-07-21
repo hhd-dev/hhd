@@ -22,6 +22,7 @@ TM = TouchScreenMatch
 TOUCH_SCREEN_QUIRKS = {
     TM("83E1", name="Legion GO"): TQ(True, False, False),
     TM("V3", name="MinisForum V3"): TQ(False, True, False),
+    TM("Galileo", name="Steam Deck OLED"): TQ(True, False, True),
 }
 
 
