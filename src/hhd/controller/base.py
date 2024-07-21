@@ -579,7 +579,7 @@ class Multiplexer:
                     except Exception as e:
                         logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
             elif self.select_is_held or not ev.get("from_reboot", False):
-                out.append(ev)
+                out.append({**ev, "from_queue": True})
 
         # Check for steam for touchpad emulation
         if (
@@ -1157,7 +1157,11 @@ class Multiplexer:
             out.extend(evs)
 
         # Grab all events from controller if grab is on
-        if self.emit and self.emit.intercept(self.unique, out):
+        # Remove queued events such as qam and xbox to avoid leaking them
+        # to the overlay
+        if self.emit and self.emit.intercept(
+            self.unique, [o for o in out if not o.get("from_queue", False)]
+        ):
             accel = random.random() * 10
             fake_accel: Sequence[Event] = [
                 {"type": "axis", "code": "accel_x", "value": accel},
