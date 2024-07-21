@@ -139,6 +139,15 @@ class AmdGPUPlugin(HHDPlugin):
         except Exception as e:
             logger.error(f"Failed to check for PPD conflict:\n{e}")
 
+        if self.ppd_conflict and os.environ.get("HHD_PPD_MASK", None):
+            logger.warning("PPD conflict detected but HHD_PPD_MASK is set. Masking PPD.")
+            # Keep going to avoid obscure errors
+            self.ppd_conflict = False
+            try:
+                os.system("systemctl mask power-profiles-daemon.service")
+            except Exception as e:
+                logger.error(f"Failed to mask PPD:\n{e}")
+
         if self.ppd_conflict:
             self.initialized = False
             return {
