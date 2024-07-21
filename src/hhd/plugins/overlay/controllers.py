@@ -509,10 +509,9 @@ def device_shortcut_loop(
             if not d.fd in r:
                 continue
             try:
-                while can_read(d.fd):
-                    e = list(d.read())
-                    # print(e)
-                    process_events(emit, dev, e)
+                e = list(d.read())
+                # print(e)
+                process_events(emit, dev, e)
             except Exception as e:
                 logger.error(
                     f"Device '{dev['pretty']}' has error. Removing. Error:\n{e}"
