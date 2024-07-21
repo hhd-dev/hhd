@@ -1,14 +1,15 @@
 import logging
+import os
 from threading import Event as TEvent
 from threading import Thread
-import os
 from typing import Sequence
 
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
-from ..plugin import open_steam_kbd, is_steam_gamepad_running
+from ..plugin import open_steam_kbd
 from .const import get_system_info, get_touchscreen_quirk
-from .controllers import device_shortcut_loop, QamHandlerKeyboard
+from .controllers import QamHandlerKeyboard, device_shortcut_loop
+from .x11 import is_gamescope_running
 
 logger = logging.getLogger(__name__)
 
@@ -167,9 +168,9 @@ class OverlayPlugin(HHDPlugin):
                     section = "touchscreen"
                     cmd = None
                 case gesture if gesture.startswith("kbd_"):
-                    if is_steam_gamepad_running(self.emit.ctx, True):
-                        # Only allow kbd shortcuts while steam is in big
-                        # picture mode
+                    if is_gamescope_running():
+                        # Only allow kbd shortcuts while gamescope is open
+                        # Cannot be used in big picture because KDE/GNOME
                         side = gesture[len("kbd_") :]
                         section = "keyboard"
                     cmd = None
