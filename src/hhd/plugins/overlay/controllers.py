@@ -86,6 +86,7 @@ EV_KEY = B("EV_KEY")
 EV_SYN = B("EV_SYN")
 HHD_DEBUG = os.environ.get("HHD_DEBUG", None)
 
+
 class QamHandlerKeyboard:
     def __init__(self) -> None:
         self.uinput = None
@@ -447,25 +448,20 @@ def process_events(emit, dev, evs):
         # inner functions are prettier
         if ev.type == EV_SYN:
             continue
-        if dev["is_touchscreen"]:
-            if ev.type != EV_ABS:
-                continue
-            if ev.code not in TOUCH_WAKE_AXIS:
-                continue
+
+        if dev["is_touchscreen"] and ev.type == EV_ABS and ev.code in TOUCH_WAKE_AXIS:
             process_touch(emit, dev["state_touch"], TOUCH_WAKE_AXIS[ev.code], ev.value)
-        if dev["is_controller"]:
-            if ev.type != EV_KEY:
-                continue
-            if ev.code not in CONTROLLER_WAKE_BUTTON:
-                continue
+
+        if (
+            dev["is_controller"]
+            and ev.type == EV_KEY
+            and ev.code in CONTROLLER_WAKE_BUTTON
+        ):
             process_ctrl(
                 emit, dev["state_ctrl"], CONTROLLER_WAKE_BUTTON[ev.code], ev.value
             )
-        if dev["is_keyboard"]:
-            if ev.type != EV_KEY:
-                continue
-            if ev.code not in KEYBOARD_WAKE_KEY:
-                continue
+
+        if dev["is_keyboard"] and ev.type == EV_KEY and ev.code in KEYBOARD_WAKE_KEY:
             process_kbd(emit, dev["state_kbd"], KEYBOARD_WAKE_KEY[ev.code], ev.value)
 
 
