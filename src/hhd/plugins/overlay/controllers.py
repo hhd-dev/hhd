@@ -112,12 +112,12 @@ class QamHandlerKeyboard:
         return False
 
     def __call__(self, expanded=False) -> Any:
+        if not is_gamescope_running():
+            # Ctrl+1/2 do nothing outside gamescope
+            return False
         if not self._open():
             return False
         if not self.uinput:
-            return False
-        if not is_gamescope_running():
-            # Ctrl+1/2 do nothing outside gamescope
             return False
 
         try:
