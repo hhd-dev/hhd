@@ -8,7 +8,7 @@ from fcntl import ioctl
 from threading import RLock
 from typing import Any, Sequence
 
-from evdev import InputDevice
+from evdev import InputDevice, categorize
 
 from hhd.controller import Event as ControllerEvent
 from hhd.controller import can_read
@@ -543,14 +543,29 @@ def device_shortcut_loop(
                     # Grab touchscreen if requested
                     dev.grab()
 
-                # Add event filter to avoid CPU use
-                # We can just merge the filters, as each device type will have
-                # different event codes
-                grab_buttons(
-                    dev.fd, B("EV_KEY"), {**CONTROLLER_WAKE_BUTTON, **KEYBOARD_WAKE_KEY}
-                )
-                grab_buttons(dev.fd, B("EV_ABS"), TOUCH_WAKE_AXIS)
-                # Mute MSC events as they will wake us up
+                # Add event filters to avoid CPU use
+                # Do controllers and keyboards together as buttons do not consume much
+                if cand["is_controller"] or cand["is_keyboard"]:
+                    grab_buttons(
+                        dev.fd,
+                        B("EV_KEY"),
+                        {**CONTROLLER_WAKE_BUTTON, **KEYBOARD_WAKE_KEY},
+                    )
+                else:
+                    grab_buttons(dev.fd, B("EV_KEY"), {})
+
+                # Abs events
+                # Touchscreen, joystick, etc. We only care about touchscreens
+                if cand["is_touchscreen"]:
+                    grab_buttons(dev.fd, B("EV_ABS"), TOUCH_WAKE_AXIS)
+                else:
+                    grab_buttons(dev.fd, B("EV_ABS"), {})
+
+                # Rel events are not used
+                # They contain e.g., scroll events, mouse movements
+                grab_buttons(dev.fd, B("EV_REL"), {})
+                # MSC Events are not used
+                # They contain e.g., scan codes
                 grab_buttons(dev.fd, B("EV_MSC"), {})
 
                 devs[name] = {
