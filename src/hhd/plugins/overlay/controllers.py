@@ -80,6 +80,11 @@ GESTURE_TOP_RATIO = 0.33
 XBOX_B_MAX_PRESS = 0.3
 KBD_HOLD_DELAY = 0.5
 
+# Cached vars
+EV_ABS = B("EV_ABS")
+EV_KEY = B("EV_KEY")
+EV_SYN = B("EV_SYN")
+HHD_DEBUG = os.environ.get("HHD_DEBUG", None)
 
 class QamHandlerKeyboard:
     def __init__(self) -> None:
@@ -253,7 +258,8 @@ def process_touch(emit, state, ev, val):
         return
 
     start_time = state.get("start_time", 0)
-    if start_time and time.time() - start_time > GESTURE_TIME:
+    curr = time.time()
+    if start_time and curr - start_time > GESTURE_TIME:
         # User took too long, stop processing gestures
         # until finger is released
         return
@@ -280,7 +286,7 @@ def process_touch(emit, state, ev, val):
         val = max_ev - val
 
     if not start_time:
-        state["start_time"] = time.time()
+        state["start_time"] = curr
 
     # Save old values
     v = val / max_ev
@@ -404,11 +410,11 @@ def process_ctrl(emit, state, ev, val):
 
 def process_events(emit, dev, evs):
     # Some nice logging to make things easier
-    if os.environ.get("HHD_DEBUG", None):
+    if HHD_DEBUG:
         log = ""
         if dev["is_touchscreen"]:
             for ev in evs:
-                if ev.type != B("EV_ABS"):
+                if ev.type != EV_ABS:
                     continue
                 code = ev.code
                 if code not in TOUCH_WAKE_AXIS:
@@ -416,7 +422,7 @@ def process_events(emit, dev, evs):
                 log += f"\n - {TOUCH_WAKE_AXIS[code]}: {ev.value}"
         elif dev["is_controller"]:
             for ev in evs:
-                if ev.type != B("EV_KEY"):
+                if ev.type != EV_KEY:
                     continue
                 code = ev.code
                 if code not in CONTROLLER_WAKE_BUTTON:
@@ -424,7 +430,7 @@ def process_events(emit, dev, evs):
                 log += f"\n - {CONTROLLER_WAKE_BUTTON[code]}: {ev.value}"
         elif dev["is_keyboard"]:
             for ev in evs:
-                if ev.type != B("EV_KEY"):
+                if ev.type != EV_KEY:
                     continue
                 code = ev.code
                 if code not in KEYBOARD_WAKE_KEY:
@@ -439,16 +445,16 @@ def process_events(emit, dev, evs):
         # The evs list is SYN, however, for gestures do we really care?
         # We can also do some ugly prefiltering here, so that the
         # inner functions are prettier
-        if ev.type == B("EV_SYN"):
+        if ev.type == EV_SYN:
             continue
         if dev["is_touchscreen"]:
-            if ev.type != B("EV_ABS"):
+            if ev.type != EV_ABS:
                 continue
             if ev.code not in TOUCH_WAKE_AXIS:
                 continue
             process_touch(emit, dev["state_touch"], TOUCH_WAKE_AXIS[ev.code], ev.value)
         if dev["is_controller"]:
-            if ev.type != B("EV_KEY"):
+            if ev.type != EV_KEY:
                 continue
             if ev.code not in CONTROLLER_WAKE_BUTTON:
                 continue
@@ -456,7 +462,7 @@ def process_events(emit, dev, evs):
                 emit, dev["state_ctrl"], CONTROLLER_WAKE_BUTTON[ev.code], ev.value
             )
         if dev["is_keyboard"]:
-            if ev.type != B("EV_KEY"):
+            if ev.type != EV_KEY:
                 continue
             if ev.code not in KEYBOARD_WAKE_KEY:
                 continue
@@ -508,7 +514,9 @@ def device_shortcut_loop(
                 continue
             try:
                 while can_read(d.fd):
-                    process_events(emit, dev, list(d.read()))
+                    e = list(d.read())
+                    # print(e)
+                    process_events(emit, dev, e)
             except Exception as e:
                 logger.error(
                     f"Device '{dev['pretty']}' has error. Removing. Error:\n{e}"
