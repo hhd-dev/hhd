@@ -148,6 +148,10 @@ def get_gamescope_displays():
     return out
 
 
+def is_gamescope_running():
+    return bool(get_gamescope_displays())
+
+
 def get_overlay_display(displays: Sequence[str], ctx=None):
     """Probes the provided gamescope displays to find the overlay one."""
 

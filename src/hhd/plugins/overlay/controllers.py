@@ -5,11 +5,8 @@ import select
 import struct
 import time
 from fcntl import ioctl
-from .const import get_touchscreen_quirk
 from threading import RLock
 from typing import Any, Sequence
-
-from hhd.controller.virtual.uinput.monkey import UInputMonkey, UInput
 
 from evdev import InputDevice
 
@@ -17,6 +14,10 @@ from hhd.controller import Event as ControllerEvent
 from hhd.controller import can_read
 from hhd.controller.lib.ioctl import EVIOCSMASK
 from hhd.controller.physical.evdev import B, list_evs, to_map
+from hhd.controller.virtual.uinput.monkey import UInput, UInputMonkey
+
+from .const import get_touchscreen_quirk
+from .x11 import is_gamescope_running
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +115,9 @@ class QamHandlerKeyboard:
         if not self._open():
             return False
         if not self.uinput:
+            return False
+        if not is_gamescope_running():
+            # Ctrl+1/2 do nothing outside gamescope
             return False
 
         try:
