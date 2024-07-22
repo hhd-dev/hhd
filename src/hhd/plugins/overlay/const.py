@@ -28,8 +28,8 @@ TOUCH_SCREEN_QUIRKS = {
     # Steam deck
     TM("Galileo", name="Steam Deck OLED"): TQ(True, False, True),
     # GPD
-    TM("G1618-04", vid=0x0416, pid=0x038F, name="GPD Win 4"): DEFAULT_LANDSCAPE,
-    TM("G1619-04", name="GPD Win Max 2 (04)"): DEFAULT_LANDSCAPE,
+    TM("G1618-04", name="GPD Win 4"): DEFAULT_LANDSCAPE,  # 2023: 0x0416:0x038F
+    TM("G1619-04", name="GPD Win Max 2 (04)"): DEFAULT_LANDSCAPE,  # 2023: 27C6:0113
     TM("G1619-05", name="GPD Win Max 2 (05)"): DEFAULT_LANDSCAPE,
     # Asus
     TM("RC71L", name="ROG Ally"): DEFAULT_LANDSCAPE,
