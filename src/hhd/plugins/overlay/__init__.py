@@ -109,7 +109,7 @@ class OverlayPlugin(HHDPlugin):
             self._close_short()
 
             kbd = False
-            for v in ("meta_press", "meta_hold"):
+            for v in ("meta_press", "meta_hold", "ctrl_3", "ctrl_4"):
                 kbd = (
                     kbd or conf.get(f"shortcuts.keyboard.{v}", "disabled") != "disabled"
                 )
