@@ -322,8 +322,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                 break
 
     if not drivers:
-        logger.info(f"No tdp drivers found for this device, exiting Adjustor.")
-        return []
+        from .drivers.general import GeneralPowerPlugin
+
+        logger.info(f"No tdp drivers found for this device, using generic plugin.")
+        return [GeneralPowerPlugin()]
 
     return [
         *drivers,
