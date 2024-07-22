@@ -50,7 +50,7 @@ class GeneralPowerPlugin(HHDPlugin):
         # SchedExt
         self.avail_scheds = {}
         avail_pretty = {}
-        kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state") or True
+        kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state")
         if kernel_supports:
             for sched, pretty in sets["children"]["sched"]["options"].items():
                 if sched == "disabled":
