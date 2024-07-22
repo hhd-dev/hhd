@@ -585,7 +585,7 @@ def device_shortcut_loop(
 
                     # Default quirks
                     portrait = max_x < max_y
-                    flip_x = False
+                    flip_x = not portrait # just the way it is
                     flip_y = False
 
                     quirk, pretty = get_touchscreen_quirk(
@@ -604,7 +604,7 @@ def device_shortcut_loop(
                         flip_y = quirk.flip_y
                         caps.append(f"Touchscreen[{pretty}]")
                     else:
-                        caps.append(f"Touchscreen[auto, portrait={portrait}]")
+                        caps.append(f"Touchscreen[auto, portrait={portrait}, x={flip_x}, y={flip_y}]")
 
                     devs[name]["state_touch"].update(
                         {
