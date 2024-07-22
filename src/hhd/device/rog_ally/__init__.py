@@ -114,7 +114,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Ally X
     # ROG Ally X RC72LA_RC72LA_000123206
-    if "ROG Ally X RC72" in dmi:
+    if "ROG Ally X RC72LA" in dmi:
         return [RogAllyControllersPlugin(ally_x=True)]
 
     return []
