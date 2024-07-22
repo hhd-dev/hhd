@@ -32,8 +32,8 @@ For more, see [AMD TDP Control Details](#amd-tdp).
 In all cases, there are checks to ensure that the TDP is within the safe range
 of the processors.
 
-## Energy Management
-Adjustor can also manage the energy profile of the processor, by setting EPP
+## Energy Management in Handhelds
+Adjustor can also manage the energy profile of the processor in handhelds, by setting EPP
 and proper frequency values.
 After we transitioned people away from Decky plugins (which had some governor controls)
 to using Handheld Daemon for TDP, we found that Power Profiles Daemon (PPD) 
@@ -69,6 +69,47 @@ KDE Powerdevil and Gnome shell work as expected, and make them control the
 TDP range instead of CPU values (which is the user's expectation).
 Of course, depending on TDP and user preference, the CPU governor values will be set
 accordingly.
+
+## Energy Management in Other computers
+As we design Handheld Daemon to be enabled in more Deck style devices (e.g., HTPCs), 
+these devices have different power requirements and processors (e.g., Intel), which 
+are better managed with Power Profiles Daemon.
+It is the aim of the project to become a general Deck style session manager
+for anything gamescope related, with useful features for all devices.
+
+In these cases, starting with 3.4, for devices that are not in the CPU/device
+whitelist (includes only AMD U series APUs and handhelds), Adjustor contains a 
+general energy management plugin that allows for switching the PPD power profile 
+from game mode.
+In addition, it supports sched_ext schedulers.
+
+This means that for general devices, Handheld Daemon uses PPD, and for handhelds,
+Handheld Daemon becomes PPD.
+This can be confusing for distribution maintainers and users, as they can and 
+should install both (e.g., Adjustor uses the Power Profile Daemon polkits).
+
+In any case, Adjustor will never break/conflict with PPD and contains helpful 
+messages about disabling PPD in case the optimized handheld plugin is loaded.
+For distribution maintainers that ship both and want Handheld Daemon to work
+out of the box, the environment variable `HHD_PPD_MASK` is provided.
+If and only if it is set e.g., by using a systemd service extension, Handheld Daemon
+will mask and disable PPD if energy management is enabled.
+This means that Power Management will work properly for all devices without manual
+intervention and whitelist by distribution maintainers.
+
+## Sched_ext
+Starting with version 3.3, Adjustor can also attach sched_ext schedulers to the
+kernel if those are supported and installed.
+Adjustor manages the lifetime of the scheduler, including launching and attaching
+it, without using a systemd service, and is fully responsive to quirk scheduler
+switches.
+
+Schedulers are whitelisted in a case by case basis, with LAVD, rusty, and bpfland
+being supported in the current version (the `scx_` namespace is crowded with e.g.,
+test schedulers).
+Of course, only installed schedulers are shown if and only if the kernel supports
+them.
+Get in touch to add your favorite scheduler, as it is a single line change.
 
 ## AMD TDP Control Details<a name="amd-tdp"></a>
 Adjustor controls TDP through the Dynamic Power and Thermal Configuration Interface
