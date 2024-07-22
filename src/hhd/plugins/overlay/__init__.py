@@ -94,6 +94,9 @@ class OverlayPlugin(HHDPlugin):
         self.enabled = self.enabled or new_enabled
         self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
+        self.touch_gestures = not bool(
+            conf.get("controllers.touchscreen.gestures_disable", False)
+        )
         disable_touch = conf.get("controllers.touchscreen.disable", False)
         if disable_touch is None:
             # Initialize value since there is no default
@@ -164,8 +167,9 @@ class OverlayPlugin(HHDPlugin):
             override_enable = False
             match ev["event"]:
                 case gesture if gesture.startswith("swipe_"):
-                    side = gesture[len("swipe_") :]
-                    section = "touchscreen"
+                    if self.touch_gestures:
+                        side = gesture[len("swipe_") :]
+                        section = "touchscreen"
                     cmd = None
                 case gesture if gesture.startswith("kbd_"):
                     if is_gamescope_running():
