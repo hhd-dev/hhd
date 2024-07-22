@@ -16,6 +16,7 @@ class TouchScreenMatch(NamedTuple):
     pid: int | None = None
     name: str | None = None
 
+DEFAULT_LANDSCAPE = TQ(False, True, False)
 
 TM = TouchScreenMatch
 
@@ -23,14 +24,16 @@ TOUCH_SCREEN_QUIRKS = {
     # Lenovo
     TM("83E1", name="Legion GO"): TQ(True, False, False),
     # MinisForum
-    TM("V3", name="MinisForum V3"): TQ(False, True, False),
+    TM("V3", name="MinisForum V3"): DEFAULT_LANDSCAPE,
     # Steam deck
     TM("Galileo", name="Steam Deck OLED"): TQ(True, False, True),
     # GPD
-    TM("G1618-04", vid=0x0416, pid=0x038F, name="GPD Win 4"): TQ(False, True, False),
+    TM("G1618-04", vid=0x0416, pid=0x038F, name="GPD Win 4"): DEFAULT_LANDSCAPE,
+    TM("G1619-04", name="GPD Win Max 2 (04)"): DEFAULT_LANDSCAPE,
+    TM("G1619-05", name="GPD Win Max 2 (05)"): DEFAULT_LANDSCAPE,
     # Asus
-    TM("RC71L", name="ROG Ally"): TQ(False, True, False),
-    TM("RC72LA", name="ROG Ally X"): TQ(False, True, False),
+    TM("RC71L", name="ROG Ally"): DEFAULT_LANDSCAPE,
+    TM("RC72LA", name="ROG Ally X"): DEFAULT_LANDSCAPE,
 }
 
 
