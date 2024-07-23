@@ -539,6 +539,7 @@ class Multiplexer:
         self.r3_to_share = r3_to_share
         self.nintendo_mode = nintendo_mode
         self.emit = emit
+        self.send_xbox_b = None
         self.imu = imu
 
         self.state = {}
@@ -1051,14 +1052,32 @@ class Multiplexer:
                             case "y":
                                 ev["code"] = "x"
 
+                    # Assume we own Xbox + Y if the user is not using the recording feature
                     if (
                         (self.guide_pressed or self.select_is_held)
                         and self.emit
-                        and ev["code"] in ("b", "y")
+                        and ev["code"] == "y"
                         and ev["value"]
                     ):
                         # logger.info(f"Sending chord for Xbox+{ev['code']}.")
-                        self.emit({"type": "special", "event": f"xbox_{ev["code"]}"})
+                        self.emit({"type": "special", "event": f"xbox_y"})
+
+                    # Assume we can only use Xbox + B for short presses
+                    if (
+                        (self.guide_pressed or self.select_is_held)
+                        and self.emit
+                        and ev["code"] == "b"
+                    ):
+                        if ev["value"]:
+                            self.send_xbox_b = time.time()
+                        else:
+                            if (
+                                self.send_xbox_b
+                                and time.time() - self.send_xbox_b < 0.3
+                            ):
+                                self.emit({"type": "special", "event": f"xbox_b"})
+                            self.send_xbox_b = None
+
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})

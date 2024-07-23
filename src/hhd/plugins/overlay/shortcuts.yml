@@ -5,7 +5,7 @@ controller:
   children:
     xbox_b:
       type: multiple
-      title: "Xbox + B (Press)"
+      title: "Xbox or View + B (Press)"
       options: &shortcuts
         disabled: "Disabled"
         keyboard: Steam Keyboard

@@ -44,6 +44,7 @@ OVERLAY_AXIS_MAP: dict[int, str] = to_map(
 
 CONTROLLER_WAKE_BUTTON: dict[int, str] = to_map(
     {
+        "select": [B("BTN_SELECT")],
         "mode": [B("BTN_MODE")],
         "b": [B("BTN_B")],
         "y": [B("BTN_Y")],
@@ -392,12 +393,15 @@ def process_ctrl(emit, state, ev, val):
     if ev == "mode":
         state["mode"] = val
         return
+    if ev == "select":
+        state["select"] = val
+        return
 
     if ev != "b" and ev != "y":
         return
 
     # Mode needs to be pressed
-    if not state.get("mode", None):
+    if not state.get("mode", None) and not state.get("select", None):
         return
 
     if val:
