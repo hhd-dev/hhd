@@ -1058,9 +1058,9 @@ msgstr ""
 "Define o nível de brilho da tela. Somente uma tela é suportada e é essa que "
 "é usada."
 
-#. Setting: Overlay with QAM Double/Tripple press (requires restart)
+#. Setting: Overlay with QAM Double/Triple press (requires restart)
 #. Field: title
-msgid "Overlay with QAM Double/Tripple press (requires restart)"
+msgid "Overlay with QAM Double/Triple press (requires restart)"
 msgstr "Sobrepor com toques duplos/triplos do QAM (necessário reiniciar)"
 
 #. Setting: Steam Powerbutton Handler

@@ -960,9 +960,9 @@ msgid ""
 " it is the one that was read."
 msgstr ""
 
-#. Setting: Overlay with QAM Double/Tripple press (requires restart)
+#. Setting: Overlay with QAM Double/Triple press (requires restart)
 #. Field: title
-msgid "Overlay with QAM Double/Tripple press (requires restart)"
+msgid "Overlay with QAM Double/Triple press (requires restart)"
 msgstr "使用 QAM 双击/三击打开覆盖层 (需要重启)"
 
 #. Setting: Steam Powerbutton Handler
