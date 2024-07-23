@@ -7,11 +7,11 @@ import time
 from fcntl import ioctl
 from threading import RLock
 from typing import Any, Sequence
+import stat
 
-from evdev import InputDevice, categorize
+from evdev import InputDevice
 
 from hhd.controller import Event as ControllerEvent
-from hhd.controller import can_read
 from hhd.controller.lib.ioctl import EVIOCSMASK
 from hhd.controller.physical.evdev import B, list_evs, to_map
 from hhd.controller.virtual.uinput.monkey import UInput, UInputMonkey
@@ -181,10 +181,6 @@ def find_devices(
 
         # Skip HHD devices
         if "hhd" in dev.get("phys", ""):
-            continue
-
-        if os.stat(name).st_mode & 0o666 == 0:
-            # Skip hidden devices
             continue
 
         # Skip Steam virtual devices
@@ -513,7 +509,7 @@ def intercept_devices(devs, activate: bool):
             try:
                 if dev.get("grabbed", False):
                     d.ungrab()
-                    dev['grabbed'] = False
+                    dev["grabbed"] = False
 
                 grab_buttons(
                     d.fd,
@@ -547,15 +543,20 @@ def intercept_events(emit, intercept_num, cid, dinput, smax, evs):
                 }
             )
         elif ev.type == EV_ABS and ev.code in OVERLAY_AXIS_MAP:
-            if dinput:
-                v = min(1, max(-1, 2 * ev.value / smax - 1))
+            code = OVERLAY_AXIS_MAP[ev.code]
+
+            if "ls" in code:
+                if dinput:
+                    v = min(1, max(-1, 2 * ev.value / smax - 1))
+                else:
+                    v = min(1, max(-1, ev.value / smax))
             else:
-                v = min(1, max(-1, ev.value / smax))
+                v = ev.value
 
             out.append(
                 {
                     "type": "axis",
-                    "code": OVERLAY_AXIS_MAP[ev.code],
+                    "code": code,
                     "value": v,
                 }
             )
@@ -612,13 +613,24 @@ def device_shortcut_loop(
             refresh_events(emit, dev)
             if not d.fd in r:
                 continue
+
             try:
+                if os.stat(name).st_mode & stat.S_IRGRP == 0:
+                    blacklist.add(cand["hash"])
+                    logger.info(f"Removing hidden device: '{dev['pretty']}'")
+                    continue
+
                 e = list(d.read())
                 # print(e)
                 process_events(emit, dev, e)
                 if should_intercept and dev["is_controller"]:
                     intercept_events(
-                        emit, intercept_num, dev["hash"], dev["dinput"], dev["stick_max"], e
+                        emit,
+                        intercept_num,
+                        dev["hash"],
+                        dev["dinput"],
+                        dev["stick_max"],
+                        e,
                     )
             except Exception as e:
                 logger.error(
@@ -648,6 +660,10 @@ def device_shortcut_loop(
                 continue
 
             try:
+                if os.stat(name).st_mode & stat.S_IRGRP == 0:
+                    blacklist.add(cand["hash"])
+                    continue
+
                 dev = InputDevice(name)
 
                 if cand["is_touchscreen"] and disable_touchscreens:
