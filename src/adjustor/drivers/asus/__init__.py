@@ -338,12 +338,13 @@ class AsusDriverPlugin(HHDPlugin):
             for k, v in zip(POINTS, DEFAULT_CURVE):
                 conf[f"tdp.asus.fan.manual.st{k}"] = v
 
+        manual_fan_curve = conf["tdp.asus.fan.mode"].to(str) == "manual"
+        
         # Handle fan curve limits by Asus
         # by enforcing minimum values based on power profile
         # which is a proxy of the current platform profile but still
         # a bit of a hack. TODO: Get the exact limits.
         # FIXME: Revisit limits
-        # manual_fan_curve = conf["tdp.asus.fan.mode"].to(str) == "manual"
         # if manual_fan_curve:
         #     match self.pp:
         #         case "balanced":
