@@ -183,6 +183,10 @@ def find_devices(
         if "hhd" in dev.get("phys", ""):
             continue
 
+        if os.stat(name).st_mode & 0o666 == 0:
+            # Skip hidden devices
+            continue
+
         # Skip Steam virtual devices
         # Vendor=28de Product=11ff
         if dev.get("vendor", 0) == 0x28DE and dev.get("product", 0) == 0x11FF:
@@ -481,6 +485,85 @@ def refresh_events(emit, dev):
         refresh_kbd(emit, dev["state_kbd"])
 
 
+def intercept_devices(devs, activate: bool):
+    for dev in devs.values():
+        if not dev["is_controller"]:
+            continue
+        d = dev["dev"]
+        if activate:
+            try:
+                grab_buttons(
+                    d.fd,
+                    B("EV_KEY"),
+                    {
+                        **CONTROLLER_WAKE_BUTTON,
+                        **KEYBOARD_WAKE_KEY,
+                        **OVERLAY_BUTTON_MAP,
+                    },
+                )
+                grab_buttons(d.fd, B("EV_ABS"), OVERLAY_AXIS_MAP)
+
+                if not dev.get("grabbed", False):
+                    d.grab()
+                    dev["grabbed"] = True
+                logger.info(f" - '{dev['pretty']}'")
+            except Exception:
+                logger.warning(f" - Failed: '{dev['pretty']}'")
+        else:
+            try:
+                if dev.get("grabbed", False):
+                    d.ungrab()
+                    dev['grabbed'] = False
+
+                grab_buttons(
+                    d.fd,
+                    B("EV_KEY"),
+                    {
+                        **CONTROLLER_WAKE_BUTTON,
+                        **KEYBOARD_WAKE_KEY,
+                    },
+                )
+                grab_buttons(d.fd, B("EV_ABS"), {})
+                logger.info(f" - '{dev['pretty']}'")
+            except Exception:
+                logger.warning(f" - Failed: '{dev['pretty']}'")
+
+
+def intercept_events(emit, intercept_num, cid, dinput, smax, evs):
+    if not emit:
+        return
+
+    out = []
+    for ev in evs:
+        if ev.type == EV_SYN:
+            continue
+
+        if ev.type == EV_KEY and ev.code in OVERLAY_BUTTON_MAP:
+            out.append(
+                {
+                    "type": "button",
+                    "code": OVERLAY_BUTTON_MAP[ev.code],
+                    "value": ev.value,
+                }
+            )
+        elif ev.type == EV_ABS and ev.code in OVERLAY_AXIS_MAP:
+            if dinput:
+                v = min(1, max(-1, 2 * ev.value / smax - 1))
+            else:
+                v = min(1, max(-1, ev.value / smax))
+
+            out.append(
+                {
+                    "type": "axis",
+                    "code": OVERLAY_AXIS_MAP[ev.code],
+                    "value": v,
+                }
+            )
+
+    if out:
+        emit.intercept(cid + intercept_num, out)
+
+
 def device_shortcut_loop(
     emit=None,
     should_exit=None,
@@ -493,6 +576,8 @@ def device_shortcut_loop(
 ):
     blacklist = set()
     last_check = 0
+    intercept = False
+    intercept_num = 0
     devs = {}
     while not should_exit or not should_exit.is_set():
         if devs:
@@ -510,6 +595,18 @@ def device_shortcut_loop(
         init = False
 
         # Process events
+        should_intercept = emit and emit.should_intercept()
+        if any(dev["is_controller"] for dev in devs.values()):
+            if not intercept and should_intercept:
+                intercept = True
+                intercept_num += 1
+                logger.info("Intercepting other controllers:")
+                intercept_devices(devs, True)
+            elif intercept and not should_intercept:
+                intercept = False
+                logger.info("Stopping intercepting other controllers:")
+                intercept_devices(devs, False)
+
         for name, dev in list(devs.items()):
             d = dev["dev"]
             refresh_events(emit, dev)
@@ -519,6 +616,10 @@ def device_shortcut_loop(
                 e = list(d.read())
                 # print(e)
                 process_events(emit, dev, e)
+                if should_intercept and dev["is_controller"]:
+                    intercept_events(
+                        emit, intercept_num, dev["hash"], dev["dinput"], dev["stick_max"], e
+                    )
             except Exception as e:
                 logger.error(
                     f"Device '{dev['pretty']}' has error. Removing. Error:\n{e}"
@@ -625,7 +726,15 @@ def device_shortcut_loop(
                         }
                     )
                 if cand["is_controller"]:
-                    caps.append("Controller")
+                    try:
+                        stick_max = dev.absinfo(B("ABS_X")).max
+                        dinput = not dev.absinfo(B("ABS_X")).min
+                    except Exception:
+                        stick_max = 2**16
+                        dinput = False
+                    devs[name]["dinput"] = dinput
+                    devs[name]["stick_max"] = stick_max
+                    caps.append(f"Controller[dinput={dinput}, smax={stick_max}]")
                 if cand["is_keyboard"]:
                     caps.append("Keyboard")
                 log += f"\n - '{cand['pretty']}'[{cand['vid']:04x}:{cand['pid']:04x}] ({', '.join(caps)})"

@@ -160,7 +160,7 @@ class ControllerEmitter:
         self.ctx = ctx
         self._simple_qam = False
         self._cap = None
-        self.cid = None
+        self.cid = ""
         self._evs = []
 
     def send_qam(self, expanded: bool = False):
@@ -231,13 +231,13 @@ class ControllerEmitter:
         # Unfortunately here we have to clear the previous events to avoid conflicts
         # TODO: Clean this up. It is only used by the RGB module.
         with self.intercept_lock:
-            self._evs = evs
+            self._evs = list(evs)
 
     def inject_recv(self):
         with self.intercept_lock:
             if not self.cid:
                 # Avoid writing events if no controller is connected
-                return
+                return []
 
             if not self._evs:
                 return []
@@ -1060,7 +1060,7 @@ class Multiplexer:
                         and ev["code"] == "y"
                         and ev["value"]
                     ):
-                        self.emit({"type": "special", "event": f"xbox_y"})
+                        self.emit({"type": "special", "event": "xbox_y"})
 
                     # Assume we can only use Xbox + B for short presses
                     if (
@@ -1075,7 +1075,7 @@ class Multiplexer:
                                 self.send_xbox_b
                                 and time.time() - self.send_xbox_b < 0.3
                             ):
-                                self.emit({"type": "special", "event": f"xbox_b"})
+                                self.emit({"type": "special", "event": "xbox_b"})
                             self.send_xbox_b = None
 
                 case "led":
@@ -1208,7 +1208,7 @@ class Multiplexer:
         # Grab all events from controller if grab is on
         # Remove queued events such as qam and xbox to avoid leaking them
         # to the overlay
-        if self.emit and self.emit.intercept(
+        if self.emit and False and self.emit.intercept(
             self.unique, [o for o in out if not o.get("from_queue", False)]
         ):
             accel = random.random() * 10
