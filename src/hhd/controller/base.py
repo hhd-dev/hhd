@@ -1208,7 +1208,7 @@ class Multiplexer:
         # Grab all events from controller if grab is on
         # Remove queued events such as qam and xbox to avoid leaking them
         # to the overlay
-        if self.emit and False and self.emit.intercept(
+        if self.emit and self.emit.intercept(
             self.unique, [o for o in out if not o.get("from_queue", False)]
         ):
             accel = random.random() * 10
