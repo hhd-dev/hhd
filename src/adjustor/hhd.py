@@ -267,7 +267,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         or bool(os.environ.get("HHD_ADJ_DEBUG"))
         or bool(os.environ.get("HHD_ADJ_ALLY"))
     ):
-        drivers.append(AsusDriverPlugin())
+        drivers.append(AsusDriverPlugin("RC72L" in prod))
         drivers_matched = True
 
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
