@@ -283,6 +283,7 @@ DEFAULT_TAGS = {
     "type": None,
     "title": "",
     "hint": "",
+    "unit": "",
     "tags": [],
     "default": None,
 }
