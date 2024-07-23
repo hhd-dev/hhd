@@ -215,7 +215,7 @@ class OverlayPlugin(HHDPlugin):
                         self.emit.open_steam(True)
                     case "keyboard":
                         if open_steam_kbd(self.emit, True):
-                            logger.info("Opening Steam keyboard.")
+                            logger.info("Opened Steam keyboard.")
                         else:
                             logger.warning("Could not open Steam keyboard. Is Steam running?")
 
