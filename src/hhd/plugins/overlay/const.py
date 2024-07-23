@@ -26,6 +26,7 @@ TOUCH_SCREEN_QUIRKS = {
     # MinisForum
     TM("V3", name="MinisForum V3"): DEFAULT_LANDSCAPE,
     # Steam deck
+    TM("Jupiter", name="Steam Deck LCD"): TQ(True, True, True),
     TM("Galileo", name="Steam Deck OLED"): TQ(True, True, True),
     # GPD
     TM("G1618-04", name="GPD Win 4"): DEFAULT_LANDSCAPE,  # 2023: 0x0416:0x038F
