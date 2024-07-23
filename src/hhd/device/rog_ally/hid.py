@@ -213,7 +213,7 @@ INIT_EVERY_S = 10
 
 
 def process_events(
-    events: Sequence[Event], prev_mode: str | None, rgb_boot: bool, rgb_charging: bool
+    events: Sequence[Event], prev_mode: str | None, rgb_boot: bool, rgb_charging: bool, global_init=True
 ):
     cmds = []
     mode = None
@@ -281,17 +281,24 @@ def process_events(
         if not br_cmd:
             br_cmd = rgb_set_brightness("high")
 
+    if br_cmd:
+        cmds.insert(0, br_cmd)
+
     if init:
+        # Init should switch modes
         cmds = [
-            *RGB_INIT,
-            config_rgb(rgb_boot, rgb_charging),
             *cmds,
             RGB_SET,
             RGB_APPLY,
         ]
 
-    if br_cmd:
-        cmds.insert(0, br_cmd)
+    if global_init:
+        cmds = [
+            *RGB_INIT,
+            config_rgb(rgb_boot, rgb_charging),
+            *cmds,
+        ]
+
     return cmds, mode
 
 
@@ -300,11 +307,13 @@ class RgbCallback:
         self.prev_mode = None
         self.rgb_boot = rgb_boot
         self.rgb_charging = rgb_charging
+        self.global_init = True
 
     def __call__(self, dev: Device, events: Sequence[Event]):
         cmds, mode = process_events(
-            events, self.prev_mode, self.rgb_boot, self.rgb_charging
+            events, self.prev_mode, self.rgb_boot, self.rgb_charging, self.global_init
         )
+        self.global_init = False
         if mode:
             self.prev_mode = mode
         if not cmds:
