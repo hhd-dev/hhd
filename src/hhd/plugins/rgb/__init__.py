@@ -137,12 +137,12 @@ class RgbPlugin(HHDPlugin):
                                 "strong_magnitude": 0,
                                 "weak_magnitude": 0,
                             },
-                            curr + 0.08,
+                            curr + 0.1,
                         ),
                     )
                     # Restore old color
                     if not self.controller and self.last_ev:
-                        evs.append((self.last_ev, curr + 4))
+                        evs.append((self.last_ev, curr + 3))
 
                     self.emit.inject_timed(evs)
 
