@@ -50,6 +50,12 @@ children:
             hint: >-
               Allows the device to boost by setting appropriate slow and fast TDPs.
   
+  cycle_info:
+    type: display
+    title: " "
+    tags: []
+    default: "Legion L + Y Cycles the TDP Mode."
+
   ffss:
     type: bool
     title: Set Fan to Full Speed
