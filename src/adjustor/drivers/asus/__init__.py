@@ -9,8 +9,8 @@ from adjustor.core.platform import set_platform_profile
 
 logger = logging.getLogger(__name__)
 
-APPLY_DELAY = 1.5
-TDP_DELAY = 0.2
+APPLY_DELAY = 0.7
+TDP_DELAY = 0.1
 MIN_TDP_START = 7
 MAX_TDP_START = 30
 # FIXME: add AC/DC values
@@ -123,7 +123,7 @@ def disable_fan_curve():
 
 
 class AsusDriverPlugin(HHDPlugin):
-    def __init__(self) -> None:
+    def __init__(self, allyx: bool = False) -> None:
         self.name = f"adjustor_asus"
         self.priority = 6
         self.log = "adja"
@@ -136,7 +136,10 @@ class AsusDriverPlugin(HHDPlugin):
         self.queue_fan = None
         self.queue_tdp = None
         self.new_tdp = None
+        self.new_mode = None
         self.old_target = None
+        self.pp = None
+        self.allyx = allyx
 
     def settings(self):
         if not self.enabled:
@@ -147,8 +150,25 @@ class AsusDriverPlugin(HHDPlugin):
 
         self.initialized = True
         out = {"tdp": {"asus": load_relative_yaml("settings.yml")}}
+
+        # Set units
+        if self.allyx:
+            out["tdp"]["asus"]["children"]["tdp"]["modes"]["quiet"]["unit"] = "13W"
+            out["tdp"]["asus"]["children"]["tdp"]["modes"]["balanced"]["unit"] = "17W"
+            out["tdp"]["asus"]["children"]["tdp"]["modes"]["performance"][
+                "unit"
+            ] = "25W"
+        else:
+            out["tdp"]["asus"]["children"]["tdp"]["modes"]["quiet"]["unit"] = "10W"
+            out["tdp"]["asus"]["children"]["tdp"]["modes"]["balanced"]["unit"] = "15W"
+            out["tdp"]["asus"]["children"]["tdp"]["modes"]["performance"][
+                "unit"
+            ] = "20W"
+
         if not self.enforce_limits:
-            out["tdp"]["asus"]["children"]["tdp"]["max"] = 50
+            out["tdp"]["asus"]["children"]["tdp"]["modes"]["custom"]["children"]["tdp"][
+                "max"
+            ] = 50
         return out
 
     def open(
@@ -204,78 +224,113 @@ class AsusDriverPlugin(HHDPlugin):
         # TDP
         #
         new_target = None
-
-        # Reset fan curve on mode change
-        # Has to happen before setting the stdp, ftdp values, in case
-        # we are in custom mode
-        fan_mode = conf["tdp.asus.fan.mode"].to(str)
-        if fan_mode != self.old_conf["fan.mode"].to(str) and fan_mode != "manual":
-            pass
-
-        # Check user changed values
-        if self.new_tdp:
-            steady = self.new_tdp
-            self.new_tdp = None
-            conf["tdp.asus.tdp"] = steady
+        new_tdp = self.new_tdp
+        self.new_tdp = None
+        new_mode = self.new_mode
+        self.new_mode = None
+        ally_x = self.allyx
+        if new_tdp:
+            # For TDP values received from steam, set the appropriate
+            # mode to get a better experience.
+            if new_tdp == (13 if ally_x else 10):
+                mode = "quiet"
+            elif new_tdp == (17 if ally_x else 15):
+                mode = "balanced"
+            elif new_tdp == 25 or new_tdp == 30:
+                mode = "performance"
+            else:
+                mode = "custom"
+            conf["tdp.asus.tdp.mode"] = mode
+        elif new_mode:
+            mode = new_mode
+            conf["tdp.asus.tdp.mode"] = mode
         else:
-            steady = conf["tdp.asus.tdp"].to(int)
+            mode = conf["tdp.asus.tdp.mode"].to(str)
 
-        steady_updated = steady and steady != self.old_conf["tdp"].to(int)
+        tdp_reset = False
+        if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
+            tdp_reset = True
 
-        if self.startup and (steady > MAX_TDP_START or steady < MIN_TDP_START):
-            logger.warning(
-                f"TDP ({steady}) outside the device spec. Resetting for stability reasons."
+        # Handle EPP for presets
+        if tdp_reset and mode != "custom":
+            match mode:
+                case "quiet":
+                    set_platform_profile("quiet")
+                    new_target = "power"
+                case "balanced":
+                    set_platform_profile("balanced")
+                    new_target = "balanced"
+                case _:  # "performance":
+                    set_platform_profile("performance")
+                    new_target = "performance"
+
+        # In custom mode, re-apply settings with debounce
+        if mode == "custom":
+            # Check user changed values
+            steady = conf["tdp.asus.tdp.custom.tdp"].to(int)
+            steady_updated = steady and steady != self.old_conf["tdp.custom.tdp"].to(
+                int
             )
-            steady = min(max(steady, MIN_TDP_START), MAX_TDP_START)
-            conf["tdp.asus.tdp"] = steady
-            steady_updated = True
 
-        boost = conf["tdp.asus.boost"].to(bool)
-        boost_updated = boost != self.old_conf["boost"].to(bool)
-
-        # If yes, queue an update
-        # Debounce
-        if self.startup or steady_updated or boost_updated:
-            self.queue_tdp = curr + APPLY_DELAY
-
-        tdp_set = self.queue_tdp and self.queue_tdp < curr
-        if tdp_set:
-            if steady < 5:
-                steady = 5
-            if steady < 13:
-                set_platform_profile("quiet")
-                new_target = "power"
-            elif steady < 20:
-                set_platform_profile("balanced")
-                new_target = "balanced"
-            else:
-                set_platform_profile("performance")
-                new_target = "performance"
-
-            self.queue_tdp = None
-            if boost:
-                # TODO: Use different boost values depending on whether plugged in
-                time.sleep(TDP_DELAY)
-                set_tdp(
-                    "fast", FTDP_FN, min(max(steady, MAX_TDP), int(steady * 35 / 25))
+            if self.startup and (steady > MAX_TDP_START or steady < MIN_TDP_START):
+                logger.warning(
+                    f"TDP ({steady}) outside the device spec. Resetting for stability reasons."
                 )
-                time.sleep(TDP_DELAY)
-                set_tdp(
-                    "slow", STDP_FN, min(max(steady, MAX_TDP), int(steady * 30 / 25))
-                )
-                time.sleep(TDP_DELAY)
-                set_tdp("steady", CTDP_FN, steady)
-            else:
-                time.sleep(TDP_DELAY)
-                set_tdp("fast", FTDP_FN, steady)
-                time.sleep(TDP_DELAY)
-                set_tdp("slow", STDP_FN, steady)
-                time.sleep(TDP_DELAY)
-                set_tdp("steady", CTDP_FN, steady)
+                steady = min(max(steady, MIN_TDP_START), MAX_TDP_START)
+                conf["tdp.asus.tdp.custom.tdp"] = steady
+                steady_updated = True
+
+            boost = conf["tdp.asus.tdp.custom.boost"].to(bool)
+            boost_updated = boost != self.old_conf["tdp.custom.boost"].to(bool)
+
+            # If yes, queue an update
+            # Debounce
+            if self.startup or steady_updated or boost_updated:
+                self.queue_tdp = curr + APPLY_DELAY
+
+            tdp_set = self.queue_tdp and self.queue_tdp < curr
+            if tdp_set:
+                if steady < 5:
+                    steady = 5
+                if steady < (15 if self.allyx else 13):
+                    set_platform_profile("quiet")
+                    new_target = "power"
+                elif steady < (22 if self.allyx else 20):
+                    set_platform_profile("balanced")
+                    new_target = "balanced"
+                else:
+                    set_platform_profile("performance")
+                    new_target = "performance"
+
+                self.queue_tdp = None
+                if boost:
+                    # TODO: Use different boost values depending on whether plugged in
+                    time.sleep(TDP_DELAY)
+                    set_tdp(
+                        "fast",
+                        FTDP_FN,
+                        min(max(steady, MAX_TDP), int(steady * 35 / 25)),
+                    )
+                    time.sleep(TDP_DELAY)
+                    set_tdp(
+                        "slow",
+                        STDP_FN,
+                        min(max(steady, MAX_TDP), int(steady * 30 / 25)),
+                    )
+                    time.sleep(TDP_DELAY)
+                    set_tdp("steady", CTDP_FN, steady)
+                else:
+                    time.sleep(TDP_DELAY)
+                    set_tdp("fast", FTDP_FN, steady)
+                    time.sleep(TDP_DELAY)
+                    set_tdp("slow", STDP_FN, steady)
+                    time.sleep(TDP_DELAY)
+                    set_tdp("steady", CTDP_FN, steady)
 
         if new_target and new_target != self.old_target:
             self.old_target = new_target
             self.emit({"type": "energy", "status": new_target})
+            self.pp = new_target
 
         # Handle fan curve resets
         if conf["tdp.asus.fan.manual.reset"].to(bool):
@@ -283,16 +338,30 @@ class AsusDriverPlugin(HHDPlugin):
             for k, v in zip(POINTS, DEFAULT_CURVE):
                 conf[f"tdp.asus.fan.manual.st{k}"] = v
 
-        # # Handle fan curve limits
-        # if conf["tdp.asus.fan.manual.enforce_limits"].to(bool):
-        #     for k, v in zip(POINTS, MIN_CURVE):
-        #         if conf[f"tdp.asus.fan.manual.st{k}"].to(int) < v:
-        #             conf[f"tdp.asus.fan.manual.st{k}"] = v
+        # Handle fan curve limits by Asus
+        # by enforcing minimum values based on power profile
+        # which is a proxy of the current platform profile but still
+        # a bit of a hack. TODO: Get the exact limits.
+        # FIXME: Revisit limits
+        # manual_fan_curve = conf["tdp.asus.fan.mode"].to(str) == "manual"
+        # if manual_fan_curve:
+        #     match self.pp:
+        #         case "balanced":
+        #             min_val = 45
+        #         case "performance":
+        #             min_val = 60
+        #         case _:  # quiet
+        #             min_val = 17
+
+        #     for k in POINTS:
+        #         if conf[f"tdp.asus.fan.manual.st{k}"].to(int) < min_val:
+        #             conf[f"tdp.asus.fan.manual.st{k}"] = min_val
 
         # Check if fan curve has changed
         # Use debounce logic on these changes
-        if tdp_set and conf["tdp.asus.fan.mode"].to(str) == "manual":
+        if tdp_reset and manual_fan_curve:
             self.queue_fan = curr + APPLY_DELAY
+
         for i in POINTS:
             if conf[f"tdp.asus.fan.manual.st{i}"].to(int) != self.old_conf[
                 f"fan.manual.st{i}"
@@ -339,14 +408,13 @@ class AsusDriverPlugin(HHDPlugin):
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
             if ev["type"] == "ppd":
-                # TODO: Replace with power modes after refactor
                 match ev["status"]:
                     case "power":
-                        self.new_tdp = 8
+                        self.new_mode = "quiet"
                     case "balanced":
-                        self.new_tdp = 15
+                        self.new_mode = "balanced"
                     case "performance":
-                        self.new_tdp = 25
+                        self.new_mode = "performance"
 
     def close(self):
         pass

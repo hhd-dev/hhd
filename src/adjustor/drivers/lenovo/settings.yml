@@ -23,7 +23,7 @@ children:
       custom:
         type: container
         title: Custom
-        unit: 25/30W
+        unit: → 25/30W
         children:
           tdp:
             type: int

@@ -165,6 +165,7 @@ class LenovoDriverPlugin(HHDPlugin):
             conf["tdp.lenovo.tdp.mode"] = mode
         elif new_mode:
             mode = new_mode
+            conf["tdp.lenovo.tdp.mode"] = mode
         else:
             mode = conf["tdp.lenovo.tdp.mode"].to(str)
         if mode is not None and mode != self.old_conf["tdp.mode"].to(str):

@@ -5,26 +5,49 @@ hint: >-
   Uses the interface of Armory Crate to set the TDP of the device.
 children:
   tdp:
-    type: int
-    title: TDP
-    hint: >-
-      Average TDP Target.
+    type: mode
+    title: TDP Mode
+    default: balanced
+    modes:
+      quiet:
+        type: container
+        title: Silent
+        unit: 
+      balanced:
+        type: container
+        title: Performance
+        unit: 
+      performance:
+        type: container
+        title: Turbo
+        unit: 
+      custom:
+        type: container
+        title: Custom
+        unit: → 25/30W
+        children:
+          tdp:
+            type: int
+            title: TDP
+            hint: >-
+              Average TDP Target.
 
-      Sets the values STAMP and Skin Power Limit to it without boost.
-      With boost, it sets the fast value to 53/30*tdp and the slow value to 43/30*tdp.
-      Boost is recommended for desktop use.
+              Sets the values STAMP and Skin Power Limit to it.
+              If boost is enabled, interpolates values for slow and fast TDPs 
+              based on those used by Asus.
+              Boost is recommended for desktop use.
 
-    min: 5
-    max: 30
-    step: 1
-    default: 15
-    unit: W
-  boost:
-    type: bool
-    title: TDP Boost
-    default: True
-    hint: >-
-      Allows the device to boost by setting appropriate slow and fast TDPs.
+            min: 0
+            max: 30
+            step: 1
+            default: 30
+            unit: W
+          boost:
+            type: bool
+            title: TDP Boost
+            default: True
+            hint: >-
+              Allows the device to boost by setting appropriate slow and fast TDPs.
 
   fan:
     type: mode
@@ -111,15 +134,3 @@ children:
       p95: 95%
       disabled: Unset
     default: disabled
-  
-  # disclaimer:
-  #   title: Sleep Bug
-  #   type: display
-  #   tags: [ non-essential ]
-  #   default: >-
-  #     There is an Asus kernel/BIOS bug that will sometimes limit TDP to 10W
-  #     after sleep.
-  #     As the kernel driver is used, this is unfixable from within
-  #     Handheld Daemon (currently investigated).
-  #     As an alternative, use SimpleDeckyTDP with RyzenAdj after
-  #     disabling TDP controls from "Settings".

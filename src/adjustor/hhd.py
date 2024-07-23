@@ -256,7 +256,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     default_tdp = 15
     max_tdp = 30
 
-    if prod == "83E1":
+    if prod == "83E1" and not bool(os.environ.get("HHD_ADJ_ALLY")):
         drivers.append(LenovoDriverPlugin())
         drivers_matched = True
         use_acpi_call = True
@@ -265,6 +265,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         "ROG Ally RC71L" in prod
         or "ROG Ally X RC72L" in prod
         or bool(os.environ.get("HHD_ADJ_DEBUG"))
+        or bool(os.environ.get("HHD_ADJ_ALLY"))
     ):
         drivers.append(AsusDriverPlugin())
         drivers_matched = True
