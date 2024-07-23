@@ -267,7 +267,11 @@ class AsusDriverPlugin(HHDPlugin):
         # In custom mode, re-apply settings with debounce
         if mode == "custom":
             # Check user changed values
-            steady = conf["tdp.asus.tdp.custom.tdp"].to(int)
+            if new_tdp:
+                steady = new_tdp
+                conf["tdp.asus.tdp.custom.tdp"] = steady
+            else:
+                steady = conf["tdp.asus.tdp.custom.tdp"].to(int)
             steady_updated = steady and steady != self.old_conf["tdp.custom.tdp"].to(
                 int
             )
@@ -339,7 +343,7 @@ class AsusDriverPlugin(HHDPlugin):
                 conf[f"tdp.asus.fan.manual.st{k}"] = v
 
         manual_fan_curve = conf["tdp.asus.fan.mode"].to(str) == "manual"
-        
+
         # Handle fan curve limits by Asus
         # by enforcing minimum values based on power profile
         # which is a proxy of the current platform profile but still
