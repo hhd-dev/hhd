@@ -132,6 +132,8 @@ class AsusDriverPlugin(HHDPlugin):
         self.enforce_limits = True
         self.startup = True
         self.old_conf = None
+        self.mode = None
+        self.cycle_tdp = None
 
         self.queue_fan = None
         self.queue_tdp = None
@@ -246,6 +248,7 @@ class AsusDriverPlugin(HHDPlugin):
             conf["tdp.asus.tdp_v2.mode"] = mode
         else:
             mode = conf["tdp.asus.tdp_v2.mode"].to(str)
+        self.mode = mode
 
         tdp_reset = False
         if mode is not None and mode != self.old_conf["tdp_v2.mode"].to(str):
@@ -272,7 +275,7 @@ class AsusDriverPlugin(HHDPlugin):
                 conf["tdp.asus.tdp_v2.custom.tdp"] = steady
             else:
                 steady = conf["tdp.asus.tdp_v2.custom.tdp"].to(int)
-            
+
             steady_updated = steady and steady != self.old_conf["tdp_v2.custom.tdp"].to(
                 int
             )
@@ -405,6 +408,7 @@ class AsusDriverPlugin(HHDPlugin):
             self.queue_fan = None
 
         # Save current config
+        self.cycle_tdp = conf["tdp.asus.cycle_tdp"].to(bool)
         self.old_conf = conf["tdp.asus"]
 
         if self.startup:
@@ -414,7 +418,7 @@ class AsusDriverPlugin(HHDPlugin):
         for ev in events:
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
-            if ev["type"] == "ppd":
+            elif ev["type"] == "ppd":
                 match ev["status"]:
                     case "power":
                         self.new_mode = "quiet"
@@ -422,6 +426,27 @@ class AsusDriverPlugin(HHDPlugin):
                         self.new_mode = "balanced"
                     case "performance":
                         self.new_mode = "performance"
+            elif self.cycle_tdp and ev['type'] == "special" and ev['event'] == "xbox_y":
+                match self.mode:
+                    case "quiet":
+                        self.new_mode = "balanced"
+                        event = "tdp_cycle_balanced"
+                    case "balanced":
+                        self.new_mode = "performance"
+                        event = "tdp_cycle_performance"
+                    case "performance":
+                        self.new_mode = "custom"
+                        event = "tdp_cycle_custom"
+                    case "custom":
+                        self.new_mode = "quiet"
+                        event = "tdp_cycle_quiet"
+                    case _:
+                        self.new_mode = "balanced"
+                        event = "tdp_cycle_balanced"
+
+                logger.info(f"Cycling TDP to '{self.new_mode}'")
+                if self.emit:
+                    self.emit({"type": "special", "event": event})
 
     def close(self):
         pass

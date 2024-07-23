@@ -48,6 +48,11 @@ children:
             default: True
             hint: >-
               Allows the device to boost by setting appropriate slow and fast TDPs.
+  
+  cycle_tdp:
+    type: bool
+    title: Cycle TDP with Armory + Y
+    default: False
 
   fan:
     type: mode
