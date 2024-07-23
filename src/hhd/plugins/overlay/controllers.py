@@ -234,6 +234,8 @@ def find_devices(
                 "is_keyboard": is_keyboard,
                 "pretty": dev.get("name", ""),
                 "hash": dev.get("hash", ""),
+                "vid": dev.get("vendor", 0),
+                "pid": dev.get("product", 0),
             }
 
     return out
@@ -626,7 +628,7 @@ def device_shortcut_loop(
                     caps.append("Controller")
                 if cand["is_keyboard"]:
                     caps.append("Keyboard")
-                log += f"\n - '{cand['pretty']}' ({', '.join(caps)})"
+                log += f"\n - '{cand['pretty']}'[{cand['vid']:04x}:{cand['pid']:04x}] ({', '.join(caps)})"
             except Exception as e:
                 logger.error(f"Failed to open device '{cand['pretty']}'. Error:\n{e}")
                 blacklist.add(cand["hash"])
