@@ -3,7 +3,6 @@ import os
 import random
 import select
 import time
-from collections import deque
 from threading import RLock
 from typing import Any, Callable, Literal, Mapping, NamedTuple, Sequence, TypedDict
 
@@ -18,23 +17,28 @@ class SpecialEvent(TypedDict):
     type: Literal["special"]
     event: Literal[
         "guide",
-        "guide_b",
+        # Builtin Controller
         "qam_single",
         "qam_predouble",
         "qam_double",
         "qam_tripple",
         "qam_hold",
+        "overlay",
+        # Shortcuts
         "xbox_b",
         "xbox_y",
         "kbd_meta_press",
-        # "kbd_meta_double",
         "kbd_meta_hold",
         "swipe_left_top",
         "swipe_left_bottom",
         "swipe_right_top",
         "swipe_right_bottom",
         "swipe_bottom",
-        "overlay",
+        # TDP Cycle animation
+        "tdp_cycle_quiet",
+        "tdp_cycle_balanced",
+        "tdp_cycle_performance",
+        "tdp_cycle_custom",
     ]
 
 
@@ -156,7 +160,8 @@ class ControllerEmitter:
         self.ctx = ctx
         self._simple_qam = False
         self._cap = None
-        self._evs = deque(maxlen=100)
+        self.cid = None
+        self._evs = []
 
     def send_qam(self, expanded: bool = False):
         with self.intercept_lock:
@@ -216,14 +221,37 @@ class ControllerEmitter:
         if not isinstance(ev, Sequence):
             ev = [ev]
         with self.intercept_lock:
-            self._evs.extend(ev)
+            if not self.cid:
+                # Avoid writing events if no controller is connected
+                return
+            for e in ev:
+                self._evs.append((e, 0))
+
+    def inject_timed(self, evs: Sequence[tuple[Event, float]]):
+        # Unfortunately here we have to clear the previous events to avoid conflicts
+        # TODO: Clean this up. It is only used by the RGB module. 
+        with self.intercept_lock:
+            self._evs = evs
 
     def inject_recv(self):
         with self.intercept_lock:
+            if not self.cid:
+                # Avoid writing events if no controller is connected
+                return
+
             if not self._evs:
                 return []
-            tmp = self._evs
-            self._evs = deque(maxlen=100)
+
+            curr = time.time()
+            removed = []
+            tmp = []
+            for i, (ev, t) in enumerate(self._evs):
+                if curr >= t:
+                    tmp.append(ev)
+                    removed.insert(0, i) # prepend to remove in opposite order
+            
+            for i in removed:
+                self._evs.pop(i)
             return tmp
 
     def set_capabilities(self, cid, cap: ControllerCapabilities | None):
@@ -1029,7 +1057,7 @@ class Multiplexer:
                     #     and ev["code"] == "b"
                     #     and ev["value"]
                     # ):
-                    #     self.emit({"type": "special", "event": "guide_b"})
+                    #     self.emit({"type": "special", "event": "xbox_b"})
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})

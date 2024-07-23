@@ -393,7 +393,7 @@ def process_ctrl(emit, state, ev, val):
         state["mode"] = val
         return
 
-    if ev != "b" or ev != "y":
+    if ev != "b" and ev != "y":
         return
 
     # Mode needs to be pressed
@@ -404,9 +404,9 @@ def process_ctrl(emit, state, ev, val):
         state[ev] = time.time()
     else:
         if state.get(ev, None) and time.time() - state[ev] < XBOX_B_MAX_PRESS:
-            logger.info("Xbox+B pressed")
+            logger.info(f"Xbox+{ev} pressed")
             if emit:
-                emit({"type": "special", "event": "xbox_b"})
+                emit({"type": "special", "event": f"xbox_{ev}"})
         state[ev] = None
 
 

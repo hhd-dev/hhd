@@ -56,6 +56,8 @@ class RgbPlugin(HHDPlugin):
         self.init_last = 0
         self.init = True
         self.uniq = None
+        self.restore = None
+        self.last_ev = None
 
         self.prev = None
 
@@ -74,6 +76,75 @@ class RgbPlugin(HHDPlugin):
             if ev["type"] == "acpi" and ev["event"] in ("ac", "dc"):
                 self.init = True
                 self.init_count = RGB_SET_TIMES - 1
+            elif ev["type"] == "special":
+                match ev["event"]:
+                    case "tdp_cycle_quiet":
+                        color = (0, 0, 255)
+                    case "tdp_cycle_balanced":
+                        color = (255, 255, 255)
+                    case "tdp_cycle_performance":
+                        color = (255, 0, 0)
+                    case "tdp_cycle_custom":
+                        color = (157, 0, 255)
+                    case _:
+                        color = None
+
+                if color:
+                    red, green, blue = color
+                    curr = time.time()
+                    evs: Sequence[tuple[Event, float]] = []
+                    # Set color based on mode on low brightness
+                    if not self.controller:
+                        evs.append(
+                            (
+                                {
+                                    "type": "led",
+                                    "initialize": True,  # Always initialize, saves problems on the ally
+                                    "code": "main",
+                                    "mode": "solid",
+                                    "direction": "left",
+                                    "brightness": 0.33,
+                                    "brightnessd": "low",
+                                    "speed": 0,
+                                    "speedd": "low",
+                                    "red": red,
+                                    "green": green,
+                                    "blue": blue,
+                                    "red2": 0,
+                                    "green2": 0,
+                                    "blue2": 0,
+                                },
+                                curr,
+                            ),
+                        )
+                    # Add short vibration
+                    evs.append(
+                        (
+                            {
+                                "type": "rumble",
+                                "code": "main",
+                                "strong_magnitude": 0.2,
+                                "weak_magnitude": 0.2,
+                            },
+                            curr,
+                        ),
+                    )
+                    evs.append(
+                        (
+                            {
+                                "type": "rumble",
+                                "code": "main",
+                                "strong_magnitude": 0,
+                                "weak_magnitude": 0,
+                            },
+                            curr + 0.08,
+                        ),
+                    )
+                    # Restore old color
+                    if not self.controller and self.last_ev:
+                        evs.append((self.last_ev, curr + 4))
+
+                    self.emit.inject_timed(evs)
 
     def settings(self):
         if not self.modes:
@@ -317,6 +388,7 @@ class RgbPlugin(HHDPlugin):
             "green2": green2,
             "blue2": blue2,
         }
+        self.last_ev = ev
         self.emit.inject(ev)
 
 

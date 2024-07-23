@@ -28,6 +28,7 @@ class OverlayPlugin(HHDPlugin):
         self.short_should_exit = None
         self.has_correction = True
         self.old_touch = False
+        self.old_asus_cycle = None
         self.short_t = None
         self.has_executable = False
 
@@ -103,11 +104,14 @@ class OverlayPlugin(HHDPlugin):
             disable_touch = False
             conf["controllers.touchscreen.disable"] = False
 
+        asus_cycle = conf.get("tdp.asus.cycle_tdp", False)
         if self.initialized and (
             not self.old_shortcuts
             or self.old_shortcuts != conf["shortcuts"]
             or self.old_touch != disable_touch
+            or self.old_asus_cycle != asus_cycle
         ):
+            self.old_asus_cycle = asus_cycle
             self.old_shortcuts = conf["shortcuts"].copy()
             self._close_short()
 
@@ -122,7 +126,10 @@ class OverlayPlugin(HHDPlugin):
                     touch
                     or conf.get(f"shortcuts.touchscreen.{v}", "disabled") != "disabled"
                 )
-            ctrl = conf.get("shortcuts.controller.xbox_b", "disabled") != "disabled"
+            ctrl = (
+                conf.get("shortcuts.controller.xbox_b", "disabled") != "disabled"
+                or asus_cycle
+            )
 
             if kbd or touch or ctrl or disable_touch:
                 logger.info(
@@ -155,9 +162,6 @@ class OverlayPlugin(HHDPlugin):
                 logger.info("No shortcuts enabled, not starting shortcut loop.")
 
     def notify(self, events: Sequence[Event]):
-        if not self.ovf:
-            return
-
         for ev in events:
             if ev["type"] != "special":
                 continue
@@ -217,9 +221,11 @@ class OverlayPlugin(HHDPlugin):
                         if open_steam_kbd(self.emit, True):
                             logger.info("Opened Steam keyboard.")
                         else:
-                            logger.warning("Could not open Steam keyboard. Is Steam running?")
+                            logger.warning(
+                                "Could not open Steam keyboard. Is Steam running?"
+                            )
 
-            if cmd and (self.enabled or override_enable):
+            if self.ovf and cmd and (self.enabled or override_enable):
                 init = "close" not in cmd
                 if init:
                     logger.info(f"Executing overlay command: '{cmd}'")
