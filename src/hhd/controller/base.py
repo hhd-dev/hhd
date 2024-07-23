@@ -805,13 +805,15 @@ class Multiplexer:
                             }
                         )
 
-                    if self.select_reboots and ev["code"] == "select":
+                    if ev["code"] == "select":
                         if ev["value"]:
                             self.select_is_held = True
-                            self.select_pressed = curr
+                            if self.select_reboots:
+                                self.select_pressed = curr
                         else:
                             self.select_is_held = False
-                            self.select_pressed = None
+                            if self.select_reboots:
+                                self.select_pressed = None
 
                     if self.swap_guide and ev["code"] in (
                         "start",
