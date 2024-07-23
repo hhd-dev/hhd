@@ -39,10 +39,8 @@ children:
 
   swap_legion_v2:
     type: bool
-    title: Swap Legion with Start/Select
+    title: Swap Legion with Menu/View
     tags: [ non-essential ]
-    hint: >-
-      Swaps the legion buttons with start/select.
     default: False
   
   nintendo_mode:
@@ -64,7 +62,7 @@ children:
   
   select_reboots:
     type: bool
-    title: Hold Select to Reboot
+    title: Hold View to Reboot
     tags: [ non-essential ]
     default: True
 

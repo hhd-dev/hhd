@@ -1052,12 +1052,12 @@ class Multiplexer:
                                 ev["code"] = "x"
 
                     if (
-                        self.guide_pressed
+                        (self.guide_pressed or self.select_is_held)
                         and self.emit
                         and ev["code"] in ("b", "y")
                         and ev["value"]
                     ):
-                        logger.info(f"Sending chord for Xbox+{ev['code']}.")
+                        # logger.info(f"Sending chord for Xbox+{ev['code']}.")
                         self.emit({"type": "special", "event": f"xbox_{ev["code"]}"})
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
