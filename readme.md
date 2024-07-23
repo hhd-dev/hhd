@@ -17,7 +17,7 @@ except intel handhelds and older prior to 6XXX AMD handhelds.
 ## TDP Control
 For the ROG Ally, Ally X and Legion Go that have an ACPI/EC implementation for 
 bios and fan curves,
-Adjustor uses the manufactuer functions for setting TDP.
+Adjustor uses the manufacturer functions for setting TDP.
 For the Allys, the asus-wmi kernel driver is used to set the tdp and manage the
 fan curves.
 For the Go, Lenovo's WMI methods are called through `acpi_call`, which will hopefully
@@ -39,7 +39,7 @@ After we transitioned people away from Decky plugins (which had some governor co
 to using Handheld Daemon for TDP, we found that Power Profiles Daemon (PPD) 
 would use aggressive CPU values.
 These values are optimized for devices that have a dedicated power budget for the CPU
-(e.g., laptops, desktops), which caused issues with handhelds.
+(e.g., laptops, desktops), which causes undesirable behavior handhelds.
 
 For example, the balanced PPD profile would set EPP to balance_performance and
 enable CPU boost, which would increase the draw of the CPU during gaming by 2W
@@ -74,14 +74,14 @@ accordingly.
 As we design Handheld Daemon to be enabled in more Deck style devices (e.g., HTPCs), 
 these devices have different power requirements and processors (e.g., Intel), which 
 are better managed with Power Profiles Daemon.
-It is the aim of the project to become a general Deck style session manager
-for anything gamescope related, with useful features for all devices.
+It is the aim of the Handheld Daemon project to become a general Deck style session 
+manager for anything gamescope related, with useful features for all devices.
 
 In these cases, starting with 3.4, for devices that are not in the CPU/device
 whitelist (includes only AMD U series APUs and handhelds), Adjustor contains a 
 general energy management plugin that allows for switching the PPD power profile 
 from game mode.
-In addition, it supports sched_ext schedulers.
+In addition, it supports [sched_ext schedulers](#sched_ext).
 
 This means that for general devices, Handheld Daemon uses PPD, and for handhelds,
 Handheld Daemon becomes PPD.
@@ -91,15 +91,15 @@ should install both (e.g., Adjustor uses the Power Profile Daemon polkits).
 In any case, Adjustor will never break/conflict with PPD and contains helpful 
 messages about disabling PPD in case the optimized handheld plugin is loaded.
 For distribution maintainers that ship both and want Handheld Daemon to work
-out of the box, the environment variable `HHD_PPD_MASK` is provided.
+without user intervention, the environment variable `HHD_PPD_MASK` is provided.
 If and only if it is set e.g., by using a systemd service extension, Handheld Daemon
-will mask and disable PPD if energy management is supported and enabled (e.g., handheld).
-Otherwise, it will unmask PPD during startup.
+will mask and disable PPD if optimized energy management is supported and enabled (e.g., for handhelds).
+If the general plugin is loaded, it will unmask PPD during startup.
 This means that Power Management will work properly for all devices without manual
-intervention and whitelisting by distribution maintainers.
+intervention or whitelisting by distribution maintainers.
 
-## Sched_ext
-Starting with version 3.3, Adjustor can also attach sched_ext schedulers to the
+## Sched_ext<a name="sched-ext"></a>
+Starting with version 3.3, Adjustor can attach sched_ext schedulers to the
 kernel if those are supported and installed.
 Adjustor manages the lifetime of the scheduler, including launching and attaching
 it, without using a systemd service, and is fully responsive to quirk scheduler
@@ -120,7 +120,7 @@ This vendor interface is part of the ACPI ASL library, and provided through the
 ALIB method 0x0C.
 The underlying implementation of the interface is SMU calls.
 This means that as long as the kernel module `acpi_call` is loaded, Adjustor
-can control TDP in an equivalent way to [RyzenAdj](https://github.dev/FlyGoat/RyzenAdj/).
+can control TDP in a similar way to [RyzenAdj](https://github.dev/FlyGoat/RyzenAdj/).
 
 The ABI of this vendor function (as it is provided to manufacturers) can be 
 considered mostly stable, so little work is needed between subsequent 
@@ -130,8 +130,9 @@ Of course, support for processors is only added after the ACPI bindings have
 been reviewed, to avoid surprises.
 Both the Ally and Legion Go use this function, in the exact same way, so setting
 TDP with it is very stable, and we have had no reported crashes.
-It should not be used (and is not used) with those devices, however, as the 
-manufacturer functions will interfere.
+It can not be used and is not used with those devices, however, as the 
+manufacturer functions would interfere and provide a better user experience,
+such as setting appropriate fan curves and changing the power light color on the Legion Go.
 
 Unfortunately for devices that do have an ACPI/EC implementation for TDP, there
 is no official way of setting TDP on demand, either on Linux or Windows, with
