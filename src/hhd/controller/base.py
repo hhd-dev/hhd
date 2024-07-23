@@ -1060,7 +1060,6 @@ class Multiplexer:
                         and ev["code"] == "y"
                         and ev["value"]
                     ):
-                        logger.info(f"Sending chord for Xbox+Y.")
                         self.emit({"type": "special", "event": f"xbox_y"})
 
                     # Assume we can only use Xbox + B for short presses
