@@ -31,18 +31,22 @@ class GeneralPowerPlugin(HHDPlugin):
 
         # PPD
         if self.ppd_supported is None:
-            self.ppd_supported = True
-            try:
-                subprocess.run(
-                    ["powerprofilesctl"],
-                    check=True,
-                    stdin=subprocess.DEVNULL,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                )
-            except Exception as e:
-                self.ppd_supported = False
-                logger.warning(f"powerprofilectl returned with error:\n{e}")
+            self.ppd_supported = False
+            if ppc := shutil.which('powerprofilesctl'):
+                try:
+                    if os.environ.get("HHD_PPD_MASK", None):
+                        logger.info("Unmasking Power Profiles Daemon in the case it was masked.")
+                        os.system('systemctl unmask power-profiles-daemon')
+                    subprocess.run(
+                        [ppc],
+                        check=True,
+                        stdin=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                    self.ppd_supported = True
+                except Exception as e:
+                    logger.warning(f"powerprofilectl returned with error:\n{e}")
 
         if not self.ppd_supported:
             del sets["children"]["profile"]
@@ -82,7 +86,7 @@ class GeneralPowerPlugin(HHDPlugin):
                 self.target = new_profile
                 try:
                     subprocess.run(
-                        ["powerprofilesctl", "set", new_profile],
+                        [shutil.which('powerprofilesctl'), "set", new_profile],
                         check=True,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
@@ -96,7 +100,7 @@ class GeneralPowerPlugin(HHDPlugin):
                 self.last_check = curr
                 try:
                     res = subprocess.run(
-                        ["powerprofilesctl", "get"],
+                        [shutil.which('powerprofilesctl'), "get"],
                         check=True,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,

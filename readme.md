@@ -70,7 +70,7 @@ TDP range instead of CPU values (which is the user's expectation).
 Of course, depending on TDP and user preference, the CPU governor values will be set
 accordingly.
 
-## Energy Management in Other computers
+## Energy Management in other computers
 As we design Handheld Daemon to be enabled in more Deck style devices (e.g., HTPCs), 
 these devices have different power requirements and processors (e.g., Intel), which 
 are better managed with Power Profiles Daemon.
@@ -93,9 +93,10 @@ messages about disabling PPD in case the optimized handheld plugin is loaded.
 For distribution maintainers that ship both and want Handheld Daemon to work
 out of the box, the environment variable `HHD_PPD_MASK` is provided.
 If and only if it is set e.g., by using a systemd service extension, Handheld Daemon
-will mask and disable PPD if energy management is enabled.
+will mask and disable PPD if energy management is supported and enabled (e.g., handheld).
+Otherwise, it will unmask PPD during startup.
 This means that Power Management will work properly for all devices without manual
-intervention and whitelist by distribution maintainers.
+intervention and whitelisting by distribution maintainers.
 
 ## Sched_ext
 Starting with version 3.3, Adjustor can also attach sched_ext schedulers to the
