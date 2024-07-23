@@ -178,7 +178,7 @@ class OverlayPlugin(HHDPlugin):
                         side = gesture[len("kbd_") :]
                         section = "keyboard"
                     cmd = None
-                case "qam_external":
+                case "xbox_b":
                     side = "xbox_b"
                     section = "controller"
                 case "qam_hold":

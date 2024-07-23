@@ -46,6 +46,7 @@ CONTROLLER_WAKE_BUTTON: dict[int, str] = to_map(
     {
         "mode": [B("BTN_MODE")],
         "b": [B("BTN_B")],
+        "y": [B("BTN_Y")],
     }
 )
 
@@ -392,7 +393,7 @@ def process_ctrl(emit, state, ev, val):
         state["mode"] = val
         return
 
-    if ev != "b":
+    if ev != "b" or ev != "y":
         return
 
     # Mode needs to be pressed
@@ -400,13 +401,13 @@ def process_ctrl(emit, state, ev, val):
         return
 
     if val:
-        state["b"] = time.time()
+        state[ev] = time.time()
     else:
-        if state.get("b", None) and time.time() - state["b"] < XBOX_B_MAX_PRESS:
+        if state.get(ev, None) and time.time() - state[ev] < XBOX_B_MAX_PRESS:
             logger.info("Xbox+B pressed")
             if emit:
-                emit({"type": "special", "event": "qam_external"})
-        state["b"] = None
+                emit({"type": "special", "event": "xbox_b"})
+        state[ev] = None
 
 
 def process_events(emit, dev, evs):
@@ -585,7 +586,7 @@ def device_shortcut_loop(
 
                     # Default quirks
                     portrait = max_x < max_y
-                    flip_x = not portrait # just the way it is
+                    flip_x = not portrait  # just the way it is
                     flip_y = False
 
                     quirk, pretty = get_touchscreen_quirk(
@@ -604,7 +605,9 @@ def device_shortcut_loop(
                         flip_y = quirk.flip_y
                         caps.append(f"Touchscreen[{pretty}]")
                     else:
-                        caps.append(f"Touchscreen[auto, portrait={portrait}, x={flip_x}, y={flip_y}]")
+                        caps.append(
+                            f"Touchscreen[auto, portrait={portrait}, x={flip_x}, y={flip_y}]"
+                        )
 
                     devs[name]["state_touch"].update(
                         {
