@@ -1057,6 +1057,7 @@ class Multiplexer:
                         and ev["code"] in ("b", "y")
                         and ev["value"]
                     ):
+                        logger.info(f"Sending chord for Xbox+{ev['code']}.")
                         self.emit({"type": "special", "event": f"xbox_{ev["code"]}"})
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
