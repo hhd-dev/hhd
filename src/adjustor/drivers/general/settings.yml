@@ -4,7 +4,7 @@ type: container
 children:
   profile:
     type: multiple
-    tags: [ordinal]
+    # tags: [ordinal] # Steamdeck has issues with this
     title: Power Profile
     hint: >-
       Allows setting the power profile of the system using Power Profiles Daemon.
