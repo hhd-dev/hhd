@@ -179,8 +179,8 @@ def find_devices(
             continue
 
         # Skip HHD devices
-        # if "hhd" in dev.get("phys", ""):
-        #     continue
+        if "hhd" in dev.get("phys", ""):
+            continue
 
         # Skip Steam virtual devices
         # Vendor=28de Product=11ff

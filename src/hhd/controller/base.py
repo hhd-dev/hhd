@@ -229,7 +229,7 @@ class ControllerEmitter:
 
     def inject_timed(self, evs: Sequence[tuple[Event, float]]):
         # Unfortunately here we have to clear the previous events to avoid conflicts
-        # TODO: Clean this up. It is only used by the RGB module. 
+        # TODO: Clean this up. It is only used by the RGB module.
         with self.intercept_lock:
             self._evs = evs
 
@@ -248,8 +248,8 @@ class ControllerEmitter:
             for i, (ev, t) in enumerate(self._evs):
                 if curr >= t:
                     tmp.append(ev)
-                    removed.insert(0, i) # prepend to remove in opposite order
-            
+                    removed.insert(0, i)  # prepend to remove in opposite order
+
             for i in removed:
                 self._evs.pop(i)
             return tmp
@@ -1051,13 +1051,13 @@ class Multiplexer:
                             case "y":
                                 ev["code"] = "x"
 
-                    # if (
-                    #     self.guide_pressed
-                    #     and self.emit
-                    #     and ev["code"] == "b"
-                    #     and ev["value"]
-                    # ):
-                    #     self.emit({"type": "special", "event": "xbox_b"})
+                    if (
+                        self.guide_pressed
+                        and self.emit
+                        and ev["code"] in ("b", "y")
+                        and ev["value"]
+                    ):
+                        self.emit({"type": "special", "event": f"xbox_{ev["code"]}"})
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})
