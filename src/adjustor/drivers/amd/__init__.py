@@ -24,7 +24,7 @@ from adjustor.fuse.gpu import (
 
 logger = logging.getLogger(__name__)
 
-APPLY_DELAY = 0.5
+APPLY_DELAY = 0.2
 
 
 def _ppd_client(emit, proc):
