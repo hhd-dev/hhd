@@ -153,20 +153,20 @@ class AsusDriverPlugin(HHDPlugin):
 
         # Set units
         if self.allyx:
-            out["tdp"]["asus"]["children"]["tdp"]["modes"]["quiet"]["unit"] = "13W"
-            out["tdp"]["asus"]["children"]["tdp"]["modes"]["balanced"]["unit"] = "17W"
-            out["tdp"]["asus"]["children"]["tdp"]["modes"]["performance"][
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"]["unit"] = "13W"
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"]["unit"] = "17W"
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
                 "unit"
             ] = "25W"
         else:
-            out["tdp"]["asus"]["children"]["tdp"]["modes"]["quiet"]["unit"] = "10W"
-            out["tdp"]["asus"]["children"]["tdp"]["modes"]["balanced"]["unit"] = "15W"
-            out["tdp"]["asus"]["children"]["tdp"]["modes"]["performance"][
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"]["unit"] = "10W"
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"]["unit"] = "15W"
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
                 "unit"
             ] = "20W"
 
         if not self.enforce_limits:
-            out["tdp"]["asus"]["children"]["tdp"]["modes"]["custom"]["children"]["tdp"][
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["children"]["tdp"][
                 "max"
             ] = 50
         return out
@@ -240,15 +240,15 @@ class AsusDriverPlugin(HHDPlugin):
                 mode = "performance"
             else:
                 mode = "custom"
-            conf["tdp.asus.tdp.mode"] = mode
+            conf["tdp.asus.tdp_v2.mode"] = mode
         elif new_mode:
             mode = new_mode
-            conf["tdp.asus.tdp.mode"] = mode
+            conf["tdp.asus.tdp_v2.mode"] = mode
         else:
-            mode = conf["tdp.asus.tdp.mode"].to(str)
+            mode = conf["tdp.asus.tdp_v2.mode"].to(str)
 
         tdp_reset = False
-        if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
+        if mode is not None and mode != self.old_conf["tdp_v2.mode"].to(str):
             tdp_reset = True
 
         # Handle EPP for presets
@@ -269,11 +269,11 @@ class AsusDriverPlugin(HHDPlugin):
             # Check user changed values
             if new_tdp:
                 steady = new_tdp
-                conf["tdp.asus.tdp.custom.tdp"] = steady
+                conf["tdp.asus.tdp_v2.custom.tdp"] = steady
             else:
-                steady = conf["tdp.asus.tdp.custom.tdp"].to(int)
+                steady = conf["tdp.asus.tdp_v2.custom.tdp"].to(int)
             
-            steady_updated = steady and steady != self.old_conf["tdp.custom.tdp"].to(
+            steady_updated = steady and steady != self.old_conf["tdp_v2.custom.tdp"].to(
                 int
             )
             steady_updated |= tdp_reset
@@ -283,11 +283,11 @@ class AsusDriverPlugin(HHDPlugin):
                     f"TDP ({steady}) outside the device spec. Resetting for stability reasons."
                 )
                 steady = min(max(steady, MIN_TDP_START), MAX_TDP_START)
-                conf["tdp.asus.tdp.custom.tdp"] = steady
+                conf["tdp.asus.tdp_v2.custom.tdp"] = steady
                 steady_updated = True
 
-            boost = conf["tdp.asus.tdp.custom.boost"].to(bool)
-            boost_updated = boost != self.old_conf["tdp.custom.boost"].to(bool)
+            boost = conf["tdp.asus.tdp_v2.custom.boost"].to(bool)
+            boost_updated = boost != self.old_conf["tdp_v2.custom.boost"].to(bool)
 
             # If yes, queue an update
             # Debounce

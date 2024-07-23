@@ -4,7 +4,7 @@ tags: [hide-title]
 hint: >-
   Uses the interface of Armory Crate to set the TDP of the device.
 children:
-  tdp:
+  tdp_v2:
     type: mode
     title: TDP Mode
     default: balanced
