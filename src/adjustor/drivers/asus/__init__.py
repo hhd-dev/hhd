@@ -272,9 +272,11 @@ class AsusDriverPlugin(HHDPlugin):
                 conf["tdp.asus.tdp.custom.tdp"] = steady
             else:
                 steady = conf["tdp.asus.tdp.custom.tdp"].to(int)
+            
             steady_updated = steady and steady != self.old_conf["tdp.custom.tdp"].to(
                 int
             )
+            steady_updated |= tdp_reset
 
             if self.startup and (steady > MAX_TDP_START or steady < MIN_TDP_START):
                 logger.warning(
