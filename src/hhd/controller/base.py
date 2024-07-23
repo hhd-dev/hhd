@@ -487,10 +487,10 @@ class Multiplexer:
     QAM_HOLD_TIME = 0.5
     QAM_MULTI_PRESS_DELAY = 0.2
     QAM_DELAY = 0.15
-    REBOOT_HOLD = 4
-    REBOOT_VIBRATION_STRENGTH = 0.6
-    REBOOT_VIBRATION_ON = 0.3
-    REBOOT_VIBRATION_OFF = 0.8
+    REBOOT_HOLD = 9
+    REBOOT_VIBRATION_STRENGTH = 1
+    REBOOT_VIBRATION_ON = 0.4
+    REBOOT_VIBRATION_OFF = 1.2
     REBOOT_VIBRATION_NUM = 3
     STEAM_CHECK_INTERVAL = 3
 
@@ -603,13 +603,12 @@ class Multiplexer:
                 if self.select_is_held:
                     try:
                         import os
-
                         os.system("systemctl reboot")
                         logger.info("rebooting")
                     except Exception as e:
                         logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
             elif self.select_is_held or not ev.get("from_reboot", False):
-                out.append({**ev, "from_queue": True})
+                out.append({**ev, "from_queue": True}) # type: ignore
 
         # Check for steam for touchpad emulation
         if (
