@@ -13,7 +13,8 @@ controller:
         steam_expanded: "Steam Overlay"
         hhd_qam: "HHD Side Menu"
         hhd_expanded: "HHD Overlay"
-      default: hhd_qam
+      # default: hhd_qam
+      default: disabled
 touchscreen:
   type: container
   tags: [non-essential]
@@ -82,12 +83,14 @@ keyboard:
       type: multiple
       title: "Start (Meta) Press"
       options: *shortcuts
-      default: steam_qam
+      # default: steam_qam
+      default: disabled
     meta_hold:
       type: multiple
       title: "Start (Meta) Hold"
       options: *shortcuts
-      default: steam_expanded
+      # default: steam_expanded
+      default: disabled
     ctrl_3:
       type: multiple
       title: "Ctrl + 3"
