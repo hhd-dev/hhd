@@ -10,16 +10,20 @@ children:
     modes:
       quiet:
         type: container
-        title: Quiet (8W)
+        title: Quiet
+        unit: 8W
       balanced:
         type: container
-        title: Balanced (15W)
+        title: Balanced
+        unit: 15W
       performance:
         type: container
-        title: Performance (20W)
+        title: Performance
+        unit: 20W
       custom:
         type: container
-        title: Custom (up to 25-30W)
+        title: Custom
+        unit: 25/30W
         children:
           tdp:
             type: int
