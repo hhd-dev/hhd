@@ -31,11 +31,7 @@ children:
             title: TDP
             hint: >-
               Average TDP Target.
-
-              Sets the values STAMP and Skin Power Limit to it.
-              If boost is enabled, interpolates values for slow and fast TDPs 
-              based on those used by Asus.
-              Boost is recommended for desktop use.
+              TDP Boost is recommended for desktop use and does not affect gaming.
 
             min: 0
             max: 30
@@ -47,7 +43,7 @@ children:
             title: TDP Boost
             default: True
             hint: >-
-              Allows the device to boost by setting appropriate slow and fast TDPs.
+              Allows the device to temporarily boost by setting appropriate slow and fast TDPs.
   
   cycle_tdp:
     type: bool
@@ -122,8 +118,7 @@ children:
             title: Fan Curve Limitation
             type: display
             default: >-
-              Asus hardware limits the minimum fan curve depending on TDP.
-              The minimums are 25%, 50%, and 75% for low, medium, and high TDPs.
+              Asus hardware limits the minimum fan curve depending on TDP mode.
 
   charge_limit:
     type: multiple
