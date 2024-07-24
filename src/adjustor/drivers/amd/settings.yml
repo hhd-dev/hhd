@@ -46,6 +46,11 @@ enabled:
               options:
                 min: 400MHz
                 nonlinear: 1GHz
+              hint: >-
+                Sets the minimum frequency for the CPU.
+                Using 400MHz will save battery in light games.
+                However, the delay of increasing the frequency
+                may cause minor stutters, especially in VRR displays.
             cpu_boost:
               type: multiple
               title: CPU Boost
