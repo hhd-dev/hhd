@@ -29,6 +29,8 @@ OVERLAY_BUTTON_MAP: dict[int, str] = to_map(
         "b": [B("BTN_B")],
         "x": [B("BTN_X")],
         "y": [B("BTN_Y")],
+        "lb": [B("BTN_TL")],
+        "rb": [B("BTN_TR")],
     }
 )
 OVERLAY_AXIS_MAP: dict[int, str] = to_map(
