@@ -561,8 +561,7 @@ def intercept_events(emit, intercept_num, cid, dinput, smax, evs):
                 }
             )
 
-    if out:
-        emit.intercept(cid + intercept_num, out)
+    emit.intercept(cid + intercept_num, out)
 
 
 def device_shortcut_loop(
@@ -612,6 +611,16 @@ def device_shortcut_loop(
             d = dev["dev"]
             refresh_events(emit, dev)
             if not d.fd in r:
+                # Run interception so that holding button repeats work
+                if should_intercept and dev["is_controller"]:
+                    intercept_events(
+                        emit,
+                        intercept_num,
+                        dev["hash"],
+                        dev["dinput"],
+                        dev["stick_max"],
+                        [],
+                    )
                 continue
 
             try:
