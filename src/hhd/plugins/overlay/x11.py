@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 X11_DIR = b"/tmp/.X11-unix/"
 HHD_ID = 5335
+STEAM_ID = 769
 
 
 class CachedValues(NamedTuple):
@@ -351,6 +352,15 @@ def show_hhd(display, hhd, steam):
     stat_notify = display.get_atom("STEAM_NOTIFICATION")
     stat_click = display.get_atom("STEAM_TOUCH_CLICK_MODE")
 
+    # Unfortunately, doing the commented out section breaks steam profiles
+    # and enables desktop mode steam input on Handheld Daemon, showing a mouse
+
+    # # Here, we do a bit of trickery with steam
+    # # We pretend to be one of the games that the user has launched to not break
+    # # steam profiles and to get steam to ignore its input
+    # stat_game = display.get_atom("STEAM_GAME")
+    # stat_focusable = display.get_atom("GAMESCOPE_FOCUSABLE_APPS")
+
     # If steam set the touch value to something else, try to override it with 1
     r = display.screen().root
     prop = r.get_property(stat_click, Xatom.CARDINAL, 0, 15)
@@ -363,12 +373,25 @@ def show_hhd(display, hhd, steam):
         steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [0])
         steam.change_property(stat_notify, Xatom.CARDINAL, 32, [0])
 
+        # # Use a game id for hhd so that steam does not leak input
+        # new_id = HHD_ID
+        # focusable = display.screen().root.get_property(
+        #     stat_focusable, Xatom.CARDINAL, 0, 50
+        # )
+        # if focusable and focusable.value:
+        #     for i in focusable.value:
+        #         if i == HHD_ID and i != STEAM_ID:
+        #             new_id = i
+        #             break
+        # logger.info(f"Setting HHD as game '{new_id}' to disable steam navigation.")
+        # hhd.change_property(stat_game, Xatom.CARDINAL, 32, [new_id])
+
     if touch_was_set:
         # Give it a bit of time before setting the touch target to avoid steam
         # messing with it
         display.flush()
         display.sync()
-        time.sleep(0.2)
+        time.sleep(0.1)
         r.change_property(stat_click, Xatom.CARDINAL, 32, [TARGET_TOUCH])
 
     display.flush()
