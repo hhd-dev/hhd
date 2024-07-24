@@ -62,13 +62,13 @@ settings:
 
     update_stable:
       type: action
-      tags: [hhd-update-stable]
+      tags: [hhd-update-stable, verify]
       title: Update (Stable)
       hint: "Updates to the latest version from PyPi (local install only)."
 
     update_beta:
       type: action
-      tags: [hhd-update-beta]
+      tags: [hhd-update-beta, verify]
       title: Update (Unstable)
       hint: "Updates to the master branch from git (local install only)."
 
