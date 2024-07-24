@@ -198,6 +198,9 @@ def list_evs(filter_valid: bool = False):
                         out["byte"][head.lower()] = bytes(reversed(arr))
                     case "P":
                         out["phys"] = line[len('P: Phys="') : -1]
+                    case "S":
+                        if "Sysfs" in line:
+                            out["sysfs"] = line[len('S: Sysfs="') : -1]
                     case "H":
                         for handler in line[len("H: Handlers=") : -1].split(" "):
                             if "event" in handler:

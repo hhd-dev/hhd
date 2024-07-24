@@ -184,8 +184,7 @@ def find_devices(
             continue
 
         # Skip HHD devices
-        phys = dev.get("phys", "")
-        if "hhd" in phys or "uhid" in phys:
+        if "hhd" in dev.get("phys", "") or "uhid" in dev.get('sysfs', ""):
             continue
 
         # Skip Steam virtual devices
