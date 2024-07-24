@@ -148,7 +148,9 @@ def loop_manage_overlay(
                 logger.error(f"UI Window not found, exitting overlay.")
                 break
             if not steam and steam_exists:
-                logger.error(f"Steam window not found but steam is active, exitting overlay.")
+                logger.error(
+                    f"Steam window not found but steam is active, exitting overlay."
+                )
                 break
 
             start = time.perf_counter()
@@ -166,7 +168,7 @@ def loop_manage_overlay(
                 if was_shown:
                     show_hhd(disp, hhd, steam)
                     logger.warning("Steam opened, hiding it.")
-            
+
             # If we are running on a headless session
             # make sure hhd cant be focused
             if not steam and not shown:
@@ -228,6 +230,7 @@ class OverlayService:
         self.should_exit = None
         self.emit = emit
         self.proc = None
+        self.interceptionSupported = True
 
     def _open_overlay(self):
         # Should not be called by outsiders
@@ -258,7 +261,7 @@ class OverlayService:
         logger.debug(f"Overlay display is the following: DISPLAY={name}")
 
         self.proc = inject_overlay(exe, name, self.ctx)
-        self.writer = OverlayWriter(self.proc.stdin)
+        self.writer = OverlayWriter(self.proc.stdin, mute=self.interceptionSupported)
         self.emit.register_intercept(self.writer)
         self.should_exit = TEvent()
         self.t = Thread(
@@ -296,7 +299,7 @@ class OverlayService:
         self.proc = launch_overlay_de(exe, disp, auth, self.ctx)
 
         # Start a managing thread
-        self.writer = OverlayWriter(self.proc.stdin)
+        self.writer = OverlayWriter(self.proc.stdin, mute=self.interceptionSupported)
         self.emit.register_intercept(self.writer)
         self.should_exit = TEvent()
         self.t = Thread(

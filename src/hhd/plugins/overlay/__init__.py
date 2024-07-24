@@ -126,10 +126,14 @@ class OverlayPlugin(HHDPlugin):
                     touch
                     or conf.get(f"shortcuts.touchscreen.{v}", "disabled") != "disabled"
                 )
-            ctrl = (
-                conf.get("shortcuts.controller.xbox_b", "disabled") != "disabled"
-                or asus_cycle
-            )
+            # ctrl = (
+            #     conf.get("shortcuts.controller.xbox_b", "disabled") != "disabled"
+            #     or asus_cycle
+            # )
+            # For now always monitor controllers to be able to grab
+            ctrl = True
+            # if self.ovf:
+            #     self.ovf.interceptionSupported = True
 
             if kbd or touch or ctrl or disable_touch:
                 logger.info(

@@ -766,10 +766,14 @@ AXIS_LIMIT = 0.5
 
 
 class OverlayWriter:
-    def __init__(self, stdout) -> None:
+    def __init__(self, stdout, mute: bool = True) -> None:
         self.state = {}
         self.stdout = stdout
         self._write_lock = RLock()
+
+        if mute:
+            # We support intercepting all controllers now
+            self.write("cmd:mute\n")
 
     def _call(self, cid: int, evs: Sequence[ControllerEvent]):
         if not cid in self.state:
