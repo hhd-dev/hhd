@@ -661,7 +661,6 @@ def device_shortcut_loop(
 
             try:
                 if os.stat(name).st_mode & stat.S_IRGRP == 0:
-                    blacklist.add(cand["hash"])
                     continue
 
                 dev = InputDevice(name)
