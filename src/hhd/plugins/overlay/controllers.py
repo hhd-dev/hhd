@@ -636,9 +636,14 @@ def device_shortcut_loop(
                 continue
 
             try:
-                if os.stat(name).st_mode & stat.S_IRGRP == 0:
-                    blacklist.add(cand["hash"])
+                if dev['is_controller'] and os.stat(name).st_mode & stat.S_IRGRP == 0:
                     logger.info(f"Removing hidden device: '{dev['pretty']}'")
+                    blacklist.add(cand["hash"])
+                    del devs[name]
+                    try:
+                        d.close()
+                    except Exception:
+                        pass
                     continue
 
                 e = list(d.read())
