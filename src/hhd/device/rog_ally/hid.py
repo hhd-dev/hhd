@@ -202,18 +202,39 @@ def rgb_set(
                 ),
             ]
         case _:
-            return [
-                rgb_command(
-                    "all", mode, direction, speed, red, green, blue, red2, green2, blue2
-                ),
-            ]
+            out = []
+            for side in ["left_left", "left_right", "right_left", "right_right"]:
+                out.append(
+                    rgb_command(
+                        side,
+                        mode,
+                        direction,
+                        speed,
+                        red,
+                        green,
+                        blue,
+                        red2,
+                        green2,
+                        blue2,
+                    )
+                )
+            return out
+            # return [
+            #     rgb_command(
+            #         "all", mode, direction, speed, red, green, blue, red2, green2, blue2
+            #     ),
+            # ]
 
 
 INIT_EVERY_S = 10
 
 
 def process_events(
-    events: Sequence[Event], prev_mode: str | None, rgb_boot: bool, rgb_charging: bool, global_init=True
+    events: Sequence[Event],
+    prev_mode: str | None,
+    rgb_boot: bool,
+    rgb_charging: bool,
+    global_init=True,
 ):
     cmds = []
     mode = None
