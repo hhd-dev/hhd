@@ -53,7 +53,7 @@ children:
   cycle_info:
     type: display
     title: " "
-    tags: []
+    tags: [non-essential]
     default: "Legion L + Y Cycles the TDP Mode."
 
   ffss:
