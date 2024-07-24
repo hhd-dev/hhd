@@ -47,7 +47,10 @@ children:
   
   cycle_tdp:
     type: bool
-    title: Change TDP with View+Y (Use with ROG Swap)
+    title: Change TDP with View+Y
+    hint: >-
+      Allows you to cycle through TDP modes with the View+Y key combination.
+      Recommended to use with ROG Swap, as the View button will be muted to games.
     default: False
 
   fan:
