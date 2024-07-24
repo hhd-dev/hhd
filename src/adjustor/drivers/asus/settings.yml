@@ -51,7 +51,7 @@ children:
   
   cycle_tdp:
     type: bool
-    title: Cycle TDP with View+Y (Use with ROG Swap)
+    title: Change TDP with View+Y (Use with ROG Swap)
     default: False
 
   fan:

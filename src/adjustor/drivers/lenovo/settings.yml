@@ -54,7 +54,7 @@ children:
     type: display
     title: " "
     tags: [non-essential]
-    default: "Legion L + Y Cycles the TDP Mode."
+    default: "Legion L + Y changes TDP Mode"
 
   ffss:
     type: bool
