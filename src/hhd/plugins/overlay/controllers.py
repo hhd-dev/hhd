@@ -12,7 +12,7 @@ import stat
 from evdev import InputDevice
 
 from hhd.controller import Event as ControllerEvent
-from hhd.controller.lib.ioctl import EVIOCSMASK
+from hhd.controller.lib.ioctl import EVIOCSMASK, EVIOCGRABCLEAN
 from hhd.controller.physical.evdev import B, list_evs, to_map
 from hhd.controller.virtual.uinput.monkey import UInput, UInputMonkey
 
@@ -20,6 +20,8 @@ from .const import get_touchscreen_quirk
 from .x11 import is_gamescope_running
 
 logger = logging.getLogger(__name__)
+
+ENHANCED_HIDING = bool(os.environ.get("HHD_EVIOC_IOCTL", False))
 
 REFRESH_INTERVAL = 0.1
 MONITOR_INTERVAL = 2
@@ -502,7 +504,15 @@ def intercept_devices(devs, activate: bool):
                 grab_buttons(d.fd, B("EV_ABS"), OVERLAY_AXIS_MAP)
 
                 if not dev.get("grabbed", False):
-                    d.grab()
+                    fallback = True
+                    if ENHANCED_HIDING:
+                        try:
+                            ioctl(d.fd, EVIOCGRABCLEAN, 1)
+                            fallback = False
+                        except Exception:
+                            pass
+                    if fallback:
+                        d.grab()
                     dev["grabbed"] = True
                 logger.info(f" - '{dev['pretty']}'")
             except Exception:
@@ -678,7 +688,15 @@ def device_shortcut_loop(
 
                 if cand["is_touchscreen"] and disable_touchscreens:
                     # Grab touchscreen if requested
-                    dev.grab()
+                    fallback = True
+                    if ENHANCED_HIDING:
+                        try:
+                            ioctl(dev.fd, EVIOCGRABCLEAN, 1)
+                            fallback = False
+                        except Exception:
+                            pass
+                    if fallback:
+                        dev.grab()
 
                 # Add event filters to avoid CPU use
                 # Do controllers and keyboards together as buttons do not consume much
@@ -763,7 +781,7 @@ def device_shortcut_loop(
                     caps.append(f"Controller[dinput={dinput}, smax={stick_max}]")
                 if cand["is_keyboard"]:
                     caps.append("Keyboard")
-                log += f"\n - '{cand['pretty']}'[{cand['vid']:04x}:{cand['pid']:04x}] ({', '.join(caps)})"
+                log += f"\n - '{cand['pretty']}' [{cand['vid']:04x}:{cand['pid']:04x}] ({', '.join(caps)})"
             except Exception as e:
                 logger.error(f"Failed to open device '{cand['pretty']}'. Error:\n{e}")
                 blacklist.add(cand["hash"])

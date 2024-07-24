@@ -237,9 +237,12 @@ UINPUT_IOCTL_BASE = "U"
 UI_SET_UNIQ_STR = lambda l: _IOC("w", UINPUT_IOCTL_BASE, 112, l)
 UI_GET_SYSNAME = lambda l: _IOC("r", UINPUT_IOCTL_BASE, 44, l)
 
-# Revokes access to an evdev decie
+# Revokes access to an evdev device
 EVIOCREVOKEALL = _IOW("E", 0x94, 4)
 JSIOCREVOKEALL = _IOW("j", 0x94, 4)
+
+# Grab clean ioctl
+EVIOCGRABCLEAN = _IOW("E", 0x95, 4)
 
 __all__ = (
     "_IOC",

@@ -7,6 +7,7 @@ from fcntl import ioctl
 
 logger = logging.getLogger(__name__)
 
+ENHANCED_HIDING = bool(os.environ.get("HHD_EVIOC_IOCTL", False))
 
 def get_syspath(devpath: str):
     for line in subprocess.run(
@@ -97,7 +98,7 @@ LABEL="hhd_end"
         reload_children(parent)
 
         # Use flag until further testing
-        if not bool(os.environ.get("HHD_REVOKEALL", False)):
+        if not ENHANCED_HIDING:
             return input_dev
 
         # Now that only we can access the device, revoke open fds
