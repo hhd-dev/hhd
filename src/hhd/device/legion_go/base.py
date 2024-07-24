@@ -156,7 +156,8 @@ def controller_loop_rest(
             required=True,
         ).with_settings(
             gyro=None, reset=reset, swap_legion=conf["swap_legion_v2"].to(bool)
-        )
+        ),
+        passthrough_pressed=True,
     )
 
     multiplexer = Multiplexer(
@@ -428,6 +429,7 @@ def controller_loop_xinput(
 
 
 class SelectivePassthrough(Producer, Consumer):
+
     def __init__(
         self,
         parent,
@@ -435,6 +437,7 @@ class SelectivePassthrough(Producer, Consumer):
         passthrough: Sequence[Button] = list(
             next(iter(LGO_RAW_INTERFACE_BTN_ESSENTIALS.values()))
         ),
+        passthrough_pressed: bool = False,
     ):
         self.parent = parent
         self.state = False
@@ -442,6 +445,8 @@ class SelectivePassthrough(Producer, Consumer):
         self.forward_buttons = forward_buttons
         self.passthrough = passthrough
         self.pressed_time = None
+        self.pressed_vals = set()
+        self.passthrough_pressed = passthrough_pressed
 
         self.to_disable_btn = set()
         self.to_disable_axis = set()
@@ -457,15 +462,18 @@ class SelectivePassthrough(Producer, Consumer):
 
         out = []
         curr = time.perf_counter()
-        passthrough = self.pressed_time and (curr - self.pressed_time < 1)
+        if self.passthrough_pressed:
+            passthrough = bool(self.pressed_vals)
+        else:
+            passthrough = self.pressed_time and (curr - self.pressed_time < 1)
 
         for ev in evs:
-            if (
-                ev["type"] == "button"
-                and ev["code"] in self.forward_buttons
-                and ev.get("value", False)
-            ):
-                self.pressed_time = curr
+            if ev["type"] == "button" and ev["code"] in self.forward_buttons:
+                if ev.get("value", False):
+                    self.pressed_time = curr
+                    self.pressed_vals.add(ev["code"])
+                else:
+                    self.pressed_vals.discard(ev["code"])
 
             if ev["type"] == "configuration":
                 out.append(ev)
