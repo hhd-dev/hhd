@@ -18,7 +18,7 @@ def evdev(dev: str | None):
         print(f" - {str(InputDevice(d))}")
     print()
 
-    if dev:
+    if dev and dev != "nograb":
         print(f"Using argument '{dev}'.")
         try:
             sel = f"/dev/input/event{int(dev)}"
@@ -57,9 +57,10 @@ def evdev(dev: str | None):
                 print(f"     > [{str(abs_info)}]")
     try:
         print()
-        print("Attempting to grab device.")
-        d.grab()
-        print("Device grabbed, system will not see its events.")
+        if dev != "nograb":
+            print("Attempting to grab device.")
+            d.grab()
+            print("Device grabbed, system will not see its events.")
     except Exception as e:
         print(f"Could not grab device, system will still see events. Error:\n{e}")
         print("\nReading events still work.")
