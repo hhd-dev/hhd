@@ -286,6 +286,7 @@ class AmdGPUPlugin(HHDPlugin):
                 )
                 # Unless it is set manually, use the default scheduler.
                 self.close_sched()
+                self.old_sched = None
                 try:
                     match self.target:
                         case "balanced":
