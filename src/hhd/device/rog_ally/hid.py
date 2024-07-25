@@ -292,7 +292,9 @@ def process_events(
             RGB_APPLY,
         ]
 
-    if global_init:
+    # For now, use init since with global init, the gamepad might
+    # not initialize properly
+    if global_init or init:
         cmds = [
             *RGB_INIT,
             config_rgb(rgb_boot, rgb_charging),
