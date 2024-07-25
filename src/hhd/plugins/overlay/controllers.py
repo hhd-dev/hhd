@@ -137,7 +137,7 @@ class QamHandlerKeyboard:
             self.uinput.write(B("EV_KEY"), B("KEY_LEFTCTRL"), 1)
             self.uinput.write(B("EV_KEY"), btn, 1)
             self.uinput.syn()
-            time.sleep(0.25)
+            time.sleep(0.3)
             self.uinput.write(B("EV_KEY"), btn, 0)
             self.uinput.write(B("EV_KEY"), B("KEY_LEFTCTRL"), 0)
             self.uinput.syn()
