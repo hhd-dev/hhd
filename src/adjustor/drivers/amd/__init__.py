@@ -196,7 +196,7 @@ class AmdGPUPlugin(HHDPlugin):
 
         self.avail_scheds = {}
         avail_pretty = {}
-        kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state")
+        kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state") or True
         if kernel_supports:
             for sched, pretty in sets["enabled"]["children"]["mode"]["modes"]["manual"][
                 "children"
@@ -284,9 +284,6 @@ class AmdGPUPlugin(HHDPlugin):
                 logger.info(
                     f"Handling energy settings for power profile '{self.target}'."
                 )
-                # Unless it is set manually, use the default scheduler.
-                self.close_sched()
-                self.old_sched = None
                 try:
                     match self.target:
                         case "balanced":
@@ -316,6 +313,9 @@ class AmdGPUPlugin(HHDPlugin):
                 except Exception as e:
                     logger.error(f"Failed to set energy mode:\n{e}")
 
+            # Unless it is set manually, use the default scheduler.
+            self.close_sched()
+            self.old_sched = None
             self.old_gpu = None
             self.old_freq = None
             self.old_boost = None
