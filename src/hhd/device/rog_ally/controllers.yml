@@ -37,7 +37,7 @@ children:
     type: bool
     tags: [non-essential]
     title: Hold View to Reboot
-    default: True
+    default: False
 
   nintendo_mode:
     type: bool
