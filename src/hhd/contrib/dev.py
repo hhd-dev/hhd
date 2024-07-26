@@ -106,8 +106,11 @@ def evdev(dev: str | None):
                     case val:
                         act = f"{val:8d}"
                 evstr += f" {act}"
-            else:
+            elif ev.type == B("EV_ABS"):
                 evstr += f" {ev.value:8d}"
+            else:
+                hexval = f"0x{ev.value:04X}"
+                evstr += f" {hexval:>8s}"
 
             print(f"│ {evstr:>58s} │")
         sleep(0.001)
