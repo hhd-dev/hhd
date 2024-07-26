@@ -441,6 +441,9 @@ class Dualsense(Producer, Consumer):
                                 ev["value"] / DS5_EDGE_DELTA_TIME_NS
                             ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
+                    if self.left_motion:
+                        # skip buttons for left motion
+                        continue
                     if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
                     if (self.paddles_to_clicks == "top" and code == "extra_l1") or (
@@ -490,6 +493,8 @@ class Dualsense(Producer, Consumer):
                         )
 
                 case "configuration":
+                    if self.left_motion:
+                        continue
                     match code:
                         case "touchpad_aspect_ratio":
                             self.aspect_ratio = cast(float, ev["value"])
