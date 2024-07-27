@@ -115,23 +115,28 @@ def evdev(dev: str | None):
             print(f"│ {evstr:>58s} │")
         sleep(0.001)
 
+def device_str(d):
+    from hhd.controller.lib.common import hexify
+
+    return (f"{d['path'].decode():13s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}"
+            + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
+            + f" Names: '{d['manufacturer_string']}': '{d['product_string']}'")
 
 def hidraw(dev: str | None):
     from hhd.controller.lib.hid import enumerate_unique, Device
-    from hhd.controller.lib.common import hexify
     from time import sleep, time, perf_counter
 
     print("Available Devices with the Current Permissions")
     avail = []
     infos = {}
+    devs = {}
     for i, d in enumerate(enumerate_unique()):
         avail.append(d["path"])
         n = int(d["path"].decode().split("hidraw")[1])
         infos[n] = (
-            f" - {d['path'].decode():13s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}"
-            + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
-            + f" Names: '{d['manufacturer_string']}': '{d['product_string']}'"
+            f" - {device_str(d)}"
         )
+        devs[d['path']] = d
     print("\n".join([infos[k] for k in sorted(infos)]))
 
     print()
@@ -161,13 +166,13 @@ def hidraw(dev: str | None):
 
     try:
         from .hid_desc import print_descriptor
-        print('\nDevice Descriptor:')
+        print('\nDevice HID Descriptor:')
         print_descriptor(d.fd)
     except Exception as e:
         print(f"Could not get descriptor:\n{e}")
     
     print()
-    print(f"Selected device `{sel.decode()}`.")
+    print(f"Selected device:\n{device_str(devs[sel])}\n")
 
     start = perf_counter()
     prev = 0

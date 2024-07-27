@@ -1,6 +1,6 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
-# 
+#
 # Copyright (c) 2024      Antheas Kapenekakis
 # Copyright (c) 2012-2017 Benjamin Tissoires <benjamin.tissoires@gmail.com>
 # Copyright (c) 2012-2017 Red Hat, Inc.
@@ -1699,6 +1699,8 @@ class _HidRDescItem(object):
         value = self.value
         up = self.usage_page
         descr = item
+        # Use a prefix to signify attrs that apply to the next input/output
+        prefix = " ."
         if item in (
             "Report ID",
             "Usage Minimum",
@@ -1711,6 +1713,8 @@ class _HidRDescItem(object):
             "Report Count",
             "Unit Exponent",
         ):
+            if item != "Report ID":
+                descr = prefix + descr
             descr += f" ({str(value)})"
         elif item == "Collection":
             descr += f" ({HidCollection(value).name.capitalize()})"
