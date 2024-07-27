@@ -115,7 +115,7 @@ conflict:
       type: display
       default: >-
         Energy Management can not be enabled while PPD or TuneD are enabled.
-        `systemctl disable --now power-profile-daemon` or `tuned`.
+        `systemctl mask power-profiles-daemon` or `tuned`.
     enable:
       title: Enable Energy Management
       type: action

@@ -120,7 +120,7 @@ class AmdGPUPlugin(HHDPlugin):
                     "-t",
                     "service",
                     "--full",
-                    "--all",
+                    # "--all",
                     "--plain",
                     "--no-legend",
                 ]
