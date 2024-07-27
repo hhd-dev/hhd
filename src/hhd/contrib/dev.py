@@ -45,14 +45,14 @@ def evdev(dev: str | None):
     print()
     print("Capabilities")
     for (cap_str, cap), vals in d.capabilities(verbose=True).items():
-        print(f" - {cap_str} ({cap})")
+        print(f" - {cap_str} ({cap:x})")
         for (names, code) in vals:
             if not isinstance(code, int):
                 abs_info = code
                 names, code = names
             else:
                 abs_info = ""
-            print(f"   {code:04d}: {', '.join(names) if isinstance(names, list) else names}")
+            print(f"   0x{code:04x}: {', '.join(names) if isinstance(names, list) else names}")
             if abs_info:
                 print(f"     > [{str(abs_info)}]")
     try:
@@ -91,8 +91,8 @@ def evdev(dev: str | None):
 
             evstr = (
                 f"{ev.timestamp() - ofs:7.3f}s /"
-                + f" {getattr(ecodes, "EV")[ev.type]:>6s} ({ev.type:03d}) /"
-                + f" {RV(ev.type, ev.code):>21s} ({ev.code:03d}):"
+                + f" {getattr(ecodes, "EV")[ev.type]:>6s} ({ev.type:02x}) /"
+                + f" {RV(ev.type, ev.code):>21s} (x{ev.code:03x}):"
             )
 
             if ev.type == B("EV_KEY"):
