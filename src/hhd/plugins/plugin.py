@@ -35,7 +35,7 @@ class PowerEvent(TypedDict):
 
 class TdpEvent(TypedDict):
     type: Literal["tdp"]
-    tdp: int
+    tdp: int | None
 
 
 class ProfileEvent(TypedDict):
