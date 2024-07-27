@@ -139,7 +139,7 @@ def controller_loop(
     multiplexer = Multiplexer(
         trigger="analog_to_discrete",
         dpad="analog_to_discrete",
-        share_to_qam=conf["share_to_qam"].to(bool),
+        share_to_qam=True,
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         params=d_params,

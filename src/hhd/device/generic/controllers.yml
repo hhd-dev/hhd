@@ -41,9 +41,3 @@ children:
     hint: >-
       Swaps A with B and X with Y.
     default: False
-
-  share_to_qam:
-    type: bool
-    title: Map share buttom to QAM.
-    tags: [advanced]
-    default: True

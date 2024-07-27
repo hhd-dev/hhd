@@ -66,12 +66,6 @@ children:
     tags: [ non-essential ]
     default: True
 
-  share_to_qam:
-    type: bool
-    title: Legion R to QAM
-    tags: [ non-essential ]
-    default: True
-
   touchpad:
 
   touchpad_hold:

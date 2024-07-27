@@ -47,12 +47,6 @@ children:
       Swaps A with B and X with Y.
     default: False
 
-  share_to_qam:
-    type: bool
-    tags: [advanced]
-    title: Map Armory to QAM.
-    default: True
-
   rgb_boot:
     type: bool
     tags: [advanced]

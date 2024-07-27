@@ -163,7 +163,7 @@ def controller_loop_rest(
     multiplexer = Multiplexer(
         dpad="both",
         trigger="analog_to_discrete",
-        share_to_qam=conf["share_to_qam"].to(bool),
+        share_to_qam=True,
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
     )
@@ -309,7 +309,7 @@ def controller_loop_xinput(
         dpad="both",
         led="main_to_sides",
         status="both_to_main",
-        share_to_qam=conf["share_to_qam"].to(bool),
+        share_to_qam=True,
         swap_guide="guide_is_select" if swap_legion else None,
         touchpad_short=touch_actions["short"].to(TouchpadAction),
         touchpad_right=touch_actions["hold"].to(TouchpadAction),
