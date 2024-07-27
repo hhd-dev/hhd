@@ -45,6 +45,11 @@ children:
             hint: >-
               Allows the device to temporarily boost by setting appropriate slow and fast TDPs.
   
+  sys_tdp:
+    type: display
+    title: " "
+    tags: [non-essential]
+
   cycle_tdp:
     type: bool
     title: Change TDP with View+Y

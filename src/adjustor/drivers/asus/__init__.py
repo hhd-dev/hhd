@@ -6,6 +6,7 @@ from typing import Sequence
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
 from adjustor.core.platform import set_platform_profile
+from adjustor.i18n import _
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +142,7 @@ class AsusDriverPlugin(HHDPlugin):
         self.new_mode = None
         self.old_target = None
         self.pp = None
+        self.sys_tdp = False
         self.allyx = allyx
 
     def settings(self):
@@ -252,6 +254,8 @@ class AsusDriverPlugin(HHDPlugin):
 
         tdp_reset = False
         if mode is not None and mode != self.old_conf["tdp_v2.mode"].to(str):
+            if not new_tdp:
+                self.sys_tdp = False
             tdp_reset = True
 
         # Handle EPP for presets
@@ -279,6 +283,9 @@ class AsusDriverPlugin(HHDPlugin):
             steady_updated = steady and steady != self.old_conf["tdp_v2.custom.tdp"].to(
                 int
             )
+            if not new_tdp and steady_updated:
+                self.sys_tdp = False
+
             steady_updated |= tdp_reset
 
             if self.startup and (steady > MAX_TDP_START or steady < MIN_TDP_START):
@@ -407,6 +414,12 @@ class AsusDriverPlugin(HHDPlugin):
                 logger.error(f"Could not set fan curve. Error:\n{e}")
             self.queue_fan = None
 
+        # Show steam message
+        if self.sys_tdp:
+            conf["tdp.asus.sys_tdp"] = _("Steam is controlling TDP")
+        else:
+            conf["tdp.asus.sys_tdp"] = ""
+
         # Save current config
         self.cycle_tdp = conf["tdp.asus.cycle_tdp"].to(bool)
         self.old_conf = conf["tdp.asus"]
@@ -418,6 +431,7 @@ class AsusDriverPlugin(HHDPlugin):
         for ev in events:
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
+                self.sys_tdp = True
             elif ev["type"] == "ppd":
                 match ev["status"]:
                     case "power":

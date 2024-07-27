@@ -14,3 +14,8 @@ children:
     title: TDP Boost
     type: bool
     default: True
+  
+  sys_tdp:
+    type: display
+    title: " "
+    tags: [non-essential]

@@ -1,12 +1,13 @@
 import logging
 import time
+from typing import Sequence
 
-from hhd.plugins import Context, HHDPlugin, load_relative_yaml, Event
+from hhd.plugins import Context, Event, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
 
 from adjustor.core.alib import AlibParams, DeviceParams, alib
 from adjustor.core.platform import get_platform_choices, set_platform_profile
-from typing import Sequence
+from adjustor.i18n import _
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class SmuQamPlugin(HHDPlugin):
         self.old_conf = None
         self.startup = True
         self.queued = None
+        self.sys_tdp = False
 
         self.old_tdp = None
         self.old_boost = None
@@ -101,15 +103,19 @@ class SmuQamPlugin(HHDPlugin):
             return
 
         curr = time.time()
+        sys_tdp = False
         if self.new_tdp:
             new_tdp = self.new_tdp
             self.new_tdp = None
+            sys_tdp = True
             conf["tdp.qam.tdp"] = new_tdp
         else:
             new_tdp = conf["tdp.qam.tdp"].to(int)
 
         if self.startup and self.lims:
-            _, smin, _, smax, _ = self.lims
+            smin = self.lims.smin
+            smax = self.lims.smax
+
             if smin and new_tdp < smin:
                 logger.warning(
                     f"Device TDP ({new_tdp}) too low for startup, adjusting."
@@ -129,6 +135,9 @@ class SmuQamPlugin(HHDPlugin):
             and self.old_tdp is not None
             and self.old_boost is not None
         )
+        if changed and not sys_tdp:
+            self.sys_tdp = False
+
         if self.startup or changed:
             self.queued = curr + APPLY_DELAY
             self.is_set = False
@@ -167,6 +176,12 @@ class SmuQamPlugin(HHDPlugin):
                 conf["tdp.smu.std.slow_limit"] = new_tdp
                 conf["tdp.smu.std.fast_limit"] = new_tdp
 
+        # Show steam message
+        if self.sys_tdp:
+            conf["tdp.qam.sys_tdp"] = _("Steam is controlling TDP")
+        else:
+            conf["tdp.qam.sys_tdp"] = ""
+
         if self.startup or (self.queued and self.queued < curr):
             self.startup = False
             self.queued = None
@@ -178,6 +193,7 @@ class SmuQamPlugin(HHDPlugin):
     def notify(self, events: Sequence[Event]):
         for ev in events:
             if ev["type"] == "tdp":
+                self.sys_tdp = True
                 self.new_tdp = ev["tdp"]
             if ev["type"] == "ppd":
                 # TODO: Make tunable per device

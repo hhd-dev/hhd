@@ -8,22 +8,23 @@ from hhd.plugins.conf import Config
 from adjustor.core.lenovo import (
     MIN_CURVE,
     TdpMode,
+    get_bios_version,
     get_charge_limit,
     get_full_fan_speed,
     get_power_light,
+    get_power_light_v1,
     get_tdp_mode,
     set_charge_limit,
     set_fan_curve,
     set_fast_tdp,
     set_full_fan_speed,
     set_power_light,
+    set_power_light_v1,
     set_slow_tdp,
     set_steady_tdp,
     set_tdp_mode,
-    get_bios_version,
-    get_power_light_v1,
-    set_power_light_v1,
 )
+from adjustor.i18n import _
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.enforce_limits = True
         self.startup = True
         self.old_conf = None
+        self.sys_tdp = False
         self.fan_curve_set = False
 
         bios_version = get_bios_version()
@@ -175,6 +177,8 @@ class LenovoDriverPlugin(HHDPlugin):
         # Grab from power button
         new_mode = get_tdp_mode()
         if new_mode != mode:
+            if not new_tdp:
+                self.sys_tdp = False
             tdp_reset = True
         conf["tdp.lenovo.tdp.mode"] = new_mode
 
@@ -219,6 +223,8 @@ class LenovoDriverPlugin(HHDPlugin):
             steady_updated = steady and steady != self.old_conf["tdp.custom.tdp"].to(
                 int
             )
+            if steady_updated and not new_tdp:
+                self.sys_tdp = False
 
             if self.startup and (steady > 30 or steady < 7):
                 logger.warning(
@@ -311,6 +317,12 @@ class LenovoDriverPlugin(HHDPlugin):
             self.fan_curve_set = True
             self.queue_fan = None
 
+        # Show steam message
+        if self.sys_tdp:
+            conf["tdp.lenovo.sys_tdp"] = _("Steam is controlling TDP")
+        else:
+            conf["tdp.lenovo.sys_tdp"] = ""
+
         # Save current config
         self.old_conf = conf["tdp.lenovo"]
 
@@ -320,6 +332,7 @@ class LenovoDriverPlugin(HHDPlugin):
     def notify(self, events: Sequence[Event]):
         for ev in events:
             if ev["type"] == "tdp":
+                self.sys_tdp = True
                 self.new_tdp = ev["tdp"]
             if ev["type"] == "ppd":
                 match ev["status"]:

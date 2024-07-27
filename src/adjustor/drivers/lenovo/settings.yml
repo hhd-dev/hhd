@@ -50,6 +50,11 @@ children:
             hint: >-
               Allows the device to boost by setting appropriate slow and fast TDPs.
   
+  sys_tdp:
+    type: display
+    title: " "
+    tags: [non-essential]
+
   cycle_info:
     type: display
     title: " "
