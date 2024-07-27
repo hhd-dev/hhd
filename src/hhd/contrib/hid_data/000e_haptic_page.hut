@@ -1,0 +1,28 @@
+(0e)	Haptic
+01	Simple Haptic Controller
+02-0F	Reserved
+10	Waveform
+11	Duration
+12-1F	Reserved
+20	Auto Trigger
+21	Manual Trigger
+22	Auto Trigger Associated Control
+23	Intensity
+24	Repeat Count
+25	Retrigger Period
+26	Waveform Vendor Page
+27	Waveform Vendor ID
+28	Waveform Cutoff Time
+29-0x0FFF	Reserved
+1000	Reserved
+1001	WAVEFORM_NONE
+1002	WAVEFORM_STOP
+1003	WAVEFORM_CLICK
+1004	WAVEFORM_BUZZ_CONTINUOUS
+1005	WAVEFORM_RUMBLE_CONTINUOUS
+1006	WAVEFORM_PRESS
+1007	WAVEFORM_RELEASE
+1006-1FFF	Reserved for standard waveforms
+2000	Reserved
+2001-2FFF	Reserved: Vendor Waveforms
+3000-FFFF	Reserved

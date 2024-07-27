@@ -1,0 +1,645 @@
+(20)	Sensor
+00	Undefined
+01	Sensor
+02-0F	Reserved
+10	Biometric
+11	Biometric Human Presence
+12	Biometric Human Proximity
+13	Biometric Human Touch
+14	Biometric: Blood Pressure
+15	Biometric: Body Temperature
+16	Biometric: Heart Rate
+17	Biometric: Heart Rate Variability
+18	Biometric: Peripheral Oxygen Saturation
+19	Biometric: Respiratory Rate
+1A-1F	Biometric: Reserved
+20	Electrical
+21	Electrical: Capacitance
+22	Electrical: Current
+23	Electrical: Power
+24	Electrical: Inductance
+25	Electrical: Resistance
+26	Electrical: Voltage
+27	Electrical: Potentiometer
+28	Electrical: Frequency
+29	Electrical: Period
+2A-2F	Electrical: Reserved
+30	Environmental
+31	Environmental: Atmospheric Pressure
+32	Environmental: Humidity
+33	Environmental: Temperature
+34	Environmental: Wind Direction
+35	Environmental: Wind Speed
+36	Environmental: Air Quality
+37	Environmental: Heat Index
+38	Environmental: Surface Temperature
+39	Environmental: Volatile Organic Compounds
+3A	Environmental: Object Presence
+3B	Environmental: Object Proximity
+3C-3F	Environmental: Reserved
+40	Light
+41	Light: Ambient Light
+42	Light: Consumer Infrared
+43	Light: Infrared Light
+44	Light: Visible Light
+45	Light: Ultraviolet Light
+46-4F	Light: Reserved
+50	Location
+51	Location: Broadcast
+52	Location: Dead Reckoning
+53	Location: GPS
+54	Location: Lookup
+55	Location: Other
+56	Location: Static
+57	Location: Triangulation
+58-5F	Location: Reserved
+60	Mechanical
+61	Mechanical: Boolean Switch
+62	Mechanical: Boolean Switch Array
+63	Mechanical: Multivalue Switch
+64	Mechanical: Force
+65	Mechanical: Pressure
+66	Mechanical: Strain
+67	Mechanical: Weight
+68	Mechanical: Haptic Vibrator
+69	Mechanical: Hall Effect Switch
+6A-6F	Mechanical: Reserved
+70	Motion
+71	Motion: Accelerometer 1D
+72	Motion: Accelerometer 2D
+73	Motion: Accelerometer 3D
+74	Motion: Gyrometer 1D
+75	Motion: Gyrometer 2D
+76	Motion: Gyrometer 3D
+77	Motion: Motion Detector
+78	Motion: Speedometer
+79	Motion: Accelerometer
+7A	Motion: Gyrometer
+7B	Motion: Gravity Vector
+7C	Motion: Linear Accelerometer
+7D-7F	Motion: Reserved
+80	Orientation
+81	Orientation: Compass 1D
+82	Orientation: Compass 2D
+83	Orientation: Compass 3D
+84	Orientation: Inclinometer 1D
+85	Orientation: Inclinometer 2D
+86	Orientation: Inclinometer 3D
+87	Orientation: Distance 1D
+88	Orientation: Distance 2D
+89	Orientation: Distance 3D
+8A	Orientation: Device Orientation
+8B	Orientation: Compass
+8C	Orientation: Inclinometer
+8D	Orientation: Distance
+8E	Orientation: Relative Orientation
+8F	Orientation: Simple Orientation
+90	Scanner
+91	Scanner: Barcode
+92	Scanner: RFID
+93	Scanner: NFC
+94-9F	Scanner: Reserved
+A0	Time
+A1	Time: Alarm Timer
+A2	Time: Real Time Clock
+A3-AF	Time: Reserved
+B0	Personal Activity
+B1	Personal Activity: Activity Detection
+B2	Personal Activity: Device Position
+B3	Personal Activity: Pedometer
+B4	Personal Activity: Step Detection
+B5-BF	Personal Activity: Reserved
+C0	Orientation Extended
+C1	Orientation Extended: Geomagnetic Orientation
+C2	Orientation Extended: Magnetometer
+C3-CF	Orientation Extended: Reserved
+D0-DF	Reserved
+E0	Other
+E1	Other: Custom
+E2	Other: Generic
+E3	Other: Generic Enumerator
+E4-EF	Other: Reserved
+F0-FF	Reserved for Vendors/OEMs
+0100-01FF	Reserved
+0200	Event
+0201	Event: Sensor State
+0202	Event: Sensor Event
+0203-02FF	Reserved
+0300	Property
+0301	Property: Friendly Name
+0302	Property: Persistent Unique ID
+0303	Property: Sensor Status
+0304	Property: Minimum Report Interval
+0305	Property: Sensor Manufacturer
+0306	Property: Sensor Model
+0307	Property: Sensor Serial Number
+0308	Property: Sensor Description
+0309	Property: Sensor Connection Type
+030A	Property: Sensor Device Path
+030B	Property: Hardware Revision
+030C	Property: Firmware Version
+030D	Property: Release Date
+030E	Property: Report Interval
+030F	Property: Change Sensitivity Absolute
+0310	Property: Change Sensitivity Percent of Range
+0311	Property: Change Sensitivity Percent Relative
+0312	Property: Accuracy
+0313	Property: Resolution
+0314	Property: Maximum
+0315	Property: Minimum
+0316	Property: Reporting State
+031A	Property: Maximum FIFO Events
+031B	Property: Report Latency
+031C	Property: Flush FIFO Events
+031D	Property: Maximum Power Consumption
+031E-03FF	Property: Reserved
+0400	Data Field: Location
+0401	Data Field: Location Reserved
+0402	Data Field: Altitude Antenna Sea Level
+0403	Data Field: Differential Reference Station ID
+0404	Data Field: Altitude Ellipsoid Error
+0405	Data Field: Altitude Ellipsoid
+0406	Data Field: Altitude Sea Level Error
+0407	Data Field: Altitude Sea Level
+0408	Data Field: Differential GPS Data Age
+0409	Data Field: Error Radius
+040A	Data Field: Fix Quality
+040B	Data Field: Fix Type
+040C	Data Field: Geoidal Separation
+040D	Data Field: GPS Operation Mode
+040E	Data Field: GPS Selection Mode
+040F	Data Field: GPS Status
+0410	Data Field: Position Dilution of Precision
+0411	Data Field: Horizontal Dilution of Precision
+0412	Data Field: Vertical Dilution of Precision
+0413	Data Field: Latitude
+0414	Data Field: Longitude
+0415	Data Field: True Heading
+0416	Data Field: Magnetic Heading
+0417	Data Field: Magnetic Variation
+0418	Data Field: Speed
+0419	Data Field: Satellites in View
+041A	Data Field: Satellites in View Azimuth
+041B	Data Field: Satellites in View Elevation
+041C	Data Field: Satellites in View IDs
+041D	Data Field: Satellites in View PRNs
+041E	Data Field: Satellites in View S/N Ratios
+041F	Data Field: Satellites Used Count
+0420	Data Field: Satellites Used PRNs
+0421	Data Field: NMEA Sentence
+0422	Data Field: Address Line 1
+0423	Data Field: Address Line 2
+0424	Data Field: City
+0425	Data Field: State or Province
+0426	Data Field: Country or Region
+0427	Data Field: Postal Code
+0428-0429	Data Field: Location Reserved
+042A	Property: Location
+042B	Property: Location Desired Accuracy
+042C-042F	Property: Location Reserved
+0430	Data Field: Environmental
+0431	Data Field: Atmospheric Pressure
+0432	Data Field: Reserved
+0433	Data Field: Relative Humidity
+0434	Data Field: Temperature
+0435	Data Field: Wind Direction
+0436	Data Field: Wind Speed
+0437	Data Field: Air Quality Index
+0438	Data Field: Equivalent CO2
+0439	Data Field: Volatile Organic Compound Concentration
+043A	Data Field: Object Presence
+043B	Data Field: Object Proximity Range
+043C	Data Field: Object Proximity Out of Range
+043D-043F	Data Field: Environmental Reserved
+0440	Property: Environmental
+0441	Property: Reference Pressure
+0442-044F	Property: Environmental Reserved
+0450	Data Field: Motion
+0451	Data Field: Motion State
+0452	Data Field: Acceleration
+0453	Data Field: Acceleration Axis X
+0454	Data Field: Acceleration Axis Y
+0455	Data Field: Acceleration Axis Z
+0456	Data Field: Angular Velocity
+0457	Data Field: Angular Velocity about X Axis
+0458	Data Field: Angular Velocity about Y Axis
+0459	Data Field: Angular Velocity about Z Axis
+045A	Data Field: Angular Position
+045B	Data Field: Angular Position about X Axis
+045C	Data Field: Angular Position about Y Axis
+045D	Data Field: Angular Position about Z Axis
+045E	Data Field: Motion Speed
+045F	Data Field: Motion Intensity
+0460-046F	Data Field: Motion Reserved
+0470	Data Field: Orientation
+0471	Data Field: Heading
+0472	Data Field: Heading X Axis
+4073	Data Field: Heading Y Axis
+0474	Data Field: Heading Z Axis
+0475	Data Field: Heading Compensated Magnetic North
+0476	Data Field: Heading Compensated True North
+0477	Data Field: Heading Magnetic North
+0478	Data Field: Heading True North
+0479	Data Field: Distance
+047A	Data Field: Distance X Axis
+047B	Data Field: Distance Y Axis
+047C	Data Field: Distance Z Axis
+047D	Data Field: Distance Out-of-Range
+047E	Data Field: Tilt
+047F	Data Field: Tilt X Axis
+0480	Data Field: Tilt Y Axis
+0481	Data Field: Tilt Z Axis
+0482	Data Field: Rotation Matrix
+0483	Data Field: Quaternion
+0484	Data Field: Magnetic Flux
+0485	Data Field: Magnetic Flux X Axis
+0486	Data Field: Magnetic Flux Y Axis
+0487	Data Field: Magnetic Flux Z Axis
+0488	Data Field: Magnetometer Accuracy
+0489	Data Field: Simple Orientation Direction
+048A-048F	Data Field: Orientation Reserved
+0490	Data Field: Mechanical
+0491	Data Field: Boolean Switch State
+0492	Data Field: Boolean Switch Array States
+0493	Data Field: Multivalue Switch Value
+0494	Data Field: Force
+0495	Data Field: Absolute Pressure
+0496	Data Field: Gauge Pressure
+0497	Data Field: Strain
+0498	Data Field: Weight
+0498-049F	Data Field: Mechanical Reserved
+04A0	Property: Mechanical
+04A1	Property: Vibration State
+04A2	Property: Forward Vibration Speed
+04A3	Property: Backward Vibration Speed
+04A4-04AF	Property: Mechanical Reserved
+04B0	Data Field: Biometric
+04B1	Data Field: Human Presence
+04B2	Data Field: Human Proximity Range
+04B3	Data Field: Human Proximity Out of Range
+04B4	Data Field: Human Touch State
+04B5	Data Field: Blood Pressure
+04B6	Data Field: Blood Pressure Diastolic
+04B7	Data Field: Blood Pressure Systolic
+04B8	Data Field: Heart Rate
+04B9	Data Field: Resting Heart Rate
+04BA	Data Field: Heartbeat Interval
+04BB	Data Field: Respiratory Rate
+04BC	Data Field: SpO2
+04BD-04CF	Data Field: Biometric Reserved
+04D0	Data Field: Light
+04D1	Data Field: Illuminance
+04D2	Data Field: Color Temperature
+04D3	Data Field: Chromaticity
+04D4	Data Field: Chromaticity X
+04D5	Data Field: Chromaticity Y
+04D6	Data Field: Consumer IR Sentence Receive
+04D7	Data Field: Infrared Light
+04D8	Data Field: Red Light
+04D9	Data Field: Green Light
+04DA	Data Field: Blue Light
+04DB	Data Field: Ultraviolet A Light
+04DC	Data Field: Ultraviolet B Light
+04DD	Data Field: Ultraviolet Index
+04DE-04DF	Data Field: Light Reserved
+04E0	Property: Light
+04E1	Property: Consumer IR Sentence Send
+04E2-04EF	Property: Light Reserved
+04F0	Data Field: Scanner
+04F1	Data Field: RFID Tag 40 Bit
+04F2	Data Field: NFC Sentence Receive
+04F3-04F7	Data Field: Scanner Reserved
+04F8	Property: Scanner
+04F9	Property: NFC Sentence Send
+04FA-04FF	Property: Scanner Reserved
+0500	Data Field: Electrical
+0501	Data Field: Capacitance
+0502	Data Field: Current
+0503	Data Field: Electrical Power
+0504	Data Field: Inductance
+0505	Data Field: Resistance
+0506	Data Field: Voltage
+0507	Data Field: Frequency
+0508	Data Field: Period
+0509	Data Field: Percent of Range
+050A-051F	Data Field: Electrical Reserved
+0520	Data Field: Time
+0521	Data Field: Year
+0522	Data Field: Month
+0523	Data Field: Day
+0524	Data Field: Day of Week
+
+0525	Data Field: Hour
+0526	Data Field: Minute
+0527	Data Field: Second
+0528	Data Field: Millisecond
+0529	Data Field: Timestamp
+052A	Data Field: Julian Day of Year
+052B	Data Field: Time Since System Boot
+052C-052F	Data Field: Time Reserved
+0530	Property: Time
+0531	Property: Time Zone Offset from UTC
+0532	Property: Time Zone Name
+0533	Property: Daylight Savings Time Observed
+0534	Property: Time Trim Adjustment
+0535	Property: Arm Alarm
+0535-053F	Property: Time Reserved
+0540	Data Field: Custom
+0541	Data Field: Custom Usage
+0542	Data Field: Custom Boolean Array
+0543	Data Field: Custom Value
+0544	Data Field: Custom Value 1
+0545	Data Field: Custom Value 2
+0546	Data Field: Custom Value 3
+0547	Data Field: Custom Value 4
+0548	Data Field: Custom Value 5
+0549	Data Field: Custom Value 6
+054A	Data Field: Custom Value 7
+054B	Data Field: Custom Value 8
+054C	Data Field: Custom Value 9
+054D	Data Field: Custom Value 10
+054E	Data Field: Custom Value 11
+054F	Data Field: Custom Value 12
+0550	Data Field: Custom Value 13
+0551	Data Field: Custom Value 14
+0552	Data Field: Custom Value 15
+0553	Data Field: Custom Value 16
+0554	Data Field: Custom Value 17
+0555	Data Field: Custom Value 18
+0556	Data Field: Custom Value 19
+0557	Data Field: Custom Value 20
+0558	Data Field: Custom Value 21
+0559	Data Field: Custom Value 22
+055A	Data Field: Custom Value 23
+055B	Data Field: Custom Value 24
+055C	Data Field: Custom Value 25
+055D	Data Field: Custom Value 26
+055E	Data Field: Custom Value 27
+055F	Data Field: Custom Value 28
+0560	Data Field: Generic
+0561	Data Field: Generic GUID or PROPERTYKEY
+0562	Data Field: Generic Category GUID
+0563	Data Field: Generic Type GUID
+0564	Data Field: Generic Event PROPERTYKEY
+0565	Data Field: Generic Property PROPERTYKEY
+0566	Data Field: Generic Data Field PROPERTYKEY
+0567	Data Field: Generic Event
+0568	Data Field: Generic Property
+0569	Data Field: Generic Data Field
+056A	Data Field: Enumerator Table Row Index
+056B	Data Field: Enumerator Table Row Count
+056C	Data Field: Generic GUID or PROPERTYKEY kind
+056D	Data Field: Generic GUID
+056E	Data Field: Generic PROPERTYKEY
+056F	Data Field: Generic Top Level Collection ID
+0570	Data Field: Generic Report ID
+0571	Data Field: Generic Report Item Position Index
+0572	Data Field: Generic Firmware VARTYPE
+0573	Data Field: Generic Unit of Measure
+0574	Data Field: Generic Unit Exponent
+0575	Data Field: Generic Report Size
+0576	Data Field: Generic Report Count
+0577-057F	Data Field: Generic Reserved
+0580	Property: Generic
+0581	Property: Enumerator Table Row Index
+0582	Property: Enumerator Table Row Count
+0583-058F	Property: Generic Reserved
+0590	Data Field: Personal Activity
+0591	Data Field: Activity Type
+0592	Data Field: Activity State
+0593	Data Field: Device Position
+0594	Data Field: Step Count
+0595	Data Field: Step Count Reset
+0596	Data Field: Step Duration
+0597	Data Field: Step Type
+0598-059F	Data Field: Personal Activity Reserved
+05A0	Property: Minimum Activity Detection Interval
+05A1	Property: Supported Activity Types
+05A2	Property: Subscribed Activity Types
+05A3	Property: Supported Step Types
+05A4	Property: Subscribed Step Types
+05A5	Property: Floor Height
+05A6-05AF	Property: Personal Activity Reserved
+05B0	Data Field: Custom Type ID
+05B1-05BF	Data Field: Custom Reserved
+05C0-07FF	Reserved for future use as Sensor Types, Data Fields and Properties
+
+0800-0FF	Reserved for use as Selection Values
+
+0800	Sensor State: Undefined
+0801	Sensor State: Ready
+0802	Sensor State: Not Available
+0803	Sensor State: No Data Sel
+0804	Sensor State: Initializing
+0805	Sensor State: Access Denied
+0806	Sensor State: Error
+0810	Sensor Event: Unknown
+0811	Sensor Event: State Changed
+0812	Sensor Event: Property Changed
+0813	Sensor Event: Data Updated
+0814	Sensor Event: Poll Response
+0815	Sensor Event: Change Sensitivity
+0816	Sensor Event: Range Maximum Reached
+0817	Sensor Event: Range Minimum Reached
+0818	Sensor Event: High Threshold Cross Upward
+0819	Sensor Event: High Threshold Cross Downward
+081A	Sensor Event: Low Threshold Cross Upward
+081B	Sensor Event: Low Threshold Cross Downward
+081C	Sensor Event: Zero Threshold Cross Upward
+081D	Sensor Event: Zero Threshold Cross Downward
+081E	Sensor Event: Period Exceeded
+081F	Sensor Event: Frequency Exceeded
+0820	Sensor Event: Complex Trigger
+
+0830	Connection Type: PC Integrated
+0831	Connection Type: PC Attached
+0832	Connection Type: PC External
+
+0840	Reporting State: Report No Events
+0841	Reporting State: Report All Events
+0842	Reporting State: Report Threshold Events
+0843	Reporting State: Wake On No Events
+0844	Reporting State: Wake On All Events
+0845	Reporting State: Wake On Threshold Events
+0317	Property: Sampling Rate
+0318	Property: Response Curve
+0319	Property: Power State
+0850	Power State: Undefined
+0851	Power State: D0 Full Power
+0852	Power State: D1 Low Power
+0853	Power State: D2 Standby Power with Wakeup
+0854	Power State: D3 Sleep with Wakeup
+0855	Power State: D4 Power Off
+
+0860	Accuracy: Default
+0861	Accuracy: High
+0862	Accuracy: Medium
+0863	Accuracy: Low
+
+0870	Fix Quality: No Fix
+0871	Fix Quality: GPS
+0872	Fix Quality: DGPS
+040B	Data Field: Fix Type NAry 1.10
+0880	Fix Type: No Fix
+0881	Fix Type: GPS SPS Mode, Fix Valid
+0882	Fix Type: DGPS SPS Mode, Fix Valid
+0883	Fix Type: GPS PPS Mode, Fix Valid
+0884	Fix Type: Real Time Kinematic
+0885	Fix Type: Float RTK
+0886	Fix Type: Estimated (dead reckoned)
+0887	Fix Type: Manual Input Mode
+0888	Fix Type: Simulator Mode
+0890	GPS Operation Mode: Manual
+0891	GPS Operation Mode: Automatic
+08A0	GPS Selection Mode: Autonomous
+08A1	GPS Selection Mode: DGPS
+08A2	GPS Selection Mode: Estimated (dead reckoned)
+08A3	GPS Selection Mode: Manual Input
+08A4	GPS Selection Mode: Simulator
+08A5	GPS Selection Mode: Data Not Valid
+08B0	GPS Status: Data Valid
+08B1	GPS Status: Data Not Valid
+
+08C0	Day of Week: Sunday
+08C1	Day of Week: Monday
+08C2	Day of Week: Tuesday
+08C3	Day of Week: Wednesday
+08C4	Day of Week: Thursday
+08C5	Day of Week: Friday
+08C6	Day of Week: Saturday
+
+08D0	Kind: Category
+08D1	Kind: Type
+08D2	Kind: Event
+08D3	Kind: Property
+08D4	Kind: Data Field
+
+08E0	Magnetometer Accuracy: Low
+08E1	Magnetometer Accuracy: Medium
+08E2	Magnetometer Accuracy: High
+
+08F0	Simple Orientation Direction: Not Rotated
+08F1	Simple Orientation Direction: Rotated 90 Degrees
+08F2	Simple Orientation Direction:  Rotated 180 Degrees
+08F3	Simple Orientation Direction:  Rotated 270 Degrees
+08F4	Simple Orientation Direction: Face Up
+08F5	Simple Orientation Direction: Face Down
+
+0900	VT_NULL: Empty
+0901	VT_BOOL: Boolean
+0902	VT_UI1: Byte
+0903	VT_I1: Character
+0904	VT_UI2: Unsigned Short
+0905	VT_I2: Short
+0906	VT_UI4: Unsigned Long
+0907	VT_I4: Long
+0908	VT_UI8: Unsigned Long Long
+0909	VT_I8: Long Long
+090A	VT_R4: Float
+090B	VT_R8: Double
+090C	VT_WSTR: Wide String
+090D	VT_STR: Narrow String
+090E	VT_CLSID: Guid
+090F	VT_VECTOR|VT_UI1: Opaque Structure
+0910	VT_F16E0: HID 16-bit Float with Unit Exponent 0
+0911	VT_F16E1: HID 16-bit Float with Unit Exponent 1
+0912	VT_F16E2: HID 16-bit Float with Unit Exponent 2
+0913	VT_F16E3: HID 16-bit Float with Unit Exponent 3
+0914	VT_F16E4: HID 16-bit Float with Unit Exponent 4
+0915	VT_F16E5: HID 16-bit Float with Unit Exponent 5
+0916	VT_F16E6: HID 16-bit Float with Unit Exponent 6
+0917	VT_F16E7: HID 16-bit Float with Unit Exponent 7
+0918	VT_F16E8: HID 16-bit Float with Unit Exponent 8
+0919	VT_F16E9: HID 16-bit Float with Unit Exponent 9
+091A	VT_F16EA: HID 16-bit Float with Unit Exponent A
+091B	VT_F16EB: HID 16-bit Float with Unit Exponent B
+091C	VT_F16EC: HID 16-bit Float with Unit Exponent C
+091D	VT_F16ED: HID 16-bit Float with Unit Exponent D
+091E	VT_F16EE: HID 16-bit Float with Unit Exponent E
+091F	VT_F16EF: HID 16-bit Float with Unit Exponent F
+0920	VT_F32E0: HID 32-bit Float with Unit Exponent 0
+0921	VT_F32E1: HID 32-bit Float with Unit Exponent 1
+0922	VT_F32E2: HID 32-bit Float with Unit Exponent 2
+0923	VT_F32E3: HID 32-bit Float with Unit Exponent 3
+0924	VT_F32E4: HID 32-bit Float with Unit Exponent 4
+0925	VT_F32E5: HID 32-bit Float with Unit Exponent 5
+0926	VT_F32E6: HID 32-bit Float with Unit Exponent 6
+0927	VT_F32E7: HID 32-bit Float with Unit Exponent 7
+0928	VT_F32E8: HID 32-bit Float with Unit Exponent 8
+0929	VT_F32E9: HID 32-bit Float with Unit Exponent 9
+092A	VT_F32EA: HID 32-bit Float with Unit Exponent A
+092B	VT_F32EB: HID 32-bit Float with Unit Exponent B
+092C	VT_F32EC: HID 32-bit Float with Unit Exponent C
+092D	VT_F32ED: HID 32-bit Float with Unit Exponent D
+092E	VT_F32EE: HID 32-bit Float with Unit Exponent E
+092F	VT_F32EF: HID 32-bit Float with Unit Exponent F
+0930	Activity Type: Unknown
+0931	Activity Type: Stationary
+0932	Activity Type: Fidgeting
+0933	Activity Type: Walking
+0934	Activity Type: Running
+0935	Activity Type: In Vehicle
+0936	Activity Type: Biking
+0937	Activity Type: Idle
+
+
+0940	Unit: Not Specified
+0941	Unit: Lux
+0942	Unit: Degrees Kelvin
+0943	Unit: Degrees Celsius
+0944	Unit: Pascal
+0945	Unit: Newton
+0946	Unit: Meters/Second
+0947	Unit: Kilogram
+0948	Unit: Meter
+0949	Unit: Meters/Second/Second
+094A	Unit: Farad
+094B	Unit: Ampere
+094C	Unit: Watt
+094D	Unit: Henry
+094E	Unit: Ohm
+094F	Unit: Volt
+0950	Unit: Hertz
+0951	Unit: Bar
+0952	Unit: Degrees Anti-clockwise
+0953	Unit: Degrees Clockwise
+0954	Unit: Degrees
+0955	Unit: Degrees/Second
+0956	Unit: Degrees/Second/Second
+0957	Unit: Knot
+0958	Unit: Percent
+0959	Unit: Second
+095A	Unit: Millisecond
+095B	Unit: G
+095C	Unit: Bytes
+095D	Unit: Milligauss
+095E	Unit: Bits
+0960	Activity State: No State Change
+0961	Activity State: Start Activity
+0962	Activity State: End Activity
+0970	Exponent 0: 1
+0971	Exponent 1: 10
+0972	Exponent 2: 100
+0973	Exponent 3: 1 000
+0974	Exponent 4: 10 000
+0975	Exponent 5: 100 000
+0976	Exponent 6: 1 000 000
+0977	Exponent 7: 10 000 000
+0978	Exponent 8: 0.00 000 001
+0979	Exponent 9: 0.0 000 001
+097A	Exponent A: 0.000 001
+097B	Exponent B: 0.00 001
+097C	Exponent C: 0.0 001
+097D	Exponent D: 0.001
+097E	Exponent E: 0.01
+097F	Exponent F: 0.1
+0980	Device Position: Unknown
+0981	Device Position: Unchanged
+0982	Device Position: On Desk
+0983	Device Position: In Hand
+0984	Device Position: Moving in Bag
+0985	Device Position: Stationary in Bag
+
+09A0-09FF	Reserved for use as Selection Values
+1000-EFFF	Reserved for use as “Data Fields with Modifiers”
+F000-FFFF	Reserved for Vendors/OEMs

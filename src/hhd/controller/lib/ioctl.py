@@ -244,6 +244,10 @@ JSIOCREVOKEALL = _IOW("j", 0x94, 4)
 # Grab clean ioctl
 EVIOCGRABCLEAN = _IOW("E", 0x95, 4)
 
+# Hidraw Descriptors
+HIDIOCGRDESCSIZE = _IOR("H", 0x01, 4)
+HIDIOCGRDESC = _IOR("H", 0x02, 4096 + 4)
+
 __all__ = (
     "_IOC",
     "_IO",

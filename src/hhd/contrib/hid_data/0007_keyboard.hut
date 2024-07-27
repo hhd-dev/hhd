@@ -1,0 +1,176 @@
+(07)	Keyboard
+00	Reserved (no event indicated)
+01	ErrorRollOver
+02	POSTFail
+03	ErrorUndefine
+04	a and A
+05	b and B
+06	c and C
+07	d and D
+08	e and E
+09	f and F
+0A	g and G
+0B	h and H
+0C	i and I
+0D	j and J
+0E	k and K
+0F	l and L
+10	m and M
+11	n and N
+12	o and O
+13	p and P
+14	q and Q
+15	r and R
+16	s and S
+17	t and T
+18	u and U
+19	v and V
+1A	w and W
+1B	x and X
+1C	y and Y
+1D	z and Z
+1E	1 and !
+1F	2 and @
+20	3 and #
+21	4 and $
+22	5 and %
+23	6 and ^
+24	7 and &
+25	8 and *
+26	9 and (
+27	0 and )
+28	Return (ENTER)
+29	ESCAPE
+2A	DELETE (Backspace)
+2B	Tab
+2C	Spacebar
+2D	- and (underscore)
+2E	= and +
+2F	[ and {
+30	] and }
+31	\ and |
+32	Non-US # and ~
+33	; and :
+34	' and "
+35	Grave Accent and Tilde
+36	Keyboard, and <
+37	. and >
+38	/ and ?
+39	Caps Lock
+3A	F1
+3B	F2
+3C	F3
+3D	F4
+3E	F5
+3F	F6
+40	F7
+41	F8
+42	F9
+43	F10
+44	F11
+45	F12
+46	PrintScreen
+47	Scroll Lock
+48	Pause
+49	Insert
+4A	Home
+4B	PageUp
+4C	Delete Forward
+4D	End
+4E	PageDown
+4F	RightArrow
+50	LeftArrow
+51	DownArrow
+52	UpArrow
+53	Keypad Num Lock and Clear
+54	Keypad /
+55	Keypad *
+56	Keypad -
+57	Keypad +
+58	Keypad ENTER
+59	Keypad 1 and End
+5A	Keypad 2 and Down Arrow
+5B	Keypad 3 and PageDn
+5C	Keypad 4 and Left Arrow
+5D	Keypad 5
+5E	Keypad 6 and Right Arrow
+5F	Keypad 7 and Home
+60	Keypad 8 and Up Arrow
+61	Keypad 9 and PageUp
+62	Keypad 0 and Insert
+63	Keypad . and Delete
+64	Non-US \ and |
+65	Application
+66	Power
+67	Keypad =
+68	F13
+69	F14
+6A	F15
+6B	F16
+6C	F17
+6D	F18
+6E	F19
+6F	F20
+70	F21
+71	F22
+72	F23
+73	F24
+74	Execute
+75	Help
+76	Menu
+77	Select
+78	Stop
+79	Again
+7A	Undo
+7B	Cut
+7C	Copy
+7D	Paste
+7E	Find
+7F	Mute
+80	Volume Up
+81	Volume Down
+82	Locking Caps Lock
+83	Locking Num Lock
+84	Locking Scroll Lock
+85	Keypad Comma
+86	Keypad Equal Sign
+87	Kanji1
+88	Kanji2
+89	Kanji3
+8A	Kanji4
+8B	Kanji5
+8C	Kanji6
+8D	Kanji7
+8E	Kanji8
+8F	Kanji9
+90	LANG1
+91	LANG2
+92	LANG3
+93	LANG4
+94	LANG5
+95	LANG6
+96	LANG7
+97	LANG8
+98	LANG9
+99	Alternate Erase
+9A	SysReq/Attention
+9B	Cancel
+9C	Clear
+9D	Prior
+9E	Return
+9F	Separator
+A0	Out
+A1	Oper
+A2	Clear/Again
+A3	CrSel/Props
+A4	ExSel
+A5-DF	Reserved
+E0	LeftControl
+E1	LeftShift
+E2	LeftAlt
+E3	Left GUI
+E4	RightControl
+E5	RightShift
+E6	RightAlt
+E7	Right GUI
+E8-FFFF	Reserved

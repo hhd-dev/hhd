@@ -1,0 +1,464 @@
+(0c)	Consumer Devices
+01	Consumer Control
+02	Numeric Key Pad
+03	Programmable Buttons
+04	Microphone
+05	Headphone
+06	Graphic Equalizer
+07-1F	Reserved
+20	+10
+21	+100
+22	AM/PM
+23-2F	Reserved
+30	Power
+31	Reset
+32	Sleep
+33	Sleep After
+34	Sleep Mode
+35	Illumination
+36	Function Buttons
+37-3F	Reserved
+40	Menu
+41	Menu Pick
+42	Menu Up
+43	Menu Down
+44	Menu Left
+45	Menu Right
+46	Menu Escape
+47	Menu Value Increase
+48	Menu Value Decrease
+49-5F	Reserved
+60	Data On Screen
+61	Closed Caption
+62	Closed Caption Select
+63	VCR/TV
+64	Broadcast Mode
+65	Snapshot
+66	Still
+67	Picture-in-Picture Toggle
+68	Picture-in-Picture Swap
+69	Red Menu Button
+6A	Green Menu Button
+6B	Blue Menu Button
+6C	Yellow Menu Button
+6D	Aspect
+6E	3D Mode Select
+6F	Display Brightness Increment
+70	Display Brightness Decrement
+71	Display Brightness
+72	Display Backlight Toggle
+73	Display Set Brightness to Minimum
+74	Display Set Brightness to Maximum
+75	Display Set Auto Brightness
+76	Camera Access Enabled
+77	Camera Access Disabled
+78	Camera Access Toggle
+79	Keyboard Brightness Increment 
+7A	Keyboard Brightness Decrement
+7B	Keyboard Backlight Set Level
+7C	Keyboard Backlight OOC
+7D	Keyboard Backlight Set Minimum
+7E	Keyboard Backlight Set Maximum
+7F	Keyboard Backlight Auto
+80	Selection
+81	Assign Selection
+82	Mode Step
+83	Recall Last
+84	Enter Channel
+85	Order Movie
+86	Channel
+87	Media Selection
+88	Media Select Computer
+89	Media Select TV
+8A	Media Select WWW
+8B	Media Select DVD
+8C	Media Select Telephone
+8D	Media Select Program Guide
+8E	Media Select Video Phone
+8F	Media Select Games
+90	Media Select Messages
+91	Media Select CD
+92	Media Select VCR
+93	Media Select Tuner
+94	Quit
+95	Help
+96	Media Select Tape
+97	Media Select Cable
+98	Media Select Satellite
+99	Media Select Security
+9A	Media Select Home
+9B	Media Select Call
+9C	Channel Increment
+9D	Channel Decrement
+9E	Media Select SAP
+9F-9F	Reserved
+A0	VCR Plus
+A1	Once
+A2	Daily
+A3	Weekly
+A4	Monthly
+A5-AF	Reserved
+B0	Play
+B1	Pause
+B2	Record
+B3	Fast Forward
+B4	Rewind
+B5	Scan Next Track
+B6	Scan Previous Track
+B7	Stop
+B8	Eject
+B9	Random Play
+BA	Select Disc
+BB	Enter Disc
+BC	Repeat
+BD	Tracking
+BE	Track Normal
+BF	Slow Tracking
+C0	Frame Forward
+C1	Frame Back
+C2	Mark
+C3	Clear Mark
+C4	Repeat From Mark
+C5	Return To Mark
+C6	Search Mark Forward
+C7	Search Mark Backwards
+C8	Counter Reset
+C9	Show Counter
+CA	Tracking Increment
+CB	Tracking Decrement
+CC	Stop/Eject
+CD	Play/Pause
+CE	Play/Skip
+CF	Voice Command
+D0	Invoke Capture Interface
+D1	Start or Stop Game Recording
+D2	Historical Game Capture
+D3	Capture Game Screenshot
+D4	Show or Hide Recording Indicator
+D5	Start or Stop Microphone Capture
+D6	Start or Stop Camera Capture
+D7	Start or Stop Game Broadcast
+D8-DF	Reserved
+E0	Volume
+E1	Balance
+E2	Mute
+E3	Bass
+E4	Treble
+E5	Bass Boost
+E6	Surround Mode
+E7	Loudness
+E8	MPX
+E9	Volume Up
+EA	Volume Down
+EB-EF	Reserved
+F0	Speed Select
+F1	Playback Speed
+F2	Standard Play
+F3	Long Play
+F4	Extended Play
+F5	Slow
+F6-FF	Reserved
+100	Fan Enable
+101	Fan Speed
+102	Light Enable
+103	Light Illumination Level
+104	Climate Control Enable
+105	Room Temperature
+106	Security Enable
+107	Fire Alarm
+108	Police Alarm
+109	Proximity
+10A	Motion
+10B	Duress Alarm
+10C	Holdup Alarm
+10D	Medical Alarm
+10E-14F	Reserved
+150	Balance Right
+151	Balance Left
+152	Bass Increment
+153	Bass Decrement
+154	Treble Increment
+155	Treble Decrement
+156-15F	Reserved
+160	Speaker System
+161	Channel Left
+162	Channel Right
+163	Channel Center
+164	Channel Front
+165	Channel Center Front
+166	Channel Side
+167	Channel Surround
+168	Channel Low Freq Enhancement
+169	Channel Top
+16A	Channel Unknown
+16B-16F	Reserved
+170	Sub-channel
+171	Sub-channel Increment
+172	Sub-channel Decrement
+173	Alternate Audio Increment
+174	Alternate Audio Decrement
+175-17F	Reserved
+180	Application Launch Buttons
+181	AL Launch Button Config Tool
+182	AL Programmable Button Config
+183	AL Consumer Control Config
+184	AL Word Processor
+185	AL Text Editor
+186	AL Spreadsheet
+187	AL Graphics Editor
+188	AL Presentation App
+189	AL Database App
+18A	AL Email Reader
+18B	AL Newsreader
+18C	AL Voicemail
+18D	AL Contacts/Address Book
+18E	AL Calendar/Schedule
+18F	AL Task/Project Manager
+190	AL Log/Journal/Timecard
+191	AL Checkbook/Finance
+192	AL Calculator
+193	AL A/VCapture/Playback
+194	AL Local Machine Browser
+195	AL LAN/WANBrowser
+196	AL Internet Browser
+197	AL Remote Networking/ISPConnect
+198	AL Network Conference
+199	AL Network Chat
+19A	AL Telephony/Dialer
+19B	AL Logon
+19C	AL Logoff
+19D	AL Logon/Logoff
+19E	AL Terminal Lock/Screensaver
+19F	AL Control Panel
+1A0	AL Command Line Processor/Run
+1A1	AL Process/Task Manager
+1A2	AL Select Task/Application
+1A3	AL Next Task/Application
+1A4	AL Previous Task/Application
+1A5	AL Preempt Halt Task/Application
+1A6	AL Integrated Help Center
+1A7	AL Documents
+1A8	AL Thesaurus
+1A9	AL Dictionary
+1AA	AL Desktop
+1AB	AL Spell Check
+1AC	AL Grammar Check
+1AD	AL Wireless Status
+1AE	AL Keyboard Layout
+1AF	AL Virus Protection
+1B0	AL Encryption
+1B1	AL Screen Saver
+1B2	AL Alarms
+1B3	AL Clock
+1B4	AL File Browser
+1B5	AL Power Status
+1B6	AL Image Browser
+1B7	AL Audio Browser
+1B8	AL Movie Browser
+1B9	AL Digital Rights Manager
+1BA	AL Digital Wallet
+1BB-1BB	Reserved
+1BC	AL Instant Messaging
+1BD	AL OEMFeatures Tips Tuto Browser
+1BE	AL OEMHelp
+1BF	AL Online Community
+1C0	AL Entertainment Content Browser
+1C1	AL Online Shopping Browser
+1C2	AL Smart Card Information/Help
+1C3	AL Market Monitor Finance Browser
+1C4	AL Customized Corp News Browser
+1C5	AL Online Activity Browser
+1C6	AL Research/Search Browser
+1C7	AL Audio Player
+# Duplicate in HUTRR75: 1C8 AL Navigation
+1C8	AL Message Status
+1C9	AL Contact Sync
+1CA-1FF	Reserved
+200	Generic GUIApplication Controls
+201	AC New
+202	AC Open
+203	AC Close
+204	AC Exit
+205	AC Maximize
+206	AC Minimize
+207	AC Save
+208	AC Print
+209	AC Properties
+20A-219	Reserved
+21A	AC Undo
+21B	AC Copy
+21C	AC Cut
+21D	AC Paste
+21E	AC Select All
+21F	AC Find
+220	AC Findand Replace
+221	AC Search
+222	AC Go To
+223	AC Home
+224	AC Back
+225	AC Forward
+226	AC Stop
+227	AC Refresh
+228	AC Previous Link
+229	AC Next Link
+22A	AC Bookmarks
+22B	AC History
+22C	AC Subscriptions
+22D	AC Zoom In
+22E	AC Zoom Out
+22F	AC Zoom
+230	AC Full Screen View
+231	AC Normal View
+232	AC View Toggle
+233	AC Scroll Up
+234	AC Scroll Down
+235	AC Scroll
+236	AC Pan Left
+237	AC Pan Right
+238	AC Pan
+239	AC New Window
+23A	AC Tile Horizontally
+23B	AC Tile Vertically
+23C	AC Format
+23D	AC Edit
+23E	AC Bold
+23F	AC Italics
+240	AC Underline
+241	AC Strikethrough
+242	AC Subscript
+243	AC Superscript
+244	AC All Caps
+245	AC Rotate
+246	AC Resize
+247	AC Fliphorizontal
+248	AC Flip Vertical
+249	AC Mirror Horizontal
+24A	AC Mirror Vertical
+24B	AC Font Select
+24C	AC Font Color
+24D	AC Font Size
+24E	AC Justify Left
+24F	AC Justify Center H
+250	AC Justify Right
+251	AC Justify Block H
+252	AC Justify Top
+253	AC Justify Center V
+254	AC Justify Bottom
+255	AC Justify Block V
+256	AC Indent Decrease
+257	AC Indent Increase
+258	AC Numbered List
+259	AC Restart Numbering
+25A	AC Bulleted List
+25B	AC Promote
+25C	AC Demote
+25D	AC Yes
+25E	AC No
+25F	AC Cancel
+260	AC Catalog
+261	AC Buy/Checkout
+262	AC Addto Cart
+263	AC Expand
+264	AC Expand All
+265	AC Collapse
+266	AC Collapse All
+267	AC Print Preview
+268	AC Paste Special
+269	AC Insert Mode
+26A	AC Delete
+26B	AC Lock
+26C	AC Unlock
+26D	AC Protect
+26E	AC Unprotect
+26F	AC Attach Comment
+270	AC Delete Comment
+271	AC View Comment
+272	AC Select Word
+273	AC Select Sentence
+274	AC Select Paragraph
+275	AC Select Column
+276	AC Select Row
+277	AC Select Table
+278	AC Select Object
+279	AC Redo/Repeat
+27A	AC Sort
+27B	AC Sort Ascending
+27C	AC Sort Descending
+27D	AC Filter
+27E	AC Set Clock
+27F	AC View Clock
+280	AC Select Time Zone
+281	AC Edit Time Zones
+282	AC Set Alarm
+283	AC Clear Alarm
+284	AC Snooze Alarm
+285	AC Reset Alarm
+286	AC Synchronize
+287	AC Send/Receive
+288	AC Send To
+289	AC Reply
+28A	AC Reply All
+28B	AC Forward Msg
+28C	AC Send
+28D	AC Attach File
+28E	AC Upload
+28F	AC Download(Save Target As)
+290	AC Set Borders
+291	AC Insert Row
+292	AC Insert Column
+293	AC Insert File
+294	AC Insert Picture
+295	AC Insert Object
+296	AC Insert Symbol
+297	AC Saveand Close
+298	AC Rename
+299	AC Merge
+29A	AC Split
+29B	AC Disribute Horizontally
+29C	AC Distribute Vertically
+29D	AC Next Keyboard Layout Select
+29E	AC Navigation Guidance
+29F	AC Desktop Show All Windows
+# Duplicate in HUTRR77: 2A0 AC Desktop Show All Applications
+2A0	ACSoft Key Left
+2A1	ACSoft Key Right
+2A2-2AF	Reserved
+2B0	AC Idle Keep Alive
+2B1-2BF	Reserved
+2C0	Extended Keyboard Attributes Collection
+2C1	Keyboard Form Factor
+2C2	Keyboard Key Type
+2C3	Keyboard Physical Layout
+2C4	Vendor-Specific Keyboard Physical Layout
+2C5	Keyboard IETF Language Tag Index
+2C6	Implemented Keyboard Input AssistControls
+2C7	Keyboard Input Assist Previous
+2C8	Keyboard Input Assist NextS
+2C9	Keyboard Input Assist Previous Group
+2CA	Keyboard Input Assist NextGroup
+2CB	Keyboard Input Assist Accept
+2CC	Keyboard Input Assist Cancel
+2CB-0x2DF	Reserved
+2E0-4FF	Reserved
+500	Contact Edited
+501	Contact Added
+502	Contact Record Active
+503	Contact Index
+504	Contact Nickname
+505	Contact First Name
+506	Contact Last Name
+507	Contact Full Name
+508	Contact Phone Number Personal
+509	Contact Phone Number Business
+50A	Contact Phone Number Mobile
+50B	Contact Phone Number Pager
+50C	Contact Phone Number Fax
+50D	Contact Phone Number Other
+50E	Contact Email Personal
+50F	Contact Email Business
+510	Contact Email Other
+511	Contact Email Main
+512	Contact Speed Dial Number
+513	Contact Status Flag
+514	Contact Misc.
+515-FFFF	Reserved

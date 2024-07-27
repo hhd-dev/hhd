@@ -1,0 +1,113 @@
+(0d)	Digitizers
+00	Undefined
+01	Digitizer
+02	Pen
+03	Light Pen
+04	Touch Screen
+05	Touch Pad
+06	White Board
+07	Coordinate Measuring Machine
+08	3-D Digitizer
+09	Stereo Plotter
+0A	Articulated Arm
+0B	Armature
+0C	Multiple Point Digitizer
+0D	Free Space Wand
+0E	Device Configuration
+0F	Capacitive Heat Map Digitizer
+10-1F	Reserved
+20	Stylus
+21	Puck
+22	Finger
+23	Device Settings
+24	Character Gesture
+25-2F	Reserved
+30	Tip Pressure
+31	Barrel Pressure
+32	In Range
+33	Touch
+34	Untouch
+35	Tap
+36	Quality
+37	Data Valid
+38	Transducer Index
+39	Tablet Function Keys
+3A	Program Change Keys
+3B	Battery Strength
+3C	Invert
+3D	X Tilt
+3E	Y Tilt
+3F	Azimuth
+40	Altitude
+41	Twist
+42	Tip Switch
+43	Secondary Tip Switch
+44	Barrel Switch
+45	Eraser
+46	Tablet Pick
+47	Confidence
+48	Width
+49	Height
+4A-50	Reserved
+51	Contact Id
+52	Inputmode
+53	Device Index
+54	Contact Count
+55	Contact Max
+56	Scan Time
+57	Surface Switch
+58	Button Switch
+59	Button Type
+5A	Secondary Barrel Switch
+5B	Transducer Serial Number
+5C	Preferred Inking Color
+5D	Preferred Color is Locked
+5E	Preferred Line Width
+5F	Preferred Line Width is Locked
+61	Gesture Character Quality
+62	Character Gesture Data Length
+63	Character Gesture Data
+64	Gesture Character Encoding
+65	UTF8 Character Gesture Encoding Sel
+66	UTF16 Little Endian Character Gesture Encoding Sel
+67	UTF16 Big Endian Character Gesture Encoding Sel
+68	UTF32 Little Endian Character Gesture Encoding
+69	UTF32 Big Endian Character Gesture Encoding
+# Duplicate in HUTRR87: 6A Capacitive Heat Map Protocol Vendor ID
+6A	Gesture Character Enable
+6B	Capacitive Heat Map Protocol Version
+6C	Capacitive Heat Map Frame Data
+6B-6F	Reserved
+70	Preferred Line Style
+71	Preferred Line Style is Locked
+72	Ink
+73	Pencil
+74	Highlighter
+75	Chisel Marker
+76	Brush
+77	No preference
+78-7F	Reserved for future line styles
+80	Digitizer Diagnostic
+81	Digitizer Error
+82	Err Normal Status
+83	Err Transducers Exceeded
+84	Err Full Trans Features Unavail
+85	Err Charge Low
+86-8F	Reserved for future errors
+90	Transducer Software Info.
+91	Transducer Vendor ID
+92	Transducer Product ID
+93	Device Supported Protocols
+94	Transducer Supported Protocols
+95	No Protocol
+96	Wacom AES Protocol
+97	USI Protocol
+98	Microsoft Pen Protocol
+99-9F	Reserved for future transducer protocols
+A0	Supported Report Rates
+A1	Report Rate
+A2	Transducer Connected
+A3	Switch Disabled
+A4	Switch Unimplemented
+A5	Transducer Switches
+A6-FFFF	Reserved

@@ -1,0 +1,43 @@
+(12)	Eye and Head Trackers
+00	Reserved 
+01	Eye Tracker 
+02	Head Tracker 
+03‐0F	Reserved 
+10	Tracking Data 
+11	Capabilities 
+12	Configuration 
+13	Status 
+14	Control 
+15‐1F	Reserved
+20	Sensor Timestamp 
+21	Position X 
+22	Position Y 
+23	Position Z  
+24	Gaze Point 
+25	Left Eye Position 
+26	Right Eye Position 
+27	Head Position 
+28	Head Direction Point 
+29	Rotation about X axis 
+2A	Rotation about Y axis 
+2B	Rotation about Z axis 
+2C‐FF	Reserved 
+100	Tracker Quality 
+101	Minimum Tracking Distance 
+102	Optimum Tracking Distance 
+103	Maximum Tracking Distance 
+104	Maximum Screen Plane Width 
+105	Maximum Screen Plane Height 
+106‐01FF	Reserved 
+200	Display Manufacturer ID 
+201	Display Product ID 
+202	Display Serial Number 
+203	Display Manufacturer Date 
+204	Calibrated Screen Width 
+205	Calibrated Screen Height 
+206-02FF	Reserved 
+300	Sampling Frequency 
+301	Configuration Status 
+302-03FF	Reserved 
+400	Device Mode Request 
+401-FFFF	Reserved 

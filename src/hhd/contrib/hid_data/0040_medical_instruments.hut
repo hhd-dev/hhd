@@ -1,0 +1,38 @@
+(40)	Medical Instruments
+00	Undefined
+01	Medical Ultrasound
+02-1F	Reserved
+20	VCR/Acquisition
+21	Freeze/Thaw
+22	Clip Store
+23	Update
+24	Next
+25	Save
+26	Print
+27	Microphone Enable
+28-3F	Reserved
+40	Cine
+41	Transmit Power
+42	Volume
+43	Focus
+44	Depth
+45-5F	Reserved
+60	Soft Step-Primary
+61	Soft Step-Secondary
+62-6F	Reserved
+70	Depth Gain Compensation
+71-7F	Reserved
+80	Zoom Select
+81	Zoom Adjust
+82	Spectral Doppler Mode Select
+83	Spectral Doppler Adjust
+84	Color Doppler Mode Select
+85	Color Doppler Adjust
+86	Motion Mode Select
+87	Motion Mode Adjust
+88	2-D Mode Select
+89	2-D Mode Adjust
+8A-9F	Reserved
+A0	Soft Control Select
+A1	Soft Control Adjust
+A2-FFFF	Reserved

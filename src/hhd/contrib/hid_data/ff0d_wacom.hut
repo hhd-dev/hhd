@@ -1,0 +1,112 @@
+(ff0d)	Wacom
+01	Wacom Digitizer
+02	Wacom Pen
+03	Light Pen
+04	Touch Screen
+05	Touch Pad
+06	White Board
+07	Coordinate Measuring Machine
+08	3-D Digitizer
+09	Stereo Plotter
+0A	Articulated Arm
+0B	Armature
+0C	Multiple Point Digitizer
+0D	Free Space Wand
+0E	Device Configuration
+0F-1F	Reserved
+20	Stylus
+21	Puck
+22	Finger
+23	Device Settings
+24-2F	Reserved
+30	Tip Pressure
+31	Barrel Pressure
+32	In Range
+33	Touch
+34	Untouch
+35	Tap
+36	Wacom Sense
+37	Data Valid
+38	Transducer Index
+39	Wacom DigitizerFnKeys
+3A	Program Change Keys
+3B	Battery Strength
+3C	Invert
+3D	X Tilt
+3E	Y Tilt
+3F	Azimuth
+40	Altitude
+41	Twist
+42	Tip Switch
+43	Secondary Tip Switch
+44	Barrel Switch
+45	Eraser
+46	Tablet Pick
+47	Confidence
+48	Width
+49	Height
+4A-50	Reserved
+51	Contact Id
+52	Inputmode
+53	Device Index
+54	Contact Count
+55	Contact Max
+56	Scan Time
+57	Surface Switch
+58	Button Switch
+59	Button Type
+5A	Secondary Barrel Switch
+5B	Transducer Serial Number
+5C	Wacom SerialHi
+5D	Preferred Color is Locked
+5E	Preferred Line Width
+5F	Preferred Line Width is Locked
+70	Preferred Line Style
+71	Preferred Line Style is Locked
+72	Ink
+73	Pencil
+74	Highlighter
+75	Chisel Marker
+76	Brush
+77	Wacom ToolType
+78-7F	Reserved for future line styles
+80	Digitizer Diagnostic
+81	Digitizer Error
+82	Err Normal Status
+83	Err Transducers Exceeded
+84	Err Full Trans Features Unavail
+85	Err Charge Low
+86-8F	Reserved for future errors
+0130	X
+0131	Y
+0132	Wacom Distance
+0136	Wacom TouchStrip
+0137	Wacom TouchStrip2
+0138	Wacom TouchRing
+0139	Wacom TouchRingStatus
+0401	Wacom Accelerometer X
+0402	Wacom Accelerometer Y
+0403	Wacom Accelerometer Z
+0404	Wacom Battery Charging
+0454	Wacom TouchOnOff
+043B	Wacom Battery Level
+0910	Wacom ExpressKey00
+0950	Wacom ExpressKeyCap00
+0980	Wacom Mode Change
+0981	Wacom Button Desktop Center
+0982	Wacom Button On Screen Keyboard
+0983	Wacom Button Display Setting
+0986	Wacom Button Touch On/Off
+0990	Wacom Button Home
+0991	Wacom Button Up
+0992	Wacom Button Down
+0993	Wacom Button Left
+0994	Wacom Button Right
+0995	Wacom Button Center
+0D03	Wacom FingerWheel
+0D30	Wacom Offset Left
+0D31	Wacom Offset Top
+0D32	Wacom Offset Right
+0D33	Wacom Offset Bottom
+1002	Wacom DataMode
+1013	Wacom Digitizer Info

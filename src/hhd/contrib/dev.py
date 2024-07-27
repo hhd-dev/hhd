@@ -141,12 +141,12 @@ def hidraw(dev: str | None):
             sel = f"/dev/hidraw{int(dev)}".encode()
         except Exception:
             sel = dev.encode()
-        if sel not in avail:
+        if sel not in avail or not sel:
             print(f"Device '{sel.decode()}' not found.")
             return
     else:
         sel = None
-        while sel not in avail:
+        while not sel or sel not in avail:
             try:
                 sel = input("Enter device path (/dev/hidraw# or #): ")
             except EOFError:
@@ -158,7 +158,16 @@ def hidraw(dev: str | None):
         print()
 
     d = Device(path=sel)
-    print(f"Selected device `{str(sel)}`.")
+
+    try:
+        from .hid_desc import print_descriptor
+        print('\nDevice Descriptor:')
+        print_descriptor(d.fd)
+    except Exception as e:
+        print(f"Could not get descriptor:\n{e}")
+    
+    print()
+    print(f"Selected device `{sel.decode()}`.")
 
     start = perf_counter()
     prev = 0
