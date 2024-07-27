@@ -319,9 +319,9 @@ class LenovoDriverPlugin(HHDPlugin):
 
         # Show steam message
         if self.sys_tdp:
-            conf["tdp.lenovo.sys_tdp"] = _("Steam is controlling TDP")
+            conf["tdp.lenovo.cycle_info"] = _("Steam is controlling TDP")
         else:
-            conf["tdp.lenovo.sys_tdp"] = ""
+            conf["tdp.lenovo.cycle_info"] = _("Legion L + Y changes TDP Mode")
 
         # Save current config
         self.old_conf = conf["tdp.lenovo"]
