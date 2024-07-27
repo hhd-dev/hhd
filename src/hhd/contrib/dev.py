@@ -75,7 +75,7 @@ def evdev(dev: str | None):
         if ofs == None:
             ofs = ev.timestamp()
         curr = perf_counter() - start
-        hz = f"{1/(curr - prev):6.1f} Hz" if curr != prev else "   NaN Hz"
+        hz = f"{1/(curr - prev):6.1f} Hz" if prev and curr != prev else "   NaN Hz"
         if ev.code == 0 and ev.type == 0 and ev.value == 0:
             print(
                 f"└ SYN ─ {curr:7.3f}s ─ {hz} ─────────────────────────────────────┘"
@@ -178,7 +178,7 @@ def hidraw(dev: str | None):
     prev = 0
     for i in range(100000000):
         curr = perf_counter() - start
-        hz = f"{1/(curr - prev):6.1f} Hz" if curr != prev else "   NaN Hz"
+        hz = f"{1/(curr - prev):6.1f} Hz" if prev and curr != prev else "   NaN Hz"
         prev = curr
         print(f"{i:6d}: {curr:8.4f}s ({hz})", d.read().hex())
         sleep(0.0005)
