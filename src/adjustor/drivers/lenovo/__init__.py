@@ -332,8 +332,8 @@ class LenovoDriverPlugin(HHDPlugin):
     def notify(self, events: Sequence[Event]):
         for ev in events:
             if ev["type"] == "tdp":
-                self.sys_tdp = True
                 self.new_tdp = ev["tdp"]
+                self.sys_tdp = ev['tdp'] is not None
             if ev["type"] == "ppd":
                 match ev["status"]:
                     case "power":

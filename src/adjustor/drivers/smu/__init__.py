@@ -195,6 +195,8 @@ class SmuQamPlugin(HHDPlugin):
             if ev["type"] == "tdp":
                 self.sys_tdp = True
                 self.new_tdp = ev["tdp"]
+                self.sys_tdp = ev['tdp'] is not None
+
             if ev["type"] == "ppd":
                 # TODO: Make tunable per device
                 match ev["status"]:

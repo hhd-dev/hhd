@@ -431,7 +431,7 @@ class AsusDriverPlugin(HHDPlugin):
         for ev in events:
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
-                self.sys_tdp = True
+                self.sys_tdp = ev['tdp'] is not None
             elif ev["type"] == "ppd":
                 match ev["status"]:
                     case "power":

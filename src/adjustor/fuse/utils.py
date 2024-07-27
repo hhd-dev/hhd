@@ -127,6 +127,8 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
                         logger.info(
                             "Received TDP value 0 from /sys. Assuming its the default value and ignoring."
                         )
+                        # Send none to remove steam notice
+                        set_tdp(None)
                 except:
                     logger.error(f"Failed process TDP value, received:\n{data}")
                 send_cmd(b"ack\n")
