@@ -2031,7 +2031,7 @@ class _HidRDescItem(object):
 
         descr, indent = self.get_human_descr(indent)
 
-        dump_file.write(f"{line:18s} // {offset:4x}:  {descr}\n")
+        dump_file.write(f"{line:18s} // {offset:03x}:  {descr}\n")
         return indent
 
     def dump_rdesc_human(self: "_HidRDescItem", indent: int, dump_file: IO) -> int:
