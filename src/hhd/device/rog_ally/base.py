@@ -354,7 +354,7 @@ def controller_loop(
         vid=[ASUS_VID],
         pid=[ALLY_PID, ALLY_X_PID],
         capabilities={EC("EV_KEY"): [EC("KEY_F23")]},
-        required=False,
+        required=True,
         grab=False,
         btn_map={EC("KEY_F17"): "extra_l1", EC("KEY_F18"): "extra_r1"},
     )
