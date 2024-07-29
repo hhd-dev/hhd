@@ -184,7 +184,11 @@ def find_devices(
             continue
 
         # Skip HHD devices
-        if "hhd" in dev.get("phys", "") or "uhid" in dev.get("sysfs", ""):
+        if "hhd" in dev.get("phys", "") or (
+            # Allow bluetooth controllers that contain uhid and phys, while
+            # blocking hhd devices that contain uhid but not phys
+            "uhid" in dev.get("sysfs", "") and not dev.get("phys", "")
+        ):
             continue
 
         # Skip Steam virtual devices
@@ -788,9 +792,7 @@ def device_shortcut_loop(
                         stick_max = 2**16
                         dinput = False
                     devs[name]["dinput"] = dinput
-                    devs[name]["state_ctrl"].update(
-                        {"uniq": dev.uniq}
-                    )
+                    devs[name]["state_ctrl"].update({"uniq": dev.uniq})
                     devs[name]["stick_max"] = stick_max
                     caps.append(f"Controller[dinput={dinput}, smax={stick_max}]")
                 if cand["is_keyboard"]:
