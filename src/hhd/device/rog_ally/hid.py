@@ -9,6 +9,7 @@ from hhd.controller.lib.hid import Device
 from .const import (
     COMMANDS_GAME,
     COMMANDS_MOUSE,
+    FLUSH_BUFFER,
     RGB_APPLY,
     RGB_INIT,
     RGB_SET,
@@ -213,7 +214,11 @@ INIT_EVERY_S = 10
 
 
 def process_events(
-    events: Sequence[Event], prev_mode: str | None, rgb_boot: bool, rgb_charging: bool, global_init=True
+    events: Sequence[Event],
+    prev_mode: str | None,
+    rgb_boot: bool,
+    rgb_charging: bool,
+    global_init=True,
 ):
     cmds = []
     mode = None
@@ -328,6 +333,17 @@ class RgbCallback:
 
 
 def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
+    # Wait for the device to be ready
+    ready = False
+    while not ready:
+        dev.write(FLUSH_BUFFER)
+        rep = dev.read(timeout=0.2)
+        logger.warning(rep.hex())
+        if rep and rep[0] == 0x5A and rep[2] == 0x0A:
+            ready = True
+        else:
+            time.sleep(0.2)
+
     match mode:
         case "default":
             cmds = COMMANDS_GAME(kconf)
