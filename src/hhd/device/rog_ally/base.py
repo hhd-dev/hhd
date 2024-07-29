@@ -199,9 +199,6 @@ class AllyHidraw(GenericGamepadHidraw):
 
 
 class AllyXHidraw(GenericGamepadHidraw):
-    """Ally X uses a Windows driver to inject gyro, much like hhd :).
-    Therefore, it is not xinput, and needs a vendor command for vibration."""
-
     def open(self) -> Sequence[int]:
         super().open()
         # Drop all events
@@ -253,7 +250,7 @@ def plugin_run(
         try:
             gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
             nkey_devs = enumerate_unique(vid=ASUS_VID)
-            # Ally X uses dinput (?)
+            
             if (not gamepad_devs and not ally_x) or not nkey_devs:
                 if first:
                     first = False

@@ -9,10 +9,10 @@ from hhd.controller.lib.hid import Device
 from .const import (
     COMMANDS_GAME,
     COMMANDS_MOUSE,
-    FLUSH_BUFFER,
     RGB_APPLY,
     RGB_INIT,
     RGB_SET,
+    WAIT_READY,
     buf,
     config_rgb,
 )
@@ -332,17 +332,24 @@ class RgbCallback:
             dev.write(r)
 
 
-def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
+def wait_for_ready(dev: Device, timeout: int = 1):
     # Wait for the device to be ready
-    ready = False
-    while not ready:
-        dev.write(FLUSH_BUFFER)
+    start = time.perf_counter()
+
+    while time.perf_counter() - start < timeout:
+        dev.write(WAIT_READY)
         rep = dev.read(timeout=0.2)
         logger.warning(rep.hex())
         if rep and rep[0] == 0x5A and rep[2] == 0x0A:
-            ready = True
+            return True
         else:
             time.sleep(0.2)
+
+    logger.error("Ready timeout lapsed.")
+    return False
+
+
+def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
 
     match mode:
         case "default":
@@ -355,4 +362,5 @@ def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
             assert False, f"Mode '{mode}' not supported."
 
     for cmd in cmds:
+        wait_for_ready(dev)
         dev.write(cmd)
