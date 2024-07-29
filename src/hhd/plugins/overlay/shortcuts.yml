@@ -15,6 +15,14 @@ controller:
         hhd_expanded: "HHD Overlay"
       # default: hhd_qam
       default: disabled
+    xbox_y:
+      type: multiple
+      title: "Xbox or View + Y"
+      options: 
+        <<: *shortcuts
+        disconnect: Disconnect Controller
+      # default: disconnect
+      default: disabled
 touchscreen:
   type: container
   tags: [non-essential]

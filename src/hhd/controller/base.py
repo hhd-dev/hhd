@@ -40,6 +40,7 @@ class SpecialEvent(TypedDict):
         "tdp_cycle_performance",
         "tdp_cycle_custom",
     ]
+    data: Any | None
 
 
 class RumbleEvent(TypedDict):

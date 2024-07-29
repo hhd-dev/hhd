@@ -30,7 +30,7 @@ OVERLAY_BUTTON_MAP: dict[int, str] = to_map(
         "a": [B("BTN_A")],
         "b": [B("BTN_B")],
         "x": [B("BTN_WEST")],
-        "y": [B("BTN_NORTH")], # BTN_Y is wrong?
+        "y": [B("BTN_NORTH")],  # BTN_Y is wrong?
         "lb": [B("BTN_TL")],
         "rb": [B("BTN_TR")],
     }
@@ -184,7 +184,7 @@ def find_devices(
             continue
 
         # Skip HHD devices
-        if "hhd" in dev.get("phys", "") or "uhid" in dev.get('sysfs', ""):
+        if "hhd" in dev.get("phys", "") or "uhid" in dev.get("sysfs", ""):
             continue
 
         # Skip Steam virtual devices
@@ -416,7 +416,13 @@ def process_ctrl(emit, state, ev, val):
         if state.get(ev, None) and time.time() - state[ev] < XBOX_B_MAX_PRESS:
             logger.info(f"Xbox+{ev} pressed")
             if emit:
-                emit({"type": "special", "event": f"xbox_{ev}"})
+                emit(
+                    {
+                        "type": "special",
+                        "event": f"xbox_{ev}",
+                        "data": {"uniq": state.get("uniq", None)},
+                    }
+                )
         state[ev] = None
 
 
@@ -636,7 +642,7 @@ def device_shortcut_loop(
                 continue
 
             try:
-                if dev['is_controller'] and os.stat(name).st_mode & stat.S_IRGRP == 0:
+                if dev["is_controller"] and os.stat(name).st_mode & stat.S_IRGRP == 0:
                     logger.info(f"Removing hidden device: '{dev['pretty']}'")
                     blacklist.add(cand["hash"])
                     del devs[name]
@@ -782,6 +788,9 @@ def device_shortcut_loop(
                         stick_max = 2**16
                         dinput = False
                     devs[name]["dinput"] = dinput
+                    devs[name]["state_ctrl"].update(
+                        {"uniq": dev.uniq}
+                    )
                     devs[name]["stick_max"] = stick_max
                     caps.append(f"Controller[dinput={dinput}, smax={stick_max}]")
                 if cand["is_keyboard"]:
