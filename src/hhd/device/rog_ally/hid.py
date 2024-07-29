@@ -363,4 +363,5 @@ def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
 
     for cmd in cmds:
         wait_for_ready(dev)
+        logger.warning(cmd.hex())
         dev.write(cmd)
