@@ -9,6 +9,7 @@ from hhd.controller.lib.hid import Device
 from .const import (
     COMMANDS_GAME,
     COMMANDS_MOUSE,
+    FEATURE_KBD_REPORT_ID,
     RGB_APPLY,
     RGB_INIT,
     RGB_SET,
@@ -338,7 +339,7 @@ def wait_for_ready(dev: Device, timeout: int = 1):
 
     while time.perf_counter() - start < timeout:
         dev.write(WAIT_READY)
-        rep = dev.read(timeout=200)
+        rep = dev.get_feature_report(FEATURE_KBD_REPORT_ID)
         logger.warning(rep.hex())
         if rep and rep[0] == 0x5A and rep[2] == 0x0A:
             return True
