@@ -13,13 +13,6 @@ from hhd.plugins import (
 )
 from hhd.plugins.settings import HHDSettings
 
-LIMIT_DEFAULTS = {
-    "s_min": 5,
-    "s_max": 0x40,
-    "t_min": 5,
-    "t_max": 0x40,
-}
-
 
 class RogAllyControllersPlugin(HHDPlugin):
     name = "rog_ally_controllers"
@@ -44,6 +37,8 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
+        from .base import LIMIT_DEFAULTS
+
         base = {"controllers": {"rog_ally": load_relative_yaml("controllers.yml")}}
         base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
             get_outputs_config(can_disable=False)
@@ -54,6 +49,8 @@ class RogAllyControllersPlugin(HHDPlugin):
         return base
 
     def update(self, conf: Config):
+        from .base import LIMIT_DEFAULTS
+
         fix_limits(conf, "controllers.rog_ally.limits", LIMIT_DEFAULTS)
 
         new_conf = conf["controllers.rog_ally"]

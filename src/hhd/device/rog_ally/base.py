@@ -39,6 +39,13 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "timestamp": ("imu_ts", None, 1, None),
 }
 
+LIMIT_DEFAULTS = {
+    "s_min": 5,
+    "s_max": 0x40,
+    "t_min": 5,
+    "t_max": 0x40,
+}
+
 MODE_DELAY = 0.3
 VIBRATION_DELAY = 0.1
 VIBRATION_ON: Event = {
@@ -336,7 +343,7 @@ def controller_loop(
         d_allyx = None
 
     # Vendor
-    kconf = get_limits(conf["limits"])
+    kconf = get_limits(conf["limits"], defaults=LIMIT_DEFAULTS)
     d_vend = AllyHidraw(
         vid=[ASUS_VID],
         pid=[ALLY_PID, ALLY_X_PID],

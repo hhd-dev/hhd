@@ -290,9 +290,9 @@ def get_limits_config(defaults: dict[str, int] = {}):
     return s
 
 
-def get_limits(conf):
+def get_limits(conf, defaults={}):
     if conf["mode"].to(str) != "manual":
-        return {}
+        return defaults
 
     kconf = conf["manual"]
     for set in ("ls", "rs", "lt", "rt"):
