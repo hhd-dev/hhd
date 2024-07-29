@@ -338,9 +338,9 @@ def wait_for_ready(dev: Device, timeout: int = 1):
     start = time.perf_counter()
 
     while time.perf_counter() - start < timeout:
-        dev.write(WAIT_READY)
+        dev.send_feature_report(WAIT_READY)
         rep = dev.get_feature_report(FEATURE_KBD_REPORT_ID)
-        logger.warning(rep.hex())
+        logger.warning(f"Ready: {rep.hex()}")
         if rep and rep[0] == 0x5A and rep[2] == 0x0A:
             return True
         else:
@@ -364,5 +364,5 @@ def switch_mode(dev: Device, mode: GamepadMode, kconf={}, first: bool = False):
     for cmd in cmds:
         wait_for_ready(dev, timeout=5 if first else 1)
         first = False
-        logger.warning(cmd.hex())
+        logger.warning(f"Write: {cmd.hex()}")
         dev.write(cmd)
