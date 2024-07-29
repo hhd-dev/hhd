@@ -338,19 +338,18 @@ def wait_for_ready(dev: Device, timeout: int = 1):
 
     while time.perf_counter() - start < timeout:
         dev.write(WAIT_READY)
-        rep = dev.read(timeout=0.2)
+        rep = dev.read(timeout=200)
         logger.warning(rep.hex())
         if rep and rep[0] == 0x5A and rep[2] == 0x0A:
             return True
         else:
-            time.sleep(0.2)
+            time.sleep(0.1)
 
     logger.error("Ready timeout lapsed.")
     return False
 
 
-def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
-
+def switch_mode(dev: Device, mode: GamepadMode, kconf={}, first: bool = False):
     match mode:
         case "default":
             cmds = COMMANDS_GAME(kconf)
@@ -362,6 +361,7 @@ def switch_mode(dev: Device, mode: GamepadMode, kconf={}):
             assert False, f"Mode '{mode}' not supported."
 
     for cmd in cmds:
-        wait_for_ready(dev)
+        wait_for_ready(dev, timeout=5 if first else 1)
+        first = False
         logger.warning(cmd.hex())
         dev.write(cmd)

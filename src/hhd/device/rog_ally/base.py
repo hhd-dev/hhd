@@ -128,8 +128,8 @@ class AllyHidraw(GenericGamepadHidraw):
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
         if self.dev:
-            logger.info(f"Switching Ally Controllers to gamepad mode.")
-            switch_mode(self.dev, "default", self.kconf)
+            logger.info(f"Switching Ally Controller to gamepad mode.")
+            switch_mode(self.dev, "default", self.kconf, first=True)
 
         self.mouse_mode = False
         return a
