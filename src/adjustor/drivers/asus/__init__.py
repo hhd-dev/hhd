@@ -161,13 +161,13 @@ class AsusDriverPlugin(HHDPlugin):
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"]["unit"] = "17W"
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
                 "unit"
-            ] = "25W"
+            ] = "25/30W"
         else:
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"]["unit"] = "10W"
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"]["unit"] = "15W"
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
                 "unit"
-            ] = "20W"
+            ] = "25/30W"
 
         if not self.enforce_limits:
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["children"]["tdp"][
