@@ -224,7 +224,9 @@ def find_hhd(display: display.Display):
 
 
 def find_steam(display: display.Display):
-    return find_win(display, ["steamwebhelper", "steam"])
+    return find_win(display, ["steamwebhelper", "steam"]) or find_win(
+        display, ["steamwebhelper", "SDL Application"]
+    )
 
 
 def does_steam_exist(display: display.Display):
