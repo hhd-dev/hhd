@@ -341,6 +341,10 @@ def wait_for_ready(dev: Device, timeout: int = 1):
         dev.send_feature_report(WAIT_READY)
         rep = dev.get_feature_report(FEATURE_KBD_REPORT_ID)
         logger.warning(f"Ready: {rep.hex()}")
+
+        # FIXME: Temporary disable since certain allys have issues with it
+        return False
+
         if rep and rep[0] == 0x5A and rep[2] == 0x0A:
             return True
         else:
