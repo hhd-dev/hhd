@@ -14,6 +14,8 @@ if [ "${is_bazzite}" ]; then
   exit
 fi
 
+set -e
+
 # Install Handheld Daemon to ~/.local/share/hhd
 mkdir -p ~/.local/share/hhd && cd ~/.local/share/hhd
 
