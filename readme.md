@@ -264,15 +264,15 @@ Add the following to your `configuration.nix` to enable:
 Handheld Daemon comes pre-installed on [Bazzite](https://bazzite.gg) and 
 updates along-side the system.
 Most users of Handheld Daemon are on Bazzite and Bazzite releases
-often happen to bundle Handheld Daemon.
+often happen for Handheld Daemon to update.
 Bazzite contains all kernel patches and quirks required for all supported handhelds
-to work (to the extent they can; certain Ayaneo devices have issues.)
+to work (to the extent they can; certain Ayaneo devices have issues).
 
-After install, you can use `ujust` to install Decky and the Handheld Daemon Decky
-plugin with the commands `ujust setup-decky`, `ujust setup-decky hhd-decky`.
-
-If you need to use a different Handheld Daemon version or a custom one, the 
-install steps do not currently work for Bazzite, a `ujust` command is in the works.
+If you want to test the development Handheld Daemon version you
+can use `ujust _hhd-dev` and give feedback.
+It will only last until you reboot and leave no changes to your system.
+After changes are deemed stable, they usually are incorporated to Bazzite
+after a few days.
 
 See [supported devices](#supported-devices) to check the status of your device and 
 [after install](#issues) for specific device quirks.
