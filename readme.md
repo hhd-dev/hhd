@@ -112,24 +112,20 @@ The touchpad will not work for devices not on the supported list.
 Help is needed for OneXPlayer/AOKZOE LED Support.
 
 ## Installation Instructions
-Use the following script to install Handheld Daemon or find your OS [here](#os-install):
+For Arch and Fedora see [here](#os-install).
+For others, you can use the following script to install a local version of
+Handheld Daemon that updates independently of the system.
 ```bash
 curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | bash
 ```
 
-You can use this script on NobaraOS (after uninstalling the built-in Handheld Daemon/HandyGCCS).
-ChimeraOS up to 45-1 is not supported due to general instability (uninstall HandyGCCS if you do).
-This does not work and is not needed on Bazzite, see [here](#bazzite).
+This script does not automatically install system dependencies.
+A partial list for Ubuntu/Debian can be found [here](#debian).
+Then see [here](./kernel.md) for a partial list of kernel 
+patches. This includes `acpi_call` for TDP on devices other than the Ally.
 
-> [!IMPORTANT]  
-> For non-gaming distros, see [here](./kernel.md) for a partial list of kernel 
-> patches. This includes `acpi_call` for TDP on devices other than the Ally.
-
-You can also install the Decky plugin (optional; decky required):
-([instructions](https://github.com/SteamDeckHomebrew/decky-loader#-installation)):
-```bash
-curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | bash
-```
+As Handheld Daemon matures, this list will continue to grow, so consider
+a gaming distro such as Bazzite for your gaming needs.
 
 ### Uninstall
 We are sorry to see you go, use the following to uninstall:
@@ -200,35 +196,25 @@ trackpad.
 This means that if you go to use it as steam input, you still get the normal
 trackpad input.
 This leads to double input.
-
-You can either disable it with the package `ds-inhibit` which detects if steam
-is running and mutes it (still works in desktop) or with the following udev rule 
-(does not work in desktop).
-Place it under `/etc/udev/rules.d/99-hhd-playstation-touchpad.rules`
-```bash
-# Disables all playstation touchpads from use as touchpads.
-ACTION=="add|change", KERNEL=="event[0-9]*", ATTRS{name}=="*Wireless Controller Touchpad", ENV{LIBINPUT_IGNORE_DEVICE}="1"
-```
-
+You should use the package `ds-inhibit` to fix that, which detects steam and mutes
+the trackpad while Steam is running.
 The package `ds-inhibit` is available in AUR, packaged for Nobara, and enabled
 by default in Bazzite.
 
 #### Playstation Glyphs and Controller Image
-If you do not want Playstation glyphs in Steam, you can use 
-https://github.com/frazse/PS5-to-Xbox-glyphs
-as a CSS Loader plugin to switch them to Xbox.
-Then, there are CSS plugins for the Legion Go and Ally controller images in
-https://github.com/frazse/SBP-Legion-Go-Theme and 
-https://github.com/semakusut/SBP-ROG-Ally respectively.
-If you are using Bazzite, you can also find a `ujust` version of the commands 
-in the Bazzite readme.
+New steam versions allow for universal glyphs that are controller agnostic,
+for when using the Dualsense output option.
+In addition, the new default Xbox option has the familiar Xbox layout.
+If you are willing to install Decky, which has certain stability issues
+as steam updates, Bazzite vendors a controller css theme 
+for Decky that changes playstation glyphs.
 
 ## <a name="configuration"></a>Configuration
 Open the overlay (double press side button), or open the desktop app (`Handheld Daemon`/`$ hhd-ui`),
 or go to [hhd.dev](https://hhd.dev) and enter your device token (`~/.config/hhd/token`).
 Then just start configuring!
 
-You can also use the Decky plugin (needs Decky):
+While deprecated, the Decky plugin is still available:
 ```
 curl -L https://github.com/hhd-dev/hhd-decky/raw/main/install.sh | sh
 ```
@@ -240,9 +226,8 @@ The configuration files are stored under `~/.config/hhd` with the main one being
 You can install Handheld Daemon from [AUR](https://aur.archlinux.org/packages/hhd) 
 (Arch) or [COPR](https://copr.fedorainfracloud.org/coprs/hhd-dev/hhd/) (Fedora).
 Both update automatically every time there is a new release.
+For Debian/Ubuntu see below.
 
-But, the auto-updater will not work, which is an important feature with devices
-without a keyboard.
 ```bash
 # Arch
 yay -S hhd adjustor hhd-ui
@@ -252,6 +237,18 @@ sudo dnf copr enable hhd-dev/hhd
 sudo dnf install hhd adjustor hhd-ui
 
 sudo systemctl enable hhd@$(whoami)
+```
+
+### <a name="debian"></a> Debian/Ubuntu
+The following packages are required for local install to work on Ubuntu/Debian.
+Handheld daemon is not packaged for apt yet.
+```bash
+sudo apt install \
+    libgirepository1.0-dev \
+    libcairo2-dev \
+    libpython3-dev \
+    python3-venv \
+    libhidapi-hidraw0
 ```
 
 ### ❄️ NixOS
