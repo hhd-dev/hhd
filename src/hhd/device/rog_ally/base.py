@@ -39,11 +39,13 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "timestamp": ("imu_ts", None, 1, None),
 }
 
-LIMIT_DEFAULTS = {
+LIMIT_DEFAULTS = lambda allyx: {
     "s_min": 5,
     "s_max": 0x40,
     "t_min": 5,
     "t_max": 0x40,
+    # ally x vibration motor is too strong
+    "vibration": 75 if allyx else 100,
 }
 
 MODE_DELAY = 0.3
@@ -250,7 +252,7 @@ def plugin_run(
         try:
             gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
             nkey_devs = enumerate_unique(vid=ASUS_VID)
-            
+
             if (not gamepad_devs and not ally_x) or not nkey_devs:
                 if first:
                     first = False
@@ -340,7 +342,7 @@ def controller_loop(
         d_allyx = None
 
     # Vendor
-    kconf = get_limits(conf["limits"], defaults=LIMIT_DEFAULTS)
+    kconf = get_limits(conf["limits"], defaults=LIMIT_DEFAULTS(ally_x))
     d_vend = AllyHidraw(
         vid=[ASUS_VID],
         pid=[ALLY_PID, ALLY_X_PID],

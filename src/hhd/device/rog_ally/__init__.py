@@ -44,14 +44,14 @@ class RogAllyControllersPlugin(HHDPlugin):
             get_outputs_config(can_disable=False)
         )
         base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config(
-            LIMIT_DEFAULTS
+            LIMIT_DEFAULTS(self.ally_x)
         )
         return base
 
     def update(self, conf: Config):
         from .base import LIMIT_DEFAULTS
 
-        fix_limits(conf, "controllers.rog_ally.limits", LIMIT_DEFAULTS)
+        fix_limits(conf, "controllers.rog_ally.limits", LIMIT_DEFAULTS(self.ally_x))
 
         new_conf = conf["controllers.rog_ally"]
         if new_conf == self.prev:
