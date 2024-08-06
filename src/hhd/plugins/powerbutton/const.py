@@ -73,7 +73,7 @@ def get_config() -> PowerButtonConfig:
         sys = None
 
     for d in SUPPORTED_DEVICES:
-        if d.prod_name == prod:
+        if d.prod_name in prod:
             return d
 
     if "ONEXPLAYER" in prod or "AOKZOE" in prod:
