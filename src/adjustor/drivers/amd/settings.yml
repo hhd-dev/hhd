@@ -26,7 +26,7 @@ enabled:
           children:
             cpu_pref:
               type: multiple
-              title: CPU Power
+              title: CPU Power (EPP)
               tags: [ordinal]
               hint: >-
                 Sets the energy performance preference for the CPU.
