@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 PP_DELAY = 0.2
 APPLY_DELAY = 1
+SLEEP_DELAY = 4
 
 
 class SmuQamPlugin(HHDPlugin):
@@ -206,6 +207,10 @@ class SmuQamPlugin(HHDPlugin):
                         self.new_tdp = 15
                     case "performance":
                         self.new_tdp = 25
+            
+            if ev['type'] == 'special' and ev['event'] == "wakeup":
+                logger.info(f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds.")
+                self.queued = time.time() + SLEEP_DELAY
 
     def close(self):
         pass
