@@ -161,7 +161,7 @@ the buttons.
 Here is how the button settings should look:
 ```
 Left-key: PrtSc + 0ms + NC + 0ms + NC + 0ms + NC
-Right-key: Pausc + 0ms + NC + 0ms + NC + 0ms + NC
+Right-key: Pause + 0ms + NC + 0ms + NC + 0ms + NC
 ```
 
 Unfortunately, it is not possible to rapid double tap the buttons due to their
