@@ -208,7 +208,7 @@ class SmuQamPlugin(HHDPlugin):
                     case "performance":
                         self.new_tdp = 25
             
-            if ev['type'] == 'special' and ev['event'] == "wakeup":
+            if ev['type'] == 'special' and ev.get('event', None) == "wakeup":
                 logger.info(f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds.")
                 self.queued = time.time() + SLEEP_DELAY
 
