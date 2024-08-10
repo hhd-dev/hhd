@@ -152,7 +152,7 @@ you can swap them with start/select for this functionality.
 
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
-back buttons to Left: PrintScreen, Right: Pause using Windows.
+back buttons to Left: PrintScreen, Right: Pausc using Windows (onscreen keyboard?).
 This is the default mapping, so if you never remapped them using Windows you
 will not have to.
 Handheld Daemon automatically handles the interval to enable being able to hold
@@ -161,7 +161,7 @@ the buttons.
 Here is how the button settings should look:
 ```
 Left-key: PrtSc + 0ms + NC + 0ms + NC + 0ms + NC
-Right-key: Pause + 0ms + NC + 0ms + NC + 0ms + NC
+Right-key: Pausc + 0ms + NC + 0ms + NC + 0ms + NC
 ```
 
 Unfortunately, it is not possible to rapid double tap the buttons due to their
