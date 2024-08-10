@@ -122,11 +122,10 @@ def device_str(d):
             + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
             + f" Names: '{d['manufacturer_string']}': '{d['product_string']}'")
 
-def hidraw(dev: str | None):
+def hidraw(dev: str | None, *cmds: str):
     from hhd.controller.lib.hid import enumerate_unique, Device
-    from time import sleep, time, perf_counter
-
-    print("Available Devices with the Current Permissions")
+    from time import sleep, perf_counter
+    
     avail = []
     infos = {}
     devs = {}
@@ -137,9 +136,7 @@ def hidraw(dev: str | None):
             f" - {device_str(d)}"
         )
         devs[d['path']] = d
-    print("\n".join([infos[k] for k in sorted(infos)]))
-
-    print()
+    
     if dev:
         print(f"Using argument '{dev}'.")
         try:
@@ -150,6 +147,10 @@ def hidraw(dev: str | None):
             print(f"Device '{sel.decode()}' not found.")
             return
     else:
+        print("Available Devices with the Current Permissions")
+        print("\n".join([infos[k] for k in sorted(infos)]))
+        print()
+        
         sel = None
         while not sel or sel not in avail:
             try:
@@ -163,6 +164,17 @@ def hidraw(dev: str | None):
         print()
 
     d = Device(path=sel)
+
+    if cmds:
+        print(f"Writing provided commands to device:")
+        for cmd in cmds:
+            print(f" - {cmd}")
+            try:
+                d.write(bytes.fromhex(cmd.replace(' ', '').replace(':', '')))
+            except Exception as e:
+                print(f"Error writing command '{cmd}':\n{e}")
+                return
+        return
 
     try:
         from .hid_desc import print_descriptor

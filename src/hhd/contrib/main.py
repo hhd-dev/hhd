@@ -24,7 +24,10 @@ def main():
             case "hidraw":
                 from .dev import hidraw
 
-                hidraw(cmds[1] if len(cmds) > 1 else None)
+                if len(cmds) > 1:
+                    hidraw(*cmds[1:])
+                else:
+                    hidraw(None)
             case "gamescope":
                 from .gs import gamescope_debug
 
