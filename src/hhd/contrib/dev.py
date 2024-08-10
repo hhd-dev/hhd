@@ -166,6 +166,8 @@ def hidraw(dev: str | None, *cmds: str):
     d = Device(path=sel)
 
     if cmds:
+        print(f"Device: {device_str(devs[sel])}")
+        print()
         print(f"Writing provided commands to device:")
         for cmd in cmds:
             print(f" - {cmd}")
