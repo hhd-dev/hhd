@@ -4,7 +4,20 @@ import random
 import select
 import time
 from threading import RLock
-from typing import Any, Callable, Literal, Mapping, NamedTuple, Sequence, TypedDict
+from typing import (
+    Any,
+    Callable,
+    Literal,
+    Mapping,
+    NamedTuple,
+    Sequence,
+    TypedDict
+)
+try:
+    # Try to maintain compat with python 3.10
+    from typing import NotRequired # type: ignore
+except ImportError:
+    from typing import Optional as NotRequired
 
 from .const import Axis, Button, Configuration
 
@@ -42,7 +55,7 @@ class SpecialEvent(TypedDict):
         # Sleep information
         "wakeup",
     ]
-    data: Any | None
+    data: "NotRequired[Any]"
 
 
 class RumbleEvent(TypedDict):
