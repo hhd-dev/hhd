@@ -39,6 +39,8 @@ class SpecialEvent(TypedDict):
         "tdp_cycle_balanced",
         "tdp_cycle_performance",
         "tdp_cycle_custom",
+        # Sleep information
+        "wakeup",
     ]
     data: Any | None
 
@@ -604,12 +606,13 @@ class Multiplexer:
                 if self.select_is_held:
                     try:
                         import os
+
                         os.system("systemctl reboot")
                         logger.info("rebooting")
                     except Exception as e:
                         logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
             elif self.select_is_held or not ev.get("from_reboot", False):
-                out.append({**ev, "from_queue": True}) # type: ignore
+                out.append({**ev, "from_queue": True})  # type: ignore
 
         # Check for steam for touchpad emulation
         if (

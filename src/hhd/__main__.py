@@ -85,6 +85,14 @@ def notifier(ev: TEvent, cond: Condition):
     return _inner
 
 
+def get_wakeup_count():
+    try:
+        with open("/sys/power/wakeup_count", "r") as f:
+            return int(f.read().strip())
+    except Exception:
+        return -1
+
+
 def print_token(ctx):
     token_fn = expanduser(join(CONFIG_DIR, "token"), ctx)
 
@@ -271,6 +279,9 @@ def main():
         signal.signal(signal.SIGPOLL, notifier(should_initialize, cond))
         signal.signal(signal.SIGINT, notifier(should_exit, cond))
         signal.signal(signal.SIGTERM, notifier(should_exit, cond))
+
+        # Get wakeup count for sleep detection
+        wakeup_count = get_wakeup_count()
 
         while not should_exit.is_set():
             #
@@ -465,6 +476,24 @@ def main():
             set_log_plugin("main")
             settings_changed = False
             events = emit.get_events()
+
+            new_wakeup_count = get_wakeup_count()
+            if new_wakeup_count != wakeup_count:
+                logger.info(
+                    f"System woke up from sleep. Wakeup count: {new_wakeup_count} from {wakeup_count}."
+                )
+                events: Sequence[Event] = [
+                    *events,
+                    {
+                        "type": "special",
+                        "event": "wakeup",
+                        "data": {
+                            "count": new_wakeup_count
+                        },  # FIXME: Count might be removed in the future
+                    },
+                ]
+                wakeup_count = new_wakeup_count
+
             for ev in events:
                 match ev["type"]:
                     case "settings":
@@ -710,7 +739,7 @@ def main():
                     cond.wait(timeout=POLL_DELAY)
 
             # Check reset
-            if conf['hhd.settings.reset'].to(bool):
+            if conf["hhd.settings.reset"].to(bool):
                 conf["hhd.settings.reset"] = False
                 should_initialize.set()
                 reset = True
