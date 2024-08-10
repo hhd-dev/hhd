@@ -9,7 +9,6 @@ from hhd.controller.lib.hid import Device
 from .const import (
     COMMANDS_GAME,
     COMMANDS_MOUSE,
-    FEATURE_KBD_REPORT_ID,
     RGB_APPLY,
     RGB_INIT,
     RGB_SET,
@@ -72,7 +71,7 @@ def rgb_command(
             # Color cycle
             c_mode = 0x02
         case "spiral":
-            # Wave
+            # Rainbow
             c_mode = 0x03
             red = 0
             green = 0
@@ -339,16 +338,17 @@ def wait_for_ready(dev: Device, timeout: int = 1):
 
     while time.perf_counter() - start < timeout:
         dev.send_feature_report(WAIT_READY)
-        rep = dev.get_feature_report(FEATURE_KBD_REPORT_ID)
-        logger.warning(f"Ready: {rep.hex()}")
+        # rep = dev.get_feature_report(FEATURE_KBD_APP) # this is not the proper
+        # way for this
+        # logger.warning(f"Ready: {rep.hex()}")
 
         # FIXME: Temporary disable since certain allys have issues with it
         return False
 
-        if rep and rep[0] == 0x5A and rep[2] == 0x0A:
-            return True
-        else:
-            time.sleep(0.1)
+        # if rep and rep[0] == 0x5A and rep[2] == 0x0A:
+        #     return True
+        # else:
+        #     time.sleep(0.1)
 
     logger.error("Ready timeout lapsed.")
     return False

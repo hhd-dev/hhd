@@ -2,9 +2,9 @@ def buf(x):
     return bytes(x) + bytes(64 - len(x))
 
 
-FEATURE_KBD_REPORT_ID = 0x5A
-FEATURE_KBD_LED_REPORT_ID1 = 0x5D
-FEATURE_KBD_LED_REPORT_ID2 = 0x5E
+FEATURE_KBD_DRIVER = 0x5A
+FEATURE_KBD_APP = 0x5D
+FEATURE_KBD_ID = FEATURE_KBD_DRIVER
 
 xpad_mode_game = 0x01
 xpad_mode_wasd = 0x02
@@ -59,15 +59,15 @@ PAD_VIEW = 0x11
 PAD_MENU = 0x12
 PAD_XBOX = 0x13
 
-MODE_GAME = buf([FEATURE_KBD_REPORT_ID, 0xD1, xpad_cmd_set_mode, 0x01, xpad_mode_game])
+MODE_GAME = buf([FEATURE_KBD_ID, 0xD1, xpad_cmd_set_mode, 0x01, xpad_mode_game])
 
 MODE_MOUSE = buf(
-    [FEATURE_KBD_REPORT_ID, 0xD1, xpad_cmd_set_mode, 0x01, xpad_mode_mouse]
+    [FEATURE_KBD_ID, 0xD1, xpad_cmd_set_mode, 0x01, xpad_mode_mouse]
 )
 
 REMAP_DPAD_UD = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_dpad_u_d,
@@ -142,7 +142,7 @@ REMAP_DPAD_UD = buf(
 
 REMAP_DPAD_UD_MOUSE = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_dpad_u_d,
@@ -200,7 +200,7 @@ REMAP_DPAD_UD_MOUSE = buf(
 
 REMAP_DPAD_LR = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_dpad_l_r,
@@ -258,7 +258,7 @@ REMAP_DPAD_LR = buf(
 
 REMAP_DPAD_LR_MOUSE = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_dpad_l_r,
@@ -316,7 +316,7 @@ REMAP_DPAD_LR_MOUSE = buf(
 
 REMAP_JOYSTICKS = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_ls_rs,
@@ -374,7 +374,7 @@ REMAP_JOYSTICKS = buf(
 
 REMAP_JOYSTICKS_MOUSE = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_ls_rs,
@@ -432,7 +432,7 @@ REMAP_JOYSTICKS_MOUSE = buf(
 
 REMAP_SHOULDERS = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_lb_rb,
@@ -490,7 +490,7 @@ REMAP_SHOULDERS = buf(
 
 REMAP_SHOULDERS_MOUSE = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_lb_rb,
@@ -548,7 +548,7 @@ REMAP_SHOULDERS_MOUSE = buf(
 
 REMAP_AB = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_a_b,
@@ -606,7 +606,7 @@ REMAP_AB = buf(
 
 REMAP_AB_MOUSE = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_a_b,
@@ -664,7 +664,7 @@ REMAP_AB_MOUSE = buf(
 
 REMAP_XY = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_x_y,
@@ -722,7 +722,7 @@ REMAP_XY = buf(
 
 REMAP_XY_MOUSE = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_x_y,
@@ -780,7 +780,7 @@ REMAP_XY_MOUSE = buf(
 
 REMAP_VIEW_MENU = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_view_menu,
@@ -838,7 +838,7 @@ REMAP_VIEW_MENU = buf(
 
 REMAP_M1M2_DEFAULT = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_m1_m2,
@@ -896,7 +896,7 @@ REMAP_M1M2_DEFAULT = buf(
 
 REMAP_M1M2_F17F18 = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_m1_m2,
@@ -954,7 +954,7 @@ REMAP_M1M2_F17F18 = buf(
 
 REMAP_TRIGGERS = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_lt_rt,
@@ -1012,7 +1012,7 @@ REMAP_TRIGGERS = buf(
 
 REMAP_TRIGGERS_MOUSE = buf(
     [
-        FEATURE_KBD_REPORT_ID,
+        FEATURE_KBD_ID,
         0xD1,
         xpad_cmd_set_mapping,
         btn_pair_lt_rt,
@@ -1068,12 +1068,12 @@ REMAP_TRIGGERS_MOUSE = buf(
     ]
 )
 
-WAIT_READY = buf([FEATURE_KBD_REPORT_ID, 0xD1, xpad_cmd_check_ready, 0x01])
+WAIT_READY = buf([FEATURE_KBD_ID, 0xD1, xpad_cmd_check_ready, 0x01])
 
 COMMIT_RESET = lambda kconf: [
     buf(
         [
-            FEATURE_KBD_REPORT_ID,
+            FEATURE_KBD_ID,
             0xD1,
             xpad_cmd_set_turbo,
             0x20,  # Length, 32
@@ -1083,7 +1083,7 @@ COMMIT_RESET = lambda kconf: [
     ),
     buf(
         [
-            FEATURE_KBD_REPORT_ID,
+            FEATURE_KBD_ID,
             0xD1,
             xpad_cmd_set_vibe_intensity,
             0x02,  # Length
@@ -1093,7 +1093,7 @@ COMMIT_RESET = lambda kconf: [
     ),
     buf(
         [
-            FEATURE_KBD_REPORT_ID,
+            FEATURE_KBD_ID,
             0xD1,
             xpad_cmd_set_js_dz,
             0x04,  # Length
@@ -1105,7 +1105,7 @@ COMMIT_RESET = lambda kconf: [
     ),
     buf(
         [
-            FEATURE_KBD_REPORT_ID,
+            FEATURE_KBD_ID,
             0xD1,
             xpad_cmd_set_tr_dz,
             0x04,  # Length
@@ -1145,10 +1145,11 @@ COMMANDS_MOUSE = lambda kconf: [
     *COMMIT_RESET(kconf),
 ]
 
-RGB_APPLY = buf([FEATURE_KBD_REPORT_ID, 0xB4])
-RGB_SET = buf([FEATURE_KBD_REPORT_ID, 0xB5])
+RGB_APPLY = buf([FEATURE_KBD_ID, 0xB4])
+RGB_SET = buf([FEATURE_KBD_ID, 0xB5])
 
 RGB_PKEY_INIT = lambda key: [
+    # buf([key, 0xB9]), # ?
     buf(
         [
             key,
@@ -1168,14 +1169,12 @@ RGB_PKEY_INIT = lambda key: [
             0x2E,
         ]
     ),
-    buf([key, 0x05, 0x20, 0x31, 0x00, 0x08]),
+    # buf([key, 0x05, 0x20, 0x31, 0x00, 0x08]), # ?
+    # Disable AURA Sync
+    # buf([key, 0xB7, 0x00]),
 ]
 
-RGB_INIT = [
-    buf([FEATURE_KBD_REPORT_ID, 0xB9]),
-    *RGB_PKEY_INIT(FEATURE_KBD_LED_REPORT_ID1),
-    *RGB_PKEY_INIT(FEATURE_KBD_LED_REPORT_ID2),
-]
+RGB_INIT = RGB_PKEY_INIT(FEATURE_KBD_ID)
 
 
 # RGB on when
@@ -1194,7 +1193,7 @@ def config_rgb(boot: bool, charging: bool) -> bytes:
         val += 0x04
     return buf(
         [
-            FEATURE_KBD_REPORT_ID,
+            FEATURE_KBD_ID,
             0xD1,
             0x09,
             0x01,
