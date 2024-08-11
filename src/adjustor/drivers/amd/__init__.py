@@ -69,6 +69,7 @@ class AmdGPUPlugin(HHDPlugin):
         self.initialized = False
         self.supports_boost = False
         self.supports_sched = False
+        self.min_freq = None
         self.avail_scheds = {}
 
         self.proc = None
@@ -157,9 +158,14 @@ class AmdGPUPlugin(HHDPlugin):
             }
 
         self.initialized = True
+        
+        # Initialize frequency settings
         manual_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"][
             "children"
         ]["gpu_freq"]["modes"]["manual"]["children"]["frequency"]
+        upper_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"][
+            "children"
+        ]["gpu_freq"]["modes"]["upper"]["children"]["frequency"]
         min_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
             "gpu_freq"
         ]["modes"]["range"]["children"]["min"]
@@ -168,11 +174,13 @@ class AmdGPUPlugin(HHDPlugin):
         ]["modes"]["range"]["children"]["max"]
 
         manual_freq["default"] = ((status.freq_min + status.freq_max) // 200) * 100
+        upper_freq["default"] = status.freq_max
         min_freq["default"] = status.freq_min
         max_freq["default"] = status.freq_max
-        for freq in (manual_freq, min_freq, max_freq):
+        for freq in (manual_freq, min_freq, max_freq, upper_freq):
             freq["min"] = status.freq_min
             freq["max"] = status.freq_max
+        self.min_freq = status.freq_min
 
         self.supports_boost = status.cpu_boost is not None
         if self.supports_boost:
@@ -339,6 +347,11 @@ class AmdGPUPlugin(HHDPlugin):
                         int
                     )
                     new_freq = (f, f)
+                case "upper":
+                    f = conf["tdp.amd_energy.mode.manual.gpu_freq.upper.frequency"].to(
+                        int
+                    )
+                    new_freq = (self.min_freq or f, f)
                 case "range":
                     min_f = conf["tdp.amd_energy.mode.manual.gpu_freq.range.min"].to(
                         int

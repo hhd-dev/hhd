@@ -78,26 +78,35 @@ enabled:
                   title: Auto
                   hint: >-
                     Lets the GPU manage its own frequency.
+                upper:
+                  type: container
+                  title: Upper Limit
+                  hint: >-
+                    Sets the GPU frequency to a maximum.
+                  children:
+                    frequency: &freq
+                      type: int
+                      unit: MHz
+                      min: 300
+                      max: 2000
+                      step: 100
+                      default: 1000
+                      title: Maximum Frequency
                 range:
                   type: container
                   title: Range
                   hint: >-
                     Sets the GPU frequency to a range.
                   children:
-                    min: &freq
-                      unit: MHz
-                      type: int
-                      min: 300
-                      max: 2000
-                      step: 100
-                      default: 1000
-                      title: Minimum
+                    min:
+                      <<: *freq
+                      title: Minimum Frequency
                     max:
                       <<: *freq
-                      title: Maximum
+                      title: Maximum Frequency
                 manual:
                   type: container
-                  title: Manual
+                  title: Fixed
                   hint: >-
                     Sets the GPU frequency manually.
                   children:
