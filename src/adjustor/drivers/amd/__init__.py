@@ -24,7 +24,7 @@ from adjustor.fuse.gpu import (
 
 logger = logging.getLogger(__name__)
 
-APPLY_DELAY = 0.2
+APPLY_DELAY = 0.25
 
 
 def _ppd_client(emit, proc):
@@ -75,9 +75,9 @@ class AmdGPUPlugin(HHDPlugin):
         self.t = None
 
         self.queue = None
+        self.queue_gpu = None
         self.sched_proc = None
         self.old_ppd = False
-        self.old_gpu = None
         self.old_freq = None
         self.old_sched = "disabled"
         self.old_boost = None
@@ -157,12 +157,22 @@ class AmdGPUPlugin(HHDPlugin):
             }
 
         self.initialized = True
-        freq = sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
+        manual_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"][
+            "children"
+        ]["gpu_freq"]["modes"]["manual"]["children"]["frequency"]
+        min_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
             "gpu_freq"
-        ]["modes"]["manual"]["children"]["frequency"]
-        freq["min"] = status.freq_min
-        freq["max"] = status.freq_max
-        freq["default"] = ((status.freq_min + status.freq_max) // 200) * 100
+        ]["modes"]["range"]["children"]["min"]
+        max_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
+            "gpu_freq"
+        ]["modes"]["range"]["children"]["max"]
+
+        manual_freq["default"] = ((status.freq_min + status.freq_max) // 200) * 100
+        min_freq["default"] = status.freq_min
+        max_freq["default"] = status.freq_max
+        for freq in (manual_freq, min_freq, max_freq):
+            freq["min"] = status.freq_min
+            freq["max"] = status.freq_max
 
         self.supports_boost = status.cpu_boost is not None
         if self.supports_boost:
@@ -273,8 +283,8 @@ class AmdGPUPlugin(HHDPlugin):
             else:
                 self.close_ppd()
 
+        curr = time.perf_counter()
         if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
-            curr = time.perf_counter()
             if self.target != self.old_target:
                 self.old_target = self.target
                 self.queue = curr + APPLY_DELAY
@@ -316,7 +326,6 @@ class AmdGPUPlugin(HHDPlugin):
             # Unless it is set manually, use the default scheduler.
             self.close_sched()
             self.old_sched = None
-            self.old_gpu = None
             self.old_freq = None
             self.old_boost = None
             self.old_epp = None
@@ -324,16 +333,35 @@ class AmdGPUPlugin(HHDPlugin):
         else:
             self.old_target = None
             new_gpu = conf["tdp.amd_energy.mode.manual.gpu_freq.mode"].to(str)
-            new_freq = conf["tdp.amd_energy.mode.manual.gpu_freq.manual.frequency"].to(
-                int
-            )
-            if new_gpu != self.old_gpu or new_freq != self.old_freq:
-                self.old_gpu = new_gpu
-                self.old_freq = new_freq
+            match new_gpu:
+                case "manual":
+                    f = conf["tdp.amd_energy.mode.manual.gpu_freq.manual.frequency"].to(
+                        int
+                    )
+                    new_freq = (f, f)
+                case "range":
+                    min_f = conf["tdp.amd_energy.mode.manual.gpu_freq.range.min"].to(
+                        int
+                    )
+                    max_f = conf["tdp.amd_energy.mode.manual.gpu_freq.range.max"].to(
+                        int
+                    )
+                    if max_f < min_f:
+                        max_f = min_f
+                        conf["tdp.amd_energy.mode.manual.gpu_freq.range.max"] = min_f
+                    new_freq = (min_f, max_f)
+                case _:
+                    new_freq = None
 
+            if new_freq != self.old_freq:
+                self.old_freq = new_freq
+                self.queue_gpu = curr + APPLY_DELAY
+
+            if self.queue_gpu is not None and curr >= self.queue_gpu:
+                self.queue_gpu = None
                 try:
-                    if new_gpu == "manual":
-                        set_gpu_manual(new_freq)
+                    if new_freq:
+                        set_gpu_manual(*new_freq)
                     else:
                         set_gpu_auto()
                 except Exception as e:

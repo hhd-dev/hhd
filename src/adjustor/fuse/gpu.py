@@ -112,15 +112,18 @@ def set_gpu_auto():
         f.write("auto")
 
 
-def set_gpu_manual(freq: int):
-    logger.info(f"Pinning GPU frequency to '{freq}Mhz'.")
+def set_gpu_manual(min_freq: int, max_freq: int | None = None):
+    if max_freq is None:
+        max_freq = min_freq
+
+    logger.info(f"Pinning GPU frequency to '{min_freq}Mhz' - '{max_freq}Mhz'.")
     hwmon = find_igpu()
     if not hwmon:
         return None
     with open(os.path.join(hwmon, GPU_LEVEL_PATH), "w") as f:
         f.write("manual")
 
-    for cmd in [f"s 0 {freq}\n", f"s 1 {freq}\n", f"c\n"]:
+    for cmd in [f"s 0 {min_freq}\n", f"s 1 {max_freq}\n", f"c\n"]:
         with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "w") as f:
             f.write(cmd)
 
