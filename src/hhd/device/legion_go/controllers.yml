@@ -53,11 +53,11 @@ children:
     
   m2_to_mute:
     type: bool
-    title: M2 As Mute
+    title: M2 As Xbox Share/Dualsense Mute
     tags: [ non-essential ]
     hint: >-
-      Maps the M2 to the mute button on Dualsense and the HAPPY_TRIGGER_20
-      on Xbox.
+      Maps the M2 to the mute button on Dualsense and the share button on the
+      Xbox Elite controller.
     default: False
   
   select_reboots:
