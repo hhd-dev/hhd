@@ -214,7 +214,7 @@ class AmdGPUPlugin(HHDPlugin):
 
         self.avail_scheds = {}
         avail_pretty = {}
-        kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state") or True
+        kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state")
         if kernel_supports:
             for sched, pretty in sets["enabled"]["children"]["mode"]["modes"]["manual"][
                 "children"
