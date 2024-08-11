@@ -41,7 +41,7 @@ enabled:
             cpu_min_freq:
               type: multiple
               title: CPU Minimum Frequency
-              tags: [ordinal]
+              tags: [ordinal, expert]
               default: min
               options:
                 min: 400MHz
