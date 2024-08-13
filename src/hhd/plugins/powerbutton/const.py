@@ -77,7 +77,7 @@ def get_config() -> PowerButtonConfig:
             return d
 
     if "ONEXPLAYER" in prod or "AOKZOE" in prod:
-        return PBC(prod, prod, type="hold_emitted", phys=["LNXPWRBN"], unsupported=True)
+        return PBC(prod, prod, type="hold_emitted", phys=["LNXPWRBN"])
 
     if sys == "AYA" or sys == "AYANEO" or sys == "AYN":
         # TODO: Fix isa handling to only work when only shift is active
