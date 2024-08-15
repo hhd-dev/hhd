@@ -325,8 +325,9 @@ class RgbCallback:
             self.prev_mode = mode
         if not cmds:
             return
+        BCK = "\n"
         logger.warning(
-            f"Running RGB commands:\n{'\n'.join([cmd[:20].hex() for cmd in cmds])}"
+            f"Running RGB commands:\n{BCK.join([cmd[:20].hex() for cmd in cmds])}"
         )
         for r in cmds:
             dev.write(r)
