@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
+SLEEP_DELAY = 4
 MIN_TDP_START = 7
 MAX_TDP_START = 30
 # FIXME: add AC/DC values
@@ -440,6 +441,9 @@ class AsusDriverPlugin(HHDPlugin):
                         self.new_mode = "balanced"
                     case "performance":
                         self.new_mode = "performance"
+            elif ev['type'] == 'special' and ev.get('event', None) == "wakeup":
+                logger.info(f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds.")
+                self.queue_tdp = time.time() + SLEEP_DELAY
             elif self.cycle_tdp and ev['type'] == "special" and ev['event'] == "xbox_y":
                 match self.mode:
                     case "quiet":
