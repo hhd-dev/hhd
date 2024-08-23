@@ -5,6 +5,7 @@ import os
 import signal
 import subprocess
 import sys
+import time
 from os.path import join
 from threading import Condition
 from threading import Event as TEvent
@@ -47,6 +48,7 @@ CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
 ERROR_DELAY = 5
 INIT_DELAY = 0.4
 POLL_DELAY = 2
+SLEEP_MIN_T = 8
 
 
 class EmitHolder(Emitter):
@@ -145,6 +147,7 @@ def main():
     https = None
     prev_http_cfg = None
     updated = False
+    last_event = None
     info = Config()
 
     # Check we are in a virtual environment
@@ -478,7 +481,15 @@ def main():
             events = emit.get_events()
 
             new_wakeup_count = get_wakeup_count()
-            if new_wakeup_count != wakeup_count:
+            curr = time.time()
+            # Debounce sleep event to avoid spurious wakeup triggers
+            # This loop will run every 2 seconds, perhaps 4 seconds if there is
+            # a delay. Unless 8 seconds lapse, ignore the event
+            if (
+                new_wakeup_count != wakeup_count
+                and last_event
+                and curr > last_event + SLEEP_MIN_T
+            ):
                 logger.info(
                     f"System woke up from sleep. Wakeup count: {new_wakeup_count} from {wakeup_count}."
                 )
@@ -492,7 +503,8 @@ def main():
                         },  # FIXME: Count might be removed in the future
                     },
                 ]
-                wakeup_count = new_wakeup_count
+            wakeup_count = new_wakeup_count
+            last_event = curr
 
             for ev in events:
                 match ev["type"]:
