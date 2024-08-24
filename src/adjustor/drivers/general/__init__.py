@@ -7,6 +7,7 @@ import time
 import signal
 from hhd.plugins import Context, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
+from threading import Event
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ class GeneralPowerPlugin(HHDPlugin):
 
     def __init__(
         self,
+        is_steamdeck: bool = False,
     ) -> None:
         self.name = f"adjustor_general"
         self.priority = 8
@@ -25,6 +27,10 @@ class GeneralPowerPlugin(HHDPlugin):
         self.old_sched = None
         self.sched_proc = None
         self.ppd_supported = None
+        self.is_steamdeck = is_steamdeck
+        self.ovr_enabled = False
+        self.should_exit = Event()
+        self.t_sys = None
 
     def settings(self):
         sets = load_relative_yaml("./settings.yml")
@@ -70,6 +76,9 @@ class GeneralPowerPlugin(HHDPlugin):
             sets["children"]["sched"]["options"] = avail_pretty
         else:
             del sets["children"]["sched"]
+
+        if not self.is_steamdeck:
+            del sets["children"]["steamdeck_ovr"]
 
         self.logged_boost = True
         return {
@@ -134,6 +143,24 @@ class GeneralPowerPlugin(HHDPlugin):
                         stderr=subprocess.DEVNULL,
                         stdout=subprocess.DEVNULL,
                     )
+        
+        # Handle steamdeck_ovr
+        if self.is_steamdeck:
+            new_ovr = conf.get("tdp.general.steamdeck_ovr", False)
+            if new_ovr and not self.ovr_enabled:
+                self.ovr_enabled = True
+                logger.info("Starting FUSE mount for /sys (Overclock).")
+                from ...fuse import prepare_tdp_mount, start_tdp_client
+
+                stat = prepare_tdp_mount(passhtrough=True)
+                if stat:
+                    self.t_sys = start_tdp_client(
+                        self.should_exit,
+                        None,
+                        1,
+                        15,
+                        20,
+                    )
 
     def close_sched(self):
         if self.sched_proc is not None:
@@ -144,3 +171,6 @@ class GeneralPowerPlugin(HHDPlugin):
 
     def close(self):
         self.close_sched()
+        if self.t_sys:
+            self.should_exit.set()
+            self.t_sys.join()

@@ -37,7 +37,7 @@ def find_igpu():
     return None
 
 
-def prepare_tdp_mount(debug: bool = False):
+def prepare_tdp_mount(debug: bool = False, passhtrough: bool = False):
     try:
         gpu = find_igpu()
         logger.info(f"Found GPU at:\n'{gpu}'")
@@ -68,6 +68,8 @@ def prepare_tdp_mount(debug: bool = False):
             f"{exe_python} -m adjustor.fuse.driver '{gpu}'"
             + f" -o root={TDP_MOUNT} -o nonempty -o allow_other"
         )
+        if passhtrough:
+            cmd += " -o passthrough"
         if debug:
             cmd += " -f"
         os.system(cmd)
@@ -156,7 +158,7 @@ def _tdp_client(should_exit: Event, set_tdp, min_tdp, default_tdp, max_tdp):
 def start_tdp_client(
     should_exit: Event, emit, min_tdp: int, default_tdp: int, max_tdp: int
 ):
-    set_tdp = lambda tdp: emit({"type": "tdp", "tdp": tdp})
+    set_tdp = lambda tdp: emit and emit({"type": "tdp", "tdp": tdp})
 
     logger.info(f"Starting TDP client on socket:\n'{FUSE_MOUNT_SOCKET}'")
     t = Thread(

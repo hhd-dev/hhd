@@ -157,7 +157,7 @@ class Xmp(Fuse):
     def fsinit(self):
         os.chdir(self.root)
 
-    def main(self, *a, **kw):
+    def main(self, *a, passthrough=False, **kw):
         os.makedirs(FUSE_MOUNT_DIR, exist_ok=True)
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -167,6 +167,7 @@ class Xmp(Fuse):
         self.file_class = XmpFile
         XmpFile.h = Handler(sock)
         XmpFile.cache = {}
+        XmpFile.passthrough = passthrough
 
         code = Fuse.main(self, *a, **kw)
         sock.close()
@@ -196,10 +197,15 @@ class Handler:
 class XmpFile:
     h: Handler
     cache: dict[str, bytes]
+    passthrough: bool
 
     def __init__(self, path, flags, *mode):
         self.path = path
-        if "power1_cap" in path or "power2_cap" in path:
+        power_attr = "power1_cap" in path or "power2_cap" in path
+        # Allow passing through writes if we are the steam deck
+        passthrough = XmpFile.passthrough and path.endswith("_cap")
+
+        if power_attr and not passthrough:
             print(f"GPU Attribute access: {path} {flags} {mode}")
 
             # Receive file contents from hhd
@@ -373,6 +379,13 @@ def main():
             default="/",
             help="GPU device private bind mount point",
         )
+        server.parser.add_option(
+            mountopt="passthrough",
+            metavar="PASSTHROUGH",
+            action="store_true",
+            default=False,
+            help="Allow tdp write passthrough, e.g., for the Steam Deck.",
+        )
         server.parse(values=server, errex=1)
 
         try:
@@ -382,7 +395,7 @@ def main():
             print("can't enter root of underlying filesystem", file=sys.stderr)
             sys.exit(1)
 
-        server.main()
+        server.main(passthrough=server.passthrough)
     except KeyboardInterrupt:
         pass
     finally:
