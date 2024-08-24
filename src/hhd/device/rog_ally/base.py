@@ -316,7 +316,14 @@ def controller_loop(
             pid=[ALLY_X_PID],
             btn_map=ALLY_X_BUTTON_MAP,
             axis_map=ALLY_X_AXIS_MAP,
-            # name=["Generic X-Box pad"],
+            capabilities={EC("EV_KEY"): [EC("BTN_Z")]},
+            required=True,
+            postprocess=DINPUT_AXIS_POSTPROCESS,
+            hide=True,
+        )
+        d_xinput_alt = GenericGamepadEvdev(
+            vid=[ASUS_VID],
+            pid=[ALLY_X_PID],
             capabilities={EC("EV_KEY"): [EC("BTN_A")]},
             required=True,
             postprocess=DINPUT_AXIS_POSTPROCESS,
@@ -339,6 +346,7 @@ def controller_loop(
             hide=True,
             postprocess={},  # remove calibration as its supported by the GUI
         )
+        d_xinput_alt = None
         d_allyx = None
 
     # Vendor
@@ -398,7 +406,19 @@ def controller_loop(
 
     try:
         d_vend.open()
-        prepare(d_xinput)
+        try:
+            prepare(d_xinput)
+        except Exception as e:
+            if not ally_x:
+                raise e
+            logger.warning(
+                "Did not find the ally HID controller. Using asus_hid driver mappings."
+            )
+            assert d_xinput_alt
+            d_xinput = d_xinput_alt
+            d_allyx = None
+            prepare(d_xinput)
+
         if d_allyx:
             prepare(d_allyx)
         if motion:
