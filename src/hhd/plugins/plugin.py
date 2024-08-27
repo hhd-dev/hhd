@@ -147,6 +147,8 @@ def get_context(user: str | None) -> Context | None:
                 print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return Context(uid, gid, uid, gid, getpass.getuser())
 
+        user = user.replace("\\x2", "-")
+
         euid = int(
             subprocess.run(
                 ["id", "-u", user], capture_output=True, check=True
