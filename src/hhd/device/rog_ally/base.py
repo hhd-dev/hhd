@@ -48,7 +48,7 @@ LIMIT_DEFAULTS = lambda allyx: {
     "vibration": 75 if allyx else 100,
 }
 
-MODE_DELAY = 0.3
+MODE_DELAY = 0.15
 VIBRATION_DELAY = 0.1
 VIBRATION_ON: Event = {
     "type": "rumble",
@@ -373,6 +373,7 @@ def controller_loop(
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         swap_guide="select_is_guide" if conf["swap_armory"].to(bool) else None,
+        qam_no_release=True,
         params=d_params,
     )
 

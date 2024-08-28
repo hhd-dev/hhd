@@ -4,18 +4,11 @@ import random
 import select
 import time
 from threading import RLock
-from typing import (
-    Any,
-    Callable,
-    Literal,
-    Mapping,
-    NamedTuple,
-    Sequence,
-    TypedDict
-)
+from typing import Any, Callable, Literal, Mapping, NamedTuple, Sequence, TypedDict
+
 try:
     # Try to maintain compat with python 3.10
-    from typing import NotRequired # type: ignore
+    from typing import NotRequired  # type: ignore
 except ImportError:
     from typing import Optional as NotRequired
 
@@ -502,6 +495,7 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 class Multiplexer:
     QAM_HOLD_TIME = 0.5
     QAM_MULTI_PRESS_DELAY = 0.2
+    QAM_TAP_TIME = 0.1
     QAM_DELAY = 0.15
     REBOOT_HOLD = 9
     REBOOT_VIBRATION_STRENGTH = 1
@@ -540,6 +534,7 @@ class Multiplexer:
         imu: None | Literal["left_to_main", "right_to_main", "main_to_sides"] = None,
         params: Mapping[str, Any] = {},
         qam_multi_tap: bool = True,
+        qam_no_release: bool = False,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -575,6 +570,7 @@ class Multiplexer:
         self.qam_released = None
         self.qam_times = 0
         self.qam_multi_tap = qam_multi_tap
+        self.qam_no_release = qam_no_release
         self.qam_simple = os.environ.get("HHD_QAM_MULTI_DISABLE", None) or (
             self.emit and self.emit.simple_qam()
         )
@@ -905,15 +901,22 @@ class Multiplexer:
                     if self.qam_button is not None and ev["code"] == self.qam_button:
                         ev["code"] = ""  # type: ignore
                         if not self.qam_simple:
-                            if ev["value"]:
-                                self.qam_times += 1
-                                self.qam_pressed = curr
-                                self.qam_released = None
+                            if self.qam_no_release:
+                                # Fix for the ally having no hold event
+                                if ev["value"]:
+                                    self.qam_times += 1
+                                    self.qam_released = curr + self.QAM_TAP_TIME
+                                    self.qam_pressed = None
                             else:
-                                # Only apply if qam_pressed was not yanked
-                                if self.qam_pressed:
-                                    self.qam_released = curr
-                                self.qam_pressed = None
+                                if ev["value"]:
+                                    self.qam_times += 1
+                                    self.qam_pressed = curr
+                                    self.qam_released = None
+                                else:
+                                    # Only apply if qam_pressed was not yanked
+                                    if self.qam_pressed:
+                                        self.qam_released = curr
+                                    self.qam_pressed = None
                         else:
                             if ev["value"]:
                                 out.append(
