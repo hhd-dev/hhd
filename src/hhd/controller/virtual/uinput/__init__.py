@@ -69,27 +69,28 @@ class UInputDevice(Consumer, Producer):
         logger.info(f"Opening virtual device '{self.name}'.")
         self.dev = None
 
-        cached = cast(
-            UInputDevice | None,
-            _cache_motions.get() if self.motions_device else _cache.get(),
-        )
-        if cached:
-            if (
-                self.capabilities == cached.capabilities
-                and self.name == cached.name
-                and self.vid == cached.vid
-                and self.pid == cached.pid
-                and self.bus == cached.bus
-                and self.phys == cached.phys
-                and self.input_props == cached.input_props
-                and self.uniq == cached.uniq
-            ):
-                logger.warning(
-                    f"Using cached controller node for {'left motions device' if self.motions_device else 'controller'}."
-                )
-                self.dev = cached.dev
-            else:
-                cached.close(True)
+        if self.cache:
+            cached = cast(
+                UInputDevice | None,
+                _cache_motions.get() if self.motions_device else _cache.get(),
+            )
+            if cached:
+                if (
+                    self.capabilities == cached.capabilities
+                    and self.name == cached.name
+                    and self.vid == cached.vid
+                    and self.pid == cached.pid
+                    and self.bus == cached.bus
+                    and self.phys == cached.phys
+                    and self.input_props == cached.input_props
+                    and self.uniq == cached.uniq
+                ):
+                    logger.warning(
+                        f"Using cached controller node for {'left motions device' if self.motions_device else 'controller'}."
+                    )
+                    self.dev = cached.dev
+                else:
+                    cached.close(True)
 
         if not self.dev:
             try:
