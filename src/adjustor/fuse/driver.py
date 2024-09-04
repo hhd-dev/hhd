@@ -395,7 +395,7 @@ def main():
             print("can't enter root of underlying filesystem", file=sys.stderr)
             sys.exit(1)
 
-        server.main(passthrough=server.passthrough)
+        server.main(passthrough=getattr(server, "passthrough", False))
     except KeyboardInterrupt:
         pass
     finally:
