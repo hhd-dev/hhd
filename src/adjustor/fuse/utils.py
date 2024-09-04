@@ -53,9 +53,13 @@ def prepare_tdp_mount(debug: bool = False, passhtrough: bool = False):
 
         if not os.path.ismount(TDP_MOUNT):
             logger.info(f"Creating bind mount for:\n'{gpu}'\nto:\n'{TDP_MOUNT}'")
-            os.system(f"mount --bind '{gpu}' '{TDP_MOUNT}'")
+            cmd = f"mount --bind '{gpu}' '{TDP_MOUNT}'"
+            r = os.system(cmd)
+            assert not r, f"Failed:\n{cmd}"
             logger.info(f"Making bind mount private.")
-            os.system(f"mount --make-private '{TDP_MOUNT}'")
+            cmd = f"mount --make-private '{TDP_MOUNT}'"
+            r = os.system(cmd)
+            assert not r, f"Failed:\n{cmd}"
         else:
             logger.info(f"Bind mount already exists at:\n'{TDP_MOUNT}'")
 
@@ -72,7 +76,8 @@ def prepare_tdp_mount(debug: bool = False, passhtrough: bool = False):
             cmd += " -o passthrough"
         if debug:
             cmd += " -f"
-        os.system(cmd)
+        r = os.system(cmd)
+        assert not r, f"Failed:\n{cmd}"
     except Exception as e:
         logger.error(f"Error preparing fuse mount:\n{e}")
         return False
