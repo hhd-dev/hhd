@@ -20,6 +20,7 @@ include `CONFIG_IIO_HRTIMER_TRIGGER`.
 
 ### TDP
 For the ROG Ally, an up-to-date kernel is required (6.5+).
+For Ally X, 6.11+ with `amd-pmf` blocked is required (see [here](https://github.com/hhd-dev/hhd/issues/95#issuecomment-2336425436)).
 For the rest of the devices, `acpi_call` as a dkms package or kernel patch is
 required (included in Bazzite, Nobara, ChimeraOS).
 

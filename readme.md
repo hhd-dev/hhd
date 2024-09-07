@@ -150,6 +150,9 @@ the right stick into a mouse.
 Combinations with the ROG, Armory Crate buttons is not supported in the Ally,
 you can swap them with start/select for this functionality.
 
+For Ally X, kernel 6.11+ is required, with a few caveats. See [here](https://github.com/hhd-dev/hhd/issues/95#issuecomment-2336425436) 
+for details.
+
 #### Extra steps GPD Win Devices
 In order for the back buttons in GPD Win Devices to work, you need to map the
 back buttons to Left: PrintScreen, Right: Pausc using Windows (onscreen keyboard?).
