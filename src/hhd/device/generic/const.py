@@ -99,6 +99,7 @@ CONFS = {
     # Onexplayer
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
     "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", "hrtimer": True},
+    "ONEXPLAYER F1L": {"name": "ONEXPLAYER ONEXFLY (L)", "hrtimer": True},
     "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", "hrtimer": True},
     "ONEXPLAYER X1 mini": {"name": "ONEXPLAYER X1 mini", "hrtimer": True},
     "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", "hrtimer": True},
