@@ -106,21 +106,25 @@ AYA_DEFAULT_CONF = {
     "btn_mapping": AYANEO_BTN_MAPPINGS,
     "mapping": AYANEO_DEFAULT_MAPPINGS,
 }
+ONEX_DEFAULT_CONF = {
+    "hrtimer": True,
+    "btn_mapping": BTN_MAPPINGS_NONTURBO,
+}
 
 CONFS = {
     # Aokzoe
     "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
     "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
     # Onexplayer
-    "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", "hrtimer": True},
-    "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", "hrtimer": True},
-    "ONEXPLAYER F1L": {"name": "ONEXPLAYER ONEXFLY (L)", "hrtimer": True},
-    "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", "hrtimer": True},
-    "ONEXPLAYER X1 mini": {"name": "ONEXPLAYER X1 mini", "hrtimer": True},
-    "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", "hrtimer": True},
-    "ONEXPLAYER 2 ARP23": {"name": "ONEXPLAYER 2", "hrtimer": True},
-    "ONEXPLAYER 2 PRO ARP23": {"name": "ONEXPLAYER 2 PRO", "hrtimer": True},
-    "ONEXPLAYER 2 PRO ARP23 EVA-01": {"name": "ONEXPLAYER 2 PRO", "hrtimer": True},
+    "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER F1L": {"name": "ONEXPLAYER ONEXFLY (L)", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER X1 mini": {"name": "ONEXPLAYER X1 mini", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER 2 ARP23": {"name": "ONEXPLAYER 2", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER 2 PRO ARP23": {"name": "ONEXPLAYER 2 PRO", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER 2 PRO ARP23 EVA-01": {"name": "ONEXPLAYER 2 PRO", **ONEX_DEFAULT_CONF},
     # Ayn
     "Loki MiniPro": {
         "name": "Loki MiniPro",
