@@ -12,12 +12,12 @@ DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "timestamp": ("imu_ts", None, 1, None),
 }
 
-BTN_MAPPINGS: dict[int, str] = {
+BTN_MAPPINGS: dict[int, Button] = {
     # Volume buttons come from the same keyboard
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     #
-    # AOKZOE A1 mappings And onexplayer mini pro mappings
+    # AOKZOE and OneXPlayer mappings
     #
     # Turbo Button [29, 56, 125] KEY_LEFTCTRL + KEY_LEFTALT + KEY_LEFTMETA
     B("KEY_LEFTALT"): "share",
@@ -30,6 +30,21 @@ BTN_MAPPINGS: dict[int, str] = {
     #
     # Provided by AOKZOE A1 Turbo button as KEY_LEFTALT
     # B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
+}
+
+BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
+    # Volume buttons come from the same keyboard
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+    #
+    # AOKZOE and OneXPlayer mappings
+    #
+    # Short press orange [32, 125] KEY_D + KEY_LEFTMETA
+    B("KEY_D"): "mode",
+    # KB Button [24, 97, 125]  KEY_O + KEY_RIGHTCTRL + KEY_LEFTMETA
+    # If we do not have turbo takeover, let turbo do its turbo thing, and
+    # failover to having the keyboard button open the overlay
+    B("KEY_O"): "share",
 }
 
 AMBERNIC_MAPPINGS: dict[int, str] = {
@@ -179,6 +194,10 @@ def get_default_config(product_name: str, manufacturer: str):
         "hrtimer": True,
         "untested": True,
     }
+
+    if manufacturer == "ONEXPLAYER":
+        out["btn_mapping"] = BTN_MAPPINGS_NONTURBO
+        out["mapping"] = DEFAULT_MAPPINGS
 
     if manufacturer == "AYA":
         out["btn_mapping"] = AYANEO_BTN_MAPPINGS

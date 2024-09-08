@@ -63,11 +63,13 @@ def plugin_run(
             continue
 
         # Use the oxp-platform driver if available
+        turbo = False
         if os.path.exists("/sys/devices/platform/oxp-platform/tt_toggle"):
             try:
                 with open("/sys/devices/platform/oxp-platform/tt_toggle", "w") as f:
                     f.write("1")
                 logger.info(f"Turbo button takeover enabled")
+                turbo = True
             except Exception:
                 logger.warn(
                     f"Turbo takeover failed. Ensure you have the latest oxp-sensors driver installed."
@@ -77,7 +79,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit, turbo)
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -97,7 +99,7 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
+    conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter, turbo: bool = False
 ):
     debug = DEBUG_MODE
 
@@ -128,12 +130,20 @@ def controller_loop(
         hide=True,
     )
 
+    if turbo:
+        # Switch buttons if turbo is enabled.
+        # This only affects AOKZOE and OneXPlayer devices with
+        # that button that have the nonturbo mapping as default
+        mappings = BTN_MAPPINGS
+    else:
+        mappings = dconf.get("btn_mapping", BTN_MAPPINGS)
+
     d_kbd_1 = GenericGamepadEvdev(
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
         grab=True,
-        btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
+        btn_map=mappings,
     )
 
     multiplexer = Multiplexer(
