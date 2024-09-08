@@ -24,10 +24,7 @@ BTN_MAPPINGS: dict[int, Button] = {
     # Short press orange [32, 125] KEY_D + KEY_LEFTMETA
     B("KEY_D"): "mode",
     # KB Button [24, 97, 125]  KEY_O + KEY_RIGHTCTRL + KEY_LEFTMETA
-    B("KEY_O"): "extra_l1", # this should become keyboard
-    # Thanks to @indigo, controlled by OneXPlayer software
-    B("KEY_L"): "extra_l1",
-    B("KEY_R"): "extra_r1",
+    B("KEY_O"): "extra_l1",
     #
     # Loki Max
     #
@@ -48,9 +45,6 @@ BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
     # If we do not have turbo takeover, let turbo do its turbo thing, and
     # failover to having the keyboard button open the overlay
     B("KEY_O"): "share",
-    # Thanks to @indigo, controlled by OneXPlayer software
-    B("KEY_L"): "extra_l1",
-    B("KEY_R"): "extra_r1",
 }
 
 AMBERNIC_MAPPINGS: dict[int, str] = {
