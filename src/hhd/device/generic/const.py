@@ -116,6 +116,7 @@ CONFS = {
     "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
     "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
     # Onexplayer
+    "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER F1L": {"name": "ONEXPLAYER ONEXFLY (L)", **ONEX_DEFAULT_CONF},
