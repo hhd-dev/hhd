@@ -373,7 +373,7 @@ def controller_loop(
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         swap_guide="select_is_guide" if conf["swap_armory"].to(bool) else None,
-        qam_no_release=True,
+        qam_no_release=not conf["swap_armory"].to(bool),
         params=d_params,
     )
 
