@@ -28,6 +28,7 @@ children:
 
   steamdeck_ovr:
     type: bool
+    tags: [advanced,expert]
     title: Steamdeck Overclock (Requires Reboot)
     hint: >-
       Allows setting the Steam TDP slider from 1-20W instead of 4-15W.
