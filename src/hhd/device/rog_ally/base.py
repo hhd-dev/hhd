@@ -440,10 +440,16 @@ def controller_loop(
                 d.consume(evs)
 
             if d_vend.mouse_mode and d_kbd_grabbed and d_kbd_1.dev:
-                d_kbd_1.dev.ungrab()
+                try:
+                    d_kbd_1.dev.ungrab()
+                except Exception:
+                    pass
                 d_kbd_grabbed = False
             elif not d_vend.mouse_mode and not d_kbd_grabbed and d_kbd_1.dev:
-                d_kbd_1.dev.grab()
+                try:
+                    d_kbd_1.dev.grab()
+                except Exception:
+                    pass
                 d_kbd_grabbed = True
 
             # If unbounded, the total number of events per second is the sum of all
