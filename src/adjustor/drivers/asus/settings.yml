@@ -48,7 +48,7 @@ children:
   sys_tdp:
     type: display
     title: " "
-    tags: [non-essential]
+    tags: []
 
   cycle_tdp:
     type: bool
