@@ -45,7 +45,7 @@ LIMIT_DEFAULTS = lambda allyx: {
     "t_min": 5,
     "t_max": 0x40,
     # ally x vibration motor is too strong
-    "vibration": 75 if allyx else 100,
+    "vibration": 50 if allyx else 100,
 }
 
 MODE_DELAY = 0.15
