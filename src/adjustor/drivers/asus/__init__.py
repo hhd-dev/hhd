@@ -139,6 +139,7 @@ class AsusDriverPlugin(HHDPlugin):
 
         self.queue_fan = None
         self.queue_tdp = None
+        self.queue_charge_limit = None
         self.new_tdp = None
         self.new_mode = None
         self.old_target = None
@@ -206,6 +207,10 @@ class AsusDriverPlugin(HHDPlugin):
         if (self.startup and lim != "disabled") or (
             lim != self.old_conf["charge_limit"].to(str)
         ):
+            self.queue_charge_limit = curr + APPLY_DELAY
+        
+        if self.queue_charge_limit and self.queue_charge_limit < curr:
+            self.queue_charge_limit = None
             match lim:
                 case "p65":
                     set_charge_limit(65)
