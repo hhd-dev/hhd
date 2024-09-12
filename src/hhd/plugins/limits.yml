@@ -1,6 +1,6 @@
 type: mode
 tags: [limits, non-essential]
-title: Hardware Limits
+title: Deadzones & Vibration
 hint: >-
   Configure joystick and trigger deadzones, vibration intensity.
 

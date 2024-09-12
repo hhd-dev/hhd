@@ -15,6 +15,15 @@ children:
   #
   # Common settings
   #
+
+  swap_armory:
+    type: bool
+    title: Swap ROG and Menu/View
+    tags: [non-essential]
+    hint: >-
+      Swaps the Armory Crate and Command center buttons with start and select.
+    default: False
+
   imu:
     type: bool
     title: Motion Support
@@ -32,6 +41,8 @@ children:
       Check `/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`.
     options: [100, 200, 400, 800, 1600]
     default: 400
+
+  limits:
 
   select_reboots:
     type: bool
@@ -58,13 +69,3 @@ children:
     tags: [advanced]
     title: RGB During Charging Asleep
     default: False
-
-  swap_armory:
-    type: bool
-    title: Swap ROG and Menu/View
-    tags: [non-essential]
-    hint: >-
-      Swaps the Armory Crate and Command center buttons with start and select.
-    default: False
-
-  limits:
