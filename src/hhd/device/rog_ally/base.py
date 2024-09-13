@@ -17,7 +17,7 @@ from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_uniqu
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_outputs, get_limits
 
-from .hid import Brightness, RgbCallback, switch_mode
+from .hid import RgbCallback, switch_mode, config_rgb
 
 SELECT_TIMEOUT = 1
 
@@ -122,16 +122,21 @@ ALLY_X_AXIS_MAP: dict[int, AbsAxis] = to_map(
 
 
 class AllyHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, kconf={}, **kwargs) -> None:
+    def __init__(self, *args, kconf={}, rgb_boot, rgb_charging, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.kconf = kconf
         self.mouse_mode = False
+        self.rgb_boot = rgb_boot
+        self.rgb_charging = rgb_charging
 
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
         if self.dev:
             logger.info(f"Switching Ally Controller to gamepad mode.")
+            # Setup leds so they dont interfere after this
+            for cmd in config_rgb(self.rgb_boot, self.rgb_charging):
+                self.dev.write(cmd)
             switch_mode(self.dev, "default", self.kconf, first=True)
 
         self.mouse_mode = False
@@ -350,9 +355,9 @@ def controller_loop(
         usage_page=[0xFF31],
         usage=[0x0080],
         required=True,
-        callback=RgbCallback(
-            conf.get("rgb_boot", False), conf.get("rgb_charging", False)
-        ),
+        rgb_boot=conf.get("rgb_boot", False),
+        rgb_charging=conf.get("rgb_charging", False),
+        callback=RgbCallback(),
         kconf=kconf,
     )
 

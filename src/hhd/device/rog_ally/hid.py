@@ -216,8 +216,6 @@ INIT_EVERY_S = 10
 def process_events(
     events: Sequence[Event],
     prev_mode: str | None,
-    rgb_boot: bool,
-    rgb_charging: bool,
     global_init=True,
 ):
     cmds = []
@@ -302,7 +300,6 @@ def process_events(
     if global_init or init:
         cmds = [
             *RGB_INIT,
-            config_rgb(rgb_boot, rgb_charging),
             *cmds,
         ]
 
@@ -310,15 +307,13 @@ def process_events(
 
 
 class RgbCallback:
-    def __init__(self, rgb_boot: bool, rgb_charging: bool) -> None:
+    def __init__(self) -> None:
         self.prev_mode = None
-        self.rgb_boot = rgb_boot
-        self.rgb_charging = rgb_charging
         self.global_init = True
 
     def __call__(self, dev: Device, events: Sequence[Event]):
         cmds, mode = process_events(
-            events, self.prev_mode, self.rgb_boot, self.rgb_charging, self.global_init
+            events, self.prev_mode, self.global_init
         )
         self.global_init = False
         if mode:
@@ -367,7 +362,7 @@ def switch_mode(dev: Device, mode: GamepadMode, kconf={}, first: bool = False):
             assert False, f"Mode '{mode}' not supported."
 
     for cmd in cmds:
-        wait_for_ready(dev, timeout=5 if first else 1)
+        # wait_for_ready(dev, timeout=5 if first else 1)
         first = False
         # logger.warning(f"Write: {cmd.hex()}")
         dev.write(cmd)
