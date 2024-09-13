@@ -242,14 +242,15 @@ class AsusDriverPlugin(HHDPlugin):
         if new_tdp:
             # For TDP values received from steam, set the appropriate
             # mode to get a better experience.
-            if new_tdp == (13 if ally_x else 10):
-                mode = "quiet"
-            elif new_tdp == (17 if ally_x else 15):
-                mode = "balanced"
-            elif new_tdp == 25 or new_tdp == 30:
-                mode = "performance"
-            else:
-                mode = "custom"
+            # if new_tdp == (13 if ally_x else 10):
+            #     mode = "quiet"
+            # elif new_tdp == (17 if ally_x else 15):
+            #     mode = "balanced"
+            # elif new_tdp == 25 or new_tdp == 30:
+            #     mode = "performance"
+            # else:
+            #     mode = "custom"
+            mode = "custom"
             conf["tdp.asus.tdp_v2.mode"] = mode
         elif new_mode:
             mode = new_mode
