@@ -170,12 +170,40 @@ def hidraw(dev: str | None, *cmds: str):
         print()
         print(f"Writing provided commands to device:")
         for cmd in cmds:
-            print(f" - {cmd}")
-            try:
-                d.write(bytes.fromhex(cmd.replace(' ', '').replace(':', '')))
-            except Exception as e:
-                print(f"Error writing command '{cmd}':\n{e}")
-                return
+            # Cleanup and get type
+            cmd = cmd.lower().strip()
+            if cmd.startswith('set:'):
+                cmd_type = "set"
+                cmd = cmd[4:]
+            elif cmd.startswith('get:'):
+                cmd_type = "get"
+                cmd = cmd[4:]
+            else:
+                cmd_type = "write"
+            cmd = cmd.replace(' ', '').replace(':', '')
+            
+            match cmd_type:
+                case "write":
+                    print(f" - {cmd}")
+                    try:
+                        d.write(bytes.fromhex(cmd))
+                    except Exception as e:
+                        print(f"Error writing command '{cmd}':\n{e}")
+                        return
+                case "set":
+                    print(f" - SET {cmd}")
+                    try:
+                        d.send_feature_report(bytes.fromhex(cmd))
+                    except Exception as e:
+                        print(f"Error setting feature '{cmd}':\n{e}")
+                        return
+                case "get":
+                    print(f" - GET {cmd}")
+                    try:
+                        print(d.get_feature_report(int(cmd, 16)).hex())
+                    except Exception as e:
+                        print(f"Error getting feature '{cmd}':\n{e}")
+                        return
         return
 
     try:
