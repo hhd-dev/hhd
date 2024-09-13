@@ -135,8 +135,7 @@ class AllyHidraw(GenericGamepadHidraw):
         if self.dev:
             logger.info(f"Switching Ally Controller to gamepad mode.")
             # Setup leds so they dont interfere after this
-            for cmd in config_rgb(self.rgb_boot, self.rgb_charging):
-                self.dev.write(cmd)
+            self.dev.write(config_rgb(self.rgb_boot, self.rgb_charging))
             switch_mode(self.dev, "default", self.kconf, first=True)
 
         self.mouse_mode = False
