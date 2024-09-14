@@ -363,7 +363,7 @@ class RgbPlugin(HHDPlugin):
                     )
                 case "speedd":
                     log += f", speed: {info['speedd']}"
-                    brightnessd = cast(Literal["low", "medium", "high"], info["speedd"])
+                    speedd = cast(Literal["low", "medium", "high"], info["speedd"])
                 case "direction":
                     log += f", direction: {info['direction']}"
                     direction = cast(Literal["left", "right"], info["direction"])

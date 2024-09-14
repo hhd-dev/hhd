@@ -240,21 +240,23 @@ def process_events(
                         set_level = False
                     case "rainbow":
                         mode = "rainbow"
-                        set_level = False
+                        set_level = True
                     case "duality":
                         mode = "duality"
                         set_level = False
                     case "solid":
                         mode = "solid"
-                        set_level = True
+                        set_level = False
                     case "spiral":
                         mode = "spiral"
                         set_level = True
                     case _:
                         assert False, f"Mode '{ev['mode']}' not supported."
-
+                
                 if set_level:
                     br_cmd = rgb_set_brightness(ev["brightnessd"])
+                else:
+                    br_cmd = rgb_set_brightness("high")
 
                 cmds.extend(
                     rgb_set(
