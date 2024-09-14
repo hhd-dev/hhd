@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 
 RGB_SET_TIMES = 3
 RGB_SET_INTERVAL = 7
-RGB_MIN_INTERVAL = 0.05
+RGB_MIN_INTERVAL = 0.1
+RGB_QUEUE_RGB = 1.5
 
 
 def hsb_to_rgb(h: int, s: int | float, v: int | float):
@@ -51,6 +52,7 @@ class RgbPlugin(HHDPlugin):
         self.loaded = False
         self.enabled = False
         self.last_set = 0
+        self.queue_leds = None
 
         self.init_count = 0
         self.init_last = 0
@@ -269,6 +271,9 @@ class RgbPlugin(HHDPlugin):
         if not self.enabled or self.controller:
             return
 
+        curr = time.perf_counter()
+        init = False
+
         rgb_conf = conf["rgb"]["handheld"]["mode"]
         if self.prev and self.prev != rgb_conf:
             self.init = False
@@ -289,14 +294,13 @@ class RgbPlugin(HHDPlugin):
             logger.info(
                 f"Initializing RGB (repeat {self.init_count}/{RGB_SET_TIMES}, interval: {RGB_SET_INTERVAL})"
             )
+            init = True
+        elif self.queue_leds and self.queue_leds < curr:
+            # Set the LEDs after two seconds with init
+            logger.info("Running full rgb command.")
+            init = True
         elif self.prev and self.prev == rgb_conf:
             return
-
-        # Avoid setting the LEDs too fast.
-        curr = time.perf_counter()
-        if curr - self.last_set < RGB_MIN_INTERVAL:
-            return
-        self.last_set = curr
 
         self.prev = rgb_conf.copy()
 
@@ -364,7 +368,6 @@ class RgbPlugin(HHDPlugin):
                     log += f", direction: {info['direction']}"
                     direction = cast(Literal["left", "right"], info["direction"])
         log += "."
-        logger.info(log)
 
         if not color2_set:
             red2 = red
@@ -373,7 +376,7 @@ class RgbPlugin(HHDPlugin):
 
         ev = {
             "type": "led",
-            "initialize": True,  # Always initialize, saves problems on the ally
+            "initialize": init,  # Always initialize, saves problems on the ally
             "code": "main",
             "mode": cast(RgbMode, mode),
             "direction": direction,
@@ -388,8 +391,18 @@ class RgbPlugin(HHDPlugin):
             "green2": green2,
             "blue2": blue2,
         }
+        self.queue_leds = curr + RGB_QUEUE_RGB
+
+        # Avoid setting the LEDs too fast.
+        if curr - self.last_set < RGB_MIN_INTERVAL and not init:
+            return
+        
+        logger.info(log)
+        self.last_set = curr
         self.last_ev = ev
         self.emit.inject(ev)
+        if init:
+            self.queue_leds = None
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
