@@ -89,7 +89,7 @@ direction:
   direction:
     type: multiple
     title: Direction
-    tags: [non-essential]
+    tags: [non-essential, ordinal]
     options:
       left: "Left"
       right: "Right"
