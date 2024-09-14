@@ -15,9 +15,10 @@ from hhd.controller.physical.evdev import (
 )
 from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_unique
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
-from hhd.plugins import Config, Context, Emitter, get_outputs, get_limits
+from hhd.plugins import Config, Context, Emitter, get_limits, get_outputs
 
-from .hid import RgbCallback, switch_mode, config_rgb
+from .const import config_rgb
+from .hid import RgbCallback, switch_mode
 
 SELECT_TIMEOUT = 1
 
@@ -158,7 +159,7 @@ class AllyHidraw(GenericGamepadHidraw):
             if ofs < curr:
                 out.append(ev)
                 self.queue.pop(0)
-        
+
         # Force a re-init after 5 seconds in case the MCU did not get the message
         # Hopefully this fixes the back buttons on the og ally.
         if self.late_init and curr > self.late_init + 5:
