@@ -3,7 +3,7 @@ import time
 from typing import Literal, Sequence
 
 from hhd.controller import Event
-from hhd.controller.base import RgbMode
+from hhd.controller.base import RgbMode, DEBUG_MODE
 from hhd.controller.lib.hid import Device
 
 from .const import (
@@ -14,7 +14,6 @@ from .const import (
     RGB_SET,
     WAIT_READY,
     buf,
-    config_rgb,
 )
 
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
@@ -321,9 +320,10 @@ class RgbCallback:
         if not cmds:
             return
         BCK = "\n"
-        logger.warning(
-            f"Running RGB commands:\n{BCK.join([cmd[:20].hex() for cmd in cmds])}"
-        )
+        if DEBUG_MODE:
+            logger.warning(
+                f"Running RGB commands:\n{BCK.join([cmd[:20].hex() for cmd in cmds])}"
+            )
         for r in cmds:
             dev.write(r)
 
