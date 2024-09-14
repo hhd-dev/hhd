@@ -128,6 +128,7 @@ class AllyHidraw(GenericGamepadHidraw):
         self.mouse_mode = False
         self.rgb_boot = rgb_boot
         self.rgb_charging = rgb_charging
+        self.late_init = None
 
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
@@ -139,6 +140,7 @@ class AllyHidraw(GenericGamepadHidraw):
             switch_mode(self.dev, "default", self.kconf, first=True)
 
         self.mouse_mode = False
+        self.late_init = time.perf_counter()
         return a
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
@@ -156,6 +158,14 @@ class AllyHidraw(GenericGamepadHidraw):
             if ofs < curr:
                 out.append(ev)
                 self.queue.pop(0)
+        
+        # Force a re-init after 5 seconds in case the MCU did not get the message
+        # Hopefully this fixes the back buttons on the og ally.
+        if self.late_init and curr > self.late_init + 5:
+            logger.info(f"Re-initializing controller.")
+            self.late_init = None
+            if not self.mouse_mode:
+                switch_mode(self.dev, "default", self.kconf, first=True)
 
         # Read new events
         while can_read(self.fd):
