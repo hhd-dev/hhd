@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
 SLEEP_DELAY = 4
-MIN_TDP_START = 7
-MAX_TDP_START = 30
+MIN_TDP = 7
+MAX_TDP = 30
 # FIXME: add AC/DC values
-MAX_TDP = 35
+MAX_TDP_BOOST = 35
 
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
 STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
@@ -287,6 +287,14 @@ class AsusDriverPlugin(HHDPlugin):
             else:
                 steady = conf["tdp.asus.tdp_v2.custom.tdp"].to(int)
 
+            if self.enforce_limits:
+                if steady < MIN_TDP:
+                    steady = MIN_TDP
+                    conf["tdp.asus.tdp_v2.custom.tdp"] = steady
+                elif steady > MAX_TDP:
+                    steady = MAX_TDP
+                    conf["tdp.asus.tdp_v2.custom.tdp"] = steady
+
             steady_updated = steady and steady != self.old_conf["tdp_v2.custom.tdp"].to(
                 int
             )
@@ -295,11 +303,11 @@ class AsusDriverPlugin(HHDPlugin):
 
             steady_updated |= tdp_reset
 
-            if self.startup and (steady > MAX_TDP_START or steady < MIN_TDP_START):
+            if self.startup and (steady > MAX_TDP or steady < MIN_TDP):
                 logger.warning(
                     f"TDP ({steady}) outside the device spec. Resetting for stability reasons."
                 )
-                steady = min(max(steady, MIN_TDP_START), MAX_TDP_START)
+                steady = min(max(steady, MIN_TDP), MAX_TDP)
                 conf["tdp.asus.tdp_v2.custom.tdp"] = steady
                 steady_updated = True
 
@@ -332,13 +340,13 @@ class AsusDriverPlugin(HHDPlugin):
                     set_tdp(
                         "fast",
                         FTDP_FN,
-                        min(max(steady, MAX_TDP), int(steady * 35 / 25)),
+                        min(max(steady, MAX_TDP_BOOST), int(steady * 35 / 25)),
                     )
                     time.sleep(TDP_DELAY)
                     set_tdp(
                         "slow",
                         STDP_FN,
-                        min(max(steady, MAX_TDP), int(steady * 30 / 25)),
+                        min(max(steady, MAX_TDP_BOOST), int(steady * 30 / 25)),
                     )
                     time.sleep(TDP_DELAY)
                     set_tdp("steady", CTDP_FN, steady)
