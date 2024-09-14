@@ -326,6 +326,7 @@ class RgbPlugin(HHDPlugin):
         green2 = 0
         blue2 = 0
         color2_set = False
+        always_init = True
 
         log = f"Setting RGB to mode '{mode}'"
         for cap in self.modes[cast(RgbMode, mode)]:
@@ -336,6 +337,8 @@ class RgbPlugin(HHDPlugin):
                         info["saturation"],
                         info["brightness"],
                     )
+                    # Cannot init leds with color slider because it is too fast
+                    always_init = False
                     log += f" with color: {red:3d}, {green:3d}, {blue:3d}"
                 case "dual":
                     red, green, blue = hsb_to_rgb(
@@ -349,6 +352,8 @@ class RgbPlugin(HHDPlugin):
                         info["saturation"],
                         info["brightness"],
                     )
+                    # Cannot init leds with color slider because it is too fast
+                    always_init = False
                     log += f" with colors: {red:3d}, {green:3d}, {blue:3d} and {red2:3d}, {green2:3d}, {blue2:3d}"
                 case "brightness":
                     log += f", brightness: {info['brightness']}"
@@ -376,7 +381,7 @@ class RgbPlugin(HHDPlugin):
 
         ev = {
             "type": "led",
-            "initialize": init,  # Always initialize, saves problems on the ally
+            "initialize": init or always_init,  # Always initialize, saves problems on the ally
             "code": "main",
             "mode": cast(RgbMode, mode),
             "direction": direction,
@@ -391,7 +396,8 @@ class RgbPlugin(HHDPlugin):
             "green2": green2,
             "blue2": blue2,
         }
-        self.queue_leds = curr + RGB_QUEUE_RGB
+        if not always_init:
+            self.queue_leds = curr + RGB_QUEUE_RGB
 
         # Avoid setting the LEDs too fast.
         if curr - self.last_set < RGB_MIN_INTERVAL and not init:
