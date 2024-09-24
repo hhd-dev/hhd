@@ -23,6 +23,8 @@ STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
 CTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl1_spl"
 EXTREME_FN = "/sys/devices/platform/asus-nb-wmi/mcu_powersave"
 EXTREME_ENABLE = bool(os.environ.get("HHD_ALLY_POWERSAVE", None))
+# This setting can really mess up the controller
+EXTREME_DELAY = 3.8
 
 FAN_CURVE_ENDPOINT = "/sys/class/hwmon"
 FAN_CURVE_NAME = "asus_custom_fan_curve"
@@ -145,6 +147,7 @@ class AsusDriverPlugin(HHDPlugin):
         self.queue_fan = None
         self.queue_tdp = None
         self.queue_charge_limit = None
+        self.queue_extreme = None
         self.new_tdp = None
         self.new_mode = None
         self.old_target = None
@@ -460,9 +463,14 @@ class AsusDriverPlugin(HHDPlugin):
             standby = conf["tdp.asus.extreme_standby"].to(bool)
             if standby != self.extreme_standby:
                 self.extreme_standby = standby
+                self.queue_extreme = curr + EXTREME_DELAY
+
+            if self.queue_extreme and self.queue_extreme < curr:
+                self.queue_extreme = None
                 try:
+                    logger.info (f"Setting extreme standby to '{standby}'")
                     with open(EXTREME_FN, "w") as f:
-                        f.write("1" if standby else "0")
+                        f.write("1" if standby == "enabled" else "0")
                 except Exception as e:
                     logger.error(f"Could not set extreme standby. Error:\n{e}")
 
