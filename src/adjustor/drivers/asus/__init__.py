@@ -21,6 +21,8 @@ MAX_TDP_BOOST = 35
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
 STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
 CTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl1_spl"
+EXTREME_FN = "/sys/devices/platform/asus-nb-wmi/mcu_powersave"
+EXTREME_ENABLE = bool(os.environ.get("HHD_ALLY_POWERSAVE", None))
 
 FAN_CURVE_ENDPOINT = "/sys/class/hwmon"
 FAN_CURVE_NAME = "asus_custom_fan_curve"
@@ -137,6 +139,9 @@ class AsusDriverPlugin(HHDPlugin):
         self.mode = None
         self.cycle_tdp = None
 
+        self.extreme_standby = None
+        self.extreme_supported = None
+
         self.queue_fan = None
         self.queue_tdp = None
         self.queue_charge_limit = None
@@ -156,6 +161,14 @@ class AsusDriverPlugin(HHDPlugin):
 
         self.initialized = True
         out = {"tdp": {"asus": load_relative_yaml("settings.yml")}}
+
+        path_exists = os.path.exists(EXTREME_FN)
+        extreme_supported = EXTREME_ENABLE and path_exists
+        if self.extreme_supported is None:
+            logger.info(f"Extreme standby enabled: {EXTREME_ENABLE}, file exists: {extreme_supported}. Enabled: {extreme_supported}")
+        self.extreme_supported = extreme_supported
+        if not self.extreme_supported:
+            del out["tdp"]["asus"]["children"]["extreme_standby"]
 
         # Set units
         if self.allyx:
@@ -441,6 +454,17 @@ class AsusDriverPlugin(HHDPlugin):
 
         if self.startup:
             self.startup = False
+
+        # Extreme standby
+        if self.extreme_supported:
+            standby = conf["tdp.asus.extreme_standby"].to(bool)
+            if standby != self.extreme_standby:
+                self.extreme_standby = standby
+                try:
+                    with open(EXTREME_FN, "w") as f:
+                        f.write("1" if standby else "0")
+                except Exception as e:
+                    logger.error(f"Could not set extreme standby. Error:\n{e}")
 
     def notify(self, events: Sequence[Event]):
         for ev in events:
