@@ -1,6 +1,7 @@
 import subprocess
 import os
 import logging
+import threading
 
 from .ioctl import EVIOCREVOKEALL, JSIOCREVOKEALL
 from fcntl import ioctl
@@ -40,8 +41,9 @@ def get_parent_sysfs(devpath: str):
     return syspath[: syspath.rindex("/")]
     # return syspath.split("/input/")[0]
 
+_reload_thread = None
 
-def reload_children(parent: str):
+def _reload_children_worker(parent: str):
     stat = subprocess.run(
         ["udevadm", "control", "--reload-rules"],
         capture_output=True,
@@ -57,6 +59,15 @@ def reload_children(parent: str):
             return False
     return True
 
+def reload_children(parent: str):
+    global _reload_thread
+
+    if _reload_thread:
+        _reload_thread.join()
+        _reload_thread = None
+    
+    _reload_thread = threading.Thread(target=_reload_children_worker, args=(parent,))
+    _reload_thread.start()
 
 def hide_gamepad(devpath: str, vid: int, pid: int) -> str | None:
     input_dev = get_gamepad_name(devpath)
