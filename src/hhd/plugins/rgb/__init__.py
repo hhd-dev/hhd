@@ -8,8 +8,8 @@ from hhd.utils import get_distro_color
 
 logger = logging.getLogger(__name__)
 
-RGB_SET_TIMES = 3
-RGB_SET_INTERVAL = 7
+RGB_SET_TIMES = 2
+RGB_SET_INTERVAL = 5
 RGB_MIN_INTERVAL = 0.1
 RGB_QUEUE_RGB = 1.5
 
@@ -278,7 +278,7 @@ class RgbPlugin(HHDPlugin):
         if self.prev and self.prev != rgb_conf:
             self.init = False
         elif self.init:
-            # Initialize by setting the LEDs 3 times
+            # Initialize by setting the LEDs X times
             # to avoid early boot having it not set
             if self.init_count >= RGB_SET_TIMES:
                 self.init = False
