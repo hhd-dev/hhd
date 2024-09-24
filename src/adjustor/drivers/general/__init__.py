@@ -54,6 +54,23 @@ class GeneralPowerPlugin(HHDPlugin):
                 except Exception as e:
                     logger.warning(f"powerprofilectl returned with error:\n{e}")
 
+            if tuned := shutil.which('tuned-adm'):
+                try:
+                    if os.environ.get("HHD_PPD_MASK", None):
+                        logger.info("Unmasking TuneD in the case it was masked.")
+                        os.system('systemctl unmask tuned')
+                    subprocess.run(
+                        [tuned],
+                        check=True,
+                        stdin=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                    self.ppd_supported = True
+                except Exception as e:
+                    logger.warning(f"tuned-adm returned with error:\n{e}")
+
+
         if not self.ppd_supported:
             del sets["children"]["profile"]
 
