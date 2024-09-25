@@ -24,6 +24,7 @@ CTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl1_spl"
 EXTREME_FN = "/sys/devices/platform/asus-nb-wmi/mcu_powersave"
 EXTREME_ENABLE = bool(os.environ.get("HHD_ALLY_POWERSAVE", None))
 # This setting can really mess up the controller
+EXTREME_STARTUP_DELAY = 12
 EXTREME_DELAY = 3.8
 
 FAN_CURVE_ENDPOINT = "/sys/class/hwmon"
@@ -147,7 +148,7 @@ class AsusDriverPlugin(HHDPlugin):
         self.queue_fan = None
         self.queue_tdp = None
         self.queue_charge_limit = None
-        self.queue_extreme = None
+        self.queue_extreme = time.perf_counter() + EXTREME_STARTUP_DELAY
         self.new_tdp = None
         self.new_mode = None
         self.old_target = None
@@ -216,7 +217,7 @@ class AsusDriverPlugin(HHDPlugin):
             self.old_conf = conf["tdp.asus"]
             return
 
-        curr = time.time()
+        curr = time.perf_counter()
 
         # Charge limit
         lim = conf["tdp.asus.charge_limit"].to(str)
@@ -461,16 +462,22 @@ class AsusDriverPlugin(HHDPlugin):
         # Extreme standby
         if self.extreme_supported:
             standby = conf["tdp.asus.extreme_standby"].to(bool)
-            if standby != self.extreme_standby:
-                self.extreme_standby = standby
+            if self.extreme_standby is not None and self.extreme_standby != standby:
                 self.queue_extreme = curr + EXTREME_DELAY
+            self.extreme_standby = standby
 
             if self.queue_extreme and self.queue_extreme < curr:
                 self.queue_extreme = None
                 try:
-                    logger.info (f"Setting extreme standby to '{standby}'")
-                    with open(EXTREME_FN, "w") as f:
-                        f.write("1" if standby == "enabled" else "0")
+                    nval = standby == "enabled"
+                    with open(EXTREME_FN, "r") as f:
+                        cval = f.read().strip() == "1"
+                    if nval != cval:
+                        logger.info (f"Setting extreme standby to '{standby}'")
+                        with open(EXTREME_FN, "w") as f:
+                            f.write("1" if standby == "enabled" else "0")
+                    else:
+                        logger.info(f"Extreme standby already set to '{standby}'")
                 except Exception as e:
                     logger.error(f"Could not set extreme standby. Error:\n{e}")
 
