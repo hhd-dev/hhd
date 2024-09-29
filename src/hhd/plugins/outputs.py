@@ -1,20 +1,17 @@
 import logging
-from typing import Any, Mapping, Sequence, Literal
+from typing import Any, Literal, Mapping, Sequence
 
 from ..controller.base import Consumer, Producer, RgbMode, RgbSettings, RgbZones
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
     CONTROLLER_THEMES,
     GAMEPAD_BUTTON_MAP,
-    HHD_PID_MOTION,
     HHD_PID_TOUCHPAD,
-    HHD_VID,
+    HORIPAD_STEAM_BUTTON_MAP,
     MOTION_AXIS_MAP,
     MOTION_AXIS_MAP_FLIP_Z,
     MOTION_CAPABILITIES,
     MOTION_INPUT_PROPS,
-    MOTION_LEFT_AXIS_MAP,
-    MOTION_LEFT_AXIS_MAP_FLIP_Z,
     TOUCHPAD_AXIS_MAP,
     TOUCHPAD_BUTTON_MAP,
     TOUCHPAD_CAPABILITIES,
@@ -63,6 +60,7 @@ def get_outputs(
         case False:
             logger.info("Gamepadui closed. Disabling touchpad emulation.")
 
+    has_qam = False
     uses_touch = False
     uses_leds = False
     noob_mode = False
@@ -123,7 +121,7 @@ def get_outputs(
             )
             producers.append(d)
             consumers.append(d)
-        case "uinput" | "xbox_elite" | "joycon_pair":
+        case "uinput" | "xbox_elite" | "joycon_pair" | "hori_steam":
             Dualsense.close_cached()
             version = 1
             if controller == "joycon_pair":
@@ -132,6 +130,13 @@ def get_outputs(
                 button_map = GAMEPAD_BUTTON_MAP
                 bus = 0x06
                 version = 0
+            elif controller == "hori_steam":
+                theme = "hori_steam"
+                flip_z = conf["hori_steam.flip_z"].to(bool)
+                button_map = HORIPAD_STEAM_BUTTON_MAP
+                bus = 0x06
+                version = 0
+                has_qam = True
             elif controller == "xbox_elite":
                 theme = "xbox_one_elite"
                 button_map = XBOX_ELITE_BUTTON_MAP
@@ -236,6 +241,7 @@ def get_outputs(
             "uses_motion": motion,
             "uses_dual_motion": dual_motion,
             "noob_mode": noob_mode,
+            "has_qam": has_qam,
         },
     )
 

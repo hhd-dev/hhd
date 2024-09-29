@@ -563,6 +563,7 @@ class Multiplexer:
         self.qam_button = qam_button
         if share_to_qam:
             self.qam_button = "share"
+        self.has_qam = params.get("has_qam", False)
 
         self.noob_mode = params.get("noob_mode", False)
         self.qam_pressed = None
@@ -1245,44 +1246,63 @@ class Multiplexer:
         elif send_steam_qam:
             # Send steam qam only if not intercepting
             if not self.emit or not self.emit.send_qam():
-                # Have a fallback if gamescope is not working
-                out.append(
-                    {
-                        "type": "button",
-                        "code": "mode",
-                        "value": True,
-                    },
-                )
-                self.queue.append(
-                    (
+                if self.has_qam:
+                    out.append(
                         {
                             "type": "button",
-                            "code": "b" if self.nintendo_qam else "a",
+                            "code": "share",
                             "value": True,
                         },
-                        curr + self.QAM_DELAY,
                     )
-                )
-                self.queue.append(
-                    (
-                        {
-                            "type": "button",
-                            "code": "b" if self.nintendo_qam else "a",
-                            "value": False,
-                        },
-                        curr + 2 * self.QAM_DELAY,
-                    ),
-                )
-                self.queue.append(
-                    (
+                    self.queue.append(
+                        (
+                            {
+                                "type": "button",
+                                "code": "share",
+                                "value": False,
+                            },
+                            curr + self.QAM_DELAY,
+                        )
+                    )
+                else:
+                    # Have a fallback if gamescope is not working
+                    out.append(
                         {
                             "type": "button",
                             "code": "mode",
-                            "value": False,
+                            "value": True,
                         },
-                        curr + 2 * self.QAM_DELAY,
-                    ),
-                )
+                    )
+                    self.queue.append(
+                        (
+                            {
+                                "type": "button",
+                                "code": "b" if self.nintendo_qam else "a",
+                                "value": True,
+                            },
+                            curr + self.QAM_DELAY,
+                        )
+                    )
+                    self.queue.append(
+                        (
+                            {
+                                "type": "button",
+                                "code": "b" if self.nintendo_qam else "a",
+                                "value": False,
+                            },
+                            curr + 2 * self.QAM_DELAY,
+                        ),
+                    )
+                    self.queue.append(
+                        (
+                            {
+                                "type": "button",
+                                "code": "mode",
+                                "value": False,
+                            },
+                            curr + 2 * self.QAM_DELAY,
+                        ),
+                    )
         elif send_steam_expand:
             out.append(
                 {

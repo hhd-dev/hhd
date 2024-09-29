@@ -37,6 +37,7 @@ CONTROLLER_THEMES: dict[str, tuple[int, int, str]] = {
     "steam_deck": (0x28DE, 0x1205, "Steam Deck"),
     "steam_controller": (0x28DE, 0x1202, "Steam Controller"),
     "steam_input": (0x28DE, 0x11FF, "Steam Input"),
+    "hori_steam": (0x0f0d, 0x0196, "Steam Controller (HHD)")
 }
 
 
@@ -457,6 +458,23 @@ XBOX_ELITE_BUTTON_MAP: dict[Button, int] = {
     "extra_r2": B("BTN_TRIGGER_HAPPY6"),
 }
 
+HORIPAD_STEAM_BUTTON_MAP: dict[Button, int] = {
+    **GAMEPAD_BASE_BUTTON_MAP,
+    # a:b0,b:b1,back:b4,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b5,
+    # leftshoulder:b9,leftstick:b7,lefttrigger:a4,leftx:a0,lefty:a1,
+    # rightshoulder:b10,rightstick:b8,righttrigger:a5,rightx:a2,righty:a3,start:b6,x:b2,y:b3,
+    # From SDL: The Wireless HORIPad for Steam has QAM, Steam, Capsense L/R Sticks, 2 rear buttons, and 2 misc buttons
+    # paddle1:b13,paddle2:b12,paddle3:b15,paddle4:b14,misc2:b11,misc3:b16,misc4:b17
+    # Try to use the same mapping
+    "share": B("BTN_TRIGGER_HAPPY1"),
+    "extra_l1": B("BTN_TRIGGER_HAPPY2"),
+    "extra_r1": B("BTN_TRIGGER_HAPPY3"),
+    "extra_l2": B("BTN_TRIGGER_HAPPY4"),
+    "extra_r2": B("BTN_TRIGGER_HAPPY5"),
+    "extra_l3": B("BTN_TRIGGER_HAPPY6"),
+    "extra_r3": B("BTN_TRIGGER_HAPPY7"),
+    # No Capsense :/
+}
 
 GAMEPAD_AXIS_MAP: dict[Axis, AX] = {
     "ls_x": AX(B("ABS_X"), 2**15 - 1),
