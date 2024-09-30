@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Literal, Mapping, Sequence
 
+import os
 from ..controller.base import Consumer, Producer, RgbMode, RgbSettings, RgbZones
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.uinput import (
@@ -22,6 +23,8 @@ from .plugin import is_steam_gamepad_running, open_steam_kbd
 from .utils import load_relative_yaml
 
 logger = logging.getLogger(__name__)
+
+HORI_ENABLED = os.environ.get("HHD_HORI_STEAM", "0") == "1"
 
 
 def get_outputs(
@@ -132,6 +135,7 @@ def get_outputs(
                 version = 0
             elif controller == "hori_steam":
                 theme = "hori_steam"
+                noob_mode = conf.get("hori_steam.noob_mode", False)
                 flip_z = conf["hori_steam.flip_z"].to(bool)
                 button_map = HORIPAD_STEAM_BUTTON_MAP
                 bus = 0x06
@@ -270,8 +274,18 @@ def get_outputs_config(
         del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
         s["modes"]["dualsense"]["children"]["paddles_as"]["default"] = "noob"
 
-    # Set xbox as default for now
-    s["default"] = "uinput"
+    if HORI_ENABLED:
+        del s["modes"]["uinput"]
+        try:
+            del s["modes"]["xbox_elite"]
+        except Exception:
+            pass
+        s["default"] = "hori_steam"
+    else:
+        del s["modes"]["hori_steam"]
+        # Set xbox as default for now
+        s["default"] = "uinput"
+
     # if default_device:
     #     s["default"] = default_device
     if start_disabled:
