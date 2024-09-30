@@ -62,7 +62,7 @@ children:
     type: bool
     tags: [advanced]
     title: RGB During Boot
-    default: False
+    default: True
 
   rgb_charging:
     type: bool
