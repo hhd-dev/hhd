@@ -27,6 +27,7 @@ class GeneralPowerPlugin(HHDPlugin):
         self.old_sched = None
         self.sched_proc = None
         self.ppd_supported = None
+        self.tuned_supported = None
         self.is_steamdeck = is_steamdeck
         self.ovr_enabled = False
         self.should_exit = Event()
@@ -53,6 +54,26 @@ class GeneralPowerPlugin(HHDPlugin):
                     self.ppd_supported = True
                 except Exception as e:
                     logger.warning(f"powerprofilectl returned with error:\n{e}")
+
+        # TuneD
+        if self.tuned_supported is None:
+            self.tuned_supported = False
+            if tuned := shutil.which('tuned-adm'):
+                try:
+                    if os.environ.get("HHD_PPD_MASK", None):
+                        logger.info("Unmasking TuneD in the case it was masked.")
+                        os.system('systemctl unmask tuned')
+                    subprocess.run(
+                        [tuned],
+                        check=True,
+                        stdin=subprocess.DEVNULL,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                    self.tuned_supported = True
+                except Exception as e:
+                    logger.warning(f"tuned-adm returned with error:\n{e}")
+
 
         if not self.ppd_supported:
             del sets["children"]["profile"]
@@ -121,6 +142,54 @@ class GeneralPowerPlugin(HHDPlugin):
                     self.ppd_supported = False
                     logger.warning(f"powerprofilectl returned with error:\n{e}")
                     self.ppd_supported = False
+
+        # Handle TuneD
+        if self.tuned_supported:
+            curr = time.time()
+            ppd_tuned_mapping = {
+                "power-saver": "powersave",
+                "balanced": "balanced",
+                "performance": "throughput-performance"
+            }
+            new_profile = ppd_tuned_mapping.get(conf.get("tdp.general.profile", self.target))
+            if new_profile != self.target and new_profile and self.target:
+                logger.info(f"Setting TuneD profile to '{new_profile}'")
+                self.target = new_profile
+                try:
+                    subprocess.run(
+                        [shutil.which('tuned-adm'), "profile", new_profile],
+                        check=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
+                except Exception as e:
+                    self.tuned_supported = False
+                    logger.warning(f"tuned-adm returned with error:\n{e}")
+                    self.tuned_supported = False
+            elif not self.last_check or curr - self.last_check > 2:
+                # Update profile every 2 seconds
+                self.last_check = curr
+                try:
+                    res = subprocess.run(
+                        [shutil.which('tuned-adm'), "active"],
+                        check=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                    )
+
+                    tuned_ppd_mapping = {
+                        "powersave": "power-saver",
+                        "balanced": "balanced",
+                        "throughput-performance": "performance"
+                    }
+                    self.target = tuned_ppd_mapping.get(res.stdout.decode().split(":")[1].strip())  # type: ignore
+
+                    if self.target != conf["tdp.general.profile"].to(str):
+                        conf["tdp.general.profile"] = self.target
+                except Exception as e:
+                    self.tuned_supported = False
+                    logger.warning(f"powerprofilectl returned with error:\n{e}")
+                    self.tuned_supported = False
 
         # Handle sched
         if self.avail_scheds:

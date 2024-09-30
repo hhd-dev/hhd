@@ -142,11 +142,13 @@ class AmdGPUPlugin(HHDPlugin):
 
         if self.ppd_conflict and os.environ.get("HHD_PPD_MASK", None):
             logger.warning(
-                "PPD conflict detected but HHD_PPD_MASK is set. Masking PPD."
+                "PPD conflict detected but HHD_PPD_MASK is set. Masking PPD/TuneD."
             )
             # Mask and disable
             os.system("systemctl mask power-profiles-daemon.service")
             os.system("systemctl disable --now power-profiles-daemon.service")
+            os.system("systemctl mask tuned.service")
+            os.system("systemctl disable --now tuned.service")
             # Keep going without check to avoid obscure errors
             self.ppd_conflict = False
 
