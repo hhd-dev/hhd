@@ -113,6 +113,12 @@ modes:
     hint: >-
       Allows for gyro, paddles, and has a proper QAM button.
     children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Allows for gyro, paddles, and has a proper QAM button.
       noob_mode:
         type: bool
         title: Extra buttons as Keyboard/Overlay
