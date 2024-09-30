@@ -919,44 +919,57 @@ class Multiplexer:
                                         self.qam_released = curr
                                     self.qam_pressed = None
                         else:
-                            if ev["value"]:
+                            if self.has_qam:
                                 out.append(
                                     {
                                         "type": "button",
-                                        "code": "mode",
-                                        "value": True,
+                                        "code": "share",
+                                        "value": ev["value"],
                                     },
                                 )
-                                self.queue.append(
-                                    (
-                                        {
-                                            "type": "button",
-                                            "code": "b" if self.nintendo_qam else "a",
-                                            "value": True,
-                                        },
-                                        curr + self.QAM_DELAY,
-                                    ),
-                                )
-                                self.queue.append(
-                                    (
-                                        {
-                                            "type": "button",
-                                            "code": "b" if self.nintendo_qam else "a",
-                                            "value": False,
-                                        },
-                                        curr + 2 * self.QAM_DELAY,
-                                    ),
-                                )
-                                self.queue.append(
-                                    (
+                            else:
+                                if ev["value"]:
+                                    out.append(
                                         {
                                             "type": "button",
                                             "code": "mode",
-                                            "value": False,
+                                            "value": True,
                                         },
-                                        curr + 2 * self.QAM_DELAY,
-                                    ),
-                                )
+                                    )
+                                    self.queue.append(
+                                        (
+                                            {
+                                                "type": "button",
+                                                "code": (
+                                                    "b" if self.nintendo_qam else "a"
+                                                ),
+                                                "value": True,
+                                            },
+                                            curr + self.QAM_DELAY,
+                                        ),
+                                    )
+                                    self.queue.append(
+                                        (
+                                            {
+                                                "type": "button",
+                                                "code": (
+                                                    "b" if self.nintendo_qam else "a"
+                                                ),
+                                                "value": False,
+                                            },
+                                            curr + 2 * self.QAM_DELAY,
+                                        ),
+                                    )
+                                    self.queue.append(
+                                        (
+                                            {
+                                                "type": "button",
+                                                "code": "mode",
+                                                "value": False,
+                                            },
+                                            curr + 2 * self.QAM_DELAY,
+                                        ),
+                                    )
 
                     if self.noob_mode and ev["code"] == "extra_l1" and ev["value"]:
                         ev["code"] = ""  # type: ignore
