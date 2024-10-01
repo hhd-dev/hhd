@@ -123,7 +123,7 @@ modes:
         type: bool
         title: Extra buttons as Keyboard/Overlay
         tags: [non-essential]
-        default: True
+        default: False
         hint: >-
           Makes the left paddle bring up a keyboard and the right paddle bring
           up the overlay.
