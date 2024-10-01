@@ -275,16 +275,16 @@ def get_outputs_config(
         s["modes"]["dualsense"]["children"]["paddles_as"]["default"] = "noob"
 
     if HORI_ENABLED:
-        del s["modes"]["uinput"]
+        # Replace xbox elite with hori
         try:
             del s["modes"]["xbox_elite"]
         except Exception:
             pass
-        s["default"] = "hori_steam"
     else:
         del s["modes"]["hori_steam"]
-        # Set xbox as default for now
-        s["default"] = "uinput"
+
+    # Set xbox as default for now
+    s["default"] = "uinput"
 
     # if default_device:
     #     s["default"] = default_device
