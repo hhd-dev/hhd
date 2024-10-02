@@ -287,6 +287,10 @@ class AmdGPUPlugin(HHDPlugin):
             if new_ppd:
                 try:
                     self.proc, self.t = _open_ppd_server(self.emit)
+                    # Fixup target in case it came before
+                    if self.proc.stdin and self.target:
+                        self.proc.stdin.write(f"{self.target}\n".encode())
+                        self.proc.stdin.flush()
                 except Exception as e:
                     logger.error(f"Failed to open PPD server:\n{e}")
                     self.close_ppd()
