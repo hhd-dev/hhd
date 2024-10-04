@@ -115,6 +115,7 @@ class RgbPlugin(HHDPlugin):
                                     "red2": 0,
                                     "green2": 0,
                                     "blue2": 0,
+                                    "oxp": None
                                 },
                                 curr,
                             ),
@@ -327,6 +328,7 @@ class RgbPlugin(HHDPlugin):
         blue2 = 0
         color2_set = False
         always_init = True
+        oxp = None
 
         log = f"Setting RGB to mode '{mode}'"
         for cap in self.modes[cast(RgbMode, mode)]:
@@ -372,6 +374,22 @@ class RgbPlugin(HHDPlugin):
                 case "direction":
                     log += f", direction: {info['direction']}"
                     direction = cast(Literal["left", "right"], info["direction"])
+                case "oxp":
+                    brightnessd = cast(
+                        Literal["low", "medium", "high"], info["brightnessd"]
+                    )
+                    log += f", mode: '{info['mode']}', brightness: '{brightnessd}', center hue: {info['hue']}, enabled: {info['secondary']}"
+                    if info["secondary"]:
+                        red2, green2, blue2 = hsb_to_rgb(
+                            info["hue"],
+                            100,
+                            100,
+                        )
+                    else:
+                        red2 = green2 = blue2 = 0
+                    color2_set = True
+                    oxp = info["mode"]
+                    
         log += "."
 
         if not color2_set:
@@ -395,6 +413,7 @@ class RgbPlugin(HHDPlugin):
             "red2": red2,
             "green2": green2,
             "blue2": blue2,
+            "oxp": oxp
         }
         if not always_init:
             self.queue_leds = curr + RGB_QUEUE_RGB

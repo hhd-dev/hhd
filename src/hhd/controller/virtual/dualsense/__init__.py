@@ -298,9 +298,10 @@ class Dualsense(Producer, Consumer):
                                 "red": red,
                                 "blue": blue,
                                 "green": green,
-                                "red2": red,
-                                "blue2": blue,
-                                "green2": green,
+                                "red2": 0, # disable for OXP
+                                "blue2": 0,
+                                "green2": 0,
+                                "oxp": None,
                             }
                         )
                     # elif (rep[39] & 2) and (rep[42] & 2):

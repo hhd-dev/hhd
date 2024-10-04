@@ -27,7 +27,7 @@ class SpecialEvent(TypedDict):
         "qam_single",
         "qam_predouble",
         "qam_double",
-        "qam_tripple",
+        "qam_triple",
         "qam_hold",
         "overlay",
         # Shortcuts
@@ -60,9 +60,9 @@ class RumbleEvent(TypedDict):
     weak_magnitude: float
 
 
-RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral", "duality"]
+RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral", "duality", "oxp"]
 RgbSettings = Literal[
-    "color", "brightness", "speed", "brightnessd", "speedd", "direction", "dual"
+    "color", "brightness", "speed", "brightnessd", "speedd", "direction", "dual", "oxp"
 ]
 
 # Mono is a single zone (main only)
@@ -70,6 +70,18 @@ RgbSettings = Literal[
 # Quad has two zones per stick (Ally)
 # TODO: This code needs to be refactored
 RgbZones = Literal["mono", "dual", "quad"]
+OxpModes = Literal[
+    "monster_woke",
+    "flowing",
+    "sunset",
+    "neon",
+    "dreamy",
+    "cyberpunk",
+    "colorful",
+    "aurora",
+    "sun",
+    "classic",
+]
 
 
 class RgbLedEvent(TypedDict):
@@ -121,6 +133,8 @@ class RgbLedEvent(TypedDict):
     red2: int
     green2: int
     blue2: int
+
+    oxp: None | OxpModes
 
 
 class ButtonEvent(TypedDict):
@@ -497,7 +511,8 @@ class Multiplexer:
     QAM_MULTI_PRESS_DELAY = 0.2
     QAM_TAP_TIME = 0.04
     QAM_DELAY = 0.15
-    REBOOT_HOLD = 9
+    REBOOT_HOLD_SELECT = 9
+    REBOOT_HOLD_TURBO = 4
     REBOOT_VIBRATION_STRENGTH = 1
     REBOOT_VIBRATION_ON = 0.4
     REBOOT_VIBRATION_OFF = 1.2
@@ -507,7 +522,13 @@ class Multiplexer:
     def __init__(
         self,
         swap_guide: (
-            None | Literal["guide_is_start", "guide_is_select", "select_is_guide"]
+            None
+            | Literal[
+                "guide_is_start",
+                "guide_is_select",
+                "select_is_guide",
+                "start_is_keyboard",
+            ]
         ) = None,
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
         dpad: (
@@ -528,6 +549,7 @@ class Multiplexer:
         touchpad_hold: TouchpadAction = "disabled",
         r3_to_share: bool = False,
         select_reboots: bool = False,
+        share_reboots: bool = False,
         nintendo_mode: bool = False,
         qam_button: str | None = None,
         emit: ControllerEmitter | None = None,
@@ -535,6 +557,9 @@ class Multiplexer:
         params: Mapping[str, Any] = {},
         qam_multi_tap: bool = True,
         qam_no_release: bool = False,
+        qam_hhd: bool = False,
+        keyboard_is: Literal["steam_qam", "qam", "keyboard"] = "keyboard",
+        keyboard_no_release: bool = False,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -546,20 +571,31 @@ class Multiplexer:
         self.touchpad_short = touchpad_short
         self.touchpad_hold = touchpad_hold
         self.touchpad_right = touchpad_right
-        self.select_reboots = select_reboots
+        self.reboot_button = None
+        if select_reboots:
+            self.reboot_button = "select"
+            self.reboot_time = self.REBOOT_HOLD_SELECT
+        if share_reboots:
+            self.reboot_button = "share"
+            self.reboot_time = self.REBOOT_HOLD_TURBO
         self.r3_to_share = r3_to_share
         self.nintendo_mode = nintendo_mode
         self.emit = emit
         self.send_xbox_b = None
         self.imu = imu
+        self.qam_hhd = qam_hhd
+        self.keyboard_is = keyboard_is
+        self.keyboard_no_release = keyboard_no_release
 
         self.state = {}
         self.touchpad_x = 0
         self.touchpad_y = 0
         self.touchpad_down = None
         self.queue: list[tuple[Event | Literal["reboot"], float]] = []
-        self.select_pressed = None
+        self.reboot_pressed = None
         self.select_is_held = False
+        self.reboot_is_held = False
+        self.qam_kbd = False
         self.qam_button = qam_button
         if share_to_qam:
             self.qam_button = "share"
@@ -613,7 +649,7 @@ class Multiplexer:
         while len(self.queue) and self.queue[0][1] < curr:
             ev = self.queue.pop(0)[0]
             if ev == "reboot":
-                if self.select_is_held:
+                if self.reboot_is_held:
                     try:
                         import os
 
@@ -621,7 +657,7 @@ class Multiplexer:
                         logger.info("rebooting")
                     except Exception as e:
                         logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
-            elif self.select_is_held or not ev.get("from_reboot", False):
+            elif self.reboot_is_held or not ev.get("from_reboot", False):
                 out.append({**ev, "from_queue": True})  # type: ignore
 
         # Check for steam for touchpad emulation
@@ -638,8 +674,8 @@ class Multiplexer:
 
             assert self.steam_check_fn() == self.steam_check, msg
 
-        if self.select_pressed and self.select_pressed + self.REBOOT_HOLD < curr:
-            self.select_pressed = None
+        if self.reboot_pressed and self.reboot_pressed + self.reboot_time < curr:
+            self.reboot_pressed = None
             for i in range(self.REBOOT_VIBRATION_NUM):
                 self.queue.append(
                     (
@@ -661,7 +697,8 @@ class Multiplexer:
                             "code": "main",
                             "strong_magnitude": 0,
                             "weak_magnitude": 0,
-                        },
+                            "from_reboot": True,
+                        },  # type: ignore
                         curr
                         + i * (self.REBOOT_VIBRATION_ON + self.REBOOT_VIBRATION_OFF)
                         + self.REBOOT_VIBRATION_ON,
@@ -821,41 +858,58 @@ class Multiplexer:
                     if ev["code"] == "select":
                         if ev["value"]:
                             self.select_is_held = True
-                            if self.select_reboots:
-                                self.select_pressed = curr
                         else:
                             self.select_is_held = False
-                            if self.select_reboots:
-                                self.select_pressed = None
+
+                    if self.reboot_button and ev["code"] == self.reboot_button:
+                        if ev["value"]:
+                            self.reboot_pressed = curr
+                            self.reboot_is_held = True
+                        else:
+                            self.reboot_pressed = None
+                            self.reboot_is_held = False
 
                     if self.swap_guide and ev["code"] in (
                         "start",
                         "select",
                         "mode",
                         "share",
+                        "keyboard",
                     ):
                         match ev["code"]:
                             # TODO: Refactor the logic of this file,
                             # the arguments do not make sense.
                             case "start":
-                                if self.swap_guide == "select_is_guide":
-                                    ev["code"] = "share"
-                                else:
-                                    ev["code"] = "mode"
+                                match self.swap_guide:
+                                    case "start_is_keyboard":
+                                        ev["code"] = "keyboard"
+                                    case "select_is_guide":
+                                        ev["code"] = "share"
+                                    case _:
+                                        ev["code"] = "mode"
                             case "select":
-                                if self.swap_guide == "select_is_guide":
-                                    ev["code"] = "mode"
-                                else:
-                                    ev["code"] = "share"
+                                match self.swap_guide:
+                                    case "start_is_keyboard":
+                                        ev["code"] = "mode"
+                                    case "select_is_guide":
+                                        ev["code"] = "mode"
+                                    case _:
+                                        ev["code"] = "share"
                             case "mode":
                                 if self.swap_guide == "guide_is_start":
                                     ev["code"] = "start"
                                 else:
                                     ev["code"] = "select"
                             case "share":
-                                if self.swap_guide == "guide_is_start":
-                                    ev["code"] = "select"
-                                else:
+                                match self.swap_guide:
+                                    case "start_is_keyboard":
+                                        pass
+                                    case "guide_is_start":
+                                        ev["code"] = "select"
+                                    case _:
+                                        ev["code"] = "start"
+                            case "keyboard":
+                                if self.swap_guide == "start_is_keyboard":
                                     ev["code"] = "start"
 
                     if self.emit and ev["code"] == "mode":
@@ -899,10 +953,13 @@ class Multiplexer:
                             }
                         )
 
-                    if self.qam_button is not None and ev["code"] == self.qam_button:
+                    if (
+                        self.qam_button is not None and ev["code"] == self.qam_button
+                    ) or (self.keyboard_is == "qam" and ev["code"] == "keyboard"):
+                        self.qam_kbd = ev["code"] == "keyboard"
                         ev["code"] = ""  # type: ignore
                         if not self.qam_simple:
-                            if self.qam_no_release:
+                            if (not self.qam_kbd and self.qam_no_release) or (self.qam_kbd and self.keyboard_no_release):
                                 # Fix for the ally having no hold event
                                 if ev["value"]:
                                     self.qam_times += 1
@@ -970,6 +1027,15 @@ class Multiplexer:
                                             curr + 2 * self.QAM_DELAY,
                                         ),
                                     )
+
+                    if ev["code"] == "keyboard":
+                        if ev["value"]:
+                            if self.keyboard_is == "steam_qam":
+                                logger.info(f"Keyboard button opens QAM.")
+                                send_steam_qam = True
+                            elif self.keyboard_is == "keyboard":
+                                self.open_steam_kbd(True)
+                        ev["code"] = ""
 
                     if self.noob_mode and ev["code"] == "extra_l1" and ev["value"]:
                         ev["code"] = ""  # type: ignore
@@ -1196,9 +1262,10 @@ class Multiplexer:
         if not self.qam_multi_tap and self.qam_released:
             qam_apply = True
 
+        qam_hhd = self.qam_hhd and not self.qam_kbd
         if (
             self.qam_pressed
-            and self.qam_times == 2
+            and self.qam_times == (1 if qam_hhd else 2)
             and not self.qam_pre_sent
             and self.emit
         ):
@@ -1206,20 +1273,31 @@ class Multiplexer:
             self.emit({"type": "special", "event": "qam_predouble"})
             self.qam_pre_sent = True
 
-        send_steam_qam = qam_apply and self.qam_released and self.qam_times == 1
+        send_steam_qam = send_steam_qam or (
+            qam_apply and not qam_hhd and self.qam_released and self.qam_times == 1
+        )
         if qam_apply and self.emit:
-            if self.qam_pressed and was_held:
-                self.emit({"type": "special", "event": "qam_hold"})
-            else:
+            if qam_hhd:
                 match self.qam_times:
                     case 0:
                         pass
                     case 1:
-                        self.emit({"type": "special", "event": "qam_single"})
-                    case 2:
                         self.emit({"type": "special", "event": "qam_double"})
                     case _:
-                        self.emit({"type": "special", "event": "qam_tripple"})
+                        self.emit({"type": "special", "event": "qam_triple"})
+            else:
+                if self.qam_pressed and was_held:
+                    self.emit({"type": "special", "event": "qam_hold"})
+                else:
+                    match self.qam_times:
+                        case 0:
+                            pass
+                        case 1:
+                            self.emit({"type": "special", "event": "qam_single"})
+                        case 2:
+                            self.emit({"type": "special", "event": "qam_double"})
+                        case _:
+                            self.emit({"type": "special", "event": "qam_triple"})
         if qam_apply:
             held = " then held" if self.qam_pressed else ""
             logger.info(f"QAM Pressed {self.qam_times}{held}.")

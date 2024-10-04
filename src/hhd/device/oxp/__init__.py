@@ -1,3 +1,5 @@
+import logging
+import os
 from threading import Event, Thread
 from typing import Any, Sequence
 
@@ -12,14 +14,17 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
+from .serial import close_serial
 
 from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
 
+logger = logging.getLogger(__name__)
+
 
 class GenericControllersPlugin(HHDPlugin):
-    name = "generic_controllers"
+    name = "onexplayer"
     priority = 18
-    log = "genc"
+    log = "oxpc"
 
     def __init__(self, dmi: str, dconf: dict) -> None:
         self.t = None
@@ -30,7 +35,7 @@ class GenericControllersPlugin(HHDPlugin):
 
         self.dmi = dmi
         self.dconf = dconf
-        self.name = f"generic_controllers@'{dconf.get('name', 'ukn')}'"
+        self.name = f"onexplayer@'{dconf.get('name', 'ukn')}'"
 
     def open(
         self,
@@ -41,25 +46,47 @@ class GenericControllersPlugin(HHDPlugin):
         self.context = context
         self.prev = None
 
+        # Use the oxp-platform driver if available
+        turbo = False
+        if os.path.exists("/sys/devices/platform/oxp-platform/tt_toggle"):
+            try:
+                with open("/sys/devices/platform/oxp-platform/tt_toggle", "w") as f:
+                    f.write("1")
+                logger.info(f"Turbo button takeover enabled")
+                turbo = True
+            except Exception:
+                logger.warning(
+                    f"Turbo takeover failed. Ensure you have the latest oxp-sensors driver installed."
+                )
+        self.turbo = turbo
+
     def settings(self) -> HHDSettings:
-        base = {"controllers": {"handheld": load_relative_yaml("controllers.yml")}}
-        base["controllers"]["handheld"]["children"]["controller_mode"].update(
+        base = {"controllers": {"oxp": load_relative_yaml("controllers.yml")}}
+        base["controllers"]["oxp"]["children"]["controller_mode"].update(
             get_outputs_config(
                 can_disable=True,
-                has_leds=is_led_supported(),
+                has_leds=True,
                 start_disabled=self.dconf.get("untested", False),
                 extra_buttons=self.dconf.get("extra_buttons", "dual"),
             )
         )
 
-        base["controllers"]["handheld"]["children"]["imu_axis"] = get_gyro_config(
+        base["controllers"]["oxp"]["children"]["imu_axis"] = get_gyro_config(
             self.dconf.get("mapping", DEFAULT_MAPPINGS)
         )
+
+        if not self.dconf.get("x1", False):
+            del base["controllers"]["oxp"]["children"]["volume_reverse"]
+            del base["controllers"]["oxp"]["children"]["swap_face"]
+        
+        if not self.turbo:
+            del base["controllers"]["oxp"]["children"]["extra_buttons"]
+            del base["controllers"]["oxp"]["children"]["turbo_reboots"]
 
         return base
 
     def update(self, conf: Config):
-        new_conf = conf["controllers.handheld"]
+        new_conf = conf["controllers.oxp"]
         if new_conf == self.prev:
             return
         if self.prev is None:
@@ -88,6 +115,7 @@ class GenericControllersPlugin(HHDPlugin):
                 self.should_exit,
                 self.updated,
                 self.dconf,
+                self.turbo,
             ),
         )
         self.t.start()
@@ -99,6 +127,18 @@ class GenericControllersPlugin(HHDPlugin):
         self.t.join()
         self.should_exit = None
         self.t = None
+
+        if self.turbo:
+            # Disable turbo button takeover
+            try:
+                with open("/sys/devices/platform/oxp-platform/tt_toggle", "w") as f:
+                    f.write("0")
+            except Exception:
+                pass
+        
+        # Close serial in the end so it can be cached properly
+        close_serial()
+        
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
@@ -114,22 +154,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if dconf:
         return [GenericControllersPlugin(dmi, dconf)]
 
-    try:
-        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
-            vendor = f.read().strip().lower()
-        if vendor == "ayn":
-            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYN"))]
-    except Exception:
-        pass
-
-    # Fallback to chassis vendor for aya
-    try:
-        with open("/sys/class/dmi/id/board_vendor") as f:
-            vendor = f.read().lower().strip()
-
-        if "ayaneo" in vendor:
-            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYA"))]
-    except Exception:
-        return []
+    # Begin hw agnostic dmi match
+    if "ONEXPLAYER" in dmi:
+        return [GenericControllersPlugin(dmi, get_default_config(dmi, "ONEXPLAYER"))]
 
     return []

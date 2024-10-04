@@ -27,6 +27,48 @@ color:
     unit: "%"
     default: 50
 
+brightnessd:
+  brightnessd: &brightnessd
+    type: multiple
+    title: Brightness
+    tags: [non-essential, ordinal]
+    options:
+      # off: "Off"
+      low: "Low"
+      medium: "Medium"
+      high: "High"
+    default: medium
+
+oxp:
+  mode:
+    type: multiple
+    title: Stick Style
+    tags: [non-essential]
+    default: classic
+    options:
+      monster_woke: "Monster Woke"
+      flowing: "Flowing Light"
+      sunset: "Sunset Afterglow"
+      neon: "Colorful Neon"
+      dreamy: "Dreamy"
+      cyberpunk: "Cyberpunk"
+      colorful: "Colorful"
+      aurora: "Aurora"
+      sun: "Warm Sun"
+      # classic: "OXP Classic" # FIXME: Missed the code for this one
+
+  brightnessd: *brightnessd
+
+  hue:
+    <<: *hue
+    title: Secondary
+  
+  secondary:
+    type: bool
+    title: Enable Secondary
+    tags: [non-essential]
+    default: true
+
 dual:
   hue:
     <<: *hue
@@ -72,18 +114,6 @@ brightness:
     step: 10
     unit: "%"
     default: 50
-
-brightnessd:
-  brightnessd:
-    type: multiple
-    title: Brightness
-    tags: [non-essential, ordinal]
-    options:
-      # off: "Off"
-      low: "Low"
-      medium: "Medium"
-      high: "High"
-    default: medium
 
 direction:
   direction:

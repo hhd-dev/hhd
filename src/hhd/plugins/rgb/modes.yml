@@ -39,3 +39,8 @@ duality:
   tags: [ non-essential, rgb, duality ]
   hint: >-
     Alternates between two colors.
+
+oxp:
+  type: container
+  title: OneXPlayer
+  tags: [ non-essential, rainbow ]

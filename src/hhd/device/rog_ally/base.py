@@ -314,8 +314,8 @@ def controller_loop(
             "solid": ["color"],
             "pulse": ["color", "speedd"],
             "duality": ["dual", "speedd"],
-            "rainbow": ["brightnessd"],  # , "speedd" # TODO: Figure out why
-            "spiral": ["brightnessd", "speedd", "direction"],  # TODO: Figure out why
+            "rainbow": ["brightnessd"],
+            "spiral": ["brightnessd", "speedd", "direction"],
         },
         rgb_zones="quad",
     )

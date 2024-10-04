@@ -17,34 +17,9 @@ BTN_MAPPINGS: dict[int, Button] = {
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     #
-    # AOKZOE and OneXPlayer mappings
+    # Loki
     #
-    # Turbo Button [29, 56, 125] KEY_LEFTCTRL + KEY_LEFTALT + KEY_LEFTMETA
-    B("KEY_LEFTALT"): "share",
-    # Short press orange [32, 125] KEY_D + KEY_LEFTMETA
-    B("KEY_D"): "mode",
-    # KB Button [24, 97, 125]  KEY_O + KEY_RIGHTCTRL + KEY_LEFTMETA
-    B("KEY_O"): "extra_l1",
-    #
-    # Loki Max
-    #
-    # Provided by AOKZOE A1 Turbo button as KEY_LEFTALT
-    # B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
-}
-
-BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
-    # Volume buttons come from the same keyboard
-    B("KEY_VOLUMEUP"): "key_volumeup",
-    B("KEY_VOLUMEDOWN"): "key_volumedown",
-    #
-    # AOKZOE and OneXPlayer mappings
-    #
-    # Short press orange [32, 125] KEY_D + KEY_LEFTMETA
-    B("KEY_D"): "mode",
-    # KB Button [24, 97, 125]  KEY_O + KEY_RIGHTCTRL + KEY_LEFTMETA
-    # If we do not have turbo takeover, let turbo do its turbo thing, and
-    # failover to having the keyboard button open the overlay
-    B("KEY_O"): "share",
+    B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
 }
 
 AMBERNIC_MAPPINGS: dict[int, str] = {
@@ -108,25 +83,9 @@ AYA_DEFAULT_CONF = {
 }
 ONEX_DEFAULT_CONF = {
     "hrtimer": True,
-    "btn_mapping": BTN_MAPPINGS_NONTURBO,
 }
 
 CONFS = {
-    # Aokzoe
-    "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
-    "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
-    # Onexplayer
-    "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER F1L": {"name": "ONEXPLAYER ONEXFLY (L)", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER X1 mini": {"name": "ONEXPLAYER X1 mini", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER X1 A": {"name": "ONEXPLAYER X1 (AMD)", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER 2 ARP23": {"name": "ONEXPLAYER 2", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER 2 PRO ARP23": {"name": "ONEXPLAYER 2 PRO", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER 2 PRO ARP23 EVA-01": {"name": "ONEXPLAYER 2 PRO", **ONEX_DEFAULT_CONF},
     # Ayn
     "Loki MiniPro": {
         "name": "Loki MiniPro",
@@ -200,10 +159,6 @@ def get_default_config(product_name: str, manufacturer: str):
         "hrtimer": True,
         "untested": True,
     }
-
-    if manufacturer == "ONEXPLAYER":
-        out["btn_mapping"] = BTN_MAPPINGS_NONTURBO
-        out["mapping"] = DEFAULT_MAPPINGS
 
     if manufacturer == "AYA":
         out["btn_mapping"] = AYANEO_BTN_MAPPINGS

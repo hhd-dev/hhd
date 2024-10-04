@@ -12,8 +12,8 @@ from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
-
-from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS
+from .serial import SerialDevice
+from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, BTN_MAPPINGS_NONTURBO
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
@@ -39,6 +39,7 @@ def plugin_run(
     should_exit: TEvent,
     updated: TEvent,
     dconf: dict,
+    turbo: bool = False,
 ):
     first = True
     init = time.perf_counter()
@@ -66,7 +67,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit, turbo)
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -86,7 +87,12 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
+    conf: Config,
+    should_exit: TEvent,
+    updated: TEvent,
+    dconf: dict,
+    emit: Emitter,
+    turbo: bool = False,
 ):
     debug = DEBUG_MODE
 
@@ -96,7 +102,12 @@ def controller_loop(
         None,
         conf["imu"].to(bool),
         emit=emit,
-        rgb_modes={"disabled": [], "solid": ["color"]} if is_led_supported() else None,
+        rgb_modes={
+            "disabled": [],
+            "oxp": ["oxp"],
+            "solid": ["color"],
+            "duality": ["dual"],
+        },
     )
     motion = d_params.get("uses_motion", True)
 
@@ -117,13 +128,41 @@ def controller_loop(
         hide=True,
     )
 
+    if turbo:
+        # Switch buttons if turbo is enabled.
+        # This only affects AOKZOE and OneXPlayer devices with
+        # that button that have the nonturbo mapping as default
+        mappings = BTN_MAPPINGS
+    else:
+        mappings = dconf.get("btn_mapping", BTN_MAPPINGS_NONTURBO)
+
     d_kbd_1 = GenericGamepadEvdev(
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
         grab=True,
-        btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
+        btn_map=mappings,
     )
+
+    share_reboots = False
+    keyboard_is = "keyboard"
+    qam_hhd = False
+    qam_no_release = False
+    if turbo:
+        if conf.get("turbo_reboots", False):
+            share_reboots = True
+        match conf.get("extra_buttons", "separate"):
+            case "separate":
+                keyboard_is = "steam_qam"
+                qam_hhd = True
+            case "combo":
+                keyboard_is = "qam"
+                qam_hhd = False
+            case "combo_hhd":
+                keyboard_is = "qam"
+                qam_hhd = True
+    else:
+        qam_no_release = True
 
     multiplexer = Multiplexer(
         trigger="analog_to_discrete",
@@ -132,27 +171,40 @@ def controller_loop(
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         params=d_params,
+        share_reboots=share_reboots,
+        keyboard_is=keyboard_is,
+        swap_guide="start_is_keyboard" if conf.get("swap_face", False) else None,
+        qam_hhd=qam_hhd,
+        qam_no_release=qam_no_release,
+        keyboard_no_release=not conf.get("swap_face", False),
     )
+
+    d_ser = SerialDevice(turbo=turbo)
+
+    if dconf.get("x1", False) and conf.get("volume_reverse", False):
+        logger.info("Reversing volume buttons.")
+        btn_map = {
+            "key_volumedown": EC("KEY_VOLUMEUP"),
+            "key_volumeup": EC("KEY_VOLUMEDOWN"),
+        }
+    else:
+        btn_map = {
+            "key_volumeup": EC("KEY_VOLUMEUP"),
+            "key_volumedown": EC("KEY_VOLUMEDOWN"),
+        }
 
     d_volume_btn = UInputDevice(
         name="Handheld Daemon Volume Keyboard",
         phys="phys-hhd-vbtn",
         capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
-        btn_map={
-            "key_volumeup": EC("KEY_VOLUMEUP"),
-            "key_volumedown": EC("KEY_VOLUMEDOWN"),
-        },
+        btn_map=btn_map,  # type: ignore
         pid=KBD_PID,
         vid=KBD_VID,
         output_timestamps=True,
     )
 
-    d_rgb = LedDevice()
-    if d_rgb.supported:
-        logger.info(f"RGB Support activated through kernel driver.")
-
     REPORT_FREQ_MIN = 25
-    REPORT_FREQ_MAX = 400
+    REPORT_FREQ_MAX = 125
 
     if motion:
         REPORT_FREQ_MAX = max(REPORT_FREQ_MAX, conf["imu_hz"].to(float))
@@ -182,6 +234,7 @@ def controller_loop(
                 prepare(d_imu)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
+        prepare(d_ser)
         for d in d_producers:
             prepare(d)
 
@@ -196,7 +249,7 @@ def controller_loop(
                 to_run.add(id(fd_to_dev[f]))
 
             for d in devs:
-                if id(d) in to_run:
+                if id(d) in to_run or d == d_ser:
                     evs.extend(d.produce(r))
 
             evs = multiplexer.process(evs)
@@ -207,20 +260,10 @@ def controller_loop(
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
-            d_rgb.consume(evs)
+            d_ser.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
-            # If unbounded, the total number of events per second is the sum of all
-            # events generated by the producers.
-            # For Legion go, that would be 100 + 100 + 500 + 30 = 730
-            # Since the controllers of the legion go only update at 500hz, this is
-            # wasteful.
-            # By setting a target refresh rate for the report and sleeping at the
-            # end, we ensure that even if multiple fds become ready close to each other
-            # they are combined to the same report, limiting resource use.
-            # Ideally, this rate is smaller than the report rate of the hardware controller
-            # to ensure there is always a report from that ready during refresh
             t = time.perf_counter()
             elapsed = t - start
             if elapsed < REPORT_DELAY_MIN:

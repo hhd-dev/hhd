@@ -189,9 +189,9 @@ class OverlayPlugin(HHDPlugin):
                 case "xbox_b":
                     side = "xbox_b"
                     section = "controller"
-                case 'xbox_y':
-                    side = 'xbox_y'
-                    section = 'controller'
+                case "xbox_y":
+                    side = "xbox_y"
+                    section = "controller"
                 case "qam_hold":
                     # Open QAM with hold for accessibility
                     cmd = "open_qam"
@@ -203,7 +203,7 @@ class OverlayPlugin(HHDPlugin):
                 case "overlay":
                     override_enable = True
                     cmd = "open_qam"
-                case "qam_tripple":
+                case "qam_triple":
                     # Allow opening expanded menu with tripple press
                     cmd = "open_expanded"
                 case _:
@@ -215,13 +215,16 @@ class OverlayPlugin(HHDPlugin):
                 cmd = None
                 match cmd_raw:
                     case "disconnect":
-                        d = ev.get('data', None)
-                        uniq = d.get('uniq', None) if d else None
+                        d = ev.get("data", None)
+                        uniq = d.get("uniq", None) if d else None
                         import re
+
                         # Make sure uniq is kind of a mac address
                         # We are a root level daemon
-                        if uniq and re.match(r'([\d:]+)', uniq):
-                            logger.warning(f"Disconnecting controller with uniq: {uniq}")
+                        if uniq and re.match(r"([\d:]+)", uniq):
+                            logger.warning(
+                                f"Disconnecting controller with uniq: {uniq}"
+                            )
                             os.system("bluetoothctl disconnect " + uniq)
                     case "hhd_qam":
                         cmd = "open_qam"
