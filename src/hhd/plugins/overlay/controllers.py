@@ -496,7 +496,8 @@ def refresh_events(emit, dev):
 
 
 def intercept_devices(devs, activate: bool):
-    for dev in devs.values():
+    failed = []
+    for id, dev in devs.items():
         if not dev["is_controller"]:
             continue
         d = dev["dev"]
@@ -527,6 +528,7 @@ def intercept_devices(devs, activate: bool):
                 logger.info(f" - '{dev['pretty']}'")
             except Exception:
                 logger.warning(f" - Failed: '{dev['pretty']}'")
+                failed.append((id, dev))
         else:
             try:
                 if dev.get("grabbed", False):
@@ -545,6 +547,8 @@ def intercept_devices(devs, activate: bool):
                 logger.info(f" - '{dev['pretty']}'")
             except Exception:
                 logger.warning(f" - Failed: '{dev['pretty']}'")
+                failed.append((id, dev))
+    return failed
 
 
 def intercept_events(emit, intercept_num, cid, dinput, smax, evs):
@@ -619,15 +623,22 @@ def device_shortcut_loop(
         # Process events
         should_intercept = emit and emit.should_intercept()
         if any(dev["is_controller"] for dev in devs.values()):
+            failed = []
             if not intercept and should_intercept:
                 intercept = True
                 intercept_num += 1
                 logger.info("Intercepting other controllers:")
-                intercept_devices(devs, True)
+                failed = intercept_devices(devs, True)
             elif intercept and not should_intercept:
                 intercept = False
                 logger.info("Stopping intercepting other controllers:")
-                intercept_devices(devs, False)
+                failed = intercept_devices(devs, False)
+            for id, f in failed:
+                blacklist.add(f["hash"])
+                try:
+                    del devs[id]
+                except Exception:
+                    pass
 
         for name, dev in list(devs.items()):
             d = dev["dev"]
