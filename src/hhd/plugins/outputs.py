@@ -37,6 +37,7 @@ def get_outputs(
     dual_motion: bool = False,
     rgb_modes: Mapping[RgbMode, Sequence[RgbSettings]] | None = None,
     rgb_zones: RgbZones = "mono",
+    controller_disabled: bool = False
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -68,11 +69,16 @@ def get_outputs(
     uses_leds = False
     noob_mode = False
     flip_z = False
+
+    if controller_disabled:
+        controller = "hidden"
+
     match controller:
         case "hidden":
             # NOOP
             UInputDevice.close_cached()
             Dualsense.close_cached()
+            motion = False
             noob_mode = conf.get("hidden.noob_mode", False)
         case "dualsense_edge":
             UInputDevice.close_cached()
@@ -214,7 +220,7 @@ def get_outputs(
         producers.append(d)
         consumers.append(d)
 
-    if touchpad == "emulation" and steam_check is not False:
+    if touchpad == "emulation" and steam_check is not False and not controller_disabled:
         d = UInputDevice(
             name="Handheld Daemon Touchpad",
             phys="phys-hhd-main",

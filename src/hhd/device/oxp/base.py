@@ -46,7 +46,7 @@ def plugin_run(
     init = time.perf_counter()
     repeated_fail = False
     switch_to_turbo = None
-    
+
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             # Close the volume keyboard cache
@@ -62,15 +62,19 @@ def plugin_run(
             found_device = True
 
         if not found_device:
+            curr = time.perf_counter()
             if first:
                 logger.info("Controller not found. Waiting...")
+                switch_to_turbo = curr + TURBO_DELAY
             time.sleep(FIND_DELAY)
             first = False
-            curr = time.perf_counter()
-            # if turbo and switch_to_turbo and curr > switch_to_turbo:
-            #     logger.info("Switching to turbo only mode.")
-            #     turbo_loop()
-            switch_to_turbo = curr + TURBO_DELAY
+            if turbo and switch_to_turbo and curr > switch_to_turbo:
+                logger.info("Switching to turbo only button mode")
+                updated.clear()
+                turbo_loop(
+                    conf.copy(), should_exit, updated, dconf, emit
+                )
+                first = False
             continue
 
         try:
@@ -94,12 +98,177 @@ def plugin_run(
             if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
-    
+
     # Close the volume keyboard cache
     UInputDevice.close_volume_cached()
 
-def turbo_loop():
-    pass
+
+def turbo_loop(
+    conf: Config,
+    should_exit: TEvent,
+    updated: TEvent,
+    dconf: dict,
+    emit: Emitter,
+):
+    debug = DEBUG_MODE
+
+    # Output
+    d_producers, d_outs, d_params = get_outputs(
+        conf["controller_mode"],
+        None,
+        conf["imu"].to(bool),
+        emit=emit,
+        rgb_modes={
+            "disabled": [],
+            "oxp": ["oxp"],
+            "solid": ["color"],
+            "duality": ["dual"],
+        },
+        controller_disabled=True,
+    )
+    
+    d_kbd_1 = GenericGamepadEvdev(
+        vid=[KBD_VID],
+        pid=[KBD_PID],
+        required=False,
+        grab=True,
+        btn_map=BTN_MAPPINGS,
+    )
+
+    share_reboots = False
+    last_controller_check = 0
+    keyboard_is = "keyboard"
+    qam_hhd = False
+    qam_no_release = False
+    if conf.get("turbo_reboots", False):
+        share_reboots = True
+    match conf.get("extra_buttons", "separate"):
+        case "separate":
+            keyboard_is = "steam_qam"
+            qam_hhd = True
+        case "combo":
+            keyboard_is = "qam"
+            qam_hhd = False
+        case "combo_hhd":
+            keyboard_is = "qam"
+            qam_hhd = True
+
+    multiplexer = Multiplexer(
+        trigger="analog_to_discrete",
+        dpad="analog_to_discrete",
+        share_to_qam=True,
+        nintendo_mode=conf["nintendo_mode"].to(bool),
+        emit=emit,
+        params=d_params,
+        share_reboots=share_reboots,
+        keyboard_is=keyboard_is,
+        swap_guide="start_is_keyboard" if conf.get("swap_face", False) else None,
+        qam_hhd=qam_hhd,
+        qam_no_release=qam_no_release,
+        keyboard_no_release=not conf.get("swap_face", False),
+    )
+
+    d_ser = SerialDevice(turbo=True)
+
+    if dconf.get("x1", False) and conf.get("volume_reverse", False):
+        logger.info("Reversing volume buttons.")
+        btn_map = {
+            "key_volumedown": EC("KEY_VOLUMEUP"),
+            "key_volumeup": EC("KEY_VOLUMEDOWN"),
+        }
+    else:
+        btn_map = {
+            "key_volumeup": EC("KEY_VOLUMEUP"),
+            "key_volumedown": EC("KEY_VOLUMEDOWN"),
+        }
+
+    d_volume_btn = UInputDevice(
+        name="Handheld Daemon Volume Keyboard",
+        phys="phys-hhd-vbtn",
+        capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
+        btn_map=btn_map,  # type: ignore
+        pid=KBD_PID,
+        vid=KBD_VID,
+        output_timestamps=True,
+        volume_keyboard=True,
+    )
+
+    REPORT_FREQ_MIN = 25
+    REPORT_FREQ_MAX = 25
+
+    REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
+    REPORT_DELAY_MIN = 1 / REPORT_FREQ_MAX
+
+    fds = []
+    devs = []
+    fd_to_dev = {}
+
+    def prepare(m):
+        devs.append(m)
+        fs = m.open()
+        fds.extend(fs)
+        for f in fs:
+            fd_to_dev[f] = m
+
+    try:
+        prepare(d_volume_btn)
+        prepare(d_kbd_1)
+        prepare(d_ser)
+        for d in d_producers:
+            prepare(d)
+
+        logger.info("Turbo only mode started, the turbo button of the device will still work.")
+        while not should_exit.is_set() and not updated.is_set():
+            start = time.perf_counter()
+
+            if start - last_controller_check > TURBO_CONTROLLER_CHECK:
+                last_controller_check = start
+                try:
+                    found_device = bool(enumerate_evs(vid=GAMEPAD_VID))
+                except Exception:
+                    logger.warning("Failed finding device, skipping check.")
+                    found_device = True
+                if found_device:
+                    logger.info("Controller found, switching to controller mode.")
+                    break
+
+            r, _, _ = select.select(fds, [], [], REPORT_DELAY_MAX)
+            evs = []
+            to_run = set()
+            for f in r:
+                to_run.add(id(fd_to_dev[f]))
+
+            for d in devs:
+                if id(d) in to_run or d == d_ser:
+                    evs.extend(d.produce(r))
+
+            evs = multiplexer.process(evs)
+            if evs:
+                if debug:
+                    logger.info(evs)
+
+                d_volume_btn.consume(evs)
+
+            d_ser.consume(evs)
+            for d in d_outs:
+                d.consume(evs)
+
+            t = time.perf_counter()
+            elapsed = t - start
+            if elapsed < REPORT_DELAY_MIN:
+                time.sleep(REPORT_DELAY_MIN - elapsed)
+
+    except KeyboardInterrupt:
+        raise
+    finally:
+        for d in reversed(devs):
+            try:
+                d.close(not updated.is_set())
+            except Exception as e:
+                logger.error(f"Error while closing device '{d}' with exception:\n{e}")
+                if debug:
+                    raise e
+
 
 def controller_loop(
     conf: Config,
