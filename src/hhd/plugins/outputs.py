@@ -252,6 +252,7 @@ def get_outputs(
             "uses_dual_motion": dual_motion,
             "noob_mode": noob_mode,
             "has_qam": has_qam,
+            "supports_qam": not controller_disabled and controller != "hidden",
         },
     )
 

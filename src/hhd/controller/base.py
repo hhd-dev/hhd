@@ -163,6 +163,7 @@ class RgbCapabilities(TypedDict):
 
 class ControllerCapabilities(TypedDict):
     buttons: dict  # TODO
+    supports_qam: bool
     rgb: RgbCapabilities | None
 
 
@@ -194,7 +195,10 @@ class ControllerEmitter:
 
     def open_steam(self, expanded: bool = False):
         if not self.send_qam(expanded):
-            self.inject({"type": "configuration", "code": "steam", "value": expanded})
+            return self.inject(
+                {"type": "configuration", "code": "steam", "value": expanded}
+            )
+        return True
 
     def set_simple_qam(self, val: bool):
         with self.intercept_lock:
@@ -244,11 +248,12 @@ class ControllerEmitter:
         if not isinstance(ev, Sequence):
             ev = [ev]
         with self.intercept_lock:
-            if not self.cid:
+            if not self.cid or (self._cap and not self._cap.get("supports_qam", True)):
                 # Avoid writing events if no controller is connected
-                return
+                return False
             for e in ev:
                 self._evs.append((e, 0))
+        return True
 
     def inject_timed(self, evs: Sequence[tuple[Event, float]]):
         # Unfortunately here we have to clear the previous events to avoid conflicts
@@ -634,7 +639,14 @@ class Multiplexer:
                     "controller": uses_rgb,
                     "zones": rgb_zones,
                 }
-            self.emit.set_capabilities(self.unique, {"buttons": {}, "rgb": rgb})
+            self.emit.set_capabilities(
+                self.unique,
+                {
+                    "buttons": {},
+                    "rgb": rgb,
+                    "supports_qam": params.get("supports_qam", True),
+                },
+            )
 
     def process(self, events: Sequence[Event]) -> Sequence[Event]:
         out: list[Event] = []
@@ -959,7 +971,9 @@ class Multiplexer:
                         self.qam_kbd = ev["code"] == "keyboard"
                         ev["code"] = ""  # type: ignore
                         if not self.qam_simple:
-                            if (not self.qam_kbd and self.qam_no_release) or (self.qam_kbd and self.keyboard_no_release):
+                            if (not self.qam_kbd and self.qam_no_release) or (
+                                self.qam_kbd and self.keyboard_no_release
+                            ):
                                 # Fix for the ally having no hold event
                                 if ev["value"]:
                                     self.qam_times += 1

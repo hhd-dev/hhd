@@ -31,6 +31,9 @@ class OverlayPlugin(HHDPlugin):
         self.old_asus_cycle = None
         self.short_t = None
         self.has_executable = False
+        self.qam_handler = None
+        self.qam_handler_fallback = None
+        self.touch_gestures = True
 
     def open(
         self,
@@ -56,6 +59,8 @@ class OverlayPlugin(HHDPlugin):
 
             if self.qam_handler:
                 emit.register_qam(self.qam_handler)
+            else:
+                self.qam_handler_fallback = QamHandlerKeyboard()
             self.emit = emit
         except Exception as e:
             logger.warning(
@@ -232,10 +237,15 @@ class OverlayPlugin(HHDPlugin):
                         cmd = "open_expanded"
                     case "steam_qam":
                         logger.info("Opening steam qam.")
-                        self.emit.open_steam(False)
+                        if (
+                            not self.emit.open_steam(False)
+                            and self.qam_handler_fallback
+                        ):
+                            self.qam_handler_fallback(False)
                     case "steam_expanded":
                         logger.info("Opening steam expanded.")
-                        self.emit.open_steam(True)
+                        if not self.emit.open_steam(True) and self.qam_handler_fallback:
+                            self.qam_handler_fallback(True)
                     case "keyboard":
                         if open_steam_kbd(self.emit, True):
                             logger.info("Opened Steam keyboard.")
@@ -263,6 +273,8 @@ class OverlayPlugin(HHDPlugin):
             self.ovf.close()
         if self.qam_handler:
             self.qam_handler.close()
+        if self.qam_handler_fallback:
+            self.qam_handler_fallback.close()
         self._close_short()
 
 
