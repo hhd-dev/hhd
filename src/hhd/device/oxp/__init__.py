@@ -3,7 +3,6 @@ import os
 from threading import Event, Thread
 from typing import Any, Sequence
 
-from hhd.controller.physical.rgb import is_led_supported
 from hhd.plugins import (
     Config,
     Context,

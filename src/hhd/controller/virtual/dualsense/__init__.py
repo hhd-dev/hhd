@@ -51,7 +51,6 @@ REPORT_MAX_DELAY = 1 / DS5_EDGE_MIN_REPORT_FREQ
 REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
 DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
 MAX_IMU_SYNC_DELAY = 2
-MIN_TIME_FOR_CACHE = 2
 
 logger = logging.getLogger(__name__)
 
@@ -166,11 +165,8 @@ class Dualsense(Producer, Consumer):
         assert self.fd
         return [self.fd]
 
-    def close(self, exit: bool) -> bool:
-        if self.cache and time.perf_counter() - self.start > MIN_TIME_FOR_CACHE:
-            # Only cache if the controller ran for at least 5 seconds, to avoid the
-            # hid node being the reason for the crash
-            self.cache = False
+    def close(self, exit: bool, in_cache: bool = False) -> bool:
+        if not in_cache and self.cache and time.perf_counter() - self.start:
             logger.warning(
                 f"Caching Dualsense {'left motions device' if self.left_motion else 'controller'} to avoid reconnection."
             )

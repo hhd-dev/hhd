@@ -15,14 +15,20 @@ logger = logging.getLogger(__name__)
 
 _cache = ControllerCache()
 _cache_motions = ControllerCache()
+_cache_volume = ControllerCache()
 
 MIN_TIME_FOR_CACHE = 2
+
 
 class UInputDevice(Consumer, Producer):
     @staticmethod
     def close_cached():
         _cache.close()
         _cache_motions.close()
+
+    @staticmethod
+    def close_volume_cached():
+        _cache_volume.close()
 
     def __init__(
         self,
@@ -42,6 +48,7 @@ class UInputDevice(Consumer, Producer):
         version: int = 1,
         cache: bool = False,
         motions_device: bool = False,
+        volume_keyboard: bool = False,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -62,6 +69,9 @@ class UInputDevice(Consumer, Producer):
         self.version = version
         self.cache = cache
         self.motions_device = motions_device
+        self.volume_keyboard = volume_keyboard
+        if volume_keyboard:
+            self.cache = True
 
         self.rumble: Event | None = None
 
@@ -70,10 +80,17 @@ class UInputDevice(Consumer, Producer):
         self.dev = None
 
         if self.cache:
-            cached = cast(
-                UInputDevice | None,
-                _cache_motions.get() if self.motions_device else _cache.get(),
-            )
+            if self.motions_device:
+                name = "left motions device"
+                cache = _cache_motions.get()
+            elif self.volume_keyboard:
+                name = "volume keyboard"
+                cache = _cache_volume.get()
+            else:
+                name = "controller"
+                cache = _cache.get()
+
+            cached = cast(UInputDevice | None, cache)
             if cached:
                 if (
                     self.capabilities == cached.capabilities
@@ -86,7 +103,7 @@ class UInputDevice(Consumer, Producer):
                     and self.uniq == cached.uniq
                 ):
                     logger.warning(
-                        f"Using cached controller node for {'left motions device' if self.motions_device else 'controller'}."
+                        f"Using cached controller node for {name}."
                     )
                     self.dev = cached.dev
                 else:
@@ -132,16 +149,20 @@ class UInputDevice(Consumer, Producer):
             return []
         return [self.fd]
 
-    def close(self, exit: bool) -> bool:
-        if self.cache and time.perf_counter() - self.start > MIN_TIME_FOR_CACHE:
-            self.cache = False
-            logger.warning(
-                f"Caching {'left motions device' if self.motions_device else 'controller'} to avoid reconnection."
-            )
+    def close(self, exit: bool, in_cache: bool = False) -> bool:
+        if not in_cache and self.cache:
             if self.motions_device:
+                name = "left motions device"
                 _cache_motions.add(self)
+            elif self.volume_keyboard:
+                name = "volume keyboard"
+                _cache_volume.add(self)
             else:
+                name = "controller"
                 _cache.add(self)
+            logger.warning(
+                f"Caching {name} to avoid reconnection."
+            )
         elif self.dev:
             self.dev.close()
             self.dev = None

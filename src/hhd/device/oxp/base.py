@@ -9,7 +9,6 @@ from hhd.controller import Multiplexer, DEBUG_MODE
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
-from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 from .serial import SerialDevice
@@ -19,6 +18,8 @@ FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
 LONGER_ERROR_DELAY = 3
 LONGER_ERROR_MARGIN = 1.3
+TURBO_DELAY = 5
+TURBO_CONTROLLER_CHECK = 2
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,12 @@ def plugin_run(
     first = True
     init = time.perf_counter()
     repeated_fail = False
+    switch_to_turbo = None
+    
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
+            # Close the volume keyboard cache
+            UInputDevice.close_volume_cached()
             time.sleep(ERROR_DELAY)
             continue
 
@@ -61,6 +66,11 @@ def plugin_run(
                 logger.info("Controller not found. Waiting...")
             time.sleep(FIND_DELAY)
             first = False
+            curr = time.perf_counter()
+            # if turbo and switch_to_turbo and curr > switch_to_turbo:
+            #     logger.info("Switching to turbo only mode.")
+            #     turbo_loop()
+            switch_to_turbo = curr + TURBO_DELAY
             continue
 
         try:
@@ -84,7 +94,12 @@ def plugin_run(
             if DEBUG_MODE:
                 raise e
             time.sleep(sleep_time)
+    
+    # Close the volume keyboard cache
+    UInputDevice.close_volume_cached()
 
+def turbo_loop():
+    pass
 
 def controller_loop(
     conf: Config,
@@ -201,6 +216,7 @@ def controller_loop(
         pid=KBD_PID,
         vid=KBD_VID,
         output_timestamps=True,
+        volume_keyboard=True,
     )
 
     REPORT_FREQ_MIN = 25

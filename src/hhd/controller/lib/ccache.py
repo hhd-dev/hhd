@@ -56,7 +56,7 @@ class ControllerCache:
                     break
                 curr = next
             if self._cached:
-                self._cached.close(True)
+                self._cached.close(True, in_cache=True)
                 self._cached = None
 
     def add(self, c):
@@ -91,7 +91,7 @@ class ControllerCache:
     def close(self):
         with self._cond:
             if self._cached:
-                self._cached.close(True)
+                self._cached.close(True, in_cache=True)
                 self._cached = None
             self._should_exit.set()
             self._cond.notify_all()
