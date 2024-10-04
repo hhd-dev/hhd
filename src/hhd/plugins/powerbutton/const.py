@@ -4,7 +4,7 @@ from typing import Literal, NamedTuple, Sequence, TypedDict
 class PowerButtonConfig(NamedTuple):
     device: str
     prod_name: str
-    type: Literal["hold_emitted", "hold_isa"] = "hold_isa"
+    type: Literal["hold_emitted", "hold_isa", "only_press"] = "hold_isa"
     phys: Sequence[str] = ["LNXPWRBN", "PNP0C0C"]
     hold_phys: Sequence[str] = ["phys-hhd-powerbutton", "isa0060"]
     hold_grab: bool = False
@@ -44,19 +44,19 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC(
         "AOKZOE A1",
         "AOKZOE A1 AR07",
-        type="hold_emitted",
+        type="only_press",
         phys=["LNXPWRBN", "PNP0C0C"],
     ),
     PBC(
         "AOKZOE A1 Pro",
         "AOKZOE A1 Pro",
-        type="hold_emitted",
+        type="only_press",
         phys=["LNXPWRBN", "PNP0C0C"],
     ),
     PBC(
         "ONEXPLAYER Mini Pro",
         "ONEXPLAYER Mini Pro",
-        type="hold_emitted",
+        type="only_press",
         phys=["LNXPWRBN", "PNP0C0C"],
     ),
 ]
@@ -77,13 +77,13 @@ def get_config() -> PowerButtonConfig:
             return d
 
     if "ONEXPLAYER" in prod or "AOKZOE" in prod:
-        return PBC(prod, prod, type="hold_emitted", phys=["LNXPWRBN"])
+        return PBC(prod, prod, type="only_press")
 
     if sys == "AYA" or sys == "AYANEO" or sys == "AYN":
         # TODO: Fix isa handling to only work when only shift is active
-        return PBC(prod, prod, type="hold_emitted")
+        return PBC(prod, prod, type="only_press")
 
-    return PBC("uknown", "NA", "hold_emitted", unsupported=True)
+    return PBC("uknown", "NA", "only_press", unsupported=True)
 
 
 # Legion go

@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 STEAM_WAIT_DELAY = 0.5
 LONG_PRESS_DELAY = 2.0
+DEBOUNCE_DELAY = 1
 
 
 def B(b: str):
@@ -74,6 +75,11 @@ def run_steam_longpress(perms: Context):
 
 def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event):
     match cfg.type:
+        case "only_press":
+            logger.info(
+                f"Starting multi-device powerbutton handler for device '{cfg.device}'."
+            )
+            power_button_multidev(cfg, ctx, should_exit)
         case "hold_emitted":
             logger.info(
                 f"Starting timer based powerbutton handler for device '{cfg.device}'."
@@ -245,6 +251,70 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
     finally:
         if dev:
             dev.close()
+        if devs:
+            for d in devs:
+                d.close()
+
+
+def power_button_multidev(cfg: PowerButtonConfig, perms: Context, should_exit: Event):
+    devs = []
+    fds = []
+    last_pressed = None
+    try:
+        while not should_exit.is_set():
+            # Initial check for steam
+            if not is_steam_gamepad_running(perms):
+                for d in devs:
+                    d.close()
+                devs = []
+                fds = []
+                logger.info(f"Waiting for steam to launch.")
+                while not is_steam_gamepad_running(perms):
+                    if should_exit.is_set():
+                        return
+                    sleep(STEAM_WAIT_DELAY)
+
+            if not devs:
+                logger.info(f"Steam is running, hooking power button.")
+                devs = register_power_buttons(cfg)
+                fds = {d.fd: d for d in devs}
+            if not devs:
+                logger.error(f"Power button(s) not found, disabling plugin.")
+                return
+
+            # Add timeout to release the button if steam exits.
+            r = select.select(list(fds), [], [], STEAM_WAIT_DELAY)[0]
+
+            # Handle press logic
+            issue_power = False
+            issue_systemctl = False
+            for fd in r:
+                # Handle button event
+                ev = fds[fd].read_one()
+                if (
+                    ev.type == B("EV_KEY")
+                    and ev.code == B("KEY_POWER")
+                    and ev.value == 1
+                ):
+                    curr_time = perf_counter()
+                    if not last_pressed or curr_time - last_pressed > DEBOUNCE_DELAY:
+                        last_pressed = curr_time
+                        issue_power = True
+
+            if issue_power:
+                logger.info("Executing short press.")
+                issue_systemctl = not run_steam_shortpress(perms)
+
+            if issue_systemctl:
+                logger.error(
+                    "Power button action did not work. Calling `systemctl suspend`"
+                )
+                os.system("systemctl suspend")
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        logger.error(f"Received exception, exitting:\n{e}")
+    finally:
         if devs:
             for d in devs:
                 d.close()
