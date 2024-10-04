@@ -313,8 +313,6 @@ class SerialDevice(Consumer, Producer):
                 self.queue_kbd = None
 
         if self.ser.fd not in fds:
-            if evs:
-                logger.info(evs)
             return evs
 
         CMD_LEN = 14
@@ -382,6 +380,4 @@ class SerialDevice(Consumer, Producer):
                 }
             )
 
-        if evs:
-            logger.info(evs)
         return evs
