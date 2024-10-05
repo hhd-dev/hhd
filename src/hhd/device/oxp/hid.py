@@ -140,7 +140,7 @@ class OxpHidraw(GenericGamepadHidraw):
             cmd = self.queue_cmd.popleft()
             logger.info(f"OXP C: {cmd.hex()}")
             self.dev.write(cmd)
-            self.next_send = time.perf_counter() + WRITE_DELAY
+            self.next_send = curr + WRITE_DELAY
 
         # Queue needs to flush before switching to next event
         # Also, there needs to be a led event to queue
@@ -221,10 +221,8 @@ class OxpHidraw(GenericGamepadHidraw):
                 ]
                 self.queue_kbd = None
 
-        if self.dev.fd not in fds:
+        if self.fd not in fds:
             return evs
-
-        CMD_LEN = 14
 
         while cmd := self.dev.read(64):
             logger.info(f"OXP R: {cmd.hex()}")
