@@ -31,10 +31,15 @@ GAMEPAD_PID = 0x028E
 KBD_VID = 0x0001
 KBD_PID = 0x0001
 
-HIDRAW_VID = 0x1A86
-HIDRAW_PID = 0xFE00
-HIDRAW_PAGE = 0xFF00
-HIDRAW_USAGE = 0x0001
+X1_MINI_VID = 0x1A86
+X1_MINI_PID = 0xFE00
+X1_MINI_PAGE = 0xFF00
+X1_MINI_USAGE = 0x0001
+
+XFLY_VID = 0x1A2C
+XFLY_PID = 0xB001
+XFLY_PAGE = 0xFF01
+XFLY_USAGE = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
 
@@ -175,10 +180,10 @@ def turbo_loop(
 
     d_ser = SerialDevice(turbo=True, required=True)
     d_hidraw = OxpHidraw(
-        vid=[HIDRAW_VID],
-        pid=[HIDRAW_PID],
-        usage_page=[HIDRAW_PAGE],
-        usage=[HIDRAW_USAGE],
+        vid=[X1_MINI_VID, XFLY_VID],
+        pid=[X1_MINI_PID, XFLY_PID],
+        usage_page=[X1_MINI_PAGE, XFLY_PAGE],
+        usage=[X1_MINI_USAGE, XFLY_USAGE],
         turbo=True,
         required=True,
     )
@@ -396,10 +401,10 @@ def controller_loop(
 
     d_ser = SerialDevice(turbo=turbo, required=True)
     d_hidraw = OxpHidraw(
-        vid=[HIDRAW_VID],
-        pid=[HIDRAW_PID],
-        usage_page=[HIDRAW_PAGE],
-        usage=[HIDRAW_USAGE],
+        vid=[X1_MINI_VID, XFLY_VID],
+        pid=[X1_MINI_PID, XFLY_PID],
+        usage_page=[X1_MINI_PAGE, XFLY_PAGE],
+        usage=[X1_MINI_USAGE, XFLY_USAGE],
         turbo=turbo,
         required=True,
     )
