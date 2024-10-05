@@ -475,6 +475,7 @@ def controller_loop(
             try:
                 prepare(d_hidraw)
                 logger.info("Found OXP hidraw vendor device.")
+                has_vendor = True
             except Exception as e:
                 logger.error(f"Could not find hidraw vendor device, error:\n{e}")
                 d_hidraw = None
