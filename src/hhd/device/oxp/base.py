@@ -12,6 +12,7 @@ from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 from .serial import SerialDevice
+from .hid import OxpHidraw
 from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, BTN_MAPPINGS_NONTURBO
 
 FIND_DELAY = 0.1
@@ -29,6 +30,11 @@ GAMEPAD_PID = 0x028E
 
 KBD_VID = 0x0001
 KBD_PID = 0x0001
+
+HIDRAW_VID = 0x1A86
+HIDRAW_PID = 0xFE00
+HIDRAW_PAGE = 0xFF00
+HIDRAW_USAGE = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
 
@@ -71,9 +77,7 @@ def plugin_run(
             if turbo and switch_to_turbo and curr > switch_to_turbo:
                 logger.info("Switching to turbo only button mode")
                 updated.clear()
-                turbo_loop(
-                    conf.copy(), should_exit, updated, dconf, emit
-                )
+                turbo_loop(conf.copy(), should_exit, updated, dconf, emit)
                 first = False
             continue
 
@@ -126,7 +130,7 @@ def turbo_loop(
         },
         controller_disabled=True,
     )
-    
+
     d_kbd_1 = GenericGamepadEvdev(
         vid=[KBD_VID],
         pid=[KBD_PID],
@@ -168,7 +172,15 @@ def turbo_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
-    d_ser = SerialDevice(turbo=True)
+    d_ser = SerialDevice(turbo=True, required=True)
+    d_hidraw = OxpHidraw(
+        vid=[HIDRAW_VID],
+        pid=[HIDRAW_PID],
+        usage_page=[HIDRAW_PAGE],
+        usage=[HIDRAW_USAGE],
+        turbo=True,
+        required=True,
+    )
 
     if dconf.get("x1", False) and conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
@@ -213,11 +225,29 @@ def turbo_loop(
     try:
         prepare(d_volume_btn)
         prepare(d_kbd_1)
-        prepare(d_ser)
+
+        has_vendor = False
+        try:
+            prepare(d_ser)
+            has_vendor = True
+        except Exception as e:
+            logger.warning(f"Could not find serial vendor device, error:\n{e}")
+            d_ser = None
+        if not has_vendor:
+            try:
+                prepare(d_hidraw)
+            except Exception as e:
+                logger.error(f"Could not find hidraw vendor device, error:\n{e}")
+                d_hidraw = None
+        if not has_vendor:
+            logger.error("No vendor device found, RGB and back buttons will not work.")
+
         for d in d_producers:
             prepare(d)
 
-        logger.info("Turbo only mode started, the turbo button of the device will still work.")
+        logger.info(
+            "Turbo only mode started, the turbo button of the device will still work."
+        )
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
 
@@ -249,7 +279,10 @@ def turbo_loop(
 
                 d_volume_btn.consume(evs)
 
-            d_ser.consume(evs)
+            if d_ser:
+                d_ser.consume(evs)
+            if d_hidraw:
+                d_hidraw.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
