@@ -104,7 +104,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.prev = {}
         self.queue_kbd = None
         self.queue_cmd = deque(maxlen=10)
-        self.last_sent = 0
+        self.next_send = 0
         self.queue_led = None
         self.turbo = turbo
 
@@ -118,10 +118,8 @@ class OxpHidraw(GenericGamepadHidraw):
         a = super().open()
         self.queue_kbd = None
         self.prev = {}
+        self.next_send = time.perf_counter() + INIT_DELAY
 
-        if self.dev:
-            time.sleep(INIT_DELAY)
-        
         self.queue_cmd.extend(INITIALIZE)
         return a
 
@@ -138,11 +136,11 @@ class OxpHidraw(GenericGamepadHidraw):
 
         # Send queued event if applicable
         curr = time.perf_counter()
-        if self.queue_cmd and curr - self.last_sent > WRITE_DELAY:
+        if self.queue_cmd and curr - self.next_send > 0:
             cmd = self.queue_cmd.popleft()
             logger.info(f"OXP C: {cmd.hex()}")
             self.dev.write(cmd)
-            self.last_sent = time.perf_counter()
+            self.next_send = time.perf_counter() + WRITE_DELAY
 
         # Queue needs to flush before switching to next event
         # Also, there needs to be a led event to queue
