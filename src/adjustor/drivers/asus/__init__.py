@@ -255,7 +255,6 @@ class AsusDriverPlugin(HHDPlugin):
         self.new_tdp = None
         new_mode = self.new_mode
         self.new_mode = None
-        ally_x = self.allyx
         if new_tdp:
             # For TDP values received from steam, set the appropriate
             # mode to get a better experience.
