@@ -142,7 +142,7 @@ def fan_pwm_tester(normal_curve: bool = True):
     if normal_curve:
         fan_curve = {
             50: 0.3,
-            60: 0.3,
+            60: 0.35,
             70: 0.4,
             80: 0.5,
             85: 0.6,
