@@ -34,13 +34,7 @@ UPDATE_FREQUENCY = 5
 UPDATE_T = 1 / UPDATE_FREQUENCY
 SETPOINT_UPDATE_FREQUENCY = 1
 SETPOINT_UPDATE_T = 1 / SETPOINT_UPDATE_FREQUENCY
-
-# Control fan curve hysterisis
-# e.g., consider {50: 0.5, 60: 0.6, 70: 0.7} with current setpoint being 0.5
-# the setpoint will only update to 0.6 if the temperature is above 57C and remain
-# there until the temperature either becomes 52C or 67C
-SET_POINT_MIN = -3
-SET_POINT_MAX = 2
+HYSTERESIS_RATIO = 0.25
 
 
 def _calculate_jerk(speed_span, decel_ratio, freq, time):
@@ -136,11 +130,16 @@ def update_setpoint(temp: float, curr: int, fan_curve: dict[int, float]):
 
     idx = targets.index(curr)
 
-    if idx > 0 and temp < targets[idx - 1] + SET_POINT_MAX:
-        return targets[idx - 1]
+    # Add some hysterisis to avoid dithering
+    if idx > 0:
+        prev = targets[idx - 1]
+        if temp < prev + (curr - prev) * HYSTERESIS_RATIO:
+            return prev
 
-    if idx < len(targets) - 1 and temp > targets[idx + 1] + SET_POINT_MIN:
-        return targets[idx + 1]
+    if idx < len(targets) - 1:
+        next = targets[idx + 1]
+        if temp > next - (next - curr) * HYSTERESIS_RATIO:
+            return next
 
     return curr
 
@@ -153,6 +152,6 @@ def get_initial_setpoint(temp: float, fan_curve: dict[int, float]):
 
     targets = list(fan_curve.keys())
     for idx, target in enumerate(targets):
-        if temp < target - SET_POINT_MIN:
+        if temp < target:
             return targets[idx - 1] if idx else targets[0]
     return targets[-1]
