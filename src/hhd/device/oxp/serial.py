@@ -170,7 +170,6 @@ def init_serial():
     for d in INITIALIZE:
         ser.write(d)
         time.sleep(WRITE_DELAY)
-    ser.read_until(size=15).hex()
 
     _serial = ser
     return ser
@@ -341,6 +340,7 @@ class SerialDevice(Consumer, Producer):
 
             if cid != 0x1A:
                 logger.warning(f"OXP CH340 unknown command: {cmd.hex()}")
+                continue
 
             btn = cmd[2]
 
