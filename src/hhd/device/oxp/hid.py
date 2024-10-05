@@ -46,9 +46,7 @@ def gen_rgb_mode(mode: str):
     return gen_cmd(0xB8, [mc, 0x00, 0x02])
 
 
-gen_intercept = lambda enable: gen_cmd(
-    0xB2, [0x03 if enable else 0x00, 0x01, 0x02]
-)
+gen_intercept = lambda enable: gen_cmd(0xB2, [0x03 if enable else 0x00, 0x01, 0x02])
 
 
 def gen_brightness(
@@ -72,11 +70,12 @@ def gen_rgb_solid(r, g, b, side: Literal[0x00, 0x03, 0x04] = 0x00):
 
 
 KBD_NAME = "keyboard"
+HOME_NAME = "guide"
 KBD_NAME_NON_TURBO = "share"
 KBD_HOLD = 0.2
 OXP_BUTTONS = {
     0x24: KBD_NAME,
-    0x21: "guide",
+    0x21: HOME_NAME,
     0x22: "extra_l1",
     0x23: "extra_r1",
 }
@@ -104,6 +103,7 @@ class OxpHidraw(GenericGamepadHidraw):
         super().__init__(*args, **kwargs)
         self.prev = {}
         self.queue_kbd = None
+        self.queue_home = None
         self.queue_cmd = deque(maxlen=10)
         self.next_send = 0
         self.queue_led = None
@@ -118,6 +118,7 @@ class OxpHidraw(GenericGamepadHidraw):
     def open(self):
         a = super().open()
         self.queue_kbd = None
+        self.queue_home = None
         self.prev = {}
         self.next_send = time.perf_counter() + INIT_DELAY
 
@@ -210,6 +211,7 @@ class OxpHidraw(GenericGamepadHidraw):
             return []
 
         evs = []
+        # A bit unclean with 2 buttons but it works
         if self.queue_kbd:
             curr = time.perf_counter()
             if curr - KBD_HOLD > self.queue_kbd:
@@ -221,6 +223,17 @@ class OxpHidraw(GenericGamepadHidraw):
                     }
                 ]
                 self.queue_kbd = None
+        if self.queue_home:
+            curr = time.perf_counter()
+            if curr - KBD_HOLD > self.queue_home:
+                evs = [
+                    {
+                        "type": "button",
+                        "code": HOME_NAME,
+                        "value": False,
+                    }
+                ]
+                self.queue_home = None
 
         if self.fd not in fds:
             return evs
@@ -265,6 +278,19 @@ class OxpHidraw(GenericGamepadHidraw):
                         }
                     )
                     self.queue_kbd = time.perf_counter()
+                self.prev[btn] = pressed
+                continue
+
+            if btn == HOME_NAME:
+                if pressed and (btn not in self.prev or self.prev[btn] != pressed):
+                    evs.append(
+                        {
+                            "type": "button",
+                            "code": HOME_NAME,
+                            "value": True,
+                        }
+                    )
+                    self.queue_home = time.perf_counter()
                 self.prev[btn] = pressed
                 continue
 
