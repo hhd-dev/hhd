@@ -140,14 +140,6 @@ def turbo_loop(
         controller_disabled=True,
     )
 
-    d_kbd_1 = GenericGamepadEvdev(
-        vid=[KBD_VID],
-        pid=[KBD_PID],
-        required=False,
-        grab=True,
-        btn_map=BTN_MAPPINGS,
-    )
-
     share_reboots = False
     last_controller_check = 0
     keyboard_is = "keyboard"
@@ -233,7 +225,6 @@ def turbo_loop(
 
     try:
         prepare(d_volume_btn)
-        prepare(d_kbd_1)
 
         has_vendor = False
         try:
@@ -358,7 +349,7 @@ def controller_loop(
         # that button that have the nonturbo mapping as default
         mappings = BTN_MAPPINGS
     else:
-        mappings = dconf.get("btn_mapping", BTN_MAPPINGS_NONTURBO)
+        mappings = BTN_MAPPINGS_NONTURBO
 
     d_kbd_1 = GenericGamepadEvdev(
         vid=[KBD_VID],
@@ -403,13 +394,13 @@ def controller_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
-    d_ser = SerialDevice(turbo=True, required=True)
+    d_ser = SerialDevice(turbo=turbo, required=True)
     d_hidraw = OxpHidraw(
         vid=[HIDRAW_VID],
         pid=[HIDRAW_PID],
         usage_page=[HIDRAW_PAGE],
         usage=[HIDRAW_USAGE],
-        turbo=True,
+        turbo=turbo,
         required=True,
     )
 

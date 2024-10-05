@@ -40,7 +40,6 @@ BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
 
 ONEX_DEFAULT_CONF = {
     "hrtimer": True,
-    "btn_mapping": BTN_MAPPINGS_NONTURBO,
 }
 
 CONFS = {
@@ -81,10 +80,6 @@ def get_default_config(product_name: str, manufacturer: str):
         "x1": "X1" in product_name,
     }
 
-    if manufacturer == "ONEXPLAYER":
-        out["btn_mapping"] = BTN_MAPPINGS_NONTURBO
-        out["mapping"] = DEFAULT_MAPPINGS
-    
     if "X1" in product_name and "mini" not in product_name.lower():
         out["rgb_secondary"] = True
 
