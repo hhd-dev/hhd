@@ -132,7 +132,7 @@ class OxpHidraw(GenericGamepadHidraw):
         for ev in events:
             if ev["type"] == "led":
                 # if self.queue_led:
-                #     logger.warning("OXP CH340 LED event queue overflow.")
+                #     logger.warning("OXP HID LED event queue overflow.")
                 self.queue_led = ev
 
         # Send queued event if applicable
@@ -233,7 +233,7 @@ class OxpHidraw(GenericGamepadHidraw):
             valid = cmd[1] == 0x3F and cmd[-2] == 0x3F
 
             if not valid:
-                logger.warning(f"OXP CH340 invalid command: {cmd.hex()}")
+                logger.warning(f"OXP HID invalid command: {cmd.hex()}")
                 continue
 
             if cid in (0xF5, 0xB8):
@@ -241,14 +241,14 @@ class OxpHidraw(GenericGamepadHidraw):
                 continue
 
             if cid != 0xB2:
-                logger.warning(f"OXP CH340 unknown command: {cmd.hex()}")
+                logger.warning(f"OXP HID unknown command: {cmd.hex()}")
                 continue
 
             btn = cmd[6]
 
             if btn not in OXP_BUTTONS:
                 logger.warning(
-                    f"OXP CH340 unknown button: {btn:x} from cmd:\n{cmd.hex()}"
+                    f"OXP HID unknown button: {btn:x} from cmd:\n{cmd.hex()}"
                 )
                 continue
 
