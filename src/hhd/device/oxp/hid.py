@@ -227,7 +227,7 @@ class OxpHidraw(GenericGamepadHidraw):
 
         while can_read(self.fd):
             cmd = self.dev.read()
-            logger.info(f"OXP R: {cmd.hex()}")
+            # logger.info(f"OXP R: {cmd.hex()}")
 
             cid = cmd[0]
             valid = cmd[1] == 0x3F and cmd[-2] == 0x3F
