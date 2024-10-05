@@ -378,7 +378,10 @@ class RgbPlugin(HHDPlugin):
                     brightnessd = cast(
                         Literal["low", "medium", "high"], info["brightnessd"]
                     )
-                    log += f", mode: '{info['mode']}', brightness: '{brightnessd}', center hue: {info['hue']}, enabled: {info['secondary']}"
+                    log += f", mode: '{info['mode']}', brightness: '{brightnessd}'"
+                    oxp = info["mode"]
+                case "oxp-secondary":
+                    log += f", center hue: {info['hue']}, enabled: {info['secondary']}"
                     if info["secondary"]:
                         red2, green2, blue2 = hsb_to_rgb(
                             info["hue"],
@@ -388,7 +391,6 @@ class RgbPlugin(HHDPlugin):
                     else:
                         red2 = green2 = blue2 = 0
                     color2_set = True
-                    oxp = info["mode"]
                     
         log += "."
 

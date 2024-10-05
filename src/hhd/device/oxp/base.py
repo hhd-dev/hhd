@@ -38,6 +38,18 @@ HIDRAW_USAGE = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
 
+RGB_MODES_FULL = {
+    "disabled": [],
+    "oxp": ["oxp", "oxp-secondary"],
+    "solid": ["color"],
+    "duality": ["dual"],
+}
+RGB_MODES_STICKS = {
+    "disabled": [],
+    "oxp": ["oxp"],
+    "solid": ["color"],
+}
+
 
 def plugin_run(
     conf: Config,
@@ -122,12 +134,9 @@ def turbo_loop(
         None,
         conf["imu"].to(bool),
         emit=emit,
-        rgb_modes={
-            "disabled": [],
-            "oxp": ["oxp"],
-            "solid": ["color"],
-            "duality": ["dual"],
-        },
+        rgb_modes=(
+            RGB_MODES_FULL if dconf.get("rgb_secondary", False) else RGB_MODES_STICKS  # type: ignore
+        ),
         controller_disabled=True,
     )
 
@@ -319,12 +328,9 @@ def controller_loop(
         None,
         conf["imu"].to(bool),
         emit=emit,
-        rgb_modes={
-            "disabled": [],
-            "oxp": ["oxp"],
-            "solid": ["color"],
-            "duality": ["dual"],
-        },
+        rgb_modes=(
+            RGB_MODES_FULL if dconf.get("rgb_secondary", False) else RGB_MODES_STICKS  # type: ignore
+        ),
     )
     motion = d_params.get("uses_motion", True)
 

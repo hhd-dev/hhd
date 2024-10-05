@@ -59,6 +59,7 @@ oxp:
 
   brightnessd: *brightnessd
 
+oxp-secondary:
   hue:
     <<: *hue
     title: Secondary

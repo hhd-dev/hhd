@@ -62,6 +62,7 @@ CONFS = {
         "name": "ONEXPLAYER X1 (AMD)",
         "x1": True,
         **ONEX_DEFAULT_CONF,
+        "rgb_secondary": True,
         "mapping": X1_MAPPING,
     },
     "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", **ONEX_DEFAULT_CONF},
@@ -83,5 +84,8 @@ def get_default_config(product_name: str, manufacturer: str):
     if manufacturer == "ONEXPLAYER":
         out["btn_mapping"] = BTN_MAPPINGS_NONTURBO
         out["mapping"] = DEFAULT_MAPPINGS
+    
+    if "X1" in product_name and "mini" not in product_name.lower():
+        out["rgb_secondary"] = True
 
     return out
