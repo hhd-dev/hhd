@@ -21,6 +21,7 @@ Requires:       python3-rich
 Requires:       python3-yaml
 Requires:       python3-setuptools
 Requires:       python3-xlib
+Requires:       python3-pyserial
 Requires:       libusb1
 Requires:       hidapi
 

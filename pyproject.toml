@@ -20,7 +20,8 @@ dependencies = [
   "PyYAML>=6.0.1",
   "rich>=13.5.2",
   "setuptools>=65.5.0",
-  "python-xlib>=0.33"
+  "python-xlib>=0.33",
+  "pyserial>=3.5",
 ]
 
 [project.urls]
