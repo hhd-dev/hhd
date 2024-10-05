@@ -9,9 +9,7 @@ from hhd.controller.base import Consumer, Producer
 logger = logging.getLogger(__name__)
 
 
-def gen_cmd(
-    cid: int, cmd: bytes | list[int] | str, idx: int = 0x01, size: int = 64
-):
+def gen_cmd(cid: int, cmd: bytes | list[int] | str, idx: int = 0x01, size: int = 64):
     # Command: [idx, cid, 0x3f, *cmd, 0x3f, cid], idx is optional
     if isinstance(cmd, str):
         c = bytes.fromhex(cmd)
@@ -45,10 +43,12 @@ def gen_rgb_mode(mode: str):
         case "classic":
             mc = 0x00
             # Missed the code for this one
-    return gen_cmd(0xb8, [mc, 0x00, 0x02])
+    return gen_cmd(0xB8, [mc, 0x00, 0x02])
 
 
-gen_intercept = lambda enable: gen_cmd(0xb2, [0x01, 0x03 if enable else 0x00, 0x01, 0x02])
+gen_intercept = lambda enable: gen_cmd(
+    0xB2, [0x01, 0x03 if enable else 0x00, 0x01, 0x02]
+)
 
 
 def gen_brightness(
@@ -64,13 +64,11 @@ def gen_brightness(
         case _:  # "high":
             bc = 0x04
 
-    return gen_cmd(
-        0xb8, [0xfd, 0x00, 0x02, 0x01, 0x05, bc]
-    )
+    return gen_cmd(0xB8, [0xFD, 0x00, 0x02, 0x01, 0x05, bc])
 
 
 def gen_rgb_solid(r, g, b, side: Literal[0x00, 0x03, 0x04] = 0x00):
-    return gen_cmd(0xb8, [0xFE, 0x00, 0x02] + 18 * [r, g, b] + [r, g])
+    return gen_cmd(0xB8, [0xFE, 0x00, 0x02] + 18 * [r, g, b] + [r, g])
 
 
 KBD_NAME = "keyboard"
@@ -100,7 +98,6 @@ WRITE_DELAY = 0.05
 SCAN_DELAY = 1
 
 
-
 class OxpHidraw(GenericGamepadHidraw):
     def __init__(self, *args, turbo: bool = True, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -121,6 +118,11 @@ class OxpHidraw(GenericGamepadHidraw):
         a = super().open()
         self.queue_kbd = None
         self.prev = {}
+
+        if self.dev:
+            time.sleep(INIT_DELAY)
+        
+        self.queue_cmd.extend(INITIALIZE)
         return a
 
     def consume(self, events):
@@ -138,7 +140,7 @@ class OxpHidraw(GenericGamepadHidraw):
         curr = time.perf_counter()
         if self.queue_cmd and curr - self.last_sent > WRITE_DELAY:
             cmd = self.queue_cmd.popleft()
-            # logger.info(f"OXP C: {cmd.hex()}")
+            logger.info(f"OXP C: {cmd.hex()}")
             self.dev.write(cmd)
             self.last_sent = time.perf_counter()
 
