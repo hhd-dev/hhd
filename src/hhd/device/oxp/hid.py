@@ -1,10 +1,10 @@
 import logging
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
 import time
 from collections import deque
 from typing import Literal
 
-from hhd.controller.base import Consumer, Producer
+from hhd.controller import can_read
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 
 logger = logging.getLogger(__name__)
 
@@ -224,7 +224,8 @@ class OxpHidraw(GenericGamepadHidraw):
         if self.fd not in fds:
             return evs
 
-        while cmd := self.dev.read(64):
+        while can_read(self.fd):
+            cmd = self.dev.read()
             logger.info(f"OXP R: {cmd.hex()}")
             # # Align to start boundary
             # if self.buf[1] != 0x3F:
