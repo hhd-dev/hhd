@@ -227,7 +227,7 @@ class OxpHidraw(GenericGamepadHidraw):
         CMD_LEN = 14
 
         while cmd := self.dev.read(64):
-            pass
+            logger.info(f"OXP R: {cmd.hex()}")
             # # Align to start boundary
             # if self.buf[1] != 0x3F:
             #     self.buf = self.buf[1:]
