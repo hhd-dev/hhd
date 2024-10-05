@@ -76,6 +76,7 @@ KBD_NAME_NON_TURBO = "share"
 KBD_HOLD = 0.2
 OXP_BUTTONS = {
     0x24: KBD_NAME,
+    0x21: "guide",
     0x22: "extra_l1",
     0x23: "extra_r1",
 }
@@ -227,64 +228,57 @@ class OxpHidraw(GenericGamepadHidraw):
         while can_read(self.fd):
             cmd = self.dev.read()
             logger.info(f"OXP R: {cmd.hex()}")
-            # # Align to start boundary
-            # if self.buf[1] != 0x3F:
-            #     self.buf = self.buf[1:]
-            #     continue
 
-            # # Grab command id
-            # cmd = self.buf[:CMD_LEN]
-            # self.buf = self.buf[CMD_LEN:]
-            # cid = cmd[0]
+            cid = cmd[0]
+            valid = cmd[1] == 0x3F and cmd[-2] == 0x3F
 
-            # valid = cmd[-2] == 0x3F and cmd[-1] == cid
-            # if not valid:
-            #     logger.warning(f"OXP CH340 invalid command: {self.buf.hex()}")
-            #     continue
+            if not valid:
+                logger.warning(f"OXP CH340 invalid command: {cmd.hex()}")
+                continue
 
-            # if cid == 0xEF:
-            #     # Initialization command, skip
-            #     continue
+            if cid in (0xF5, 0xB8):
+                # Initialization (0xf5) and rgb (0xb8) command responses, skip
+                continue
 
-            # if cid != 0x1A:
-            #     logger.warning(f"OXP CH340 unknown command: {cmd.hex()}")
-            #     continue
+            if cid != 0xB2:
+                logger.warning(f"OXP CH340 unknown command: {cmd.hex()}")
+                continue
 
-            # btn = cmd[2]
+            btn = cmd[6]
 
-            # if btn not in OXP_BUTTONS:
-            #     logger.warning(
-            #         f"OXP CH340 unknown button: {btn:x} from cmd:\n{cmd.hex()}"
-            #     )
-            #     continue
+            if btn not in OXP_BUTTONS:
+                logger.warning(
+                    f"OXP CH340 unknown button: {btn:x} from cmd:\n{cmd.hex()}"
+                )
+                continue
 
-            # btn = OXP_BUTTONS[btn]
-            # pressed = cmd[8] == 1
+            btn = OXP_BUTTONS[btn]
+            pressed = cmd[12] == 1
 
-            # if btn == KBD_NAME:
-            #     if pressed and (btn not in self.prev or self.prev[btn] != pressed):
-            #         evs.append(
-            #             {
-            #                 "type": "button",
-            #                 "code": KBD_NAME if self.turbo else KBD_NAME_NON_TURBO,
-            #                 "value": True,
-            #             }
-            #         )
-            #         self.queue_kbd = time.perf_counter()
-            #     self.prev[btn] = pressed
-            #     continue
+            if btn == KBD_NAME:
+                if pressed and (btn not in self.prev or self.prev[btn] != pressed):
+                    evs.append(
+                        {
+                            "type": "button",
+                            "code": KBD_NAME if self.turbo else KBD_NAME_NON_TURBO,
+                            "value": True,
+                        }
+                    )
+                    self.queue_kbd = time.perf_counter()
+                self.prev[btn] = pressed
+                continue
 
-            # if btn in self.prev and self.prev[btn] == pressed:
-            #     # Debounce
-            #     continue
+            if btn in self.prev and self.prev[btn] == pressed:
+                # Debounce
+                continue
 
-            # self.prev[btn] = pressed
-            # evs.append(
-            #     {
-            #         "type": "button",
-            #         "code": btn,
-            #         "value": pressed,
-            #     }
-            # )
+            self.prev[btn] = pressed
+            evs.append(
+                {
+                    "type": "button",
+                    "code": btn,
+                    "value": pressed,
+                }
+            )
 
         return evs
