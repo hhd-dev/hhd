@@ -128,27 +128,26 @@ def init_serial():
     PID = "7523"
 
     dev = None
-    while not dev:
-        for d in os.listdir("/dev"):
-            if not d.startswith("ttyUSB"):
-                continue
+    for d in os.listdir("/dev"):
+        if not d.startswith("ttyUSB"):
+            continue
 
-            path = os.path.join("/dev", d)
+        path = os.path.join("/dev", d)
 
-            out = subprocess.run(
-                ["udevadm", "info", "--name", path],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
+        out = subprocess.run(
+            ["udevadm", "info", "--name", path],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
-            if f"ID_VENDOR_ID={VID}" not in out.stdout:
-                continue
+        if f"ID_VENDOR_ID={VID}" not in out.stdout:
+            continue
 
-            if f"ID_MODEL_ID={PID}" not in out.stdout:
-                continue
+        if f"ID_MODEL_ID={PID}" not in out.stdout:
+            continue
 
-            dev = path
+        dev = path
 
     if not dev:
         logger.warning("OXP CH340 serial device not found.")
