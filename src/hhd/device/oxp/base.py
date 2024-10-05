@@ -403,7 +403,15 @@ def controller_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
-    d_ser = SerialDevice(turbo=turbo)
+    d_ser = SerialDevice(turbo=True, required=True)
+    d_hidraw = OxpHidraw(
+        vid=[HIDRAW_VID],
+        pid=[HIDRAW_PID],
+        usage_page=[HIDRAW_PAGE],
+        usage=[HIDRAW_USAGE],
+        turbo=True,
+        required=True,
+    )
 
     if dconf.get("x1", False) and conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
@@ -459,7 +467,24 @@ def controller_loop(
                 prepare(d_imu)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
-        prepare(d_ser)
+
+        has_vendor = False
+        try:
+            prepare(d_ser)
+            has_vendor = True
+        except Exception as e:
+            logger.info(f"Could not find serial vendor device, error:\n{e}")
+            d_ser = None
+        if not has_vendor:
+            try:
+                prepare(d_hidraw)
+                logger.info("Found OXP hidraw vendor device.")
+            except Exception as e:
+                logger.error(f"Could not find hidraw vendor device, error:\n{e}")
+                d_hidraw = None
+        if not has_vendor:
+            logger.error("No vendor device found, RGB and back buttons will not work.")
+
         for d in d_producers:
             prepare(d)
 
@@ -485,7 +510,10 @@ def controller_loop(
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
-            d_ser.consume(evs)
+            if d_ser:
+                d_ser.consume(evs)
+            if d_hidraw:
+                d_hidraw.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
