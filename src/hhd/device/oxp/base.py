@@ -240,11 +240,12 @@ def turbo_loop(
             prepare(d_ser)
             has_vendor = True
         except Exception as e:
-            logger.warning(f"Could not find serial vendor device, error:\n{e}")
+            logger.info(f"Could not find serial vendor device, error:\n{e}")
             d_ser = None
         if not has_vendor:
             try:
                 prepare(d_hidraw)
+                logger.info("Found OXP hidraw vendor device.")
             except Exception as e:
                 logger.error(f"Could not find hidraw vendor device, error:\n{e}")
                 d_hidraw = None
