@@ -46,9 +46,6 @@ def gen_rgb_mode(mode: str):
             mc = 0x01
         case "sun":
             mc = 0x08
-        case "classic":
-            mc = 0x00
-            # Missed the code for this one
     return gen_cmd(0xFD, [0x00, mc])
 
 
@@ -257,6 +254,9 @@ class SerialDevice(Consumer, Producer):
             case "oxp":
                 brightness = ev["brightnessd"]
                 stick = ev["oxp"]
+                if stick == "classic":
+                    # Classic mode is a cherry red
+                    stick = 0xb7, 0x30, 0x00
                 r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
                 center = r2, g2, b2
                 center_enabled = r2 > 10 or g2 > 10 or b2 > 10

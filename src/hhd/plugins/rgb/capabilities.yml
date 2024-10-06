@@ -55,7 +55,7 @@ oxp:
       colorful: "Colorful"
       aurora: "Aurora"
       sun: "Warm Sun"
-      # classic: "OXP Classic" # FIXME: Missed the code for this one
+      classic: "OXP Classic"
 
   brightnessd: *brightnessd
 

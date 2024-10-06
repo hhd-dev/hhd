@@ -40,9 +40,6 @@ def gen_rgb_mode(mode: str):
             mc = 0x01
         case "sun":
             mc = 0x08
-        case "classic":
-            mc = 0x00
-            # Missed the code for this one
     return gen_cmd(0x07, [mc])
 
 
@@ -160,6 +157,9 @@ class OxpHidrawV2(GenericGamepadHidraw):
             case "oxp":
                 brightness = ev["brightnessd"]
                 stick = ev["oxp"]
+                if stick == "classic":
+                    # Classic mode is a cherry red
+                    stick = 0xb7, 0x30, 0x00
             case _:  # "disabled":
                 stick_enabled = False
 
