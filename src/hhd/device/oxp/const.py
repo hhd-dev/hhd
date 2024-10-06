@@ -50,7 +50,11 @@ CONFS = {
     # Onexplayer
     "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER F1": {
+        "name": "ONEXPLAYER ONEXFLY",
+        **ONEX_DEFAULT_CONF,
+        "protocol": "mixed",
+    },
     "ONEXPLAYER F1L": {
         "name": "ONEXPLAYER ONEXFLY (L)",
         **ONEX_DEFAULT_CONF,
