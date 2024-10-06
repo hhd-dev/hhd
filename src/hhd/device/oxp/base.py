@@ -12,7 +12,8 @@ from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 from .serial import SerialDevice
-from .hid import OxpHidraw
+from .hid_v1 import OxpHidraw
+from .hid_v2 import OxpHidrawV2
 from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, BTN_MAPPINGS_NONTURBO
 
 FIND_DELAY = 0.1
@@ -124,6 +125,60 @@ def plugin_run(
     UInputDevice.close_volume_cached()
 
 
+def find_vendor(prepare, turbo):
+    d_ser = SerialDevice(turbo=turbo, required=True)
+    d_hidraw = OxpHidraw(
+        vid=[X1_MINI_VID],
+        pid=[X1_MINI_PID],
+        usage_page=[X1_MINI_PAGE],
+        usage=[X1_MINI_USAGE],
+        turbo=turbo,
+        required=True,
+    )
+    d_hidraw_v2 = OxpHidrawV2(
+        vid=[XFLY_VID],
+        pid=[XFLY_PID],
+        usage_page=[XFLY_PAGE],
+        usage=[XFLY_USAGE],
+        turbo=turbo,
+        required=True,
+    )
+
+    try:
+        prepare(d_ser)
+        return d_ser
+    except Exception as e:
+        logger.info("Could not find serial vendor device, error:\n{e}")
+        pass
+
+    try:
+        prepare(d_hidraw)
+        logger.info("Found OXP V1 hidraw vendor device.")
+        return d_hidraw
+    except Exception as e:
+        logger.info("Could not find V1 hidraw vendor device, error:\n{e}")
+        pass
+
+    try:
+        prepare(d_hidraw)
+        logger.info("Found OXP V1 hidraw vendor device.")
+        return d_hidraw
+    except Exception as e:
+        logger.info("Could not find V1 hidraw vendor device, error:\n{e}")
+        pass
+
+    try:
+        prepare(d_hidraw_v2)
+        logger.info("Found OXP V2 hidraw vendor device.")
+        return d_hidraw_v2
+    except Exception as e:
+        logger.info("Could not find V2 hidraw vendor device, error:\n{e}")
+        pass
+
+    logger.error("No vendor device found, RGB and back buttons will not work.")
+    return None
+
+
 def turbo_loop(
     conf: Config,
     should_exit: TEvent,
@@ -230,23 +285,7 @@ def turbo_loop(
 
     try:
         prepare(d_volume_btn)
-
-        has_vendor = False
-        try:
-            prepare(d_ser)
-            has_vendor = True
-        except Exception as e:
-            logger.info(f"Could not find serial vendor device, error:\n{e}")
-            d_ser = None
-        if not has_vendor:
-            try:
-                prepare(d_hidraw)
-                logger.info("Found OXP hidraw vendor device.")
-            except Exception as e:
-                logger.error(f"Could not find hidraw vendor device, error:\n{e}")
-                d_hidraw = None
-        if not has_vendor:
-            logger.error("No vendor device found, RGB and back buttons will not work.")
+        d_vend = find_vendor(prepare, True)
 
         for d in d_producers:
             prepare(d)
@@ -285,10 +324,8 @@ def turbo_loop(
 
                 d_volume_btn.consume(evs)
 
-            if d_ser:
-                d_ser.consume(evs)
-            if d_hidraw:
-                d_hidraw.consume(evs)
+            if d_vend:
+                d_vend.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
@@ -399,16 +436,6 @@ def controller_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
-    d_ser = SerialDevice(turbo=turbo, required=True)
-    d_hidraw = OxpHidraw(
-        vid=[X1_MINI_VID, XFLY_VID],
-        pid=[X1_MINI_PID, XFLY_PID],
-        usage_page=[X1_MINI_PAGE, XFLY_PAGE],
-        usage=[X1_MINI_USAGE, XFLY_USAGE],
-        turbo=turbo,
-        required=True,
-    )
-
     if dconf.get("x1", False) and conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
         btn_map = {
@@ -453,7 +480,7 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
-        # d_vend.open()
+        d_vend = find_vendor(prepare, turbo)
         prepare(d_xinput)
         if motion:
             start_imu = True
@@ -463,24 +490,6 @@ def controller_loop(
                 prepare(d_imu)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
-
-        has_vendor = False
-        try:
-            prepare(d_ser)
-            has_vendor = True
-        except Exception as e:
-            logger.info(f"Could not find serial vendor device, error:\n{e}")
-            d_ser = None
-        if not has_vendor:
-            try:
-                prepare(d_hidraw)
-                logger.info("Found OXP hidraw vendor device.")
-                has_vendor = True
-            except Exception as e:
-                logger.error(f"Could not find hidraw vendor device, error:\n{e}")
-                d_hidraw = None
-        if not has_vendor:
-            logger.error("No vendor device found, RGB and back buttons will not work.")
 
         for d in d_producers:
             prepare(d)
@@ -496,7 +505,7 @@ def controller_loop(
                 to_run.add(id(fd_to_dev[f]))
 
             for d in devs:
-                if id(d) in to_run or d == d_ser:
+                if id(d) in to_run or d == d_vend:
                     evs.extend(d.produce(r))
 
             evs = multiplexer.process(evs)
@@ -507,10 +516,8 @@ def controller_loop(
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
-            if d_ser:
-                d_ser.consume(evs)
-            if d_hidraw:
-                d_hidraw.consume(evs)
+            if d_vend:
+                d_vend.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
