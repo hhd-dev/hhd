@@ -9,14 +9,14 @@ from hhd.controller.physical.hidraw import GenericGamepadHidraw
 logger = logging.getLogger(__name__)
 
 
-def gen_cmd(cid: int, cmd: bytes | list[int] | str, idx: int = 0x01, size: int = 64):
+def gen_cmd(cid: int, cmd: bytes | list[int] | str, size: int = 64):
     # Command: [idx, cid, 0x3f, *cmd, 0x3f, cid], idx is optional
     if isinstance(cmd, str):
         c = bytes.fromhex(cmd)
     else:
         c = bytes(cmd)
-    base = bytes([cid, 0x3F, idx, *c])
-    return base + bytes([0] * (size - len(base) - 2)) + bytes([0x3F, cid])
+    base = bytes([cid, 0xFF, *c])
+    return base + bytes([0] * (size - len(base)))
 
 
 def gen_rgb_mode(mode: str):
@@ -43,14 +43,13 @@ def gen_rgb_mode(mode: str):
         case "classic":
             mc = 0x00
             # Missed the code for this one
-    return gen_cmd(0xB8, [mc, 0x00, 0x02])
+    return gen_cmd(0x07, [mc])
 
 
 gen_intercept = lambda enable: gen_cmd(0xB2, [0x03 if enable else 0x00, 0x01, 0x02])
 
 
 def gen_brightness(
-    side: Literal[0, 3, 4],
     enabled: bool,
     brightness: Literal["low", "medium", "high"],
 ):
@@ -62,11 +61,11 @@ def gen_brightness(
         case _:  # "high":
             bc = 0x04
 
-    return gen_cmd(0xB8, [0xFD, 0x00, 0x02, enabled, 0x05, bc])
+    return gen_cmd(0x07, [0xFD, enabled, 0x05, bc])
 
 
-def gen_rgb_solid(r, g, b, side: Literal[0x00, 0x03, 0x04] = 0x00):
-    return gen_cmd(0xB8, [0xFE, 0x00, 0x02] + 18 * [r, g, b] + [r, g])
+def gen_rgb_solid(r, g, b):
+    return gen_cmd(0x07, [0xFE] + 20 * [r, g, b] + [0x00])
 
 
 KBD_NAME = "keyboard"
@@ -82,15 +81,15 @@ OXP_BUTTONS = {
 
 
 INITIALIZE = [
-    gen_cmd(
-        0xF5,
-        "010238020101010101000000020102000000030103000000040104000000050105000000060106000000070107000000080108000000090109000000",
-    ),
-    gen_cmd(
-        0xF5,
-        "0102380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220200000000230200000000",
-    ),
-    gen_intercept(False),
+    # gen_cmd(
+    #     0xF5,
+    #     "010238020101010101000000020102000000030103000000040104000000050105000000060106000000070107000000080108000000090109000000",
+    # ),
+    # gen_cmd(
+    #     0xF5,
+    #     "0102380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220200000000230200000000",
+    # ),
+    # gen_intercept(False),
 ]
 
 INIT_DELAY = 0.2
@@ -154,35 +153,21 @@ class OxpHidrawV2(GenericGamepadHidraw):
         brightness = "high"
         stick = None
         stick_enabled = True
-        # center = None
-        # center_enabled = True
-        # init = ev["initialize"]
 
         match ev["mode"]:
             case "solid":
                 stick = ev["red"], ev["green"], ev["blue"]
-                # r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
-                # center = r2, g2, b2
-                # center_enabled = r2 > 10 or g2 > 10 or b2 > 10
-            # case "duality":
-            #     stick = ev["red"], ev["green"], ev["blue"]
-            #     center = ev["red2"], ev["green2"], ev["blue2"]
             case "oxp":
                 brightness = ev["brightnessd"]
                 stick = ev["oxp"]
-                # r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
-                # center = r2, g2, b2
-                # center_enabled = r2 > 10 or g2 > 10 or b2 > 10
-                # init = True
             case _:  # "disabled":
                 stick_enabled = False
-                # center_enabled = False
 
         if (
             stick_enabled != self.prev_stick_enabled
             or brightness != self.prev_brightness
         ):
-            self.queue_cmd.append(gen_brightness(0, stick_enabled, brightness))
+            self.queue_cmd.append(gen_brightness(stick_enabled, brightness))
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
 
@@ -190,21 +175,10 @@ class OxpHidrawV2(GenericGamepadHidraw):
             if isinstance(stick, str):
                 self.queue_cmd.append(gen_rgb_mode(stick))
             else:
-                self.queue_cmd.append(gen_rgb_solid(*stick, side=0x00))
+                self.queue_cmd.append(gen_rgb_solid(*stick))
             self.prev_stick = stick
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
-
-        # if center_enabled != self.prev_center_enabled:
-        #     self.queue_cmd.append(gen_brightness(0x03, center_enabled, "high"))
-        #     self.queue_cmd.append(gen_brightness(0x04, center_enabled, "high"))
-        #     self.prev_center_enabled = center_enabled
-
-        # # Only apply center colors on init on init
-        # if init and center_enabled and center and center != self.prev_center:
-        #     self.queue_cmd.append(gen_rgb_solid(*center, side=0x03))
-        #     self.queue_cmd.append(gen_rgb_solid(*center, side=0x04))
-        #     self.prev_center = center
 
     def produce(self, fds):
         if not self.dev:
