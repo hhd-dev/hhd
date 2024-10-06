@@ -160,20 +160,12 @@ class AmdGPUPlugin(HHDPlugin):
             }
 
         self.initialized = True
-        
+
         # Initialize frequency settings
-        manual_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"][
-            "children"
-        ]["gpu_freq"]["modes"]["manual"]["children"]["frequency"]
-        upper_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"][
-            "children"
-        ]["gpu_freq"]["modes"]["upper"]["children"]["frequency"]
-        min_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
-            "gpu_freq"
-        ]["modes"]["range"]["children"]["min"]
-        max_freq = sets["enabled"]["children"]["mode"]["modes"]["manual"]["children"][
-            "gpu_freq"
-        ]["modes"]["range"]["children"]["max"]
+        manual_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["manual"]["children"]["frequency"]
+        upper_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["upper"]["children"]["frequency"]
+        min_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"]["children"]["min"]
+        max_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"]["children"]["max"]
 
         manual_freq["default"] = ((status.freq_min + status.freq_max) // 200) * 100
         upper_freq["default"] = status.freq_max
@@ -346,28 +338,20 @@ class AmdGPUPlugin(HHDPlugin):
             self.old_min_freq = None
         else:
             self.old_target = None
-            new_gpu = conf["tdp.amd_energy.mode.manual.gpu_freq.mode"].to(str)
+            new_gpu = conf["tdp.amd_energy.gpu_freq.mode"].to(str)
             match new_gpu:
                 case "manual":
-                    f = conf["tdp.amd_energy.mode.manual.gpu_freq.manual.frequency"].to(
-                        int
-                    )
+                    f = conf["tdp.amd_energy.gpu_freq.manual.frequency"].to(int)
                     new_freq = (f, f)
                 case "upper":
-                    f = conf["tdp.amd_energy.mode.manual.gpu_freq.upper.frequency"].to(
-                        int
-                    )
+                    f = conf["tdp.amd_energy.gpu_freq.upper.frequency"].to(int)
                     new_freq = (self.min_freq or f, f)
                 case "range":
-                    min_f = conf["tdp.amd_energy.mode.manual.gpu_freq.range.min"].to(
-                        int
-                    )
-                    max_f = conf["tdp.amd_energy.mode.manual.gpu_freq.range.max"].to(
-                        int
-                    )
+                    min_f = conf["tdp.amd_energy.gpu_freq.range.min"].to(int)
+                    max_f = conf["tdp.amd_energy.gpu_freq.range.max"].to(int)
                     if max_f < min_f:
                         max_f = min_f
-                        conf["tdp.amd_energy.mode.manual.gpu_freq.range.max"] = min_f
+                        conf["tdp.amd_energy.gpu_freq.range.max"] = min_f
                     new_freq = (min_f, max_f)
                 case _:
                     new_freq = None
