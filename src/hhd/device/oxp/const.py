@@ -13,6 +13,7 @@ DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
 }
 
 X1_MAPPING = gen_gyro_state("x", True, "z", False, "y", False)
+X1_MINI_MAPPING = gen_gyro_state("z", True, "x", False, "y", True)
 
 BTN_MAPPINGS: dict[int, Button] = {
     # Volume buttons come from the same keyboard
@@ -53,14 +54,15 @@ CONFS = {
     "ONEXPLAYER F1L": {"name": "ONEXPLAYER ONEXFLY (L)", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER X1 mini": {
+        **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER X1 mini",
         "x1": True,
-        **ONEX_DEFAULT_CONF,
+        "mapping": X1_MINI_MAPPING,
     },
     "ONEXPLAYER X1 A": {
+        **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER X1 (AMD)",
         "x1": True,
-        **ONEX_DEFAULT_CONF,
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
     },
