@@ -159,7 +159,9 @@ def init_serial():
 
             # if f"ID_MODEL_ID={PID}" not in out.stdout:
             #     continue
-            logger.info(f"Serial port information:\n{out}")
+
+            # TODO: We need to get a baseline to quirk this type properly
+            logger.info(f"Serial port information:\n{out.stdout}")
 
             dev = path
             break
