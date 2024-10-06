@@ -32,7 +32,8 @@ class DeviceInfo(NamedTuple):
 
 ACCEL_NAMES = ["accel_3d"]
 GYRO_NAMES = ["gyro_3d"]
-IMU_NAMES = ["bmi323-imu", "BMI0160", "BMI0260", "i2c-10EC5280:00"]
+# FIXME: this :00 needs to be cleaned up
+IMU_NAMES = ["bmi323-imu", "BMI0160", "BMI0260", "i2c-10EC5280:00", "i2c-BOSC0260:00"]
 SYSFS_TRIG_CONFIG_DIR = os.environ.get("HHD_MOUNT_TRIG_SYSFS", "/var/trig_sysfs_config")
 
 ACCEL_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
