@@ -125,7 +125,7 @@ def plugin_run(
     UInputDevice.close_volume_cached()
 
 
-def find_vendor(prepare, turbo):
+def find_vendor(prepare, turbo, protocol: str | None):
     d_ser = SerialDevice(turbo=turbo, required=True)
     d_hidraw = OxpHidraw(
         vid=[X1_MINI_VID],
@@ -144,35 +144,40 @@ def find_vendor(prepare, turbo):
         required=True,
     )
 
-    try:
-        prepare(d_ser)
-        # OneXFly uses serial only for the buttons and hidraw for RGB
-        # Initialize V2 selectcively on that one
+    if not protocol or protocol in ["serial", "mixed"]:
         try:
-            if d_ser.buttons_only:
-                prepare(d_hidraw_v2)
-            return [d_ser, d_hidraw_v2]
+            prepare(d_ser)
+            # OneXFly uses serial only for the buttons and hidraw for RGB
+            # Initialize V2 selectcively on that one
+            try:
+                if d_ser.buttons_only:
+                    if protocol == "serial":
+                        logger.warning(f"Device has protocol 'serial', but 'mixed' was detected.")
+                    prepare(d_hidraw_v2)
+                return [d_ser, d_hidraw_v2]
+            except Exception as e:
+                logger.info(
+                    f"Could not find V2 hidraw vendor device, RGB will not work, error:\n{e}"
+                )
+                return [d_ser]
         except Exception as e:
-            logger.info(
-                f"Could not find V2 hidraw vendor device, RGB will not work, error:\n{e}"
-            )
-            return [d_ser]
-    except Exception as e:
-        pass
+            pass
 
-    try:
-        prepare(d_hidraw)
-        logger.info("Found OXP V1 hidraw vendor device.")
-        return [d_hidraw]
-    except Exception as e:
-        pass
-
-    try:
-        prepare(d_hidraw_v2)
-        logger.info("Found OXP V2 hidraw vendor device.")
-        return [d_hidraw_v2]
-    except Exception as e:
-        pass
+    if not protocol or protocol == "hid_v1":
+        try:
+            prepare(d_hidraw)
+            logger.info("Found OXP V1 hidraw vendor device.")
+            return [d_hidraw]
+        except Exception as e:
+            pass
+    
+    if not protocol or protocol == "hid_v2":
+        try:
+            prepare(d_hidraw_v2)
+            logger.info("Found OXP V2 hidraw vendor device.")
+            return [d_hidraw_v2]
+        except Exception as e:
+            pass
 
     logger.error("No vendor device found, RGB and back buttons will not work.")
     return []
@@ -274,7 +279,7 @@ def turbo_loop(
 
     try:
         prepare(d_volume_btn)
-        d_vend = find_vendor(prepare, True)
+        d_vend = find_vendor(prepare, True, dconf.get("protocol", None))
 
         for d in d_producers:
             prepare(d)
@@ -469,7 +474,7 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
-        d_vend = find_vendor(prepare, turbo)
+        d_vend = find_vendor(prepare, turbo, dconf.get("protocol", None))
         prepare(d_xinput)
         if motion:
             start_imu = True

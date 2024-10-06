@@ -51,13 +51,18 @@ CONFS = {
     "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER Mini Pro": {"name": "ONEXPLAYER Mini Pro", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER F1": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER F1L": {"name": "ONEXPLAYER ONEXFLY (L)", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER F1L": {
+        "name": "ONEXPLAYER ONEXFLY (L)",
+        **ONEX_DEFAULT_CONF,
+        "protocol": "hid_v1",
+    },
     "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER X1 mini": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER X1 mini",
         "x1": True,
         "mapping": X1_MINI_MAPPING,
+        "protocol": "hid_v1",
     },
     "ONEXPLAYER X1 A": {
         **ONEX_DEFAULT_CONF,
@@ -65,6 +70,7 @@ CONFS = {
         "x1": True,
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
+        "protocol": "serial",
     },
     "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER 2 ARP23": {"name": "ONEXPLAYER 2", **ONEX_DEFAULT_CONF},
