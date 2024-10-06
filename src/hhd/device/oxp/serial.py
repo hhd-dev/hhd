@@ -125,50 +125,56 @@ def init_serial():
     PID = "7523"
 
     dev = None
+    buttons_only = False
     for d in os.listdir("/dev"):
-        if d.startswith("ttyUSB"):
-            path = os.path.join("/dev", d)
+        if not d.startswith("ttyUSB"):
+            continue
 
-            out = subprocess.run(
-                ["udevadm", "info", "--name", path],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
+        path = os.path.join("/dev", d)
 
-            if f"ID_VENDOR_ID={VID}" not in out.stdout:
-                continue
+        out = subprocess.run(
+            ["udevadm", "info", "--name", path],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
-            if f"ID_MODEL_ID={PID}" not in out.stdout:
-                continue
+        if f"ID_VENDOR_ID={VID}" not in out.stdout:
+            continue
 
-            dev = path
-            break
-        if d.startswith("ttyS"):
-            path = os.path.join("/dev", d)
+        if f"ID_MODEL_ID={PID}" not in out.stdout:
+            continue
 
-            out = subprocess.run(
-                ["udevadm", "info", "--name", path],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
+        dev = path
+        break
 
-            # if f"ID_VENDOR_ID={VID}" not in out.stdout:
-            #     continue
+    for d in os.listdir("/dev"):
+        if not d.startswith("ttyS"):
+            continue
 
-            # if f"ID_MODEL_ID={PID}" not in out.stdout:
-            #     continue
+        path = os.path.join("/dev", d)
 
-            # TODO: We need to get a baseline to quirk this type properly
-            logger.info(f"Serial port information:\n{out.stdout}")
+        out = subprocess.run(
+            ["udevadm", "info", "--name", path],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
-            dev = path
-            break
+        # OneXFly device is pnp
+        if "devices/pnp" not in out.stdout:
+            continue
+
+        # TODO: We need to get a baseline to quirk this type properly
+        logger.info(f"Serial port information:\n{out.stdout}")
+
+        dev = path
+        buttons_only = True
+        break
 
     if not dev:
         logger.warning("OXP CH340 serial device not found.")
-        return None
+        return None, buttons_only
 
     logger.info(f"OXP CH340 serial device found at {dev}")
 
@@ -189,7 +195,7 @@ def init_serial():
         time.sleep(WRITE_DELAY)
 
     _serial = ser
-    return ser
+    return ser, buttons_only
 
 
 def close_serial():
@@ -211,6 +217,7 @@ class SerialDevice(Consumer, Producer):
         self.last_sent = 0
         self.queue_led = None
         self.turbo = turbo
+        self.buttons_only = False
 
         self.prev_brightness = None
         self.prev_stick = None
@@ -219,7 +226,7 @@ class SerialDevice(Consumer, Producer):
         self.prev_center_enabled = None
 
     def open(self):
-        ser = init_serial()
+        ser, self.buttons_only = init_serial()
         if ser is None:
             if self.required:
                 raise RuntimeError("OXP CH340 serial device not found.")
@@ -230,7 +237,7 @@ class SerialDevice(Consumer, Producer):
         return [ser.fd]
 
     def consume(self, events):
-        if not self.ser:
+        if not self.ser or self.buttons_only:
             return
 
         # Capture led events

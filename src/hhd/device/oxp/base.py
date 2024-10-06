@@ -146,37 +146,36 @@ def find_vendor(prepare, turbo):
 
     try:
         prepare(d_ser)
-        return d_ser
+        # OneXFly uses serial only for the buttons and hidraw for RGB
+        # Initialize V2 selectcively on that one
+        try:
+            if d_ser.buttons_only:
+                prepare(d_hidraw_v2)
+            return [d_ser, d_hidraw_v2]
+        except Exception as e:
+            logger.info(
+                f"Could not find V2 hidraw vendor device, RGB will not work, error:\n{e}"
+            )
+            return [d_ser]
     except Exception as e:
-        logger.info("Could not find serial vendor device, error:\n{e}")
         pass
 
     try:
         prepare(d_hidraw)
         logger.info("Found OXP V1 hidraw vendor device.")
-        return d_hidraw
+        return [d_hidraw]
     except Exception as e:
-        logger.info("Could not find V1 hidraw vendor device, error:\n{e}")
-        pass
-
-    try:
-        prepare(d_hidraw)
-        logger.info("Found OXP V1 hidraw vendor device.")
-        return d_hidraw
-    except Exception as e:
-        logger.info("Could not find V1 hidraw vendor device, error:\n{e}")
         pass
 
     try:
         prepare(d_hidraw_v2)
         logger.info("Found OXP V2 hidraw vendor device.")
-        return d_hidraw_v2
+        return [d_hidraw_v2]
     except Exception as e:
-        logger.info("Could not find V2 hidraw vendor device, error:\n{e}")
         pass
 
     logger.error("No vendor device found, RGB and back buttons will not work.")
-    return None
+    return []
 
 
 def turbo_loop(
@@ -231,16 +230,6 @@ def turbo_loop(
         qam_hhd=qam_hhd,
         qam_no_release=qam_no_release,
         keyboard_no_release=not conf.get("swap_face", False),
-    )
-
-    d_ser = SerialDevice(turbo=True, required=True)
-    d_hidraw = OxpHidraw(
-        vid=[X1_MINI_VID, XFLY_VID],
-        pid=[X1_MINI_PID, XFLY_PID],
-        usage_page=[X1_MINI_PAGE, XFLY_PAGE],
-        usage=[X1_MINI_USAGE, XFLY_USAGE],
-        turbo=True,
-        required=True,
     )
 
     if dconf.get("x1", False) and conf.get("volume_reverse", False):
@@ -314,7 +303,7 @@ def turbo_loop(
                 to_run.add(id(fd_to_dev[f]))
 
             for d in devs:
-                if id(d) in to_run or d == d_ser:
+                if id(d) in to_run or d in d_vend:
                     evs.extend(d.produce(r))
 
             evs = multiplexer.process(evs)
@@ -324,8 +313,8 @@ def turbo_loop(
 
                 d_volume_btn.consume(evs)
 
-            if d_vend:
-                d_vend.consume(evs)
+            for d in d_vend:
+                d.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
@@ -516,8 +505,8 @@ def controller_loop(
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
-            if d_vend:
-                d_vend.consume(evs)
+            for d in d_vend:
+                d.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
