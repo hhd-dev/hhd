@@ -76,55 +76,55 @@ enabled:
                 scx_rusty: rusty
               default: disabled
     gpu_freq:
-        type: mode
-        title: GPU Frequency
-        hint: >-
-          Pins the GPU to a certain frequency.
-          Helps in certain games that are CPU or GPU heavy
-          by shifting power to or from the GPU.
-          Has a minor effect.
-        default: auto
-        modes:
-          auto:
-            type: container
-            title: Auto
-            hint: >-
-              Lets the GPU manage its own frequency.
-          upper:
-            type: container
-            title: Max Limit
-            hint: >-
-              Limits the maximum frequency of the GPU.
-            children:
-              frequency: &freq
-                type: int
-                unit: MHz
-                min: 300
-                max: 2000
-                step: 100
-                default: 1000
-                title: Maximum Frequency
-          range:
-            type: container
-            title: Range
-            hint: >-
-              Sets the GPU frequency to a range.
-            children:
-              min:
-                <<: *freq
-                title: Minimum Frequency
-              max:
-                <<: *freq
-                title: Maximum Frequency
-          manual:
-            type: container
-            title: Fixed
-            hint: >-
-              Pins the GPU to a certain frequency (not recommended).
-            children:
-              frequency:
-                <<: *freq
-                title: Frequency
+      type: mode
+      title: GPU Frequency
+      hint: >-
+        Pins the GPU to a certain frequency.
+        Helps in certain games that are CPU or GPU heavy
+        by shifting power to or from the GPU.
+        Has a minor effect.
+      default: auto
+      modes:
+        auto:
+          type: container
+          title: Auto
+          hint: >-
+            Lets the GPU manage its own frequency.
+        upper:
+          type: container
+          title: Max Limit
+          hint: >-
+            Limits the maximum frequency of the GPU.
+          children:
+            frequency: &freq
+              type: int
+              unit: MHz
+              min: 300
+              max: 2000
+              step: 100
+              default: 1000
+              title: Maximum Frequency
+        range:
+          type: container
+          title: Range
+          hint: >-
+            Sets the GPU frequency to a range.
+          children:
+            min:
+              <<: *freq
+              title: Minimum Frequency
+            max:
+              <<: *freq
+              title: Maximum Frequency
+        manual:
+          type: container
+          title: Fixed
+          hint: >-
+            Pins the GPU to a certain frequency (not recommended).
+          children:
+            frequency:
+              <<: *freq
+              title: Frequency
 
 conflict:
   title: Processor Settings

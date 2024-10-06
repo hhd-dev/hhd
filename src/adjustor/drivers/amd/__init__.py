@@ -162,10 +162,18 @@ class AmdGPUPlugin(HHDPlugin):
         self.initialized = True
 
         # Initialize frequency settings
-        manual_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["manual"]["children"]["frequency"]
-        upper_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["upper"]["children"]["frequency"]
-        min_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"]["children"]["min"]
-        max_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"]["children"]["max"]
+        manual_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["manual"][
+            "children"
+        ]["frequency"]
+        upper_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["upper"][
+            "children"
+        ]["frequency"]
+        min_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"][
+            "children"
+        ]["min"]
+        max_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"][
+            "children"
+        ]["max"]
 
         manual_freq["default"] = ((status.freq_min + status.freq_max) // 200) * 100
         upper_freq["default"] = status.freq_max
@@ -303,7 +311,6 @@ class AmdGPUPlugin(HHDPlugin):
                 try:
                     match self.target:
                         case "balanced":
-                            set_gpu_auto()
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("balance_power")
@@ -311,7 +318,6 @@ class AmdGPUPlugin(HHDPlugin):
                                 set_cpu_boost(True)
                             set_frequency_scaling(nonlinear=False)
                         case "performance":
-                            set_gpu_auto()
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("balance_power")
@@ -319,7 +325,6 @@ class AmdGPUPlugin(HHDPlugin):
                                 set_cpu_boost(True)
                             set_frequency_scaling(nonlinear=True)
                         case _:  # power
-                            set_gpu_auto()
                             if self.supports_epp:
                                 set_powersave_governor()
                                 set_epp_mode("power")
@@ -332,44 +337,11 @@ class AmdGPUPlugin(HHDPlugin):
             # Unless it is set manually, use the default scheduler.
             self.close_sched()
             self.old_sched = None
-            self.old_freq = None
             self.old_boost = None
             self.old_epp = None
             self.old_min_freq = None
         else:
             self.old_target = None
-            new_gpu = conf["tdp.amd_energy.gpu_freq.mode"].to(str)
-            match new_gpu:
-                case "manual":
-                    f = conf["tdp.amd_energy.gpu_freq.manual.frequency"].to(int)
-                    new_freq = (f, f)
-                case "upper":
-                    f = conf["tdp.amd_energy.gpu_freq.upper.frequency"].to(int)
-                    new_freq = (self.min_freq or f, f)
-                case "range":
-                    min_f = conf["tdp.amd_energy.gpu_freq.range.min"].to(int)
-                    max_f = conf["tdp.amd_energy.gpu_freq.range.max"].to(int)
-                    if max_f < min_f:
-                        max_f = min_f
-                        conf["tdp.amd_energy.gpu_freq.range.max"] = min_f
-                    new_freq = (min_f, max_f)
-                case _:
-                    new_freq = None
-
-            if new_freq != self.old_freq:
-                self.old_freq = new_freq
-                self.queue_gpu = curr + APPLY_DELAY
-
-            if self.queue_gpu is not None and curr >= self.queue_gpu:
-                self.queue_gpu = None
-                try:
-                    if new_freq:
-                        set_gpu_manual(*new_freq)
-                    else:
-                        set_gpu_auto()
-                except Exception as e:
-                    logger.error(f"Failed to set GPU mode:\n{e}")
-
             if self.supports_boost:
                 new_boost = conf["tdp.amd_energy.mode.manual.cpu_boost"].to(bool)
                 if new_boost != self.old_boost:
@@ -428,6 +400,39 @@ class AmdGPUPlugin(HHDPlugin):
                             stderr=subprocess.DEVNULL,
                             stdout=subprocess.DEVNULL,
                         )
+
+        # Apply GPU settings
+        new_gpu = conf["tdp.amd_energy.gpu_freq.mode"].to(str)
+        match new_gpu:
+            case "manual":
+                f = conf["tdp.amd_energy.gpu_freq.manual.frequency"].to(int)
+                new_freq = (f, f)
+            case "upper":
+                f = conf["tdp.amd_energy.gpu_freq.upper.frequency"].to(int)
+                new_freq = (self.min_freq or f, f)
+            case "range":
+                min_f = conf["tdp.amd_energy.gpu_freq.range.min"].to(int)
+                max_f = conf["tdp.amd_energy.gpu_freq.range.max"].to(int)
+                if max_f < min_f:
+                    max_f = min_f
+                    conf["tdp.amd_energy.gpu_freq.range.max"] = min_f
+                new_freq = (min_f, max_f)
+            case _:
+                new_freq = None
+
+        if new_freq != self.old_freq:
+            self.old_freq = new_freq
+            self.queue_gpu = curr + APPLY_DELAY
+
+        if self.queue_gpu is not None and curr >= self.queue_gpu:
+            self.queue_gpu = None
+            try:
+                if new_freq:
+                    set_gpu_manual(*new_freq)
+                else:
+                    set_gpu_auto()
+            except Exception as e:
+                logger.error(f"Failed to set GPU mode:\n{e}")
 
     def close_ppd(self):
         if self.proc is not None:
