@@ -176,5 +176,11 @@ class GenericGamepadHidraw(Producer, Consumer):
         if self.callback and self.dev:
             self.callback(self.dev, events)
 
+    def close(self, exit: bool) -> bool:
+        if self.dev:
+            self.dev.close()
+            self.dev = None
+        return True
+
 
 __all__ = ["GenericGamepadHidraw", "BM", "AM"]
