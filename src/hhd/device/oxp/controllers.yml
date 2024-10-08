@@ -15,7 +15,7 @@ children:
   extra_buttons:
     type: multiple
     title: "Keyboard and Turbo buttons are:"
-    default: oem
+    default: combo_hhd
     options:
       oem: Keyboard, Combo
       separate: Steam Menu, HHD
