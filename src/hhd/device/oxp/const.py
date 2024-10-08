@@ -43,10 +43,30 @@ ONEX_DEFAULT_CONF = {
     "hrtimer": True,
 }
 
+OXP_F1_CONF = {
+    "name": "ONEXPLAYER ONEXFLY",
+    **ONEX_DEFAULT_CONF,
+    "protocol": "mixed",
+}
+OXP_2_CONF = {
+    "name": "ONEXPLAYER 2",
+    **ONEX_DEFAULT_CONF,
+    "protocol": "mixed",
+    "rgb": False,
+    "buttons": "none",
+    "protocol": "none",  # explicitly disable
+}
+AOKZOE_CONF = {
+    "name": "AOKZOE A1",
+    "hrtimer": True,
+    "protocol": "none",
+    "rgb": False,
+}
+
 CONFS = {
     # Aokzoe
-    "AOKZOE A1 AR07": {"name": "AOKZOE A1", "hrtimer": True},
-    "AOKZOE A1 Pro": {"name": "AOKZOE A1 Pro", "hrtimer": True},
+    "AOKZOE A1 AR07": AOKZOE_CONF,
+    "AOKZOE A1 Pro": AOKZOE_CONF,
     # Onexplayer
     "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER Mini Pro": {
@@ -54,17 +74,20 @@ CONFS = {
         **ONEX_DEFAULT_CONF,
         "protocol": "hid_v2",
     },
-    "ONEXPLAYER F1": {
-        "name": "ONEXPLAYER ONEXFLY",
-        **ONEX_DEFAULT_CONF,
-        "protocol": "mixed",
-    },
-    "ONEXPLAYER F1L": {
-        "name": "ONEXPLAYER ONEXFLY (L)",
-        **ONEX_DEFAULT_CONF,
-        "protocol": "mixed",
-    },
-    "ONEXPLAYER F1 EVA-01": {"name": "ONEXPLAYER ONEXFLY", **ONEX_DEFAULT_CONF},
+    "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", **ONEX_DEFAULT_CONF},
+    # OneXFly
+    "ONEXPLAYER F1": OXP_F1_CONF,
+    "ONEXPLAYER F1 EVA-01": OXP_F1_CONF,
+    "ONEXPLAYER F1L": OXP_F1_CONF,
+    "ONEXPLAYER F1 OLED": OXP_F1_CONF,
+    # OXP 2
+    "ONEXPLAYER 2": OXP_2_CONF,
+    "ONEXPLAYER 2 ARP23": OXP_2_CONF,
+    "ONEXPLAYER 2 GA18": OXP_2_CONF,
+    # Pro is a bit different
+    "ONEXPLAYER 2 PRO ARP23": OXP_2_CONF,
+    "ONEXPLAYER 2 PRO ARP23 EVA-01": OXP_2_CONF,
+    # X1 Line
     "ONEXPLAYER X1 mini": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER X1 mini",
@@ -88,10 +111,6 @@ CONFS = {
         "mapping": X1_MAPPING,
         "protocol": "serial",
     },
-    "ONEXPLAYER mini A07": {"name": "ONEXPLAYER mini", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER 2 ARP23": {"name": "ONEXPLAYER 2", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER 2 PRO ARP23": {"name": "ONEXPLAYER 2 PRO", **ONEX_DEFAULT_CONF},
-    "ONEXPLAYER 2 PRO ARP23 EVA-01": {"name": "ONEXPLAYER 2 PRO", **ONEX_DEFAULT_CONF},
 }
 
 
@@ -106,5 +125,9 @@ def get_default_config(product_name: str, manufacturer: str):
 
     if "X1" in product_name and "mini" not in product_name.lower():
         out["rgb_secondary"] = True
+
+    if "aokzoe" in manufacturer.lower():
+        out["protocol"] = "none"
+        out["rgb"] = False
 
     return out

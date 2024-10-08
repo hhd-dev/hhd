@@ -152,7 +152,9 @@ def find_vendor(prepare, turbo, protocol: str | None):
             try:
                 if d_ser.buttons_only:
                     if protocol == "serial":
-                        logger.warning(f"Device has protocol 'serial', but 'mixed' was detected.")
+                        logger.warning(
+                            f"Device has protocol 'serial', but 'mixed' was detected."
+                        )
                     prepare(d_hidraw_v2)
                 return [d_ser, d_hidraw_v2]
             except Exception as e:
@@ -170,7 +172,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
             return [d_hidraw]
         except Exception as e:
             pass
-    
+
     if not protocol or protocol == "hid_v2":
         try:
             prepare(d_hidraw_v2)
@@ -193,14 +195,19 @@ def turbo_loop(
     debug = DEBUG_MODE
 
     # Output
+    if dconf.get("rgb_secondary", False):
+        rgb_modes = RGB_MODES_FULL
+    elif dconf.get("rgb", True):
+        rgb_modes = RGB_MODES_STICKS
+    else:
+        rgb_modes = None
+
     d_producers, d_outs, d_params = get_outputs(
         conf["controller_mode"],
         None,
         conf["imu"].to(bool),
         emit=emit,
-        rgb_modes=(
-            RGB_MODES_FULL if dconf.get("rgb_secondary", False) else RGB_MODES_STICKS  # type: ignore
-        ),
+        rgb_modes=rgb_modes,  # type: ignore
         controller_disabled=True,
     )
 

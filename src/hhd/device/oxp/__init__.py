@@ -64,7 +64,7 @@ class GenericControllersPlugin(HHDPlugin):
         base["controllers"]["oxp"]["children"]["controller_mode"].update(
             get_outputs_config(
                 can_disable=True,
-                has_leds=True,
+                has_leds=self.dconf.get("rgb", True),
                 start_disabled=self.dconf.get("untested", False),
                 extra_buttons=self.dconf.get("extra_buttons", "dual"),
             )
