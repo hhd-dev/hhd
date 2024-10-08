@@ -105,19 +105,19 @@ WRITE_DELAY = 0.05
 SCAN_DELAY = 1
 
 _serial = None
-
+_buttons_only = False
 
 def init_serial():
     import serial
 
-    global _serial
+    global _serial, _buttons_only
 
     # Perform a dry run to check the device still exists and if it does
     # return the serial object.
     if _serial:
         try:
             _serial.read(0)
-            return _serial
+            return _serial, _buttons_only
         except Exception:
             _serial = None
 
@@ -169,12 +169,12 @@ def init_serial():
         logger.info(f"Serial port information:\n{out.stdout}")
 
         dev = path
-        buttons_only = True
+        _buttons_only = True
         break
 
     if not dev:
         logger.warning("OXP CH340 serial device not found.")
-        return None, buttons_only
+        return None, _buttons_only
 
     logger.info(f"OXP CH340 serial device found at {dev}")
 
