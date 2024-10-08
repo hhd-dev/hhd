@@ -211,6 +211,14 @@ def turbo_loop(
         controller_disabled=True,
     )
 
+    d_kbd_1 = GenericGamepadEvdev(
+        vid=[KBD_VID],
+        pid=[KBD_PID],
+        required=False,
+        grab=True,
+        btn_map=BTN_MAPPINGS,
+    )
+
     share_reboots = False
     last_controller_check = 0
     keyboard_is = "keyboard"
@@ -290,6 +298,7 @@ def turbo_loop(
 
         for d in d_producers:
             prepare(d)
+        prepare(d_kbd_1)
 
         logger.info(
             "Turbo only mode started, the turbo button of the device will still work."
