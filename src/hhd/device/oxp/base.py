@@ -295,6 +295,7 @@ def turbo_loop(
     try:
         prepare(d_volume_btn)
         d_vend = find_vendor(prepare, True, dconf.get("protocol", None))
+        d_vend_id = [id(d) for d in d_vend]
 
         for d in d_producers:
             prepare(d)
@@ -324,7 +325,8 @@ def turbo_loop(
                 to_run.add(id(fd_to_dev[f]))
 
             for d in devs:
-                if id(d) in to_run or d in d_vend:
+                d_id = id(d)
+                if d_id in to_run or d_id in d_vend_id:
                     evs.extend(d.produce(r))
 
             evs = multiplexer.process(evs)
@@ -491,6 +493,7 @@ def controller_loop(
 
     try:
         d_vend = find_vendor(prepare, turbo, dconf.get("protocol", None))
+        d_vend_id = [id(d) for d in d_vend]
         prepare(d_xinput)
         if motion:
             start_imu = True
@@ -515,7 +518,8 @@ def controller_loop(
                 to_run.add(id(fd_to_dev[f]))
 
             for d in devs:
-                if id(d) in to_run or d == d_vend:
+                d_id = id(d)
+                if d_id in to_run or d_id in d_vend_id:
                     evs.extend(d.produce(r))
 
             evs = multiplexer.process(evs)

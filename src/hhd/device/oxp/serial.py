@@ -392,7 +392,8 @@ class SerialDevice(Consumer, Producer):
                     self.queue_kbd = time.perf_counter()
                 self.prev[btn] = pressed
                 continue
-
+            
+            logger.info(f"OXP CH340 button: {btn} pressed: {pressed}")
             if btn in self.prev and self.prev[btn] == pressed:
                 # Debounce
                 continue
