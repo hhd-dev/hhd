@@ -78,16 +78,16 @@ OXP_BUTTONS = {
 }
 
 
-INITIALIZE = [
+INITIALIZE = lambda vibration: [
     gen_cmd(
-        0xb4,
+        0xB4,
         "0238020101010101000000020102000000030103000000040104000000050105000000060106000000070107000000080108000000090109000000",
     ),
     gen_cmd(
-        0xb4,
+        0xB4,
         "02380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220200000000230200000000",
     ),
-    gen_intercept(False),
+    # gen_intercept(False), # seems to cause issues with vibration?
 ]
 
 INIT_DELAY = 0.2
@@ -169,7 +169,7 @@ class OxpHidraw(GenericGamepadHidraw):
                 stick = ev["oxp"]
                 if stick == "classic":
                     # Classic mode is a cherry red
-                    stick = 0xb7, 0x30, 0x00
+                    stick = 0xB7, 0x30, 0x00
                 # r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
                 # center = r2, g2, b2
                 # center_enabled = r2 > 10 or g2 > 10 or b2 > 10
