@@ -92,6 +92,7 @@ INITIALIZE = [
 
 INIT_DELAY = 0.2
 WRITE_DELAY = 0.05
+SCAN_DELAY = 1
 
 
 class OxpHidraw(GenericGamepadHidraw):
@@ -177,13 +178,13 @@ class OxpHidraw(GenericGamepadHidraw):
                 stick_enabled = False
                 # center_enabled = False
 
-        # if (
-        #     stick_enabled != self.prev_stick_enabled
-        #     or brightness != self.prev_brightness
-        # ):
-        #     self.queue_cmd.append(gen_brightness(0, stick_enabled, brightness))
-        #     self.prev_brightness = brightness
-        #     self.prev_stick_enabled = stick_enabled
+        if (
+            stick_enabled != self.prev_stick_enabled
+            or brightness != self.prev_brightness
+        ):
+            self.queue_cmd.append(gen_brightness(0, stick_enabled, brightness))
+            self.prev_brightness = brightness
+            self.prev_stick_enabled = stick_enabled
 
         if stick_enabled and stick != self.prev_stick:
             if isinstance(stick, str):
