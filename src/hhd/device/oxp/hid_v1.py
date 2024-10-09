@@ -87,7 +87,7 @@ INITIALIZE = [
         0xB4,
         "02380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220200000000230200000000",
     ),
-    # gen_intercept(False), # seems to cause issues with vibration?
+    gen_intercept(False)
 ]
 
 INIT_DELAY = 4
@@ -129,6 +129,7 @@ class OxpHidraw(GenericGamepadHidraw):
             _init_done = True
         else:
             self.next_send = time.perf_counter() + CONNECT_DELAY
+            self.queue_cmd.append(gen_intercept(False))
         return a
 
     def consume(self, events):
