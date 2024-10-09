@@ -138,7 +138,7 @@ class OxpHidraw(GenericGamepadHidraw):
         if self.queue_cmd and curr - self.next_send > 0:
             cmd = self.queue_cmd.popleft()
             logger.info(f"OXP C: {cmd.hex()}")
-            self.dev.write(cmd)
+            self.dev.send_feature_report(cmd)
             self.next_send = curr + WRITE_DELAY
 
         # Queue needs to flush before switching to next event
