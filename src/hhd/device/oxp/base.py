@@ -165,13 +165,13 @@ def find_vendor(prepare, turbo, protocol: str | None):
         except Exception as e:
             pass
 
-    if not protocol or protocol == "hid_v1":
-        try:
-            prepare(d_hidraw)
-            logger.info("Found OXP V1 hidraw vendor device.")
-            return [d_hidraw]
-        except Exception as e:
-            pass
+    # if not protocol or protocol == "hid_v1":
+    #     try:
+    #         prepare(d_hidraw)
+    #         logger.info("Found OXP V1 hidraw vendor device.")
+    #         return [d_hidraw]
+    #     except Exception as e:
+    #         pass
 
     if not protocol or protocol == "hid_v2":
         try:
