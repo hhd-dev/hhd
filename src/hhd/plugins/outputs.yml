@@ -164,7 +164,7 @@ modes:
         options:
           noob: Keyboard/Overlay
           touchpad: Touchpad Clicks
-          both: Shortctus + Touchpad Clicks
+          both: Shortcuts + Touchpad Clicks
           disabled: Disabled
         default: noob
 
