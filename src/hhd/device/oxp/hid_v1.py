@@ -143,7 +143,7 @@ class OxpHidraw(GenericGamepadHidraw):
 
         # Queue needs to flush before switching to next event
         # Also, there needs to be a led event to queue
-        if self.queue_cmd or not self.queue_led:
+        if self.queue_cmd or not self.queue_led or True:
             return
         ev = self.queue_led
         self.queue_led = None
