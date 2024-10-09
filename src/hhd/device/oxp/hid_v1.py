@@ -178,7 +178,6 @@ class OxpHidraw(GenericGamepadHidraw):
                 stick_enabled = False
                 # center_enabled = False
 
-        wrote_cmd = False
         if (
             stick_enabled != self.prev_stick_enabled
             or brightness != self.prev_brightness
@@ -186,7 +185,6 @@ class OxpHidraw(GenericGamepadHidraw):
             self.queue_cmd.append(gen_brightness(0, stick_enabled, brightness))
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
-            wrote_cmd = True
 
         if stick_enabled and stick != self.prev_stick:
             if isinstance(stick, str):
@@ -196,10 +194,6 @@ class OxpHidraw(GenericGamepadHidraw):
             self.prev_stick = stick
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
-            wrote_cmd = True
-
-        if wrote_cmd:
-            self.queue_cmd.append(gen_intercept(False))
 
         # if center_enabled != self.prev_center_enabled:
         #     self.queue_cmd.append(gen_brightness(0x03, center_enabled, "high"))
