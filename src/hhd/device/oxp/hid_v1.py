@@ -184,6 +184,8 @@ class OxpHidraw(GenericGamepadHidraw):
             self.prev_stick_enabled = stick_enabled
         if self.prev_brightness is None:
             self.prev_brightness = brightness
+        if self.prev_stick is None:
+            self.prev_stick = stick
 
         if (
             stick_enabled != self.prev_stick_enabled
