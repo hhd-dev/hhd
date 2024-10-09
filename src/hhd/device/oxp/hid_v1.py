@@ -178,6 +178,13 @@ class OxpHidraw(GenericGamepadHidraw):
                 stick_enabled = False
                 # center_enabled = False
 
+        # Force RGB to not initialize to workaround RGB breaking 
+        # rumble when being set
+        if self.prev_stick_enabled is None:
+            self.prev_stick_enabled = stick_enabled
+        if self.prev_brightness is None:
+            self.prev_brightness = brightness
+
         if (
             stick_enabled != self.prev_stick_enabled
             or brightness != self.prev_brightness
