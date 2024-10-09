@@ -90,7 +90,7 @@ INITIALIZE = [
     # gen_intercept(False), # seems to cause issues with vibration?
 ]
 
-INIT_DELAY = 0.2
+INIT_DELAY = 4
 WRITE_DELAY = 0.05
 SCAN_DELAY = 1
 
