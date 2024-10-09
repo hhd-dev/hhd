@@ -91,9 +91,11 @@ INITIALIZE = [
 ]
 
 INIT_DELAY = 4
+CONNECT_DELAY = 0.3
 WRITE_DELAY = 0.05
 SCAN_DELAY = 1
 
+_init_done = False
 
 class OxpHidraw(GenericGamepadHidraw):
     def __init__(self, *args, turbo: bool = True, **kwargs) -> None:
@@ -117,9 +119,16 @@ class OxpHidraw(GenericGamepadHidraw):
         self.queue_kbd = None
         self.queue_home = None
         self.prev = {}
-        self.next_send = time.perf_counter() + INIT_DELAY
 
-        self.queue_cmd.extend(INITIALIZE)
+        global _init_done
+        if not _init_done:
+            self.next_send = time.perf_counter() + INIT_DELAY
+            self.queue_cmd.extend(INITIALIZE)
+            # Setting the mappings is a bit aggressive and causes the device
+            # to flash its leds. Only do it during boot.
+            _init_done = True
+        else:
+            self.next_send = time.perf_counter() + CONNECT_DELAY
         return a
 
     def consume(self, events):
