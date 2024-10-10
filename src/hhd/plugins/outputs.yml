@@ -150,7 +150,7 @@ modes:
         # title: Capabilities
         tags: [non-essential]
         default: |
-          Touchpad, gyro, and RGB support. Extra buttons are touchpad clicks.
+          Touchpad, gyro, and RGB support. Extra buttons are remappable.
 
       paddles_as:
         type: multiple
