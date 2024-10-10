@@ -10,6 +10,7 @@ from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
+from hhd.controller.physical.hidraw import enumerate_unique
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 from .serial import SerialDevice
 from .hid_v1 import OxpHidraw
@@ -85,14 +86,31 @@ def plugin_run(
             time.sleep(LONGER_ERROR_DELAY)
             found_device = True
 
-        if not found_device:
+        try:
+            protocol = dconf.get("protocol", None)
+            # Serial device is always present
+            # Hid devices might not be, wait a bit for them
+            match protocol:
+                case "hid_v1":
+                    found_vendor = bool(
+                        enumerate_unique(vid=X1_MINI_VID, pid=X1_MINI_PID)
+                    )
+                case "hid_v2" | "mixed":
+                    found_vendor = bool(enumerate_unique(vid=XFLY_VID, pid=XFLY_PID))
+                case _:
+                    found_vendor = True
+        except Exception:
+            logger.warning("Failed finding vendor device, skipping check.")
+            found_vendor = True
+
+        if not found_device or not found_vendor:
             curr = time.perf_counter()
             if first:
                 logger.info("Controller not found. Waiting...")
                 switch_to_turbo = curr + TURBO_DELAY
             time.sleep(FIND_DELAY)
             first = False
-            if turbo and switch_to_turbo and curr > switch_to_turbo:
+            if found_vendor and turbo and switch_to_turbo and curr > switch_to_turbo:
                 logger.info("Switching to turbo only button mode")
                 updated.clear()
                 turbo_loop(conf.copy(), should_exit, updated, dconf, emit)
