@@ -80,26 +80,6 @@ def get_outputs(
             Dualsense.close_cached()
             motion = False
             noob_mode = conf.get("hidden.noob_mode", False)
-        case "dualsense_edge":
-            UInputDevice.close_cached()
-            flip_z = conf["dualsense_edge.flip_z"].to(bool)
-            uses_touch = touchpad == "controller" and steam_check is not False
-            uses_leds = conf.get("dualsense_edge.led_support", False)
-            d = Dualsense(
-                touchpad_method=correction,
-                edge_mode=True,
-                use_bluetooth=conf["dualsense_edge.bluetooth_mode"].to(bool),
-                enable_touchpad=uses_touch,
-                enable_rgb=uses_leds,
-                fake_timestamps=not motion,
-                sync_gyro=conf["dualsense_edge.sync_gyro"].to(bool) and motion,
-                paddles_to_clicks="disabled",
-                flip_z=flip_z,
-                controller_id=controller_id,
-                cache=True,
-            )
-            producers.append(d)
-            consumers.append(d)
         case "dualsense":
             UInputDevice.close_cached()
             flip_z = conf["dualsense.flip_z"].to(bool)
@@ -129,7 +109,7 @@ def get_outputs(
                 sync_gyro=conf["dualsense.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=paddles_to_clicks,
                 flip_z=flip_z,
-                controller_id=controller_id,
+                controller_id=controller_id | (0xf0 if edge_mode else 0),
                 cache=True,
             )
             producers.append(d)

@@ -126,6 +126,9 @@ class Dualsense(Producer, Consumer):
                 if self.dev and self.dev.fd:
                     self.fd = self.dev.fd
             else:
+                logger.warning(
+                    f"Throwing away cached Dualsense for {'left motions device' if self.left_motion else 'controller'}."
+                )
                 cached.close(True)
         name = (
             (DS5_EDGE_NAME if self.edge_mode else DS5_NAME)
@@ -166,7 +169,7 @@ class Dualsense(Producer, Consumer):
         return [self.fd]
 
     def close(self, exit: bool, in_cache: bool = False) -> bool:
-        if not in_cache and self.cache and time.perf_counter() - self.start:
+        if not exit and not in_cache and self.cache and time.perf_counter() - self.start:
             logger.warning(
                 f"Caching Dualsense {'left motions device' if self.left_motion else 'controller'} to avoid reconnection."
             )

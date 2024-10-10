@@ -150,7 +150,7 @@ class UInputDevice(Consumer, Producer):
         return [self.fd]
 
     def close(self, exit: bool, in_cache: bool = False) -> bool:
-        if not in_cache and self.cache:
+        if not exit and not in_cache and self.cache:
             if self.motions_device:
                 name = "left motions device"
                 _cache_motions.add(self)
