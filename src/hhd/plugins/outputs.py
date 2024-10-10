@@ -107,17 +107,21 @@ def get_outputs(
             uses_leds = conf.get("dualsense.led_support", False)
             paddles_as = conf.get("dualsense.paddles_as", "noob")
             noob_mode = paddles_as in ("noob", "both")
+            edge_mode = False
 
             if paddles_as == "both":
                 paddles_to_clicks = "bottom"
             elif paddles_as == "touchpad":
                 paddles_to_clicks = "top"
+            elif paddles_as == "steam_input":
+                edge_mode = True
+                paddles_to_clicks = "disabled"
             else:
                 paddles_to_clicks = "disabled"
 
             d = Dualsense(
                 touchpad_method=correction,
-                edge_mode=False,
+                edge_mode=edge_mode,
                 use_bluetooth=conf["dualsense.bluetooth_mode"].to(bool),
                 enable_touchpad=uses_touch,
                 enable_rgb=uses_leds,
@@ -279,7 +283,6 @@ def get_outputs_config(
         del s["modes"]["xbox_elite"]
     elif extra_buttons == "dual":
         del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
-        s["modes"]["dualsense"]["children"]["paddles_as"]["default"] = "noob"
 
     if HORI_ENABLED:
         # Replace xbox elite with hori
