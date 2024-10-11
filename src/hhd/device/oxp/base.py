@@ -93,10 +93,22 @@ def plugin_run(
             match protocol:
                 case "hid_v1":
                     found_vendor = bool(
-                        enumerate_unique(vid=X1_MINI_VID, pid=X1_MINI_PID)
+                        enumerate_unique(
+                            vid=X1_MINI_VID,
+                            pid=X1_MINI_PID,
+                            usage_page=X1_MINI_PAGE,
+                            usage=X1_MINI_USAGE,
+                        )
                     )
                 case "hid_v2" | "mixed":
-                    found_vendor = bool(enumerate_unique(vid=XFLY_VID, pid=XFLY_PID))
+                    found_vendor = bool(
+                        enumerate_unique(
+                            vid=XFLY_VID,
+                            pid=XFLY_PID,
+                            usage_page=XFLY_PAGE,
+                            usage=XFLY_USAGE,
+                        )
+                    )
                 case _:
                     found_vendor = True
         except Exception:
