@@ -722,8 +722,6 @@ class Multiplexer:
             self.touchpad_hold != "disabled"
             and self.touchpad_down
             and curr - self.touchpad_down[0] > 0.8
-            and abs(self.touchpad_down[1] - self.touchpad_x) < 0.1
-            and abs(self.touchpad_down[2] - self.touchpad_y) < 0.1
         ):
             action = (
                 "touchpad_left"
@@ -750,6 +748,11 @@ class Multiplexer:
                     curr + self.QAM_DELAY,
                 )
             )
+            self.touchpad_down = None
+        elif self.touchpad_down and (
+            abs(self.touchpad_down[1] - self.touchpad_x) > 0.13
+            or abs(self.touchpad_down[2] - self.touchpad_y) > 0.13
+        ):
             self.touchpad_down = None
 
         for ev in events:
