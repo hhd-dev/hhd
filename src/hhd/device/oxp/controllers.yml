@@ -14,6 +14,7 @@ children:
 
   extra_buttons:
     type: multiple
+    tags: [ non-essential ]
     title: "Keyboard and Turbo buttons are:"
     default: combo_hhd
     options:
@@ -24,16 +25,19 @@ children:
   
   swap_face:
     type: bool
+    tags: [ non-essential ]
     title: Swap View/Menu and Xbox/Kbd
     default: False
 
   turbo_reboots:
     type: bool
+    tags: [ non-essential ]
     default: True
     title: Holding Turbo Reboots
 
   volume_reverse:
     type: bool
+    tags: [ non-essential ]
     title: Reverse Volume Buttons
     hint: >-
       Reverse the volume buttons of the X1 style devices to match other tablets.
