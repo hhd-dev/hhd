@@ -722,6 +722,7 @@ class Multiplexer:
             self.touchpad_hold != "disabled"
             and self.touchpad_down
             and curr - self.touchpad_down[0] > 0.8
+            and self.touchpad_down[-1]
         ):
             action = (
                 "touchpad_left"
@@ -753,7 +754,7 @@ class Multiplexer:
             abs(self.touchpad_down[1] - self.touchpad_x) > 0.13
             or abs(self.touchpad_down[2] - self.touchpad_y) > 0.13
         ):
-            self.touchpad_down = None
+            self.touchpad_down[-1] = False
 
         for ev in events:
             match ev["type"]:
@@ -1219,6 +1220,7 @@ class Multiplexer:
                 curr,
                 self.touchpad_x,
                 self.touchpad_y,
+                True,
             )
 
         for s in status_events:
