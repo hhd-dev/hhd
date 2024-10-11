@@ -5,6 +5,7 @@ from threading import Event as TEvent
 from typing import Sequence
 
 from hhd.controller import DEBUG_MODE, Axis, Event, Multiplexer, can_read
+from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import DINPUT_AXIS_POSTPROCESS, AbsAxis
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import (
@@ -42,9 +43,9 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
 
 LIMIT_DEFAULTS = lambda allyx: {
     "s_min": 5,
-    "s_max": 0x40,
+    "s_max": 0x60 if allyx else 0x40,
     "t_min": 5,
-    "t_max": 0x40,
+    "t_max": 0x60 if allyx else 0x40,
     # ally x vibration motor is too strong
     "vibration": 50 if allyx else 100,
 }
