@@ -6,6 +6,7 @@ from threading import Event as TEvent
 from typing import Sequence
 
 from hhd.controller import Button, Consumer, Event, Producer, DEBUG_MODE
+from hhd.controller.lib.hide import unhide_all
 from hhd.controller.base import Multiplexer, TouchpadAction
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
@@ -126,6 +127,8 @@ def plugin_run(
             time.sleep(sleep_time)
         reset = False
 
+    # Unhide all devices before exiting
+    unhide_all()
 
 def controller_loop_rest(
     mode: str,

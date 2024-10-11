@@ -7,6 +7,7 @@ from threading import Event as TEvent
 import evdev
 
 from hhd.controller import Multiplexer, DEBUG_MODE
+from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
@@ -38,10 +39,16 @@ def plugin_run(
     dconf: dict,
 ):
     first = True
+    first_disabled = True
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
+            if first_disabled:
+                unhide_all()
+            first_disabled = False
             continue
+        else:
+            first_disabled = True
 
         found_gamepad = False
         try:
@@ -76,6 +83,8 @@ def plugin_run(
                 raise e
             time.sleep(ERROR_DELAY)
 
+    # Unhide all devices before exiting
+    unhide_all()
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter

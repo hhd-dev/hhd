@@ -9,6 +9,7 @@ import evdev
 
 from hhd.controller import DEBUG_MODE, Event, Multiplexer, can_read
 from hhd.controller.base import Event, TouchpadAction
+from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
@@ -156,12 +157,18 @@ def plugin_run(
     dconf: dict,
 ):
     first = True
+    first_disabled = True
     init = time.perf_counter()
     repeated_fail = False
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
+            if first_disabled:
+                unhide_all()
+            first_disabled = False
             continue
+        else:
+            first_disabled = True
 
         found_gamepad = False
         try:
@@ -202,6 +209,8 @@ def plugin_run(
                 raise e
             time.sleep(sleep_time)
 
+    # Unhide all devices before exiting
+    unhide_all()
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter

@@ -4,8 +4,8 @@ import select
 import time
 from threading import Event as TEvent
 
-
-from hhd.controller import Multiplexer, DEBUG_MODE
+from hhd.controller import DEBUG_MODE, Multiplexer
+from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
@@ -41,12 +41,19 @@ def plugin_run(
     dconf: dict,
 ):
     first = True
+    first_disabled = True
     init = time.perf_counter()
     repeated_fail = False
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
+            if first_disabled:
+                UInputDevice.close_volume_cached()
+                unhide_all()
+            first_disabled = False
             continue
+        else:
+            first_disabled = True
 
         try:
             found_device = bool(enumerate_evs(vid=GAMEPAD_VID))
@@ -84,6 +91,9 @@ def plugin_run(
                 raise e
             time.sleep(sleep_time)
 
+    # Unhide all devices before exiting and close keyboard cache
+    UInputDevice.close_volume_cached()
+    unhide_all()
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter

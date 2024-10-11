@@ -6,6 +6,7 @@ from threading import Event as TEvent
 
 
 from hhd.controller import Multiplexer, DEBUG_MODE
+from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
@@ -74,10 +75,14 @@ def plugin_run(
 
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
-            # Close the volume keyboard cache
-            UInputDevice.close_volume_cached()
             time.sleep(ERROR_DELAY)
+            if first_disabled:
+                UInputDevice.close_volume_cached()
+                unhide_all()
+            first_disabled = False
             continue
+        else:
+            first_disabled = True
 
         try:
             found_device = bool(enumerate_evs(vid=GAMEPAD_VID))
@@ -153,6 +158,7 @@ def plugin_run(
 
     # Close the volume keyboard cache
     UInputDevice.close_volume_cached()
+    unhide_all()
 
 
 def find_vendor(prepare, turbo, protocol: str | None):

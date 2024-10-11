@@ -298,6 +298,8 @@ def plugin_run(
                 raise e
             time.sleep(sleep_time)
 
+    # Unhide all devices before exiting
+    unhide_all()
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool
