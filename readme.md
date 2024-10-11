@@ -80,8 +80,16 @@ is added to your device.
   - Win 4 (No LEDs)
   - Win Mini
   - Win Max 2
-- MSI
-  - Claw A1M (only front buttons)
+- OneXPlayer
+  - X1 (AMD)
+  - X1 Mini
+  - F1, F1 EVA-01, F1L
+  - 2, 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
+  - Mini A07
+  - Mini Pro
+  - ONE XPLAYER
+- Ayn
+  - Loki Zero/Max
 - Ayaneo
   - Air Standard/Plus/Pro
   - 1S/1S Limited
@@ -91,15 +99,8 @@ is added to your device.
   - SLIDE
   - 2021 Standard/Pro/Pro Retro Power
   - NEO 2021/Founder
-- Ayn
-  - Loki Zero/Max
 - AOKZOE (No LEDs)
   - A1 Normal/Pro
-- Onexplayer (No LEDs)
-  - Mini Pro
-  - F1, F1 EVA-01
-  - Mini A07
-  - 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
 - Ambernic
   - Win600 (no keyboard button yet)
 
@@ -108,8 +109,7 @@ GPD Win devices that have not been verified to work
 (controller emulation will be off on first start).
 If everything works and you fix the gyro axis for your device, open an issue
 so that your device can be added to the supported list.
-The touchpad will not work for devices not on the supported list.
-Help is needed for OneXPlayer/AOKZOE LED Support.
+Touchpad emulation will not work for devices not on the supported list.
 
 ## Installation Instructions
 For Arch and Fedora see [here](#os-install).
@@ -365,3 +365,20 @@ Handheld Daemon is licensed under THE GNU GPLv3+. See LICENSE for details.
 A small number of files are dual licensed with MIT, and contain
 SPDX headers denoting so. 
 Versions prior to and excluding 2.0.0 are licensed using MIT.
+
+# Credits
+Much like a lot of open-source projects, Handheld Daemon is a community effort.
+It relies on the kernel drivers 
+[oxp-sensors](https://github.com/torvalds/linux/blob/master/drivers/hwmon/oxp-sensors.c), [ayn-platform](https://github.com/ShadowBlip/ayn-platform), 
+[ayaneo-platform](https://github.com/ShadowBlip/ayaneo-platform), 
+[bmi260](https://github.com/hhd-dev/bmi260),
+and [asus-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/asus-wmi.c).
+In addition, certain parts of Handheld Daemon reference the reverse engineering
+efforts of [asus-linux](https://gitlab.com/asus-linux), 
+the [Handheld Companion](https://github.com/Valkirie/HandheldCompanion) project,
+and the [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) project.
+Finally, its functionality is made possible thanks to thousands of hours of 
+volunteer testing, who have provided feedback and helped shape the project.
+Some of those volunteers integrated support for their devices directly, especially
+in the case of Ayaneo, GPD, and for the initial support of OneXPlayer, and ROG Ally
+devices.
