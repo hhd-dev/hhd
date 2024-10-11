@@ -253,13 +253,11 @@ def get_outputs_config(
         del s["modes"]["disabled"]
     if not has_leds:
         del s["modes"]["dualsense"]["children"]["led_support"]
-        del s["modes"]["dualsense_edge"]["children"]["led_support"]
 
     if extra_buttons == "none":
         del s["modes"]["dualsense"]["children"]["paddles_as"]
         del s["modes"]["uinput"]["children"]["noob_mode"]
         del s["modes"]["hidden"]["children"]["noob_mode"]
-        del s["modes"]["dualsense_edge"]
         del s["modes"]["xbox_elite"]
     elif extra_buttons == "dual":
         del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
