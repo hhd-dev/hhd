@@ -156,13 +156,15 @@ def is_device(fn):
     if not os.path.exists(fn):
         return False
 
-    m = os.stat(fn)[stat.ST_MODE]
-    if not stat.S_ISCHR(m):
-        return False
+    try:
+        m = os.stat(fn)[stat.ST_MODE]
+        if not stat.S_ISCHR(m):
+            return False
 
-    if not os.access(fn, os.R_OK | os.W_OK):
+        if not os.access(fn, os.R_OK | os.W_OK):
+            return False
+    except Exception:
         return False
-
     return True
 
 
