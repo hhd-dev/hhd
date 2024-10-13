@@ -3,11 +3,11 @@ from hhd.controller.physical.evdev import B, to_map
 from hhd.plugins import gen_gyro_state
 
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
-    "accel_x": ("accel_z", "accel", 1, None),
-    "accel_y": ("accel_x", "accel", -1, None),
+    "accel_x": ("accel_x", "accel", 1, None),
+    "accel_y": ("accel_z", "accel", 1, None),
     "accel_z": ("accel_y", "accel", -1, None),
-    "anglvel_x": ("gyro_z", "anglvel", 1, None),
-    "anglvel_y": ("gyro_x", "anglvel", -1, None),
+    "anglvel_x": ("gyro_x", "anglvel", 1, None),
+    "anglvel_y": ("gyro_z", "anglvel", 1, None), 
     "anglvel_z": ("gyro_y", "anglvel", -1, None),
     "timestamp": ("imu_ts", None, 1, None),
 }
