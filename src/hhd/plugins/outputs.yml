@@ -50,16 +50,20 @@ modes:
         default: |
           Simple Xbox controller. 
           Universal compatibility.
-          Extra buttons are shortcuts.
+          Extra buttons are shortcuts or Steam Input.
 
-      noob_mode:
-        type: bool
-        title: Extra buttons as Keyboard/Overlay
-        tags: [non-essential]
-        default: True
+      paddles_as:
+        type: multiple
+        title: Extra buttons as
         hint: >-
-          Makes the left paddle bring up a keyboard and the right paddle bring
-          up the overlay.
+          Changes the behavior of the extra buttons.
+          Left button is Keyboard, right button is Overlay.
+          Or they can be set for Steam Input.
+        options:
+          steam_input: Steam Input (Elite)
+          noob: Keyboard/Overlay
+          disabled: Disabled
+        default: noob
 
       nintendo_qam:
         type: bool

@@ -37,7 +37,7 @@ def get_outputs(
     dual_motion: bool = False,
     rgb_modes: Mapping[RgbMode, Sequence[RgbSettings]] | None = None,
     rgb_zones: RgbZones = "mono",
-    controller_disabled: bool = False
+    controller_disabled: bool = False,
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -109,7 +109,7 @@ def get_outputs(
                 sync_gyro=conf["dualsense.sync_gyro"].to(bool) and motion,
                 paddles_to_clicks=paddles_to_clicks,
                 flip_z=flip_z,
-                controller_id=controller_id | (0xf0 if edge_mode else 0),
+                controller_id=controller_id | (0xF0 if edge_mode else 0),
                 cache=True,
             )
             producers.append(d)
@@ -117,6 +117,7 @@ def get_outputs(
         case "uinput" | "xbox_elite" | "joycon_pair" | "hori_steam":
             Dualsense.close_cached()
             version = 1
+            paddles_as = conf.get("uinput.paddles_as", "noob")
             if controller == "joycon_pair":
                 theme = "joycon_pair"
                 nintendo_qam = conf["joycon_pair.nintendo_qam"].to(bool)
@@ -131,12 +132,14 @@ def get_outputs(
                 bus = 0x06
                 version = 0
                 has_qam = True
-            elif controller == "xbox_elite":
+            elif controller == "xbox_elite" or (
+                controller == "uinput" and paddles_as == "steam_input"
+            ):
                 theme = "xbox_one_elite"
                 button_map = XBOX_ELITE_BUTTON_MAP
                 bus = 0x03
             else:
-                noob_mode = conf.get("uinput.noob_mode", False)
+                noob_mode = paddles_as == "noob"
                 # theme = conf.get("uinput.theme", "hhd")
                 theme = "hhd"
                 nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
