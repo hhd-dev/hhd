@@ -252,35 +252,38 @@ def get_outputs_config(
     extra_buttons: Literal["none", "dual", "quad"] = "dual",
 ):
     s = load_relative_yaml("outputs.yml")
-    if not can_disable:
-        del s["modes"]["disabled"]
-    if not has_leds:
-        del s["modes"]["dualsense"]["children"]["led_support"]
+    try:
+        if not can_disable:
+            del s["modes"]["disabled"]
+        if not has_leds:
+            del s["modes"]["dualsense"]["children"]["led_support"]
 
-    if extra_buttons == "none":
-        del s["modes"]["dualsense"]["children"]["paddles_as"]
-        del s["modes"]["uinput"]["children"]["noob_mode"]
-        del s["modes"]["hidden"]["children"]["noob_mode"]
-        del s["modes"]["xbox_elite"]
-    elif extra_buttons == "dual":
-        del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
-
-    if HORI_ENABLED:
-        # Replace xbox elite with hori
-        try:
+        if extra_buttons == "none":
+            del s["modes"]["dualsense"]["children"]["paddles_as"]
+            del s["modes"]["uinput"]["children"]["paddles_as"]
+            del s["modes"]["hidden"]["children"]["noob_mode"]
             del s["modes"]["xbox_elite"]
-        except Exception:
-            pass
-    else:
-        del s["modes"]["hori_steam"]
+        elif extra_buttons == "dual":
+            del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
 
-    # Set xbox as default for now
-    s["default"] = "uinput"
+        if HORI_ENABLED:
+            # Replace xbox elite with hori
+            try:
+                del s["modes"]["xbox_elite"]
+            except Exception:
+                pass
+        else:
+            del s["modes"]["hori_steam"]
 
-    # if default_device:
-    #     s["default"] = default_device
-    if start_disabled:
-        s["default"] = "disabled"
+        # Set xbox as default for now
+        s["default"] = "uinput"
+
+        # if default_device:
+        #     s["default"] = default_device
+        if start_disabled:
+            s["default"] = "disabled"
+    except Exception as e:
+        logger.exception(f"Error fixing outputs:\n{e}")
     return s
 
 
