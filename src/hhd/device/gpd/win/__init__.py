@@ -14,7 +14,11 @@ from hhd.plugins import (
 from hhd.plugins.settings import HHDSettings
 from hhd.controller.lib.hid import enumerate_unique
 
-from .const import GPD_WIN_MAX_2_2023_MAPPINGS, GPD_WIN_DEFAULT_MAPPINGS
+from .const import (
+    GPD_WIN_MAX_2_2023_MAPPINGS,
+    GPD_WIN_DEFAULT_MAPPINGS,
+    GPD_WIN_4_8840U_MAPPINGS,
+)
 
 GPD_CONFS = {
     "G1618-03": {  # Old model, has no gyro/touchpad
@@ -141,14 +145,24 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
-    # Match just product number, should be enough for now
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        dmi = f.read().strip()
-        dconf = GPD_CONFS.get(dmi, None)
-        if dconf:
-            return [GpdWinControllersPlugin(dmi, dconf)]
-
     try:
+    # Match just product number, should be enough for now
+        with open("/sys/devices/virtual/dmi/id/product_name") as f:
+            dmi = f.read().strip()
+            dconf = GPD_CONFS.get(dmi, None)
+            
+            if dmi == "G1618-04":
+                with open("/proc/cpuinfo") as f:
+                    cpuinfo = f.read().strip()
+                # 8840U has a different gyro mapping
+                if "AMD Ryzen 7 8840U" in cpuinfo:
+                    dconf = dict(GPD_CONFS["G1618-04"])
+                    dconf['name'] = "GPD Win 4 (8840U)"
+                    dconf["mapping"] = GPD_WIN_4_8840U_MAPPINGS
+
+            if dconf:
+                return [GpdWinControllersPlugin(dmi, dconf)]
+
         with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
             vendor = f.read().strip().lower()
         if vendor == "gpd":
