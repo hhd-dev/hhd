@@ -177,11 +177,12 @@ def loop_manage_overlay(
             if start - last_game_check > GAME_CHECK_INTERVAL:
                 game = get_current_game(disp)
                 if old_game != game:
-                    logger.info(f"Switched to game with ID {game}.")
                     emit.info["game.id"] = str(game)
                     emit.info["game.is_steam"] = game in (STEAM_ID, HHD_ID, 7)
                     game_data = emit.get_gamedata(str(game))
+                    name = game_data["name"] if game_data else "Unknown Title"
                     emit.info["game.data"] = game_data
+                    logger.info(f"Switched to game {game}: '{name}'.")
                     old_game = game
 
             # If we are running on a headless session
