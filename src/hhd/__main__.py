@@ -39,7 +39,7 @@ from .plugins.settings import (
     save_state_yaml,
     validate_config,
 )
-from .utils import expanduser, fix_perms, get_context, get_os, switch_priviledge
+from .utils import expanduser, fix_perms, get_context, get_os, switch_priviledge, get_ac_status_fn, get_ac_status
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +148,10 @@ def main():
     prev_http_cfg = None
     updated = False
     last_event = None
+    ac_fn = get_ac_status_fn()
     info = Config()
+    info['ac'] = None
+    ac_status = None
 
     # Check we are in a virtual environment
     # TODO: Improve
@@ -505,6 +508,14 @@ def main():
                 ]
             wakeup_count = new_wakeup_count
             last_event = curr
+
+            # AC status
+            if ac_fn:
+                new_status = get_ac_status(ac_fn)
+                if new_status != ac_status:
+                    logger.info(f"AC status is: {new_status}")
+                    ac_status = new_status
+                    info['ac'] = ac_status
 
             for ev in events:
                 match ev["type"]:

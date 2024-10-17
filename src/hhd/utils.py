@@ -52,6 +52,38 @@ def get_os() -> str:
     return "ukn"
 
 
+def get_ac_status_fn() -> str | None:
+    BASE_DIR = "/sys/class/power_supply"
+    fn = None
+    try:
+        for name in os.listdir(BASE_DIR):
+            if name.startswith("AC") or name.startswith("ADP"):
+                fn = name
+                break
+        if fn is None:
+            logger.error(
+                f"Could not find AC status file. Power supply directory:\n{os.listdir(BASE_DIR)}"
+            )
+            return None
+
+        return os.path.join(BASE_DIR, fn, "online")
+    except Exception as e:
+        logger.error(f"Could not read power supply directory, error:\n{e}")
+        return None
+
+
+def get_ac_status(fn: str | None) -> bool | None:
+    if fn is None:
+        return None
+    if not os.path.exists(fn):
+        return None
+    try:
+        with open(fn) as f:
+            return f.read().strip() != "Discharging"
+    except Exception as e:
+        return None
+
+
 __all__ = [
     "get_os",
     "is_steam_gamepad_running",
@@ -62,4 +94,6 @@ __all__ = [
     "get_context",
     "Context",
     "run_steam_command",
+    "get_ac_status",
+    "get_ac_status_fn",
 ]
