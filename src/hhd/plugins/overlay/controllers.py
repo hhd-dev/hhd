@@ -146,6 +146,24 @@ class QamHandlerKeyboard:
             logger.error(f"Could not send keyboard event. Error:\n{e}")
             return False
 
+    def screenshot(self) -> bool:
+        if not self._open():
+            return False
+        if not self.uinput:
+            return False
+
+        try:
+            btn = B("KEY_F12")
+            self.uinput.write(B("EV_KEY"), btn, 1)
+            self.uinput.syn()
+            time.sleep(0.1)
+            self.uinput.write(B("EV_KEY"), btn, 0)
+            self.uinput.syn()
+            return True
+        except Exception as e:
+            logger.error(f"Could not send screenshot event. Error:\n{e}")
+            return False
+
     def close(self):
         if self.uinput:
             self.uinput.close()
@@ -187,7 +205,8 @@ def find_devices(
         if "hhd" in dev.get("phys", "") or (
             # Allow bluetooth controllers that contain uhid and phys, while
             # blocking hhd devices that contain uhid but not phys
-            "uhid" in dev.get("sysfs", "") and not dev.get("phys", "")
+            "uhid" in dev.get("sysfs", "")
+            and not dev.get("phys", "")
         ):
             continue
 
@@ -342,6 +361,10 @@ def process_touch(emit, state, ev, val):
     elif start_y > 1 - GESTURE_START and last_y < 1 - GESTURE_END:
         if emit:
             emit({"type": "special", "event": "swipe_bottom"})
+        handled = True
+    elif start_y < GESTURE_START and last_y > GESTURE_END:
+        if emit:
+            emit({"type": "special", "event": "swipe_top"})
         handled = True
 
     if handled:

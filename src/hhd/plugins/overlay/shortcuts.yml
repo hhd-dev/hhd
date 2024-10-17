@@ -13,6 +13,7 @@ controller:
         steam_expanded: "Steam Overlay"
         hhd_qam: "HHD Side Menu"
         hhd_expanded: "HHD Overlay"
+        # screenshot: "Screenshot"
       # default: hhd_qam
       default: disabled
     xbox_y:
@@ -53,6 +54,11 @@ touchscreen:
       title: "→ Swipe Left Side (Bottom)"
       options: *shortcuts
       default: steam_expanded
+    top:
+      type: multiple
+      title: "↓ Swipe Down"
+      options: *shortcuts
+      default: disabled
 
     orientation:
       type: mode

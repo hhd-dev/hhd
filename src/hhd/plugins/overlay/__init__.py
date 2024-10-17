@@ -298,6 +298,12 @@ class OverlayPlugin(HHDPlugin):
                             logger.warning(
                                 "Could not open Steam keyboard. Is Steam running?"
                             )
+                    case "screenshot":
+                        logger.info("Taking screenshot.")
+                        if self.qam_handler and hasattr(self.qam_handler, "screenshot"):
+                            getattr(self.qam_handler, "screenshot")()
+                        elif self.qam_handler_fallback:
+                            self.qam_handler_fallback.screenshot()
 
             if self.ovf and cmd and (self.enabled or override_enable):
                 init = "close" not in cmd
