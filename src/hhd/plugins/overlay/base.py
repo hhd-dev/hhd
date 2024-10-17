@@ -170,8 +170,10 @@ def loop_manage_overlay(
                 old, was_shown, game = update_steam_values(disp, steam, old)
                 if old_game != game:
                     logger.info(f"Switched to game with ID {game}.")
-                    emit.info["game.id"] = game
-                    emit.info["game.is_steam"] = STEAM_ID
+                    emit.info["game.id"] = str(game)
+                    emit.info["game.is_steam"] = game in (STEAM_ID, 7)
+                    game_data = emit.get_gamedata(str(game))
+                    emit.info["game.data"] = game_data
                     old_game = game
                 if was_shown:
                     show_hhd(disp, hhd, steam)

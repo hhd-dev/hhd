@@ -22,13 +22,16 @@ def load_steam_games(ctx: Context, emit, burnt_ids: set):
     # Defer loading until we enter a game
     info = emit.info
     curr = info.get("game.id", None)
+    # Lump steam into none to avoid loading twice
+    if info.get("game.is_steam", False):
+        curr = None
 
     # If the game changes and we do not have data for it do a reload
     if curr in burnt_ids:
-        return
+        return None, None
 
     if "games" in info and curr in info["games"]:
-        return
+        return None, None
 
     # Maybe a game is missing from appcache, if it is burn it
     # so we dont try to load the library again
@@ -38,9 +41,10 @@ def load_steam_games(ctx: Context, emit, burnt_ids: set):
         # Load the games
         games, images = get_games(expanduser("~/.local/share/Steam/appcache/", ctx))
         logger.info(f"Loaded info for {len(games)} steam games.")
-        return images
+        return games, images
     except Exception as e:
         logger.warning(f"Could not load steam games:\n{e}")
+        return None, None
 
 
 class OverlayPlugin(HHDPlugin):
@@ -134,12 +138,12 @@ class OverlayPlugin(HHDPlugin):
 
         # Preemptively launch overlay
         if self.enabled and self.ovf:
-            self.ovf.launch_overlay()
             # Load game information
             if self.ctx:
-                images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
-                if images:
-                    self.emit.set_images(images)
+                games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
+                if games and images:
+                    self.emit.set_gamedata(games, images)
+            self.ovf.launch_overlay()
 
         self.touch_gestures = not bool(
             conf.get("controllers.touchscreen.gestures_disable", False)

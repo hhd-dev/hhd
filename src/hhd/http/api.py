@@ -247,10 +247,7 @@ class RestHandler(BaseHTTPRequestHandler):
                 "Image data not provided. Syntax: /api/v1/image/{game}/{type}"
             )
 
-        try:
-            game = int(segments[0])
-        except ValueError:
-            return self.send_error(f"Game id '{segments[0]}' is not a valid number.")
+        game = segments[0]
         image_type = segments[1]
 
         img = self.emit.get_image(game, image_type)

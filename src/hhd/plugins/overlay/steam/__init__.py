@@ -11,7 +11,7 @@ def get_games(appdir: str):
         _, data = parse_appinfo(f)
         for d in data:
             try:
-                appid = d['appid']
+                appid = str(d['appid'])
                 name = d['data']['appinfo']['common']['name']
                 games[appid] = {"name": name, "images": []}
             except KeyError:
@@ -23,7 +23,7 @@ def get_games(appdir: str):
         try:
             id_split = fn.index('_')
             ext_split = fn.rindex('.')
-            appid = int(fn[:id_split])
+            appid = fn[:id_split]
             itype = fn[id_split+1:ext_split]
 
             if appid not in games:
