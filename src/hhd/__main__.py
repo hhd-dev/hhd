@@ -52,10 +52,10 @@ SLEEP_MIN_T = 8
 
 
 class EmitHolder(Emitter):
-    def __init__(self, condition: Condition, ctx) -> None:
+    def __init__(self, condition: Condition, ctx, info) -> None:
         self._events = []
         self._condition = condition
-        super().__init__(ctx=ctx)
+        super().__init__(ctx=ctx, info=info)
 
     def __call__(self, event: Event | Sequence[Event]) -> None:
         with self._condition:
@@ -253,7 +253,7 @@ def main():
         # Open plugins
         lock = RLock()
         cond = Condition(lock)
-        emit = EmitHolder(cond, ctx)
+        emit = EmitHolder(cond, ctx, info)
         for p in sorted_plugins:
             set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
             p.open(emit, ctx)

@@ -32,6 +32,7 @@ from .x11 import (
     register_changes,
     show_hhd,
     update_steam_values,
+    STEAM_ID,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,6 +49,7 @@ Status = Literal["closed", "qam", "expanded", "notification"]
 GUARD_CHECK = 0.5
 STARTUP_MAX_DELAY = 10
 LOOP_SLEEP = 0.05
+OVERLAY_CHECK_INTERVAL = 5
 
 
 def loop_manage_desktop(
@@ -134,6 +136,7 @@ def loop_manage_overlay(
         hhd = find_hhd(disp)
         steam = find_steam(disp)
         steam_exists = does_steam_exist(disp)
+        old_game = None
         old = None
         shown = False
 
@@ -164,7 +167,12 @@ def loop_manage_overlay(
             # yank its focus
             process_events(disp)
             if steam and shown:
-                old, was_shown = update_steam_values(disp, steam, old)
+                old, was_shown, game = update_steam_values(disp, steam, old)
+                if old_game != game:
+                    logger.info(f"Switched to game with ID {game}.")
+                    emit.info["game.id"] = game
+                    emit.info["game.is_steam"] = STEAM_ID
+                    old_game = game
                 if was_shown:
                     show_hhd(disp, hhd, steam)
                     logger.warning("Steam opened, hiding it.")
@@ -199,7 +207,7 @@ def loop_manage_overlay(
                     else:
                         if not shown:
                             if steam:
-                                old, _ = update_steam_values(disp, steam, None)
+                                old, _, _ = update_steam_values(disp, steam, None)
                             show_hhd(disp, hhd, steam)
                             writer.reset()
                         shown = True
@@ -231,32 +239,53 @@ class OverlayService:
         self.emit = emit
         self.proc = None
         self.interceptionSupported = True
+        self.last_check = None
+        self.installed = True
 
-    def _open_overlay(self):
+    def launch_overlay(self):
+        if not self.installed:
+            return
+        curr = time.perf_counter()
+        if self.last_check and curr - self.last_check < OVERLAY_CHECK_INTERVAL:
+            return
+        self.last_check = curr
+
+        launched = self._open_overlay(requested=False)
+        if launched and not self.is_healthy():
+            self.started = False
+
+    def _open_overlay(self, requested=False):
         # Should not be called by outsiders
         # requires special permissions and error handling by update
-        if self.started:
+        if self.started or not self.installed:
             return True
+
+        displays = get_gamescope_displays()
+        if not displays:
+            if requested:
+                logger.warning(
+                    "Could not find overlay displays, gamescope is not active."
+                )
+            return False
+        if requested:
+            logger.debug(f"Found the following gamescope displays: {displays}")
+
+        res = get_overlay_display(displays, self.ctx)
+        if not res:
+            if requested:
+                logger.error(
+                    f"Could not find overlay display in gamescope displays. This should never happen."
+                )
+            return False
+
         logger.info("Attempting to launch overlay.")
 
         exe = find_overlay_exe(self.ctx)
         if not exe:
             logger.warning("Overlay is not installed, not launching.")
+            self.installed = False
             return False
         logger.info(f"Found overlay executable '{exe}'")
-
-        displays = get_gamescope_displays()
-        if not displays:
-            logger.warning("Could not find overlay displays, gamescope is not active.")
-            return False
-        logger.debug(f"Found the following gamescope displays: {displays}")
-
-        res = get_overlay_display(displays, self.ctx)
-        if not res:
-            logger.error(
-                f"Could not find overlay display in gamescope displays. This should never happen."
-            )
-            return False
         disp, name = res
         logger.debug(f"Overlay display is the following: DISPLAY={name}")
 

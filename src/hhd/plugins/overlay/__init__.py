@@ -100,6 +100,10 @@ class OverlayPlugin(HHDPlugin):
         self.enabled = self.enabled or new_enabled
         self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
+        # Preemptively launch overlay
+        if self.enabled and self.ovf:
+            self.ovf.launch_overlay()
+
         self.touch_gestures = not bool(
             conf.get("controllers.touchscreen.gestures_disable", False)
         )

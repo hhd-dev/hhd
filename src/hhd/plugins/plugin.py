@@ -82,6 +82,12 @@ Event = (
 
 
 class Emitter(ControllerEmitter):
+    def __init__(self, ctx=None, info=None) -> None:
+        if info is None:
+            info = Config()
+        self.info = info
+        super().__init__(ctx)
+
     def __call__(self, event: Event | Sequence[Event]) -> None:
         pass
 

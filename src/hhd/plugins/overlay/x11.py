@@ -318,6 +318,7 @@ def update_steam_values(display, steam, old: CachedValues | None):
     stat_overlay = display.get_atom("STEAM_OVERLAY")
     stat_notify = display.get_atom("STEAM_NOTIFICATION")
     stat_click = display.get_atom("STEAM_TOUCH_CLICK_MODE")
+    stat_game = display.get_atom("GAMESCOPE_FOCUSED_APP_GFX")
 
     def was_set(v):
         prop = steam.get_property(v, Xatom.CARDINAL, 0, 15)
@@ -335,6 +336,8 @@ def update_steam_values(display, steam, old: CachedValues | None):
     touch_val = prop.value[0] if touch_was_set else None
     if touch_val is None and old and old.touch is not None:
         touch_val = old.touch
+    game = r.get_property(stat_game, Xatom.CARDINAL, 0, 15)
+    game = game.value[0] if game and game.value else None
 
     out = CachedValues(
         focus=new_focus or (old.focus if old else False),
@@ -342,7 +345,7 @@ def update_steam_values(display, steam, old: CachedValues | None):
         notify=new_notify or (old.notify if old else False),
         touch=touch_val,
     )
-    return out, new_focus or new_overlay or new_notify
+    return out, new_focus or new_overlay or new_notify, game
 
 
 TARGET_TOUCH = 4
