@@ -143,13 +143,14 @@ class OverlayPlugin(HHDPlugin):
         self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
         # Preemptively launch overlay
-        if self.enabled and self.ovf:
+        if self.enabled:
             # Load game information
             if self.ctx:
                 games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
                 if games and images:
                     self.emit.set_gamedata(games, images)
-            self.ovf.launch_overlay()
+            if self.ovf:
+                self.ovf.launch_overlay()
 
         self.touch_gestures = not bool(
             conf.get("controllers.touchscreen.gestures_disable", False)

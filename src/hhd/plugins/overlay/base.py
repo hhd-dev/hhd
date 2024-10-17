@@ -14,6 +14,7 @@ from hhd.plugins import Context, Emitter
 from .controllers import OverlayWriter
 from .overlay import find_overlay_exe, inject_overlay, launch_overlay_de
 from .x11 import (
+    HHD_ID,
     STEAM_ID,
     does_steam_exist,
     find_focusable_windows,
@@ -21,6 +22,7 @@ from .x11 import (
     find_steam,
     find_x11_auth,
     find_x11_display,
+    get_current_game,
     get_gamescope_displays,
     get_overlay_display,
     hide_hhd,
@@ -47,6 +49,7 @@ GUARD_CHECK = 0.5
 STARTUP_MAX_DELAY = 10
 LOOP_SLEEP = 0.05
 OVERLAY_CHECK_INTERVAL = 5
+GAME_CHECK_INTERVAL = 2
 
 
 def loop_manage_desktop(
@@ -135,6 +138,7 @@ def loop_manage_overlay(
         steam = find_steam(disp)
         steam_exists = does_steam_exist(disp)
         old_game = None
+        last_game_check = 0
         old = None
         shown = False
 
@@ -165,17 +169,20 @@ def loop_manage_overlay(
             # yank its focus
             process_events(disp)
             if steam and shown:
-                old, was_shown, game = update_steam_values(disp, steam, old)
-                if old_game != game:
-                    logger.info(f"Switched to game with ID {game}.")
-                    emit.info["game.id"] = str(game)
-                    emit.info["game.is_steam"] = game in (STEAM_ID, 7)
-                    game_data = emit.get_gamedata(str(game))
-                    emit.info["game.data"] = game_data
-                    old_game = game
+                old, was_shown = update_steam_values(disp, steam, old)
                 if was_shown:
                     show_hhd(disp, hhd, steam)
                     logger.warning("Steam opened, hiding it.")
+
+            if start - last_game_check > GAME_CHECK_INTERVAL:
+                game = get_current_game(disp)
+                if old_game != game:
+                    logger.info(f"Switched to game with ID {game}.")
+                    emit.info["game.id"] = str(game)
+                    emit.info["game.is_steam"] = game in (STEAM_ID, HHD_ID, 7)
+                    game_data = emit.get_gamedata(str(game))
+                    emit.info["game.data"] = game_data
+                    old_game = game
 
             # If we are running on a headless session
             # make sure hhd cant be focused
@@ -207,7 +214,7 @@ def loop_manage_overlay(
                     else:
                         if not shown:
                             if steam:
-                                old, _, _ = update_steam_values(disp, steam, None)
+                                old, _ = update_steam_values(disp, steam, None)
                             show_hhd(disp, hhd, steam)
                             writer.reset()
                         shown = True
