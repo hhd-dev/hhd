@@ -239,6 +239,38 @@ class RestHandler(BaseHTTPRequestHandler):
                 case other:
                     self.send_not_found(f"Command 'profile/{other}' not supported.")
 
+    def handle_image(
+        self, segments: list[str], params: dict[str, list[str]], content: Any | None
+    ):
+        if len(segments) < 2:
+            return self.send_not_found(
+                "Image data not provided. Syntax: /api/v1/image/{game}/{type}"
+            )
+
+        try:
+            game = int(segments[0])
+        except ValueError:
+            return self.send_error(f"Game id '{segments[0]}' is not a valid number.")
+        image_type = segments[1]
+
+        img = self.emit.get_image(game, image_type)
+        if img is None:
+            return self.send_error(f"Image '{game}/{image_type}' not found.")
+
+        if img.endswith(".jpg") or img.endswith(".jpeg"):
+            ctype = "image/jpeg"
+        elif img.endswith(".png"):
+            ctype = "image/png"
+        else:
+            return self.send_error(f"Image type '{img}' not supported.")
+
+        if not os.path.exists(img):
+            return self.send_error(f"Image '{img}' not found.")
+
+        self.set_response_ok(extra_headers={"Content-type": ctype})
+        with open(img, "rb") as f:
+            self.wfile.write(f.read())
+
     def v1_endpoint(self, content: Any | None):
         segments, params = parse_path(self.path)
         langs = params.get("lang", params.get("locale", None))
@@ -262,6 +294,8 @@ class RestHandler(BaseHTTPRequestHandler):
 
         command = segments[2].lower()
         match command:
+            case "image" | "images":
+                self.handle_image(segments[3:], params, content)
             case "profile":
                 self.handle_profile(segments[3:], params, content)
             case "settings":
@@ -277,7 +311,9 @@ class RestHandler(BaseHTTPRequestHandler):
                         }
                     except Exception as e:
                         logger.error(f"Error while writing version hash to response.")
-                    s = translate(s, self.conf, self.locales, lang=lang, user_lang=self.user_lang)
+                    s = translate(
+                        s, self.conf, self.locales, lang=lang, user_lang=self.user_lang
+                    )
                     self.wfile.write(json.dumps(s).encode())
             case "state":
                 self.set_response_ok()
@@ -293,13 +329,29 @@ class RestHandler(BaseHTTPRequestHandler):
                         # Hang for the next update if the UI requests it.
                         self.cond.wait()
                     out = {**cast(dict, self.conf.conf), "info": self.info.conf}
-                    out["version"] = translate_ver(self.conf, lang=lang, user_lang=self.user_lang)
-                    out = translate(out, self.conf, self.locales, lang=lang, user_lang=self.user_lang)
+                    out["version"] = translate_ver(
+                        self.conf, lang=lang, user_lang=self.user_lang
+                    )
+                    out = translate(
+                        out,
+                        self.conf,
+                        self.locales,
+                        lang=lang,
+                        user_lang=self.user_lang,
+                    )
                     self.wfile.write(json.dumps(out).encode())
             case "version":
                 self.send_json({"version": 5})
             case "sections":
-                self.send_json(translate(SECTIONS, self.conf, self.locales, lang=lang, user_lang=self.user_lang))
+                self.send_json(
+                    translate(
+                        SECTIONS,
+                        self.conf,
+                        self.locales,
+                        lang=lang,
+                        user_lang=self.user_lang,
+                    )
+                )
             case other:
                 self.send_not_found(f"Command '{other}' not supported.")
 

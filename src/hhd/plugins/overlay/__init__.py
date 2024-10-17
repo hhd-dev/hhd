@@ -5,15 +5,42 @@ from threading import Thread
 from typing import Sequence
 
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
+from hhd.utils import expanduser
 
 from ..plugin import open_steam_kbd
 from .const import get_system_info, get_touchscreen_quirk
 from .controllers import QamHandlerKeyboard, device_shortcut_loop
+from .steam import get_games
 from .x11 import is_gamescope_running
 
 logger = logging.getLogger(__name__)
 
 SHORTCUT_RELOAD_DELAY = 2
+
+
+def load_steam_games(ctx: Context, emit, burnt_ids: set):
+    # Defer loading until we enter a game
+    info = emit.info
+    curr = info.get("game.id", None)
+
+    # If the game changes and we do not have data for it do a reload
+    if curr in burnt_ids:
+        return
+
+    if "games" in info and curr in info["games"]:
+        return
+
+    # Maybe a game is missing from appcache, if it is burn it
+    # so we dont try to load the library again
+    burnt_ids.add(curr)
+
+    try:
+        # Load the games
+        games, images = get_games(expanduser("~/.local/share/Steam/appcache/", ctx))
+        logger.info(f"Loaded info for {len(games)} steam games.")
+        return images
+    except Exception as e:
+        logger.warning(f"Could not load steam games:\n{e}")
 
 
 class OverlayPlugin(HHDPlugin):
@@ -34,6 +61,10 @@ class OverlayPlugin(HHDPlugin):
         self.qam_handler = None
         self.qam_handler_fallback = None
         self.touch_gestures = True
+        self.ctx = None
+
+        self.images = None
+        self.burnt_ids = set()
 
     def open(
         self,
@@ -46,6 +77,7 @@ class OverlayPlugin(HHDPlugin):
             from .x11 import QamHandlerGamescope
 
             self.ovf = OverlayService(context, emit)
+            self.ctx = context
             self.has_executable = bool(find_overlay_exe(context))
 
             if bool(os.environ.get("HHD_QAM_KEYBOARD", None)):
@@ -103,6 +135,11 @@ class OverlayPlugin(HHDPlugin):
         # Preemptively launch overlay
         if self.enabled and self.ovf:
             self.ovf.launch_overlay()
+            # Load game information
+            if self.ctx:
+                images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
+                if images:
+                    self.emit.set_images(images)
 
         self.touch_gestures = not bool(
             conf.get("controllers.touchscreen.gestures_disable", False)

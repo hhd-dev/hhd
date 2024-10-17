@@ -86,10 +86,19 @@ class Emitter(ControllerEmitter):
         if info is None:
             info = Config()
         self.info = info
+        self.images = {}
         super().__init__(ctx)
 
     def __call__(self, event: Event | Sequence[Event]) -> None:
         pass
+
+    def set_images(self, images: dict[int, dict[str, str]]) -> None:
+        with self.intercept_lock:
+            self.images = images
+
+    def get_image(self, game: int, icon: str) -> str | None:
+        with self.intercept_lock:
+            return self.images.get(game, {}).get(icon, None)
 
 
 class HHDPlugin:
