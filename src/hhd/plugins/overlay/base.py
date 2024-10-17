@@ -12,27 +12,24 @@ from Xlib import display
 from hhd.plugins import Context, Emitter
 
 from .controllers import OverlayWriter
-from .overlay import (
-    find_overlay_exe,
-    inject_overlay,
-    launch_overlay_de,
-)
+from .overlay import find_overlay_exe, inject_overlay, launch_overlay_de
 from .x11 import (
+    STEAM_ID,
+    does_steam_exist,
+    find_focusable_windows,
     find_hhd,
     find_steam,
-    make_hhd_not_focusable,
     find_x11_auth,
     find_x11_display,
-    does_steam_exist,
     get_gamescope_displays,
     get_overlay_display,
     hide_hhd,
+    make_hhd_not_focusable,
     prepare_hhd,
     process_events,
     register_changes,
     show_hhd,
     update_steam_values,
-    STEAM_ID,
 )
 
 logger = logging.getLogger(__name__)
@@ -110,6 +107,7 @@ def loop_manage_overlay(
     emit: Emitter,
     writer: OverlayWriter,
     should_exit: TEvent,
+    requested: bool,
 ):
     try:
         status: Status = "closed"
@@ -127,7 +125,7 @@ def loop_manage_overlay(
         curr = start
         while (
             curr - start < STARTUP_MAX_DELAY
-            and not find_hhd(disp)
+            and (not find_hhd(disp) or not find_focusable_windows(disp))
             and not should_exit.is_set()
         ):
             time.sleep(GUARD_CHECK)
@@ -297,7 +295,7 @@ class OverlayService:
         self.should_exit = TEvent()
         self.t = Thread(
             target=loop_manage_overlay,
-            args=(disp, self.proc, self.emit, self.writer, self.should_exit),
+            args=(disp, self.proc, self.emit, self.writer, self.should_exit, requested),
         )
         self.t.start()
 

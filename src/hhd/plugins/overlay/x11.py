@@ -430,6 +430,14 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
     display.sync()
 
 
+def find_focusable_windows(display):
+    stat_focusable = display.get_atom("GAMESCOPE_FOCUSABLE_APPS")
+    focusable = display.screen().root.get_property(
+        stat_focusable, Xatom.CARDINAL, 0, 50
+    )
+    return focusable.value if focusable and focusable.value else []
+
+
 def make_hhd_not_focusable(display):
     stat_focused = display.get_atom("GAMESCOPECTRL_BASELAYER_APPID")
     stat_focusable = display.get_atom("GAMESCOPE_FOCUSABLE_APPS")
