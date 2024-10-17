@@ -30,7 +30,7 @@ def load_steam_games(ctx: Context, emit, burnt_ids: set):
     if curr in burnt_ids:
         return None, None
 
-    if "games" in info and curr in info["games"]:
+    if "games" in info and curr in info.get("games", {}):
         return None, None
 
     # Maybe a game is missing from appcache, if it is burn it
@@ -41,6 +41,12 @@ def load_steam_games(ctx: Context, emit, burnt_ids: set):
         # Load the games
         games, images = get_games(expanduser("~/.local/share/Steam/appcache/", ctx))
         logger.info(f"Loaded info for {len(games)} steam games.")
+
+        # Add correct game data after refreshing the database (e.g., the user
+        # downloaded a new game)
+        if curr and curr in games:
+            emit.info["game.data"] = games[curr]
+
         return games, images
     except Exception as e:
         logger.warning(f"Could not load steam games:\n{e}")
