@@ -47,7 +47,7 @@ msgstr "设置"
 #. Section Name for: shortcuts
 #, fuzzy
 msgid "Shortcuts"
-msgstr "短按动作"
+msgstr "快捷"
 
 #. Section Name for: bazzite
 msgid "Bazzite"
@@ -115,18 +115,18 @@ msgstr ""
 #. Option: vapor
 #, fuzzy
 msgid "Vapor"
-msgstr "API 端口"
+msgstr ""
 
 #. Setting: Reset Settings
 #. Field: title
 #, fuzzy
 msgid "Reset Settings"
-msgstr "核心设置"
+msgstr "重置"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr ""
+msgstr "将所有 Handheld Daemon 设置重置为默认值"
 
 #. Setting: It is no longer possible to update Decky from here. If you see
 #. this, update the Decky plugin manually.
@@ -309,7 +309,7 @@ msgstr "模拟不同类型的控制器, 以融合 GPD 设备的特性"
 #. Setting: L4/R4 Mapping
 #. Field: title
 msgid "L4/R4 Mapping"
-msgstr ""
+msgstr "L4/R4 映射"
 
 #. Setting: L4/R4 Mapping
 #. Option: disabled
@@ -336,7 +336,7 @@ msgstr "禁用"
 #. Setting: L4/R4 Mapping
 #. Option: generic
 msgid "Paddles"
-msgstr ""
+msgstr "背键"
 
 #. Setting: L4/R4 Mapping
 #. Option: l4
@@ -391,7 +391,7 @@ msgstr "右控制器"
 #. Field: title
 #, fuzzy
 msgid "Both Controllers"
-msgstr "左控制器"
+msgstr "左右控制器"
 
 #. Setting: Both Controllers
 #. Field: hint
@@ -404,12 +404,12 @@ msgstr ""
 #. Field: title
 #, fuzzy
 msgid "Swap Legion with Menu/View"
-msgstr "交换 Start/Select 按钮"
+msgstr "交换 Legion Menu/View 按钮"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
 msgid "M2 As Xbox Share/Dualsense Mic Mute"
-msgstr ""
+msgstr "M2 映射为 Xbox Share/Dualsense 麦克风静音按钮"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: hint
@@ -417,13 +417,13 @@ msgstr ""
 msgid ""
 "Maps the M2 to the mute button on Dualsense and the share button on the "
 "Xbox Elite controller."
-msgstr "将 M2 映射为 Dualsense 的静音按钮和 Xbox 的 HAPPY_TRIGGER_20"
+msgstr "将 M2 映射为 Dualsense 的静音按钮和 Xbox Elite 控制器的共享按钮"
 
 #. Setting: Hold View to Reboot
 #. Field: title
 #, fuzzy
 msgid "Hold View to Reboot"
-msgstr "按住 Select 键重启"
+msgstr "按住 View 键重启"
 
 #. Setting: Fix touchpad hold [BROKEN]
 #. Field: title
@@ -461,22 +461,22 @@ msgstr "香橙派 Neo"
 #. Field: title
 #, fuzzy
 msgid "OneXPlayer Controller"
-msgstr "左控制器"
+msgstr "OneXPlayer 控制器"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Field: title
 msgid "Keyboard and Turbo buttons are:"
-msgstr ""
+msgstr "键盘和 Turbo 按钮用作:"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: oem
 msgid "Keyboard, Combo"
-msgstr ""
+msgstr "键盘, Combo"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: separate
 msgid "Steam Menu, HHD"
-msgstr ""
+msgstr "Steam 菜单, HHD"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo_hhd
@@ -491,23 +491,23 @@ msgstr ""
 #. Setting: Swap View/Menu and Xbox/Kbd
 #. Field: title
 msgid "Swap View/Menu and Xbox/Kbd"
-msgstr ""
+msgstr "交换 View/Menu 和 Xbox/Kbd"
 
 #. Setting: Holding Turbo Reboots
 #. Field: title
 #, fuzzy
 msgid "Holding Turbo Reboots"
-msgstr "按住 Select 键重启"
+msgstr "按住 Turbo 键重启"
 
 #. Setting: Reverse Volume Buttons
 #. Field: title
 msgid "Reverse Volume Buttons"
-msgstr ""
+msgstr "反转音量按钮"
 
 #. Setting: Reverse Volume Buttons
 #. Field: hint
 msgid "Reverse the volume buttons of the X1 style devices to match other tablets."
-msgstr ""
+msgstr "反转 X1 设备的音量按钮, 以匹配其他平板设备"
 
 #. Setting: Ally Controller
 #. Field: title
@@ -528,12 +528,12 @@ msgstr "模拟不同类型的控制器, 以融合 ROG 设备的特性"
 #. Field: title
 #, fuzzy
 msgid "Swap ROG and Menu/View"
-msgstr "交换 ROG Start/Select 按钮"
+msgstr "交换 ROG Menu/View 按钮"
 
 #. Setting: Swap ROG and Menu/View
 #. Field: hint
 msgid "Swaps the Armory Crate and Command center buttons with start and select."
-msgstr "交换 Armory Crate/Command center 与 Start/Select 按钮"
+msgstr "交换 Armory Crate/Command center 与 Menu/View 按钮"
 
 #. Setting: Motion Hz
 #. Field: hint
@@ -548,12 +548,12 @@ msgstr ""
 #. Setting: RGB During Boot
 #. Field: title
 msgid "RGB During Boot"
-msgstr ""
+msgstr "RGB 启动时工作"
 
 #. Setting: RGB During Charging Asleep
 #. Field: title
 msgid "RGB During Charging Asleep"
-msgstr ""
+msgstr "RGB 充电时休眠"
 
 #. Setting: Motion Axis
 #. Field: title
@@ -641,32 +641,32 @@ msgstr "Z 轴反转"
 #. Setting: Deadzones & Vibration
 #. Field: title
 msgid "Deadzones & Vibration"
-msgstr ""
+msgstr "死区和震动"
 
 #. Setting: Deadzones & Vibration
 #. Field: hint
 msgid "Configure joystick and trigger deadzones, vibration intensity."
-msgstr ""
+msgstr "配置摇杆和扳机死区, 震动强度"
 
 #. Setting: Default
 #. Field: hint
 msgid "Uses reasonable values based on hardware."
-msgstr ""
+msgstr "根据硬件使用合理的值"
 
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "手动"
 
 #. Setting: Manual
 #. Field: hint
 msgid "Allows for manual configuration of deadzones and vibration intensity."
-msgstr ""
+msgstr "允许手动配置死区和震动强度"
 
 #. Setting: Vibration Intensity
 #. Field: title
 msgid "Vibration Intensity"
-msgstr ""
+msgstr "震动强度"
 
 #. Setting: Vibration Intensity
 #. Field: hint
@@ -674,11 +674,12 @@ msgid ""
 "Intensity of the vibration. The higher the value, the stronger the "
 "vibration."
 msgstr ""
+"震动强度。值越高, 震动越强"
 
 #. Setting: Left Stick Minimum
 #. Field: title
 msgid "Left Stick Minimum"
-msgstr ""
+msgstr "左摇杆最小值"
 
 #. Setting: Left Stick Minimum
 #. Field: hint
@@ -689,11 +690,12 @@ msgid ""
 "Deadzone for the joystick. The higher the value, the more the joystick "
 "needs to be moved before registering."
 msgstr ""
+"摇杆死区。值越高, 摇杆需要移动的距离越大才能激活"
 
 #. Setting: Left Stick Maximum
 #. Field: title
 msgid "Left Stick Maximum"
-msgstr ""
+msgstr "左摇杆最大值"
 
 #. Setting: Left Stick Maximum
 #. Field: hint
@@ -704,54 +706,55 @@ msgid ""
 "Maximum value for joystick. The higher the value, the more the joystick "
 "needs to be moved before reaching maximum."
 msgstr ""
+"摇杆最大值。值越高, 摇杆需要移动的距离越大才能达到最大值"
 
 #. Setting: Right Stick Minimum
 #. Field: title
 #, fuzzy
 msgid "Right Stick Minimum"
-msgstr "点击右侧"
+msgstr "右摇杆最小值"
 
 #. Setting: Right Stick Maximum
 #. Field: title
 #, fuzzy
 msgid "Right Stick Maximum"
-msgstr "点击右侧"
+msgstr "右摇杆最大值"
 
 #. Setting: Left Trigger Minimum
 #. Field: title
 msgid "Left Trigger Minimum"
-msgstr ""
+msgstr "左扳机最小值"
 
 #. Setting: Left Trigger Maximum
 #. Field: title
 msgid "Left Trigger Maximum"
-msgstr ""
+msgstr "左扳机最大值"
 
 #. Setting: Right Trigger Minimum
 #. Field: title
 msgid "Right Trigger Minimum"
-msgstr ""
+msgstr "右扳机最小值"
 
 #. Setting: Right Trigger Maximum
 #. Field: title
 msgid "Right Trigger Maximum"
-msgstr ""
+msgstr "右扳机最大值"
 
 #. Setting: Reset to Default
 #. Field: title
 #, fuzzy
 msgid "Reset to Default"
-msgstr "默认"
+msgstr "重置"
 
 #. Setting: Reset to Default
 #. Field: hint
 msgid "Reset all values to default."
-msgstr ""
+msgstr "将所有值重置为默认"
 
 #. Setting: Hidden
 #. Field: title
 msgid "Hidden"
-msgstr ""
+msgstr "隐藏"
 
 #. Setting: Hidden
 #. Field: hint
@@ -759,11 +762,12 @@ msgid ""
 "Disables the controller. Handheld Daemon overlay will still work in "
 "gamemode."
 msgstr ""
+"禁用控制器。Handheld Daemon 叠加仍然可以在游戏模式下工作"
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
 msgid "Extra buttons as Keyboard/Overlay"
-msgstr ""
+msgstr "额外按钮作为键盘/叠加快捷键"
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: hint
@@ -771,6 +775,7 @@ msgid ""
 "Makes the left paddle bring up a keyboard and the right paddle bring up "
 "the overlay."
 msgstr ""
+"左背键弹出键盘, 右背键弹出叠加层"
 
 #. Setting: Xbox
 #. Field: title
@@ -780,7 +785,7 @@ msgstr ""
 #. Setting: Extra buttons as
 #. Field: title
 msgid "Extra buttons as"
-msgstr ""
+msgstr "额外按钮作为"
 
 #. Setting: Extra buttons as
 #. Field: hint
@@ -788,21 +793,22 @@ msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be set for Steam Input."
 msgstr ""
+"更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为 Steam 输入"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
 msgid "Steam Input (Elite)"
-msgstr ""
+msgstr "Steam 输入 (Elite)"
 
 #. Setting: Extra buttons as
 #. Option: noob
 msgid "Keyboard/Overlay"
-msgstr ""
+msgstr "键盘/叠加层"
 
 #. Setting: Nintendo QAM Fix
 #. Field: title
 msgid "Nintendo QAM Fix"
-msgstr ""
+msgstr "任天堂 QAM 修复"
 
 #. Setting: Xbox Elite
 #. Field: title
@@ -813,17 +819,17 @@ msgstr ""
 #. Field: title
 #, fuzzy
 msgid "Steam Controller"
-msgstr "左控制器"
+msgstr "Steam 控制器"
 
 #. Setting: Steam Controller
 #. Field: hint
 msgid "Allows for gyro, paddles, and has a proper QAM button."
-msgstr ""
+msgstr "可用陀螺仪、背键, 并且有一个合适的 QAM 按钮"
 
 #. Setting: Invert Roll Axis
 #. Field: title
 msgid "Invert Roll Axis"
-msgstr "反转滚动轴 (Z轴)"
+msgstr "反转滚动轴"
 
 #. Setting: Invert Roll Axis
 #. Field: hint
@@ -848,11 +854,13 @@ msgid ""
 " button is Overlay. Or they can be left/right touchpad clicks. For the "
 "legion go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
+"更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为左/右触摸板模拟。"
+"对于 Legion Go, 顶部按钮是快捷键, 底部是触摸板模拟"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
 msgid "Steam Input (Edge)"
-msgstr ""
+msgstr "Steam 输入 (Edge)"
 
 #. Setting: Extra buttons as
 #. Option: touchpad
@@ -863,7 +871,7 @@ msgstr "触摸板模拟"
 #. Setting: Extra buttons as
 #. Option: both
 msgid "Shortcuts + Touchpad Clicks"
-msgstr ""
+msgstr "快捷键 + 触摸板模拟"
 
 #. Setting: LED Support
 #. Field: title
@@ -938,7 +946,7 @@ msgstr "触摸板模拟"
 msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
-msgstr "模拟一个触摸板。如果当前模拟控制器本身支持触摸板 (例如 Dualsense), 则将其模拟成其自带触摸板, 否则会模拟成一个独立的虚拟触摸板设备"
+msgstr "模拟一个触摸板。如果当前模拟控制器本身支持触摸板 (例如 Dualsense), 则将映射成目标设备自带触摸板, 否则会模拟成一个独立的虚拟触摸板设备"
 
 #. Setting: Disabled
 #. Field: hint
@@ -1067,6 +1075,7 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
+"将短触摸 (小于 0.2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; 请在桌面触摸板设置中启用\"轻触点击\")"
 
 #. Setting: Hold Action
 #. Field: hint
@@ -1076,6 +1085,7 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
+"将长触摸 (大于 2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; 请在桌面触摸板设置中启用\"轻触点击\")"
 
 #. Setting: System
 #. Field: hint
@@ -1095,13 +1105,14 @@ msgid ""
 "Sets the brightness level of a display. Only one display is supported and"
 " it is the one that was read."
 msgstr ""
+"设置显示器的亮度级别。仅支持一个显示器, 并且是读取的显示器"
 
 #. Setting: Shortcut Support + Side Button double/triple press (Requires
 #. Restart)
 #. Field: title
 #, fuzzy
 msgid "Shortcut Support + Side Button double/triple press (Requires Restart)"
-msgstr "使用 QAM 双击/三击打开覆盖层 (需要重启)"
+msgstr "快捷键支持 + 侧面按钮双击/三击 (需要重启)"
 
 #. Setting: All Controllers
 #. Field: title
@@ -1112,7 +1123,7 @@ msgstr "Ally 控制器"
 #. Setting: Xbox or View + B (Press)
 #. Field: title
 msgid "Xbox or View + B (Press)"
-msgstr ""
+msgstr "Xbox 或 View + B"
 
 #. Setting: Xbox or View + B (Press)
 #. Option: keyboard
@@ -1128,7 +1139,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Keyboard"
-msgstr ""
+msgstr "Steam 键盘"
 
 #. Setting: Xbox or View + B (Press)
 #. Option: steam_qam
@@ -1144,7 +1155,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Side Menu"
-msgstr ""
+msgstr "Steam 侧边菜单"
 
 #. Setting: Xbox or View + B (Press)
 #. Option: steam_expanded
@@ -1160,7 +1171,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Overlay"
-msgstr ""
+msgstr "Steam 叠加层"
 
 #. Setting: Xbox or View + B (Press)
 #. Option: hhd_qam
@@ -1176,7 +1187,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "HHD Side Menu"
-msgstr ""
+msgstr "HHD 侧边菜单"
 
 #. Setting: Xbox or View + B (Press)
 #. Option: hhd_expanded
@@ -1192,7 +1203,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "HHD Overlay"
-msgstr ""
+msgstr "HHD 叠加层"
 
 #. Setting: Xbox or View + Y
 #. Field: title
@@ -1203,87 +1214,87 @@ msgstr ""
 #. Option: disconnect
 #, fuzzy
 msgid "Disconnect Controller"
-msgstr "左控制器"
+msgstr "断开控制器连接"
 
 #. Setting: Touchscreen
 #. Field: title
 msgid "Touchscreen"
-msgstr ""
+msgstr "触摸屏"
 
 #. Setting: ↑ Swipe Up
 #. Field: title
 msgid "↑ Swipe Up"
-msgstr ""
+msgstr "↑ 向上滑动"
 
 #. Setting: ← Swipe Right Side (Top)
 #. Field: title
 msgid "← Swipe Right Side (Top)"
-msgstr ""
+msgstr "← 右侧边滑动 (顶部)"
 
 #. Setting: ← Swipe Right Side (Bottom)
 #. Field: title
 msgid "← Swipe Right Side (Bottom)"
-msgstr ""
+msgstr "← 右侧边滑动 (底部)"
 
 #. Setting: → Swipe Left Side (Top)
 #. Field: title
 msgid "→ Swipe Left Side (Top)"
-msgstr ""
+msgstr "→ 左侧边滑动 (顶部)"
 
 #. Setting: → Swipe Left Side (Bottom)
 #. Field: title
 msgid "→ Swipe Left Side (Bottom)"
-msgstr ""
+msgstr "→ 左侧边滑动 (底部)"
 
 #. Setting: ↓ Swipe Down
 #. Field: title
 msgid "↓ Swipe Down"
-msgstr ""
+msgstr "↓ 向下滑动"
 
 #. Setting: Orientation Correction
 #. Field: title
 msgid "Orientation Correction"
-msgstr ""
+msgstr "方向校正"
 
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr ""
+msgstr "自动"
 
 #. Setting: Device
 #. Field: title
 msgid "Device"
-msgstr ""
+msgstr "设备"
 
 #. Setting: Portrait
 #. Field: title
 msgid "Portrait"
-msgstr ""
+msgstr "纵向"
 
 #. Setting: Flip Left-Right
 #. Field: title
 msgid "Flip Left-Right"
-msgstr ""
+msgstr "左右翻转"
 
 #. Setting: Flip Top-Bottom
 #. Field: title
 msgid "Flip Top-Bottom"
-msgstr ""
+msgstr "上下翻转"
 
 #. Setting: Keyboard (Gaming Only)
 #. Field: title
 msgid "Keyboard (Gaming Only)"
-msgstr ""
+msgstr "键盘 (仅游戏)"
 
 #. Setting: Start (Meta) Press
 #. Field: title
 msgid "Start (Meta) Press"
-msgstr ""
+msgstr "Start (Meta) 按下"
 
 #. Setting: Start (Meta) Hold
 #. Field: title
 msgid "Start (Meta) Hold"
-msgstr ""
+msgstr "Start (Meta) 按住"
 
 #. Setting: Ctrl + 3
 #. Field: title
@@ -1298,12 +1309,12 @@ msgstr ""
 #. Setting: Disable Touchscreen (Until Restart)
 #. Field: title
 msgid "Disable Touchscreen (Until Restart)"
-msgstr ""
+msgstr "禁用触摸屏 (直到重启)"
 
 #. Setting: Disable Touch Gestures (Until Restart)
 #. Field: title
 msgid "Disable Touch Gestures (Until Restart)"
-msgstr ""
+msgstr "禁用触摸手势 (直到重启)"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title
@@ -1320,13 +1331,13 @@ msgstr "启用 Steam 电源按钮处理 (负责睡眠动画和电源按钮菜单
 #. Setting: Hue
 #. Field: title
 msgid "Hue"
-msgstr ""
+msgstr "色调"
 
 #. Setting: Saturation
 #. Field: title
 #, fuzzy
 msgid "Saturation"
-msgstr "短按动作"
+msgstr "饱和度"
 
 #. Setting: Brightness
 #. Option: low
@@ -1349,7 +1360,7 @@ msgstr "高"
 #. Setting: Stick Style
 #. Field: title
 msgid "Stick Style"
-msgstr ""
+msgstr "摇杆样式"
 
 #. Setting: Stick Style
 #. Option: monster_woke
@@ -1404,7 +1415,7 @@ msgstr ""
 #. Setting: Secondary
 #. Field: title
 msgid "Secondary"
-msgstr ""
+msgstr "次要"
 
 #. Setting: Enable Secondary
 #. Field: title
@@ -1415,13 +1426,13 @@ msgstr "启用 API"
 #. Setting: Speed
 #. Field: title
 msgid "Speed"
-msgstr ""
+msgstr "速度"
 
 #. Setting: Direction
 #. Field: title
 #, fuzzy
 msgid "Direction"
-msgstr "长按动作"
+msgstr "方向"
 
 #. Setting: Off
 #. Field: title
@@ -1431,58 +1442,58 @@ msgstr "关闭"
 #. Setting: Off
 #. Field: hint
 msgid "Turns the LEDs off."
-msgstr ""
+msgstr "关闭 LED 灯"
 
 #. Setting: Solid
 #. Field: title
 msgid "Solid"
-msgstr ""
+msgstr "固定"
 
 #. Setting: Solid
 #. Field: hint
 msgid "Maintains the LEDs at a solid color."
-msgstr ""
+msgstr "保持 LED 灯为固定颜色"
 
 #. Setting: Pulse
 #. Field: title
 msgid "Pulse"
-msgstr ""
+msgstr "呼吸"
 
 #. Setting: Pulse
 #. Field: hint
 msgid "Slowly pulses the LEDs as a prespecified color."
-msgstr ""
+msgstr "LED 按照预设颜色缓慢呼吸"
 
 #. Setting: Rainbow
 #. Field: title
 msgid "Rainbow"
-msgstr ""
+msgstr "彩虹"
 
 #. Setting: Rainbow
 #. Field: hint
 msgid "Cycles through the different colors."
-msgstr ""
+msgstr "循环显示不同颜色"
 
 #. Setting: Spiral
 #. Field: title
 #, fuzzy
 msgid "Spiral"
-msgstr "虚拟触摸板"
+msgstr "螺旋"
 
 #. Setting: Spiral
 #. Field: hint
 msgid "Creates an RGB spiral around the stick."
-msgstr ""
+msgstr "在摇杆周围创建一个 RGB 螺旋"
 
 #. Setting: Duality
 #. Field: title
 msgid "Duality"
-msgstr ""
+msgstr "双色"
 
 #. Setting: Duality
 #. Field: hint
 msgid "Alternates between two colors."
-msgstr ""
+msgstr "在两种颜色之间交替"
 
 #. Setting: OneXPlayer
 #. Field: title
@@ -1493,24 +1504,24 @@ msgstr ""
 #. Field: title
 #, fuzzy
 msgid "RGB Settings"
-msgstr "设置"
+msgstr "RGB 设置"
 
 #. Setting: RGB Mode
 #. Field: title
 msgid "RGB Mode"
-msgstr ""
+msgstr "RGB 模式"
 
 #. Setting: Controller RGB
 #. Field: title
 #, fuzzy
 msgid "Controller RGB"
-msgstr "控制器"
+msgstr "控制器 RGB"
 
 #. Setting: Enable RGB support.
 #. Field: title
 #, fuzzy
 msgid "Enable RGB support."
-msgstr "LED 支持"
+msgstr "启用 RGB 支持"
 
 #~ msgid "About"
 #~ msgstr "关于"
