@@ -1118,7 +1118,7 @@ msgstr "快捷键支持 + 侧面按钮双击/三击 (需要重启)"
 #. Field: title
 #, fuzzy
 msgid "All Controllers"
-msgstr "Ally 控制器"
+msgstr "所有控制器"
 
 #. Setting: Xbox or View + B (Press)
 #. Field: title
