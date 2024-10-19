@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 SHORTCUT_RELOAD_DELAY = 2
 
+FORCE_GAME = os.environ.get("HHD_FORCE_GAME_ID", None)
+
 
 def load_steam_games(ctx: Context, emit, burnt_ids: set):
     # Defer loading until we enter a game
@@ -149,6 +151,10 @@ class OverlayPlugin(HHDPlugin):
                 games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
                 if games and images:
                     self.emit.set_gamedata(games, images)
+            if FORCE_GAME:
+                self.emit.info["game.id"] = FORCE_GAME
+                self.emit.info["game.is_steam"] = False
+                self.emit.info["game.data"] = self.emit.get_gamedata(FORCE_GAME)
             if self.ovf:
                 self.ovf.launch_overlay()
 
