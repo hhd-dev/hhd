@@ -148,6 +148,7 @@ CONFS = {
         # "hrtimer": True, Uses sensor fusion garbage? From intel? Will need custom work
         "extra_buttons": "none",
         "btn_mapping": MSI_CLAW_MAPPINGS,
+        "claw": True,
     },
 }
 
