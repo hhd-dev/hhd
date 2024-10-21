@@ -87,7 +87,7 @@ def plugin_run(
         if not found_device:
             if first:
                 logger.info("Controller not found. Waiting...")
-                if claw_init:
+                if claw_init and dconf.get("claw", False):
                     try:
                         init_claw()
                     except Exception as e:
