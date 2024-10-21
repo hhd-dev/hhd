@@ -87,14 +87,6 @@ def plugin_run(
         if not found_device:
             if first:
                 logger.info("Controller not found. Waiting...")
-                if claw_init and dconf.get("claw", False):
-                    try:
-                        init_claw()
-                    except Exception as e:
-                        logger.error(
-                            f"Failed initializing claw controller with error:\n{e}"
-                        )
-                    claw_init = False
             time.sleep(FIND_DELAY)
             first = False
             continue
@@ -116,6 +108,14 @@ def plugin_run(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             first = True
+            if claw_init and dconf.get("claw", False):
+                try:
+                    init_claw()
+                except Exception as e2:
+                    logger.error(
+                        f"Failed initializing claw controller with error:\n{e2}"
+                    )
+                claw_init = False
             # Raise exception
             if DEBUG_MODE:
                 raise e
