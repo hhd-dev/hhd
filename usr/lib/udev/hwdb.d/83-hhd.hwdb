@@ -23,9 +23,6 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
 # From systemd / by ChimeraOS team
 # Systemd will have it by default in the future. Until then, have it here.
 # From then on, have it as a reference.
-# The convention is for F15 to be left and F16 to be right, as was used for Ayaneo
-# and OrangePi (From ChimeraOS themselves no less). 
-# ChimeraOS breaks this convention here.
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClawA1M:*
   KEYBOARD_KEY_b9=f15     # Right Face Button
   KEYBOARD_KEY_ba=f16     # Left Face Button

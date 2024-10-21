@@ -6,6 +6,7 @@ from threading import Event as TEvent
 
 from hhd.controller import DEBUG_MODE, Multiplexer
 from hhd.controller.lib.hide import unhide_all
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
@@ -26,13 +27,29 @@ logger = logging.getLogger(__name__)
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
-MSI_CLAW_VID = 0x0db0
+MSI_CLAW_VID = 0x0DB0
 MSI_CLAW_PID = 0x1901
 
 KBD_VID = 0x0001
 KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
+
+
+def init_claw():
+    # Wait a bit to get the controller to appear during boot
+    logger.info("Waiting 7s for Claw controller.")
+    time.sleep(7)
+    logger.info("Initializing Claw controller.")
+    d_vend = GenericGamepadHidraw(
+        vid=[MSI_CLAW_VID],
+        pid=[MSI_CLAW_PID],
+        usage_page=[0xFFA0],
+        usage=[0x0001],
+        required=True,
+    )
+    assert d_vend.dev
+    d_vend.dev.write([0x0f, 0x00, 0x00, 0x3c, 0x24, 0x01, 0x00, 0x00])
 
 
 def plugin_run(
@@ -44,6 +61,7 @@ def plugin_run(
     dconf: dict,
 ):
     first = True
+    claw_init = True
     first_disabled = True
     init = time.perf_counter()
     repeated_fail = False
@@ -69,6 +87,14 @@ def plugin_run(
         if not found_device:
             if first:
                 logger.info("Controller not found. Waiting...")
+                if claw_init:
+                    try:
+                        init_claw()
+                    except Exception as e:
+                        logger.error(
+                            f"Failed initializing claw controller with error:\n{e}"
+                        )
+                    claw_init = False
             time.sleep(FIND_DELAY)
             first = False
             continue
@@ -98,6 +124,7 @@ def plugin_run(
     # Unhide all devices before exiting and close keyboard cache
     UInputDevice.close_volume_cached()
     unhide_all()
+
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter

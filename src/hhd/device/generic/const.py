@@ -28,8 +28,8 @@ AMBERNIC_MAPPINGS: dict[int, str] = {
 }
 
 MSI_CLAW_MAPPINGS = {
-    B("KEY_F15"): "share",
-    B("KEY_F16"): "mode",
+    B("KEY_F15"): "mode",
+    B("KEY_F16"): "share",
 }
 
 AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
