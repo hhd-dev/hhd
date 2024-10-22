@@ -197,9 +197,9 @@ def controller_loop(
                 usage=[0x0001],
                 required=True,
             )
-            assert d_vend.dev
             try:
                 d_vend.open()
+                assert d_vend.dev
                 d_vend.dev.write([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00, 0x00])
             finally:
                 d_vend.close(True)
