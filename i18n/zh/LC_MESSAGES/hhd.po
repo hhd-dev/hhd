@@ -45,7 +45,6 @@ msgid "Settings"
 msgstr "设置"
 
 #. Section Name for: shortcuts
-#, fuzzy
 msgid "Shortcuts"
 msgstr "快捷"
 
@@ -113,15 +112,13 @@ msgstr ""
 
 #. Setting: Theme
 #. Option: vapor
-#, fuzzy
 msgid "Vapor"
 msgstr ""
 
 #. Setting: Reset Settings
 #. Field: title
-#, fuzzy
 msgid "Reset Settings"
-msgstr "重置"
+msgstr "重置设置"
 
 #. Setting: Reset Settings
 #. Field: hint
@@ -389,7 +386,6 @@ msgstr "右控制器"
 
 #. Setting: Both Controllers
 #. Field: title
-#, fuzzy
 msgid "Both Controllers"
 msgstr "左右控制器"
 
@@ -402,7 +398,6 @@ msgstr ""
 
 #. Setting: Swap Legion with Menu/View
 #. Field: title
-#, fuzzy
 msgid "Swap Legion with Menu/View"
 msgstr "交换 Legion Menu/View 按钮"
 
@@ -413,7 +408,6 @@ msgstr "M2 映射为 Xbox Share/Dualsense 麦克风静音按钮"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: hint
-#, fuzzy
 msgid ""
 "Maps the M2 to the mute button on Dualsense and the share button on the "
 "Xbox Elite controller."
@@ -421,7 +415,6 @@ msgstr "将 M2 映射为 Dualsense 的静音按钮和 Xbox Elite 控制器的共
 
 #. Setting: Hold View to Reboot
 #. Field: title
-#, fuzzy
 msgid "Hold View to Reboot"
 msgstr "按住 View 键重启"
 
@@ -459,7 +452,6 @@ msgstr "香橙派 Neo"
 
 #. Setting: OneXPlayer Controller
 #. Field: title
-#, fuzzy
 msgid "OneXPlayer Controller"
 msgstr "OneXPlayer 控制器"
 
@@ -495,7 +487,6 @@ msgstr "交换 View/Menu 和 Xbox/Kbd"
 
 #. Setting: Holding Turbo Reboots
 #. Field: title
-#, fuzzy
 msgid "Holding Turbo Reboots"
 msgstr "按住 Turbo 键重启"
 
@@ -526,7 +517,6 @@ msgstr "模拟不同类型的控制器, 以融合 ROG 设备的特性"
 
 #. Setting: Swap ROG and Menu/View
 #. Field: title
-#, fuzzy
 msgid "Swap ROG and Menu/View"
 msgstr "交换 ROG Menu/View 按钮"
 
@@ -710,13 +700,11 @@ msgstr ""
 
 #. Setting: Right Stick Minimum
 #. Field: title
-#, fuzzy
 msgid "Right Stick Minimum"
 msgstr "右摇杆最小值"
 
 #. Setting: Right Stick Maximum
 #. Field: title
-#, fuzzy
 msgid "Right Stick Maximum"
 msgstr "右摇杆最大值"
 
@@ -742,9 +730,8 @@ msgstr "右扳机最大值"
 
 #. Setting: Reset to Default
 #. Field: title
-#, fuzzy
 msgid "Reset to Default"
-msgstr "重置"
+msgstr "重置为默认"
 
 #. Setting: Reset to Default
 #. Field: hint
@@ -817,7 +804,6 @@ msgstr ""
 
 #. Setting: Steam Controller
 #. Field: title
-#, fuzzy
 msgid "Steam Controller"
 msgstr "Steam 控制器"
 
@@ -833,7 +819,6 @@ msgstr "反转滚动轴"
 
 #. Setting: Invert Roll Axis
 #. Field: hint
-#, fuzzy
 msgid ""
 "Inverts the roll (Z) axis compared to a real Horipad controller. Useful "
 "for Steam Input, since you want it to be inverted to look left to right, "
@@ -864,9 +849,8 @@ msgstr "Steam 输入 (Edge)"
 
 #. Setting: Extra buttons as
 #. Option: touchpad
-#, fuzzy
 msgid "Touchpad Clicks"
-msgstr "触摸板模拟"
+msgstr "触摸板点击"
 
 #. Setting: Extra buttons as
 #. Option: both
@@ -1049,7 +1033,7 @@ msgstr ""
 #. Option: right
 #. Setting: Direction
 msgid "Right"
-msgstr "右对齐"
+msgstr "右"
 
 #. Setting: Location
 #. Option: center
@@ -1060,7 +1044,7 @@ msgstr "居中"
 #. Option: left
 #. Setting: Direction
 msgid "Left"
-msgstr "左对齐"
+msgstr "左"
 
 #. Setting: Location
 #. Option: stretch
@@ -1110,20 +1094,18 @@ msgstr ""
 #. Setting: Shortcut Support + Side Button double/triple press (Requires
 #. Restart)
 #. Field: title
-#, fuzzy
 msgid "Shortcut Support + Side Button double/triple press (Requires Restart)"
 msgstr "快捷键支持 + 侧面按钮双击/三击 (需要重启)"
 
 #. Setting: All Controllers
 #. Field: title
-#, fuzzy
 msgid "All Controllers"
 msgstr "所有控制器"
 
 #. Setting: Xbox or View + B (Press)
 #. Field: title
 msgid "Xbox or View + B (Press)"
-msgstr "Xbox 或 View + B"
+msgstr "Xbox 或 View + B (按下)"
 
 #. Setting: Xbox or View + B (Press)
 #. Option: keyboard
@@ -1208,11 +1190,10 @@ msgstr "HHD 叠加层"
 #. Setting: Xbox or View + Y
 #. Field: title
 msgid "Xbox or View + Y"
-msgstr ""
+msgstr "Xbox 或 View + Y"
 
 #. Setting: Xbox or View + Y
 #. Option: disconnect
-#, fuzzy
 msgid "Disconnect Controller"
 msgstr "断开控制器连接"
 
@@ -1284,7 +1265,7 @@ msgstr "上下翻转"
 #. Setting: Keyboard (Gaming Only)
 #. Field: title
 msgid "Keyboard (Gaming Only)"
-msgstr "键盘 (仅游戏)"
+msgstr "键盘 (仅游戏中)"
 
 #. Setting: Start (Meta) Press
 #. Field: title
@@ -1335,7 +1316,6 @@ msgstr "色调"
 
 #. Setting: Saturation
 #. Field: title
-#, fuzzy
 msgid "Saturation"
 msgstr "饱和度"
 
@@ -1419,9 +1399,8 @@ msgstr "次要"
 
 #. Setting: Enable Secondary
 #. Field: title
-#, fuzzy
 msgid "Enable Secondary"
-msgstr "启用 API"
+msgstr "启用次要"
 
 #. Setting: Speed
 #. Field: title
@@ -1430,7 +1409,6 @@ msgstr "速度"
 
 #. Setting: Direction
 #. Field: title
-#, fuzzy
 msgid "Direction"
 msgstr "方向"
 
@@ -1476,7 +1454,6 @@ msgstr "循环显示不同颜色"
 
 #. Setting: Spiral
 #. Field: title
-#, fuzzy
 msgid "Spiral"
 msgstr "螺旋"
 
@@ -1502,7 +1479,6 @@ msgstr ""
 
 #. Setting: RGB Settings
 #. Field: title
-#, fuzzy
 msgid "RGB Settings"
 msgstr "RGB 设置"
 
@@ -1513,13 +1489,11 @@ msgstr "RGB 模式"
 
 #. Setting: Controller RGB
 #. Field: title
-#, fuzzy
 msgid "Controller RGB"
 msgstr "控制器 RGB"
 
 #. Setting: Enable RGB support.
 #. Field: title
-#, fuzzy
 msgid "Enable RGB support."
 msgstr "启用 RGB 支持"
 

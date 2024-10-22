@@ -33,7 +33,6 @@ msgstr "启用 TDP 控制"
 
 #. Setting: Enable TDP Controls
 #. Field: hint
-#, fuzzy
 msgid ""
 "Enables TDP management by Handheld Daemon. While enabled, Handheld Daemon"
 " will set and maintain the TDP limits set on start-up and during other "
@@ -41,7 +40,7 @@ msgid ""
 msgstr ""
 "启用 Handheld Daemon 的 TDP 管理。启用后, Handheld Daemon 将在启动时和其他设备更改 (ac/dc) "
 "时设置和维护 TDP 限制。\n"
-"如果设备崩溃, TDP 设置将在下次启动时禁用。"
+"如果设备崩溃, TDP 设置将在下次启动时禁用"
 
 #. Setting: Error
 #. Field: title
@@ -51,7 +50,7 @@ msgstr "错误"
 #. Setting: Error
 #. Option: nowrite
 msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
-msgstr "无法写入 ACPI Call 文件。TDP 控制需要 ACPI Call。"
+msgstr "无法写入 ACPI Call 文件, TDP 控制需要 ACPI Call 支持"
 
 #. Setting: TDP Capabilities
 #. Field: title
@@ -121,15 +120,13 @@ msgstr ""
 
 #. Setting: Processor Settings
 #. Field: title
-#, fuzzy
 msgid "Processor Settings"
-msgstr "TDP 设置"
+msgstr "处理器设置"
 
 #. Setting: CPU Settings
 #. Field: title
-#, fuzzy
 msgid "CPU Settings"
-msgstr "TDP 设置"
+msgstr "CPU 设置"
 
 #. Setting: Auto
 #. Field: title
@@ -171,12 +168,12 @@ msgid ""
 "included."
 msgstr ""
 "设置 CPU 的能源性能偏好。在所有 TDP 下保持平衡以获得良好的性能。选项映射到 `power`, `balance_power`, "
-"`balance_performance`。不推荐使用性能选项，也不包括在内。"
+"`balance_performance`。不推荐使用性能选项, 也不包括在内。"
 
 #. Setting: CPU Power (EPP)
 #. Option: power
 msgid "Low"
-msgstr "节能"
+msgstr ""
 
 #. Setting: CPU Power (EPP)
 #. Option: balance_power
@@ -192,7 +189,7 @@ msgstr "均衡"
 #. Setting: CPU Power (EPP)
 #. Option: balance_performance
 msgid "High"
-msgstr "高性能"
+msgstr ""
 
 #. Setting: CPU Minimum Frequency
 #. Field: title
@@ -230,7 +227,7 @@ msgid ""
 "Enables or disables the CPU boost frequencies. Disabling lowers total "
 "consumption by 2W with  minimal performance impact."
 msgstr ""
-"启用或禁用 CPU boost 频率。禁用可以将总消耗降低 2W，对性能影响很小。"
+"启用或禁用 CPU boost 频率。禁用可以将总消耗降低 2W, 对性能影响很小。"
 
 #. Setting: CPU Boost
 #. Option: disabled
@@ -244,15 +241,13 @@ msgstr "禁用"
 #. Setting: CPU Boost
 #. Option: enabled
 #. Setting: Extreme Standby Mode
-#, fuzzy
 msgid "Enabled"
 msgstr "启用"
 
 #. Setting: Custom Scheduler
 #. Field: title
-#, fuzzy
 msgid "Custom Scheduler"
-msgstr "自定义风扇曲线"
+msgstr "自定义调度"
 
 #. Setting: Custom Scheduler
 #. Field: hint
@@ -260,7 +255,7 @@ msgid ""
 "Allows attaching a scheduler to the kernel sched_ext. Schedulers need to "
 "be installed and kernel needs to support sched_ext."
 msgstr ""
-"允许将调度程序附加到内核 sched_ext。调度程序需要安装，内核需要支持 sched_ext。"
+"允许将调度程序附加到内核 sched_ext。调度程序需要安装, 内核需要支持 sched_ext。"
 
 #. Setting: Custom Scheduler
 #. Option: scx_lavd
@@ -350,7 +345,6 @@ msgstr "检测到冲突"
 
 #. Setting: Enable Processor Settings
 #. Field: title
-#, fuzzy
 msgid "Enable Processor Settings"
 msgstr "启用处理器控制"
 
@@ -366,8 +360,8 @@ msgid ""
 "including Governor, Boost, GPU frequency, and EPP. In addition, Handheld "
 "daemon will launch a PPD service to replace PPD's role in the system. "
 msgstr ""
-"Handheld daemon 将管理系统的电源偏好，包括调度程序、Boost、GPU 频率和 EPP。"
-"此外，Handheld daemon 将启动一个 PPD 服务来取代系统中 PPD 的角色。"
+"Handheld daemon 将管理系统的电源偏好, 包括调度程序、Boost、GPU 频率和 EPP。"
+"此外, Handheld daemon 将启动一个 PPD 服务来取代系统中 PPD 的角色。"
 
 #. Setting: Enable PPD Emulation (KDE/Gnome Power)
 #. Field: title
@@ -432,7 +426,7 @@ msgid ""
 "Average TDP Target. TDP Boost is recommended for desktop use and does not"
 " affect gaming."
 msgstr ""
-"平均 TDP 目标。TDP Boost 适用于桌面使用，不影响游戏。"
+"平均 TDP 目标。TDP Boost 适用于桌面使用, 不影响游戏。"
 
 #. Setting: TDP Boost
 #. Field: title
@@ -441,7 +435,6 @@ msgstr ""
 
 #. Setting: TDP Boost
 #. Field: hint
-#, fuzzy
 msgid ""
 "Allows the device to temporarily boost by setting appropriate slow and "
 "fast TDPs."
@@ -464,7 +457,7 @@ msgid ""
 "Recommended to use with ROG Swap, as the View button will be muted to "
 "games."
 msgstr ""
-"允许您使用 View+Y 组合键在 TDP 模式之间循环。建议与 ROG Swap 一起使用，因为 View 按钮将被游戏静默。"
+"允许您使用 View+Y 组合键在 TDP 模式之间循环。建议与 ROG Swap 一起使用, 因为 View 按钮将被游戏静默。"
 
 #. Setting: Custom Fan Curve
 #. Field: title
@@ -587,9 +580,8 @@ msgstr ""
 
 #. Setting: Charge Limit (%)
 #. Option: disabled
-#, fuzzy
 msgid "Unset"
-msgstr "未设置"
+msgstr "不限"
 
 #. Setting: Extreme Standby Mode
 #. Field: title
@@ -600,23 +592,21 @@ msgstr ""
 #. Field: hint
 #, python-format
 msgid ""
-"Lowers the power consumption of the device from 4% to 1% overnight. "
+"Lowers the power consumption of the device from 4%% to 1%% overnight. "
 "Active only on battery. Turns off the power light and the controller  "
 "requires longer to wake up."
 msgstr ""
-"将设备的功耗从 4% 降低到 1%。仅在电池模式下有效。关闭电源指示灯，控制器需要更长时间才能唤醒。"
+"将设备的功耗从 4% 降低到 1%, 仅在电池模式下有效。关闭电源指示灯, 控制器需要更长时间才能唤醒"
 
 #. Setting: Power
 #. Field: title
 #. Setting: Energy Policy
 #. Option: power
-#, fuzzy
 msgid "Power"
 msgstr "电源"
 
 #. Setting: Power Profile
 #. Field: title
-#, fuzzy
 msgid "Power Profile"
 msgstr "电源配置"
 
@@ -644,7 +634,7 @@ msgid ""
 "Allows setting the Steam TDP slider from 1-20W instead of 4-15W. "
 "Unchecked, it is still setting TDP to 15W."
 msgstr ""
-"允许将 Steam TDP 滑块设置为 1-20W，而不是 4-15W。未选中时，仍将 TDP 设置为 15W。"
+"允许将 Steam TDP 滑块设置为 1-20W, 而不是 4-15W。未选中时, 仍将 TDP 设置为 15W。"
 
 msgid "Legion L + Y changes TDP Mode"
 msgstr "Legion L + Y 更改 TDP 模式"
@@ -735,9 +725,8 @@ msgstr "重置为 BIOS V28 中由联想提供的原始风扇曲线。"
 
 #. Setting: Charge Limit (80%)
 #. Field: title
-#, fuzzy
 msgid "Charge Limit (80%)"
-msgstr "充电限制 (%)"
+msgstr "充电限制 (80%)"
 
 #. Setting: Charge Limit (80%)
 #. Field: hint
@@ -807,7 +796,7 @@ msgstr "平衡性能"
 #. Setting: Energy Policy
 #. Field: title
 msgid "Energy Policy"
-msgstr ""
+msgstr "电源政策"
 
 #. Setting: Standard Parameters
 #. Field: title
