@@ -36,22 +36,6 @@ KBD_PID = 0x0001
 BACK_BUTTON_DELAY = 0.1
 
 
-def init_claw():
-    # Wait a bit to get the controller to appear during boot
-    logger.info("Waiting 7s for Claw controller.")
-    time.sleep(7)
-    logger.info("Initializing Claw controller.")
-    d_vend = GenericGamepadHidraw(
-        vid=[MSI_CLAW_VID],
-        pid=[MSI_CLAW_PID],
-        usage_page=[0xFFA0],
-        usage=[0x0001],
-        required=True,
-    )
-    assert d_vend.dev
-    d_vend.dev.write([0x0f, 0x00, 0x00, 0x3c, 0x24, 0x01, 0x00, 0x00])
-
-
 def plugin_run(
     conf: Config,
     emit: Emitter,
@@ -61,7 +45,6 @@ def plugin_run(
     dconf: dict,
 ):
     first = True
-    claw_init = True
     first_disabled = True
     init = time.perf_counter()
     repeated_fail = False
@@ -108,14 +91,6 @@ def plugin_run(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             first = True
-            if claw_init and dconf.get("claw", False):
-                try:
-                    init_claw()
-                except Exception as e2:
-                    logger.error(
-                        f"Failed initializing claw controller with error:\n{e2}"
-                    )
-                claw_init = False
             # Raise exception
             if DEBUG_MODE:
                 raise e
@@ -213,7 +188,22 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
-        # d_vend.open()
+        if dconf.get("claw", False):
+            # Wait a bit to get the controller to appear during boot
+            d_vend = GenericGamepadHidraw(
+                vid=[MSI_CLAW_VID],
+                pid=[MSI_CLAW_PID],
+                usage_page=[0xFFA0],
+                usage=[0x0001],
+                required=True,
+            )
+            assert d_vend.dev
+            try:
+                d_vend.open()
+                d_vend.dev.write([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00, 0x00])
+            finally:
+                d_vend.close(True)
+
         prepare(d_xinput)
         if motion:
             start_imu = True
