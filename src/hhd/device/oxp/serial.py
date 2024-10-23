@@ -184,12 +184,6 @@ def init_serial():
         exclusive=True,
     )
 
-    # Write init commands and read initial response.
-    time.sleep(INIT_DELAY)
-    for d in INITIALIZE:
-        ser.write(d)
-        time.sleep(WRITE_DELAY)
-
     return ser, buttons_only
 
 
