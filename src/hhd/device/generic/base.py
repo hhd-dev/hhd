@@ -198,6 +198,7 @@ def controller_loop(
                 required=True,
             )
             try:
+                time.sleep(1)
                 d_vend.open()
                 assert d_vend.dev
                 d_vend.dev.write(bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00, 0x00]))
