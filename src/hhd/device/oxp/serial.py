@@ -101,26 +101,14 @@ INITIALIZE = [
     # gen_intercept(False), # does not seem to be needed
 ]
 
-INIT_DELAY = 0.2
+INIT_DELAY = 2
 WRITE_DELAY = 0.05
 SCAN_DELAY = 1
 
-_serial = None
-_buttons_only = False
+_mappings_init = True
 
-def init_serial():
-    import serial
 
-    global _serial, _buttons_only
-
-    # Perform a dry run to check the device still exists and if it does
-    # return the serial object.
-    if _serial:
-        try:
-            _serial.read(0)
-            return _serial, _buttons_only
-        except Exception:
-            _serial = None
+def get_serial():
 
     VID = "1a86"
     PID = "7523"
@@ -170,12 +158,19 @@ def init_serial():
         logger.info(f"Serial port information:\n{out.stdout}")
 
         dev = path
-        _buttons_only = True
+        buttons_only = True
         break
+    return dev, buttons_only
+
+
+def init_serial():
+    import serial
+
+    dev, buttons_only = get_serial()
 
     if not dev:
         logger.warning("OXP CH340 serial device not found.")
-        return None, _buttons_only
+        return None, buttons_only
 
     logger.info(f"OXP CH340 serial device found at {dev}")
 
@@ -195,16 +190,7 @@ def init_serial():
         ser.write(d)
         time.sleep(WRITE_DELAY)
 
-    _serial = ser
     return ser, buttons_only
-
-
-def close_serial():
-    global _serial
-
-    if _serial:
-        _serial.close()
-        _serial = None
 
 
 class SerialDevice(Consumer, Producer):
@@ -235,6 +221,13 @@ class SerialDevice(Consumer, Producer):
         self.ser = ser
         self.queue_kbd = None
         self.prev = {}
+
+        self.next_send = time.perf_counter() + INIT_DELAY
+
+        global _mappings_init
+        if _mappings_init:
+            self.queue_cmd.extend(INITIALIZE)
+
         return [ser.fd]
 
     def consume(self, events):
@@ -284,7 +277,7 @@ class SerialDevice(Consumer, Producer):
                 stick = ev["oxp"]
                 if stick == "classic":
                     # Classic mode is a cherry red
-                    stick = 0xb7, 0x30, 0x00
+                    stick = 0xB7, 0x30, 0x00
                 r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
                 center = r2, g2, b2
                 center_enabled = r2 > 10 or g2 > 10 or b2 > 10
@@ -292,6 +285,15 @@ class SerialDevice(Consumer, Producer):
             case _:  # "disabled":
                 stick_enabled = False
                 center_enabled = False
+
+        # Force RGB to not initialize to workaround RGB breaking
+        # rumble when being set
+        if self.prev_stick_enabled is None:
+            self.prev_stick_enabled = stick_enabled
+        if self.prev_brightness is None:
+            self.prev_brightness = brightness
+        if self.prev_stick is None:
+            self.prev_stick = stick
 
         if (
             stick_enabled != self.prev_stick_enabled
@@ -393,7 +395,7 @@ class SerialDevice(Consumer, Producer):
                     self.queue_kbd = time.perf_counter()
                 self.prev[btn] = pressed
                 continue
-            
+
             logger.info(f"OXP CH340 button: {btn} pressed: {pressed}")
             if btn in self.prev and self.prev[btn] == pressed:
                 # Debounce

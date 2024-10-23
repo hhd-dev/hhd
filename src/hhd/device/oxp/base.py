@@ -13,7 +13,7 @@ from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.controller.physical.hidraw import enumerate_unique
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
-from .serial import SerialDevice
+from .serial import SerialDevice, get_serial
 from .hid_v1 import OxpHidraw
 from .hid_v2 import OxpHidrawV2
 from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, BTN_MAPPINGS_NONTURBO
@@ -105,7 +105,7 @@ def plugin_run(
                             usage=X1_MINI_USAGE,
                         )
                     )
-                case "hid_v2" | "mixed":
+                case "hid_v2":
                     found_vendor = bool(
                         enumerate_unique(
                             vid=XFLY_VID,
@@ -114,6 +114,17 @@ def plugin_run(
                             usage=XFLY_USAGE,
                         )
                     )
+                case "mixed":
+                    found_vendor = bool(
+                        enumerate_unique(
+                            vid=XFLY_VID,
+                            pid=XFLY_PID,
+                            usage_page=XFLY_PAGE,
+                            usage=XFLY_USAGE,
+                        )
+                    ) and bool(get_serial()[0])
+                case "serial":
+                    found_vendor = bool(get_serial()[0])
                 case _:
                     found_vendor = True
         except Exception:

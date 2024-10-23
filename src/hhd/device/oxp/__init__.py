@@ -13,7 +13,6 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
-from .serial import close_serial
 
 from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
 
@@ -77,7 +76,7 @@ class GenericControllersPlugin(HHDPlugin):
         if not self.dconf.get("x1", False):
             del base["controllers"]["oxp"]["children"]["volume_reverse"]
             del base["controllers"]["oxp"]["children"]["swap_face"]
-        
+
         if not self.turbo:
             del base["controllers"]["oxp"]["children"]["extra_buttons"]
             del base["controllers"]["oxp"]["children"]["turbo_reboots"]
@@ -134,10 +133,6 @@ class GenericControllersPlugin(HHDPlugin):
                     f.write("0")
             except Exception:
                 pass
-        
-        # Close serial in the end so it can be cached properly
-        close_serial()
-        
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
