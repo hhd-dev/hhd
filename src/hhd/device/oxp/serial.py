@@ -227,6 +227,7 @@ class SerialDevice(Consumer, Producer):
         global _mappings_init
         if _mappings_init:
             self.queue_cmd.extend(INITIALIZE)
+            _mappings_init = False
 
         return [ser.fd]
 
