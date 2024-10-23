@@ -144,19 +144,20 @@ class OverlayPlugin(HHDPlugin):
         self.enabled = self.enabled or new_enabled
         self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
+        # TODO: Temporarily disabled, remove
         # Preemptively launch overlay
-        if self.enabled:
-            # Load game information
-            if self.ctx:
-                games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
-                if games and images:
-                    self.emit.set_gamedata(games, images)
-            if FORCE_GAME:
-                self.emit.info["game.id"] = FORCE_GAME
-                self.emit.info["game.is_steam"] = False
-                self.emit.info["game.data"] = self.emit.get_gamedata(FORCE_GAME)
-            if self.ovf:
-                self.ovf.launch_overlay()
+        # if self.enabled:
+        #     # Load game information
+        #     if self.ctx:
+        #         games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
+        #         if games and images:
+        #             self.emit.set_gamedata(games, images)
+        #     if FORCE_GAME:
+        #         self.emit.info["game.id"] = FORCE_GAME
+        #         self.emit.info["game.is_steam"] = False
+        #         self.emit.info["game.data"] = self.emit.get_gamedata(FORCE_GAME)
+        #     if self.ovf:
+        #         self.ovf.launch_overlay()
 
         self.touch_gestures = not bool(
             conf.get("controllers.touchscreen.gestures_disable", False)
