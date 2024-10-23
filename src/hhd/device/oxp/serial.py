@@ -396,7 +396,7 @@ class SerialDevice(Consumer, Producer):
                 self.prev[btn] = pressed
                 continue
 
-            logger.info(f"OXP CH340 button: {btn} pressed: {pressed}")
+            # logger.info(f"OXP CH340 button: {btn} pressed: {pressed}")
             if btn in self.prev and self.prev[btn] == pressed:
                 # Debounce
                 continue
