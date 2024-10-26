@@ -28,6 +28,8 @@ AMBERNIC_MAPPINGS: dict[int, str] = {
 }
 
 MSI_CLAW_MAPPINGS = {
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
     B("KEY_F15"): "mode",
     B("KEY_F16"): "share",
 }
