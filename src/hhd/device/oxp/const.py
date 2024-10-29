@@ -110,6 +110,7 @@ CONFS = {
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
         "protocol": "serial",
+        "turbo": False, # disable turbo takeover so that it can be used for TDP
     },
 }
 

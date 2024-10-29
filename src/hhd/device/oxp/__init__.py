@@ -46,7 +46,9 @@ class GenericControllersPlugin(HHDPlugin):
 
         # Use the oxp-platform driver if available
         turbo = False
-        if os.path.exists("/sys/devices/platform/oxp-platform/tt_toggle"):
+        if self.dconf.get("turbo", True) and os.path.exists(
+            "/sys/devices/platform/oxp-platform/tt_toggle"
+        ):
             try:
                 with open("/sys/devices/platform/oxp-platform/tt_toggle", "w") as f:
                     f.write("1")
