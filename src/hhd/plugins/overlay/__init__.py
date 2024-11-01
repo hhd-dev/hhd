@@ -119,11 +119,11 @@ class OverlayPlugin(HHDPlugin):
         set = {"hhd": {"settings": load_relative_yaml("settings.yml")}}
         if self.enabled:
             self.initialized = True
+            set["gamemode"] = load_relative_yaml("gamemode.yml")
             set["shortcuts"] = load_relative_yaml("shortcuts.yml")
-            set["controllers"] = load_relative_yaml("touchcontrols.yml")
 
             if not SUPPORTS_HALVING:
-                del set["controllers"]["touchscreen"]["children"]["steamui_halfhz"]
+                del set["gamemode"]["display"]["children"]["steamui_halfhz"]
 
             if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
                 "HHD_ALLOW_CORRECTION", None
@@ -163,15 +163,15 @@ class OverlayPlugin(HHDPlugin):
                 self.ovf.launch_overlay()
 
         self.touch_gestures = not bool(
-            conf.get("controllers.touchscreen.gestures_disable", False)
+            conf.get("gamemode.display.gestures_disable", False)
         )
         if SUPPORTS_HALVING and self.ovf:
-            self.ovf.gsconf["steamui_halfhz"] = conf.get("controllers.touchscreen.steamui_halfhz", False)
-        disable_touch = conf.get("controllers.touchscreen.disable", False)
+            self.ovf.gsconf["steamui_halfhz"] = conf.get("gamemode.display.steamui_halfhz", False)
+        disable_touch = conf.get("gamemode.display.touchscreen_disable", False)
         if disable_touch is None:
             # Initialize value since there is no default
             disable_touch = False
-            conf["controllers.touchscreen.disable"] = False
+            conf["gamemode.display.touchscreen_disable"] = False
 
         asus_cycle = conf.get("tdp.asus.cycle_tdp", False)
         if self.initialized and (
