@@ -9,7 +9,7 @@ from typing import Literal, cast
 
 from Xlib import display
 
-from hhd.plugins import Context, Emitter
+from hhd.plugins import Context, Emitter, Config
 
 from .controllers import OverlayWriter
 from .overlay import find_overlay_exe, inject_overlay, launch_overlay_de
@@ -32,6 +32,7 @@ from .x11 import (
     register_changes,
     show_hhd,
     update_steam_values,
+    apply_gamescope_config,
 )
 
 logger = logging.getLogger(__name__)
@@ -111,6 +112,7 @@ def loop_manage_overlay(
     writer: OverlayWriter,
     should_exit: TEvent,
     requested: bool,
+    gsconf: Config
 ):
     try:
         status: Status = "closed"
@@ -122,6 +124,7 @@ def loop_manage_overlay(
         os.set_blocking(fd_out, False)
         os.set_blocking(fd_err, False)
         fd_disp = disp.fileno()
+        gsprev = {}
 
         # Give electron time to warmup
         start = time.perf_counter()
@@ -168,6 +171,7 @@ def loop_manage_overlay(
             # If steam tries to appear while the overlay is active
             # yank its focus
             process_events(disp)
+            apply_gamescope_config(disp, gsconf, gsprev)
             if steam and shown:
                 old, was_shown = update_steam_values(disp, steam, old)
                 if was_shown:
@@ -253,6 +257,7 @@ class OverlayService:
         self.interceptionSupported = True
         self.last_check = None
         self.installed = True
+        self.gsconf = Config()
 
     def launch_overlay(self):
         if not self.installed:
@@ -307,7 +312,7 @@ class OverlayService:
         self.should_exit = TEvent()
         self.t = Thread(
             target=loop_manage_overlay,
-            args=(disp, self.proc, self.emit, self.writer, self.should_exit, requested),
+            args=(disp, self.proc, self.emit, self.writer, self.should_exit, requested, self.gsconf),
         )
         self.t.start()
 

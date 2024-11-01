@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 SHORTCUT_RELOAD_DELAY = 2
 
 FORCE_GAME = os.environ.get("HHD_FORCE_GAME_ID", None)
+SUPPORTS_HALVING = os.environ.get("HHD_GS_STEAMUI_HALFHZ", False)
 
 
 def load_steam_games(ctx: Context, emit, burnt_ids: set):
@@ -121,6 +122,9 @@ class OverlayPlugin(HHDPlugin):
             set["shortcuts"] = load_relative_yaml("shortcuts.yml")
             set["controllers"] = load_relative_yaml("touchcontrols.yml")
 
+            if not SUPPORTS_HALVING:
+                del set["controllers"]["touchscreen"]["children"]["steamui_halfhz"]
+
             if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
                 "HHD_ALLOW_CORRECTION", None
             ):
@@ -144,24 +148,25 @@ class OverlayPlugin(HHDPlugin):
         self.enabled = self.enabled or new_enabled
         self.emit.set_simple_qam(not self.enabled or not self.has_executable)
 
-        # TODO: Temporarily disabled, remove
         # Preemptively launch overlay
-        # if self.enabled:
-        #     # Load game information
-        #     if self.ctx:
-        #         games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
-        #         if games and images:
-        #             self.emit.set_gamedata(games, images)
-        #     if FORCE_GAME:
-        #         self.emit.info["game.id"] = FORCE_GAME
-        #         self.emit.info["game.is_steam"] = False
-        #         self.emit.info["game.data"] = self.emit.get_gamedata(FORCE_GAME)
-        #     if self.ovf:
-        #         self.ovf.launch_overlay()
+        if self.enabled:
+            # Load game information
+            if self.ctx:
+                games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
+                if games and images:
+                    self.emit.set_gamedata(games, images)
+            if FORCE_GAME:
+                self.emit.info["game.id"] = FORCE_GAME
+                self.emit.info["game.is_steam"] = False
+                self.emit.info["game.data"] = self.emit.get_gamedata(FORCE_GAME)
+            if self.ovf:
+                self.ovf.launch_overlay()
 
         self.touch_gestures = not bool(
             conf.get("controllers.touchscreen.gestures_disable", False)
         )
+        if SUPPORTS_HALVING and self.ovf:
+            self.ovf.gsconf["steamui_halfhz"] = conf.get("controllers.touchscreen.steamui_halfhz", False)
         disable_touch = conf.get("controllers.touchscreen.disable", False)
         if disable_touch is None:
             # Initialize value since there is no default

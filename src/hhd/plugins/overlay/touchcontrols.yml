@@ -9,3 +9,9 @@ touchscreen:
     gestures_disable:
       type: bool
       title: "Disable Touch Gestures (Until Restart)"
+
+    steamui_halfhz:
+      tags: [non-essential]
+      type: bool
+      title: "Run SteamUI at 60/72 Hz"
+      default: true

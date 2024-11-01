@@ -10,7 +10,7 @@ import Xlib
 from Xlib import XK, X, Xatom, display, error
 from Xlib.ext.xtest import fake_input
 
-from hhd.plugins import Context, Emitter
+from hhd.plugins import Context, Emitter, Config
 from hhd.utils import restore_priviledge, switch_priviledge
 
 logger = logging.getLogger(__name__)
@@ -178,6 +178,22 @@ def get_overlay_display(displays: Sequence[str], ctx=None):
         if old:
             restore_priviledge(old)
 
+
+def apply_gamescope_config(display: display.Display, config: Config, prev: dict):
+    apply = False
+    
+    halfhz = config.get("steamui_halfhz", None)
+    halfhz_rev = prev.get("steamui_halfhz", None)
+    if halfhz is not None and halfhz != halfhz_rev:
+        display.screen().root.change_property(
+            display.get_atom("GAMESCOPE_STEAMUI_HALFHZ"), Xatom.CARDINAL, 32, [int(halfhz)]
+        )
+        logger.info(f"Setting SteamUI halfhz to {halfhz}.")
+        prev["steamui_halfhz"] = halfhz
+        apply = True
+    
+    if apply:
+        display.flush()
 
 def find_wins(display: display.Display, win: list[str], atoms: list[str] = []):
     n = display.get_atom("WM_CLASS")
