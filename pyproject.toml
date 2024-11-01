@@ -1,6 +1,6 @@
 [project]
 name = "hhd"
-version = "3.5.11"
+version = "3.5.12"
 authors = [
   { name="Kapenekakis Antheas", email="pypi@antheas.dev" },
 ]
