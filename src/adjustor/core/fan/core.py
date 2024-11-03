@@ -106,6 +106,7 @@ def update_fan_speed(
     fan_info: FanInfo,
     fan_curve: dict[int, float],
     junction: bool,
+    observe_only: bool = False,
 ) -> tuple[bool, FanState]:
     t_edge = read_temp(fan_info["edge"])
     t_junction = read_temp(fan_info["tctl"])
@@ -115,9 +116,10 @@ def update_fan_speed(
     v_curr, in_setpoint, data = calculate_fan_speed(t_curr, data, fan_curve, junction)
 
     v_curr_int = min(255, max(0, int(v_curr * 255)))
-    if state is None or state["v_target_pwm"] != v_curr_int:
-        for v_fn, _, _ in fan_info["fans"]:
-            write_fan_speed(v_fn, v_curr_int)
+    if not observe_only:
+        if state is None or state["v_target_pwm"] != v_curr_int:
+            for v_fn, _, _ in fan_info["fans"]:
+                write_fan_speed(v_fn, v_curr_int)
 
     fan_speeds = [read_fan_speed(rpm_fn) for _, _, rpm_fn in fan_info["fans"] if rpm_fn]
     return (
@@ -134,7 +136,7 @@ def update_fan_speed(
     )
 
 
-def fan_pwm_tester(normal_curve: bool = True):
+def fan_pwm_tester(normal_curve: bool = True, observe_only: bool = False):
     fan_info = get_fan_info()
     if fan_info is None:
         return
@@ -150,14 +152,16 @@ def fan_pwm_tester(normal_curve: bool = True):
             100: 0.9,
         }
         fan_curve = {
-            40: 0.25,
-            50: 0.3,
-            60: 0.4,
-            70: 0.5,
-            80: 0.55,
-            85: 0.6,
-            90: 0.8,
-            100: 0.9,
+            40: 0.2,
+            45: 0.3,
+            50: 0.4,
+            55: 0.45,
+            60: 0.55,
+            65: 0.7,
+            70: 0.8,
+            80: 0.85,
+            90: 0.9,
+            100: 1,
         }
     else:
         fan_curve = {
@@ -170,16 +174,19 @@ def fan_pwm_tester(normal_curve: bool = True):
         }
 
     try:
-        set_fans_to_pwm(True, fan_info)
+        if not observe_only:
+            set_fans_to_pwm(True, fan_info)
+
+        MAX_FAN = 5300
 
         state = None
         for i in range(10000000):
-            in_setpoint, state = update_fan_speed(state, fan_info, fan_curve, False)
+            in_setpoint, state = update_fan_speed(state, fan_info, fan_curve, False, observe_only=observe_only)
             
-            print(f"\n> {i:05d}: {'in setpoint' if in_setpoint else 'updating'}")
+            print(f"\n> {i:05d}: {'in setpoint' if in_setpoint else 'updating'}{' (observe)' if observe_only else ''}")
             print(f"  Junction: {state['t_junction']:.2f}C, Edge: {state['t_edge']:.2f}C")
-            print(f"  Current: {state['v_curr']:.2f}, Target: {state['v_target']:.2f}")
-            print(f"  Fan speeds: {' '.join(map(lambda rpm: f"{rpm:4d}rpm", state['v_rpm']))}")
+            print(f"  Current: {state['v_curr']*100:.1f}%, Target: {state['v_target']*100:.1f}%")
+            print(f"  Fan speeds: {' '.join(map(lambda rpm: f"{rpm:4d}rpm/{MAX_FAN}rpm ({100*rpm/MAX_FAN:.1f}%)", state['v_rpm']))}")
             time.sleep(SETPOINT_UPDATE_T if in_setpoint else UPDATE_T)
     except KeyboardInterrupt:
         print("Exiting fan test.")
