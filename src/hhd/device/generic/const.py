@@ -47,6 +47,7 @@ TECNO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
         # Misc
         "mode": BM((5 << 3) + 7), # 1: Bottom left
         "keyboard": BM((5 << 3) + 6), # 2: Bottom right
+        "extra_l1": BM((7 << 3) + 2), # 3: Keyboard switch button
     }
 }
 
