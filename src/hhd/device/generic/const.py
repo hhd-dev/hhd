@@ -43,7 +43,7 @@ TECNO_BTN_MAPPINGS = {
 }
 
 TECNO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
-    0x04: {
+    0x74: {
         # Misc
         "mode": BM((5 << 3) + 7), # 1: Bottom left
         "keyboard": BM((5 << 3) + 6), # 2: Bottom right

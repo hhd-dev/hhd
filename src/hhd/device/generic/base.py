@@ -14,7 +14,7 @@ from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
-from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS
+from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, TECNO_RAW_INTERFACE_BTN_MAP
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
@@ -133,7 +133,7 @@ def controller_loop(
             conf["imu_hz"].to(int),
             get_gyro_state(conf["imu_axis"], dconf.get("mapping", DEFAULT_MAPPINGS)),
         )
-    else: 
+    else:
         d_imu = None
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
@@ -224,7 +224,9 @@ def controller_loop(
                 time.sleep(1)
                 d_vend.open()
                 assert d_vend.dev
-                d_vend.dev.write(bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00, 0x00]))
+                d_vend.dev.write(
+                    bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00, 0x00])
+                )
             finally:
                 d_vend.close(True)
         if dtype == "tecno":
@@ -234,6 +236,7 @@ def controller_loop(
                 usage_page=[0xFFA0],
                 usage=[0x0001],
                 required=True,
+                btn_map=TECNO_RAW_INTERFACE_BTN_MAP,
             )
 
         prepare(d_xinput)
