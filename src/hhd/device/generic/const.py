@@ -1,6 +1,7 @@
 from hhd.controller import Axis, Button, Configuration
 from hhd.controller.physical.evdev import B, to_map
 from hhd.plugins import gen_gyro_state
+from hhd.controller.physical.hidraw import AM, BM, CM
 
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
@@ -33,6 +34,22 @@ MSI_CLAW_MAPPINGS = {
     B("KEY_F15"): "mode",
     B("KEY_F16"): "share",
 }
+
+
+TECNO_BTN_MAPPINGS = {
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+    B("KEY_F1"): "share",  # Center button (shift+alt+ctrl+f1)
+}
+
+TECNO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
+    0x04: {
+        # Misc
+        "mode": BM((5 << 3) + 7), # 1: Bottom left
+        "keyboard": BM((5 << 3) + 6), # 2: Bottom right
+    }
+}
+
 
 AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
@@ -151,6 +168,16 @@ CONFS = {
         "extra_buttons": "none",
         "btn_mapping": MSI_CLAW_MAPPINGS,
         "claw": True,
+        "type": "claw",
+        "display_gyro": False,
+    },
+    # TECNO
+    "TECNO AG01": {
+        "name": "TECNO (Displayless)",
+        "extra_buttons": "none",
+        "btn_mapping": TECNO_BTN_MAPPINGS,
+        "type": "tecno",
+        "display_gyro": False,
     },
 }
 

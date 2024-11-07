@@ -52,9 +52,13 @@ class GenericControllersPlugin(HHDPlugin):
             )
         )
 
-        base["controllers"]["handheld"]["children"]["imu_axis"] = get_gyro_config(
-            self.dconf.get("mapping", DEFAULT_MAPPINGS)
-        )
+        if self.dconf.get("display_gyro", True):
+            base["controllers"]["handheld"]["children"]["imu_axis"] = get_gyro_config(
+                self.dconf.get("mapping", DEFAULT_MAPPINGS)
+            )
+        else:
+            del base["controllers"]["handheld"]["children"]["imu_axis"]
+            del base["controllers"]["handheld"]["children"]["imu"]
 
         return base
 

@@ -59,6 +59,11 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         type="only_press",
         phys=["LNXPWRBN", "PNP0C0C"],
     ),
+    PBC(
+        "TECNO (Displayless)",
+        "TECNO AG01",
+        type="only_press",
+    ),
 ]
 
 
