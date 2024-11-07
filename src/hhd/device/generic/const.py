@@ -172,7 +172,7 @@ CONFS = {
         "display_gyro": False,
     },
     # TECNO
-    "TECNO AG01": {
+    "Pocket Go": {
         "name": "TECNO (Displayless)",
         "extra_buttons": "none",
         "btn_mapping": TECNO_BTN_MAPPINGS,

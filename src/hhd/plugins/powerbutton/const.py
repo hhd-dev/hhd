@@ -61,7 +61,7 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     ),
     PBC(
         "TECNO (Displayless)",
-        "TECNO AG01",
+        "Pocket Go",
         type="only_press",
     ),
 ]
