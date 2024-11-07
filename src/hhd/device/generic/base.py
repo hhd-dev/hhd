@@ -63,7 +63,13 @@ def plugin_run(
             first_disabled = True
 
         try:
-            vid = MSI_CLAW_VID if dconf.get("claw", False) else GAMEPAD_VID
+            match dconf.get("type", None):
+                case "tecno":
+                    vid = TECNO_VID
+                case "claw":
+                    vid = MSI_CLAW_VID
+                case _:
+                    vid = GAMEPAD_VID
             found_device = bool(enumerate_evs(vid=vid))
         except Exception:
             logger.warning("Failed finding device, skipping check.")
@@ -133,8 +139,8 @@ def controller_loop(
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        vid=[GAMEPAD_VID, MSI_CLAW_VID],
-        pid=[GAMEPAD_PID, MSI_CLAW_PID],
+        vid=[GAMEPAD_VID, MSI_CLAW_VID, TECNO_VID],
+        pid=[GAMEPAD_PID, MSI_CLAW_PID, TECNO_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
