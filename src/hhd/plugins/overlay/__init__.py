@@ -19,6 +19,7 @@ SHORTCUT_RELOAD_DELAY = 2
 
 FORCE_GAME = os.environ.get("HHD_FORCE_GAME_ID", None)
 SUPPORTS_HALVING = os.environ.get("HHD_GS_STEAMUI_HALFHZ", False)
+SUPPORTS_DPMS = os.environ.get("HHD_GS_DPMS", False)
 
 
 def load_steam_games(ctx: Context, emit, burnt_ids: set):
@@ -123,7 +124,9 @@ class OverlayPlugin(HHDPlugin):
             set["shortcuts"] = load_relative_yaml("shortcuts.yml")
 
             if not SUPPORTS_HALVING:
-                del set["gamemode"]["display"]["children"]["steamui_halfhz"]
+                del set["gamemode"]["gamescope"]["children"]["steamui_halfhz"]
+            if not SUPPORTS_DPMS:
+                del set["gamemode"]["gamescope"]["children"]["dpms"]
 
             if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
                 "HHD_ALLOW_CORRECTION", None
@@ -166,7 +169,12 @@ class OverlayPlugin(HHDPlugin):
             conf.get("gamemode.display.gestures_disable", False)
         )
         if SUPPORTS_HALVING and self.ovf:
-            self.ovf.gsconf["steamui_halfhz"] = conf.get("gamemode.display.steamui_halfhz", False)
+            self.ovf.gsconf["steamui_halfhz"] = conf.get(
+                "gamemode.gamescope.steamui_halfhz", False
+            )
+        if SUPPORTS_DPMS and self.ovf:
+            self.ovf.gsconf["dpms"] = conf.get("gamemode.gamescope.dpms", False)
+
         disable_touch = conf.get("gamemode.display.touchscreen_disable", False)
         if disable_touch is None:
             # Initialize value since there is no default

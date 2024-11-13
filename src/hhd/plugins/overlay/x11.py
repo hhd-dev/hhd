@@ -333,6 +333,15 @@ def get_current_game(display):
     game = display.screen().root.get_property(stat_game, Xatom.CARDINAL, 0, 15)
     return game.value[0] if game and game.value else None
 
+
+def set_dpms(display, enable: bool):
+    stat_dpms = display.get_atom("GAMESCOPE_DPMS")
+    display.screen().root.change_property(
+        stat_dpms, Xatom.CARDINAL, 32, [1 if enable else 0]
+    )
+    display.flush()
+
+
 def update_steam_values(display, steam, old: CachedValues | None):
     stat_focus = display.get_atom("STEAM_INPUT_FOCUS")
     stat_overlay = display.get_atom("STEAM_OVERLAY")

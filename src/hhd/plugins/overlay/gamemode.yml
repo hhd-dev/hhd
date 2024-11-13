@@ -2,13 +2,6 @@ display:
   type: container
   title: Display
   children:
-
-    steamui_halfhz:
-      tags: [non-essential]
-      type: bool
-      title: "Run Steam at 60/72 Hz"
-      default: true
-
     touchscreen_disable:
       type: bool
       title: "Disable Touchscreen (Until Restart)"
@@ -16,3 +9,19 @@ display:
     gestures_disable:
       type: bool
       title: "Disable Touch Gestures (Until Restart)"
+
+gamescope:
+  type: container
+  title: Gamescope
+  children:
+    steamui_halfhz:
+      tags: [non-essential]
+      type: bool
+      title: "Run Steam at 60/72 Hz"
+      default: true
+    
+    dpms:
+      tags: [non-essential]
+      type: bool
+      title: "Poweroff screen before sleep"
+      default: true
