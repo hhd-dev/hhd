@@ -1,10 +1,10 @@
 import logging
 import subprocess
-from select import select
 from typing import Literal
 import os
 
 logger = logging.getLogger(__name__)
+
 
 class WakeHandler:
     def __init__(self) -> None:
@@ -30,7 +30,7 @@ class WakeHandler:
             assert self.proc.stdout is not None
             self.fd = self.proc.stdout.fileno()
             os.set_blocking(self.fd, False)
-            
+
             if not self.inhibit(True):
                 # We need both the inhibitor and reader for this to work
                 self.close()
@@ -39,20 +39,20 @@ class WakeHandler:
             return True
         except Exception:
             if self.proc:
-                self.proc.kill()
+                self.proc.terminate()
                 self.proc.wait()
             self.proc = None
             self.broken = True
             return False
 
     def inhibit(self, enable: bool):
-        if self.broken:
-            return False
-
         if self.inhibitor:
-            self.inhibitor.kill()
+            self.inhibitor.terminate()
             self.inhibitor.wait()
             self.inhibitor = None
+
+        if self.broken:
+            return False
 
         if enable:
             try:

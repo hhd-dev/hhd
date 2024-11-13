@@ -30,6 +30,7 @@ USER=${USER:-bazzite}
 # Environment="HHD_PPD_MASK=1"
 # Environment="HHD_HIDE_ALL=1"
 # Environment="HHD_GS_STEAMUI_HALFHZ=1"
+# Environment="HHD_GS_DPMS=1"
 
 # [Install]
 # WantedBy=multi-user.target
