@@ -40,8 +40,25 @@ def gamescope_debug(args: list[str]):
         did = args[0]
         name = did
         d = Display(did)
-
+        args = args[1:]
     print(f"Overlay display is '{name}'")
 
-    print("\nDebug Data:")
-    print_debug(d, args)
+    cmd_sent = False
+    if args:
+        for arg in args:
+            if "=" in arg:
+                from Xlib import Xatom
+
+                atom, val = arg.split("=", 1)
+
+                print(f"Setting {atom} to {val}")
+                d.screen().root.change_property(
+                    d.get_atom(atom), Xatom.CARDINAL, 32, [int(val)]
+                )
+                cmd_sent = True
+
+    if cmd_sent:
+        d.flush()
+    else:
+        print("\nDebug Data:")
+        print_debug(d, args)
