@@ -131,6 +131,7 @@ def plugin_run(
             logger.warning("Failed finding vendor device, skipping check.")
             found_vendor = True
 
+        turbo_start = False
         if not found_device or not found_vendor:
             curr = time.perf_counter()
             if first:
@@ -141,15 +142,19 @@ def plugin_run(
             if found_vendor and turbo and switch_to_turbo and curr > switch_to_turbo:
                 logger.info("Switching to turbo only button mode")
                 updated.clear()
-                turbo_loop(conf.copy(), should_exit, updated, dconf, emit)
+                turbo_start = True
                 first = False
-            continue
+            else:
+                continue
 
         try:
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit, turbo)
+            if turbo_start:
+                turbo_loop(conf.copy(), should_exit, updated, dconf, emit)
+            else:
+                controller_loop(conf.copy(), should_exit, updated, dconf, emit, turbo)
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
