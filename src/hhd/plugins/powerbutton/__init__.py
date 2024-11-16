@@ -25,6 +25,7 @@ class PowerbuttondPlugin(HHDPlugin):
         self.cfg = cfg
         self.t = None
         self.event = None
+        self.emit = None
 
     def open(
         self,
@@ -33,6 +34,7 @@ class PowerbuttondPlugin(HHDPlugin):
     ):
         self.started = False
         self.context = context
+        self.emit = emit
 
     def settings(self):
         d = {"hhd": load_relative_yaml("settings.yml")}
@@ -52,7 +54,7 @@ class PowerbuttondPlugin(HHDPlugin):
 
         self.event = Event()
         self.t = Thread(
-            target=power_button_run, args=(self.cfg, self.context, self.event)
+            target=power_button_run, args=(self.cfg, self.context, self.event, self.emit)
         )
         self.t.start()
         self.started = True

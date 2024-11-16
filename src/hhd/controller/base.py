@@ -47,6 +47,10 @@ class SpecialEvent(TypedDict):
         "tdp_cycle_custom",
         # Sleep information
         "wakeup",
+        # Powerbutton presses
+        "pbtn_short",
+        "pbtn_long",
+        "pbtn_double", # todo
     ]
     data: "NotRequired[Any]"
 
