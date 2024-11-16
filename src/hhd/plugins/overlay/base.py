@@ -202,7 +202,6 @@ def loop_manage_overlay(
                     set_dpms(disp, True)
                     dpms_time = start
                     logger.info("Enabling gamescope DPMS.")
-                    time.sleep(0.09) # Give buffer for vblank to hit
                     wake_handler.inhibit(False)
                 elif s == "exit":
                     set_dpms(disp, False)
