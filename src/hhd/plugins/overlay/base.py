@@ -487,6 +487,7 @@ class OverlayService:
             if ev.get("event", None) != "pbtn_short":
                 continue
             
-            # Fire screen_off while the powerbutton event is happening
-            logger.info("Powerbutton event detected, transitioning to standby.")
-            standby_transition("screen_off")
+            # If steam does not suspend us the following breaks:
+            # # Fire screen_off while the powerbutton event is happening
+            # logger.info("Powerbutton event detected, transitioning to standby.")
+            # standby_transition("screen_off")
