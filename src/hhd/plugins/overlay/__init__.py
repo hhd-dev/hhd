@@ -243,6 +243,9 @@ class OverlayPlugin(HHDPlugin):
                 logger.info("No shortcuts enabled, not starting shortcut loop.")
 
     def notify(self, events: Sequence[Event]):
+        if self.ovf:
+            self.ovf.notify(events)
+
         for ev in events:
             if ev["type"] != "special":
                 continue

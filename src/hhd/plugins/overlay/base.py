@@ -54,6 +54,20 @@ LOOP_SLEEP = 0.05
 OVERLAY_CHECK_INTERVAL = 5
 GAME_CHECK_INTERVAL = 2
 
+SUPPORTS_STANDBY = os.environ.get("HHD_GS_STANDBY", "0") == "1"
+
+def standby_transition(state: str):
+    if not SUPPORTS_STANDBY:
+        return
+    
+    try:
+        if not os.path.exists("/sys/power/standby"):
+            return
+
+        with open("/sys/power/standby", "w") as f:
+            f.write(state)
+    except Exception as e:
+        logger.error(f"Failed to set standby state to {state}:\n{e}")
 
 def loop_manage_desktop(
     proc: subprocess.Popen,
@@ -200,11 +214,13 @@ def loop_manage_overlay(
                 s = wake_handler()
                 if s == "entry":
                     set_dpms(disp, True)
+                    standby_transition("sleep")
                     dpms_time = start
                     logger.info("Enabling gamescope DPMS.")
                     wake_handler.inhibit(False)
                 elif s == "exit":
                     set_dpms(disp, False)
+                    standby_transition("active")
                     dpms_time = None
                     logger.info("Disabling gamescope DPMS.")
                     wake_handler.inhibit(True)
@@ -458,3 +474,19 @@ class OverlayService:
         except Exception as e:
             logger.error(f"Failed launching overlay with error:\n{e}")
             self.close()
+
+    def notify(self, events):
+        if not SUPPORTS_STANDBY:
+            return
+        if not self.gsconf or not self.gsconf.get("dpms", False):
+            return
+        
+        for ev in events:
+            if ev.get("type", None) != "special":
+                continue
+            if ev.get("event", None) != "pbtn_short":
+                continue
+            
+            # Fire screen_off while the powerbutton event is happening
+            logger.info("Powerbutton event detected, transitioning to standby.")
+            standby_transition("screen_off")
