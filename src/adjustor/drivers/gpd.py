@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 from hhd.plugins import HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
@@ -8,7 +9,17 @@ logger = logging.getLogger(__name__)
 
 
 def handle_gpd_fix():
-    logger.info("Received Hibernate Thermal event (spurious to get Windows to Hibernate), sleeping again.")
+    logger.info(
+        "Received Hibernate Thermal event (spurious to get Windows to Hibernate), sleeping again."
+    )
+
+    # Wait for suspend.target to finish
+    # While active it returns 0
+    for _ in range(150):
+        if os.system("systemctl is-active --quiet suspend.target"):
+            break
+        time.sleep(0.1)
+
     os.system("systemctl suspend")
 
 
@@ -21,7 +32,7 @@ class GpdFixPlugin(HHDPlugin):
         self.global_enabled = False
 
     def settings(self) -> HHDSettings:
-        # Settings change notification 
+        # Settings change notification
         # is sent by other plugins
         if self.global_enabled:
             return load_relative_yaml("gpd.yml")
