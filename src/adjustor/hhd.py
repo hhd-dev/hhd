@@ -10,7 +10,9 @@ from hhd.plugins.plugin import Emitter
 from hhd.utils import expanduser
 
 from adjustor.core.acpi import check_perms, initialize
-from adjustor.core.const import CPU_DATA, DEV_DATA, PLATFORM_PROFILE_MAP, ENERGY_MAP
+from adjustor.core.const import (CPU_DATA, DEV_DATA, ENERGY_MAP,
+                                 PLATFORM_PROFILE_MAP)
+from adjustor.drivers.gpd import GpdFixPlugin
 
 from .i18n import _
 
@@ -235,10 +237,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
+    from .drivers.amd import AmdGPUPlugin
     from .drivers.asus import AsusDriverPlugin
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
-    from .drivers.amd import AmdGPUPlugin
 
     drivers = []
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
@@ -330,6 +332,14 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         
         is_steamdeck = "Jupiter" in prod or "Galileo" in prod
         return [GeneralPowerPlugin(is_steamdeck=is_steamdeck)]
+
+    try:
+        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
+            vendor = f.read().strip().lower()
+        if vendor.lower() == "gpd":
+            drivers.append(GpdFixPlugin())
+    except Exception:
+        pass
 
     return [
         *drivers,
