@@ -32,3 +32,6 @@ SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="*Motion Sensors", MODE="0666
 
 # Enable xpad for the MSI Claw
 ATTRS{idVendor}=="0db0", ATTRS{idProduct}=="1901", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 0db0 1901 > /sys/bus/usb/drivers/xpad/new_id'"
+
+# Enable xpad for the TECNO Pocket Go
+ATTRS{idVendor}=="2993", ATTRS{idProduct}=="2001", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 2993 2001 > /sys/bus/usb/drivers/xpad/new_id'"
