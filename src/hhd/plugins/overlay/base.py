@@ -304,6 +304,8 @@ def loop_manage_overlay(
         emit.grab(False)
         if wake_handler:
             wake_handler.close()
+        # Make sure we leave on the active state
+        standby_transition("active")
 
 
 class OverlayService:
