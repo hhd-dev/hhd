@@ -64,7 +64,7 @@ class GeneralPowerPlugin(HHDPlugin):
                         logger.info("Unmasking TuneD in the case it was masked.")
                         os.system('systemctl unmask tuned')
                     subprocess.run(
-                        [tuned],
+                        [tuned,'active'],
                         check=True,
                         stdin=subprocess.DEVNULL,
                         stdout=subprocess.DEVNULL,
@@ -75,7 +75,7 @@ class GeneralPowerPlugin(HHDPlugin):
                     logger.warning(f"tuned-adm returned with error:\n{e}")
 
 
-        if not self.ppd_supported:
+        if not self.ppd_supported and not self.tuned_supported:
             del sets["children"]["profile"]
 
         # SchedExt
@@ -188,7 +188,7 @@ class GeneralPowerPlugin(HHDPlugin):
                         conf["tdp.general.profile"] = self.target
                 except Exception as e:
                     self.tuned_supported = False
-                    logger.warning(f"powerprofilectl returned with error:\n{e}")
+                    logger.warning(f"tuned-adm returned with error:\n{e}")
                     self.tuned_supported = False
 
         # Handle sched
