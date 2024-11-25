@@ -240,7 +240,7 @@ class SerialDevice(Consumer, Producer):
         curr = time.perf_counter()
         if self.queue_cmd and curr - self.last_sent > WRITE_DELAY:
             cmd = self.queue_cmd.popleft()
-            # logger.info(f"OXP C: {cmd.hex()}")
+            logger.info(f"OXP C: {cmd.hex()}")
             self.ser.write(cmd)
             self.last_sent = time.perf_counter()
 
