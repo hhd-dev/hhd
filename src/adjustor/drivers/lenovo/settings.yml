@@ -143,6 +143,11 @@ children:
             hint: >-
               Reset to the original fan curve provided by Lenovo in BIOS V28.
 
+  tdp_rgb:
+    type: bool
+    title: Show TDP changes with RGB
+    default: False
+
   charge_limit:
     tags: [advanced]
     type: bool

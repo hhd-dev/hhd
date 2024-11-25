@@ -15,6 +15,7 @@ EVENT_MATCHES: Sequence[tuple[dict[str, Any], str]] = [
     ({"device_class": b"button/power"}, "powerbutton"),
     # Legion GO TDP event
     ({"bus_id": b"D320289E-8FEA-"}, "tdp"),
+    ({"device_class": b"wmi", "bus_id": b"PNP0C14:01"}, "tdp"), # Legion go
     # GPD Force hibernate thermal event
     # , 'type': 0xf100, 'data': 0x0100 ignore these attrs for now...
     ({"device_class": b"thermal_zone", "bus_id": b"LNXTHERM:00"}, "hibernate-thermal"),

@@ -44,6 +44,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.old_conf = None
         self.sys_tdp = False
         self.fan_curve_set = False
+        self.notify_tdp = False
 
         bios_version = get_bios_version()
         logger.info(f"Lenovo BIOS version: {bios_version}")
@@ -326,6 +327,12 @@ class LenovoDriverPlugin(HHDPlugin):
         # Save current config
         self.old_conf = conf["tdp.lenovo"]
 
+        if self.notify_tdp:
+            self.notify_tdp = False
+            print(new_mode)
+            if conf.get("tdp.lenovo.tdp_rgb", False):
+                self.emit({"type": "special", "event": f"tdp_cycle_{new_mode}"})  # type: ignore
+
         if self.startup:
             self.startup = False
 
@@ -333,7 +340,7 @@ class LenovoDriverPlugin(HHDPlugin):
         for ev in events:
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
-                self.sys_tdp = ev['tdp'] is not None
+                self.sys_tdp = ev["tdp"] is not None
             if ev["type"] == "ppd":
                 match ev["status"]:
                     case "power":
@@ -342,6 +349,9 @@ class LenovoDriverPlugin(HHDPlugin):
                         self.new_mode = "balanced"
                     case "performance":
                         self.new_mode = "performance"
+            print(ev)
+            if ev["type"] == "acpi" and ev.get("event", None) == "tdp":
+                self.notify_tdp = True
 
     def close(self):
         pass
