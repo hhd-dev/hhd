@@ -72,6 +72,7 @@ def plugin_run(
     init = time.perf_counter()
     repeated_fail = False
     switch_to_turbo = None
+    first_disabled = True
 
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
