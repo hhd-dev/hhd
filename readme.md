@@ -83,7 +83,7 @@ is added to your device.
 - OneXPlayer
   - X1 (AMD)
   - X1 Mini
-  - F1, F1 EVA-01, F1L
+  - F1, F1 EVA-01, F1L, F1 OLED, F1 Pro
   - 2, 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
   - Mini A07
   - Mini Pro
