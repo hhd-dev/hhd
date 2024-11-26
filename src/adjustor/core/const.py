@@ -1,4 +1,32 @@
+from typing import TypedDict
+
 from .alib import A, D, DeviceParams, AlibParams
+
+
+class DevicePreset(TypedDict):
+    tdp_limit: int
+    slow_limit: int
+    fast_limit: int
+    slow_time: int
+    stapm_time: int
+    temp_target: int
+    fan_curve: dict[int, float] | None
+
+
+class DevideProfile(TypedDict):
+    quiet: DevicePreset
+    balanced: DevicePreset
+    performance: DevicePreset
+    # Turbo is custom with max tdp values
+    turbo: DevicePreset
+
+    platform_profile_map: dict[str, int]
+    ppd_balanced_min: int
+    ppd_performance_min: int
+
+    alib: dict[str, AlibParams]
+    dev: dict[str, DeviceParams]
+
 
 PLATFORM_PROFILE_MAP = [
     ("low-power", 0),
