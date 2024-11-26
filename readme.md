@@ -255,12 +255,15 @@ sudo apt install \
 ```
 
 ### ❄️ NixOS
-Handheld Daemon (core; no overlay, TDP) is on `nixpkgs` in the `unstable` channel.
+Handheld Daemon (core and overlay, no TDP) is on `nixpkgs` in the `unstable` channel.
 
 Add the following to your `configuration.nix` to enable:
 ```nix
-  services.handheld-daemon.enable = true;
-  services.handheld-daemon.user = "<your-user>";
+  services.handheld-daemon = {
+    enable = true;
+    user = "<your-user>";
+    ui.enable = true;
+  };
 ```
 
 ### <a name="bazzite"></a><a name="after-install"></a>Bazzite
