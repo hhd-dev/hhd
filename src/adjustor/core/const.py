@@ -29,6 +29,7 @@ ALIB_PARAMS_5040: dict[str, AlibParams] = ALIB_PARAMS
 ALIB_PARAMS_7040: dict[str, AlibParams] = ALIB_PARAMS
 ALIB_PARAMS_6040: dict[str, AlibParams] = ALIB_PARAMS
 ALIB_PARAMS_8040: dict[str, AlibParams] = ALIB_PARAMS
+ALIB_PARAMS_HX370: dict[str, AlibParams] = ALIB_PARAMS
 
 DEV_PARAMS_30W: dict[str, DeviceParams] = {
     "stapm_limit": D(0, 4, 15, 30, 40),
@@ -69,12 +70,14 @@ DEV_PARAMS_5000: dict[str, DeviceParams] = DEV_PARAMS_25W
 DEV_PARAMS_6000: dict[str, DeviceParams] = DEV_PARAMS_30W
 DEV_PARAMS_7040: dict[str, DeviceParams] = DEV_PARAMS_30W
 DEV_PARAMS_8040: dict[str, DeviceParams] = DEV_PARAMS_30W
+DEV_PARAMS_HX370: dict[str, DeviceParams] = DEV_PARAMS_30W
 DEV_PARAMS_LEGO = DEV_PARAMS_30W
 
 DEV_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams], bool]] = {
     "NEO-01": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False),
     "V3": (DEV_PARAMS_28W, ALIB_PARAMS_8040, False),
     "83E1": (DEV_PARAMS_LEGO, ALIB_PARAMS_7040, False),
+    "ONEXPLAYER F1Pro": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, False),
 }
 
 CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
@@ -88,4 +91,5 @@ CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
     "AMD Ryzen 7 7840U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     "AMD Ryzen 7 8840U": (DEV_PARAMS_8040, ALIB_PARAMS_8040),
     # AMD Athlon Silver 3050e (Win600, will it support tdp?)
+    "AMD Ryzen AI 9 HX 370": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370),
 }
