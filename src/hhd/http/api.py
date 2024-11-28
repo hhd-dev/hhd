@@ -2,9 +2,10 @@ import itertools
 import json
 import logging
 import os
+import socket
 from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from socketserver import ThreadingMixIn
+from socketserver import ThreadingMixIn, TCPServer
 from threading import Condition, Thread
 from typing import Any, Mapping, Sequence, cast
 from urllib.parse import parse_qs, urlparse
@@ -415,6 +416,10 @@ class ThreadingSimpleServer(ThreadingMixIn, HTTPServer):
     pass
 
 
+class UnixHTTPServer(ThreadingMixIn, TCPServer):
+    address_family = socket.AF_UNIX
+
+
 class HHDHTTPServer:
     def __init__(
         self,
@@ -424,18 +429,30 @@ class HHDHTTPServer:
     ) -> None:
         self.localhost = localhost
         self.port = port
+        cond = Condition()
 
         # Have to subclass to create closure
         class NewRestHandler(RestHandler):
             pass
 
-        cond = Condition()
         NewRestHandler.cond = cond
         NewRestHandler.token = token
-        self.cond = cond
         self.handler = NewRestHandler
+
+        # Use another class for Unix handler without
+        # authentication since the file is root only
+        class NewUnixHandler(RestHandler):
+            pass
+
+        NewUnixHandler.cond = cond
+        NewUnixHandler.token = None
+        self.uhandler = NewUnixHandler
+
+        self.cond = cond
         self.https = None
         self.t = None
+        self.unix = None
+        self.tu = None
 
     def update(
         self,
@@ -448,16 +465,18 @@ class HHDHTTPServer:
         ctx: Context,
     ):
         with self.cond:
-            self.handler.settings = settings
-            self.handler.conf = conf
-            self.handler.info = info
-            self.handler.profiles = profiles
-            self.handler.emit = emit
-            self.handler.locales = locales
-            self.handler.ctx = ctx
+            for handler in [self.handler, self.uhandler]:
+                handler.settings = settings
+                handler.conf = conf
+                handler.info = info
+                handler.profiles = profiles
+                handler.emit = emit
+                handler.locales = locales
+                handler.ctx = ctx
             if not hasattr(self.handler, "user_lang"):
                 # Only load user lang once to avoid weirdness
                 self.handler.user_lang = get_user_lang(ctx)
+                self.uhandler.user_lang = self.handler.user_lang
             self.cond.notify_all()
 
     def open(self):
@@ -467,6 +486,19 @@ class HHDHTTPServer:
         self.t = Thread(target=self.https.serve_forever)
         self.t.start()
 
+        try:
+            if not os.path.exists("/run/hhd"):
+                os.mkdir("/run/hhd", 0o700)
+            else:
+                os.chmod("/run/hhd", 0o700)
+            if os.path.exists("/run/hhd/api"):
+                os.remove("/run/hhd/api")
+            self.unix = UnixHTTPServer("/run/hhd/api", self.uhandler) # type: ignore
+            self.tu = Thread(target=self.unix.serve_forever)
+            self.tu.start()
+        except Exception as e:
+            logger.error(f"Error starting server at '/run/hhd/api':\n{e}")
+
     def close(self):
         if self.https and self.t:
             with self.cond:
@@ -475,3 +507,10 @@ class HHDHTTPServer:
             self.t.join()
             self.https = None
             self.t = None
+        if self.unix and self.tu:
+            with self.cond:
+                self.cond.notify_all()
+            self.unix.shutdown()
+            self.tu.join()
+            self.unix = None
+            self.tu = None
