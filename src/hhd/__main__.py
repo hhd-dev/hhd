@@ -413,15 +413,19 @@ def main():
                 ]
                 for fn in cfg_fns:
                     fd = os.open(expanduser(fn, ctx), os.O_RDONLY)
-                    fcntl.fcntl(
-                        fd,
-                        fcntl.F_NOTIFY,
-                        fcntl.DN_CREATE
-                        | fcntl.DN_DELETE
-                        | fcntl.DN_MODIFY
-                        | fcntl.DN_RENAME
-                        | fcntl.DN_MULTISHOT,
-                    )
+                    try:
+                        fcntl.fcntl(
+                            fd,
+                            fcntl.F_NOTIFY,
+                            fcntl.DN_CREATE
+                            | fcntl.DN_DELETE
+                            | fcntl.DN_MODIFY
+                            | fcntl.DN_RENAME
+                            | fcntl.DN_MULTISHOT,
+                        )
+                    except Exception:
+                        os.close(fd)
+                        continue
                     cfg_fds.append(fd)
 
                 should_initialize.clear()
