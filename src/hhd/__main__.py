@@ -412,8 +412,9 @@ def main():
                     join(CONFIG_DIR, "profiles"),
                 ]
                 for fn in cfg_fns:
-                    fd = os.open(expanduser(fn, ctx), os.O_RDONLY)
+                    fd = -1
                     try:
+                        fd = os.open(expanduser(fn, ctx), os.O_RDONLY)
                         fcntl.fcntl(
                             fd,
                             fcntl.F_NOTIFY,
@@ -424,7 +425,8 @@ def main():
                             | fcntl.DN_MULTISHOT,
                         )
                     except Exception:
-                        os.close(fd)
+                        if fd != -1:
+                            os.close(fd)
                         continue
                     cfg_fds.append(fd)
 
