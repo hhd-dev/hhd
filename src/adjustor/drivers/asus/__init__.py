@@ -225,7 +225,7 @@ class AsusDriverPlugin(HHDPlugin):
             lim != self.old_conf["charge_limit"].to(str)
         ):
             self.queue_charge_limit = curr + APPLY_DELAY
-        
+
         if self.queue_charge_limit and self.queue_charge_limit < curr:
             self.queue_charge_limit = None
             match lim:
@@ -279,6 +279,9 @@ class AsusDriverPlugin(HHDPlugin):
         if mode is not None and mode != self.old_conf["tdp_v2.mode"].to(str):
             if not new_tdp:
                 self.sys_tdp = False
+            tdp_reset = True
+
+        if mode is not None and self.startup:
             tdp_reset = True
 
         # Handle EPP for presets
