@@ -1,11 +1,13 @@
 import logging
 import time
+from threading import Event as TEvent, Lock, Thread
 from typing import Sequence
 
 from hhd.plugins import Context, Event, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
 
 from adjustor.core.alib import AlibParams, DeviceParams, alib
+from adjustor.core.fan import fan_worker, get_fan_info
 from adjustor.core.platform import get_platform_choices, set_platform_profile
 from adjustor.i18n import _
 
@@ -43,6 +45,14 @@ class SmuQamPlugin(HHDPlugin):
         self.new_tdp = None
         self.is_set = False
         self.lims = self.dev.get("skin_limit", self.dev.get("stapm_limit", None))
+
+        self.fan_info = None
+        self.fan_t = None
+        self.fan_should_exit = TEvent()
+        self.fan_junction = TEvent()
+        self.fan_lock = Lock()
+        self.fan_curve = {}
+        self.fan_state = {}
 
         # Workaround for debugging on the legion go
         # Avoids sending SMU commands that will conflict with Lenovo TDP on
@@ -87,6 +97,9 @@ class SmuQamPlugin(HHDPlugin):
                 {"min": dmin, "max": dmax, "default": default}
             )
 
+        if not self.fan_info:
+            del out["tdp"]["qam"]["children"]["fan"]
+
         return out
 
     def open(
@@ -95,6 +108,7 @@ class SmuQamPlugin(HHDPlugin):
         context: Context,
     ):
         self.emit = emit
+        self.fan_info = get_fan_info()
 
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -191,12 +205,57 @@ class SmuQamPlugin(HHDPlugin):
         self.old_tdp = new_tdp
         self.old_boost = new_boost
 
+        if self.fan_info:
+            mode = conf["tdp.qam.fan.mode"].to(str)
+            if mode != "disabled":
+                with self.fan_lock:
+                    for k, v in conf[f"tdp.qam.fan.{mode}"].to(dict).items():
+                        if not k.startswith("st"):
+                            continue
+                        self.fan_curve[int(k[2:])] = v / 100
+                    if self.fan_state:
+                        s = self.fan_state
+                        fan_speed = (
+                            f"{s['v_curr']*100:.1f}% @ {s['t_target']}C"
+                            if s["in_setpoint"]
+                            else f"{s['v_curr']*100:.1f}% → {s['v_target']*100:.1f}%"
+                        )
+                        conf[f"tdp.qam.fan.{mode}.info"] = (
+                            f"{fan_speed} ({', '.join(map(str, s['v_rpm']))} RPM)\n"
+                            + f"Tctl: {s['t_junction']:.2f}C, "
+                            + f"Edge: {s['t_edge']:.2f}C\n"
+                        )
+                    if "junction" in mode:
+                        self.fan_junction.set()
+                    else:
+                        self.fan_junction.clear()
+
+                if not self.fan_t:
+                    self.fan_t = Thread(
+                        target=fan_worker,
+                        args=(
+                            self.fan_info,
+                            self.fan_should_exit,
+                            self.fan_lock,
+                            self.fan_curve,
+                            self.fan_state,
+                            self.fan_junction,
+                        ),
+                    )
+                    self.fan_t.start()
+            else:
+                if self.fan_t:
+                    self.fan_should_exit.set()
+                    self.fan_t.join()
+                    self.fan_t = None
+                    self.fan_state = {}
+
     def notify(self, events: Sequence[Event]):
         for ev in events:
             if ev["type"] == "tdp":
                 self.sys_tdp = True
                 self.new_tdp = ev["tdp"]
-                self.sys_tdp = ev['tdp'] is not None
+                self.sys_tdp = ev["tdp"] is not None
 
             if ev["type"] == "ppd":
                 # TODO: Make tunable per device
@@ -207,13 +266,19 @@ class SmuQamPlugin(HHDPlugin):
                         self.new_tdp = 15
                     case "performance":
                         self.new_tdp = 25
-            
-            if ev['type'] == 'special' and ev.get('event', None) == "wakeup":
-                logger.info(f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds.")
+
+            if ev["type"] == "special" and ev.get("event", None) == "wakeup":
+                logger.info(
+                    f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds."
+                )
                 self.queued = time.time() + SLEEP_DELAY
 
     def close(self):
-        pass
+        if self.fan_t:
+            self.fan_should_exit.set()
+            self.fan_t.join()
+            self.fan_t = None
+            self.fan_state = {}
 
 
 class SmuDriverPlugin(HHDPlugin):

@@ -1,6 +1,7 @@
 import logging
 import time
 from typing import TypedDict
+from threading import Lock, Event
 
 from .alg import (
     SETPOINT_UPDATE_T,
@@ -40,10 +41,12 @@ class FanState(TypedDict):
     v_curr: float
     v_target: float
     v_target_pwm: int
+    t_target: int
     v_rpm: list[int]
     t_junction: float
     t_edge: float
     fan_data: FanData
+    in_setpoint: bool
 
 
 def get_fan_info() -> FanInfo | None:
@@ -131,9 +134,35 @@ def update_fan_speed(
             "v_rpm": fan_speeds,
             "t_junction": t_junction,
             "t_edge": t_edge,
+            "t_target": data["t_target"],
             "fan_data": data,
+            "in_setpoint": in_setpoint,
         },
     )
+
+
+def fan_worker(
+    info: FanInfo,
+    should_exit: Event,
+    lock: Lock,
+    fan_curve: dict[int, float],
+    state: FanState,
+    junction: Event,
+):
+    try:
+        set_fans_to_pwm(True, info)
+        while not should_exit.is_set():
+            with lock:
+                state_tmp = state or None # First time state will be empty
+                in_setpoint, state_tmp = update_fan_speed(
+                    state_tmp, info, fan_curve, junction.is_set()
+                )
+                state.update(state_tmp)
+            time.sleep(SETPOINT_UPDATE_T if in_setpoint else UPDATE_T)
+    except Exception as e:
+        logger.error(f"Fan worker failed:\n{e}")
+    finally:
+        set_fans_to_pwm(False, info)
 
 
 def fan_pwm_tester(normal_curve: bool = True, observe_only: bool = False):
@@ -181,12 +210,22 @@ def fan_pwm_tester(normal_curve: bool = True, observe_only: bool = False):
 
         state = None
         for i in range(10000000):
-            in_setpoint, state = update_fan_speed(state, fan_info, fan_curve, False, observe_only=observe_only)
-            
-            print(f"\n> {i:05d}: {'in setpoint' if in_setpoint else 'updating'}{' (observe)' if observe_only else ''}")
-            print(f"  Junction: {state['t_junction']:.2f}C, Edge: {state['t_edge']:.2f}C")
-            print(f"  Current: {state['v_curr']*100:.1f}%, Target: {state['v_target']*100:.1f}%")
-            print(f"  Fan speeds: {' '.join(map(lambda rpm: f"{rpm:4d}rpm/{MAX_FAN}rpm ({100*rpm/MAX_FAN:.1f}%)", state['v_rpm']))}")
+            in_setpoint, state = update_fan_speed(
+                state, fan_info, fan_curve, False, observe_only=observe_only
+            )
+
+            print(
+                f"\n> {i:05d}: {'in setpoint' if in_setpoint else 'updating'}{' (observe)' if observe_only else ''}"
+            )
+            print(
+                f"  Junction: {state['t_junction']:.2f}C, Edge: {state['t_edge']:.2f}C"
+            )
+            print(
+                f"  Current: {state['v_curr']*100:.1f}%, Target: {state['v_target']*100:.1f}%"
+            )
+            print(
+                f"  Fan speeds: {' '.join(map(lambda rpm: f"{rpm:4d}rpm/{MAX_FAN}rpm ({100*rpm/MAX_FAN:.1f}%)", state['v_rpm']))}"
+            )
             time.sleep(SETPOINT_UPDATE_T if in_setpoint else UPDATE_T)
     except KeyboardInterrupt:
         print("Exiting fan test.")

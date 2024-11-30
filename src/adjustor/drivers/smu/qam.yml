@@ -19,3 +19,103 @@ children:
     type: display
     title: " "
     tags: []
+  
+  fan:
+    type: mode
+    title: Custom Fan Curve
+    hint: >-
+      Allows you to set a custom fan curve and to choose the temperature
+      probe (Edge or Junction). Junction is the peak temperature of the
+      chip: responds faster and prevents throttling. Edge is the temperature
+      of the chip: responds slower and prevents overheating.
+
+    default: disabled
+    modes:
+      disabled:
+        type: container
+        title: Disabled
+
+      manual_edge:
+        type: container
+        title: Manual (Edge, Smooth)
+        tags: [ non-essential ]
+        children:
+
+          info:
+            title: ""
+            type: display
+
+          st40: &speed_template
+            hint: Sets the speed at the named temperature.
+            tags: [slim]
+            type: int
+            min: 0
+            max: 100
+            step: 2
+            unit: "%"
+            title: 40C
+            default: 25
+
+          st50:
+            <<: *speed_template
+            title: 50C
+            default: 40
+          st55:
+            <<: *speed_template
+            title: 55C
+            default: 45
+          st60:
+            <<: *speed_template
+            title: 60C
+            default: 50
+          st65:
+            <<: *speed_template
+            title: 65C
+            default: 55
+          st70:
+            <<: *speed_template
+            title: 70C
+            default: 70
+          st80:
+            <<: *speed_template
+            title: 80C
+            default: 85
+          st90:
+            <<: *speed_template
+            title: 90C
+            default: 100
+
+      manual_junction:
+        type: container
+        title: Manual (Tctl, Fast)
+        tags: [ non-essential ]
+        children:
+
+          info:
+            title: ""
+            type: display
+
+          st40:
+            <<: *speed_template
+            title: 40C
+            default: 40
+          st50:
+            <<: *speed_template
+            title: 50C
+            default: 45
+          st60:
+            <<: *speed_template
+            title: 60C
+            default: 50
+          st70:
+            <<: *speed_template
+            title: 70C
+            default: 80
+          st80:
+            <<: *speed_template
+            title: 80C
+            default: 90
+          st90:
+            <<: *speed_template
+            title: 90C
+            default: 100
