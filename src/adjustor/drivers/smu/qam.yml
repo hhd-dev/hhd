@@ -84,6 +84,10 @@ children:
             <<: *speed_template
             title: 90C
             default: 100
+          
+          reset:
+            type: action
+            title: Reset to Default
 
       manual_junction:
         type: container
@@ -119,3 +123,7 @@ children:
             <<: *speed_template
             title: 90C
             default: 100
+
+          reset:
+            type: action
+            title: Reset to Default

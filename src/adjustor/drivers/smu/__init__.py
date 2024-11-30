@@ -17,6 +17,24 @@ PP_DELAY = 0.2
 APPLY_DELAY = 1
 SLEEP_DELAY = 4
 
+DEFAULT_EDGE = {
+    40: 25,
+    50: 40,
+    55: 45,
+    60: 50,
+    65: 55,
+    70: 70,
+    80: 85,
+    90: 100,
+}
+DEFAULT_TCTL = {
+    40: 40,
+    50: 45,
+    60: 50,
+    70: 80,
+    80: 90,
+    90: 100,
+}
 
 class SmuQamPlugin(HHDPlugin):
 
@@ -209,6 +227,13 @@ class SmuQamPlugin(HHDPlugin):
             mode = conf["tdp.qam.fan.mode"].to(str)
             if mode != "disabled":
                 with self.fan_lock:
+                    if conf[f"tdp.qam.fan.{mode}.reset"].to(bool):
+                        conf[f"tdp.qam.fan.{mode}.reset"] = False
+                        curve = DEFAULT_EDGE if "edge" in mode else DEFAULT_TCTL
+                        for k, v in curve.items():
+                            if f"tdp.qam.fan.{mode}.st{k}" in conf:
+                                conf[f"tdp.qam.fan.{mode}.st{k}"] = v
+
                     for k, v in conf[f"tdp.qam.fan.{mode}"].to(dict).items():
                         if not k.startswith("st"):
                             continue
