@@ -24,6 +24,8 @@ BTN_MAPPINGS: dict[int, Button] = {
 }
 
 AMBERNIC_MAPPINGS: dict[int, str] = {
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
     B("KEY_LEFTMETA"): "share",
     B("KEY_G"): "mode",
 }
