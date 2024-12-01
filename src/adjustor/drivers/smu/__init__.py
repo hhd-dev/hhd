@@ -256,6 +256,7 @@ class SmuQamPlugin(HHDPlugin):
                         self.fan_junction.clear()
 
                 if not self.fan_t:
+                    self.fan_should_exit.clear()
                     self.fan_t = Thread(
                         target=fan_worker,
                         args=(
