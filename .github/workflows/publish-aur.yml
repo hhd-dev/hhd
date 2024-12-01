@@ -28,3 +28,4 @@ jobs:
           commit_message: manual update from actions
           allow_empty_commits: false
           ssh_keyscan_types: rsa,ecdsa,ed25519
+          updpkgsums: true
