@@ -55,35 +55,6 @@ children:
             unit: "%"
             title: 40C
             default: 25
-
-          st50:
-            <<: *speed_template
-            title: 50C
-            default: 40
-          st55:
-            <<: *speed_template
-            title: 55C
-            default: 45
-          st60:
-            <<: *speed_template
-            title: 60C
-            default: 50
-          st65:
-            <<: *speed_template
-            title: 65C
-            default: 55
-          st70:
-            <<: *speed_template
-            title: 70C
-            default: 70
-          st80:
-            <<: *speed_template
-            title: 80C
-            default: 85
-          st90:
-            <<: *speed_template
-            title: 90C
-            default: 100
           
           reset:
             type: action
@@ -103,26 +74,6 @@ children:
             <<: *speed_template
             title: 40C
             default: 40
-          st50:
-            <<: *speed_template
-            title: 50C
-            default: 45
-          st60:
-            <<: *speed_template
-            title: 60C
-            default: 50
-          st70:
-            <<: *speed_template
-            title: 70C
-            default: 80
-          st80:
-            <<: *speed_template
-            title: 80C
-            default: 90
-          st90:
-            <<: *speed_template
-            title: 90C
-            default: 100
 
           reset:
             type: action

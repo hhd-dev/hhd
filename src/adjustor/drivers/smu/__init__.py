@@ -19,6 +19,7 @@ SLEEP_DELAY = 4
 
 DEFAULT_EDGE = {
     40: 25,
+    45: 25,
     50: 40,
     55: 45,
     60: 50,
@@ -35,6 +36,7 @@ DEFAULT_TCTL = {
     80: 90,
     90: 100,
 }
+
 
 class SmuQamPlugin(HHDPlugin):
 
@@ -117,6 +119,30 @@ class SmuQamPlugin(HHDPlugin):
 
         if not self.fan_info:
             del out["tdp"]["qam"]["children"]["fan"]
+        else:
+            base = out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_edge"][
+                "children"
+            ]["st40"]
+            reset = out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_edge"][
+                "children"
+            ].pop("reset")
+            for k, v in DEFAULT_EDGE.items():
+                out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_edge"][
+                    "children"
+                ][f"st{k}"] = {**base, "title": f"{k}C", "default": v}
+            out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_edge"]["children"][
+                "reset"
+            ] = reset
+            reset = out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_junction"][
+                "children"
+            ].pop("reset")
+            for k, v in DEFAULT_TCTL.items():
+                out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_junction"][
+                    "children"
+                ][f"st{k}"] = {**base, "title": f"{k}C", "default": v}
+            out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_junction"][
+                "children"
+            ]["reset"] = reset
 
         return out
 

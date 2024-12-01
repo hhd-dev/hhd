@@ -34,7 +34,6 @@ UPDATE_FREQUENCY = 5
 UPDATE_T = 1 / UPDATE_FREQUENCY
 SETPOINT_UPDATE_FREQUENCY = 1
 SETPOINT_UPDATE_T = 1 / SETPOINT_UPDATE_FREQUENCY
-HYSTERESIS_RATIO = 0.25
 
 
 def _calculate_jerk(speed_span, decel_ratio, freq, time):
@@ -133,12 +132,12 @@ def update_setpoint(temp: float, curr: int, fan_curve: dict[int, float]):
     # Add some hysterisis to avoid dithering
     if idx > 0:
         prev = targets[idx - 1]
-        if temp < prev + (curr - prev) * HYSTERESIS_RATIO:
+        if temp < prev:
             return prev
 
     if idx < len(targets) - 1:
         next = targets[idx + 1]
-        if temp > next - (next - curr) * HYSTERESIS_RATIO:
+        if temp > next:
             return next
 
     return curr
