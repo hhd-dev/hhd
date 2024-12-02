@@ -25,10 +25,7 @@ tdp:
       tags: [ non-essential ]
       default: >
         Handheld Daemon supports the TDP slider in Steam and can use its per
-        game profiles now. For the Legion Go and Ally, it also supports custom
-        fan curves and battery limits.
-        Consider it, unless you prefer Decky.
-        (Powercontrol supports fan curves for GPD and Ayaneo devices)
+        game profiles. It also supports custom fan curves and battery limits.
 
     decky_remove:
       title: Disable Decky TDP Plugins
