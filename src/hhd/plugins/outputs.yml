@@ -55,6 +55,7 @@ modes:
       paddles_as:
         type: multiple
         title: Extra buttons as
+        tags: [non-essential]
         hint: >-
           Changes the behavior of the extra buttons.
           Left button is Keyboard, right button is Overlay.
