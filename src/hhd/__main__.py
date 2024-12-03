@@ -44,6 +44,7 @@ from .utils import expanduser, fix_perms, get_context, get_os, switch_priviledge
 logger = logging.getLogger(__name__)
 
 CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
+PLUGIN_WHITELIST = os.environ.get("HHD_PLUGINS", "")
 
 ERROR_DELAY = 5
 INIT_DELAY = 0.4
@@ -198,13 +199,17 @@ def main():
         logger.info(f"Running autodetection...")
 
         detector_names = []
+        whitelist = PLUGIN_WHITELIST.split(",") if PLUGIN_WHITELIST else []
         for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
             name = autodetect.name
             detector_names.append(name)
             if name in blacklist:
                 logger.info(f"Skipping blacklisted provider '{name}'.")
-            else:
-                detectors[autodetect.name] = autodetect.resolve()
+            if whitelist and name not in whitelist:
+                logger.info(f"Skipping provider '{name}' due to whitelist.")
+                continue
+
+            detectors[autodetect.name] = autodetect.resolve()
 
         # Save new blacklist file
         save_blacklist_yaml(blacklist_fn, detector_names, blacklist)
