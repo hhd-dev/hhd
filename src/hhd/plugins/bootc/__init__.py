@@ -17,7 +17,9 @@ BOOTC_PATH = os.environ.get("HHD_BOOTC_PATH", "bootc")
 BRANCHES = os.environ.get(
     "HHD_BOOTC_BRANCHES", "stable:Stable,testing:Testing,unstable:Unstable"
 )
-DEFAULT_PREFIX = "> "
+
+REF_PREFIX = "§ "
+DEFAULT_PREFIX = "◉ "
 
 BOOTC_STATUS_CMD = [
     BOOTC_PATH,
@@ -189,25 +191,32 @@ class BootcPlugin(HHDPlugin):
 
         # Find branch and replace tag
         branch = get_branch(img, self.branches)
-        rebased_ver = False
+        rebased_ver = None
         self.branch_name = branch
         self.branch_ref = None
+        has_rebased = False
         if branch:
             if ":" in img:
                 tag = img[img.rindex(":") + 1 :]
                 if tag != branch:
-                    rebased_ver = True
+                    rebased_ver = tag
+                    has_rebased = True
                     self.branch_ref = ref.split(":")[0] + ":" + branch
                 img = img[: img.rindex(":") + 1] + branch
         if img:
             conf["updates.bootc.image"] = img
 
         # If we have a staged update, that will boot first
-        s = self.get_version("staged")
+        og = s = self.get_version("staged")
         staged = False
         if s:
-            conf["updates.bootc.staged"] = DEFAULT_PREFIX + s
+            s = DEFAULT_PREFIX + s
             staged = True
+        if s and og == rebased_ver:
+            s = REF_PREFIX + s
+            # Only apply one start to avoid confusion
+            rebased_ver = None
+        conf["updates.bootc.staged"] = s
 
         # Check if the user selected rollback
         # Then that will be the default, provided there is a rollback
@@ -223,9 +232,11 @@ class BootcPlugin(HHDPlugin):
         conf[f"updates.bootc.rollback"] = s
 
         # Otherwise, the booted version will be the default
-        s = self.get_version("booted")
+        og = s = self.get_version("booted")
         if s and not rollback and not staged:
             s = DEFAULT_PREFIX + s
+        if s and og == rebased_ver:
+            s = REF_PREFIX + s
         conf[f"updates.bootc.booted"] = s
 
         conf["updates.bootc.status"] = ""
@@ -256,7 +267,7 @@ class BootcPlugin(HHDPlugin):
         elif self.get_version("staged"):
             conf["updates.bootc.stage.mode"] = "ready_updated"
             self.state = "ready_updated"
-        elif rebased_ver:
+        elif has_rebased:
             conf["updates.bootc.stage.mode"] = "ready_rebased"
             self.state = "ready_rebased"
         elif rollback:
