@@ -53,6 +53,23 @@ children:
           rebase:
             type: action
             title: Change Branch (Rebase)
+          
+      ready_rebased:
+        type: container
+        children:
+          update:
+            type: action
+            title: Remove Pin and Update
+
+          revert:
+            type: action
+            title: Revert to Previous
+            hint: >-
+              Rollback to the previous image.
+          
+          rebase:
+            type: action
+            title: Change Branch (Rebase)
 
       ready_check:
         type: container
@@ -93,9 +110,27 @@ children:
             type: action
             title: Change Branch (Rebase)
           
-          # rollback:
-          #   type: action
-          #   title: Rollback Version
+      ready_reverted:
+        type: container
+        children:
+          reboot:
+            type: action
+            title: Reboot
+            tags: [verify]
+            hint: >-
+              Reboot to apply the update. Are you sure?
+
+          revert:
+            type: action
+            title: Undo Revert
+            
+          update:
+            type: action
+            title: Check for Updates
+          
+          rebase:
+            type: action
+            title: Choose Version (Rebase)
 
       incompatible:
         type: container
@@ -131,18 +166,6 @@ children:
           progress:
             type: custom
             tags: [progress]
-      
-      rollback:
-        type: container
-        children:
-          version:
-            type: custom
-            title: Version
-            tags: [dropdown]
-
-          cancel:
-            type: action
-            title: Cancel
 
       rebase:
         type: container
@@ -151,6 +174,11 @@ children:
             type: multiple
             title: Branch
             options:
+
+          version:
+            type: custom
+            title: Version
+            tags: [dropdown]
 
           apply:
             type: action

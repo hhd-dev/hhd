@@ -15,6 +15,7 @@ BOOTC_PATH = os.environ.get("HHD_BOOTC_PATH", "bootc")
 BRANCHES = os.environ.get(
     "HHD_BOOTC_BRANCHES", "stable:Stable,testing:Testing,unstable:Unstable"
 )
+DEFAULT_PREFIX = "> "
 
 BOOTC_STATUS_CMD = [
     BOOTC_PATH,
@@ -52,6 +53,8 @@ STAGES = Literal[
     "ready",
     "ready_check",
     "ready_updated",
+    "ready_reverted",
+    "ready_rebased",
     "incompatible",
     "waiting",
     "rebase_dialog",
@@ -76,7 +79,7 @@ def get_ref_from_status(status: dict | None):
     return (status or {}).get("spec", {}).get("image", {}).get("image", "")
 
 
-def get_branch(ref: str, branches: dict):
+def get_branch(ref: str, branches: dict, fallback: bool = True):
     if ":" not in ref:
         return next(iter(branches))
     curr_tag = ref[ref.rindex(":") + 1 :]
@@ -85,6 +88,8 @@ def get_branch(ref: str, branches: dict):
         if branch in curr_tag:
             return branch
 
+    if not fallback:
+        return None
     # If no tag, assume it is the first one
     return next(iter(branches))
 
@@ -131,9 +136,12 @@ def is_incompatible(status: dict):
 class BootcPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"bootc"
-        self.priority = 85
+        self.priority = 70
         self.log = "bupd"
         self.proc = None
+        self.branch_name = None
+        self.branch_ref = None
+        self.checked_update = False
 
         self.branches = {}
         for branch in BRANCHES.split(","):
@@ -173,14 +181,51 @@ class BootcPlugin(HHDPlugin):
 
     def _init(self, conf: Config):
         self.status = get_bootc_status()
-        img = self.status.get("spec", {}).get("image", {}).get("image", "")
+        ref = self.status.get("spec", {}).get("image", {}).get("image", "")
+        img = ref
         if "/" in img:
             img = img[img.rfind("/") + 1 :]
+
+        # Find branch and replace tag
+        branch = get_branch(img, self.branches)
+        rebased_ver = False
+        self.branch_name = branch
+        self.branch_ref = None
+        if branch:
+            if ":" in img:
+                tag = img[img.rindex(":") + 1 :]
+                if tag != branch:
+                    rebased_ver = True
+                    self.branch_ref = ref.split(":")[0] + ":" + branch
+                img = img[: img.rindex(":") + 1] + branch
         if img:
             conf["updates.bootc.image"] = img
 
-        for v in ["staged", "booted", "rollback"]:
-            conf[f"updates.bootc.{v}"] = self.get_version(v)
+        # If we have a staged update, that will boot first
+        s = self.get_version("staged")
+        staged = False
+        if s:
+            conf["updates.bootc.staged"] = DEFAULT_PREFIX + s
+            staged = True
+
+        # Check if the user selected rollback
+        # Then that will be the default, provided there is a rollback
+        rollback = (
+            not staged
+            and self.status.get("spec", {}).get("bootOrder", None) == "rollback"
+        )
+        s = self.get_version("rollback")
+        if s and rollback:
+            s = DEFAULT_PREFIX + s
+        else:
+            rollback = False
+        conf[f"updates.bootc.rollback"] = s
+
+        # Otherwise, the booted version will be the default
+        s = self.get_version("booted")
+        if s and not rollback and not staged:
+            s = DEFAULT_PREFIX + s
+        conf[f"updates.bootc.booted"] = s
 
         conf["updates.bootc.status"] = ""
         self.updated = True
@@ -191,10 +236,14 @@ class BootcPlugin(HHDPlugin):
         if "/" in cached_img:
             cached_img = cached_img[cached_img.rfind("/") + 1 :]
 
+        if self.checked_update:
+            conf[f"updates.bootc.update"] = _("No update available")
+        else:
+            conf[f"updates.bootc.update"] = None
+
         if is_incompatible(self.status):
             conf["updates.bootc.stage.mode"] = "incompatible"
             self.state = "incompatible"
-            conf[f"updates.bootc.update"] = None
         elif (
             cached_version
             and cached_img == img
@@ -206,11 +255,15 @@ class BootcPlugin(HHDPlugin):
         elif self.get_version("staged"):
             conf["updates.bootc.stage.mode"] = "ready_updated"
             self.state = "ready_updated"
-            conf[f"updates.bootc.update"] = None
+        elif rebased_ver:
+            conf["updates.bootc.stage.mode"] = "ready_rebased"
+            self.state = "ready_rebased"
+        elif rollback:
+            conf["updates.bootc.stage.mode"] = "ready_reverted"
+            self.state = "ready_reverted"
         else:
             conf["updates.bootc.stage.mode"] = "ready_check"
             self.state = "ready_check"
-            conf[f"updates.bootc.update"] = None
 
     def update(self, conf: Config):
 
@@ -219,16 +272,37 @@ class BootcPlugin(HHDPlugin):
             case "init":
                 self._init(conf)
             # Ready
-            case "ready" | "ready_check" | "ready_updated" as e:
+            case (
+                "ready"
+                | "ready_check"
+                | "ready_updated"
+                | "ready_reverted"
+                | "ready_rebased" as e
+            ):
                 update = conf.get_action(f"updates.bootc.stage.{e}.update")
                 revert = conf.get_action(f"updates.bootc.stage.{e}.revert")
                 rebase = conf.get_action(f"updates.bootc.stage.{e}.rebase")
-                rollback = conf.get_action(f"updates.bootc.stage.{e}.rollback")
                 reboot = conf.get_action(f"updates.bootc.stage.{e}.reboot")
 
                 if update:
-                    if e == "ready":
+                    if e == "ready_rebased" and self.branch_ref:
+                        self.checked_update = False
                         self.state = "waiting_progress"
+                        self.proc = run_command_threaded(
+                            [BOOTC_PATH, "switch", self.branch_ref]
+                        )
+                        conf["updates.bootc.stage.mode"] = "loading"
+                        conf["updates.bootc.stage.loading.progress"] = {
+                            "text": _("Updating to latest "),
+                            "unit": self.branches.get(
+                                self.branch_name, self.branch_name
+                            ),
+                            "value": None,
+                        }
+
+                    elif e == "ready":
+                        self.state = "waiting_progress"
+                        self.checked_update = False
                         self.proc = run_command_threaded(BOOTC_UPDATE_CMD, output=False)
                         conf["updates.bootc.stage.mode"] = "loading"
                         conf["updates.bootc.stage.loading.progress"] = {
@@ -239,6 +313,7 @@ class BootcPlugin(HHDPlugin):
                     else:
                         self.state = "waiting"
                         self.proc = run_command_threaded(BOOTC_STATUS_CMD)
+                        self.checked_update = True
                         conf["updates.bootc.stage.mode"] = "loading"
                         conf["updates.bootc.stage.loading.progress"] = {
                             "text": _("Checking for updates..."),
@@ -246,19 +321,23 @@ class BootcPlugin(HHDPlugin):
                             "unit": None,
                         }
                 elif revert:
+                    self.checked_update = False
                     self.state = "waiting"
                     self.proc = run_command_threaded(BOOTC_ROLLBACKCMD)
                     conf["updates.bootc.stage.mode"] = "loading"
+                    if e == "ready_updated":
+                        text = _("Undoing Update...")
+                    elif e == "ready_reverted":
+                        text = _("Undoing Revert...")
+                    else:
+                        text = _("Reverting to Previous version...")
                     conf["updates.bootc.stage.loading.progress"] = {
-                        "text": (
-                            _("Undoing Update...")
-                            if e == "ready_updated"
-                            else _("Setting Previous as default...")
-                        ),
+                        "text": text,
                         "value": None,
                         "unit": None,
                     }
                 elif rebase:
+                    self.checked_update = False
                     if not self.branches:
                         self._init(conf)
                     else:
@@ -317,7 +396,9 @@ class BootcPlugin(HHDPlugin):
                         conf["updates.bootc.stage.mode"] = "loading"
                         conf["updates.bootc.stage.loading.progress"] = {
                             "text": _("Rebasing to "),
-                            "unit": self.branches.get(branch, branch),
+                            "unit": self.branches.get(
+                                branch, branch.capitalize() if branch else None
+                            ),
                             "value": None,
                         }
                     else:
