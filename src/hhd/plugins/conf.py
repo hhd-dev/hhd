@@ -176,6 +176,14 @@ class Config:
         except KeyError:
             return default
 
+    def get_action(self, key):
+        if key not in self:
+            return False
+        tmp = bool(self[key].conf)
+        if tmp:
+            self[key] = False
+        return tmp
+
     def to(self, t: type[A]) -> A:
         return cast(t, self.conf)
 

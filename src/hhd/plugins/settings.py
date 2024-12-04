@@ -714,32 +714,64 @@ def standard_validator(tags, config, value):
     if "progress" in tags:
         if not value:
             return False
-        
+
         # Progress contains a dict with
         # three values: value, max, unit, and text
         if not isinstance(value, Mapping):
-            return False
-        
+            return True
+
         # Value is optional and should be a number
         # If it is none, the progress bar should be pulsing
-        if "value" in value:
-            if not isinstance(value["value"], (int, float)):
-                return False
+        if (
+            "value" in value
+            and value is not None
+            and not isinstance(value["value"], (int, float))
+        ):
+            return True
 
         # Max is required and should be a number (if value is present)
-        if "max" not in value and "value" in value:
-            return False
-        
-        if not isinstance(value["max"], (int, float)):
-            return False
-        
+        if "max" not in value and "value" in value and value["value"] is not None:
+            return True
+
+        if (
+            "max" in value
+            and value["max"] is not None
+            and not isinstance(value["max"], (int, float))
+        ):
+            return True
+
         # Unit is optional, should be text
-        if "unit" in value and not isinstance(value["unit"], str):
-            return False
-        
+        if (
+            "unit" in value
+            and value["unit"] is not None
+            and not isinstance(value["unit"], str)
+        ):
+            return True
+
         # Text is optional, should be text
-        if "text" in value and not isinstance(value["text"], str):
+        if (
+            "text" in value
+            and value["text"] is not None
+            and not isinstance(value["text"], str)
+        ):
+            return True
+
+        return False
+
+    if "dropdown" in tags:
+        if not value:
             return False
+
+        if not isinstance(value, dict):
+            return True
+
+        if "options" not in value:
+            return True
+
+        if "value" in value and value["value"] not in value["options"]:
+            return True
+
+        return False
 
 
 def validate_config(

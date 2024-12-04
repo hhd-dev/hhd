@@ -1,0 +1,139 @@
+type: container
+tags: [system, non-essential]
+title: System Image
+hint: >-
+  Manage the currently installed image with bootc.
+
+children:
+  image:
+    tags: [slim, bold]
+    type: display
+    title: Image
+    default: bazzite-deck:stable
+
+  staged:
+    tags: [slim, bold]
+    type: display
+    title: Next
+
+  booted:
+    tags: [slim]
+    type: display
+    title: Current
+  
+  rollback:
+    tags: [slim]
+    type: display
+    title: Previous
+  
+  update:
+    tags: [slim, bold]
+    type: display
+    title: Update
+
+  stage:
+    type: mode
+    tags: [no_dropdown]
+    title: Update Stage
+
+    modes:
+      ready:
+        type: container
+        children:
+          update:
+            type: action
+            title: Apply Update
+
+          revert:
+            type: action
+            title: Revert to Previous
+            hint: >-
+              Rollback to the previous image.
+          
+          rebase:
+            type: action
+            title: Change Branch (Rebase)
+
+      ready_check:
+        type: container
+        children:
+          update:
+            type: action
+            title: Check for Updates
+
+          revert:
+            type: action
+            title: Revert to Previous
+            hint: >-
+              Rollback to the previous image.
+          
+          rebase:
+            type: action
+            title: Change Branch (Rebase)
+          
+          # rollback:
+          #   type: action
+          #   title: Rollback Version
+
+      incompatible:
+        type: container
+        children:
+          error:
+            type: display
+            tags: [error]
+            title: Error
+            default: >
+              Due to layering or custom initramfs, you cannot use bootc.
+              Undo the customizations and try again.
+
+          reset:
+            type: action
+            title: Run rpm-ostree reset
+            tag: [verify]
+            hint: >-
+              Disable the custom initramfs and remove layers.
+  
+      loading_cancellable:
+        type: container
+        children:
+          progress:
+            type: progress
+          
+          cancel:
+            type: action
+            title: Cancel
+      
+      loading:
+        type: container
+        children:
+          progress:
+            type: custom
+            tags: [progress]
+      
+      rollback:
+        type: container
+        children:
+          version:
+            type: custom
+            title: Version
+            tags: [dropdown]
+
+          cancel:
+            type: action
+            title: Cancel
+
+      rebase:
+        type: container
+        children:
+          branch:
+            type: multiple
+            title: Branch
+            options:
+
+          apply:
+            type: action
+            title: Apply   
+
+          cancel:
+            type: action
+            title: Cancel

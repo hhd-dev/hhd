@@ -43,6 +43,7 @@ generic = "hhd.device.generic:autodetect"
 powerbuttond = "hhd.plugins.powerbutton:autodetect"
 rgb = "hhd.plugins.rgb:autodetect"
 overlay = "hhd.plugins.overlay:autodetect"
+bootc = "hhd.plugins.bootc:autodetect"
 # display = "hhd.plugins.display:autodetect"
 
 [project.entry-points."hhd.i18n"]
