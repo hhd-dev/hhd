@@ -77,11 +77,15 @@ def get_ref_from_status(status: dict | None):
 
 
 def get_branch(ref: str, branches: dict):
+    if ":" not in ref:
+        return next(iter(branches))
     curr_tag = ref[ref.rindex(":") + 1 :]
+
     for branch in branches:
         if branch in curr_tag:
-            curr_tag = branch
-            break
+            return branch
+
+    # If no tag, assume it is the first one
     return next(iter(branches))
 
 
@@ -267,9 +271,7 @@ class BootcPlugin(HHDPlugin):
                             .get("image", {})
                             .get("image", "")
                         )
-                        default = get_branch(curr, self.branches) or next(
-                            iter(self.branches)
-                        )
+                        default = get_branch(curr, self.branches)
                         conf["updates.bootc.stage.rebase.branch"] = default
                 elif reboot:
                     logger.info("User pressed reboot in updater. Rebooting...")
