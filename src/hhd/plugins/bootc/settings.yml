@@ -180,6 +180,11 @@ children:
             type: custom
             title: Version
             tags: [dropdown]
+          
+          version_error:
+            type: display
+            title: Error
+            tags: [error, slim]
 
           apply:
             type: action

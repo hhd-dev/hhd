@@ -711,6 +711,8 @@ class Validator(Protocol):
 
 
 def standard_validator(tags, config, value):
+    return True
+
     if "progress" in tags:
         if not value:
             return False
@@ -718,7 +720,7 @@ def standard_validator(tags, config, value):
         # Progress contains a dict with
         # three values: value, max, unit, and text
         if not isinstance(value, Mapping):
-            return True
+            return False
 
         # Value is optional and should be a number
         # If it is none, the progress bar should be pulsing
@@ -727,18 +729,18 @@ def standard_validator(tags, config, value):
             and value is not None
             and not isinstance(value["value"], (int, float))
         ):
-            return True
+            return False
 
         # Max is required and should be a number (if value is present)
         if "max" not in value and "value" in value and value["value"] is not None:
-            return True
+            return False
 
         if (
             "max" in value
             and value["max"] is not None
             and not isinstance(value["max"], (int, float))
         ):
-            return True
+            return False
 
         # Unit is optional, should be text
         if (
@@ -746,7 +748,7 @@ def standard_validator(tags, config, value):
             and value["unit"] is not None
             and not isinstance(value["unit"], str)
         ):
-            return True
+            return False
 
         # Text is optional, should be text
         if (
@@ -754,25 +756,26 @@ def standard_validator(tags, config, value):
             and value["text"] is not None
             and not isinstance(value["text"], str)
         ):
-            return True
+            return False
 
-        return False
+        return True
 
     if "dropdown" in tags:
         if not value:
             return False
 
         if not isinstance(value, dict):
-            return True
+            return False
 
         if "options" not in value:
-            return True
+            return False
 
         if "value" in value and value["value"] not in value["options"]:
-            return True
+            return False
 
-        return False
+        return True
 
+    return False
 
 def validate_config(
     conf: Config, settings: HHDSettings, validator: Validator, use_defaults: bool = True

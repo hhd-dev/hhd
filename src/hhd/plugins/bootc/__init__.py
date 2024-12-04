@@ -1,9 +1,11 @@
 import json
 import logging
 import os
-import subprocess
-from typing import Literal, Sequence
 import signal
+import subprocess
+from threading import Thread
+from typing import Literal, Sequence
+
 from hhd.i18n import _
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
@@ -45,7 +47,7 @@ BOOTC_UPDATE_CMD = [
     "update",
 ]
 
-SKOPEO_REBASE_CMD = lambda ref: ["skopeo", "inspect", ref]
+SKOPEO_REBASE_CMD = lambda ref: ["skopeo", "inspect", "docker://" + ref]
 
 
 STAGES = Literal[
@@ -58,6 +60,7 @@ STAGES = Literal[
     "incompatible",
     "rebase_dialog",
     "loading",
+    "loading_rebase",
     "loading_cancellable",
 ]
 
@@ -90,21 +93,21 @@ def get_branch(ref: str, branches: dict, fallback: bool = True):
     return next(iter(branches))
 
 
-def get_rebase_refs(ref: str, lim: int = 5, branches: dict = {}):
+def get_rebase_refs(ref: str, tags, lim: int = 5, branches: dict = {}):
+    logger.info(f"Getting rebase refs for {ref}")
     try:
         output = subprocess.check_output(SKOPEO_REBASE_CMD(ref)).decode("utf-8")
         data = json.loads(output)
-
-        curr_tag = get_branch(ref, branches) or ref
-
         versions = data.get("RepoTags", [])
-        same_branch = [v for v in versions if curr_tag in v]
-        same_branch.sort(reverse=True)
-        return same_branch[:lim]
 
+        for branch in branches:
+            same_branch = [v for v in versions if v.startswith(branch) and v != branch]
+            same_branch.sort(reverse=True)
+            tags[branch] = same_branch[:lim]
+
+        logger.info(f"Finished getting refs")
     except Exception as e:
         logger.error(f"Failed to get rebase refs: {e}")
-        return []
 
 
 def run_command_threaded(cmd: list, output: bool = False):
@@ -138,6 +141,8 @@ class BootcPlugin(HHDPlugin):
         self.branch_name = None
         self.branch_ref = None
         self.checked_update = False
+        self.t = None
+        self.t_data = None
 
         self.branches = {}
         for branch in BRANCHES.split(","):
@@ -263,6 +268,11 @@ class BootcPlugin(HHDPlugin):
 
     def update(self, conf: Config):
 
+        # Detect reset and avoid breaking the UI
+        if conf.get("updates.bootc.stage.mode", None) is None:
+            self._init(conf)
+            return
+
         # Try to fill in basic info
         match self.state:
             case "init":
@@ -336,8 +346,6 @@ class BootcPlugin(HHDPlugin):
                     if not self.branches:
                         self._init(conf)
                     else:
-                        self.state = "rebase_dialog"
-                        conf["updates.bootc.stage.mode"] = "rebase"
                         # Get branch that should be default
                         curr = (
                             (self.status or {})
@@ -347,6 +355,24 @@ class BootcPlugin(HHDPlugin):
                         )
                         default = get_branch(curr, self.branches)
                         conf["updates.bootc.stage.rebase.branch"] = default
+
+                        # Prepare loader
+                        conf["updates.bootc.stage.mode"] = "loading"
+                        conf["updates.bootc.stage.loading.progress"] = {
+                            "text": _("Loading Versions..."),
+                            "value": None,
+                            "unit": None,
+                        }
+
+                        # Launch loader thread
+                        self.t_data = {}
+                        self.t = Thread(
+                            target=get_rebase_refs,
+                            args=(curr, self.t_data),
+                            kwargs={"branches": self.branches},
+                        )
+                        self.t.start()
+                        self.state = "loading_rebase"
                 elif reboot:
                     logger.info("User pressed reboot in updater. Rebooting...")
                     subprocess.run(["systemctl", "reboot"])
@@ -364,26 +390,67 @@ class BootcPlugin(HHDPlugin):
                     }
 
             # Rebase dialog
-            case "rebase_dialog":
+            case "rebase_dialog" | "loading_rebase" as e:
+                # FIXME: this is the only match statement that
+                # does early returns. Allows loading the previous
+                # versions instantly.
+
+                conf["updates.bootc.update"] = None
+                if e == "loading_rebase":
+                    if self.t is None:
+                        self._init(conf)
+                        return
+                    elif not self.t.is_alive():
+                        self.t = None
+                        self.state = "rebase_dialog"
+                        conf["updates.bootc.stage.mode"] = "rebase"
+                    else:
+                        return
+
                 apply = conf.get_action("updates.bootc.stage.rebase.apply")
                 cancel = conf.get_action("updates.bootc.stage.rebase.cancel")
+                branch = conf.get(
+                    "updates.bootc.stage.rebase.branch", next(iter(self.branches))
+                )
+
+                version = "latest"
+                if not self.t_data:
+                    conf["updates.bootc.stage.rebase.version_error"] = _(
+                        "Failed to load previous versions"
+                    )
+                else:
+                    conf["updates.bootc.stage.rebase.version_error"] = None
+                    if branch in self.t_data:
+                        bdata = {k.replace(".", ""): k for k in self.t_data[branch]}
+                        version = conf.get(
+                            "updates.bootc.stage.rebase.version.value", "latest"
+                        )
+                        conf["updates.bootc.stage.rebase.version"] = None
+                        conf["updates.bootc.stage.rebase.version"] = {
+                            "options": {
+                                "latest": "Latest",
+                                **bdata,
+                            },
+                            "value": version if version in bdata else "latest",
+                        }
+                        # Readd . since config system does not support them
+                        version = bdata.get(version, "latest")
 
                 if cancel:
                     self._init(conf)
                 elif apply:
-                    branch = conf.get("updates.bootc.stage.rebase.branch", None)
+                    if version == "latest":
+                        version = branch
 
                     curr = get_ref_from_status(self.status)
-                    if curr == branch:
+                    next_ref = (
+                        (curr[: curr.rindex(":")] if ":" in curr else curr)
+                        + ":"
+                        + version
+                    )
+                    if next_ref == curr:
                         self._init(conf)
-                    elif curr and branch in self.branches:
-                        # remove tag from curr and replace with branch
-                        next_ref = (
-                            (curr[: curr.rindex(":")] if ":" in curr else curr)
-                            + ":"
-                            + branch
-                        )
-
+                    else:
                         self.state = "loading_cancellable"
                         self.proc = run_command_threaded(
                             [BOOTC_PATH, "switch", next_ref]
@@ -391,13 +458,9 @@ class BootcPlugin(HHDPlugin):
                         conf["updates.bootc.stage.mode"] = "loading_cancellable"
                         conf["updates.bootc.stage.loading_cancellable.progress"] = {
                             "text": _("Rebasing to "),
-                            "unit": self.branches.get(
-                                branch, branch.capitalize() if branch else None
-                            ),
+                            "unit": self.branches.get(version, version),
                             "value": None,
                         }
-                    else:
-                        self._init(conf)
 
             # Wait for the subcommand to complete
             case "loading_cancellable":
@@ -427,6 +490,10 @@ class BootcPlugin(HHDPlugin):
             self.proc.send_signal(signal.SIGINT)
             self.proc.wait()
             self.proc = None
+        if self.t:
+            if self.t.is_alive():
+                self.t.join()
+            self.t = None
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:

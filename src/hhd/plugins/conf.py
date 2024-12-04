@@ -175,6 +175,8 @@ class Config:
             return self[key].to(type(default))
         except KeyError:
             return default
+        except TypeError:
+            return default
 
     def get_action(self, key):
         if key not in self:
