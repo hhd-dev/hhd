@@ -1,9 +1,9 @@
 import os
 import shutil
+import subprocess
 
 from hhd.plugins import Context
 from hhd.utils import expanduser
-import subprocess
 
 
 def find_overlay_exe(ctx: Context):
@@ -37,6 +37,7 @@ def inject_overlay(fn: str, display: str, ctx: Context):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        preexec_fn=lambda: os.setpgrp(), # allow closing the overlay smoothly
         user=ctx.euid,
         group=ctx.egid,
     )

@@ -299,6 +299,11 @@ def loop_manage_overlay(
         logger.warning(f"The overlay process ended with an exception:\n{e}")
     finally:
         logger.info(f"Stopping overlay process.")
+        try:
+            writer.write("cmd:close\n")
+            time.sleep(0.2)
+        except Exception as e:
+            logger.error(f"Error informing overlay:\n{e}")
         proc.kill()
         proc.wait()
         emit.grab(False)

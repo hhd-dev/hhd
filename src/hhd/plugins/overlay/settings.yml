@@ -3,5 +3,5 @@ type: container
 children:
   overlay_enabled:
     type: bool
-    title: "Shortcut Support + Side Button double/triple press (Requires Restart)"
+    title: "Overlay services (Shortcuts+Gamemode, Requires Restart)"
     default: True
