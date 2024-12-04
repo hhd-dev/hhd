@@ -271,6 +271,9 @@ class BootcPlugin(HHDPlugin):
                             iter(self.branches)
                         )
                         conf["updates.bootc.stage.rebase.branch"] = default
+                elif reboot:
+                    logger.info("User pressed reboot in updater. Rebooting...")
+                    subprocess.run(["systemctl", "reboot"])
 
             # Incompatible
             case "incompatible":

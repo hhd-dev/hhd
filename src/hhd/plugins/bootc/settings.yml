@@ -77,6 +77,9 @@ children:
           reboot:
             type: action
             title: Reboot
+            tags: [verify]
+            hint: >-
+              Reboot to apply the update. Are you sure?
 
           revert:
             type: action
