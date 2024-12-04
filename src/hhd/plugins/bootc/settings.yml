@@ -70,6 +70,25 @@ children:
           rebase:
             type: action
             title: Change Branch (Rebase)
+
+      ready_updated:
+        type: container
+        children:
+          reboot:
+            type: action
+            title: Reboot
+
+          revert:
+            type: action
+            title: Undo Update
+            
+          update:
+            type: action
+            title: Check for Updates
+          
+          rebase:
+            type: action
+            title: Change Branch (Rebase)
           
           # rollback:
           #   type: action

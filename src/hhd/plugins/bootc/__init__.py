@@ -51,6 +51,7 @@ STAGES = Literal[
     "init",
     "ready",
     "ready_check",
+    "ready_updated",
     "incompatible",
     "waiting",
     "rebase_dialog",
@@ -198,6 +199,10 @@ class BootcPlugin(HHDPlugin):
             conf["updates.bootc.stage.mode"] = "ready"
             self.state = "ready"
             conf[f"updates.bootc.update"] = cached_version
+        elif self.get_version("staged"):
+            conf["updates.bootc.stage.mode"] = "ready_updated"
+            self.state = "ready_updated"
+            conf[f"updates.bootc.update"] = None
         else:
             conf["updates.bootc.stage.mode"] = "ready_check"
             self.state = "ready_check"
@@ -210,28 +215,29 @@ class BootcPlugin(HHDPlugin):
             case "init":
                 self._init(conf)
             # Ready
-            case "ready" | "ready_check" as e:
+            case "ready" | "ready_check" | "ready_updated" as e:
                 update = conf.get_action(f"updates.bootc.stage.{e}.update")
                 revert = conf.get_action(f"updates.bootc.stage.{e}.revert")
                 rebase = conf.get_action(f"updates.bootc.stage.{e}.rebase")
                 rollback = conf.get_action(f"updates.bootc.stage.{e}.rollback")
+                reboot = conf.get_action(f"updates.bootc.stage.{e}.reboot")
 
                 if update:
-                    if e == "ready_check":
-                        self.state = "waiting"
-                        self.proc = run_command_threaded(RPM_OSTREE_RESET)
+                    if e == "ready":
+                        self.state = "waiting_progress"
+                        self.proc = run_command_threaded(BOOTC_UPDATE_CMD, output=False)
                         conf["updates.bootc.stage.mode"] = "loading"
                         conf["updates.bootc.stage.loading.progress"] = {
-                            "text": _("Checking for updates..."),
+                            "text": _("Updating... "),
                             "value": None,
                             "unit": None,
                         }
                     else:
-                        self.state = "waiting_progress"
-                        self.proc = run_command_threaded(BOOTC_UPDATE_CMD, output=False)
-                        conf["updates.bootc.stage.mode"] = "loading_progress"
-                        conf["updates.bootc.stage.loading_progress.progress"] = {
-                            "text": _("Updating... "),
+                        self.state = "waiting"
+                        self.proc = run_command_threaded(BOOTC_STATUS_CMD)
+                        conf["updates.bootc.stage.mode"] = "loading"
+                        conf["updates.bootc.stage.loading.progress"] = {
+                            "text": _("Checking for updates..."),
                             "value": None,
                             "unit": None,
                         }
@@ -240,7 +246,11 @@ class BootcPlugin(HHDPlugin):
                     self.proc = run_command_threaded(BOOTC_ROLLBACKCMD)
                     conf["updates.bootc.stage.mode"] = "loading"
                     conf["updates.bootc.stage.loading.progress"] = {
-                        "text": _("Setting Previous as default..."),
+                        "text": (
+                            _("Undoing Update...")
+                            if e == "ready_updated"
+                            else _("Setting Previous as default...")
+                        ),
                         "value": None,
                         "unit": None,
                     }
@@ -267,8 +277,8 @@ class BootcPlugin(HHDPlugin):
                 if conf.get_action("updates.bootc.stage.incompatible.reset"):
                     self.state = "waiting_progress"
                     self.proc = run_command_threaded(RPM_OSTREE_RESET, output=False)
-                    conf["updates.bootc.stage.mode"] = "loading_progress"
-                    conf["updates.bootc.stage.loading_progress.progress"] = {
+                    conf["updates.bootc.stage.mode"] = "loading"
+                    conf["updates.bootc.stage.loading.progress"] = {
                         "text": _("Removing Customizations..."),
                         "value": None,
                         "unit": None,
