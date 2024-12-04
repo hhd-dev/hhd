@@ -140,16 +140,17 @@ children:
             tags: [error]
             title: Error
             default: >
-              Due to layering or custom initramfs, you cannot use bootc.
-              Undo the customizations and try again.
+              Due to layering or custom initramfs, you cannot update from here.
+              You can undo those with the button below.
 
           reset:
             type: action
             title: Run rpm-ostree reset
             tag: [verify]
             hint: >-
-              Disable the custom initramfs and remove layers.
-  
+              Disable the custom initramfs and remove layers. Your personal
+              data will not be affected.
+              
       loading_cancellable:
         type: container
         children:

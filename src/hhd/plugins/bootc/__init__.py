@@ -77,7 +77,9 @@ def get_bootc_status():
 
 
 def get_ref_from_status(status: dict | None):
-    return (status or {}).get("spec", {}).get("image", {}).get("image", "")
+    return (((status or {}).get("spec", None) or {}).get("image", None) or {}).get(
+        "image", ""
+    )
 
 
 def get_branch(ref: str, branches: dict, fallback: bool = True):
@@ -126,12 +128,14 @@ def is_incompatible(status: dict):
     if status.get("apiVersion", None) != "org.containers.bootc/v1":
         return True
 
-    if ((status.get("status", None) or {}).get("booted", None) or {}).get(
-        "incompatible", False
-    ):
-        return True
+    boot_incompatible = (
+        (status.get("status", None) or {}).get("booted", None) or {}
+    ).get("incompatible", False)
 
-    return False
+    if staged := ((status.get("status", None) or {}).get("staged", None) or {}):
+        return staged.get("incompatible", False)
+
+    return boot_incompatible
 
 
 class BootcPlugin(HHDPlugin):
@@ -177,14 +181,21 @@ class BootcPlugin(HHDPlugin):
     def get_version(self, s):
         assert self.status
         return (
-            (self.status.get("status", {}).get(s, None) or {})
-            .get("image", {})
-            .get("version", "")
-        )
+            (self.status.get("status", {}).get(s, None) or {}).get("image", None) or {}
+        ).get("version", "")
 
     def _init(self, conf: Config):
         self.status = get_bootc_status()
-        ref = self.status.get("spec", {}).get("image", {}).get("image", "")
+
+        if is_incompatible(self.status):
+            conf["updates.bootc.stage.mode"] = "incompatible"
+            self.state = "incompatible"
+            conf[f"updates.bootc.update"] = None
+            return
+
+        ref = ((self.status.get("spec", None) or {}).get("image", None) or {}).get(
+            "image", ""
+        )
         img = ref
         if "/" in img:
             img = img[img.rfind("/") + 1 :]
@@ -222,7 +233,8 @@ class BootcPlugin(HHDPlugin):
         # Then that will be the default, provided there is a rollback
         rollback = (
             not staged
-            and self.status.get("spec", {}).get("bootOrder", None) == "rollback"
+            and (self.status.get("spec", None) or {}).get("bootOrder", None)
+            == "rollback"
         )
         s = self.get_version("rollback")
         if s and rollback:
@@ -253,10 +265,7 @@ class BootcPlugin(HHDPlugin):
         else:
             conf[f"updates.bootc.update"] = None
 
-        if is_incompatible(self.status):
-            conf["updates.bootc.stage.mode"] = "incompatible"
-            self.state = "incompatible"
-        elif (
+        if (
             cached_version
             and cached_img == img
             and cached_version != self.get_version("staged")
