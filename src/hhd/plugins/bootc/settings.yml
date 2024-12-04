@@ -154,7 +154,8 @@ children:
         type: container
         children:
           progress:
-            type: progress
+            type: custom
+            tags: [progress]
           
           cancel:
             type: action

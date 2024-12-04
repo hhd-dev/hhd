@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 from typing import Literal, Sequence
-
+import signal
 from hhd.i18n import _
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
@@ -56,13 +56,9 @@ STAGES = Literal[
     "ready_reverted",
     "ready_rebased",
     "incompatible",
-    "waiting",
     "rebase_dialog",
-    "rollback_dialog",
-    "download_loading",
-    "download_error",
-    "download_complete",
-    "waiting_progress",
+    "loading",
+    "loading_cancellable",
 ]
 
 
@@ -287,31 +283,30 @@ class BootcPlugin(HHDPlugin):
                 if update:
                     if e == "ready_rebased" and self.branch_ref:
                         self.checked_update = False
-                        self.state = "waiting_progress"
+                        self.state = "loading_cancellable"
                         self.proc = run_command_threaded(
                             [BOOTC_PATH, "switch", self.branch_ref]
                         )
-                        conf["updates.bootc.stage.mode"] = "loading"
-                        conf["updates.bootc.stage.loading.progress"] = {
+                        conf["updates.bootc.stage.mode"] = "loading_cancellable"
+                        conf["updates.bootc.stage.loading_cancellable.progress"] = {
                             "text": _("Updating to latest "),
                             "unit": self.branches.get(
                                 self.branch_name, self.branch_name
                             ),
                             "value": None,
                         }
-
                     elif e == "ready":
-                        self.state = "waiting_progress"
+                        self.state = "loading_cancellable"
                         self.checked_update = False
                         self.proc = run_command_threaded(BOOTC_UPDATE_CMD, output=False)
-                        conf["updates.bootc.stage.mode"] = "loading"
-                        conf["updates.bootc.stage.loading.progress"] = {
+                        conf["updates.bootc.stage.mode"] = "loading_cancellable"
+                        conf["updates.bootc.stage.loading_cancellable.progress"] = {
                             "text": _("Updating... "),
                             "value": None,
                             "unit": None,
                         }
                     else:
-                        self.state = "waiting"
+                        self.state = "loading"
                         self.proc = run_command_threaded(BOOTC_STATUS_CMD)
                         self.checked_update = True
                         conf["updates.bootc.stage.mode"] = "loading"
@@ -322,7 +317,7 @@ class BootcPlugin(HHDPlugin):
                         }
                 elif revert:
                     self.checked_update = False
-                    self.state = "waiting"
+                    self.state = "loading"
                     self.proc = run_command_threaded(BOOTC_ROLLBACKCMD)
                     conf["updates.bootc.stage.mode"] = "loading"
                     if e == "ready_updated":
@@ -359,7 +354,7 @@ class BootcPlugin(HHDPlugin):
             # Incompatible
             case "incompatible":
                 if conf.get_action("updates.bootc.stage.incompatible.reset"):
-                    self.state = "waiting_progress"
+                    self.state = "loading"
                     self.proc = run_command_threaded(RPM_OSTREE_RESET, output=False)
                     conf["updates.bootc.stage.mode"] = "loading"
                     conf["updates.bootc.stage.loading.progress"] = {
@@ -389,12 +384,12 @@ class BootcPlugin(HHDPlugin):
                             + branch
                         )
 
-                        self.state = "waiting"
+                        self.state = "loading_cancellable"
                         self.proc = run_command_threaded(
                             [BOOTC_PATH, "switch", next_ref]
                         )
-                        conf["updates.bootc.stage.mode"] = "loading"
-                        conf["updates.bootc.stage.loading.progress"] = {
+                        conf["updates.bootc.stage.mode"] = "loading_cancellable"
+                        conf["updates.bootc.stage.loading_cancellable.progress"] = {
                             "text": _("Rebasing to "),
                             "unit": self.branches.get(
                                 branch, branch.capitalize() if branch else None
@@ -405,13 +400,22 @@ class BootcPlugin(HHDPlugin):
                         self._init(conf)
 
             # Wait for the subcommand to complete
-            case "waiting_progress":
+            case "loading_cancellable":
+                cancel = conf.get_action(
+                    f"updates.bootc.stage.loading_cancellable.cancel"
+                )
                 if self.proc is None:
                     self._init(conf)
                 elif self.proc.poll() is not None:
                     self._init(conf)
                     self.proc = None
-            case "waiting":
+                elif cancel:
+                    logger.info("User cancelled update. Stopping...")
+                    self.proc.send_signal(signal.SIGINT)
+                    self.proc.wait()
+                    self.proc = None
+                    self._init(conf)
+            case "loading":
                 if self.proc is None:
                     self._init(conf)
                 elif self.proc.poll() is not None:
@@ -419,7 +423,10 @@ class BootcPlugin(HHDPlugin):
                     self.proc = None
 
     def close(self):
-        pass
+        if self.proc:
+            self.proc.send_signal(signal.SIGINT)
+            self.proc.wait()
+            self.proc = None
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
