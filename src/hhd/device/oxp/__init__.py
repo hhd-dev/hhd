@@ -77,7 +77,8 @@ class GenericControllersPlugin(HHDPlugin):
 
         if not self.dconf.get("x1", False):
             del base["controllers"]["oxp"]["children"]["volume_reverse"]
-            del base["controllers"]["oxp"]["children"]["swap_face"]
+            # Maybe it is helpful for OneXFly users
+            # del base["controllers"]["oxp"]["children"]["swap_face"]
 
         if not self.turbo:
             del base["controllers"]["oxp"]["children"]["extra_buttons"]
