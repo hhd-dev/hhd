@@ -226,7 +226,7 @@ class SerialDevice(Consumer, Producer):
         return [ser.fd]
 
     def consume(self, events):
-        if not self.ser or self.buttons_only:
+        if not self.ser:
             return
 
         # Capture led events
@@ -243,6 +243,10 @@ class SerialDevice(Consumer, Producer):
             logger.info(f"OXP C: {cmd.hex()}")
             self.ser.write(cmd)
             self.last_sent = time.perf_counter()
+        
+        # No LEDs, skip the rest
+        if self.buttons_only:
+            return
 
         # Queue needs to flush before switching to next event
         # Also, there needs to be a led event to queue
