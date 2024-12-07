@@ -315,7 +315,7 @@ class BootcPlugin(HHDPlugin):
         if s:
             s = DEFAULT_PREFIX + s
             staged = True
-        if s and og == rebased_ver:
+        if s and rebased_ver and og in rebased_ver:
             s = REF_PREFIX + s
             # Only apply one start to avoid confusion
             rebased_ver = None
@@ -339,7 +339,7 @@ class BootcPlugin(HHDPlugin):
         og = s = self.get_version("booted")
         if s and not rollback and not staged:
             s = DEFAULT_PREFIX + s
-        if s and og == rebased_ver:
+        if s and rebased_ver and og in rebased_ver:
             s = REF_PREFIX + s
         conf[f"updates.bootc.booted"] = s
 
