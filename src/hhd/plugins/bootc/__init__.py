@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 REFRESH_HZ = 3
 PROGRESS_STAGES = {
-    "pulling": (_("Pulling: %s"), 0, 80),
-    "importing": (_("Importing: %s"), 80, 10),
-    "staging": (_("Staging: %s"), 90, 10),
+    "pulling": (_("Downloading:"), 0, 80),
+    "importing": (_("Importing:"), 80, 10),
+    "staging": (_("Deploying:"), 90, 10),
     "unknown": (_("Loading"), 100, 0),
 }
 
@@ -143,10 +143,9 @@ def _bootc_progress_reader(fd, emit, friendly, lock, obj):
                 break
             data = json.loads(data)
 
-            textf, start, length = PROGRESS_STAGES.get(
+            text, start, length = PROGRESS_STAGES.get(
                 data.get("task", "unknown"), PROGRESS_STAGES["unknown"]
             )
-            text = textf.replace("%s", friendly)
 
             match data["type"]:
                 case "ProgressSteps":
@@ -154,14 +153,14 @@ def _bootc_progress_reader(fd, emit, friendly, lock, obj):
                     total = data.get("stepsTotal", 0)
                     value = start + min(length, int((curr / total) * length))
                     if total > 1:
-                        unit = f" ({min(curr + 1, total)}/{total})"
+                        unit = f" {friendly} ({min(curr + 1, total)}/{total})"
                     else:
-                        unit = ""
+                        unit = f" {friendly}"
                 case "ProgressBytes":
                     curr = data.get("bytes", 0)
                     total = data.get("bytesTotal", 0)
                     value = start + min(length, int((curr / total) * length))
-                    unit = f" ({curr/1e9:.1f}/{total/1e9:.1f} GB)"
+                    unit = f" {friendly} ({curr/1e9:.1f}/{total/1e9:.1f} GB)"
                 case _:
                     value = None  # indeterminate
 
@@ -412,7 +411,7 @@ class BootcPlugin(HHDPlugin):
                             self.proc, self.progress = run_command_threaded_progress(
                                 cmd,
                                 self.emit,
-                                self.branch_ref,
+                                self.branch_name,
                                 self.progress_lock,
                             )
                         else:
