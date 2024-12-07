@@ -1,9 +1,11 @@
 import json
 import logging
 import os
+import select
 import signal
 import subprocess
-from threading import Thread
+import time
+from threading import Lock, Thread
 from typing import Literal, Sequence
 
 from hhd.i18n import _
@@ -11,6 +13,14 @@ from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
 
 logger = logging.getLogger(__name__)
+
+REFRESH_HZ = 3
+PROGRESS_STAGES = {
+    "pulling": (_("Pulling: %s"), 0, 80),
+    "importing": (_("Importing: %s"), 80, 10),
+    "staging": (_("Staging: %s"), 90, 10),
+    "unknown": (_("Loading"), 100, 0),
+}
 
 BOOTC_ENABLED = os.environ.get("HHD_BOOTC", "0") == "1"
 BOOTC_PATH = os.environ.get("HHD_BOOTC_PATH", "bootc")
@@ -114,14 +124,81 @@ def get_rebase_refs(ref: str, tags, lim: int = 5, branches: dict = {}):
         logger.error(f"Failed to get rebase refs: {e}")
 
 
-def run_command_threaded(cmd: list, output: bool = False):
+def run_command_threaded(cmd: list):
     try:
         return subprocess.Popen(
             cmd,
-            stdout=subprocess.PIPE if output else None,
+            stdout=subprocess.PIPE,
         )
     except Exception as e:
         logger.error(f"Failed to run command: {e}")
+
+
+def _bootc_progress_reader(fd, emit, friendly, lock, obj):
+    last_update = 0
+    try:
+        while select.select([fd.fileno()], [], [])[0]:
+            data = fd.readline()
+            if not data:
+                break
+            data = json.loads(data)
+
+            textf, start, length = PROGRESS_STAGES.get(
+                data.get("task", "unknown"), PROGRESS_STAGES["unknown"]
+            )
+            text = textf.replace("%s", friendly)
+
+            match data["type"]:
+                case "ProgressSteps":
+                    curr = data.get("steps", 0)
+                    total = data.get("stepsTotal", 0)
+                    value = start + min(length, int((curr / total) * length))
+                    if total > 1:
+                        unit = f" ({min(curr + 1, total)}/{total})"
+                    else:
+                        unit = ""
+                case "ProgressBytes":
+                    curr = data.get("bytes", 0)
+                    total = data.get("bytesTotal", 0)
+                    value = start + min(length, int((curr / total) * length))
+                    unit = f" ({curr/1e9:.1f}/{total/1e9:.1f} GB)"
+                case _:
+                    value = None  # indeterminate
+
+            with lock:
+                obj.update({"text": text, "value": value, "unit": unit})
+
+            # Increase the update rate of the UI
+            curr = time.perf_counter()
+            if curr - last_update > 1 / REFRESH_HZ and emit:
+                last_update = curr
+                emit({"type": "special", "event": "refresh"})
+    finally:
+        fd.close()
+
+
+def run_command_threaded_progress(cmd: list, emit, friendly, lock):
+    r = None
+    try:
+        r, w = os.pipe2(0)
+        proc = subprocess.Popen(
+            cmd + [f"--json-fd", str(w), "--quiet"],
+            pass_fds=[w],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        os.close(w)
+
+        obj = {}
+        fd = os.fdopen(r, "r")
+        t = Thread(target=_bootc_progress_reader, args=(fd, emit, friendly, lock, obj))
+        t.start()
+        return proc, obj
+    except Exception as e:
+        logger.error(f"Failed to run command: {e}")
+        if r:
+            os.close(r)
+        return None, None
 
 
 def is_incompatible(status: dict):
@@ -138,6 +215,12 @@ def is_incompatible(status: dict):
     return boot_incompatible
 
 
+def has_bootc_progress_support():
+    return "--json-fd" in subprocess.check_output(
+        [BOOTC_PATH, "upgrade", "--help"]
+    ).decode("utf-8")
+
+
 class BootcPlugin(HHDPlugin):
     def __init__(self) -> None:
         self.name = f"bootc"
@@ -149,6 +232,10 @@ class BootcPlugin(HHDPlugin):
         self.checked_update = False
         self.t = None
         self.t_data = None
+        self.progress_lock = Lock()
+        self.progress = None
+        self.staged = ""
+        self.emit = None
 
         self.branches = {}
         for branch in BRANCHES.split(","):
@@ -177,6 +264,12 @@ class BootcPlugin(HHDPlugin):
         context: Context,
     ):
         self.updated = False
+        self.bootc_progress = has_bootc_progress_support()
+        self.emit = emit
+        if self.bootc_progress:
+            logger.info("Bootc progress support detected")
+        else:
+            logger.warning("Bootc progress support not detected")
 
     def get_version(self, s):
         assert self.status
@@ -218,7 +311,7 @@ class BootcPlugin(HHDPlugin):
             conf["updates.bootc.image"] = img
 
         # If we have a staged update, that will boot first
-        og = s = self.get_version("staged")
+        self.staged = og = s = self.get_version("staged")
         staged = False
         if s:
             s = DEFAULT_PREFIX + s
@@ -314,9 +407,16 @@ class BootcPlugin(HHDPlugin):
                     if e == "ready_rebased" and self.branch_ref:
                         self.checked_update = False
                         self.state = "loading_cancellable"
-                        self.proc = run_command_threaded(
-                            [BOOTC_PATH, "switch", self.branch_ref]
-                        )
+                        cmd = [BOOTC_PATH, "switch", self.branch_ref]
+                        if self.bootc_progress:
+                            self.proc, self.progress = run_command_threaded_progress(
+                                cmd,
+                                self.emit,
+                                self.branch_ref,
+                                self.progress_lock,
+                            )
+                        else:
+                            self.proc = run_command_threaded(cmd)
                         conf["updates.bootc.stage.mode"] = "loading_cancellable"
                         conf["updates.bootc.stage.loading_cancellable.progress"] = {
                             "text": _("Updating to latest "),
@@ -328,7 +428,15 @@ class BootcPlugin(HHDPlugin):
                     elif e == "ready":
                         self.state = "loading_cancellable"
                         self.checked_update = False
-                        self.proc = run_command_threaded(BOOTC_UPDATE_CMD, output=False)
+                        if self.bootc_progress:
+                            self.proc, self.progress = run_command_threaded_progress(
+                                BOOTC_UPDATE_CMD,
+                                self.emit,
+                                self.staged or "",
+                                self.progress_lock,
+                            )
+                        else:
+                            self.proc = run_command_threaded(BOOTC_UPDATE_CMD)
                         conf["updates.bootc.stage.mode"] = "loading_cancellable"
                         conf["updates.bootc.stage.loading_cancellable.progress"] = {
                             "text": _("Updating... "),
@@ -401,7 +509,7 @@ class BootcPlugin(HHDPlugin):
             case "incompatible":
                 if conf.get_action("updates.bootc.stage.incompatible.reset"):
                     self.state = "loading"
-                    self.proc = run_command_threaded(RPM_OSTREE_RESET, output=False)
+                    self.proc = run_command_threaded(RPM_OSTREE_RESET)
                     conf["updates.bootc.stage.mode"] = "loading"
                     conf["updates.bootc.stage.loading.progress"] = {
                         "text": _("Removing Customizations..."),
@@ -472,9 +580,13 @@ class BootcPlugin(HHDPlugin):
                         self._init(conf)
                     else:
                         self.state = "loading_cancellable"
-                        self.proc = run_command_threaded(
-                            [BOOTC_PATH, "switch", next_ref]
-                        )
+                        cmd = [BOOTC_PATH, "switch", next_ref]
+                        if self.bootc_progress:
+                            self.proc, self.progress = run_command_threaded_progress(
+                                cmd, self.emit, version, self.progress_lock
+                            )
+                        else:
+                            self.proc = run_command_threaded(cmd)
                         conf["updates.bootc.stage.mode"] = "loading_cancellable"
                         conf["updates.bootc.stage.loading_cancellable.progress"] = {
                             "text": _("Rebasing to "),
@@ -498,6 +610,10 @@ class BootcPlugin(HHDPlugin):
                     self.proc.wait()
                     self.proc = None
                     self._init(conf)
+                elif self.progress:
+                    conf["updates.bootc.stage.loading_cancellable.progress"] = (
+                        self.progress
+                    )
             case "loading":
                 if self.proc is None:
                     self._init(conf)

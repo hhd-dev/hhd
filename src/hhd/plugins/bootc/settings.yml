@@ -52,7 +52,7 @@ children:
           
           rebase:
             type: action
-            title: Change Branch (Rebase)
+            title: Change Version (Rebase)
           
       ready_rebased:
         type: container
@@ -179,7 +179,7 @@ children:
 
           version:
             type: custom
-            title: Version
+            title: Version Pin
             tags: [dropdown]
           
           version_error:

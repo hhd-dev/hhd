@@ -50,7 +50,11 @@ class SpecialEvent(TypedDict):
         # Powerbutton presses
         "pbtn_short",
         "pbtn_long",
-        "pbtn_double", # todo
+        "pbtn_double",  # todo
+        # Debug
+        "restart_dev",
+        "shutdown_dev",
+        "refresh",
     ]
     data: "NotRequired[Any]"
 
