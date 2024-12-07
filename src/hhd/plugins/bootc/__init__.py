@@ -151,7 +151,7 @@ def _bootc_progress_reader(fd, emit, friendly, lock, obj):
                 case "ProgressSteps":
                     curr = data.get("steps", 0)
                     total = data.get("stepsTotal", 0)
-                    value = start + min(length, int((curr / total) * length))
+                    value = start + min(length, int((curr / (total + 1)) * length))
                     if total > 1:
                         unit = f" {friendly} ({min(curr + 1, total)}/{total})"
                     else:
@@ -160,7 +160,7 @@ def _bootc_progress_reader(fd, emit, friendly, lock, obj):
                     curr = data.get("bytes", 0)
                     total = data.get("bytesTotal", 0)
                     value = start + min(length, int((curr / total) * length))
-                    unit = f" {friendly} ({curr/1e9:.1f}/{total/1e9:.1f} GB)"
+                    unit = f" {friendly} ({curr/1e9:.1f}/{total/1e9 + 0.099:.1f} GB)"
                 case _:
                     value = None  # indeterminate
 
