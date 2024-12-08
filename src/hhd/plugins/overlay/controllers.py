@@ -29,8 +29,8 @@ OVERLAY_BUTTON_MAP: dict[int, str] = to_map(
     {
         "a": [B("BTN_A")],
         "b": [B("BTN_B")],
-        "x": [B("BTN_WEST")],
-        "y": [B("BTN_NORTH")],  # BTN_Y is wrong?
+        "x": [B("BTN_X")],
+        "y": [B("BTN_Y")],
         "lb": [B("BTN_TL")],
         "rb": [B("BTN_TR")],
     }
@@ -51,7 +51,7 @@ CONTROLLER_WAKE_BUTTON: dict[int, str] = to_map(
         "select": [B("BTN_SELECT")],
         "mode": [B("BTN_MODE")],
         "b": [B("BTN_B")],
-        "y": [B("BTN_NORTH")],
+        "y": [B("BTN_Y")],
     }
 )
 
