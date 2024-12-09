@@ -5,7 +5,7 @@ from .ctl import get_state, set_state, unroll_dict
 
 SOCKET_UNIX = "/run/hhd/api"
 USAGE = """
-hhd.steamos [-h] {steamos-branch-select,steamos-update} [--fallback] [keys ...]
+hhd.steamos [-h] {steamos-select-branch,steamos-update} [--fallback] [keys ...]
 
 Handheld Daemon steamos polkit stub
 Allows mimicking the polkit behavior of SteamOS to perform updates, etc.
@@ -14,7 +14,8 @@ return 20 if handheld daemon cannot update the system. In this case, you can
 use the legacy fallback to update the system.
 
 Commands:
-    steamos-branch-select: Select a branch that running steamos-update will update to.
+    steamos-select-branch: Select a branch that running steamos-update will update to.
+        Aliased to steamos-branch-select. Options are: rel, rc, beta, main, bc, -l, -c.
     steamos-update: Perform an update. 
 
 """
@@ -169,7 +170,7 @@ def main():
 
         opts = [v for v in sys.argv[2:] if v != "--fallback"]
         match cmd:
-            case "steamos-branch-select":
+            case "steamos-branch-select" | "steamos-select-branch":
                 v = _select_branch(fallback, opts)
             case "steamos-update":
                 v = _update(fallback, opts)
