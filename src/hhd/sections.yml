@@ -4,8 +4,9 @@ sections:
   rgb: RGB
   controllers: Controller
   hhd: Settings
-  shortcuts: Shortcuts
-  gamemode: Gamemode
   updates: Updates
+  gamemode: Gamemode
+  shortcuts: Shortcuts
+  debug: Bug Report
   bazzite: Bazzite
   utilities: Utilities

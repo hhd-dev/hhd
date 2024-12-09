@@ -15,7 +15,9 @@ from hhd.plugins.plugin import (
 logger = logging.getLogger(__name__)
 
 DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch")
-
+GIT_HHD = "git+https://github.com/hhd-dev/hhd"
+GIT_ADJ = "git+https://github.com/hhd-dev/adjustor"
+HHD_DEV_DIR = "/run/hhd/dev"
 
 def get_distro_color():
     match get_os():

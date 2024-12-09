@@ -1,0 +1,65 @@
+reports:
+  type: container
+  tags: [system, non-essential]
+  title: Bug Report
+  
+  children:
+    url:
+      type: display
+      title: Bug Report Link
+      tags: [qr, verify]
+
+    error:
+      type: display
+      tags: [error]
+      title: Upload Error
+    
+    progress:
+      type: custom
+      tags: [progress]
+
+    submit:
+      type: action
+      title: Submit Report
+      tags: [verify]
+      hint: 'Upload a bug report to paste.centos.org'
+
+    boot:
+      type: multiple
+      title: Logs from
+      default: current
+      options:
+        current: Current Boot
+        previous: Previous Boot (-1)
+        m2: Boot -2
+        m3: Boot -3
+    
+    status:
+      type: display
+      title:
+      default: 'Create a log that will be uploaded to paste.centos.org for 3 days'
+
+dev:
+  type: container
+  tags: [system, non-essential]
+  title: Development Tools
+
+  children:
+    progress:
+      type: custom
+      tags: [progress]
+    
+    error:
+      type: display
+      tags: [error]
+
+    hhd_dev:
+      type: action
+      tags: [verify]
+      title: Use HHD Beta Until Restart
+      hint: >-
+        Switch to the HHD beta channel until you restart.
+    
+    hhd_dev_exit:
+      type: action
+      title: Go Back to Stable

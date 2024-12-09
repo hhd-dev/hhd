@@ -39,7 +39,18 @@ from .plugins.settings import (
     save_state_yaml,
     validate_config,
 )
-from .utils import expanduser, fix_perms, get_context, get_os, switch_priviledge, get_ac_status_fn, get_ac_status
+from .utils import (
+    GIT_ADJ,
+    GIT_HHD,
+    HHD_DEV_DIR,
+    expanduser,
+    fix_perms,
+    get_ac_status,
+    get_ac_status_fn,
+    get_context,
+    get_os,
+    switch_priviledge,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -143,6 +154,7 @@ def main():
     detectors: dict[str, HHDAutodetect] = {}
     plugins: dict[str, Sequence[HHDPlugin]] = {}
     cfg_fds = []
+    switch_root = None
 
     # HTTP data
     https = None
@@ -151,7 +163,7 @@ def main():
     last_event = None
     ac_fn = get_ac_status_fn()
     info = Config()
-    info['ac'] = None
+    info["ac"] = None
     ac_status = None
 
     # Check we are in a virtual environment
@@ -526,7 +538,7 @@ def main():
                 if new_status != ac_status:
                     logger.info(f"AC status is: {new_status}")
                     ac_status = new_status
-                    info['ac'] = ac_status
+                    info["ac"] = ac_status
 
             for ev in events:
                 match ev["type"]:
@@ -552,7 +564,16 @@ def main():
                             conf.update(profiles[ev["name"]].conf)
                     case "state":
                         conf.update(ev["config"].conf)
-                    case "special" | "acpi" | "tdp" | "ppd" | "energy":
+                    case "special":
+                        if ev["event"] == "restart_dev":
+                            should_exit.set()
+                            switch_root = True
+                            break
+                        elif ev["event"] == "shutdown_dev":
+                            should_exit.set()
+                            # Trigger restart
+                            updated = True
+                    case "acpi" | "tdp" | "ppd" | "energy":
                         pass
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")
@@ -696,16 +717,8 @@ def main():
                                 "--upgrade",
                                 "--cache-dir",
                                 "/tmp/__hhd_update_cache",
-                                (
-                                    "git+https://github.com/hhd-dev/hhd"
-                                    if upd_beta
-                                    else "hhd"
-                                ),
-                                (
-                                    "git+https://github.com/hhd-dev/adjustor"
-                                    if upd_beta
-                                    else "adjustor"
-                                ),
+                                (GIT_HHD if upd_beta else "hhd"),
+                                (GIT_ADJ if upd_beta else "adjustor"),
                             ]
                         )
 
@@ -811,6 +824,11 @@ def main():
     if updated:
         # Use error code to restart service
         sys.exit(-1)
+
+    if switch_root:
+        os.environ["HHD_SWITCH_ROOT"] = "1"
+        o = subprocess.run([HHD_DEV_DIR + "/bin/hhd", *sys.argv], check=False)
+        sys.exit(o.returncode)
 
 
 if __name__ == "__main__":

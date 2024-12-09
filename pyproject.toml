@@ -30,8 +30,8 @@ dependencies = [
 
 [project.entry-points."console_scripts"]
 hhd = "hhd.__main__:main"
-"hhd.contrib" = "hhd.contrib:main"
 hhdctl = "hhd.http.ctl:main"
+"hhd.contrib" = "hhd.contrib:main"
 
 [project.entry-points."hhd.plugins"]
 legion_go = "hhd.device.legion_go:autodetect"
@@ -44,6 +44,7 @@ powerbuttond = "hhd.plugins.powerbutton:autodetect"
 rgb = "hhd.plugins.rgb:autodetect"
 overlay = "hhd.plugins.overlay:autodetect"
 bootc = "hhd.plugins.bootc:autodetect"
+debug = "hhd.plugins.debug:autodetect"
 # display = "hhd.plugins.display:autodetect"
 
 [project.entry-points."hhd.i18n"]
