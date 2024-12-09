@@ -37,14 +37,18 @@ Examples:
 """
 
 
-def unroll_dict(d, prefix=""):
+def _unroll_dict(d, prefix=""):
     if isinstance(d, dict):
         for k, v in d.items():
             if prefix:
                 k = f"{prefix}.{k}"
-            yield from unroll_dict(v, k)
+            yield from _unroll_dict(v, k)
     else:
         yield prefix, d
+
+
+def unroll_dict(d):
+    return dict(_unroll_dict(d))
 
 
 class UnixConnection(HTTPConnection):
@@ -82,7 +86,7 @@ def _get(keys, poll: bool = False, state=None, values: bool = False):
         return 2
 
     out = ""
-    data = dict(unroll_dict(json.loads(state.read())))
+    data = unroll_dict(json.loads(state.read()))
     err = 0
     for k in keys or data:
         if k not in data or data[k] is None:
@@ -109,6 +113,7 @@ def _get(keys, poll: bool = False, state=None, values: bool = False):
     sys.stdout.write(out)
     sys.stdout.flush()
     return err
+
 
 def _track(keys, sep, values):
     poll = False
@@ -226,6 +231,7 @@ def main():
 ALL = {
     "set_state": set_state,
     "get_state": get_state,
+    "unroll_dict": unroll_dict,
     "main": main,
 }
 

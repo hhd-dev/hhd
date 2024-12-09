@@ -5,6 +5,14 @@ hint: >-
   Manage the currently installed image with bootc.
 
 children:
+  steamos-target:
+    type: display
+    tags: [hidden]
+  
+  steamos-update:
+    type: display
+    tags: [hidden]
+
   image:
     tags: [slim, bold]
     type: display

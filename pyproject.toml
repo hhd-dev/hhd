@@ -32,6 +32,7 @@ dependencies = [
 hhd = "hhd.__main__:main"
 hhdctl = "hhd.http.ctl:main"
 "hhd.contrib" = "hhd.contrib:main"
+"hhd.steamos" = "hhd.http.steamos:main"
 
 [project.entry-points."hhd.plugins"]
 legion_go = "hhd.device.legion_go:autodetect"
