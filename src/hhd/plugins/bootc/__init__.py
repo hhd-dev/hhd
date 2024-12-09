@@ -411,7 +411,7 @@ class BootcPlugin(HHDPlugin):
 
                 steamos = conf.get("updates.bootc.steamos-update", None)
                 target = conf.get("updates.bootc.steamos-target", None)
-                if target and target not in BRANCHES:
+                if target and (target not in BRANCHES or target == self.branch_name):
                     target = None
 
                 # Handle steamos polkit

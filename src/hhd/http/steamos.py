@@ -1,5 +1,6 @@
 import argparse
 import sys
+import time
 from .ctl import get_state, set_state, unroll_dict
 
 SOCKET_UNIX = "/run/hhd/api"
@@ -25,9 +26,11 @@ ALL = {
 }
 
 BRANCH_MAP = {
-    "stable": "stable",
-    "testing": "beta",
-    "unstable": "main",
+    "rel": "stable",
+    "rc": "testing",
+    "beta": "unstable",
+    "bc": "unstable",
+    "main": "unstable",
 }
 
 FALLBACK_CODE = 20
@@ -41,19 +44,27 @@ def _select_branch(fallback, opts):
         # print(f"Stage: {stage}", file=sys.stderr)
         incompatible = stage is None or stage == "incompatible"
 
-        branch = state.get("updates.bootc.steamos-target", None)
-        if not branch:
-            img = state.get("updates.bootc.image", None)
-            assert img is not None
-            for k, v in BRANCH_MAP.items():
-                if k in img:
-                    branch = v
-                    break
+        img = state.get("updates.bootc.steamos-target", None)
+        if not img:
+            img = state.get("updates.bootc.image", None).split(":")[-1]
+        assert img is not None
+        for k, v in BRANCH_MAP.items():
+            if img.startswith(v):
+                branch = k
+                break
     except Exception as e:
         incompatible = True
         print(f"Error: {e}", file=sys.stderr)
     if incompatible and fallback:
         return FALLBACK_CODE
+
+    if "-c" in opts:
+        print(branch)
+        return 0
+    if "-l" in opts:
+        for v in BRANCH_MAP.keys():
+            print(v)
+        return 0
 
     if not opts:
         print("No option provided", file=sys.stderr)
@@ -61,13 +72,6 @@ def _select_branch(fallback, opts):
 
     if incompatible:
         print("Incompatible state", file=sys.stderr)
-        return 0
-
-    if "-c" in opts:
-        return branch
-    if "-l" in opts:
-        for v in BRANCH_MAP.values():
-            print(v)
         return 0
 
     if not opts:
@@ -79,8 +83,8 @@ def _select_branch(fallback, opts):
 
     target_os = None
     for k, v in BRANCH_MAP.items():
-        if target == v:
-            target_os = k
+        if target == k:
+            target_os = v
             break
 
     if target_os is None:
@@ -108,7 +112,7 @@ def _update(fallback, opts):
             "updates.bootc.steamos-update", None
         )
 
-    if val != "has-update" and not (val and val.startswith("%")):
+    if val != "has-update" and not (val and val.endswith("%")):
         print(f"No updates available ({val})", file=sys.stderr)
         return 7
     elif check:
@@ -116,14 +120,22 @@ def _update(fallback, opts):
         return 0
 
     # Otherwise apply, bootc does not need separate steps
-    val = unroll_dict(set_state({"updates.bootc.steamos-update": "apply"})).get(
-        "updates.bootc.steamos-update", None
-    )
+    if not val or not val.endswith("%"):
+        val = unroll_dict(set_state({"updates.bootc.steamos-update": "apply"})).get(
+            "updates.bootc.steamos-update", None
+        )
+
+    curr = 0
+    print("\r\033[K\r0%  ", end="")
     while not val or "%" in val or val == "apply":
-        if not val or val == "apply":
-            print("0%")
-        else:
-            print(val)
+        print(f"\r\033[K\r{curr:.2f}%  ", end="")
+
+        if val and val.endswith("%"):
+            next = float(val[:-1])
+            if next != curr:
+                print(f"\r\033[K\r{next:.2f}%  ", end="")
+                curr = next
+
         val = unroll_dict(get_state(poll=True)).get(
             "updates.bootc.steamos-update", None
         )
@@ -143,11 +155,12 @@ def main():
         fallback = "--fallback" in sys.argv
         cmd = sys.argv[1]
 
+        opts = [v for v in sys.argv[2:] if v != "--fallback"]
         match cmd:
             case "steamos-branch-select":
-                v = _select_branch(fallback, sys.argv[2:])
+                v = _select_branch(fallback, opts)
             case "steamos-update":
-                v = _update(fallback, sys.argv[2:])
+                v = _update(fallback, opts)
             case _:
                 print(f"Invalid command: '{cmd}'")
                 v = -1
