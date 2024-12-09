@@ -28,9 +28,9 @@ ALL = {
 BRANCH_MAP = {
     "rel": "stable",
     "rc": "testing",
-    "beta": "unstable",
-    "bc": "unstable",
+    "beta": "testing",
     "main": "unstable",
+    "bc": "unstable",
 }
 
 FALLBACK_CODE = 20
@@ -103,14 +103,26 @@ def _update(fallback, opts):
     check = "check" in opts
 
     # Check if there is an update
-    set_state({"updates.bootc.steamos-update": "check"})
-    val = unroll_dict(set_state({"updates.bootc.steamos-update": "check"})).get(
-        "updates.bootc.steamos-update", None
-    )
-    while val == "check":
-        val = unroll_dict(get_state(poll=True)).get(
+    try:
+        if unroll_dict(get_state()).get("updates.bootc.steamos-update", None) in (
+            "incompatible",
+            None,
+        ):
+            print("Incompatible state", file=sys.stderr)
+            return FALLBACK_CODE if fallback else 0
+
+        val = unroll_dict(set_state({"updates.bootc.steamos-update": "check"})).get(
             "updates.bootc.steamos-update", None
         )
+        while val == "check":
+            val = unroll_dict(get_state(poll=True)).get(
+                "updates.bootc.steamos-update", None
+            )
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        if fallback:
+            return FALLBACK_CODE
+        return 1
 
     if val != "has-update" and not (val and val.endswith("%")):
         print(f"No updates available ({val})", file=sys.stderr)
@@ -125,16 +137,16 @@ def _update(fallback, opts):
             "updates.bootc.steamos-update", None
         )
 
-    curr = 0
-    print("\r\033[K\r0%  ", end="")
+    curr = 0.2
     while not val or "%" in val or val == "apply":
-        print(f"\r\033[K\r{curr:.2f}%  ", end="")
-
         if val and val.endswith("%"):
             next = float(val[:-1])
-            if next != curr:
-                print(f"\r\033[K\r{next:.2f}%  ", end="")
-                curr = next
+            while curr < next:
+                # print(f"\r\033[K\r{curr:.2f}% 1m1s", end="")
+                print(f"\r{curr:.2f}%", end="")
+                sys.stdout.flush()
+                curr += min(5, next - curr)
+                time.sleep(0.2)
 
         val = unroll_dict(get_state(poll=True)).get(
             "updates.bootc.steamos-update", None
@@ -171,9 +183,7 @@ def main():
     except KeyboardInterrupt:
         sys.exit(0)
     except Exception as e:
-        raise e
-        if fallback:
-            sys.exit(20)
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
