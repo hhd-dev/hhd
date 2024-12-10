@@ -169,7 +169,9 @@ class AsusDriverPlugin(HHDPlugin):
         path_exists = os.path.exists(EXTREME_FN)
         extreme_supported = EXTREME_ENABLE and path_exists
         if self.extreme_supported is None:
-            logger.info(f"Extreme standby enabled: {EXTREME_ENABLE}, file exists: {extreme_supported}. Enabled: {extreme_supported}")
+            logger.info(
+                f"Extreme standby enabled: {EXTREME_ENABLE}, file exists: {extreme_supported}. Enabled: {extreme_supported}"
+            )
         self.extreme_supported = extreme_supported
         if not self.extreme_supported:
             del out["tdp"]["asus"]["children"]["extreme_standby"]
@@ -177,21 +179,25 @@ class AsusDriverPlugin(HHDPlugin):
         # Set units
         if self.allyx:
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"]["unit"] = "13W"
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"]["unit"] = "17W"
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"][
+                "unit"
+            ] = "17W"
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
                 "unit"
             ] = "25/30W"
         else:
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"]["unit"] = "10W"
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"]["unit"] = "15W"
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"][
+                "unit"
+            ] = "15W"
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
                 "unit"
             ] = "25/30W"
 
         if not self.enforce_limits:
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["children"]["tdp"][
-                "max"
-            ] = 50
+            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["children"][
+                "tdp"
+            ]["max"] = 50
         return out
 
     def open(
@@ -298,6 +304,7 @@ class AsusDriverPlugin(HHDPlugin):
                     new_target = "performance"
 
         # In custom mode, re-apply settings with debounce
+        tdp_set = False
         if mode == "custom":
             # Check user changed values
             if new_tdp:
@@ -410,7 +417,7 @@ class AsusDriverPlugin(HHDPlugin):
 
         # Check if fan curve has changed
         # Use debounce logic on these changes
-        if tdp_reset and manual_fan_curve:
+        if ((tdp_reset and mode != "custom") or tdp_set) and manual_fan_curve:
             self.queue_fan = curr + APPLY_DELAY
 
         for i in POINTS:
@@ -431,7 +438,7 @@ class AsusDriverPlugin(HHDPlugin):
                 self.queue_tdp = curr + APPLY_DELAY
 
         apply_curve = self.queue_fan and self.queue_fan < curr
-        if apply_curve:
+        if apply_curve or tdp_set:
             try:
                 if conf["tdp.asus.fan.mode"].to(str) == "manual":
                     set_fan_curve(
@@ -475,7 +482,7 @@ class AsusDriverPlugin(HHDPlugin):
                     with open(EXTREME_FN, "r") as f:
                         cval = f.read().strip() == "1"
                     if nval != cval:
-                        logger.info (f"Setting extreme standby to '{standby}'")
+                        logger.info(f"Setting extreme standby to '{standby}'")
                         with open(EXTREME_FN, "w") as f:
                             f.write("1" if standby == "enabled" else "0")
                     else:
@@ -487,7 +494,7 @@ class AsusDriverPlugin(HHDPlugin):
         for ev in events:
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
-                self.sys_tdp = ev['tdp'] is not None
+                self.sys_tdp = ev["tdp"] is not None
             elif ev["type"] == "ppd":
                 match ev["status"]:
                     case "power":
@@ -496,10 +503,12 @@ class AsusDriverPlugin(HHDPlugin):
                         self.new_mode = "balanced"
                     case "performance":
                         self.new_mode = "performance"
-            elif ev['type'] == 'special' and ev.get('event', None) == "wakeup":
-                logger.info(f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds.")
+            elif ev["type"] == "special" and ev.get("event", None) == "wakeup":
+                logger.info(
+                    f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds."
+                )
                 self.queue_tdp = time.time() + SLEEP_DELAY
-            elif self.cycle_tdp and ev['type'] == "special" and ev['event'] == "xbox_y":
+            elif self.cycle_tdp and ev["type"] == "special" and ev["event"] == "xbox_y":
                 match self.mode:
                     case "quiet":
                         self.new_mode = "balanced"
