@@ -32,6 +32,7 @@ class GeneralPowerPlugin(HHDPlugin):
         self.ovr_enabled = False
         self.should_exit = Event()
         self.t_sys = None
+        self.currentTarget = None
 
     def settings(self):
         sets = load_relative_yaml("./settings.yml")
@@ -151,10 +152,11 @@ class GeneralPowerPlugin(HHDPlugin):
                 "balanced": "balanced",
                 "performance": "throughput-performance"
             }
+
             new_profile = ppd_tuned_mapping.get(conf.get("tdp.general.profile", self.target))
-            if new_profile != self.target and new_profile and self.target:
-                logger.info(f"Setting TuneD profile to '{new_profile}'")
-                self.target = new_profile
+            if new_profile != self.currentTarget and new_profile and self.currentTarget:
+                logger.info(f"Setting TuneD profile to '{new_profile}' from '{self.target}'")
+                self.currentTarget = new_profile
                 try:
                     subprocess.run(
                         [shutil.which('tuned-adm'), "profile", new_profile],
@@ -162,6 +164,7 @@ class GeneralPowerPlugin(HHDPlugin):
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
                     )
+
                 except Exception as e:
                     self.tuned_supported = False
                     logger.warning(f"tuned-adm returned with error:\n{e}")
@@ -176,13 +179,13 @@ class GeneralPowerPlugin(HHDPlugin):
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE,
                     )
-
                     tuned_ppd_mapping = {
                         "powersave": "power-saver",
                         "balanced": "balanced",
                         "throughput-performance": "performance"
                     }
-                    self.target = tuned_ppd_mapping.get(res.stdout.decode().split(":")[1].strip())  # type: ignore
+                    self.currentTarget = res.stdout.decode().split(":")[1].strip()
+                    self.target = tuned_ppd_mapping.get(self.currentTarget)  # type: ignore
 
                     if self.target != conf["tdp.general.profile"].to(str):
                         conf["tdp.general.profile"] = self.target
