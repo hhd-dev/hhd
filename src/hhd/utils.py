@@ -19,6 +19,7 @@ GIT_HHD = "git+https://github.com/hhd-dev/hhd"
 GIT_ADJ = "git+https://github.com/hhd-dev/adjustor"
 HHD_DEV_DIR = "/run/hhd/dev"
 
+
 def get_distro_color():
     match get_os():
         case "manjaro":
@@ -54,19 +55,19 @@ def get_os() -> str:
         if name in os_release:
             logger.info(f"Running under Linux distro '{name}'.")
             distro = name
-    
+
     try:
         # Match just product name
         # if a device exists here its officially supported
         with open("/sys/devices/virtual/dmi/id/product_name") as f:
             dmi = f.read().strip()
 
-        if "jupiter" in dmi.lower():
+        if "jupiter" in dmi.lower() or "onexplayer" in dmi.lower():
             if distro == "bazzite":
                 distro = "blood_orange_ba"
             else:
                 distro = "blood_orange"
-        
+
         if "F1Pro" in dmi and "EVA" in dmi:
             if distro == "bazzite":
                 distro = "red_gold_ba"
@@ -74,7 +75,7 @@ def get_os() -> str:
                 distro = "red_gold"
     except Exception as e:
         logger.error(f"Could not read product name, error:\n{e}")
-    
+
     if distro is not None:
         return distro
 
