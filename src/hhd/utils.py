@@ -29,6 +29,10 @@ def get_distro_color():
             return 195
         case "ubuntu":
             return 340
+        case "red_gold" | "red_gold_ba":
+            return 28
+        case "blood_orange" | "blood_orange_ba":
+            return 18
         case _:
             return 30
 
@@ -45,10 +49,34 @@ def get_os() -> str:
         logger.error(f"Could not read os information, error:\n{e}")
         return "ukn"
 
+    distro = None
     for name in DISTRO_NAMES:
         if name in os_release:
             logger.info(f"Running under Linux distro '{name}'.")
-            return name
+            distro = name
+    
+    try:
+        # Match just product name
+        # if a device exists here its officially supported
+        with open("/sys/devices/virtual/dmi/id/product_name") as f:
+            dmi = f.read().strip()
+
+        if "jupiter" in dmi.lower():
+            if distro == "bazzite":
+                distro = "blood_orange_ba"
+            else:
+                distro = "blood_orange"
+        
+        if "F1Pro" in dmi and "EVA" in dmi:
+            if distro == "bazzite":
+                distro = "red_gold_ba"
+            else:
+                distro = "red_gold"
+    except Exception as e:
+        logger.error(f"Could not read product name, error:\n{e}")
+    
+    if distro is not None:
+        return distro
 
     logger.info(f"Running under an unknown Linux distro.")
     return "ukn"
