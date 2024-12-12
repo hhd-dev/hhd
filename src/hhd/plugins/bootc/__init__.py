@@ -4,6 +4,7 @@ import os
 import select
 import signal
 import subprocess
+import shutil
 import time
 from threading import Lock, Thread
 from typing import Literal, Sequence
@@ -693,6 +694,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         return existing
 
     if not BOOTC_ENABLED:
+        return []
+    
+    if not shutil.which(BOOTC_PATH):
+        logger.warning("Bootc is enabled but not found in path.")
         return []
 
     return [BootcPlugin()]
