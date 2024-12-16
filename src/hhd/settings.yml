@@ -28,6 +28,7 @@ settings:
         diavolo: Diavolo
         ocean: Atlantis
         vapor: Vapor
+        blood_orange: Blood Orange
       
     reset:
       type: action

@@ -62,11 +62,11 @@ def get_os() -> str:
         with open("/sys/devices/virtual/dmi/id/product_name") as f:
             dmi = f.read().strip()
 
-        if "jupiter" in dmi.lower() or "onexplayer" in dmi.lower():
-            if distro == "bazzite":
-                distro = "blood_orange_ba"
-            else:
-                distro = "blood_orange"
+        # if "jupiter" in dmi.lower() or "onexplayer" in dmi.lower():
+        #     if distro == "bazzite":
+        #         distro = "blood_orange_ba"
+        #     else:
+        #         distro = "blood_orange"
 
         if "ONEXPLAYER F1 EVA-02" in dmi:
             if distro == "bazzite":
