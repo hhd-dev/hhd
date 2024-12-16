@@ -68,7 +68,7 @@ def get_os() -> str:
             else:
                 distro = "blood_orange"
 
-        if "F1Pro" in dmi and "EVA" in dmi:
+        if "ONEXPLAYER F1 EVA-02" in dmi:
             if distro == "bazzite":
                 distro = "red_gold_ba"
             else:
