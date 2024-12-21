@@ -92,7 +92,6 @@ class BackbuttonsEvdev(GenericGamepadEvdev):
             for e in self.dev.read():
                 if e.type != EC("EV_KEY"):
                     continue
-                print(e)
 
                 pressed = e.value != 0
 
