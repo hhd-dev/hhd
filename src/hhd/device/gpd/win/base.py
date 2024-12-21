@@ -8,7 +8,7 @@ from typing import Sequence
 import evdev
 
 from hhd.controller import DEBUG_MODE, Event, Multiplexer, can_read
-from hhd.controller.base import Event, TouchpadAction
+from hhd.controller.base import Event
 from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
@@ -40,7 +40,7 @@ TOUCHPAD_PID = 0x0255
 TOUCHPAD_VID_2 = 0x0911
 TOUCHPAD_PID_2 = 0x5288
 
-BACK_BUTTON_DELAY = 0.03
+BACK_BUTTON_DELAY = 0.025
 
 # /dev/input/event17 Microsoft X-Box 360 pad usb-0000:73:00.3-4.1/input0
 # bus: 0003, vendor 045e, product 028e, version 0101
@@ -59,92 +59,77 @@ BACK_BUTTON_DELAY = 0.03
 #    'product_string': 'Mouse for Windows',
 #    'usage_page': 1, 'usage': 6, 'interface_number': 1},
 
+LEFT_BUTTONS = {
+    EC("KEY_SYSRQ"),
+    EC("KEY_F20"),
+}
 
-class GpdWin4Hidraw(GenericGamepadHidraw):
+RIGHT_BUTTONS = {
+    EC("KEY_PAUSE"),
+    EC("KEY_F21"),
+}
+
+
+class BackbuttonsEvdev(GenericGamepadEvdev):
     def __init__(self, *args, **kwargs) -> None:
+        self.left_pressed = False
+        self.left_released = None
+        self.right_pressed = False
+        self.right_released = None
         super().__init__(*args, **kwargs)
 
-    def open(self) -> Sequence[int]:
-        self.left_pressed = None
-        self.right_pressed = None
-        self.last_pressed = None
-        self.clear_ts = None
-
-        self.queue: list[tuple[Event, float]] = []
-        return super().open()
-
-    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
-        # If we can not read return
-        if not self.fd or not self.dev:
+    def produce(self, fds: Sequence[int]):
+        if not self.dev:
             return []
 
-        # Process events
+        # GPD events execute micro sequences
+        # Inbetween the sequences, there is a ~20ms gap in which the
+        # button is not pressed. Therefore, record when the button was
+        # pressed and if more than ~25ms has passed, consider it released.
         curr = time.perf_counter()
-        out: Sequence[Event] = []
+        out = []
+        while self.fd in fds and can_read(self.dev):
+            for e in self.dev.read():
+                if e.type != EC("EV_KEY"):
+                    continue
+                print(e)
 
-        # Read new events
-        left_pressed = None
-        right_pressed = None
-        while can_read(self.fd):
-            rep = self.dev.read(self.report_size)
+                pressed = e.value != 0
 
-            # l4 = 0x46
-            # r4 = 0x48
-            # both = l4 + r4
-            # when both l4/r4 held, rep[2] and rep[3] will both be active
-            #   they will be the same known values for l4 and r4
-            #   but the order is not guaranteed to be consistent
-            check = rep[2] + rep[3]
-            match check:
-                case 0x46:
-                    # action = "left/l4"
-                    left_pressed = True
-                    self.last_pressed = "left"
-                    self.clear_ts = None
-                case 0x48:
-                    # action = "right/r4"
-                    right_pressed = True
-                    self.last_pressed = "right"
-                    self.clear_ts = None
-                case 0x8E:
-                    # both l4 and r4 are being pressed
-                    left_pressed = True
-                    right_pressed = True
-                    self.clear_ts = None
-                case _:  # 0x00:
-                    # This occurs only when one button is pressed
-                    # So in case both are remove one
-                    if self.last_pressed == "right" and self.left_pressed:
-                        left_pressed = False
-                    if self.last_pressed == "left" and self.right_pressed:
-                        right_pressed = False
-                    self.clear_ts = curr + BACK_BUTTON_DELAY
+                if e.code in LEFT_BUTTONS:
+                    if pressed:
+                        if not self.left_pressed:
+                            out.append(
+                                {"type": "button", "code": "extra_l1", "value": True}
+                            )
+                        self.left_pressed = True
+                        self.left_released = None
+                    else:
+                        self.left_released = curr
+                if e.code in RIGHT_BUTTONS:
+                    if pressed:
+                        if not self.right_pressed:
+                            out.append(
+                                {
+                                    "type": "button",
+                                    "code": "extra_r1",
+                                    "value": True,
+                                }
+                            )
+                        self.right_pressed = True
+                        self.right_released = None
+                    else:
+                        self.right_released = curr
 
-        if self.clear_ts and self.clear_ts < curr:
-            # Reset after timeout
-            if self.left_pressed:
-                out.append({"type": "button", "code": "extra_l1", "value": False})
-                self.left_pressed = False
-            if self.right_pressed:
-                out.append({"type": "button", "code": "extra_r1", "value": False})
-                self.right_pressed = False
-            self.clear_ts = None
-        else:
-            # If no timeout, update
-            # Left, right will be none if no events were received
-            # If they were, they will be true/false
-            # If that conflicts with the saved values, send events.
-            if left_pressed is not None and self.left_pressed != left_pressed:
-                out.append(
-                    {"type": "button", "code": "extra_l1", "value": left_pressed}
-                )
-                self.left_pressed = left_pressed
+        if self.left_released and curr - self.left_released > BACK_BUTTON_DELAY:
+            out.append({"type": "button", "code": "extra_l1", "value": False})
+            self.left_released = None
+            self.left_pressed = False
+        if self.right_released and curr - self.right_released > BACK_BUTTON_DELAY:
+            out.append({"type": "button", "code": "extra_r1", "value": False})
+            self.right_released = None
+            self.right_pressed = False
 
-            if right_pressed is not None and self.right_pressed != right_pressed:
-                out.append(
-                    {"type": "button", "code": "extra_r1", "value": right_pressed}
-                )
-                self.right_pressed = right_pressed
         return out
 
 
@@ -206,11 +191,13 @@ def plugin_run(
             )
             # Raise exception
             if DEBUG_MODE:
-                raise e
+                import traceback
+                logger.error(traceback.format_exc())
             time.sleep(sleep_time)
 
     # Unhide all devices before exiting
     unhide_all()
+
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
@@ -260,20 +247,11 @@ def controller_loop(
     )
 
     # Vendor
-    d_vend = GpdWin4Hidraw(
+    d_kbd_1 = BackbuttonsEvdev(
         vid=[GPD_WIN_4_VID],
         pid=[GPD_WIN_4_PID],
-        usage_page=[0x0001],
-        usage=[0x0006],
-        required=True,
-    )
-
-    d_kbd_1 = GenericGamepadEvdev(
-        vid=[GPD_WIN_4_VID],
-        pid=[GPD_WIN_4_PID],
-        # TODO: Verify capability check does not cause regressions
         capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
-        required=False,
+        required=True,
         grab=True,
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
@@ -295,15 +273,15 @@ def controller_loop(
     if has_touchpad:
         touch_actions = (
             conf["touchpad.controller"]
-            if conf["touchpad.mode"].to(TouchpadAction) == "controller"
+            if conf.get("touchpad.mode", None) == "controller"
             else conf["touchpad.emulation"]
         )
 
         multiplexer = Multiplexer(
             trigger="analog_to_discrete",
             dpad="analog_to_discrete",
-            touchpad_short=touch_actions["short"].to(TouchpadAction),
-            touchpad_hold=touch_actions["hold"].to(TouchpadAction),
+            touchpad_short=touch_actions.get("short", "disabled"),
+            touchpad_hold=touch_actions.get("hold", "disabled"),
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
             emit=emit,
@@ -342,7 +320,9 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
-        d_vend.open()
+        if l4r4_enabled:
+            kbd_fds = d_kbd_1.open()
+            fds.extend(kbd_fds)
         prepare(d_xinput)
         if motion:
             start_imu = True
@@ -352,8 +332,6 @@ def controller_loop(
                 prepare(d_imu)
         if has_touchpad and d_params["uses_touch"]:
             prepare(d_touch)
-        if l4r4_enabled:
-            prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
 
@@ -365,19 +343,19 @@ def controller_loop(
             evs = []
             to_run = set()
             for f in r:
-                to_run.add(id(fd_to_dev[f]))
+                # skip kbd_1 to always run it
+                if f not in kbd_fds:
+                    to_run.add(id(fd_to_dev[f]))
 
             for d in devs:
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
-            evs.extend(d_vend.produce(r))
+            evs.extend(d_kbd_1.produce(r))
 
             evs = multiplexer.process(evs)
             if evs:
                 if debug:
                     logger.info(evs)
-
-                # d_vend.consume(evs)
                 d_xinput.consume(evs)
 
             for d in d_outs:
@@ -402,7 +380,7 @@ def controller_loop(
         raise
     finally:
         try:
-            d_vend.close(not updated.is_set())
+            d_kbd_1.close(not updated.is_set())
         except Exception as e:
             logger.error(f"Error while closing device '{d}' with exception:\n{e}")
             if debug:

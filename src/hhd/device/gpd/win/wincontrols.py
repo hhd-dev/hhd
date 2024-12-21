@@ -260,13 +260,13 @@ RUMBLE_MODES = {
     "high": 2,
 }
 
-HHD_CONFIG_BACKBUTTONS = {
+BACKBUTTONS_HHD = {
     "buttons": {
-        "extra_l1": "f20", # "sysrq",
+        "extra_l1": "f20",  # "sysrq",
         "extra_l2": "none",
         "extra_l3": "none",
         "extra_l4": "none",
-        "extra_r1": "f21", # "pause",
+        "extra_r1": "f21",  # "pause",
         "extra_r2": "none",
         "extra_r3": "none",
         "extra_r4": "none",
@@ -280,6 +280,28 @@ HHD_CONFIG_BACKBUTTONS = {
         "extra_r2": 0,
         "extra_r3": 0,
         "extra_r4": 25,
+    },
+}
+BACKBUTTONS_DEFAULT = {
+    "buttons": {
+        "extra_l1": "sysrq",
+        "extra_l2": "none",
+        "extra_l3": "none",
+        "extra_l4": "none",
+        "extra_r1": "pause",
+        "extra_r2": "none",
+        "extra_r3": "none",
+        "extra_r4": "none",
+    },
+    "delays": {
+        "extra_l1": 0,
+        "extra_l2": 0,
+        "extra_l3": 0,
+        "extra_l4": 300,
+        "extra_r1": 0,
+        "extra_r2": 0,
+        "extra_r3": 0,
+        "extra_r4": 300,
     },
 }
 
@@ -569,4 +591,4 @@ def explain_config():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    update_config(**HHD_CONFIG_BACKBUTTONS)
+    update_config(**BACKBUTTONS_HHD)
