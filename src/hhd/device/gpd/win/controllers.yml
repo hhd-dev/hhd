@@ -46,10 +46,11 @@ children:
   l4r4:
     type: multiple
     tags: [ non-essential ]
-    title: L4/R4 Mapping
+    title: Menu/L4/R4 Mapping
     options:
       disabled: "Disabled"
       generic: "Paddles"
+      menu: "Menu is QAM"
       l4: "L4 is QAM"
       r4: "R4 is QAM"
     default: r4

@@ -259,15 +259,23 @@ def controller_loop(
         case "l4":
             qam_button = "extra_l1"
             l4r4_enabled = True
+            qam_multi_tap = False
         case "r4":
             qam_button = "extra_r1"
             l4r4_enabled = True
+            qam_multi_tap = False
+        case "menu":
+            qam_button = "mode"
+            l4r4_enabled = True
+            qam_multi_tap = True
         case "disabled":
             qam_button = None
             l4r4_enabled = False
+            qam_multi_tap = True
         case _:
             qam_button = None
             l4r4_enabled = True
+            qam_multi_tap = True
 
     if has_touchpad:
         touch_actions = (
@@ -285,7 +293,8 @@ def controller_loop(
             qam_button=qam_button,
             emit=emit,
             params=d_params,
-            qam_multi_tap=False,
+            qam_multi_tap=qam_multi_tap,
+            qam_hold="mode",
         )
     else:
         multiplexer = Multiplexer(
@@ -295,7 +304,8 @@ def controller_loop(
             qam_button=qam_button,
             emit=emit,
             params=d_params,
-            qam_multi_tap=False,
+            qam_multi_tap=qam_multi_tap,
+            qam_hold="mode",
         )
 
     REPORT_FREQ_MIN = 25

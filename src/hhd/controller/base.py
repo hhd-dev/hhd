@@ -520,7 +520,7 @@ TouchpadAction = Literal["disabled", "left_click", "right_click"]
 
 
 class Multiplexer:
-    QAM_HOLD_TIME = 0.5
+    QAM_HOLD_TIME = 0.4
     QAM_MULTI_PRESS_DELAY = 0.2
     QAM_TAP_TIME = 0.04
     QAM_DELAY = 0.15
@@ -571,6 +571,7 @@ class Multiplexer:
         qam_multi_tap: bool = True,
         qam_no_release: bool = False,
         qam_hhd: bool = False,
+        qam_hold: Literal["hhd", "mode"] = "hhd",
         keyboard_is: Literal["steam_qam", "qam", "keyboard"] = "keyboard",
         keyboard_no_release: bool = False,
     ) -> None:
@@ -597,6 +598,7 @@ class Multiplexer:
         self.send_xbox_b = None
         self.imu = imu
         self.qam_hhd = qam_hhd
+        self.qam_hold = qam_hold
         self.keyboard_is = keyboard_is
         self.keyboard_no_release = keyboard_no_release
 
@@ -1303,6 +1305,7 @@ class Multiplexer:
         send_steam_qam = send_steam_qam or (
             qam_apply and not qam_hhd and self.qam_released and self.qam_times == 1
         )
+        send_steam_expand = qam_apply and self.qam_pressed and was_held and self.qam_hold == "mode"
         if qam_apply and self.emit:
             if qam_hhd:
                 match self.qam_times:
@@ -1313,7 +1316,9 @@ class Multiplexer:
                     case _:
                         self.emit({"type": "special", "event": "qam_triple"})
             else:
-                if self.qam_pressed and was_held:
+                # FIXME: hiding the event based on qam_hold should not happen
+                # instead the handler should not open hhd
+                if self.qam_pressed and was_held and self.qam_hold == "hhd":
                     self.emit({"type": "special", "event": "qam_hold"})
                 else:
                     match self.qam_times:
