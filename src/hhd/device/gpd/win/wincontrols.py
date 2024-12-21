@@ -260,8 +260,32 @@ RUMBLE_MODES = {
     "high": 2,
 }
 
+HHD_CONFIG_BACKBUTTONS = {
+    "buttons": {
+        "extra_l1": "f20", # "sysrq",
+        "extra_l2": "none",
+        "extra_l3": "none",
+        "extra_l4": "none",
+        "extra_r1": "f21", # "pause",
+        "extra_r2": "none",
+        "extra_r3": "none",
+        "extra_r4": "none",
+    },
+    "delays": {
+        "extra_l1": 0,
+        "extra_l2": 0,
+        "extra_l3": 0,
+        "extra_l4": 25,
+        "extra_r1": 0,
+        "extra_r2": 0,
+        "extra_r3": 0,
+        "extra_r4": 25,
+    },
+}
+
 WSIZE = 33
 RSIZE = 64
+
 
 def get_command(cid: int, ofs: int = 0, payload: bytes = b"") -> bytes:
     base = bytes([0x01, 0xA5, cid, 0x5A, 0xFF ^ cid, 0x00, ofs, 0x00]) + payload
@@ -444,7 +468,7 @@ def update_config(
 
     with Device(path=dev["path"]) as d:
         write_config(d, fwver, bytes(cfg))
-    
+
     return fwver
 
 
@@ -545,4 +569,4 @@ def explain_config():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    update_config(rgb_mode="breathed", rgb_color=(0xff, 0xa5, 0x00))
+    update_config(**HHD_CONFIG_BACKBUTTONS)
