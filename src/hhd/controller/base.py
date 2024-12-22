@@ -531,6 +531,7 @@ class Multiplexer:
     REBOOT_VIBRATION_OFF = 1.2
     REBOOT_VIBRATION_NUM = 3
     STEAM_CHECK_INTERVAL = 3
+    STARTSELECT_TRIGGER_THRESHOLD = 0.6
 
     def __init__(
         self,
@@ -574,6 +575,7 @@ class Multiplexer:
         qam_hold: Literal["hhd", "mode"] = "hhd",
         keyboard_is: Literal["steam_qam", "qam", "keyboard"] = "keyboard",
         keyboard_no_release: bool = False,
+        startselect_chord: bool = False,
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -601,6 +603,8 @@ class Multiplexer:
         self.qam_hold = qam_hold
         self.keyboard_is = keyboard_is
         self.keyboard_no_release = keyboard_no_release
+        self.startselect_chord = startselect_chord
+        self.startselect_pressed = None
 
         self.state = {}
         self.touchpad_x = 0
@@ -826,6 +830,38 @@ class Multiplexer:
                                     ev["code"] = "right_imu_ts"
                                     ev["code"] = "left_imu_ts"
 
+                    if (
+                        self.startselect_pressed == "wait"
+                        and ev["code"]
+                        in (
+                            "lt",
+                            "rt",
+                            "hat_x",
+                            "hat_y",
+                        )
+                        and abs(ev["value"]) > self.STARTSELECT_TRIGGER_THRESHOLD
+                    ):
+                        out.append(
+                            {
+                                "type": "button",
+                                "code": "mode",
+                                "value": True,
+                            }
+                        )
+                        self.startselect_pressed = "pressed"
+                    if self.startselect_pressed == "pressed":
+                        self.queue.append(
+                            (
+                                {
+                                    "type": "axis",
+                                    "code": ev["code"],
+                                    "value": ev["value"],
+                                },
+                                curr + self.QAM_DELAY,
+                            )
+                        )
+                        ev["code"] = ""  # type: ignore
+
                     if self.trigger == "analog_to_discrete" and ev["code"] in (
                         "lt",
                         "rt",
@@ -937,6 +973,43 @@ class Multiplexer:
                             case "keyboard":
                                 if self.swap_guide == "start_is_keyboard":
                                     ev["code"] = "start"
+
+                    if self.startselect_chord and ev["code"] in ("start", "select"):
+                        if self.startselect_pressed == "pressed":
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": "mode",
+                                        "value": False,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                )
+                            )
+                            self.startselect_pressed = None
+
+                        if ev["value"]:
+                            self.startselect_pressed = "wait"
+                        elif self.startselect_pressed == "wait":
+                            self.startselect_pressed = None
+                            out.append(
+                                {
+                                    "type": "button",
+                                    "code": ev["code"],
+                                    "value": True,
+                                }
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": ev["code"],
+                                        "value": False,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                )
+                            )
+                        ev["code"] = ""  # type: ignore
 
                     if self.emit and ev["code"] == "mode":
                         # Steam might do weirdness, emit an event to prepare
@@ -1206,6 +1279,28 @@ class Multiplexer:
                                 self.emit({"type": "special", "event": "xbox_b"})
                             self.send_xbox_b = None
 
+                    # Apply start/select qam
+                    if self.startselect_pressed == "wait" and ev["code"]:
+                        out.append(
+                            {
+                                "type": "button",
+                                "code": "mode",
+                                "value": True,
+                            }
+                        )
+                        self.startselect_pressed = "pressed"
+                    if self.startselect_pressed == "pressed":
+                        self.queue.append(
+                            (
+                                {
+                                    "type": "button",
+                                    "code": ev["code"],
+                                    "value": ev['value'],
+                                },
+                                curr + self.QAM_DELAY,
+                            )
+                        )
+                        ev["code"] = ""  # type: ignore
                 case "led":
                     if self.led == "left_to_main" and ev["code"] == "left":
                         out.append({**ev, "code": "main"})
@@ -1305,7 +1400,9 @@ class Multiplexer:
         send_steam_qam = send_steam_qam or (
             qam_apply and not qam_hhd and self.qam_released and self.qam_times == 1
         )
-        send_steam_expand = qam_apply and self.qam_pressed and was_held and self.qam_hold == "mode"
+        send_steam_expand = (
+            qam_apply and self.qam_pressed and was_held and self.qam_hold == "mode"
+        )
         if qam_apply and self.emit:
             if qam_hhd:
                 match self.qam_times:

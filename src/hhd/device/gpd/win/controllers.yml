@@ -54,3 +54,12 @@ children:
       l4: "L4 is QAM"
       r4: "R4 is QAM"
     default: r4
+
+  main_chords:
+    type: bool
+    tags: [ non-essential ]
+    title: Start/Select do SteamOS Combos
+    hint: >-
+      When holding Select or Start, if another button is pressed, they become
+      the Xbox button.
+    default: False
