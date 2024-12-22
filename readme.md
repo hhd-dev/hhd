@@ -379,8 +379,7 @@ and [asus-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x8
 In addition, certain parts of Handheld Daemon reference the reverse engineering
 efforts of [asus-linux](https://gitlab.com/asus-linux), 
 the [Handheld Companion](https://github.com/Valkirie/HandheldCompanion) project,
-the [ValvePython](https://github.com/ValvePython) project,
-and the [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) project.
+the [ValvePython](https://github.com/ValvePython) project, [pyWinControls](https://github.com/pelrun/pyWinControls), and the [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) project.
 Finally, its functionality is made possible thanks to thousands of hours of 
 volunteer testing, who have provided feedback and helped shape the project.
 Some of those volunteers integrated support for their devices directly, especially
