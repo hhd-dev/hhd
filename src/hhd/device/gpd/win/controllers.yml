@@ -12,6 +12,33 @@ children:
     hint: >-
       Emulate different controller types to fuse gpd features.
 
+  l4r4:
+    type: multiple
+    tags: [ non-essential ]
+    title: Menu/L4/R4 Mapping
+    options:
+      disabled: "Disabled"
+      generic: "Paddles, no Combo"
+      menu: "Menu is Combo"
+      l4: "L4 is Combo"
+      r4: "R4 is Combo"
+    default: menu
+    hint: >-
+      Maps L4/R4 to Steam Input (requires L4/R4 as HHD in Wincontrols
+      tab). If disabled, they are keyboard buttons. Menu/L4/R4 can be
+      combos: Menu is single-press QAM, double HHD, hold
+      Xbox. L4/R4 are single-press QAM, hold HHD (legacy). 
+
+  main_chords:
+    type: bool
+    tags: [ non-essential ]
+    title: Start/Select do SteamOS Combos
+    hint: >-
+      When holding Select or Start, if another button is pressed, they become
+      the Xbox button, which allows doing SteamOS combos (Select+RT is
+      screenshot).
+    default: True
+
   #
   # Common settings
   #
@@ -41,25 +68,4 @@ children:
     title: Nintendo Mode (A-B Swap)
     hint: >-
       Swaps A with B and X with Y.
-    default: False
-
-  l4r4:
-    type: multiple
-    tags: [ non-essential ]
-    title: Menu/L4/R4 Mapping
-    options:
-      disabled: "Disabled"
-      generic: "Paddles"
-      menu: "Menu is QAM"
-      l4: "L4 is QAM"
-      r4: "R4 is QAM"
-    default: r4
-
-  main_chords:
-    type: bool
-    tags: [ non-essential ]
-    title: Start/Select do SteamOS Combos
-    hint: >-
-      When holding Select or Start, if another button is pressed, they become
-      the Xbox button.
     default: False
