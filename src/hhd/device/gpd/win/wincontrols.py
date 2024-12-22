@@ -535,13 +535,15 @@ def update_config(
         assert rumble in RUMBLE_MODES, f"Unknown rumble mode {rumble}"
         cfg[66 : 66 + 2] = RUMBLE_MODES[rumble].to_bytes(2, "little")
 
-    if rgb_mode is not None:
-        assert rgb_mode in RGB_MODES, f"Unknown rgb mode {rgb_mode}"
-        cfg[68] = RGB_MODES[rgb_mode]
+    if "K4" in fwver:
+        # Limit RGB changes to Win 4 with firmware 40X
+        if rgb_mode is not None:
+            assert rgb_mode in RGB_MODES, f"Unknown rgb mode {rgb_mode}"
+            cfg[68] = RGB_MODES[rgb_mode]
 
-    if rgb_color is not None:
-        assert len(rgb_color) == 3, "RGB color must be a tuple of 3 integers"
-        cfg[69 : 69 + 3] = bytes(rgb_color)
+        if rgb_color is not None:
+            assert len(rgb_color) == 3, "RGB color must be a tuple of 3 integers"
+            cfg[69 : 69 + 3] = bytes(rgb_color)
 
     if all(i == j for i, j in zip(cfg, init_cfg)):
         logger.info("No changes to apply. Skipping write.")
