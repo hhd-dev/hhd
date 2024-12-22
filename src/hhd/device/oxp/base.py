@@ -86,7 +86,7 @@ def plugin_run(
             first_disabled = True
 
         try:
-            found_device = bool(enumerate_evs(vid=GAMEPAD_VID))
+            found_device = bool(enumerate_evs(vid=GAMEPAD_VID, pid=GAMEPAD_PID))
         except Exception:
             logger.warning("Failed finding device, skipping check.")
             time.sleep(LONGER_ERROR_DELAY)
@@ -363,7 +363,7 @@ def turbo_loop(
             if start - last_controller_check > TURBO_CONTROLLER_CHECK:
                 last_controller_check = start
                 try:
-                    found_device = bool(enumerate_evs(vid=GAMEPAD_VID))
+                    found_device = bool(enumerate_evs(vid=GAMEPAD_VID, pid=GAMEPAD_PID))
                 except Exception:
                     logger.warning("Failed finding device, skipping check.")
                     found_device = True
