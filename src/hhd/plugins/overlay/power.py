@@ -12,7 +12,7 @@ def get_windows_bootnum() -> int | None:
             if "Windows Boot Manager" in line:
                 return int(line[: line.index(" ")].replace("*", "").replace("Boot", ""))
 
-        return int()
+        return None
     except Exception as e:
         return None
 
