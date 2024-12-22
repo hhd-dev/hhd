@@ -38,6 +38,33 @@ def get_distro_color():
             return 30
 
 
+def hsb_to_rgb(h: int, s: int | float, v: int | float):
+    # https://www.rapidtables.com/convert/color/hsv-to-rgb.html
+    if h >= 360:
+        h = 359
+    s = s / 100
+    v = v / 100
+
+    c = v * s
+    x = c * (1 - abs((h / 60) % 2 - 1))
+    m = v - c
+
+    if h < 60:
+        rgb = (c, x, 0)
+    elif h < 120:
+        rgb = (x, c, 0)
+    elif h < 180:
+        rgb = (0, c, x)
+    elif h < 240:
+        rgb = (0, x, c)
+    elif h < 300:
+        rgb = (x, 0, c)
+    else:
+        rgb = (c, 0, x)
+
+    return [int((v + m) * 255) for v in rgb]
+
+
 def get_os() -> str:
     if name := os.environ.get("HHD_DISTRO", None):
         logger.warning(f"Distro override using an environment variable to '{name}'.")

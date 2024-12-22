@@ -1,10 +1,10 @@
 import logging
 import time
-from typing import Sequence, cast, Literal
+from typing import Literal, Sequence, cast
 
-from hhd.controller import Event, RgbMode, DEBUG_MODE
+from hhd.controller import DEBUG_MODE, Event, RgbMode
 from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml
-from hhd.utils import get_distro_color
+from hhd.utils import get_distro_color, hsb_to_rgb
 
 logger = logging.getLogger(__name__)
 
@@ -12,33 +12,6 @@ RGB_SET_TIMES = 2
 RGB_SET_INTERVAL = 5
 RGB_MIN_INTERVAL = 0.1
 RGB_QUEUE_RGB = 1.5
-
-
-def hsb_to_rgb(h: int, s: int | float, v: int | float):
-    # https://www.rapidtables.com/convert/color/hsv-to-rgb.html
-    if h >= 360:
-        h = 359
-    s = s / 100
-    v = v / 100
-
-    c = v * s
-    x = c * (1 - abs((h / 60) % 2 - 1))
-    m = v - c
-
-    if h < 60:
-        rgb = (c, x, 0)
-    elif h < 120:
-        rgb = (x, c, 0)
-    elif h < 180:
-        rgb = (0, c, x)
-    elif h < 240:
-        rgb = (0, x, c)
-    elif h < 300:
-        rgb = (x, 0, c)
-    else:
-        rgb = (c, 0, x)
-
-    return [int((v + m) * 255) for v in rgb]
 
 
 class RgbPlugin(HHDPlugin):
@@ -115,7 +88,7 @@ class RgbPlugin(HHDPlugin):
                                     "red2": 0,
                                     "green2": 0,
                                     "blue2": 0,
-                                    "oxp": None
+                                    "oxp": None,
                                 },
                                 curr,
                             ),
@@ -391,7 +364,7 @@ class RgbPlugin(HHDPlugin):
                     else:
                         red2 = green2 = blue2 = 0
                     color2_set = True
-                    
+
         log += "."
 
         if not color2_set:
@@ -401,7 +374,8 @@ class RgbPlugin(HHDPlugin):
 
         ev = {
             "type": "led",
-            "initialize": init or always_init,  # Always initialize, saves problems on the ally
+            "initialize": init
+            or always_init,  # Always initialize, saves problems on the ally
             "code": "main",
             "mode": cast(RgbMode, mode),
             "direction": direction,
@@ -415,7 +389,7 @@ class RgbPlugin(HHDPlugin):
             "red2": red2,
             "green2": green2,
             "blue2": blue2,
-            "oxp": oxp
+            "oxp": oxp,
         }
         if not always_init:
             self.queue_leds = curr + RGB_QUEUE_RGB
@@ -423,7 +397,7 @@ class RgbPlugin(HHDPlugin):
         # Avoid setting the LEDs too fast.
         if curr - self.last_set < RGB_MIN_INTERVAL and not init:
             return
-        
+
         logger.info(log)
         self.last_set = curr
         self.last_ev = ev

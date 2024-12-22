@@ -3,6 +3,7 @@ sections:
   tdp: TDP
   rgb: RGB
   controllers: Controller
+  wincontrols: WinControls
   hhd: Settings
   updates: Updates
   gamemode: Gamemode
