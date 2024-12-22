@@ -494,7 +494,7 @@ class BootcPlugin(HHDPlugin):
                         }
                     else:
                         self.state = "loading"
-                        self.proc = run_command_threaded(BOOTC_STATUS_CMD)
+                        self.proc = run_command_threaded(BOOTC_CHECK_CMD)
                         self.checked_update = True
                         conf["updates.bootc.stage.mode"] = "loading"
                         conf["updates.bootc.stage.loading.progress"] = {
