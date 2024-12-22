@@ -513,9 +513,8 @@ def update_config(
         fwver, cfg = read_config(d)
 
     # Apply changes
+    init_cfg = cfg
     cfg = bytearray(cfg)
-
-    init_hash = sum(cfg)
 
     for k, v in buttons.items():
         assert k in BUTTON_MAP, f"Unknown button {k}"
@@ -544,8 +543,7 @@ def update_config(
         assert len(rgb_color) == 3, "RGB color must be a tuple of 3 integers"
         cfg[69 : 69 + 3] = bytes(rgb_color)
 
-    mod_hash = sum(cfg)
-    if init_hash == mod_hash:
+    if all(i == j for i, j in zip(cfg, init_cfg)):
         logger.info("No changes to apply. Skipping write.")
         return fwver
 
