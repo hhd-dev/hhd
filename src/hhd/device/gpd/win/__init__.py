@@ -196,6 +196,8 @@ class GpdWinControlsPlugin(HHDPlugin):
             BACKBUTTONS_HHD,
             BUTTONS_DEFAULT,
             BUTTONS_PHAWX,
+            BUTTONS_TRIGGERS_DEFAULT,
+            BUTTONS_TRIGGERS_STEAMOS,
             update_config,
         )
 
@@ -210,6 +212,12 @@ class GpdWinControlsPlugin(HHDPlugin):
                 buttons.update(BUTTONS_DEFAULT)
             case "wasd":
                 buttons.update(BUTTONS_PHAWX)
+
+        match c.get("mouse_mode_triggers", "unchanged"):
+            case "gpd":
+                buttons.update(BUTTONS_TRIGGERS_DEFAULT)
+            case "steamos":
+                buttons.update(BUTTONS_TRIGGERS_STEAMOS)
 
         match c.get("l4r4", "unchanged"):
             case "hhd":

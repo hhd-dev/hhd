@@ -76,6 +76,15 @@ children:
         wasd: "WASD (from Phawx)"
       default: unchanged
 
+    mouse_mode_triggers:
+      type: multiple
+      title: Mouse Mode Triggers
+      options:
+        unchanged: "Do not change"
+        gpd: "GPD (RT is Fast Mouse)"
+        steamos: "SteamOS (LT/RT are R/L Clicks)"
+      default: unchanged
+
     l4r4:
       type: multiple
       title: L4/R4 Mapping

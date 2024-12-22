@@ -48,7 +48,7 @@ ACTION_MAP = {
     "0": 0x27,
     # Special characters
     "enter": 0x28,
-    "exc": 0x29,
+    "escape": 0x29,
     "backspace": 0x2A,
     "tab": 0x2B,
     "space": 0x2C,
@@ -320,13 +320,9 @@ BUTTONS_DEFAULT = {
     "ls_right": "d",
     "ls": "space",
     "rs": "enter",
-    "start": "none",
-    "select": "none",
+    "start": "escape",
+    "select": "enter",
     "menu": "none",
-    "lb": "mouse_left",
-    "rb": "mouse_right",
-    "lt": "mouse_middle",
-    "rt": "mouse_fast",
 }
 
 BUTTONS_PHAWX = {
@@ -342,15 +338,25 @@ BUTTONS_PHAWX = {
     "ls_down": "s",
     "ls_left": "a",
     "ls_right": "d",
-    "ls": "space",
+    "ls": "leftshift",
     "rs": "enter",
-    "start": "none",
-    "select": "none",
+    "start": "escape",
+    "select": "enter",
     "menu": "none",
+}
+
+BUTTONS_TRIGGERS_DEFAULT = {
     "lb": "mouse_left",
     "rb": "mouse_right",
     "lt": "mouse_middle",
     "rt": "mouse_fast",
+}
+
+BUTTONS_TRIGGERS_STEAMOS = {
+    "lb": "mouse_middle",
+    "rb": "mouse_fast",
+    "lt": "mouse_right",
+    "rt": "mouse_left",
 }
 
 WSIZE = 33
