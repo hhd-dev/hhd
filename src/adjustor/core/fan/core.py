@@ -99,9 +99,12 @@ def calculate_fan_speed(
 
 
 def set_fans_to_pwm(enable: bool, fan_info: FanInfo):
-    for _, fn_enable, _ in fan_info["fans"]:
+    for _, fn_enable, _, legacy in fan_info["fans"]:
         with open(fn_enable, "w") as f:
-            f.write("1" if enable else "0")
+            if enable:
+                f.write("1")
+            else:
+                f.write("0" if legacy else "2")
 
 
 def update_fan_speed(
@@ -121,10 +124,10 @@ def update_fan_speed(
     v_curr_int = min(255, max(0, int(v_curr * 255)))
     if not observe_only:
         if state is None or state["v_target_pwm"] != v_curr_int:
-            for v_fn, _, _ in fan_info["fans"]:
+            for v_fn, _, _, _ in fan_info["fans"]:
                 write_fan_speed(v_fn, v_curr_int)
 
-    fan_speeds = [read_fan_speed(rpm_fn) for _, _, rpm_fn in fan_info["fans"] if rpm_fn]
+    fan_speeds = [read_fan_speed(rpm_fn) for _, _, rpm_fn, _ in fan_info["fans"] if rpm_fn]
     return (
         in_setpoint,
         {
@@ -153,7 +156,7 @@ def fan_worker(
         set_fans_to_pwm(True, info)
         while not should_exit.is_set():
             with lock:
-                state_tmp = state or None # First time state will be empty
+                state_tmp = state or None  # First time state will be empty
                 in_setpoint, state_tmp = update_fan_speed(
                     state_tmp, info, fan_curve, junction.is_set()
                 )

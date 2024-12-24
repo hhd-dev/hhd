@@ -1,6 +1,7 @@
 import os
 
-FAN_HWMONS = ["oxpec"]
+FAN_HWMONS_LEGACY = ["oxpec"]
+FAN_HWMONS = ["oxp_ec"]
 HWMON_DIR = "/sys/class/hwmon"
 
 
@@ -53,7 +54,7 @@ def find_fans():
         with open(f"{HWMON_DIR}/{hwmon}/name") as f:
             name = f.read().strip()
 
-        if name not in FAN_HWMONS:
+        if name not in FAN_HWMONS and name not in FAN_HWMONS_LEGACY:
             continue
 
         for fn in os.listdir(f"{HWMON_DIR}/{hwmon}"):
@@ -73,6 +74,7 @@ def find_fans():
                         f"{HWMON_DIR}/{hwmon}/{fn}",
                         f"{HWMON_DIR}/{hwmon}/{fn}_enable",
                         speed_fn,
+                        name in FAN_HWMONS_LEGACY,
                     )
                 )
 
@@ -87,6 +89,7 @@ def read_temp(path: str) -> float:
 def read_fan_speed(path: str) -> int:
     with open(path, "r") as f:
         return int(f.read())
+
 
 def write_fan_speed(path: str, speed: int):
     with open(path, "w") as f:
