@@ -371,12 +371,14 @@ def get_command(cid: int, ofs: int = 0, payload: bytes = b"") -> bytes:
 PAUSE = 0.05
 
 GM_SUPPROTED_VERSIONS = {
-    4: 9,
-    # 5: 7
+    3: 0x14, # Win Max 2
+    4: 0x09, # Win 4
+    5: 0x10  # Win Mini
 }
 EXT_SUPPORTED_VERSIONS = {
-    4: 7,
-    # 5: 9
+    1: 0x23,
+    4: 0x07,
+    5: 0x04
 }
 
 
@@ -387,14 +389,14 @@ def check_fwver(res: bytes):
     ext_major_ver = res[11]
     ext_minor_ver = res[12]
 
-    fwver = f"X{gm_major_ver}{gm_minor_ver:02d}K{ext_major_ver}{ext_minor_ver:02d}"
+    fwver = f"X{gm_major_ver}{gm_minor_ver:02x}K{ext_major_ver}{ext_minor_ver:02x}"
 
     # Version check
     for k, v in GM_SUPPROTED_VERSIONS.items():
         if gm_major_ver == k:
             assert (
                 gm_minor_ver <= v
-            ), f"Unsupported gamepad firmware version {fwver} (up to X{k}{v:02d})"
+            ), f"Unsupported gamepad firmware version {fwver} (up to X{k}{v:02x})"
             break
     else:
         raise ValueError(f"Unsupported gamepad major version {gm_major_ver} in {fwver}")
@@ -402,7 +404,7 @@ def check_fwver(res: bytes):
         if ext_major_ver == k:
             assert (
                 ext_minor_ver <= v
-            ), f"Unsupported extendboard firmware {fwver} version (up to K{k}{v:02d})"
+            ), f"Unsupported extendboard firmware {fwver} version (up to K{k}{v:02x})"
             break
     else:
         raise ValueError(
