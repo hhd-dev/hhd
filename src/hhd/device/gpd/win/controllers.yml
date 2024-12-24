@@ -30,14 +30,18 @@ children:
       Xbox. L4/R4 are single-press QAM, hold HHD (legacy). 
 
   main_chords:
-    type: bool
+    type: multiple
     tags: [ non-essential ]
     title: Start/Select do SteamOS Combos
     hint: >-
       When holding Select or Start, if another button is pressed, they become
       the Xbox button, which allows doing SteamOS combos (Select+RT is
       screenshot).
-    default: True
+    options:
+      disabled: "Disabled"
+      select: "Select Only"
+      start_select: "Start+Select"
+    default: select
 
   #
   # Common settings

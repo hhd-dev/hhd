@@ -295,7 +295,7 @@ def controller_loop(
             params=d_params,
             qam_multi_tap=qam_multi_tap,
             qam_hold="mode",
-            startselect_chord=conf.get("main_chords", False),
+            startselect_chord=conf.get("main_chords", "disabled"),
         )
     else:
         multiplexer = Multiplexer(
@@ -307,7 +307,7 @@ def controller_loop(
             params=d_params,
             qam_multi_tap=qam_multi_tap,
             qam_hold="mode",
-            startselect_chord=conf.get("main_chords", False),
+            startselect_chord=conf.get("main_chords", "disabled"),
         )
 
     REPORT_FREQ_MIN = 25

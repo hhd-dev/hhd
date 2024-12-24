@@ -575,7 +575,7 @@ class Multiplexer:
         qam_hold: Literal["hhd", "mode"] = "hhd",
         keyboard_is: Literal["steam_qam", "qam", "keyboard"] = "keyboard",
         keyboard_no_release: bool = False,
-        startselect_chord: bool = False,
+        startselect_chord: str = "disabled",
     ) -> None:
         self.swap_guide = swap_guide
         self.trigger = trigger
@@ -974,7 +974,12 @@ class Multiplexer:
                                 if self.swap_guide == "start_is_keyboard":
                                     ev["code"] = "start"
 
-                    if self.startselect_chord and ev["code"] in ("start", "select"):
+                    if (
+                        self.startselect_chord != "disabled" and ev["code"] == "select"
+                    ) or (
+                        self.startselect_chord == "start_select"
+                        and ev["code"] == "start"
+                    ):
                         if self.startselect_pressed == "pressed":
                             self.queue.append(
                                 (
@@ -1295,7 +1300,7 @@ class Multiplexer:
                                 {
                                     "type": "button",
                                     "code": ev["code"],
-                                    "value": ev['value'],
+                                    "value": ev["value"],
                                 },
                                 curr + self.QAM_DELAY,
                             )
