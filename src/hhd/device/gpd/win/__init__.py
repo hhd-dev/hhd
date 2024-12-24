@@ -206,6 +206,7 @@ class GpdWinControlsPlugin(HHDPlugin):
 
         buttons = {}
         delays = {}
+        deadzones = {}
 
         match c.get("mouse_mode", "unchanged"):
             case "mouse":
@@ -226,6 +227,9 @@ class GpdWinControlsPlugin(HHDPlugin):
             case "default":
                 buttons.update(BACKBUTTONS_DEFAULT["buttons"])
                 delays.update(BACKBUTTONS_DEFAULT["delays"])
+        
+        if c.get("deadzones.mode", "unchanged") == "custom":
+            deadzones.update(c.get("deadzones.custom", {}))
 
         rgb_mode = "off"
         rgb_color = (0, 0, 0)
@@ -250,6 +254,7 @@ class GpdWinControlsPlugin(HHDPlugin):
                 rumble=vibration,
                 rgb_mode=rgb_mode,
                 rgb_color=rgb_color,  # type: ignore
+                deadzones=deadzones
             )
         except Exception as e:
             conf["wincontrols.wincontrols.status"] = f"{e}"

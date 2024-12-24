@@ -230,9 +230,9 @@ BUTTON_MAP = {
 }
 
 DEADZONE_MAP = {
-    "ls_deadzone": 72,
+    "ls_boundary": 72,
     "ls_center": 73,
-    "rs_deadzone": 74,
+    "rs_boundary": 74,
     "rs_center": 75,
 }
 
@@ -370,16 +370,8 @@ def get_command(cid: int, ofs: int = 0, payload: bytes = b"") -> bytes:
 
 PAUSE = 0.05
 
-GM_SUPPROTED_VERSIONS = {
-    3: 0x14, # Win Max 2
-    4: 0x09, # Win 4
-    5: 0x10  # Win Mini
-}
-EXT_SUPPORTED_VERSIONS = {
-    1: 0x23,
-    4: 0x07,
-    5: 0x04
-}
+GM_SUPPROTED_VERSIONS = {3: 0x14, 4: 0x09, 5: 0x10}  # Win Max 2  # Win 4  # Win Mini
+EXT_SUPPORTED_VERSIONS = {1: 0x23, 4: 0x07, 5: 0x04}
 
 
 def check_fwver(res: bytes):
@@ -536,6 +528,13 @@ def update_config(
     if rumble is not None:
         assert rumble in RUMBLE_MODES, f"Unknown rumble mode {rumble}"
         cfg[66 : 66 + 2] = RUMBLE_MODES[rumble].to_bytes(2, "little")
+
+    deadzones = {k: min(max(v, -10), 10) for k, v in deadzones.items()}
+    for k, v in deadzones.items():
+        assert k in DEADZONE_MAP, f"Unknown deadzone {k}"
+        cfg[DEADZONE_MAP[k] : DEADZONE_MAP[k] + 1] = v.to_bytes(
+            1, "little", signed=True
+        )
 
     if "K4" in fwver:
         # Limit RGB changes to Win 4 with firmware 40X
