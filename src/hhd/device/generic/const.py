@@ -47,9 +47,9 @@ TECNO_BTN_MAPPINGS = {
 TECNO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
     0x74: {
         # Misc
-        "mode": BM((5 << 3) + 7), # 1: Bottom left
-        "keyboard": BM((5 << 3) + 6), # 2: Bottom right
-        "extra_l1": BM((7 << 3) + 2), # 3: Keyboard switch button
+        "mode": BM((5 << 3) + 7),  # 1: Bottom left
+        "keyboard": BM((5 << 3) + 6),  # 2: Bottom right
+        "extra_l1": BM((7 << 3) + 2),  # 3: Keyboard switch button
     }
 }
 
@@ -158,6 +158,7 @@ CONFS = {
         "name": "AYANEO 2021 Pro Retro Power",
         **AYA_DEFAULT_CONF,
     },
+    "KUN": {"name": "AYANEO 2021 Kun", **AYA_DEFAULT_CONF},
     # Ambernic
     "Win600": {
         "name": "Ambernic Win600",

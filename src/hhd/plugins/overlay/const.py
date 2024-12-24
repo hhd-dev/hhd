@@ -35,6 +35,8 @@ TOUCH_SCREEN_QUIRKS = {
     # Asus
     TM("RC71L", name="ROG Ally"): DEFAULT_LANDSCAPE,
     TM("RC72LA", name="ROG Ally X"): DEFAULT_LANDSCAPE,
+    # Ayaneo
+    TM("KUN", name="Ayaneo Kun"): TQ(True, False, True),
 }
 
 
