@@ -330,7 +330,7 @@ def main():
                 except Exception as e:
                     logger.warning(f"Could not hide update settings. Error:\n{e}")
                 settings = merge_settings(
-                    [*[p.settings() for p in sorted_plugins], hhd_settings]
+                    [hhd_settings, *[p.settings() for p in sorted_plugins]]
                 )
                 # Force general settings to be last
                 if "hhd" in settings:
@@ -584,6 +584,7 @@ def main():
                 logger.info(f"Reloading settings.")
 
                 # Settings
+                settings_base = {k: {} for k in load_relative_yaml("sections.yml")['sections']}
                 hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
                 # TODO: Improve check
                 try:
@@ -593,7 +594,11 @@ def main():
                 except Exception as e:
                     logger.warning(f"Could not hide update settings. Error:\n{e}")
                 settings = merge_settings(
-                    [*[p.settings() for p in sorted_plugins], hhd_settings]
+                    [
+                        settings_base,
+                        hhd_settings,
+                        *[p.settings() for p in sorted_plugins],
+                    ]
                 )
                 # Force general settings to be last
                 if "hhd" in settings:
