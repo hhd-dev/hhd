@@ -116,28 +116,28 @@ children:
           children:
             ls_center:
               type: int
-              title: Left Stick Deadzone
+              title: Left Stick Center
               min: -10
               max: 10
               default: 0
 
             ls_boundary:
               type: int
-              title: Left Stick Endstop
+              title: Left Stick Boundary
               min: -10
               max: 10
               default: 0
 
             rs_center:
               type: int
-              title: Right Stick Deadzone
+              title: Right Stick Center
               min: -10
               max: 10
               default: 0
 
             rs_boundary:
               type: int
-              title: Right Stick Endstop
+              title: Right Stick Boundary
               min: -10
               max: 10
               default: 0
