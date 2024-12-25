@@ -64,7 +64,6 @@ class OverlayPlugin(HHDPlugin):
         self.priority = 75
         self.log = "ovrl"
         self.ovf = None
-        self.enabled = False
         self.initialized = False
         self.old_shortcuts = None
         self.short_should_exit = None
@@ -120,56 +119,50 @@ class OverlayPlugin(HHDPlugin):
     def settings(self):
         if not self.ovf:
             return {}
-        set = {"hhd": {"settings": load_relative_yaml("settings.yml")}}
-        if self.enabled:
-            self.initialized = True
-            set["gamemode"] = load_relative_yaml("gamemode.yml")
-            set["shortcuts"] = load_relative_yaml("shortcuts.yml")
 
-            if self.win_bootnum is None:
-                del set["gamemode"]["power"]
+        self.initialized = True
+        set = {
+            "gamemode": load_relative_yaml("gamemode.yml"),
+            "shortcuts": load_relative_yaml("shortcuts.yml"),
+        }
 
-            if not SUPPORTS_HALVING:
-                del set["gamemode"]["gamescope"]["children"]["steamui_halfhz"]
-            if not SUPPORTS_DPMS:
-                del set["gamemode"]["gamescope"]["children"]["dpms"]
+        if self.win_bootnum is None:
+            del set["gamemode"]["power"]
 
-            if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
-                "HHD_ALLOW_CORRECTION", None
-            ):
-                # For devices with a dmi match, hide orientation correction
-                self.has_correction = False
-                del set["shortcuts"]["touchscreen"]["children"]["orientation"]
-            else:
-                self.has_correction = True
-                set["shortcuts"]["touchscreen"]["children"]["orientation"]["modes"][
-                    "manual"
-                ]["children"]["dmi"]["default"] = " - ".join(
-                    map(lambda x: f'"{x}"', get_system_info())
-                )
+        if not SUPPORTS_HALVING:
+            del set["gamemode"]["gamescope"]["children"]["steamui_halfhz"]
+        if not SUPPORTS_DPMS:
+            del set["gamemode"]["gamescope"]["children"]["dpms"]
+
+        if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
+            "HHD_ALLOW_CORRECTION", None
+        ):
+            # For devices with a dmi match, hide orientation correction
+            self.has_correction = False
+            del set["shortcuts"]["touchscreen"]["children"]["orientation"]
+        else:
+            self.has_correction = True
+            set["shortcuts"]["touchscreen"]["children"]["orientation"]["modes"][
+                "manual"
+            ]["children"]["dmi"]["default"] = " - ".join(
+                map(lambda x: f'"{x}"', get_system_info())
+            )
         return set
 
     def update(self, conf: Config):
-        # Or with self.enabled to require restart
-        new_enabled = conf.get("hhd.settings.overlay_enabled", False)
-        if new_enabled != self.enabled:
-            self.emit({"type": "settings"})
-        self.enabled = self.enabled or new_enabled
-        self.emit.set_simple_qam(not self.enabled or not self.has_executable)
+        self.emit.set_simple_qam(not self.has_executable)
 
-        # Preemptively launch overlay
-        if self.enabled:
-            # Load game information
-            if self.ctx:
-                games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
-                if games and images:
-                    self.emit.set_gamedata(games, images)
-            if FORCE_GAME:
-                self.emit.info["game.id"] = FORCE_GAME
-                self.emit.info["game.is_steam"] = False
-                self.emit.info["game.data"] = self.emit.get_gamedata(FORCE_GAME)
-            if self.ovf:
-                self.ovf.launch_overlay()
+        # Load game information
+        if self.ctx:
+            games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
+            if games and images:
+                self.emit.set_gamedata(games, images)
+        if FORCE_GAME:
+            self.emit.info["game.id"] = FORCE_GAME
+            self.emit.info["game.is_steam"] = False
+            self.emit.info["game.data"] = self.emit.get_gamedata(FORCE_GAME)
+        if self.ovf:
+            self.ovf.launch_overlay()
 
         self.touch_gestures = not bool(
             conf.get("gamemode.display.gestures_disable", False)
@@ -347,7 +340,7 @@ class OverlayPlugin(HHDPlugin):
                         elif self.qam_handler_fallback:
                             self.qam_handler_fallback.screenshot()
 
-            if self.ovf and cmd and (self.enabled or override_enable):
+            if self.ovf and cmd:
                 init = "close" not in cmd
                 if init:
                     logger.info(f"Executing overlay command: '{cmd}'")

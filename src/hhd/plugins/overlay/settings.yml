@@ -1,7 +1,0 @@
-type: container
-
-children:
-  overlay_enabled:
-    type: bool
-    title: "Overlay services (Shortcuts+Gamemode, Requires Restart)"
-    default: True
