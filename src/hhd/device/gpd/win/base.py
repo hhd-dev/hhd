@@ -259,23 +259,23 @@ def controller_loop(
         case "l4":
             qam_button = "extra_l1"
             l4r4_enabled = True
-            qam_multi_tap = False
+            qam_hold = "hhd"
         case "r4":
             qam_button = "extra_r1"
             l4r4_enabled = True
-            qam_multi_tap = False
+            qam_hold = "hhd"
         case "menu":
             qam_button = "mode"
             l4r4_enabled = True
-            qam_multi_tap = True
+            qam_hold = "mode"
         case "disabled":
             qam_button = None
             l4r4_enabled = False
-            qam_multi_tap = True
+            qam_hold = "hhd"
         case _:
             qam_button = None
             l4r4_enabled = True
-            qam_multi_tap = True
+            qam_hold = "hhd"
 
     if has_touchpad:
         touch_actions = (
@@ -293,8 +293,8 @@ def controller_loop(
             qam_button=qam_button,
             emit=emit,
             params=d_params,
-            qam_multi_tap=qam_multi_tap,
-            qam_hold="mode",
+            # qam_multi_tap=qam_multi_tap, # supports it now
+            qam_hold=qam_hold,
             startselect_chord=conf.get("main_chords", "disabled"),
         )
     else:
@@ -305,8 +305,8 @@ def controller_loop(
             qam_button=qam_button,
             emit=emit,
             params=d_params,
-            qam_multi_tap=qam_multi_tap,
-            qam_hold="mode",
+            # qam_multi_tap=qam_multi_tap, # supports it now
+            qam_hold=qam_hold,
             startselect_chord=conf.get("main_chords", "disabled"),
         )
 

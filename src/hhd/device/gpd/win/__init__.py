@@ -32,6 +32,8 @@ GPD_CONFS = {
         "hrtimer": True,
         "wincontrols": True,
         "rgb": True,
+        "combo": "menu",
+        "chord": "select",
     },
     "G1617-01": {
         "name": "GPD Win Mini",
@@ -96,6 +98,14 @@ class GpdWinControllersPlugin(HHDPlugin):
                 has_leds=False,
                 start_disabled=self.dconf.get("untested", False),
             )
+        )
+
+        # Tweak defaults for l4r4menu and main_chords
+        base["controllers"]["gpd_win"]["children"]["l4r4"]["default"] = self.dconf.get(
+            "combo", "r4"
+        )
+        base["controllers"]["gpd_win"]["children"]["main_chords"]["default"] = (
+            self.dconf.get("chord", "disabled")
         )
 
         if self.dconf.get("touchpad", False):
@@ -227,7 +237,7 @@ class GpdWinControlsPlugin(HHDPlugin):
             case "default":
                 buttons.update(BACKBUTTONS_DEFAULT["buttons"])
                 delays.update(BACKBUTTONS_DEFAULT["delays"])
-        
+
         if c.get("deadzones.mode", "unchanged") == "custom":
             deadzones.update(c.get("deadzones.custom", {}))
 
@@ -254,7 +264,7 @@ class GpdWinControlsPlugin(HHDPlugin):
                 rumble=vibration,
                 rgb_mode=rgb_mode,
                 rgb_color=rgb_color,  # type: ignore
-                deadzones=deadzones
+                deadzones=deadzones,
             )
         except Exception as e:
             conf["wincontrols.wincontrols.status"] = f"{e}"
