@@ -320,8 +320,8 @@ BUTTONS_DEFAULT = {
     "ls_right": "d",
     "ls": "space",
     "rs": "enter",
-    "start": "escape",
-    "select": "enter",
+    "start": "none",
+    "select": "none",
     "menu": "none",
 }
 
