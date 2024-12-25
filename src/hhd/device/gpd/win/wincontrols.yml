@@ -73,7 +73,7 @@ children:
       options:
         unchanged: "Do not change"
         mouse: "GPD Mouse Mode"
-        wasd: "WASD for Games"
+        wasd: "For Games"
       default: unchanged
 
     mouse_mode_triggers:
