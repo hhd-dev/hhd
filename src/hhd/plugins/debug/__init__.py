@@ -156,7 +156,7 @@ class DebugPlugin(HHDPlugin):
 
         if hhd_dev:
             conf["debug.dev.progress"] = {
-                "text": _("Downloading Handheld Daemon Beta..."),
+                "text": _("Downloading Beta and Restarting..."),
                 "value": None,
                 "unit": None,
             }
