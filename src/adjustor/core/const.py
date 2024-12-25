@@ -93,6 +93,17 @@ DEV_PARAMS_25W: dict[str, DeviceParams] = {
     # Temp
     "temp_target": D(60, 70, 85, 90, 100),
 }
+DEV_PARAMS_28W: dict[str, DeviceParams] = {
+    "stapm_limit": D(0, 4, 15, 28, 32),
+    "skin_limit": D(0, 4, 15, 28, 32),
+    "slow_limit": D(0, 4, 20, 30, 35),
+    "fast_limit": D(0, 4, 25, 32, 37),
+    # Times
+    "slow_time": D(5, 5, 10, 10, 10),
+    "stapm_time": D(100, 100, 100, 200, 200),
+    # Temp
+    "temp_target": D(60, 70, 85, 90, 100),
+}
 
 DEV_PARAMS_5000: dict[str, DeviceParams] = DEV_PARAMS_25W
 DEV_PARAMS_6000: dict[str, DeviceParams] = DEV_PARAMS_30W
@@ -106,6 +117,12 @@ DEV_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams], bool]]
     "V3": (DEV_PARAMS_28W, ALIB_PARAMS_8040, False),
     "83E1": (DEV_PARAMS_LEGO, ALIB_PARAMS_7040, False),
     "ONEXPLAYER F1Pro": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, False),
+    "ONEXPLAYER F1 EVA-02": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, False),
+    # GPD Devices are 28W max
+    "G1618-04": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False),
+    "G1617-01": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False),
+    "G1619-04": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False),
+    "G1619-05": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False),
 }
 
 CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
