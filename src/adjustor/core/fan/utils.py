@@ -1,7 +1,7 @@
 import os
 
 FAN_HWMONS_LEGACY = ["oxpec"]
-FAN_HWMONS = ["oxp_ec"]
+FAN_HWMONS = ["oxp_ec", "gpdfan"]
 HWMON_DIR = "/sys/class/hwmon"
 
 
