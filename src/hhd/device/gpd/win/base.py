@@ -334,6 +334,8 @@ def controller_loop(
         if l4r4_enabled:
             kbd_fds = d_kbd_1.open()
             fds.extend(kbd_fds)
+        else:
+            kbd_fds = []
         prepare(d_xinput)
         if motion:
             start_imu = True
