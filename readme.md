@@ -374,7 +374,7 @@ Much like a lot of open-source projects, Handheld Daemon is a community effort.
 It relies on the kernel drivers 
 [oxp-sensors](https://github.com/torvalds/linux/blob/master/drivers/hwmon/oxp-sensors.c), [ayn-platform](https://github.com/ShadowBlip/ayn-platform), 
 [ayaneo-platform](https://github.com/ShadowBlip/ayaneo-platform), 
-[bmi260](https://github.com/hhd-dev/bmi260),
+[bmi260](https://github.com/hhd-dev/bmi260), [gpdfan](https://github.com/Cryolitia/gpd-fan-driver/),
 and [asus-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/asus-wmi.c).
 In addition, certain parts of Handheld Daemon reference the reverse engineering
 efforts of [asus-linux](https://gitlab.com/asus-linux), 
