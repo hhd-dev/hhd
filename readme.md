@@ -90,7 +90,7 @@ sudo systemctl start hhd_local@$(whoami)
 
 ### <a name="issues"></a>After Install Instructions
 For all devices, use the [bazzite kernel](https://github.com/hhd-dev/kernel-bazzite)
-for best support or Bazzite.
+for best support or Bazzite. Some caveats for certain devices are listed below.
 
 #### Extra steps for ROG Ally
 You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
@@ -110,7 +110,7 @@ SteamOS chords (e.g., Select + RT is screenshot). For other devices, the R4
 button is used to bring up QAM (single tap), and HHD (double tap/hold).
 You can customize to your tastes in the Controller section.
 
-#### Extra steps for Ayaneo/Ayn/Onexplayer
+#### Extra steps for Ayaneo/Ayn
 You might experience a tiny amount of lag with the Ayaneo LEDs.
 The paddles of the Ayn Loki Max are not remappable as far as we know.
 
