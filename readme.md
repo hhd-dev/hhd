@@ -76,12 +76,12 @@ is added to your device.
 - Asus ROG
   - Ally
   - Ally X
-- GPD Win (Both 2023/2024)
-  - Win 4 (No LEDs)
+- GPD Win (all model years)
+  - Win 4
   - Win Mini
   - Win Max 2
 - OneXPlayer
-  - X1 (AMD)
+  - X1 (AMD, Intel w/o TDP)
   - X1 Mini
   - F1, F1 EVA-01, F1L, F1 OLED, F1 Pro
   - 2, 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
@@ -99,6 +99,7 @@ is added to your device.
   - SLIDE
   - 2021 Standard/Pro/Pro Retro Power
   - NEO 2021/Founder
+  - KUN (only front buttons)
 - AOKZOE (No LEDs)
   - A1 Normal/Pro
 - Ambernic
