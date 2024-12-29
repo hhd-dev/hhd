@@ -198,6 +198,11 @@ def delete_temporary_swap():
     os.remove(HHD_SWAP_FILE)
 
 
+def emergency_shutdown():
+    logger.error("HIBERNATION FAILED. INITIATING EMERGENCY SHUTDOWN.")
+    os.system("systemctl poweroff")
+
+
 def emergency_hibernate(shutdown: bool = False):
     # Try to hibernate with built in swap
     logger.warning("Commencing emergency hibernation")
@@ -239,9 +244,7 @@ def emergency_hibernate(shutdown: bool = False):
             status = _("Failed to hibernate to temporary swap.")
 
     if shutdown:
-        logger.error("HIBERNATION FAILED. INITIATING EMERGENCY SHUTDOWN.")
-        os.system("systemctl poweroff")
-
+        emergency_shutdown()
     return status
 
 
