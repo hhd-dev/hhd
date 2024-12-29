@@ -54,11 +54,41 @@ class GenericControllersPlugin(HHDPlugin):
                     f.write("1")
                 logger.info(f"Turbo button takeover enabled")
                 turbo = True
+
+                if os.path.exists("/sys/devices/platform/oxp-platform/tt_led"):
+                    with open("/sys/devices/platform/oxp-platform/tt_led", "w") as f:
+                        f.write("0")
             except Exception:
                 logger.warning(
                     f"Turbo takeover failed. Ensure you have the latest oxp-sensors driver installed."
                 )
         self.turbo = turbo
+
+    def notify(self, events: Sequence):
+        if not self.turbo:
+            return
+
+        woke = False
+        for ev in events:
+            if ev["type"] == "special" and ev.get("event", None) == "wakeup":
+                woke = True
+
+        if not woke:
+            return
+
+        # We need to reset after hibernation
+        try:
+            logger.info(f"Turbo button takeover enabled")
+            with open("/sys/devices/platform/oxp-platform/tt_toggle", "w") as f:
+                f.write("1")
+
+            if os.path.exists("/sys/devices/platform/oxp-platform/tt_led"):
+                with open("/sys/devices/platform/oxp-platform/tt_led", "w") as f:
+                    f.write("0")
+        except Exception:
+            logger.warning(
+                f"Turbo takeover failed. Ensure you have the latest oxp-sensors driver installed."
+            )
 
     def settings(self) -> HHDSettings:
         base = {"controllers": {"oxp": load_relative_yaml("controllers.yml")}}
