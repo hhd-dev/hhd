@@ -11,6 +11,7 @@ import evdev
 from hhd.utils import Context, is_steam_gamepad_running, run_steam_command
 
 from .const import PowerButtonConfig
+from ..power.power import supports_sleep, emergency_hibernate
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +66,20 @@ def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
     return None
 
 
+_supports_sleep = None
+
+
 def run_steam_shortpress(perms: Context):
-    return run_steam_command("steam://shortpowerpress", perms)
+    global _supports_sleep
+    # FIXME: This should be patched in systemd instead
+    if _supports_sleep is None:
+        _supports_sleep = supports_sleep()
+
+    if _supports_sleep:
+        return run_steam_command("steam://shortpowerpress", perms)
+    else:
+        emergency_hibernate(shutdown=False)
+        return True
 
 
 def run_steam_longpress(perms: Context):
@@ -166,7 +179,9 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event,
         logger.error(f"Received exception, exitting:\n{e}")
 
 
-def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Event, emit):
+def power_button_timer(
+    cfg: PowerButtonConfig, perms: Context, should_exit: Event, emit
+):
     dev = None
     devs = []
     try:
@@ -260,7 +275,9 @@ def power_button_timer(cfg: PowerButtonConfig, perms: Context, should_exit: Even
                 d.close()
 
 
-def power_button_multidev(cfg: PowerButtonConfig, perms: Context, should_exit: Event, emit):
+def power_button_multidev(
+    cfg: PowerButtonConfig, perms: Context, should_exit: Event, emit
+):
     devs = []
     fds = []
     last_pressed = None

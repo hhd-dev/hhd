@@ -203,6 +203,46 @@ def emergency_shutdown():
     os.system("systemctl poweroff")
 
 
+def supports_sleep():
+    # https://gitlab.freedesktop.org/drm/amd/-/blob/master/scripts/amd_s2idle.py
+    try:
+        fn = os.path.join("/", "sys", "power", "mem_sleep")
+        if not os.path.exists(fn):
+            logger.error(
+                "Kernel compiled without sleep support. Sleep button will force hibernate."
+            )
+            return False
+
+        with open(fn) as f:
+            sleep = f.read().strip()
+
+        if "deep" in sleep:
+            logger.info("S3 sleep supported, sleep button will work.")
+            return True
+
+        import struct
+
+        target = os.path.join("/", "sys", "firmware", "acpi", "tables", "FACP")
+        with open(target, "rb") as r:
+            r.seek(0x70)
+            BIT = lambda x: 1 << x
+            found = struct.unpack("<I", r.read(4))[0] & BIT(21)
+            s2idle_supported = bool(found)
+
+        if s2idle_supported:
+            logger.info("S2idle sleep supported, sleep button will work.")
+        else:
+            logger.error(
+                "S2idle sleep not supported. Sleep button will force hibernate."
+            )
+
+        return s2idle_supported
+
+    except Exception as e:
+        logging.error(f"Failed to read FADT: {e}. Assuming sleep is supported")
+    return True
+
+
 def emergency_hibernate(shutdown: bool = False):
     # Try to hibernate with built in swap
     logger.warning("Commencing emergency hibernation")
