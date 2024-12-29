@@ -52,8 +52,12 @@ def set_bat_alarm(bat: str | None):
     if not bat or not os.path.exists(bat + "/alarm"):
         return
 
-    with open(bat + "/energy_full") as f:
-        full = int(f.read())
+    if os.path.exists(bat + "/energy_full"):
+        with open(bat + "/energy_full") as f:
+            full = int(f.read())
+    else:
+        with open(bat + "/charge_full") as f:
+            full = int(f.read())
 
     # Go a bit below the threshold to make sure we hibernate when we wake up.
     lvl = BATTERY_LOW_THRESHOLD * 85 * full // 100 // 100
@@ -161,7 +165,10 @@ class PowerPlugin(HHDPlugin):
             if not self.alarm_set:
                 self.alarm_set = True
                 if self.bat:
-                    set_bat_alarm(self.bat)
+                    try:
+                        set_bat_alarm(self.bat)
+                    except Exception as e:
+                        logger.error(f"Failed to set battery alarms:\n{e}")
 
             curr = time.time()
             if (
@@ -195,6 +202,7 @@ class PowerPlugin(HHDPlugin):
                         self.therm = {}
                         self.bat = None
                 return
+
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
