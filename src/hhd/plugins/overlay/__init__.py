@@ -7,7 +7,6 @@ from typing import Sequence
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 from hhd.utils import expanduser
 
-from .power import get_windows_bootnum, boot_windows
 from ..plugin import open_steam_kbd
 from .const import get_system_info, get_touchscreen_quirk
 from .controllers import QamHandlerKeyboard, device_shortcut_loop
@@ -71,7 +70,6 @@ class OverlayPlugin(HHDPlugin):
         self.old_touch = False
         self.old_asus_cycle = None
         self.short_t = None
-        self.win_bootnum = None
         self.has_executable = False
         self.qam_handler = None
         self.qam_handler_fallback = None
@@ -94,7 +92,6 @@ class OverlayPlugin(HHDPlugin):
             self.ovf = OverlayService(context, emit)
             self.ctx = context
             self.has_executable = bool(find_overlay_exe(context))
-            self.win_bootnum = get_windows_bootnum()
 
             if bool(os.environ.get("HHD_QAM_KEYBOARD", None)):
                 # Sends the events as ctrl+1, ctrl+2
@@ -125,9 +122,6 @@ class OverlayPlugin(HHDPlugin):
             "gamemode": load_relative_yaml("gamemode.yml"),
             "shortcuts": load_relative_yaml("shortcuts.yml"),
         }
-
-        if self.win_bootnum is None:
-            del set["gamemode"]["power"]
 
         if not SUPPORTS_HALVING:
             del set["gamemode"]["gamescope"]["children"]["steamui_halfhz"]
@@ -179,12 +173,6 @@ class OverlayPlugin(HHDPlugin):
             # Initialize value since there is no default
             disable_touch = False
             conf["gamemode.display.touchscreen_disable"] = False
-
-        if self.win_bootnum is not None and conf.get(
-            "gamemode.power.reboot_windows", False
-        ):
-            conf["gamemode.power.reboot_windows"] = False
-            boot_windows()
 
         asus_cycle = conf.get("tdp.asus.cycle_tdp", False)
         if self.initialized and (

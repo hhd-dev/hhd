@@ -46,6 +46,7 @@ rgb = "hhd.plugins.rgb:autodetect"
 overlay = "hhd.plugins.overlay:autodetect"
 bootc = "hhd.plugins.bootc:autodetect"
 debug = "hhd.plugins.debug:autodetect"
+power = "hhd.plugins.power:autodetect"
 # display = "hhd.plugins.display:autodetect"
 
 [project.entry-points."hhd.i18n"]

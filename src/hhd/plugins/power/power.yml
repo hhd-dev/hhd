@@ -1,0 +1,29 @@
+type: container
+title: Power
+tags: [non-essential]
+children:
+  status:
+    type: display
+    title: "Error"
+    tags: [error]
+
+  reboot_windows:
+    type: action
+    title: "Reboot into Windows"
+    tags: [verify]
+    hint: Make sure you saved your game progress.
+  
+  hibernate:
+    type: action
+    title: "Hibernate"
+    hint: Saves your progress and powers off the device.
+    tags: [verify]
+
+  hibernate_auto:
+    type: bool
+    title: "Hibernate when device asks and at 5%."
+    hint: |
+      Certain devices wake up to force Windows to hibernate. If Linux does not
+      they cause issues. Detect and hibernate on thermal events and on 5%
+      battery.
+    default: true
