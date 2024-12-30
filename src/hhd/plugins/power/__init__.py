@@ -19,10 +19,11 @@ TEMP_CHECK_INTERVAL = 10
 # has e.g., a battery bug that trips the condition incorrectly
 TEMP_CHECK_INITIALIZE = 300
 BATTERY_LOW_THRESHOLD = 5
+LAST_ATTEMPT_WAIT = 5
 LAST_ATTEMPT_BAIL = 30
 
 
-def thermal_check(therm: dict[str, int], bat: str | None, last_attempt: float = 0):
+def thermal_check(therm: dict[str, int], bat: str | None, last_attempt: float = 0, wakeup: bool = False):
     found = False
     for path, temp in therm.items():
         with open(path) as f:
@@ -43,13 +44,19 @@ def thermal_check(therm: dict[str, int], bat: str | None, last_attempt: float = 
     if not found:
         return False
 
-    if time.time() - last_attempt < LAST_ATTEMPT_BAIL:
+    if not wakeup and time.time() - last_attempt < LAST_ATTEMPT_WAIT:
+        # There is a small chance that systemctl returns control too early
+        # and we run the event loop and fall in the if statement below.
+        # Therefore, unless this was triggered by a  wakeup, we should
+        # wait a bit.
+        return False
+    elif time.time() - last_attempt < LAST_ATTEMPT_BAIL:
         # Bail out if we woke up too soon
         # This is to avoid a loop of hibernation attempts and wakeup
         # Hibernation requires ~20s to complete, then boot another 20
         # so a user should not be able to trigger this by waking up
         emergency_shutdown()
-        return False
+        return True
     else:
         emergency_hibernate(shutdown=True)
         return True
@@ -209,7 +216,7 @@ class PowerPlugin(HHDPlugin):
                         logger.error(f"Failed to reset battery alarms:\n{e}")
                         self.bat = None
                     try:
-                        if thermal_check(self.therm, self.bat, self.last_attempt):
+                        if thermal_check(self.therm, self.bat, self.last_attempt, wakeup=True):
                             self.last_attempt = time.time()
                     except Exception as e:
                         logger.error(f"Failed to check thermal zones:\n{e}")
