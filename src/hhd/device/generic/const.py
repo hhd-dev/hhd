@@ -23,7 +23,7 @@ BTN_MAPPINGS: dict[int, Button] = {
     B("KEY_T"): "share",  # T + LCTRL + LSHFT + LALT
 }
 
-AMBERNIC_MAPPINGS: dict[int, str] = {
+ANBERNIC_MAPPINGS: dict[int, str] = {
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     B("KEY_LEFTMETA"): "share",
@@ -159,10 +159,10 @@ CONFS = {
         **AYA_DEFAULT_CONF,
     },
     "KUN": {"name": "AYANEO 2021 Kun", **AYA_DEFAULT_CONF},
-    # Ambernic
+    # Anbernic
     "Win600": {
-        "name": "Ambernic Win600",
-        "btn_mapping": AMBERNIC_MAPPINGS,
+        "name": "Anbernic Win600",
+        "btn_mapping": ANBERNIC_MAPPINGS,
         "extra_buttons": "none",
     },
     # MSI Claw
