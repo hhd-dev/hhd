@@ -34,10 +34,13 @@ def thermal_check(therm: dict[str, int], bat: str | None, last_attempt: float = 
                 )
                 found = True
 
-    if bat:
+    if bat and not found:
+        with open(bat + "/status") as f:
+            dc = "discharging" in bat.lower()
+
         with open(bat + "/capacity") as f:
             curr = int(f.read())
-            if curr <= BATTERY_LOW_THRESHOLD:
+            if dc and curr <= BATTERY_LOW_THRESHOLD:
                 logger.warning(f"Battery level reached {curr}%, hibernating.")
                 found = True
 
