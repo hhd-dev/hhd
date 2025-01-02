@@ -235,6 +235,7 @@ class BootcPlugin(HHDPlugin):
         self.progress_lock = Lock()
         self.progress = None
         self.staged = ""
+        self.cached_version = ""
         self.emit = None
 
         self.branches = {}
@@ -353,6 +354,7 @@ class BootcPlugin(HHDPlugin):
         cached_img = cached.get("image", {}).get("image", "") if cached else ""
         if "/" in cached_img:
             cached_img = cached_img[cached_img.rfind("/") + 1 :]
+        self.cached_version = cached_version
 
         if self.checked_update:
             conf[f"updates.bootc.update"] = _("No update available")
@@ -481,7 +483,7 @@ class BootcPlugin(HHDPlugin):
                             self.proc, self.progress = run_command_threaded_progress(
                                 BOOTC_UPDATE_CMD,
                                 self.emit,
-                                self.staged or "",
+                                self.cached_version or self.branch_name or "",
                                 self.progress_lock,
                             )
                         else:
