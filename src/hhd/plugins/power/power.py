@@ -5,7 +5,7 @@ import subprocess
 from hhd.i18n import _
 
 # TODO: Flip this to 0 on release
-HHD_SWAP_CREATE = os.environ.get("HHD_SWAP_CREATE", "1") == "1"
+HHD_SWAP_CREATE = os.environ.get("HHD_SWAP_CREATE", "0") == "1"
 HHD_SWAP_SUBVOL = os.environ.get("HHD_SWAP_SUBVOL", "/var/swap")
 HHD_SWAP_FILE = os.environ.get("HHD_SWAP_FILE", "/var/swap/hhdswap")
 
@@ -258,7 +258,7 @@ def emergency_hibernate(shutdown: bool = False):
     if not ret:
         return ""
 
-    status = _("Failed to hibernate (missing swap?).")
+    status = _("Failed to hibernate (missing swap file).")
 
     if HHD_SWAP_CREATE:
         # Create temporary swap and hibernate
