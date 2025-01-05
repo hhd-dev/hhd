@@ -420,7 +420,7 @@ class BootcPlugin(HHDPlugin):
                 # Handle steamos polkit
                 steamos_upd = False
                 if steamos == "check":
-                    if target:
+                    if target or e == "ready":
                         conf["updates.bootc.steamos-update"] = "has-update"
                     else:
                         update = True
