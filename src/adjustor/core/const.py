@@ -131,6 +131,7 @@ CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
     # GPD Win 4
     # model name    : AMD Ryzen 7 6800U with Radeon Graphics
     # 28W works fine, 30W is pushing it
+    "AMD Ryzen 7 5700U": (DEV_PARAMS_6000, ALIB_PARAMS_6040),
     "AMD Ryzen 7 5800U": (DEV_PARAMS_6000, ALIB_PARAMS_6040),
     "AMD Ryzen 7 6800U": (DEV_PARAMS_6000, ALIB_PARAMS_6040),
     "AMD Ryzen 7 7840U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
