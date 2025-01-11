@@ -6,9 +6,9 @@ if [ "$EUID" = 0 ]; then
   exit
 fi
 
-is_bazzite=$(cat /etc/os-release  | sed -e 's/\(.*\)/\L\1/' | grep bazzite)
+is_bazzite=$(cat /etc/os-release  | sed -e 's/\(.*\)/\L\1/' | grep bazzite-deck)
 if [ "${is_bazzite}" ]; then
-  echo "Handheld Daemon is preinstalled on Bazzite."
+  echo "Handheld Daemon is preinstalled on bazzite-deck."
   echo "If your device is not whitelisted, you can enable Handheld Daemon with the command:"
   echo "sudo systemctl enable --now hhd@\$(whoami)"
   exit
