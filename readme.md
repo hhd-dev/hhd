@@ -12,7 +12,7 @@
 <!-- [![]()]() -->
 
 # Handheld Daemon
-Handheld Daemon provides hardware enablement for Windows handhelds, so that they run correctly in Linux. It acts as a vendor interface replacement (e.g., Armoury Crate equivalent). It does fan curves, TDP controls, controller emulation including gyro, back buttons, and SteamOS shortcuts, and RGB remapping. All of this is through a gamescope overlay, accessible through double tapping the side menu button of the device, and a desktop app.
+Handheld Daemon provides hardware enablement for Windows handhelds, so that they run correctly in Linux. It acts as a vendor interface replacement (e.g., Armoury Crate equivalent), with fan curves, TDP controls, controller emulation including gyro, back buttons, and SteamOS shortcuts, and RGB remapping. All of this is through a gamescope overlay, accessible through double tapping the side menu button of the device, and a desktop app.
 
 ## Showcase
 ![Overlay](./docs/overlay.gif)
