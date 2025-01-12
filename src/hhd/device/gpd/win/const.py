@@ -37,4 +37,5 @@ GPD_WIN_MAX_2_2023_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | No
     "timestamp": ("imu_ts", None, 1, None),
 }
 
+GPD_WIN_4_6800U_MAPPINGS = gen_gyro_state("x", True, "z", True, "y", False)
 GPD_WIN_4_8840U_MAPPINGS = gen_gyro_state("z", True, "x", False, "y", True)
