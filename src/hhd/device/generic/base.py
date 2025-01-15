@@ -167,6 +167,7 @@ def controller_loop(
         trigger="analog_to_discrete",
         dpad="analog_to_discrete",
         share_to_qam=True,
+        select_reboots=conf.get("select_reboots", False),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         params=d_params,

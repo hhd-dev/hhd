@@ -40,3 +40,9 @@ children:
     hint: >-
       Swaps A with B and X with Y.
     default: False
+
+  select_reboots:
+    type: bool
+    tags: [non-essential]
+    title: Hold View to Reboot
+    default: False
