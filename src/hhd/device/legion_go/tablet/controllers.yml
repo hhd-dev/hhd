@@ -68,16 +68,6 @@ children:
 
   touchpad:
 
-  touchpad_hold:
-    type: bool
-    title: Fix touchpad hold [BROKEN]
-    tags: [ non-essential, hidden ]
-    # hint: >-
-    #   Tries to fix touchpad hold by using an alternate input source for the
-    #   touchpad. Update frequency will be lower. In conjunction with this setting,
-    #   disable touchpad vibration.
-    #   Bug: touchpad gets stuck after hold.
-
   shortcuts:
     type: bool
     title: Enable Shortcuts Controller

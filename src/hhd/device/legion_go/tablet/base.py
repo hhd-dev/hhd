@@ -46,6 +46,7 @@ def plugin_run(
     context: Context,
     should_exit: TEvent,
     updated: TEvent,
+    dconf: dict,
     others: dict,
 ):
     reset = others.get("reset", False)
@@ -226,10 +227,6 @@ def controller_loop_xinput(
             simu = None
             cidx = 0
 
-    fix_hold = (
-        conf["touchpad_hold"].to(bool)
-        and conf["touchpad.mode"].to(TouchpadAction) == "controller"
-    )
     d_producers, d_outs, d_params = get_outputs(
         conf["xinput"],
         conf["touchpad"],
@@ -287,7 +284,7 @@ def controller_loop_xinput(
         ).with_settings(
             gyro=dimu,
             reset=reset,
-            use_touchpad=fix_hold,
+            use_touchpad=False,
             swap_legion=swap_legion,
         )
     )
@@ -345,12 +342,7 @@ def controller_loop_xinput(
         prepare(d_xinput)
         prepare(d_shortcuts)
         if d_params["uses_touch"]:
-            if fix_hold:
-                # If fixing hold, only do touchpad
-                devs.append(d_touch)
-                d_touch.open()
-            else:
-                prepare(d_touch)
+            prepare(d_touch)
         prepare(d_raw)
         for d in d_producers:
             prepare(d)
