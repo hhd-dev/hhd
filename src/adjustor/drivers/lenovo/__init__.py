@@ -346,7 +346,6 @@ class LenovoDriverPlugin(HHDPlugin):
 
         if self.notify_tdp:
             self.notify_tdp = False
-            print(new_mode)
             if conf.get("tdp.lenovo.tdp_rgb", False):
                 self.emit({"type": "special", "event": f"tdp_cycle_{new_mode}"})  # type: ignore
 
@@ -366,7 +365,6 @@ class LenovoDriverPlugin(HHDPlugin):
                         self.new_mode = "balanced"
                     case "performance":
                         self.new_mode = "performance"
-            print(ev)
             if ev["type"] == "acpi" and ev.get("event", None) == "tdp":
                 self.notify_tdp = True
 
