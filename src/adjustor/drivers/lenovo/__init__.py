@@ -46,7 +46,9 @@ class LenovoDriverPlugin(HHDPlugin):
         self.fan_curve_set = False
         self.notify_tdp = False
         self.legion_s = legion_s
-        self.max_watts = 33 if legion_s else 35
+        # While it claims 33W, it causes issues...
+        # self.max_watts = 33 if legion_s else 30
+        self.max_watts = 30
 
         bios_version = get_bios_version()
         if legion_s:
