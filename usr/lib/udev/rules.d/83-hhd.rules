@@ -35,3 +35,6 @@ ATTRS{idVendor}=="0db0", ATTRS{idProduct}=="1901", RUN+="/sbin/modprobe xpad" RU
 
 # Enable xpad for the TECNO Pocket Go
 ATTRS{idVendor}=="2993", ATTRS{idProduct}=="2001", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 2993 2001 > /sys/bus/usb/drivers/xpad/new_id'"
+
+# Enable xpad for the Legion Go S
+ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e310", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 1a86 e310 > /sys/bus/usb/drivers/xpad/new_id'"
