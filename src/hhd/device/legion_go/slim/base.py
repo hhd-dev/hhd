@@ -5,12 +5,11 @@ import time
 from threading import Event as TEvent
 from typing import Sequence
 
-from hhd.controller import Button, Consumer, Event, Producer, DEBUG_MODE
-from hhd.controller.lib.hide import unhide_all
+from hhd.controller import DEBUG_MODE, Button, Consumer, Event, Producer
 from hhd.controller.base import Multiplexer
+from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
@@ -19,7 +18,7 @@ from .const import (
     GOS_INTERFACE_BTN_ESSENTIALS,
     GOS_INTERFACE_BTN_MAP,
 )
-from .hid import LegionHidraw, RgbCallback
+from .hid import LegionHidraw, LegionHidrawTs, RgbCallback
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.5
@@ -148,7 +147,7 @@ def controller_loop_rest(
         logger.info(f"Shortcuts disabled. Waiting for controllers to change modes.")
 
     d_raw = SelectivePassthrough(
-        GenericGamepadHidraw(
+        LegionHidrawTs(
             vid=[GOS_VID],
             pid=list(GOS_PIDS),
             usage_page=[0xFFA0],
@@ -218,6 +217,7 @@ def controller_loop_rest(
         d_raw.close(True)
         d_cfg.close(True)
 
+
 def controller_loop_xinput(
     conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, reset: bool
 ):
@@ -249,7 +249,7 @@ def controller_loop_xinput(
         hide=True,
     )
     d_raw = SelectivePassthrough(
-        GenericGamepadHidraw(
+        LegionHidrawTs(
             vid=[GOS_VID],
             pid=list(GOS_PIDS),
             usage_page=[0xFFA0],
@@ -318,9 +318,6 @@ def controller_loop_xinput(
         for d in d_producers:
             prepare(d)
 
-        ts_count: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
-        ts_last: dict[str, int] = {"left_imu_ts": 0, "right_imu_ts": 0}
-
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
@@ -334,25 +331,6 @@ def controller_loop_xinput(
             for d in devs:
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
-
-            for ev in evs:
-                if ev["type"] == "axis" and "_imu_ts" in ev["code"]:
-                    # Find diff between previous event
-                    last = ts_last[ev["code"]]
-                    curr = ev["value"]
-                    diff = curr - last
-                    if curr < last:
-                        diff += 256
-                    ts_last[ev["code"]] = curr
-                    # 8ms per count
-                    ts_count[ev["code"]] += diff * 8_000_000
-                    ev["value"] = ts_count[ev["code"]]
-                if ev["type"] == "axis" and "gyro" in ev["code"]:
-                    v = ev["value"]
-                    if (abs(v / 0.001065) // 1) in (254, 255):
-                        # Legion go controllers have a bug where they will
-                        # randomly output 254 or 255. If that happens, drop event
-                        ev["code"] = ""  # type: ignore
 
             evs = multiplexer.process(evs)
             if evs:

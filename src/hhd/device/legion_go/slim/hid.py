@@ -197,3 +197,23 @@ class LegionHidraw(GenericGamepadHidraw):
             self.dev.write(r)
 
         return out
+
+
+class LegionHidrawTs(GenericGamepadHidraw):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ts_count = 0
+
+    def produce(self, fds: Sequence[int]):
+        evs = super().produce(fds)
+
+        if self.fd in fds:
+            # If fd was readable, 8ms have passed
+            self.ts_count += 8_000_000
+
+            evs = [
+                *evs,
+                {"type": "axis", "code": "imu_ts", "value": self.ts_count},
+            ]
+
+        return evs

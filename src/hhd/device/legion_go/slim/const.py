@@ -51,11 +51,10 @@ GOS_INTERFACE_AXIS_MAP: dict[Axis, AM] = {
     "rt": AM(12 << 3, "u8"),
     "lt": AM(13 << 3, "u8"),
     # # Controller IMU
-    "imu_ts": AM(14 << 3, "u8", scale=1),
-    "accel_x": AM(15 << 3, "i16", scale=-0.00212, order="big"),
-    "accel_z": AM(17 << 3, "i16", scale=-0.00212, order="big"),
-    "accel_y": AM(19 << 3, "i16", scale=-0.00212, order="big"),
-    "gyro_x": AM(21 << 3, "i16", scale=-0.001065, order="big"),
-    "gyro_z": AM(23 << 3, "i16", scale=-0.001065, order="big"),
-    "gyro_y": AM(25 << 3, "i16", scale=-0.001065, order="big"),
+    "accel_x": AM(14 << 3, "i16", scale=-0.00212, order="little"),
+    "accel_z": AM(16 << 3, "i16", scale=-0.00212, order="little"),
+    "accel_y": AM(18 << 3, "i16", scale=-0.00212, order="little"),
+    "gyro_x": AM(20 << 3, "i16", scale=-0.0005325, order="little"),
+    "gyro_z": AM(22 << 3, "i16", scale=0.0005325, order="little"),
+    "gyro_y": AM(24 << 3, "i16", scale=-0.0005325, order="little"),
 }
