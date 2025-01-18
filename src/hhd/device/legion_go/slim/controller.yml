@@ -1,0 +1,58 @@
+type: container
+tags: [lgc]
+title: Legion Controller
+hint: >-
+  Configure the Legion Controller emulation modes.
+
+children:
+  xinput:
+    type: mode
+    tags: [lgsc_xinput]
+    title: Emulation Mode (X-Input)
+    hint: >-
+      Emulate different controller types when in X-Input mode.
+
+  #
+  # Common settings
+  #
+  imu:
+    type: bool
+    title: Motion Support
+    hint: >-
+      Enable gyroscope/accelerometer (IMU) support
+    default: True
+
+  swap_legion:
+    type: bool
+    title: Swap Legion with Menu/View
+    tags: [ non-essential ]
+    default: False
+  
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+  
+  select_reboots:
+    type: bool
+    title: Hold View to Reboot
+    tags: [ non-essential ]
+    default: True
+
+  shortcuts:
+    type: bool
+    title: Enable Shortcuts Controller
+    tags: [ non-essential ]
+    hint: >-
+      When in dinput mode, enable a controller for shortcuts.
+    default: True
+
+  factory_reset:
+    type: action
+    title: Reset Controller
+    tags: [ non-essential, verify ]
+    hint: >-
+      Resets the controller to stock settings.

@@ -1,4 +1,5 @@
 from threading import Event, Thread
+from typing import Any, Sequence
 
 from hhd.plugins import (
     Config,
@@ -8,15 +9,17 @@ from hhd.plugins import (
     load_relative_yaml,
     get_outputs_config,
     get_touchpad_config,
+    get_gyro_state,
+    get_gyro_config,
 )
 from hhd.plugins.settings import HHDSettings
 from hhd.controller.physical.imu import BMI_MAPPINGS
 
 
-class LegionGoControllersPlugin(HHDPlugin):
-    name = "legion_go_controllers"
+class LegionGoSControllerPlugin(HHDPlugin):
+    name = "legion_go_slim_controller"
     priority = 18
-    log = "llgo"
+    log = "lgos"
 
     def __init__(self, dconf) -> None:
         self.dconf = dconf
@@ -37,23 +40,16 @@ class LegionGoControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
-        base = {"controllers": {"legion_go": load_relative_yaml("controllers.yml")}}
-        base["controllers"]["legion_go"]["children"]["xinput"].update(
-            get_outputs_config(extra_buttons="quad")
+        base = {"controllers": {"legion_gos": load_relative_yaml("controller.yml")}}
+        base["controllers"]["legion_gos"]["children"]["xinput"].update(
+            get_outputs_config(extra_buttons="dual")
         )
-        base["controllers"]["legion_go"]["children"]["touchpad"] = get_touchpad_config()
         return base
 
     def update(self, conf: Config):
-        new_conf = conf["controllers.legion_go"]
-        reset = conf["controllers.legion_go.factory_reset"].to(bool)
-        conf["controllers.legion_go.factory_reset"] = False
-
-        # Migrate old setting
-        val = conf.get("controllers.legion_go.swap_legion", None)
-        if val and val != "disabled":
-            conf["controllers.legion_go.swap_legion"] = None
-            conf["controllers.legion_go.swap_legion_v2"] = True
+        new_conf = conf["controllers.legion_gos"]
+        reset = conf["controllers.legion_gos.factory_reset"].to(bool)
+        conf["controllers.legion_gos.factory_reset"] = False
 
         if new_conf == self.prev:
             return

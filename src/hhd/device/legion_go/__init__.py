@@ -4,16 +4,18 @@ from hhd.plugins import (
     HHDPlugin,
 )
 
+from .slim import LegionGoSControllerPlugin
 from .tablet import LegionGoControllersPlugin
 
-LEGION_CONFS = {
+LEGION_GO_CONFS = {
     "83E1": {
-        "name": "Legion Go (1st Gen)",
-        "dual": True,
+        "name": "Legion Go",
     },
+}
+
+LEGION_S_CONFS = {
     "83L3": {
         "name": "Legion Go S",
-        "dual": False,
     },
 }
 
@@ -26,7 +28,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         dmi = f.read().strip()
 
-    if dmi not in LEGION_CONFS:
-        return []
+    if dmi in LEGION_S_CONFS:
+        return [LegionGoSControllerPlugin(dconf=LEGION_S_CONFS[dmi])]
 
-    return [LegionGoControllersPlugin(dconf=LEGION_CONFS[dmi])]
+    if dmi in LEGION_GO_CONFS:
+        return [LegionGoControllersPlugin(dconf=LEGION_GO_CONFS[dmi])]
+
+    return []
