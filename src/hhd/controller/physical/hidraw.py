@@ -41,6 +41,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         product: Sequence[str | re.Pattern] = [],
         usage_page: Sequence[int] = [],
         usage: Sequence[int] = [],
+        interface: int | None = None,
         btn_map: dict[int | None, dict[Button, BM]] = {},
         axis_map: dict[int | None, dict[Axis, AM]] = {},
         config_map: dict[int | None, dict[Configuration, CM]] = {},
@@ -55,6 +56,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.product = product
         self.usage_page = usage_page
         self.usage = usage
+        self.interface = interface
         self.report_size = report_size
 
         self.btn_map = btn_map
@@ -83,6 +85,11 @@ class GenericGamepadHidraw(Producer, Consumer):
             if not matches_patterns(d["usage_page"], self.usage_page):
                 continue
             if not matches_patterns(d["usage"], self.usage):
+                continue
+            if (
+                self.interface is not None
+                and d.get("interface_number", None) != self.interface
+            ):
                 continue
             self.path = d["path"]
             self.dev = Device(path=self.path)
