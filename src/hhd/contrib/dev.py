@@ -118,14 +118,16 @@ def evdev(dev: str | None):
 def device_str(d):
     from hhd.controller.lib.common import hexify
 
-    return (f"{d['path'].decode():13s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}"
-            + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
-            + f" Names: '{d['manufacturer_string']}': '{d['product_string']}'")
+    return (
+        f"{d['path'].decode():13s} {hexify(d['vendor_id'])}:{hexify(d['product_id'])}"
+        + f" Usage Page: 0x{hexify(d['usage_page'])} Usage: 0x{hexify(d['usage'])}"
+        + f" Interface: {d['interface_number']} Names: '{d['manufacturer_string']}': '{d['product_string']}'"
+    )
 
 def hidraw(dev: str | None, *cmds: str):
     from hhd.controller.lib.hid import enumerate_unique, Device
     from time import sleep, perf_counter
-    
+
     avail = []
     infos = {}
     devs = {}
@@ -136,7 +138,7 @@ def hidraw(dev: str | None, *cmds: str):
             f" - {device_str(d)}"
         )
         devs[d['path']] = d
-    
+
     if dev:
         print(f"Using argument '{dev}'.")
         try:
@@ -150,7 +152,7 @@ def hidraw(dev: str | None, *cmds: str):
         print("Available Devices with the Current Permissions")
         print("\n".join([infos[k] for k in sorted(infos)]))
         print()
-        
+
         sel = None
         while not sel or sel not in avail:
             try:
@@ -181,7 +183,7 @@ def hidraw(dev: str | None, *cmds: str):
             else:
                 cmd_type = "write"
             cmd = cmd.replace(' ', '').replace(':', '')
-            
+
             match cmd_type:
                 case "write":
                     print(f" - {cmd}")
@@ -212,7 +214,7 @@ def hidraw(dev: str | None, *cmds: str):
         print_descriptor(d.fd)
     except Exception as e:
         print(f"Could not get descriptor:\n{e}")
-    
+
     print()
     print(f"Selected device:\n{device_str(devs[sel])}\n")
 
