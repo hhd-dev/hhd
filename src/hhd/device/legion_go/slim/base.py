@@ -10,6 +10,7 @@ from hhd.controller.lib.hide import unhide_all
 from hhd.controller.base import Multiplexer
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
@@ -147,7 +148,7 @@ def controller_loop_rest(
         logger.info(f"Shortcuts disabled. Waiting for controllers to change modes.")
 
     d_raw = SelectivePassthrough(
-        LegionHidraw(
+        GenericGamepadHidraw(
             vid=[GOS_VID],
             pid=list(GOS_PIDS),
             usage_page=[0xFFA0],
@@ -157,9 +158,19 @@ def controller_loop_rest(
             axis_map={None: GOS_INTERFACE_AXIS_MAP},
             btn_map={None: GOS_INTERFACE_BTN_MAP},
             required=True,
-        ).with_settings(reset=reset),
+        ),
         passthrough_pressed=True,
     )
+    d_cfg = LegionHidraw(
+        vid=[GOS_VID],
+        pid=list(GOS_PIDS),
+        usage_page=[0xFFA0],
+        usage=[0x0001],
+        report_size=64,
+        interface=3,
+        callback=RgbCallback(),
+        required=True,
+    ).with_settings(reset=reset)
 
     multiplexer = Multiplexer(
         dpad="both",
@@ -185,6 +196,7 @@ def controller_loop_rest(
     try:
         fds = []
         fds.extend(d_raw.open())
+        fds.extend(d_cfg.open())
         if shortcuts_enabled:
             fds.extend(d_shortcuts.open())
             fds.extend(d_uinput.open())
@@ -199,11 +211,12 @@ def controller_loop_rest(
                 if debug and evs:
                     logger.info(evs)
                 d_uinput.consume(evs)
+                d_cfg.consume(evs)
     finally:
         d_uinput.close(True)
         d_shortcuts.close(True)
         d_raw.close(True)
-
+        d_cfg.close(True)
 
 def controller_loop_xinput(
     conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, reset: bool
@@ -231,13 +244,12 @@ def controller_loop_xinput(
     d_xinput = GenericGamepadEvdev(
         vid=[GOS_VID],
         pid=[GOS_XINPUT],
-        # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
         hide=True,
     )
     d_raw = SelectivePassthrough(
-        LegionHidraw(
+        GenericGamepadHidraw(
             vid=[GOS_VID],
             pid=list(GOS_PIDS),
             usage_page=[0xFFA0],
@@ -246,12 +258,19 @@ def controller_loop_xinput(
             interface=6,
             axis_map={None: GOS_INTERFACE_AXIS_MAP},
             btn_map={None: GOS_INTERFACE_BTN_MAP},
-            callback=RgbCallback(),
             required=True,
-        ).with_settings(
-            reset=reset,
         )
     )
+    d_cfg = LegionHidraw(
+        vid=[GOS_VID],
+        pid=list(GOS_PIDS),
+        usage_page=[0xFFA0],
+        usage=[0x0001],
+        report_size=64,
+        interface=3,
+        callback=RgbCallback(),
+        required=True,
+    ).with_settings(reset=reset)
 
     # Mute keyboard shortcuts, mute
     d_shortcuts = GenericGamepadEvdev(
@@ -294,6 +313,7 @@ def controller_loop_xinput(
     try:
         prepare(d_xinput)
         prepare(d_shortcuts)
+        prepare(d_cfg)
         prepare(d_raw)
         for d in d_producers:
             prepare(d)
@@ -341,6 +361,7 @@ def controller_loop_xinput(
 
                 d_xinput.consume(evs)
                 d_raw.consume(evs)
+                d_cfg.consume(evs)
 
             for d in d_outs:
                 d.consume(evs)
