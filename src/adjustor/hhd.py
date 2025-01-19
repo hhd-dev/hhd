@@ -271,8 +271,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         max_tdp = 33
 
     if (
-        "ROG Flow Z13 GZ302EA" in prod # lets see them laptops
-        or "ROG Ally RC71L" in prod
+        "ROG Ally RC71L" in prod
         or "ROG Ally X RC72L" in prod
         or bool(os.environ.get("HHD_ADJ_DEBUG"))
         or bool(os.environ.get("HHD_ADJ_ALLY"))
@@ -337,7 +336,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         from .drivers.general import GeneralPowerPlugin
 
         logger.info(f"No tdp drivers found for this device, using generic plugin.")
-
+        
         is_steamdeck = "Jupiter" in prod or "Galileo" in prod
         return [GeneralPowerPlugin(is_steamdeck=is_steamdeck)]
 
