@@ -42,7 +42,7 @@ ALLY_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
 }
 
 LIMIT_DEFAULTS = lambda allyx: {
-    "s_min": 5,
+    "s_min": 0 if allyx else 5,
     "s_max": 0x60 if allyx else 0x40,
     "t_min": 5,
     "t_max": 0x60 if allyx else 0x40,
@@ -289,7 +289,15 @@ def plugin_run(
                 LONGER_ERROR_DELAY if repeated_fail and failed_fast else ERROR_DELAY
             )
             repeated_fail = failed_fast
-            logger.error(f"Received the following error:\n{type(e)}: {e}")
+            logger.error(f"Received the following error:\n{type(e)}:")
+
+            try:
+                import traceback
+
+                traceback.print_exc()
+            except Exception:
+                pass
+
             logger.error(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
@@ -300,6 +308,7 @@ def plugin_run(
 
     # Unhide all devices before exiting
     unhide_all()
+
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool
