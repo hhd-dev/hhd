@@ -28,10 +28,12 @@ ALL = {
 
 BRANCH_MAP = {
     "rel": "stable",
-    "rc": "testing",
     "beta": "testing",
-    "main": "unstable",
+    "preview": "testing",
+    "rc": "testing",
     "bc": "unstable",
+    "pc": "unstable",
+    "main": "unstable",
 }
 
 FALLBACK_CODE = 20
