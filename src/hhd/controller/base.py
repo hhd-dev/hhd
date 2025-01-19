@@ -1457,16 +1457,26 @@ class Multiplexer:
         if self.emit and self.emit.intercept(
             self.unique, [o for o in out if not o.get("from_queue", False)]
         ):
-            accel = random.random() * 10
-            fake_accel: Sequence[Event] = [
-                {"type": "axis", "code": "accel_x", "value": accel},
-                {"type": "axis", "code": "left_accel_x", "value": accel},
-                {"type": "axis", "code": "right_accel_x", "value": accel},
-            ]
-            return fake_accel + [
+            # Hiding the gyro and sending fake accel values causes
+            # issues with emulators and gyro
+            # accel = random.random() * 10
+            # fake_accel: Sequence[Event] = [
+            #     {"type": "axis", "code": "accel_x", "value": accel},
+            #     {"type": "axis", "code": "left_accel_x", "value": accel},
+            #     {"type": "axis", "code": "right_accel_x", "value": accel},
+            # ]
+            # return fake_accel + [
+            #     o
+            #     for o in out
+            #     if o["type"] not in ("button", "axis") or "ts" in o.get("code", "")
+            # ]
+            return [
                 o
                 for o in out
-                if o["type"] not in ("button", "axis") or "ts" in o.get("code", "")
+                if o["type"] not in ("button", "axis")
+                or "ts" in o.get("code", "")
+                or "accel" in o.get("code", "")
+                or "gyro" in o.get("code", "")
             ]
         elif send_steam_qam:
             # Send steam qam only if not intercepting
