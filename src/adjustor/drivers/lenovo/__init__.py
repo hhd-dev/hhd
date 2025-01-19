@@ -46,9 +46,14 @@ class LenovoDriverPlugin(HHDPlugin):
         self.fan_curve_set = False
         self.notify_tdp = False
         self.legion_s = legion_s
-        # While it claims 33W, it causes issues...
-        # self.max_watts = 33 if legion_s else 30
-        self.max_watts = 30
+        if legion_s:
+            self.max_watts = 33
+            self.max_watts_sppt = 33
+            self.max_watts_fppt = 35
+        else:
+            self.max_watts = 30
+            self.max_watts_sppt = 32
+            self.max_watts_fppt = 41
 
         bios_version = get_bios_version()
         if legion_s:
@@ -265,9 +270,14 @@ class LenovoDriverPlugin(HHDPlugin):
                 if boost:
                     set_steady_tdp(steady)
                     time.sleep(TDP_DELAY)
-                    set_slow_tdp(min(steady + 2, self.max_watts))
+                    set_slow_tdp(steady + (self.max_watts_sppt - self.max_watts))
                     time.sleep(TDP_DELAY)
-                    set_fast_tdp(min(42, int(steady * 41 / 30)))
+                    set_fast_tdp(
+                        min(
+                            self.max_watts_fppt,
+                            int(steady * self.max_watts_fppt / self.max_watts),
+                        )
+                    )
                 else:
                     set_steady_tdp(steady)
                     time.sleep(TDP_DELAY)
