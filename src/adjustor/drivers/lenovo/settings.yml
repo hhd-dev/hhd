@@ -153,8 +153,9 @@ children:
     tags: [advanced]
     type: bool
     title: Charge Limit (80%)
+    default: False
     hint: >-
-      Limits device charging to 80%. Lenovo EC method. Available since BIOSv29.
+      Limits device charging to 80%.
 
   power_light:
     tags: [advanced]
