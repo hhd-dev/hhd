@@ -147,7 +147,7 @@ children:
     type: bool
     title: Show TDP changes with RGB
     tags: [non-essential]
-    default: False
+    default: True
 
   charge_limit:
     tags: [advanced]
