@@ -67,11 +67,9 @@ curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | bash
 
 This script does not automatically install system dependencies.
 A partial list for Ubuntu/Debian can be found [here](#debian).
-Then see [here](./kernel.md) for a partial list of kernel 
-patches. This includes `acpi_call` for TDP on devices other than the Ally.
-
-As Handheld Daemon matures, this list will continue to grow, so consider
-a gaming distro such as Bazzite for your gaming needs.
+This includes `acpi_call` for TDP on devices other than the Ally.
+For all devices, use the [bazzite kernel](https://github.com/hhd-dev/kernel-bazzite)
+for best support or Bazzite. Some caveats for certain devices are listed below.
 
 ### Uninstall
 We are sorry to see you go, use the following to uninstall:
@@ -89,8 +87,6 @@ sudo systemctl start hhd_local@$(whoami)
 ```
 
 ### <a name="issues"></a>After Install Instructions
-For all devices, use the [bazzite kernel](https://github.com/hhd-dev/kernel-bazzite)
-for best support or Bazzite. Some caveats for certain devices are listed below.
 
 #### Extra steps for ROG Ally
 You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
