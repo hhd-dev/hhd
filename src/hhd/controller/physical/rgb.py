@@ -8,7 +8,10 @@ from typing import Any, Sequence
 from hhd.controller import Consumer
 from hhd.controller.base import Event, RgbLedEvent
 
-LED_PATH = "/sys/class/leds/multicolor:chassis/"
+LED_PATHS = [
+    "/sys/class/leds/multicolor:chassis/",
+    "/sys/class/leds/ayaneo:rgb:joystick_rings/",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +32,23 @@ def read_sysfs(dir: str, fn: str, default: str | None = None):
         raise e
 
 
+def get_led_path():
+    for p in LED_PATHS:
+        if os.path.exists(p):
+            return p
+    return None
+
+
 def is_led_supported():
-    return os.path.exists(LED_PATH)
+    return get_led_path() is not None
 
 
 def chassis_led_set(ev: RgbLedEvent, init: bool = True):
     if ev["type"] != "led":
+        return
+
+    led_path = get_led_path()
+    if not led_path:
         return
 
     match ev["mode"]:
@@ -43,7 +57,13 @@ def chassis_led_set(ev: RgbLedEvent, init: bool = True):
         case _:
             r_mode = 0
 
-    r_brightness = max(min(int(ev["brightness"] * 255), 255), 0)
+    max_brightness = 255
+    try:
+        max_brightness = int(read_sysfs(led_path, "max_brightness", "255"))
+    except Exception:
+        pass
+
+    r_brightness = max(min(int(ev["brightness"] * max_brightness), max_brightness), 0)
     r_red = max(min(ev["red"], 255), 0)
     r_green = max(min(ev["green"], 255), 0)
     r_blue = max(min(ev["blue"], 255), 0)
@@ -51,18 +71,31 @@ def chassis_led_set(ev: RgbLedEvent, init: bool = True):
     # Mode only exists on ayn devices
     if init:
         try:
-            write_sysfs(LED_PATH, "led_mode", r_mode)
+            write_sysfs(led_path, "led_mode", r_mode)
         except Exception:
             logger.info(
                 "Could not write led_mode (not applicable for Ayaneo, only Ayn)."
             )
             try:
-                write_sysfs(LED_PATH, "device/led_mode", r_mode)
+                write_sysfs(led_path, "device/led_mode", r_mode)
             except Exception:
                 logger.info("Could not write led_mode to secondary path.")
 
-        write_sysfs(LED_PATH, "brightness", r_brightness)
-    write_sysfs(LED_PATH, "multi_intensity", f"{r_red} {r_green} {r_blue}")
+        write_sysfs(led_path, "brightness", r_brightness)
+
+    pattern = read_sysfs(led_path, "multi_index", "red green blue")
+    arr = []
+    for color in pattern.split(" "):
+        if color == "red":
+            arr.append(r_red)
+        elif color == "green":
+            arr.append(r_green)
+        elif color == "blue":
+            arr.append(r_blue)
+        else:
+            arr.append(0)
+
+    write_sysfs(led_path, "multi_intensity", " ".join(map(str, arr)))
 
 
 def thread_chassis_led_set(ev: RgbLedEvent, pending: TEvent, error: TEvent):
