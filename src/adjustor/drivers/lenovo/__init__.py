@@ -44,7 +44,6 @@ class LenovoDriverPlugin(HHDPlugin):
         self.prev_charge_limit = None
         self.sys_tdp = False
         self.fan_curve_set = False
-        self.notify_tdp = False
         self.legion_s = legion_s
         if legion_s:
             self.max_watts = 33
@@ -172,6 +171,7 @@ class LenovoDriverPlugin(HHDPlugin):
         new_tdp = self.new_tdp
         self.new_tdp = None
         new_mode = self.new_mode
+        notify_tdp = False
         self.new_mode = None
         if new_tdp:
             # For TDP values received from steam, set the appropriate
@@ -200,6 +200,7 @@ class LenovoDriverPlugin(HHDPlugin):
             if not new_tdp:
                 self.sys_tdp = False
             tdp_reset = True
+            notify_tdp = True
         conf["tdp.lenovo.tdp.mode"] = new_mode
 
         # Reset fan curve on mode change
@@ -351,8 +352,8 @@ class LenovoDriverPlugin(HHDPlugin):
         # Save current config
         self.old_conf = conf["tdp.lenovo"]
 
-        if self.notify_tdp:
-            self.notify_tdp = False
+        if notify_tdp:
+            notify_tdp = False
             if conf.get("tdp.lenovo.tdp_rgb", False):
                 self.emit({"type": "special", "event": f"tdp_cycle_{new_mode}"})  # type: ignore
 
@@ -372,8 +373,6 @@ class LenovoDriverPlugin(HHDPlugin):
                         self.new_mode = "balanced"
                     case "performance":
                         self.new_mode = "performance"
-            if ev["type"] == "acpi" and ev.get("event", None) == "tdp":
-                self.notify_tdp = True
 
     def close(self):
         pass
