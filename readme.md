@@ -20,7 +20,9 @@ Handheld Daemon provides hardware enablement for Windows handhelds, so that they
 ## <a name="devices"></a>Supported Devices
 Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ayn. It also features some support for Ayaneo devices, Anbernic, and MSI. We aim to support new models by these manufacturers as they release, so if you don't see your device below, chances are it will still work or just needs to have its config included.
 
-- Legion Go
+- Lenovo Legion
+  - Go
+  - Go S
 - Asus ROG
   - Ally
   - Ally X
