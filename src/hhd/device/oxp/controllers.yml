@@ -60,7 +60,7 @@ children:
     hint: >-
       Sets the sampling frequency for the IMU.
     options: [100, 200, 400, 800]
-    default: 200
+    default: 100
   
   imu_axis:
 
