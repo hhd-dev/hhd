@@ -16,7 +16,6 @@ from hhd.plugins.settings import HHDSettings
 from hhd.utils import get_distro_color, hsb_to_rgb
 
 from .const import (
-    GPD_WIN_4_6800U_MAPPINGS,
     GPD_WIN_4_8840U_MAPPINGS,
     GPD_WIN_DEFAULT_MAPPINGS,
     GPD_WIN_MAX_2_2023_MAPPINGS,
@@ -290,15 +289,11 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             if dmi == "G1618-04":
                 with open("/proc/cpuinfo") as f:
                     cpuinfo = f.read().strip()
-                # Different generations have different mappings
+                # 8840U has a different gyro mapping
                 if "AMD Ryzen 7 8840U" in cpuinfo:
                     dconf = dict(GPD_CONFS["G1618-04"])
                     dconf["name"] = "GPD Win 4 (8840U)"
                     dconf["mapping"] = GPD_WIN_4_8840U_MAPPINGS
-                if "AMD Ryzen 7 6800U" in cpuinfo:
-                    dconf = dict(GPD_CONFS["G1618-04"])
-                    dconf["name"] = "GPD Win 4 (6800U)"
-                    dconf["mapping"] = GPD_WIN_4_6800U_MAPPINGS
 
             if dconf:
                 base: list[HHDPlugin] = [GpdWinControllersPlugin(dmi, dconf)]
