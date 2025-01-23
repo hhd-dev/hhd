@@ -39,7 +39,7 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - Mini Pro
   - ONE XPLAYER
 - Ayn
-  - Loki Zero/Max
+  - Loki MiniPro/Zero/Max
 - Ayaneo
   - Air Standard/Plus/Pro
   - 1S/1S Limited
