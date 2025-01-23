@@ -19,7 +19,10 @@ PBC = PowerButtonConfig
 
 SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("Legion Go", "83E1"),
-    PBC("Legion Go S", "83L3"),
+    PBC("Legion Go S Z2 Go", "83L3"),
+    PBC("Legion Go S Z1E", "83N6"),
+    PBC("Legion Go S", "83Q2"),
+    PBC("Legion Go S", "83Q3"),
     PBC("ROG Ally", "ROG Ally RC71L_Action"),
     PBC("ROG Ally", "ROG Ally RC71L_RC71L"),
     PBC("ROG Ally", "ROG Ally RC71L"),
