@@ -232,7 +232,7 @@ class AdjustorPlugin(HHDPlugin):
 
 
 LEGION_GO_DMI = "83E1"
-LEGION_GO_S_DMIS = ["83L3"]
+LEGION_GO_S_DMIS = ["83L3", "83N6", "83Q2", "83Q3"]
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
