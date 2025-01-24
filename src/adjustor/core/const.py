@@ -71,11 +71,11 @@ DEV_PARAMS_30W: dict[str, DeviceParams] = {
     "temp_target": D(60, 70, 85, 90, 100),
 }
 
-DEV_PARAMS_28W: dict[str, DeviceParams] = {
-    "stapm_limit": D(0, 4, 15, 28, 35),
-    "skin_limit": D(0, 4, 15, 28, 35),
-    "slow_limit": D(0, 4, 20, 32, 37),
-    "fast_limit": D(0, 4, 25, 35, 40),
+DEV_PARAMS_18W: dict[str, DeviceParams] = {
+    "stapm_limit": D(0, 5, 15, 18, 22),
+    "skin_limit": D(0, 5, 15, 18, 22),
+    "slow_limit": D(0, 5, 15, 18, 22),
+    "fast_limit": D(0, 5, 15, 20, 25),
     # Times
     "slow_time": D(5, 5, 10, 10, 10),
     "stapm_time": D(100, 100, 100, 200, 200),
@@ -128,11 +128,13 @@ DEV_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams], bool]]
 CPU_DATA: dict[str, tuple[dict[str, DeviceParams], dict[str, AlibParams]]] = {
     "AMD Ryzen Z1 Extreme": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     "AMD Ryzen Z1": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
+    # Ayaneo AIR Pro, max is 18W
+    "AMD Ryzen 5 5560U": (DEV_PARAMS_18W, ALIB_PARAMS_5040),
+    # 28W works fine, 30W is pushing it
+    "AMD Ryzen 7 5700U": (DEV_PARAMS_5000, ALIB_PARAMS_5040),
+    "AMD Ryzen 7 5800U": (DEV_PARAMS_5000, ALIB_PARAMS_5040),
     # GPD Win 4
     # model name    : AMD Ryzen 7 6800U with Radeon Graphics
-    # 28W works fine, 30W is pushing it
-    "AMD Ryzen 7 5700U": (DEV_PARAMS_6000, ALIB_PARAMS_6040),
-    "AMD Ryzen 7 5800U": (DEV_PARAMS_6000, ALIB_PARAMS_6040),
     "AMD Ryzen 7 6800U": (DEV_PARAMS_6000, ALIB_PARAMS_6040),
     "AMD Ryzen 7 7840U": (DEV_PARAMS_7040, ALIB_PARAMS_7040),
     "AMD Ryzen 7 8840U": (DEV_PARAMS_8040, ALIB_PARAMS_8040),
