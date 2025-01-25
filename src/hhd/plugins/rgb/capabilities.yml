@@ -91,6 +91,7 @@ speed:
     min: 0
     max: 100
     unit: "%"
+    step: 10
     default: 50
 
 speedd:
