@@ -203,6 +203,7 @@ class LenovoDriverPlugin(HHDPlugin):
                 self.sys_tdp = False
             tdp_reset = True
             notify_tdp = True
+            self.old_mode = mode
         conf["tdp.lenovo.tdp.mode"] = new_mode
 
         # Reset fan curve on mode change
