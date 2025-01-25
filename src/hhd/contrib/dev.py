@@ -91,7 +91,7 @@ def evdev(dev: str | None):
 
             evstr = (
                 f"{ev.timestamp() - ofs:7.3f}s /"
-                + f" {getattr(ecodes, "EV")[ev.type]:>6s} ({ev.type:02x}) /"
+                + f" {getattr(ecodes, 'EV')[ev.type]:>6s} ({ev.type:02x}) /"
                 + f" {RV(ev.type, ev.code):>21s} (x{ev.code:03x}):"
             )
 
