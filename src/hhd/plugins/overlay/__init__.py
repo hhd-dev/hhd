@@ -17,9 +17,10 @@ logger = logging.getLogger(__name__)
 
 SHORTCUT_RELOAD_DELAY = 2
 
+HHD_OVERLAY_DISABLE = os.environ.get("HHD_OVERLAY_DISABLE", "0") == "1"
 FORCE_GAME = os.environ.get("HHD_FORCE_GAME_ID", None)
-SUPPORTS_HALVING = os.environ.get("HHD_GS_STEAMUI_HALFHZ", False)
-SUPPORTS_DPMS = os.environ.get("HHD_GS_DPMS", False)
+SUPPORTS_HALVING = os.environ.get("HHD_GS_STEAMUI_HALFHZ", "0") == "1"
+SUPPORTS_DPMS = os.environ.get("HHD_GS_DPMS", "0") == "1"
 
 
 def load_steam_games(ctx: Context, emit, burnt_ids: set):
@@ -353,6 +354,9 @@ class OverlayPlugin(HHDPlugin):
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
+    if HHD_OVERLAY_DISABLE:
+        return []
+
     if len(existing):
         return existing
 
