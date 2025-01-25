@@ -41,6 +41,7 @@ class LenovoDriverPlugin(HHDPlugin):
         self.enforce_limits = True
         self.startup = True
         self.old_conf = None
+        self.old_mode = None
         self.prev_charge_limit = None
         self.sys_tdp = False
         self.fan_curve_set = False
@@ -190,7 +191,8 @@ class LenovoDriverPlugin(HHDPlugin):
             conf["tdp.lenovo.tdp.mode"] = mode
         else:
             mode = conf["tdp.lenovo.tdp.mode"].to(str)
-        if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
+        if mode is not None and mode != self.old_mode:
+            self.old_mode = mode
             set_tdp_mode(cast(TdpMode, mode))
             tdp_reset = True
 
