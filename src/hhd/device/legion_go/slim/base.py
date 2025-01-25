@@ -18,7 +18,7 @@ from .const import (
     GOS_INTERFACE_BTN_ESSENTIALS,
     GOS_INTERFACE_BTN_MAP,
 )
-from .hid import LegionHidraw, LegionHidrawTs, RgbCallback
+from .hid import LegionHidraw, LegionHidrawTs, rgb_callback
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.5
@@ -267,7 +267,7 @@ def controller_loop_xinput(
         usage=[0x0001],
         report_size=64,
         interface=3,
-        callback=RgbCallback(),
+        callback=rgb_callback,
         required=True,
     ).with_settings(reset=reset)
 

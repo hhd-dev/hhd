@@ -1,5 +1,4 @@
 from threading import Event, Thread
-from typing import Any, Sequence
 
 from hhd.plugins import (
     Config,
@@ -8,12 +7,8 @@ from hhd.plugins import (
     HHDPlugin,
     load_relative_yaml,
     get_outputs_config,
-    get_touchpad_config,
-    get_gyro_state,
-    get_gyro_config,
 )
 from hhd.plugins.settings import HHDSettings
-from hhd.controller.physical.imu import BMI_MAPPINGS
 
 
 class LegionGoSControllerPlugin(HHDPlugin):

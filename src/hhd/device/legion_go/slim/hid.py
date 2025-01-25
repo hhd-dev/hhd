@@ -123,6 +123,7 @@ def rgb_multi_load_settings(
 class RgbCallback:
     def __init__(self) -> None:
         self.prev_mode = None
+        self.prev_event = None
 
     def __call__(self, dev: Device, events: Sequence[Event]):
         try:
@@ -149,7 +150,20 @@ class RgbCallback:
                         mode = "spiral"
                     case _:
                         pass
-
+                
+                # On rgb modes such as the rainbow vomit, reiniting causes
+                # a flicker, so we only update if the values have changed
+                if self.prev_event:
+                    pv = self.prev_event
+                    if (
+                        pv["mode"] == ev["mode"]
+                        and pv["red"] == ev["red"]
+                        and pv["green"] == ev["green"]
+                        and pv["blue"] == ev["blue"]
+                        and pv["brightness"] == ev["brightness"]
+                        and pv["speed"] == ev["speed"]
+                    ):
+                        continue
                 if mode:
                     reps = rgb_multi_load_settings(
                         mode,
@@ -161,6 +175,8 @@ class RgbCallback:
                         ev["speed"],
                         self.prev_mode != mode,
                     )
+                    self.prev_event = ev
+
                     # Only init sparingly, to speed up execution
                     self.prev_mode = mode
                 else:
@@ -171,6 +187,7 @@ class RgbCallback:
         except Exception as e:
             logger.error(f"Error while setting RGB:\n{e}")
 
+rgb_callback = RgbCallback()
 
 class LegionHidraw(GenericGamepadHidraw):
     def with_settings(
