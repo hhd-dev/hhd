@@ -81,7 +81,7 @@ CONFS = {
     "ONEXPLAYER F1L": OXP_F1_CONF,
     "ONEXPLAYER F1 OLED": OXP_F1_CONF,
     "ONEXPLAYER F1Pro": OXP_F1_CONF,
-    "ONEXPLAYER F1 EVA-02": OXP_F1_CONF, # F1Pro variant
+    "ONEXPLAYER F1 EVA-02": OXP_F1_CONF,  # F1Pro variant
     # OXP 2
     "ONEXPLAYER 2": OXP_2_CONF,
     "ONEXPLAYER 2 ARP23": OXP_2_CONF,
@@ -98,6 +98,14 @@ CONFS = {
         "protocol": "hid_v1",
     },
     "ONEXPLAYER X1 A": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER X1 (AMD)",
+        "x1": True,
+        "rgb_secondary": True,
+        "mapping": X1_MAPPING,
+        "protocol": "serial",
+    },
+    "ONEXPLAYER X1Pro": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER X1 (AMD)",
         "x1": True,
