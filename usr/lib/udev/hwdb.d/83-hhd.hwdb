@@ -19,10 +19,11 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
   KEYBOARD_KEY_66=f15
   KEYBOARD_KEY_67=f16
 
-# MSI Claw
+# MSI Claw, MSI Claw 8
 # From systemd / by ChimeraOS team
 # Systemd will have it by default in the future. Until then, have it here.
 # From then on, have it as a reference.
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClawA1M:*
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClaw8AI+A2VM:*
   KEYBOARD_KEY_b9=f15     # Right Face Button
   KEYBOARD_KEY_ba=f16     # Left Face Button
