@@ -214,7 +214,7 @@ def loop_manage_overlay(
                 s = wake_handler()
                 if s == "entry":
                     set_dpms(disp, True)
-                    standby_transition("sleep")
+                    standby_transition("screen_off")
                     dpms_time = start
                     logger.info("Enabling gamescope DPMS.")
                     wake_handler.inhibit(False)
