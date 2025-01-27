@@ -70,6 +70,12 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         "Pocket Go",
         type="only_press",
     ),
+    PBC(
+        "MSI Claw 8",
+        "Claw 8 AI+ A2VM",
+        type="only_press",
+        phys=["LNXPWRBN"],
+    ),
 ]
 
 

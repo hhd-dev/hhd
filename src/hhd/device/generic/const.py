@@ -175,6 +175,15 @@ CONFS = {
         "type": "claw",
         "display_gyro": False,
     },
+    # MSI Claw 8
+    "Claw 8 AI+ A2VM": {
+        "name": "MSI Claw 8",
+        "extra_buttons": "none",
+        "btn_mapping": MSI_CLAW_MAPPINGS,
+        "claw": True,
+        "type": "claw",
+        "display_gyro": False,
+    },
     # TECNO
     "Pocket Go": {
         "name": "TECNO (Displayless)",
