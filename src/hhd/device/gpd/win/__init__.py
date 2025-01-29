@@ -43,7 +43,7 @@ GPD_CONFS = {
     "G1617-02": {
         "name": "GPD Win Mini (2025)",
         "touchpad": True,
-        "wincontrols": True,
+        "wincontrols": False,
     },
     "G1619-04": {
         "name": "GPD Win Max 2 (04)",

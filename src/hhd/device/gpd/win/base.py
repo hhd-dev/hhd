@@ -30,8 +30,9 @@ LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
-GPD_WIN_4_VID = 0x2F24
-GPD_WIN_4_PID = 0x0135
+GPD_WIN_VID = 0x2F24
+# 2025 Win mini has a new ID
+GPD_WIN_PIDS = [0x0135, 0x0137]
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
@@ -247,8 +248,8 @@ def controller_loop(
 
     # Vendor
     d_kbd_1 = BackbuttonsEvdev(
-        vid=[GPD_WIN_4_VID],
-        pid=[GPD_WIN_4_PID],
+        vid=[GPD_WIN_VID],
+        pid=GPD_WIN_PIDS,
         capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
         required=True,
         grab=True,
