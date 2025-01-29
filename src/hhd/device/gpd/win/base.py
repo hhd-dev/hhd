@@ -30,14 +30,17 @@ LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
-GPD_WIN_VID = 0x2F24
-# 2025 Win mini has a new ID
-GPD_WIN_PIDS = [0x0135, 0x0137]
+# Old devices were 2f24:0135
+# New 2025 Win mini uses 045e:002d
+GPD_WIN_VIDS = [0x2F24, 0x045e]
+GPD_WIN_PIDS = [0x0135, 0x002d]
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
+# Win Max 2
 TOUCHPAD_VID = 0x093A
 TOUCHPAD_PID = 0x0255
+# Win Minis
 TOUCHPAD_VID_2 = 0x0911
 TOUCHPAD_PID_2 = 0x5288
 
