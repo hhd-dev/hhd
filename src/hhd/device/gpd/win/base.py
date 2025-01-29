@@ -251,7 +251,7 @@ def controller_loop(
 
     # Vendor
     d_kbd_1 = BackbuttonsEvdev(
-        vid=[GPD_WIN_VID],
+        vid=GPD_WIN_VIDS,
         pid=GPD_WIN_PIDS,
         capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
         required=True,
