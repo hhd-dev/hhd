@@ -65,6 +65,7 @@ def standby_transition(state: str):
             return
 
         with open("/sys/power/standby", "w") as f:
+            logger.info(f"Setting standby state to '{state}'.")
             f.write(state)
     except Exception as e:
         logger.error(f"Failed to set standby state to {state}:\n{e}")
@@ -214,7 +215,7 @@ def loop_manage_overlay(
                 s = wake_handler()
                 if s == "entry":
                     set_dpms(disp, True)
-                    standby_transition("screen_off")
+                    standby_transition("sleep")
                     dpms_time = start
                     logger.info("Enabling gamescope DPMS.")
                     wake_handler.inhibit(False)
