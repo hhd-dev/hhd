@@ -47,8 +47,8 @@ class LenovoDriverPlugin(HHDPlugin):
         self.fan_curve_set = False
         self.legion_s = legion_s
         if legion_s:
-            self.max_watts = 33
-            self.max_watts_sppt = 33
+            self.max_watts = 30 # 33W
+            self.max_watts_sppt = 30 # 33W
             self.max_watts_fppt = 35
         else:
             self.max_watts = 30
@@ -89,7 +89,7 @@ class LenovoDriverPlugin(HHDPlugin):
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"]["children"][
                 "tdp"
             ]["max"] = self.max_watts
-        if self.max_watts > 30:
+        if self.legion_s:
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"][
                 "unit"
             ] = f"→ {self.max_watts}W"
@@ -202,7 +202,8 @@ class LenovoDriverPlugin(HHDPlugin):
             if not new_tdp:
                 self.sys_tdp = False
             tdp_reset = True
-            notify_tdp = True
+            if self.old_mode is not None:
+                notify_tdp = True
             self.old_mode = mode
         conf["tdp.lenovo.tdp.mode"] = new_mode
 
