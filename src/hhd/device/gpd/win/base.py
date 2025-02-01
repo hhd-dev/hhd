@@ -188,8 +188,7 @@ def plugin_run(
                 LONGER_ERROR_DELAY if repeated_fail and failed_fast else ERROR_DELAY
             )
             repeated_fail = failed_fast
-            logger.error(f"Received the following error:\n{type(e)}: {e}")
-            logger.error(
+            logger.exception(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
             # Raise exception
