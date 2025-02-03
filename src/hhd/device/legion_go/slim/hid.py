@@ -180,7 +180,7 @@ class RgbCallback:
                     # Only init sparingly, to speed up execution
                     self.prev_mode = mode
                 else:
-                    reps = rgb_enable(False)
+                    reps = [rgb_enable(False)]
 
                 for r in reps:
                     dev.write(r)
