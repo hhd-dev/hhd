@@ -508,6 +508,9 @@ class AsusDriverPlugin(HHDPlugin):
                     f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds."
                 )
                 self.queue_tdp = time.time() + SLEEP_DELAY
+            elif ev["type"] == "acpi" and ev["event"] in ("ac", "dc") and not self.queue_tdp:
+                logger.info(f"Power adapter status switched to '{ev['event']}', resetting TDP.")
+                self.queue_tdp = time.time() + APPLY_DELAY
             elif self.cycle_tdp and ev["type"] == "special" and ev["event"] == "xbox_y":
                 match self.mode:
                     case "quiet":
