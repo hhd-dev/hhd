@@ -68,9 +68,14 @@ msgid "English"
 msgstr "Inglês"
 
 #. Setting: Language
-#. Option: zh
-msgid "Chinese"
-msgstr "Chinês"
+#. Option: zh_CN
+msgid "Simplified Chinese"
+msgstr "Chinês Simplificado"
+
+#. Setting: Language
+#. Option: zh_TW
+msgid "Traditional Chinese"
+msgstr "Chinês Tradicional"
 
 #. Setting: Language
 #. Option: pt

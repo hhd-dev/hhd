@@ -9,17 +9,17 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-10-19 09:26+0200\n"
 "PO-Revision-Date: 2024-04-08 19:00+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Alex <aliceric27@gmail.com>\n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
-msgstr ""
+msgstr "使用下面的按钮禁用 Decky TDP 插件以继续。"
 
 #. Setting: TDP Controls
 #. Field: title
@@ -70,8 +70,9 @@ msgid ""
 "restarts Decky. This might cause Steam to restart. Move them back and "
 "reboot to re-enable."
 msgstr ""
-"通过将其从 ~/homebrew/plugins 移动到 ~/homebrew/plugins/hhd-disabled 来禁用 Decky TDP 插件 "
-"(Powercontrol, SimpleDeckyTDP)。然后, 重新启动 Decky。这可能会导致 Steam 重新启动。将它们移回并重新启动以重新启用。"
+"通过将其从 ~/homebrew/plugins 移动到 ~/homebrew/plugins/hhd-disabled 来禁用 Decky "
+"TDP 插件 (Powercontrol, SimpleDeckyTDP)。然后, 重新启动 Decky。这可能会导致 Steam "
+"重新启动。将它们移回并重新启动以重新启用。"
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -95,8 +96,7 @@ msgstr "添加 TDP 到 /sys 以供 Steam 使用 (需要重新启动)"
 msgid ""
 "Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the"
 " TDP slider in Steam."
-msgstr ""
-"使用 FUSE 挂载将 TDP 属性添加到 /sys/class/drm。这可以修复 Steam 中的 TDP 滑块。"
+msgstr "使用 FUSE 挂载将 TDP 属性添加到 /sys/class/drm。这可以修复 Steam 中的 TDP 滑块。"
 
 #. Setting: Enforce Device TDP Limits
 #. Field: title
@@ -141,8 +141,8 @@ msgid ""
 "low TDPs, the CPU will be tuned down and at other TDPs, it will use "
 "balanced settings."
 msgstr ""
-"Handheld Daemon 将管理能源管理设置。这包括 CPU 调度程序、CPU boost、GPU 频率和 CPU 功率偏好。"
-"在低 TDP 下, CPU 将被调整, 在其他 TDP 下, 它将使用平衡设置。"
+"Handheld Daemon 将管理能源管理设置。这包括 CPU 调度程序、CPU boost、GPU 频率和 CPU 功率偏好。在低 TDP "
+"下, CPU 将被调整, 在其他 TDP 下, 它将使用平衡设置。"
 
 #. Setting: Manual
 #. Field: title
@@ -157,7 +157,7 @@ msgstr "允许您手动设置能源管理设置。"
 #. Setting: CPU Power (EPP)
 #. Field: title
 msgid "CPU Power (EPP)"
-msgstr ""
+msgstr "CPU电源(EPP)"
 
 #. Setting: CPU Power (EPP)
 #. Field: hint
@@ -173,7 +173,7 @@ msgstr ""
 #. Setting: CPU Power (EPP)
 #. Option: power
 msgid "Low"
-msgstr ""
+msgstr "低"
 
 #. Setting: CPU Power (EPP)
 #. Option: balance_power
@@ -189,7 +189,7 @@ msgstr "均衡"
 #. Setting: CPU Power (EPP)
 #. Option: balance_performance
 msgid "High"
-msgstr ""
+msgstr "高"
 
 #. Setting: CPU Minimum Frequency
 #. Field: title
@@ -202,9 +202,7 @@ msgid ""
 "Sets the minimum frequency for the CPU. Using 400MHz will save battery in"
 " light games. However, the delay of increasing the frequency may cause "
 "minor stutters, especially in VRR displays."
-msgstr ""
-"设置 CPU 的最小频率。在轻量级游戏中使用 400MHz 可以节省电池。然而, 增加频率的延迟可能会导致轻微的卡顿, "
-"尤其是在 VRR 显示器上。"
+msgstr "设置 CPU 的最小频率。在轻量级游戏中使用 400MHz 可以节省电池。然而, 增加频率的延迟可能会导致轻微的卡顿, 尤其是在 VRR 显示器上。"
 
 #. Setting: CPU Minimum Frequency
 #. Option: min
@@ -219,15 +217,14 @@ msgstr ""
 #. Setting: CPU Boost
 #. Field: title
 msgid "CPU Boost"
-msgstr ""
+msgstr "CPU 加速"
 
 #. Setting: CPU Boost
 #. Field: hint
 msgid ""
 "Enables or disables the CPU boost frequencies. Disabling lowers total "
 "consumption by 2W with  minimal performance impact."
-msgstr ""
-"启用或禁用 CPU boost 频率。禁用可以将总消耗降低 2W, 对性能影响很小。"
+msgstr "启用或禁用 CPU boost 频率。禁用可以将总消耗降低 2W, 对性能影响很小。"
 
 #. Setting: CPU Boost
 #. Option: disabled
@@ -254,8 +251,7 @@ msgstr "自定义调度"
 msgid ""
 "Allows attaching a scheduler to the kernel sched_ext. Schedulers need to "
 "be installed and kernel needs to support sched_ext."
-msgstr ""
-"允许将调度程序附加到内核 sched_ext。调度程序需要安装, 内核需要支持 sched_ext。"
+msgstr "允许将调度程序附加到内核 sched_ext。调度程序需要安装, 内核需要支持 sched_ext。"
 
 #. Setting: Custom Scheduler
 #. Option: scx_lavd
@@ -283,9 +279,7 @@ msgstr "GPU 频率"
 msgid ""
 "Pins the GPU to a certain frequency. Helps in certain games that are CPU "
 "or GPU heavy by shifting power to or from the GPU. Has a minor effect."
-msgstr ""
-"将 GPU 固定在某个频率。通过将电源从 GPU 转移或转移至 GPU 来帮助在某些 CPU 或 GPU 负载较重的游戏中。"
-"有轻微的影响。"
+msgstr "将 GPU 固定在某个频率。通过将电源从 GPU 转移或转移至 GPU 来帮助在某些 CPU 或 GPU 负载较重的游戏中。有轻微的影响。"
 
 #. Setting: Auto
 #. Field: hint
@@ -300,8 +294,7 @@ msgstr "最大限制"
 #. Setting: Max Limit
 #. Field: hint
 msgid "Limits the maximum frequency of the GPU."
-msgstr ""
-"限制 GPU 的最大频率。"
+msgstr "限制 GPU 的最大频率。"
 
 #. Setting: Maximum Frequency
 #. Field: title
@@ -360,8 +353,8 @@ msgid ""
 "including Governor, Boost, GPU frequency, and EPP. In addition, Handheld "
 "daemon will launch a PPD service to replace PPD's role in the system. "
 msgstr ""
-"Handheld daemon 将管理系统的电源偏好, 包括调度程序、Boost、GPU 频率和 EPP。"
-"此外, Handheld daemon 将启动一个 PPD 服务来取代系统中 PPD 的角色。"
+"Handheld daemon 将管理系统的电源偏好, 包括调度程序、Boost、GPU 频率和 EPP。此外, Handheld daemon "
+"将启动一个 PPD 服务来取代系统中 PPD 的角色。"
 
 #. Setting: Enable PPD Emulation (KDE/Gnome Power)
 #. Field: title
@@ -425,13 +418,12 @@ msgstr ""
 msgid ""
 "Average TDP Target. TDP Boost is recommended for desktop use and does not"
 " affect gaming."
-msgstr ""
-"平均 TDP 目标。TDP Boost 适用于桌面使用, 不影响游戏。"
+msgstr "平均 TDP 目标。TDP 增强适用于桌面使用, 不影响游戏。"
 
 #. Setting: TDP Boost
 #. Field: title
 msgid "TDP Boost"
-msgstr ""
+msgstr "TDP 增强"
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -456,8 +448,7 @@ msgid ""
 "Allows you to cycle through TDP modes with the View+Y key combination. "
 "Recommended to use with ROG Swap, as the View button will be muted to "
 "games."
-msgstr ""
-"允许您使用 View+Y 组合键在 TDP 模式之间循环。建议与 ROG Swap 一起使用, 因为 View 按钮将被游戏静默。"
+msgstr "允许您使用 View+Y 组合键在 TDP 模式之间循环。建议与 ROG Swap 一起使用, 因为 View 按钮将被游戏静默。"
 
 #. Setting: Custom Fan Curve
 #. Field: title
@@ -551,7 +542,7 @@ msgstr "充电限制 (%)"
 #. Setting: Charge Limit (%)
 #. Field: hint
 msgid "Applies a charge limit to the battery, 75% and up."
-msgstr "对电池应用充电限制, 65% 及以上。"
+msgstr "对电池应用充电限制, 75% 及以上。"
 
 #. Setting: Charge Limit (%)
 #. Option: p70
@@ -586,17 +577,16 @@ msgstr "不限"
 #. Setting: Extreme Standby Mode
 #. Field: title
 msgid "Extreme Standby Mode"
-msgstr ""
+msgstr "极限待机模式"
 
 #. Setting: Extreme Standby Mode
 #. Field: hint
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"Lowers the power consumption of the device from 4%% to 1%% overnight. "
+"Lowers the power consumption of the device from 4% to 1% overnight. "
 "Active only on battery. Turns off the power light and the controller  "
 "requires longer to wake up."
-msgstr ""
-"将设备的功耗从 4% 降低到 1%, 仅在电池模式下有效。关闭电源指示灯, 控制器需要更长时间才能唤醒"
+msgstr "将设备的功耗从 4% 降低到 1%, 仅在电池模式下有效。关闭电源指示灯, 控制器需要更长时间才能唤醒"
 
 #. Setting: Power
 #. Field: title
@@ -615,8 +605,7 @@ msgstr "电源配置"
 msgid ""
 "Allows setting the power profile of the system using Power Profiles "
 "Daemon."
-msgstr ""
-"使用 Power Profiles Daemon 设置系统的电源配置。"
+msgstr "使用 Power Profiles Daemon 设置系统的电源配置。"
 
 #. Setting: Power Profile
 #. Option: power-saver
@@ -633,8 +622,7 @@ msgstr "Steamdeck 超频 (需要重新启动)"
 msgid ""
 "Allows setting the Steam TDP slider from 1-20W instead of 4-15W. "
 "Unchecked, it is still setting TDP to 15W."
-msgstr ""
-"允许将 Steam TDP 滑块设置为 1-20W, 而不是 4-15W。未选中时, 仍将 TDP 设置为 15W。"
+msgstr "允许将 Steam TDP 滑块设置为 1-20W, 而不是 4-15W。未选中时, 仍将 TDP 设置为 15W。"
 
 msgid "Legion L + Y changes TDP Mode"
 msgstr "Legion L + Y 更改 TDP 模式"
@@ -695,8 +683,7 @@ msgstr ""
 msgid ""
 "Lets Legion GO manage the curve on its own. Setting this option will "
 "cause a mode change to reset the fan curve."
-msgstr ""
-"让 Legion GO 自行管理风扇曲线。设置此选项将导致模式更改以重置风扇曲线。"
+msgstr "让 Legion GO 自行管理风扇曲线。设置此选项将导致模式更改以重置风扇曲线。"
 
 #. Setting: 10C
 #. Field: title
@@ -711,7 +698,7 @@ msgstr "20°C"
 #. Setting: Enforce Windows Minimums
 #. Field: title
 msgid "Enforce Windows Minimums"
-msgstr ""
+msgstr "执行Windows最低要求"
 
 #. Setting: Enforce Windows Minimums
 #. Field: hint
@@ -736,12 +723,12 @@ msgstr "将设备充电限制在 80%。联想 EC 方法。自 BIOSv29 起可用�
 #. Setting: Power Light (Awake)
 #. Field: title
 msgid "Power Light (Awake)"
-msgstr ""
+msgstr "电源指示灯(唤醒时)"
 
 #. Setting: Power Light (Sleep)
 #. Field: title
 msgid "Power Light (Sleep)"
-msgstr ""
+msgstr "电源指示灯(睡眠时)"
 
 #. Setting: TDP Settings
 #. Field: title
@@ -822,31 +809,45 @@ msgid ""
 " the actual max TDP value of the device. Then,the Slow TDP limit averages"
 " the last 10-20s of TDP values and keeps the value below it."
 msgstr ""
+"Ryzen 处理器的标准 TDP 参数。所有参数需要设置为"  
+"正确控制设备的 TDP。\n"  
+"Ryzen 处理器有两种模式：STTv2 和 STAPM（传统模式）。AMD 建议"  
+"制造商使用 STTv2，这使得 Legion Go 成为唯一通过 BIOS 设置"  
+"提供 STAPM 选项的设备。\n"  
+"在 STTv2 模式下，设备将持续提升性能，直到设备的 \"表面\""  
+"(用户可接触的最热点) 达到制造商设定的温度。"  
+"然后，设备将使用表面温度 TDP 限制。在 STAPM 模式下，设备"  
+"会平均过去 1-3 分钟的 TDP 值，并保持该值低于 STAPM TDP 限制。"  
+"任一模式都会忽略另一模式的限制（STAPM 限制在 STT 上无效，"  
+"表面温度限制在 STAPM 上无效），因此两者都应该设置。\n"  
+"快速和慢速限制控制提升行为。快速 TDP 限制是设备的实际最大"  
+"TDP 值。然后，慢速 TDP 限制会平均过去 10-20 秒的 TDP 值，并"  
+"保持该值低于此限制。"
 
 #. Setting: Fast TDP Limit
 #. Field: title
 msgid "Fast TDP Limit"
-msgstr ""
+msgstr "快速TDP限制"
 
 #. Setting: Slow TDP Limit
 #. Field: title
 msgid "Slow TDP Limit"
-msgstr ""
+msgstr "慢速TDP限制"
 
 #. Setting: Skin Temp TDP Limit
 #. Field: title
 msgid "Skin Temp TDP Limit"
-msgstr ""
+msgstr "表面热点TDP限制"
 
 #. Setting: STAPM TDP Limit
 #. Field: title
 msgid "STAPM TDP Limit"
-msgstr ""
+msgstr "STAPM TDP限制"
 
 #. Setting: Advanced Parameters
 #. Field: title
 msgid "Advanced Parameters"
-msgstr ""
+msgstr "高级参数"
 
 #. Setting: Advanced Parameters
 #. Field: hint
@@ -863,21 +864,28 @@ msgid ""
 "TDP values the CPU will average to calculate its current Slow and STAPM  "
 "TDP values."
 msgstr ""
+"下面的高级参数控制提升行为，需要根据每个设备的冷却系统进行调整。"  
+"它们主要影响提升行为，这对台式机使用很重要。\n"  
+"例外是温度目标 (TCTL)，它控制 CPU 内核的最高温度。在大多数设备上，"  
+"它可以安全地提高到 100°C。但是，如果温度突然上升到 105°C，"  
+"它将进入热保护模式，功耗降至 5W，持续几分钟。\n"  
+"慢速 TDP 和 STAPM 的积分时间影响 CPU 将平均多少个先前的 TDP 值"  
+"来计算其当前的慢速和 STAPM TDP 值。"  
 
 #. Setting: Temp Target (TCTL)
 #. Field: title
 msgid "Temp Target (TCTL)"
-msgstr ""
+msgstr "温度目标 (TCTL)"
 
 #. Setting: Slow Limit Integration Time
 #. Field: title
 msgid "Slow Limit Integration Time"
-msgstr ""
+msgstr "慢速限制积分时间"
 
 #. Setting: STAPM Limit Integration Time
 #. Field: title
 msgid "STAPM Limit Integration Time"
-msgstr ""
+msgstr "STAPM 限制积分时间"
 
 #. Setting: Enable Advanced Parameters
 #. Field: title
