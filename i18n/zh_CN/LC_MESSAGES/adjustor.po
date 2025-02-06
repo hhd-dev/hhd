@@ -717,7 +717,7 @@ msgstr "重置为 BIOS V28 中由联想提供的原始风扇曲线。"
 #. Setting: Show TDP changes with RGB
 #. Field: title
 msgid "Show TDP changes with RGB"
-msgstr ""
+msgstr "使用RGB显示TDP状态"
 
 #. Setting: Charge Limit (80%)
 #. Field: title
@@ -727,7 +727,7 @@ msgstr "充电限制 (80%)"
 #. Setting: Charge Limit (80%)
 #. Field: hint
 msgid "Limits device charging to 80%."
-msgstr ""
+msgstr "限制充电80%"
 
 #. Setting: Power Light (Awake)
 #. Field: title
@@ -757,11 +757,15 @@ msgid ""
 "responds faster and prevents throttling. Edge is the temperature of the "
 "chip: responds slower and prevents overheating."
 msgstr ""
+"允许您设置自定义风扇曲线并选择温度探头 "  
+"(边缘或接点)。接点是芯片的峰值温度： "  
+"响应更快并防止降频。边缘是芯片的温度： "  
+"响应较慢并防止过热。"  
 
 #. Setting: Manual (Edge, Smooth)
 #. Field: title
 msgid "Manual (Edge, Smooth)"
-msgstr ""
+msgstr "手动 (边缘, 平滑)"
 
 #. Setting: Reset to Default
 #. Field: title
@@ -772,7 +776,7 @@ msgstr "恢复默认"
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
 msgid "Manual (Tctl, Fast)"
-msgstr ""
+msgstr "手动（Tctl，快速）"
 
 #. Setting: Advanced Configurator
 #. Field: title
