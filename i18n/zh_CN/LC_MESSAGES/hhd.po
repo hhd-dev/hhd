@@ -9,14 +9,14 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2024-10-19 09:26+0200\n"
 "PO-Revision-Date: 2024-02-07 17:27+0100\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Alex <aliceric27@gmail.com>\n"
 "Language: zh_Hans_CN\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: system
 #. Setting: Language
@@ -72,14 +72,19 @@ msgid "English"
 msgstr ""
 
 #. Setting: Language
-#. Option: zh
-msgid "Chinese"
-msgstr "中文"
+#. Option: zh_CN
+msgid "Simplified Chinese"
+msgstr "简体中文"
+
+#. Setting: Language
+#. Option: zh_TW
+msgid "Traditional Chinese"
+msgstr "繁體中文"
 
 #. Setting: Language
 #. Option: pt
 msgid "Portugese"
-msgstr ""
+msgstr "Português"
 
 #. Setting: Theme
 #. Field: title
@@ -338,12 +343,12 @@ msgstr "背键"
 #. Setting: L4/R4 Mapping
 #. Option: l4
 msgid "L4 is QAM"
-msgstr ""
+msgstr "L4是快捷菜单建"
 
 #. Setting: L4/R4 Mapping
 #. Option: r4
 msgid "R4 is QAM"
-msgstr ""
+msgstr "R4是快捷菜单建"
 
 #. Setting: Legion Controllers
 #. Field: title
@@ -395,6 +400,8 @@ msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
 msgstr ""
+"主控制器使用右侧控制器的运动传感器， "
+"并为左侧控制器的运动传感器创建了一个辅助控制器。"
 
 #. Setting: Swap Legion with Menu/View
 #. Field: title
@@ -663,8 +670,7 @@ msgstr "震动强度"
 msgid ""
 "Intensity of the vibration. The higher the value, the stronger the "
 "vibration."
-msgstr ""
-"震动强度。值越高, 震动越强"
+msgstr "震动强度。值越高, 震动越强"
 
 #. Setting: Left Stick Minimum
 #. Field: title
@@ -679,8 +685,7 @@ msgstr "左摇杆最小值"
 msgid ""
 "Deadzone for the joystick. The higher the value, the more the joystick "
 "needs to be moved before registering."
-msgstr ""
-"摇杆死区。值越高, 摇杆需要移动的距离越大才能激活"
+msgstr "摇杆死区。值越高, 摇杆需要移动的距离越大才能激活"
 
 #. Setting: Left Stick Maximum
 #. Field: title
@@ -695,8 +700,7 @@ msgstr "左摇杆最大值"
 msgid ""
 "Maximum value for joystick. The higher the value, the more the joystick "
 "needs to be moved before reaching maximum."
-msgstr ""
-"摇杆最大值。值越高, 摇杆需要移动的距离越大才能达到最大值"
+msgstr "摇杆最大值。值越高, 摇杆需要移动的距离越大才能达到最大值"
 
 #. Setting: Right Stick Minimum
 #. Field: title
@@ -748,8 +752,7 @@ msgstr "隐藏"
 msgid ""
 "Disables the controller. Handheld Daemon overlay will still work in "
 "gamemode."
-msgstr ""
-"禁用控制器。Handheld Daemon 叠加仍然可以在游戏模式下工作"
+msgstr "禁用控制器。Handheld Daemon 叠加仍然可以在游戏模式下工作"
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
@@ -761,8 +764,7 @@ msgstr "额外按钮作为键盘/叠加快捷键"
 msgid ""
 "Makes the left paddle bring up a keyboard and the right paddle bring up "
 "the overlay."
-msgstr ""
-"左背键弹出键盘, 右背键弹出叠加层"
+msgstr "左背键弹出键盘, 右背键弹出叠加层"
 
 #. Setting: Xbox
 #. Field: title
@@ -779,8 +781,7 @@ msgstr "额外按钮作为"
 msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be set for Steam Input."
-msgstr ""
-"更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为 Steam 输入"
+msgstr "更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为 Steam 输入"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -838,9 +839,7 @@ msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be left/right touchpad clicks. For the "
 "legion go, top buttons are shortcuts, bottom are touchpad clicks."
-msgstr ""
-"更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为左/右触摸板模拟。"
-"对于 Legion Go, 顶部按钮是快捷键, 底部是触摸板模拟"
+msgstr "更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为左/右触摸板模拟。对于 Legion Go, 顶部按钮是快捷键, 底部是触摸板模拟"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -918,7 +917,7 @@ msgstr ""
 #. Setting: Paused
 #. Field: title
 msgid "Paused"
-msgstr ""
+msgstr "暂停"
 
 #. Setting: Touchpad Emulation
 #. Field: title
@@ -930,7 +929,9 @@ msgstr "触摸板模拟"
 msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
-msgstr "模拟一个触摸板。如果当前模拟控制器本身支持触摸板 (例如 Dualsense), 则将映射成目标设备自带触摸板, 否则会模拟成一个独立的虚拟触摸板设备"
+msgstr ""
+"模拟一个触摸板。如果当前模拟控制器本身支持触摸板 (例如 Dualsense), 则将映射成目标设备自带触摸板, "
+"否则会模拟成一个独立的虚拟触摸板设备"
 
 #. Setting: Disabled
 #. Field: hint
@@ -1028,6 +1029,13 @@ msgid ""
 "left and half of the right is right. \"Stretch\" stretches the touchpad "
 "to the whole dualsense surface."
 msgstr ""
+"控制实际触控板与虚拟触控板的放置，使用"  
+"Steam 所期望的方式。在 Steam 中，\"左\" 触控板映射到左半边，"  
+"\"右\" 触控板映射到右半边，而 \"中心\" 映射到整个触控板。"  
+"因此，虚拟触控板在左侧被裁剪为左侧，右侧被裁剪为右侧，"  
+"在中心扩展为中心。这意味着当设置为中心时，左触控板的一半"  
+"是左侧，右触控板的一半是右侧。\"拉伸\" 将触控板拉伸到整个"  
+"双感应表面。"  
 
 #. Setting: Location
 #. Option: right
@@ -1059,7 +1067,8 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"将短触摸 (小于 0.2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; 请在桌面触摸板设置中启用\"轻触点击\")"
+"将短触摸 (小于 0.2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; "
+"请在桌面触摸板设置中启用\"轻触点击\")"
 
 #. Setting: Hold Action
 #. Field: hint
@@ -1069,7 +1078,8 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"将长触摸 (大于 2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; 请在桌面触摸板设置中启用\"轻触点击\")"
+"将长触摸 (大于 2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; "
+"请在桌面触摸板设置中启用\"轻触点击\")"
 
 #. Setting: System
 #. Field: hint
@@ -1077,6 +1087,7 @@ msgid ""
 "Basic display settings. Brightness (and framerate TBD). This pane is "
 "meant to replace "
 msgstr ""
+"基本显示设置。亮度（和帧率待定）。此面板旨在替代"
 
 #. Setting: Brightness
 #. Field: title
@@ -1088,8 +1099,7 @@ msgstr "亮度"
 msgid ""
 "Sets the brightness level of a display. Only one display is supported and"
 " it is the one that was read."
-msgstr ""
-"设置显示器的亮度级别。仅支持一个显示器, 并且是读取的显示器"
+msgstr "设置显示器的亮度级别。仅支持一个显示器, 并且是读取的显示器"
 
 #. Setting: Shortcut Support + Side Button double/triple press (Requires
 #. Restart)
