@@ -442,7 +442,7 @@ msgstr " "
 #. Setting: Change TDP with View+Y
 #. Field: title
 msgid "Change TDP with View+Y"
-msgstr "使用 View+Y鍵 更改 TDP"
+msgstr "使用 View + Y 鍵更改 TDP"
 
 #. Setting: Change TDP with View+Y
 #. Field: hint
@@ -450,7 +450,7 @@ msgid ""
 "Allows you to cycle through TDP modes with the View+Y key combination. "
 "Recommended to use with ROG Swap, as the View button will be muted to "
 "games."
-msgstr "允許你使用 View+Y 組合鍵在 TDP 模式之間循環。建議與 ROG Swap 一起使用, 因為 View 鍵將因遊戲而無效。"
+msgstr "允許你使用 View + Y 組合鍵在 TDP 模式之間循環。建議與 ROG Swap 一起使用, 因為 View 鍵將因遊戲而無效。"
 
 #. Setting: Custom Fan Curve
 #. Field: title
@@ -719,7 +719,7 @@ msgstr "重置為 BIOS V28 中由聯想提供的原始風扇曲線。"
 #. Setting: Show TDP changes with RGB
 #. Field: title
 msgid "Show TDP changes with RGB"
-msgstr ""
+msgstr "使用 RGB 顯示 TDP 狀態"
 
 #. Setting: Charge Limit (80%)
 #. Field: title
@@ -729,7 +729,7 @@ msgstr "充電限制 (80%)"
 #. Setting: Charge Limit (80%)
 #. Field: hint
 msgid "Limits device charging to 80%."
-msgstr ""
+msgstr "限制設備充電至80%"
 
 #. Setting: Power Light (Awake)
 #. Field: title
@@ -759,11 +759,13 @@ msgid ""
 "responds faster and prevents throttling. Edge is the temperature of the "
 "chip: responds slower and prevents overheating."
 msgstr ""
-
+"允許您設置自定義風扇曲線並選擇溫度點（邊緣或接合點）。"
+"溫度點是芯片的最高溫度：反應更快並防止降頻。"
+"邊緣是芯片的溫度：反應較慢並防止過熱。"
 #. Setting: Manual (Edge, Smooth)
 #. Field: title
 msgid "Manual (Edge, Smooth)"
-msgstr ""
+msgstr "手動 (邊緣, 平滑)"
 
 #. Setting: Reset to Default
 #. Field: title
@@ -774,7 +776,7 @@ msgstr "恢復預設"
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
 msgid "Manual (Tctl, Fast)"
-msgstr ""
+msgstr "手動 (Tctl, 快速)"
 
 #. Setting: Advanced Configurator
 #. Field: title

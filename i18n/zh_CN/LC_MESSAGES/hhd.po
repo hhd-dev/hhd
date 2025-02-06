@@ -289,7 +289,7 @@ msgstr "体感采样率"
 #. Setting: Motion Hz
 #. Field: hint
 msgid "Sets the sampling frequency for the IMU."
-msgstr ""
+msgstr "设置IMU的采样频率"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
@@ -335,8 +335,10 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-
-#. Setting: Menu/L4/R4 Mapping
+"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 HHD）。如果 "
+"禁用，它们将作为键盘按钮。菜单/L4/R4 可以是组合键：菜单是 "
+"单擊呼出快速選單鍵(QAM)，双擊呼出HHD，长按則為Xbox。L4/R4 是单呼出快速選單鍵(QAM)，长按 "
+"HHD（原始）。"
 #. Option: disabled
 #. Setting: Start/Select do SteamOS Combos
 #. Setting: Disabled
@@ -362,29 +364,29 @@ msgstr "禁用"
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
 msgid "Paddles, no Combo"
-msgstr ""
+msgstr "背键无组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
 msgid "Menu is Combo"
-msgstr ""
+msgstr "菜单是组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
 #, fuzzy
 msgid "L4 is Combo"
-msgstr "L4是快捷菜单建"
+msgstr "L4是組合建"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
 #, fuzzy
 msgid "R4 is Combo"
-msgstr "R4是快捷菜单建"
+msgstr "R4是是組合建"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: title
 msgid "Start/Select do SteamOS Combos"
-msgstr ""
+msgstr "Start/Select 键作为 SteamOS 组合键"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: hint
@@ -393,6 +395,8 @@ msgid ""
 "the Xbox button, which allows doing SteamOS combos (Select+RT is "
 "screenshot)."
 msgstr ""
+"按住 Select 或 Start 时，如果按下另一个按钮，它们将变为 Xbox 按钮，"
+"允许执行 SteamOS 组合（Select+RT 是屏幕截图）。"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
@@ -408,7 +412,7 @@ msgstr ""
 #. Setting: WinControls
 #. Field: hint
 msgid "Specialized settings for GPD devices."
-msgstr ""
+msgstr "GPD 设备的专门设置"
 
 #. Setting: RGB Mode
 #. Field: title
@@ -465,7 +469,7 @@ msgstr "循环显示不同颜色"
 #. Setting: Mouse Mode Mapping
 #. Field: title
 msgid "Mouse Mode Mapping"
-msgstr ""
+msgstr "鼠标模式映射"
 
 #. Setting: Mouse Mode Mapping
 #. Option: unchanged
@@ -474,32 +478,32 @@ msgstr ""
 #. Setting: Do not change
 #. Field: title
 msgid "Do not change"
-msgstr ""
+msgstr "不更改"
 
 #. Setting: Mouse Mode Mapping
 #. Option: mouse
 msgid "GPD Mouse Mode"
-msgstr ""
+msgstr "GPD 鼠标模式"
 
 #. Setting: Mouse Mode Mapping
 #. Option: wasd
 msgid "For Games"
-msgstr ""
+msgstr "於游戏時"
 
 #. Setting: Mouse Mode Triggers
 #. Field: title
 msgid "Mouse Mode Triggers"
-msgstr ""
+msgstr "鼠标模式触发键"
 
 #. Setting: Mouse Mode Triggers
 #. Option: gpd
 msgid "GPD (RT is Fast Mouse)"
-msgstr ""
+msgstr "GPD (RT 为快速鼠标)"
 
 #. Setting: Mouse Mode Triggers
 #. Option: steamos
 msgid "SteamOS (LT/RT are R/L Clicks)"
-msgstr ""
+msgstr "SteamOS (LT/RT 為 R/L 点击)"
 
 #. Setting: L4/R4 Mapping
 #. Field: title
@@ -509,12 +513,12 @@ msgstr "L4/R4 映射"
 #. Setting: L4/R4 Mapping
 #. Option: hhd
 msgid "For HHD (F20/F21)"
-msgstr ""
+msgstr "於 HHD (F20/F21)"
 
 #. Setting: L4/R4 Mapping
 #. Option: default
 msgid "Default (Pause/PrntScr)"
-msgstr ""
+msgstr "默认（暂停/PrntScr）"
 
 #. Setting: Deadzones
 #. Field: title
@@ -525,17 +529,17 @@ msgstr "死区和震动"
 #. Setting: Do not change
 #. Field: hint
 msgid "Do not change the deadzones."
-msgstr ""
+msgstr "不改变死区"
 
 #. Setting: Set Deadzones
 #. Field: title
 msgid "Set Deadzones"
-msgstr ""
+msgstr "设置死区"
 
 #. Setting: Set Deadzones
 #. Field: hint
 msgid "Use custom deadzones."
-msgstr ""
+msgstr "使用自定义死区"
 
 #. Setting: Left Stick Center
 #. Field: title
@@ -584,12 +588,12 @@ msgstr "高"
 #. Setting: Firmware
 #. Field: title
 msgid "Firmware"
-msgstr ""
+msgstr "固件"
 
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "错误"
 
 #. Setting: Apply Settings
 #. Field: title
@@ -606,7 +610,7 @@ msgstr "Legion 控制器"
 #. Setting: Legion Controller
 #. Field: hint
 msgid "Configure the Legion Controller emulation modes."
-msgstr ""
+msgstr "配置 Legion 控制器模拟模式"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: title
@@ -638,7 +642,7 @@ msgstr "启用快捷控制器"
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
 msgid "When in dinput mode, enable a controller for shortcuts."
-msgstr ""
+msgstr "在 dinput 模式下, 启用一个控制器用于快捷方式"
 
 #. Setting: Reset Controller
 #. Field: title
@@ -755,7 +759,7 @@ msgstr "Steam 菜单, HHD"
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo_hhd
 msgid "Combo, HHD"
-msgstr ""
+msgstr " Combo, HHD"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo
@@ -1344,13 +1348,13 @@ msgstr ""
 "请在桌面触摸板设置中启用\"轻触点击\")"
 
 msgid "Downloading:"
-msgstr ""
+msgstr "下载中: "
 
 msgid "Importing:"
-msgstr ""
+msgstr "导入中:"
 
 msgid "Deploying:"
-msgstr ""
+msgstr "部署中:"
 
 #, fuzzy
 msgid "Loading"
@@ -1361,34 +1365,34 @@ msgid "No update available"
 msgstr "更新 (稳定版)"
 
 msgid "Rebasing to "
-msgstr ""
+msgstr "重置到 "
 
 msgid "Updating to latest "
-msgstr ""
+msgstr "更新到最新"
 
 msgid "Updating... "
-msgstr ""
+msgstr "更新中... "
 
 msgid "Checking for updates..."
-msgstr ""
+msgstr "检查更新中..."
 
 msgid "Undoing Update..."
-msgstr ""
+msgstr "撤销更新中..."
 
 msgid "Undoing Revert..."
-msgstr ""
+msgstr "撤销还原中..."
 
 msgid "Reverting to Previous version..."
-msgstr ""
+msgstr "还原到上一个版本中..."
 
 msgid "Loading Versions..."
-msgstr ""
+msgstr "加载版本中..."
 
 msgid "Removing Customizations..."
-msgstr ""
+msgstr "移除自定义设置中..."
 
 msgid "Failed to load previous versions"
-msgstr ""
+msgstr "加载上一个版本失败"
 
 #. Setting: System Image
 #. Field: title
@@ -1399,17 +1403,17 @@ msgstr "系统"
 #. Setting: System Image
 #. Field: hint
 msgid "Manage the currently installed image with bootc."
-msgstr ""
+msgstr "使用 bootc 管理当前安装的镜像"
 
 #. Setting: Image
 #. Field: title
 msgid "Image"
-msgstr ""
+msgstr "镜像"
 
 #. Setting: Next
 #. Field: title
 msgid "Next"
-msgstr ""
+msgstr "下一个"
 
 #. Setting: Current
 #. Field: title
@@ -1420,7 +1424,7 @@ msgstr "居中"
 #. Setting: Previous
 #. Field: title
 msgid "Previous"
-msgstr ""
+msgstr "上一个"
 
 #. Setting: Update
 #. Field: title
@@ -1437,67 +1441,67 @@ msgstr "更新 (稳定版)"
 #. Setting: Apply Update
 #. Field: title
 msgid "Apply Update"
-msgstr ""
+msgstr "应用更新"
 
 #. Setting: Revert to Previous
 #. Field: title
 msgid "Revert to Previous"
-msgstr ""
+msgstr "还原到上一个"
 
 #. Setting: Revert to Previous
 #. Field: hint
 msgid "Rollback to the previous image."
-msgstr ""
+msgstr "回滚到上一个镜像"
 
 #. Setting: Change Version (Rebase)
 #. Field: title
 msgid "Change Version (Rebase)"
-msgstr ""
+msgstr "更改版本 (重置)"
 
 #. Setting: Remove Pin and Update
 #. Field: title
 msgid "Remove Pin and Update"
-msgstr ""
+msgstr "移除版本锁定并更新"
 
 #. Setting: Change Branch (Rebase)
 #. Field: title
 msgid "Change Branch (Rebase)"
-msgstr ""
+msgstr "更改分支 (重置)"
 
 #. Setting: Check for Updates
 #. Field: title
 msgid "Check for Updates"
-msgstr ""
+msgstr "检查更新"
 
 #. Setting: Reboot
 #. Field: title
 msgid "Reboot"
-msgstr ""
+msgstr "重启"
 
 #. Setting: Reboot
 #. Field: hint
 msgid "Reboot to apply the update. Are you sure?"
-msgstr ""
+msgstr "重启以应用更新。确定吗？"
 
 #. Setting: Undo Update
 #. Field: title
 msgid "Undo Update"
-msgstr ""
+msgstr "撤销更新"
 
 #. Setting: Undo Revert
 #. Field: title
 msgid "Undo Revert"
-msgstr ""
+msgstr "撤销还原"
 
 #. Setting: Choose Version (Rebase)
 #. Field: title
 msgid "Choose Version (Rebase)"
-msgstr ""
+msgstr "选择版本 (重置)"
 
 #. Setting: Run rpm-ostree reset
 #. Field: title
 msgid "Run rpm-ostree reset"
-msgstr ""
+msgstr "运行 rpm-ostree 重置"
 
 #. Setting: Run rpm-ostree reset
 #. Field: hint
@@ -1505,48 +1509,49 @@ msgid ""
 "Disable the custom initramfs and remove layers. Your personal data will "
 "not be affected."
 msgstr ""
+"禁用自定义 initramfs 并移除层。您的个人数据不会受到影响"
 
 #. Setting: Cancel
 #. Field: title
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #. Setting: Branch
 #. Field: title
 msgid "Branch"
-msgstr ""
+msgstr "分支"
 
 #. Setting: Version Pin
 #. Field: title
 msgid "Version Pin"
-msgstr ""
+msgstr "版本锁定"
 
 #. Setting: Apply
 #. Field: title
 msgid "Apply"
-msgstr ""
+msgstr "应用"
 
 msgid "Uploading log to fpaste..."
-msgstr ""
+msgstr "上传日志到 fpaste..."
 
 msgid "Shutting down..."
-msgstr ""
+msgstr "关机中..."
 
 msgid "Failed to download Handheld Daemon Beta."
-msgstr ""
+msgstr "下载 Handheld Daemon Beta 失败"
 
 msgid "Downloading Beta and Restarting..."
-msgstr ""
+msgstr "下载 Beta 并重启中..."
 
 #. Setting: Bug Report
 #. Field: title
 msgid "Bug Report"
-msgstr ""
+msgstr "Bug 回報"
 
 #. Setting: Bug Report Link
 #. Field: title
 msgid "Bug Report Link"
-msgstr ""
+msgstr "Bug 回報链接"
 
 #. Setting: Upload Error
 #. Field: title
@@ -1557,57 +1562,57 @@ msgstr "更新错误"
 #. Setting: Submit Report
 #. Field: title
 msgid "Submit Report"
-msgstr ""
+msgstr "提交报告"
 
 #. Setting: Submit Report
 #. Field: hint
 msgid "Upload a bug report to paste.centos.org"
-msgstr ""
+msgstr "上传一个 bug 报告到 paste.centos.org"
 
 #. Setting: Logs from
 #. Field: title
 msgid "Logs from"
-msgstr ""
+msgstr "日志来自"
 
 #. Setting: Logs from
 #. Option: current
 msgid "Current Boot"
-msgstr ""
+msgstr "当前启动"
 
 #. Setting: Logs from
 #. Option: previous
 msgid "Previous Boot (-1)"
-msgstr ""
+msgstr "上一个启动 (-1)"
 
 #. Setting: Logs from
 #. Option: m2
 msgid "Boot -2"
-msgstr ""
+msgstr "启动 -2"
 
 #. Setting: Logs from
 #. Option: m3
 msgid "Boot -3"
-msgstr ""
+msgstr "启动 -3"
 
 #. Setting: Development Tools
 #. Field: title
 msgid "Development Tools"
-msgstr ""
+msgstr "开发工具"
 
 #. Setting: Use HHD Beta Until Restart
 #. Field: title
 msgid "Use HHD Beta Until Restart"
-msgstr ""
+msgstr "使用 HHD Beta 直到重启"
 
 #. Setting: Use HHD Beta Until Restart
 #. Field: hint
 msgid "Switch to the HHD beta channel until you restart."
-msgstr ""
+msgstr "切换到 HHD beta 频道直到重启"
 
 #. Setting: Go Back to Stable
 #. Field: title
 msgid "Go Back to Stable"
-msgstr ""
+msgstr "返回稳定版"
 
 #. Setting: System
 #. Field: hint
@@ -1631,7 +1636,7 @@ msgstr "设置显示器的亮度级别。仅支持一个显示器, 并且是读�
 #. Setting: Display
 #. Field: title
 msgid "Display"
-msgstr ""
+msgstr "显示"
 
 #. Setting: Disable Touchscreen (Until Restart)
 #. Field: title
@@ -1646,17 +1651,17 @@ msgstr "禁用触摸手势 (直到重启)"
 #. Setting: Gamescope
 #. Field: title
 msgid "Gamescope"
-msgstr ""
+msgstr "游戏范围"
 
 #. Setting: Run Steam at 60/72 Hz
 #. Field: title
 msgid "Run Steam at 60/72 Hz"
-msgstr ""
+msgstr "Steam 运行在 60/72 Hz"
 
 #. Setting: Poweroff screen before sleep
 #. Field: title
 msgid "Poweroff screen before sleep"
-msgstr ""
+msgstr "在休眠前关闭屏幕"
 
 #. Setting: All Controllers
 #. Field: title
@@ -1849,43 +1854,43 @@ msgid "Ctrl + 4"
 msgstr ""
 
 msgid "Failed to hibernate (missing swap file)."
-msgstr ""
+msgstr "休眠失败 (缺少交换文件)."
 
 msgid "Failed to create temporary swap."
-msgstr ""
+msgstr "创建临时交换文件失败."
 
 msgid "Failed to hibernate to temporary swap."
-msgstr ""
+msgstr "休眠到临时交换文件失败."
 
 #. Setting: Power
 #. Field: title
 msgid "Power"
-msgstr ""
+msgstr "电源"
 
 #. Setting: Reboot into Windows
 #. Field: title
 msgid "Reboot into Windows"
-msgstr ""
+msgstr "重启进入 Windows"
 
 #. Setting: Reboot into Windows
 #. Field: hint
 msgid "Make sure you saved your game progress."
-msgstr ""
+msgstr "确保您已保存游戏进度"
 
 #. Setting: Hibernate
 #. Field: title
 msgid "Hibernate"
-msgstr ""
+msgstr "休眠"
 
 #. Setting: Hibernate
 #. Field: hint
 msgid "Saves your progress and powers off the device."
-msgstr ""
+msgstr "保存您的进度并关闭设备"
 
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: title
 msgid "Hibernate when device asks and at 5%."
-msgstr ""
+msgstr "当设备请求并在 5% 时休眠"
 
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: hint
@@ -1894,6 +1899,7 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
+"某些设备会唤醒以强制 Windows 进入休眠。如果 Linux 不这样做, 会导致问题。检测并在热事件和 5% 电量时休眠。\n"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title
