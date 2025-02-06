@@ -1,14 +1,14 @@
 # Translations template for PROJECT.
-# Copyright (C) 2024 ORGANIZATION
+# Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-19 09:26+0200\n"
+"POT-Creation-Date: 2025-02-06 18:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -604,6 +604,9 @@ msgid ""
 "Unchecked, it is still setting TDP to 15W."
 msgstr ""
 
+msgid "Power Light"
+msgstr ""
+
 msgid "Legion L + Y changes TDP Mode"
 msgstr ""
 
@@ -685,6 +688,11 @@ msgstr ""
 msgid "Reset to the original fan curve provided by Lenovo in BIOS V28."
 msgstr ""
 
+#. Setting: Show TDP changes with RGB
+#. Field: title
+msgid "Show TDP changes with RGB"
+msgstr ""
+
 #. Setting: Charge Limit (80%)
 #. Field: title
 msgid "Charge Limit (80%)"
@@ -692,7 +700,7 @@ msgstr ""
 
 #. Setting: Charge Limit (80%)
 #. Field: hint
-msgid "Limits device charging to 80%. Lenovo EC method. Available since BIOSv29."
+msgid "Limits device charging to 80%."
 msgstr ""
 
 #. Setting: Power Light (Awake)
@@ -713,6 +721,30 @@ msgstr ""
 #. Setting: TDP
 #. Field: hint
 msgid "Controls all Ryzen SMU settings through preset curves."
+msgstr ""
+
+#. Setting: Custom Fan Curve
+#. Field: hint
+msgid ""
+"Allows you to set a custom fan curve and to choose the temperature probe "
+"(Edge or Junction). Junction is the peak temperature of the chip: "
+"responds faster and prevents throttling. Edge is the temperature of the "
+"chip: responds slower and prevents overheating."
+msgstr ""
+
+#. Setting: Manual (Edge, Smooth)
+#. Field: title
+msgid "Manual (Edge, Smooth)"
+msgstr ""
+
+#. Setting: Reset to Default
+#. Field: title
+msgid "Reset to Default"
+msgstr ""
+
+#. Setting: Manual (Tctl, Fast)
+#. Field: title
+msgid "Manual (Tctl, Fast)"
 msgstr ""
 
 #. Setting: Advanced Configurator

@@ -1,14 +1,14 @@
 # Translations template for PROJECT.
-# Copyright (C) 2024 ORGANIZATION
+# Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-19 09:26+0200\n"
+"POT-Creation-Date: 2025-02-06 18:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,14 +16,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.15.0\n"
-
-#. Section Name for: system
-#. Setting: Language
-#. Option: system
-#. Setting: System
-#. Field: title
-msgid "System"
-msgstr ""
 
 #. Section Name for: tdp
 msgid "TDP"
@@ -39,20 +31,30 @@ msgstr ""
 msgid "Controller"
 msgstr ""
 
-#. Section Name for: hhd
-msgid "Settings"
+#. Section Name for: wincontrols
+#. Setting: WinControls
+#. Field: title
+msgid "WinControls"
+msgstr ""
+
+#. Section Name for: gamemode
+msgid "General"
+msgstr ""
+
+#. Section Name for: updates
+msgid "Updates"
+msgstr ""
+
+#. Section Name for: debug
+msgid "Bugreport"
 msgstr ""
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
 msgstr ""
 
-#. Section Name for: bazzite
-msgid "Bazzite"
-msgstr ""
-
-#. Section Name for: utilities
-msgid "Utilities"
+#. Section Name for: hhd
+msgid "Settings"
 msgstr ""
 
 #. Setting: Core Settings
@@ -66,18 +68,20 @@ msgid "Language"
 msgstr ""
 
 #. Setting: Language
+#. Option: system
+#. Setting: System
+#. Field: title
+msgid "System"
+msgstr ""
+
+#. Setting: Language
 #. Option: C
 msgid "English"
 msgstr ""
 
 #. Setting: Language
-#. Option: zh_CN
-msgid "Simplified Chinese"
-msgstr ""
-
-#. Setting: Language
-#. Option: zh_TW
-msgid "Traditional Chinese"
+#. Option: zh
+msgid "Chinese"
 msgstr ""
 
 #. Setting: Language
@@ -117,6 +121,11 @@ msgstr ""
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
+msgstr ""
+
+#. Setting: Theme
+#. Option: blood_orange
+msgid "Blood Orange"
 msgstr ""
 
 #. Setting: Reset Settings
@@ -275,9 +284,7 @@ msgstr ""
 
 #. Setting: Motion Hz
 #. Field: hint
-msgid ""
-"Sets the sampling frequency for the IMU. Check "
-"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
+msgid "Sets the sampling frequency for the IMU."
 msgstr ""
 
 #. Setting: Nintendo Mode (A-B Swap)
@@ -288,6 +295,11 @@ msgstr ""
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: hint
 msgid "Swaps A with B and X with Y."
+msgstr ""
+
+#. Setting: Hold View to Reboot
+#. Field: title
+msgid "Hold View to Reboot"
 msgstr ""
 
 #. Setting: GPD Controller
@@ -305,13 +317,23 @@ msgstr ""
 msgid "Emulate different controller types to fuse gpd features."
 msgstr ""
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
 #. Field: title
-msgid "L4/R4 Mapping"
+msgid "Menu/L4/R4 Mapping"
 msgstr ""
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
+#. Field: hint
+msgid ""
+"Maps L4/R4 to Steam Input (requires L4/R4 as HHD in Wincontrols tab). If "
+"disabled, they are keyboard buttons. Menu/L4/R4 can be combos: Menu is "
+"single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
+" HHD (legacy). "
+msgstr ""
+
+#. Setting: Menu/L4/R4 Mapping
 #. Option: disabled
+#. Setting: Start/Select do SteamOS Combos
 #. Setting: Disabled
 #. Field: title
 #. Setting: Extra buttons as
@@ -332,19 +354,282 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
 #. Option: generic
-msgid "Paddles"
+msgid "Paddles, no Combo"
 msgstr ""
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
+#. Option: menu
+msgid "Menu is Combo"
+msgstr ""
+
+#. Setting: Menu/L4/R4 Mapping
 #. Option: l4
-msgid "L4 is QAM"
+msgid "L4 is Combo"
+msgstr ""
+
+#. Setting: Menu/L4/R4 Mapping
+#. Option: r4
+msgid "R4 is Combo"
+msgstr ""
+
+#. Setting: Start/Select do SteamOS Combos
+#. Field: title
+msgid "Start/Select do SteamOS Combos"
+msgstr ""
+
+#. Setting: Start/Select do SteamOS Combos
+#. Field: hint
+msgid ""
+"When holding Select or Start, if another button is pressed, they become "
+"the Xbox button, which allows doing SteamOS combos (Select+RT is "
+"screenshot)."
+msgstr ""
+
+#. Setting: Start/Select do SteamOS Combos
+#. Option: select
+msgid "Select Only"
+msgstr ""
+
+#. Setting: Start/Select do SteamOS Combos
+#. Option: start_select
+msgid "Start+Select"
+msgstr ""
+
+#. Setting: WinControls
+#. Field: hint
+msgid "Specialized settings for GPD devices."
+msgstr ""
+
+#. Setting: RGB Mode
+#. Field: title
+msgid "RGB Mode"
+msgstr ""
+
+#. Setting: Off
+#. Field: title
+#. Setting: Vibration Strength
+#. Option: off
+msgid "Off"
+msgstr ""
+
+#. Setting: Off
+#. Field: hint
+msgid "Turns the LEDs off."
+msgstr ""
+
+#. Setting: Solid
+#. Field: title
+msgid "Solid"
+msgstr ""
+
+#. Setting: Solid
+#. Field: hint
+msgid "Maintains the LEDs at a solid color."
+msgstr ""
+
+#. Setting: Hue
+#. Field: title
+msgid "Hue"
+msgstr ""
+
+#. Setting: Pulse
+#. Field: title
+msgid "Pulse"
+msgstr ""
+
+#. Setting: Pulse
+#. Field: hint
+msgid "Slowly pulses the LEDs as a prespecified color."
+msgstr ""
+
+#. Setting: Rainbow
+#. Field: title
+msgid "Rainbow"
+msgstr ""
+
+#. Setting: Rainbow
+#. Field: hint
+msgid "Cycles through the different colors."
+msgstr ""
+
+#. Setting: Mouse Mode Mapping
+#. Field: title
+msgid "Mouse Mode Mapping"
+msgstr ""
+
+#. Setting: Mouse Mode Mapping
+#. Option: unchanged
+#. Setting: Mouse Mode Triggers
+#. Setting: L4/R4 Mapping
+#. Setting: Do not change
+#. Field: title
+msgid "Do not change"
+msgstr ""
+
+#. Setting: Mouse Mode Mapping
+#. Option: mouse
+msgid "GPD Mouse Mode"
+msgstr ""
+
+#. Setting: Mouse Mode Mapping
+#. Option: wasd
+msgid "For Games"
+msgstr ""
+
+#. Setting: Mouse Mode Triggers
+#. Field: title
+msgid "Mouse Mode Triggers"
+msgstr ""
+
+#. Setting: Mouse Mode Triggers
+#. Option: gpd
+msgid "GPD (RT is Fast Mouse)"
+msgstr ""
+
+#. Setting: Mouse Mode Triggers
+#. Option: steamos
+msgid "SteamOS (LT/RT are R/L Clicks)"
 msgstr ""
 
 #. Setting: L4/R4 Mapping
-#. Option: r4
-msgid "R4 is QAM"
+#. Field: title
+msgid "L4/R4 Mapping"
+msgstr ""
+
+#. Setting: L4/R4 Mapping
+#. Option: hhd
+msgid "For HHD (F20/F21)"
+msgstr ""
+
+#. Setting: L4/R4 Mapping
+#. Option: default
+msgid "Default (Pause/PrntScr)"
+msgstr ""
+
+#. Setting: Deadzones
+#. Field: title
+msgid "Deadzones"
+msgstr ""
+
+#. Setting: Do not change
+#. Field: hint
+msgid "Do not change the deadzones."
+msgstr ""
+
+#. Setting: Set Deadzones
+#. Field: title
+msgid "Set Deadzones"
+msgstr ""
+
+#. Setting: Set Deadzones
+#. Field: hint
+msgid "Use custom deadzones."
+msgstr ""
+
+#. Setting: Left Stick Center
+#. Field: title
+msgid "Left Stick Center"
+msgstr ""
+
+#. Setting: Left Stick Boundary
+#. Field: title
+msgid "Left Stick Boundary"
+msgstr ""
+
+#. Setting: Right Stick Center
+#. Field: title
+msgid "Right Stick Center"
+msgstr ""
+
+#. Setting: Right Stick Boundary
+#. Field: title
+msgid "Right Stick Boundary"
+msgstr ""
+
+#. Setting: Vibration Strength
+#. Field: title
+msgid "Vibration Strength"
+msgstr ""
+
+#. Setting: Vibration Strength
+#. Option: medium
+#. Setting: Brightness
+#. Setting: Speed
+msgid "Medium"
+msgstr ""
+
+#. Setting: Vibration Strength
+#. Option: high
+#. Setting: Brightness
+#. Setting: Speed
+msgid "High"
+msgstr ""
+
+#. Setting: Firmware
+#. Field: title
+msgid "Firmware"
+msgstr ""
+
+#. Setting: Error
+#. Field: title
+msgid "Error"
+msgstr ""
+
+#. Setting: Apply Settings
+#. Field: title
+msgid "Apply Settings"
+msgstr ""
+
+#. Setting: Legion Controller
+#. Field: title
+msgid "Legion Controller"
+msgstr ""
+
+#. Setting: Legion Controller
+#. Field: hint
+msgid "Configure the Legion Controller emulation modes."
+msgstr ""
+
+#. Setting: Emulation Mode (X-Input)
+#. Field: title
+msgid "Emulation Mode (X-Input)"
+msgstr ""
+
+#. Setting: Emulation Mode (X-Input)
+#. Field: hint
+msgid "Emulate different controller types when in X-Input mode."
+msgstr ""
+
+#. Setting: Motion Support
+#. Field: hint
+msgid "Enable gyroscope/accelerometer (IMU) support"
+msgstr ""
+
+#. Setting: Swap Legion with Menu/View
+#. Field: title
+msgid "Swap Legion with Menu/View"
+msgstr ""
+
+#. Setting: Enable Shortcuts Controller
+#. Field: title
+msgid "Enable Shortcuts Controller"
+msgstr ""
+
+#. Setting: Enable Shortcuts Controller
+#. Field: hint
+msgid "When in dinput mode, enable a controller for shortcuts."
+msgstr ""
+
+#. Setting: Reset Controller
+#. Field: title
+msgid "Reset Controller"
+msgstr ""
+
+#. Setting: Reset Controller
+#. Field: hint
+msgid "Resets the controller to stock settings."
 msgstr ""
 
 #. Setting: Legion Controllers
@@ -357,11 +642,6 @@ msgstr ""
 msgid ""
 "Allows for configuring the Legion controllers using the built in firmware"
 " commands and enabling emulation modes for various controller types."
-msgstr ""
-
-#. Setting: Emulation Mode (X-Input)
-#. Field: title
-msgid "Emulation Mode (X-Input)"
 msgstr ""
 
 #. Setting: Emulation Mode (X-Input)
@@ -398,11 +678,6 @@ msgid ""
 "secondary controller is created for the left controller's motion sensor."
 msgstr ""
 
-#. Setting: Swap Legion with Menu/View
-#. Field: title
-msgid "Swap Legion with Menu/View"
-msgstr ""
-
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
 msgid "M2 As Xbox Share/Dualsense Mic Mute"
@@ -413,21 +688,6 @@ msgstr ""
 msgid ""
 "Maps the M2 to the mute button on Dualsense and the share button on the "
 "Xbox Elite controller."
-msgstr ""
-
-#. Setting: Hold View to Reboot
-#. Field: title
-msgid "Hold View to Reboot"
-msgstr ""
-
-#. Setting: Fix touchpad hold [BROKEN]
-#. Field: title
-msgid "Fix touchpad hold [BROKEN]"
-msgstr ""
-
-#. Setting: Enable Shortcuts Controller
-#. Field: title
-msgid "Enable Shortcuts Controller"
 msgstr ""
 
 #. Setting: Enable Shortcuts Controller
@@ -525,14 +785,6 @@ msgstr ""
 #. Setting: Swap ROG and Menu/View
 #. Field: hint
 msgid "Swaps the Armory Crate and Command center buttons with start and select."
-msgstr ""
-
-#. Setting: Motion Hz
-#. Field: hint
-msgid ""
-"Sets the sampling frequency for the IMU. 1600 requires an IMU patch. "
-"Check "
-"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
 msgstr ""
 
 #. Setting: RGB During Boot
@@ -1048,6 +1300,265 @@ msgid ""
 "settings)."
 msgstr ""
 
+msgid "Downloading:"
+msgstr ""
+
+msgid "Importing:"
+msgstr ""
+
+msgid "Deploying:"
+msgstr ""
+
+msgid "Loading"
+msgstr ""
+
+msgid "No update available"
+msgstr ""
+
+msgid "Rebasing to "
+msgstr ""
+
+msgid "Updating to latest "
+msgstr ""
+
+msgid "Updating... "
+msgstr ""
+
+msgid "Checking for updates..."
+msgstr ""
+
+msgid "Undoing Update..."
+msgstr ""
+
+msgid "Undoing Revert..."
+msgstr ""
+
+msgid "Reverting to Previous version..."
+msgstr ""
+
+msgid "Loading Versions..."
+msgstr ""
+
+msgid "Removing Customizations..."
+msgstr ""
+
+msgid "Failed to load previous versions"
+msgstr ""
+
+#. Setting: System Image
+#. Field: title
+msgid "System Image"
+msgstr ""
+
+#. Setting: System Image
+#. Field: hint
+msgid "Manage the currently installed image with bootc."
+msgstr ""
+
+#. Setting: Image
+#. Field: title
+msgid "Image"
+msgstr ""
+
+#. Setting: Next
+#. Field: title
+msgid "Next"
+msgstr ""
+
+#. Setting: Current
+#. Field: title
+msgid "Current"
+msgstr ""
+
+#. Setting: Previous
+#. Field: title
+msgid "Previous"
+msgstr ""
+
+#. Setting: Update
+#. Field: title
+msgid "Update"
+msgstr ""
+
+#. Setting: Update Stage
+#. Field: title
+msgid "Update Stage"
+msgstr ""
+
+#. Setting: Apply Update
+#. Field: title
+msgid "Apply Update"
+msgstr ""
+
+#. Setting: Revert to Previous
+#. Field: title
+msgid "Revert to Previous"
+msgstr ""
+
+#. Setting: Revert to Previous
+#. Field: hint
+msgid "Rollback to the previous image."
+msgstr ""
+
+#. Setting: Change Version (Rebase)
+#. Field: title
+msgid "Change Version (Rebase)"
+msgstr ""
+
+#. Setting: Remove Pin and Update
+#. Field: title
+msgid "Remove Pin and Update"
+msgstr ""
+
+#. Setting: Change Branch (Rebase)
+#. Field: title
+msgid "Change Branch (Rebase)"
+msgstr ""
+
+#. Setting: Check for Updates
+#. Field: title
+msgid "Check for Updates"
+msgstr ""
+
+#. Setting: Reboot
+#. Field: title
+msgid "Reboot"
+msgstr ""
+
+#. Setting: Reboot
+#. Field: hint
+msgid "Reboot to apply the update. Are you sure?"
+msgstr ""
+
+#. Setting: Undo Update
+#. Field: title
+msgid "Undo Update"
+msgstr ""
+
+#. Setting: Undo Revert
+#. Field: title
+msgid "Undo Revert"
+msgstr ""
+
+#. Setting: Choose Version (Rebase)
+#. Field: title
+msgid "Choose Version (Rebase)"
+msgstr ""
+
+#. Setting: Run rpm-ostree reset
+#. Field: title
+msgid "Run rpm-ostree reset"
+msgstr ""
+
+#. Setting: Run rpm-ostree reset
+#. Field: hint
+msgid ""
+"Disable the custom initramfs and remove layers. Your personal data will "
+"not be affected."
+msgstr ""
+
+#. Setting: Cancel
+#. Field: title
+msgid "Cancel"
+msgstr ""
+
+#. Setting: Branch
+#. Field: title
+msgid "Branch"
+msgstr ""
+
+#. Setting: Version Pin
+#. Field: title
+msgid "Version Pin"
+msgstr ""
+
+#. Setting: Apply
+#. Field: title
+msgid "Apply"
+msgstr ""
+
+msgid "Uploading log to fpaste..."
+msgstr ""
+
+msgid "Shutting down..."
+msgstr ""
+
+msgid "Failed to download Handheld Daemon Beta."
+msgstr ""
+
+msgid "Downloading Beta and Restarting..."
+msgstr ""
+
+#. Setting: Bug Report
+#. Field: title
+msgid "Bug Report"
+msgstr ""
+
+#. Setting: Bug Report Link
+#. Field: title
+msgid "Bug Report Link"
+msgstr ""
+
+#. Setting: Upload Error
+#. Field: title
+msgid "Upload Error"
+msgstr ""
+
+#. Setting: Submit Report
+#. Field: title
+msgid "Submit Report"
+msgstr ""
+
+#. Setting: Submit Report
+#. Field: hint
+msgid "Upload a bug report to paste.centos.org"
+msgstr ""
+
+#. Setting: Logs from
+#. Field: title
+msgid "Logs from"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: current
+msgid "Current Boot"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: previous
+msgid "Previous Boot (-1)"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: m2
+msgid "Boot -2"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: m3
+msgid "Boot -3"
+msgstr ""
+
+#. Setting: Development Tools
+#. Field: title
+msgid "Development Tools"
+msgstr ""
+
+#. Setting: Use HHD Beta Until Restart
+#. Field: title
+msgid "Use HHD Beta Until Restart"
+msgstr ""
+
+#. Setting: Use HHD Beta Until Restart
+#. Field: hint
+msgid "Switch to the HHD beta channel until you restart."
+msgstr ""
+
+#. Setting: Go Back to Stable
+#. Field: title
+msgid "Go Back to Stable"
+msgstr ""
+
 #. Setting: System
 #. Field: hint
 msgid ""
@@ -1067,10 +1578,34 @@ msgid ""
 " it is the one that was read."
 msgstr ""
 
-#. Setting: Shortcut Support + Side Button double/triple press (Requires
-#. Restart)
+#. Setting: Display
 #. Field: title
-msgid "Shortcut Support + Side Button double/triple press (Requires Restart)"
+msgid "Display"
+msgstr ""
+
+#. Setting: Disable Touchscreen (Until Restart)
+#. Field: title
+msgid "Disable Touchscreen (Until Restart)"
+msgstr ""
+
+#. Setting: Disable Touch Gestures (Until Restart)
+#. Field: title
+msgid "Disable Touch Gestures (Until Restart)"
+msgstr ""
+
+#. Setting: Gamescope
+#. Field: title
+msgid "Gamescope"
+msgstr ""
+
+#. Setting: Run Steam at 60/72 Hz
+#. Field: title
+msgid "Run Steam at 60/72 Hz"
+msgstr ""
+
+#. Setting: Poweroff screen before sleep
+#. Field: title
+msgid "Poweroff screen before sleep"
 msgstr ""
 
 #. Setting: All Controllers
@@ -1263,14 +1798,51 @@ msgstr ""
 msgid "Ctrl + 4"
 msgstr ""
 
-#. Setting: Disable Touchscreen (Until Restart)
-#. Field: title
-msgid "Disable Touchscreen (Until Restart)"
+msgid "Failed to hibernate (missing swap file)."
 msgstr ""
 
-#. Setting: Disable Touch Gestures (Until Restart)
+msgid "Failed to create temporary swap."
+msgstr ""
+
+msgid "Failed to hibernate to temporary swap."
+msgstr ""
+
+#. Setting: Power
 #. Field: title
-msgid "Disable Touch Gestures (Until Restart)"
+msgid "Power"
+msgstr ""
+
+#. Setting: Reboot into Windows
+#. Field: title
+msgid "Reboot into Windows"
+msgstr ""
+
+#. Setting: Reboot into Windows
+#. Field: hint
+msgid "Make sure you saved your game progress."
+msgstr ""
+
+#. Setting: Hibernate
+#. Field: title
+msgid "Hibernate"
+msgstr ""
+
+#. Setting: Hibernate
+#. Field: hint
+msgid "Saves your progress and powers off the device."
+msgstr ""
+
+#. Setting: Hibernate when device asks and at 5%.
+#. Field: title
+msgid "Hibernate when device asks and at 5%."
+msgstr ""
+
+#. Setting: Hibernate when device asks and at 5%.
+#. Field: hint
+msgid ""
+"Certain devices wake up to force Windows to hibernate. If Linux does not\n"
+"they cause issues. Detect and hibernate on thermal events and on 5%\n"
+"battery.\n"
 msgstr ""
 
 #. Setting: Steam Powerbutton Handler
@@ -1285,11 +1857,6 @@ msgid ""
 "powerbutton menu)."
 msgstr ""
 
-#. Setting: Hue
-#. Field: title
-msgid "Hue"
-msgstr ""
-
 #. Setting: Saturation
 #. Field: title
 msgid "Saturation"
@@ -1299,18 +1866,6 @@ msgstr ""
 #. Option: low
 #. Setting: Speed
 msgid "Low"
-msgstr ""
-
-#. Setting: Brightness
-#. Option: medium
-#. Setting: Speed
-msgid "Medium"
-msgstr ""
-
-#. Setting: Brightness
-#. Option: high
-#. Setting: Speed
-msgid "High"
 msgstr ""
 
 #. Setting: Stick Style
@@ -1388,46 +1943,6 @@ msgstr ""
 msgid "Direction"
 msgstr ""
 
-#. Setting: Off
-#. Field: title
-msgid "Off"
-msgstr ""
-
-#. Setting: Off
-#. Field: hint
-msgid "Turns the LEDs off."
-msgstr ""
-
-#. Setting: Solid
-#. Field: title
-msgid "Solid"
-msgstr ""
-
-#. Setting: Solid
-#. Field: hint
-msgid "Maintains the LEDs at a solid color."
-msgstr ""
-
-#. Setting: Pulse
-#. Field: title
-msgid "Pulse"
-msgstr ""
-
-#. Setting: Pulse
-#. Field: hint
-msgid "Slowly pulses the LEDs as a prespecified color."
-msgstr ""
-
-#. Setting: Rainbow
-#. Field: title
-msgid "Rainbow"
-msgstr ""
-
-#. Setting: Rainbow
-#. Field: hint
-msgid "Cycles through the different colors."
-msgstr ""
-
 #. Setting: Spiral
 #. Field: title
 msgid "Spiral"
@@ -1456,11 +1971,6 @@ msgstr ""
 #. Setting: RGB Settings
 #. Field: title
 msgid "RGB Settings"
-msgstr ""
-
-#. Setting: RGB Mode
-#. Field: title
-msgid "RGB Mode"
 msgstr ""
 
 #. Setting: Controller RGB

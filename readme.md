@@ -228,13 +228,15 @@ pybabel extract --no-location -F i18n/babel.cfg -o i18n/hhd.pot src/hhd
 # Assuming adjustor is in an adjacent directory
 pybabel extract --no-location -F i18n/babel.cfg -o i18n/adjustor.pot ../adjustor/src/adjustor
 
+YOUR_LANG=el
+
 # Generate PO files for your language if they do not exist
-pybabel init -i i18n/hhd.pot -d i18n -D hhd -l YOUR_LANG
-pybabel init -i i18n/adjustor.pot -d i18n -D adjustor -l YOUR_LANG
+pybabel init -i i18n/hhd.pot -d i18n -D hhd -l $YOUR_LANG
+pybabel init -i i18n/adjustor.pot -d i18n -D adjustor -l $YOUR_LANG
 
 # Update current PO files for your language
-pybabel update -i i18n/hhd.pot -d i18n -D hhd -l YOUR_LANG
-pybabel update -i i18n/adjustor.pot -d i18n -D adjustor -l YOUR_LANG
+pybabel update -i i18n/hhd.pot -d i18n -D hhd -l $YOUR_LANG
+pybabel update -i i18n/adjustor.pot -d i18n -D adjustor -l $YOUR_LANG
 ```
 
 ### Creating a Local Repo version

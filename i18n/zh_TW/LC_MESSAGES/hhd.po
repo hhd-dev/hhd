@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2024-10-19 09:26+0200\n"
+"POT-Creation-Date: 2025-02-06 18:26+0100\n"
 "PO-Revision-Date: 2025-02-04 16:36+0800\n"
 "Last-Translator: Alex <aliceric27@gmail.com>\n"
 "Language: zh_Hant_TW\n"
@@ -16,15 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.17.0\n"
-
-#. Section Name for: system
-#. Setting: Language
-#. Option: system
-#. Setting: System
-#. Field: title
-msgid "System"
-msgstr "系統"
+"Generated-By: Babel 2.15.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
@@ -40,21 +32,34 @@ msgstr ""
 msgid "Controller"
 msgstr "控制器"
 
-#. Section Name for: hhd
-msgid "Settings"
-msgstr "設定"
+#. Section Name for: wincontrols
+#. Setting: WinControls
+#. Field: title
+#, fuzzy
+msgid "WinControls"
+msgstr "Legion 控制器"
+
+#. Section Name for: gamemode
+#, fuzzy
+msgid "General"
+msgstr "置中"
+
+#. Section Name for: updates
+#, fuzzy
+msgid "Updates"
+msgstr "更新 (穩定版)"
+
+#. Section Name for: debug
+msgid "Bugreport"
+msgstr ""
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
 msgstr "快捷鍵"
 
-#. Section Name for: bazzite
-msgid "Bazzite"
-msgstr ""
-
-#. Section Name for: utilities
-msgid "Utilities"
-msgstr "工具"
+#. Section Name for: hhd
+msgid "Settings"
+msgstr "設定"
 
 #. Setting: Core Settings
 #. Field: title
@@ -67,19 +72,21 @@ msgid "Language"
 msgstr "語言"
 
 #. Setting: Language
+#. Option: system
+#. Setting: System
+#. Field: title
+msgid "System"
+msgstr "系統"
+
+#. Setting: Language
 #. Option: C
 msgid "English"
 msgstr ""
 
 #. Setting: Language
-#. Option: zh_CN
-msgid "Simplified Chinese"
-msgstr "简体中文"
-
-#. Setting: Language
-#. Option: zh_TW
-msgid "Traditional Chinese"
-msgstr "繁體中文"
+#. Option: zh
+msgid "Chinese"
+msgstr ""
 
 #. Setting: Language
 #. Option: pt
@@ -118,6 +125,11 @@ msgstr ""
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
+msgstr ""
+
+#. Setting: Theme
+#. Option: blood_orange
+msgid "Blood Orange"
 msgstr ""
 
 #. Setting: Reset Settings
@@ -276,12 +288,8 @@ msgstr "體感取樣率"
 
 #. Setting: Motion Hz
 #. Field: hint
-msgid ""
-"Sets the sampling frequency for the IMU. Check "
-"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
+msgid "Sets the sampling frequency for the IMU."
 msgstr ""
-"設定 IMU 的採樣頻率。檢查 "
-"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
@@ -292,6 +300,11 @@ msgstr "任天堂模式 (A-B 交換)"
 #. Field: hint
 msgid "Swaps A with B and X with Y."
 msgstr "A 與 B 交換，X 與 Y 交換"
+
+#. Setting: Hold View to Reboot
+#. Field: title
+msgid "Hold View to Reboot"
+msgstr "按住 View 鍵重啟"
 
 #. Setting: GPD Controller
 #. Field: title
@@ -308,13 +321,24 @@ msgstr "可以將您的 GPD 控制器配置為統一設備輸出"
 msgid "Emulate different controller types to fuse gpd features."
 msgstr "模擬不同類型的控制器，以融合 GPD 設備的特性"
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
 #. Field: title
-msgid "L4/R4 Mapping"
+#, fuzzy
+msgid "Menu/L4/R4 Mapping"
 msgstr "L4/R4 映射"
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
+#. Field: hint
+msgid ""
+"Maps L4/R4 to Steam Input (requires L4/R4 as HHD in Wincontrols tab). If "
+"disabled, they are keyboard buttons. Menu/L4/R4 can be combos: Menu is "
+"single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
+" HHD (legacy). "
+msgstr ""
+
+#. Setting: Menu/L4/R4 Mapping
 #. Option: disabled
+#. Setting: Start/Select do SteamOS Combos
 #. Setting: Disabled
 #. Field: title
 #. Setting: Extra buttons as
@@ -335,20 +359,298 @@ msgstr "L4/R4 映射"
 msgid "Disabled"
 msgstr "禁用"
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
 #. Option: generic
-msgid "Paddles"
-msgstr "背鍵"
+msgid "Paddles, no Combo"
+msgstr ""
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
+#. Option: menu
+msgid "Menu is Combo"
+msgstr ""
+
+#. Setting: Menu/L4/R4 Mapping
 #. Option: l4
-msgid "L4 is QAM"
+#, fuzzy
+msgid "L4 is Combo"
 msgstr "L4是快捷選單鍵"
 
-#. Setting: L4/R4 Mapping
+#. Setting: Menu/L4/R4 Mapping
 #. Option: r4
-msgid "R4 is QAM"
+#, fuzzy
+msgid "R4 is Combo"
 msgstr "R4是快捷選單鍵"
+
+#. Setting: Start/Select do SteamOS Combos
+#. Field: title
+msgid "Start/Select do SteamOS Combos"
+msgstr ""
+
+#. Setting: Start/Select do SteamOS Combos
+#. Field: hint
+msgid ""
+"When holding Select or Start, if another button is pressed, they become "
+"the Xbox button, which allows doing SteamOS combos (Select+RT is "
+"screenshot)."
+msgstr ""
+
+#. Setting: Start/Select do SteamOS Combos
+#. Option: select
+#, fuzzy
+msgid "Select Only"
+msgstr "次要"
+
+#. Setting: Start/Select do SteamOS Combos
+#. Option: start_select
+msgid "Start+Select"
+msgstr ""
+
+#. Setting: WinControls
+#. Field: hint
+msgid "Specialized settings for GPD devices."
+msgstr ""
+
+#. Setting: RGB Mode
+#. Field: title
+msgid "RGB Mode"
+msgstr "RGB 模式"
+
+#. Setting: Off
+#. Field: title
+#. Setting: Vibration Strength
+#. Option: off
+msgid "Off"
+msgstr "關閉"
+
+#. Setting: Off
+#. Field: hint
+msgid "Turns the LEDs off."
+msgstr "關閉 LED 燈"
+
+#. Setting: Solid
+#. Field: title
+msgid "Solid"
+msgstr "固定"
+
+#. Setting: Solid
+#. Field: hint
+msgid "Maintains the LEDs at a solid color."
+msgstr "保持 LED 燈為固定顏色"
+
+#. Setting: Hue
+#. Field: title
+msgid "Hue"
+msgstr "色調"
+
+#. Setting: Pulse
+#. Field: title
+msgid "Pulse"
+msgstr "呼吸"
+
+#. Setting: Pulse
+#. Field: hint
+msgid "Slowly pulses the LEDs as a prespecified color."
+msgstr "LED 按照預設顏色缓慢呼吸"
+
+#. Setting: Rainbow
+#. Field: title
+msgid "Rainbow"
+msgstr "彩虹"
+
+#. Setting: Rainbow
+#. Field: hint
+msgid "Cycles through the different colors."
+msgstr "循環顯示不同顏色"
+
+#. Setting: Mouse Mode Mapping
+#. Field: title
+msgid "Mouse Mode Mapping"
+msgstr ""
+
+#. Setting: Mouse Mode Mapping
+#. Option: unchanged
+#. Setting: Mouse Mode Triggers
+#. Setting: L4/R4 Mapping
+#. Setting: Do not change
+#. Field: title
+msgid "Do not change"
+msgstr ""
+
+#. Setting: Mouse Mode Mapping
+#. Option: mouse
+msgid "GPD Mouse Mode"
+msgstr ""
+
+#. Setting: Mouse Mode Mapping
+#. Option: wasd
+msgid "For Games"
+msgstr ""
+
+#. Setting: Mouse Mode Triggers
+#. Field: title
+msgid "Mouse Mode Triggers"
+msgstr ""
+
+#. Setting: Mouse Mode Triggers
+#. Option: gpd
+msgid "GPD (RT is Fast Mouse)"
+msgstr ""
+
+#. Setting: Mouse Mode Triggers
+#. Option: steamos
+msgid "SteamOS (LT/RT are R/L Clicks)"
+msgstr ""
+
+#. Setting: L4/R4 Mapping
+#. Field: title
+msgid "L4/R4 Mapping"
+msgstr "L4/R4 映射"
+
+#. Setting: L4/R4 Mapping
+#. Option: hhd
+msgid "For HHD (F20/F21)"
+msgstr ""
+
+#. Setting: L4/R4 Mapping
+#. Option: default
+msgid "Default (Pause/PrntScr)"
+msgstr ""
+
+#. Setting: Deadzones
+#. Field: title
+#, fuzzy
+msgid "Deadzones"
+msgstr "死區和震動"
+
+#. Setting: Do not change
+#. Field: hint
+msgid "Do not change the deadzones."
+msgstr ""
+
+#. Setting: Set Deadzones
+#. Field: title
+msgid "Set Deadzones"
+msgstr ""
+
+#. Setting: Set Deadzones
+#. Field: hint
+msgid "Use custom deadzones."
+msgstr ""
+
+#. Setting: Left Stick Center
+#. Field: title
+#, fuzzy
+msgid "Left Stick Center"
+msgstr "左搖桿最小值"
+
+#. Setting: Left Stick Boundary
+#. Field: title
+#, fuzzy
+msgid "Left Stick Boundary"
+msgstr "左搖桿最小值"
+
+#. Setting: Right Stick Center
+#. Field: title
+#, fuzzy
+msgid "Right Stick Center"
+msgstr "右搖桿最小值"
+
+#. Setting: Right Stick Boundary
+#. Field: title
+#, fuzzy
+msgid "Right Stick Boundary"
+msgstr "右搖桿最小值"
+
+#. Setting: Vibration Strength
+#. Field: title
+#, fuzzy
+msgid "Vibration Strength"
+msgstr "震動強度"
+
+#. Setting: Vibration Strength
+#. Option: medium
+#. Setting: Brightness
+#. Setting: Speed
+msgid "Medium"
+msgstr "中"
+
+#. Setting: Vibration Strength
+#. Option: high
+#. Setting: Brightness
+#. Setting: Speed
+msgid "High"
+msgstr "高"
+
+#. Setting: Firmware
+#. Field: title
+msgid "Firmware"
+msgstr ""
+
+#. Setting: Error
+#. Field: title
+msgid "Error"
+msgstr ""
+
+#. Setting: Apply Settings
+#. Field: title
+#, fuzzy
+msgid "Apply Settings"
+msgstr "設定"
+
+#. Setting: Legion Controller
+#. Field: title
+#, fuzzy
+msgid "Legion Controller"
+msgstr "Legion 控制器"
+
+#. Setting: Legion Controller
+#. Field: hint
+msgid "Configure the Legion Controller emulation modes."
+msgstr ""
+
+#. Setting: Emulation Mode (X-Input)
+#. Field: title
+msgid "Emulation Mode (X-Input)"
+msgstr "模擬模式 (X-Input)"
+
+#. Setting: Emulation Mode (X-Input)
+#. Field: hint
+#, fuzzy
+msgid "Emulate different controller types when in X-Input mode."
+msgstr "當 Legion 控制器處於 X-Input 模式時，模擬不同類型的控制器。"
+
+#. Setting: Motion Support
+#. Field: hint
+#, fuzzy
+msgid "Enable gyroscope/accelerometer (IMU) support"
+msgstr "啟用陀螺儀/加速度計 (IMU) 支援 (0.3% 背景 CPU 使用)"
+
+#. Setting: Swap Legion with Menu/View
+#. Field: title
+msgid "Swap Legion with Menu/View"
+msgstr "交換 Legion 菜單/視圖 按鈕"
+
+#. Setting: Enable Shortcuts Controller
+#. Field: title
+msgid "Enable Shortcuts Controller"
+msgstr "啟用快捷控制器"
+
+#. Setting: Enable Shortcuts Controller
+#. Field: hint
+msgid "When in dinput mode, enable a controller for shortcuts."
+msgstr ""
+
+#. Setting: Reset Controller
+#. Field: title
+#, fuzzy
+msgid "Reset Controller"
+msgstr "左控制器"
+
+#. Setting: Reset Controller
+#. Field: hint
+#, fuzzy
+msgid "Resets the controller to stock settings."
+msgstr "將控制器重置為預設設定"
 
 #. Setting: Legion Controllers
 #. Field: title
@@ -361,11 +663,6 @@ msgid ""
 "Allows for configuring the Legion controllers using the built in firmware"
 " commands and enabling emulation modes for various controller types."
 msgstr "使用控制器韌體內建命令配置 Legion 控制器，並啟用各種控制器類型的模擬模式。"
-
-#. Setting: Emulation Mode (X-Input)
-#. Field: title
-msgid "Emulation Mode (X-Input)"
-msgstr "模擬模式 (X-Input)"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
@@ -399,14 +696,7 @@ msgstr "左右控制器"
 msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
-msgstr ""
-"主控制器使用右側控制器的運動感應器， "
-"並為左側控制器的運動感應器創建了一個輔助控制器。"
-
-#. Setting: Swap Legion with Menu/View
-#. Field: title
-msgid "Swap Legion with Menu/View"
-msgstr "交換 Legion 菜單/視圖 按鈕"
+msgstr "主控制器使用右側控制器的運動感應器， 並為左側控制器的運動感應器創建了一個輔助控制器。"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
@@ -419,21 +709,6 @@ msgid ""
 "Maps the M2 to the mute button on Dualsense and the share button on the "
 "Xbox Elite controller."
 msgstr "将 M2 映射为 Dualsense 的静音按钮和 Xbox Elite 控制器的共享按钮"
-
-#. Setting: Hold View to Reboot
-#. Field: title
-msgid "Hold View to Reboot"
-msgstr "按住 View 鍵重啟"
-
-#. Setting: Fix touchpad hold [BROKEN]
-#. Field: title
-msgid "Fix touchpad hold [BROKEN]"
-msgstr "修復觸控板長按 [不可用]"
-
-#. Setting: Enable Shortcuts Controller
-#. Field: title
-msgid "Enable Shortcuts Controller"
-msgstr "啟用快捷控制器"
 
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
@@ -531,16 +806,6 @@ msgstr "交換 ROG Menu/View 按鈕"
 #. Field: hint
 msgid "Swaps the Armory Crate and Command center buttons with start and select."
 msgstr "交換 Armory Crate/Command center 與 Menu/View 按鈕"
-
-#. Setting: Motion Hz
-#. Field: hint
-msgid ""
-"Sets the sampling frequency for the IMU. 1600 requires an IMU patch. "
-"Check "
-"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
-msgstr ""
-"設定 IMU 的取樣頻率。1600 需要一個 IMU 補丁。鍵查 "
-"`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
 
 #. Setting: RGB During Boot
 #. Field: title
@@ -825,8 +1090,8 @@ msgid ""
 "for Steam Input, since you want it to be inverted to look left to right, "
 "but an issue in emulators."
 msgstr ""
-"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。這對於 Steam 輸入非常有用，因為您可能希望它反轉以便從左到右查看。"
-"但在模擬器中會有問題"
+"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。這對於 Steam "
+"輸入非常有用，因為您可能希望它反轉以便從左到右查看。但在模擬器中會有問題"
 
 #. Setting: Dualsense
 #. Field: title
@@ -839,7 +1104,9 @@ msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be left/right touchpad clicks. For the "
 "legion go, top buttons are shortcuts, bottom are touchpad clicks."
-msgstr "更改額外按鈕的行為。左側按鈕為鍵盤，右側按鈕為覆蓋選單。或者可以設定為左/右觸控板模擬。對於 Legion Go，頂部按鈕是快捷鍵，底部是觸控板模擬。"
+msgstr ""
+"更改額外按鈕的行為。左側按鈕為鍵盤，右側按鈕為覆蓋選單。或者可以設定為左/右觸控板模擬。對於 Legion "
+"Go，頂部按鈕是快捷鍵，底部是觸控板模擬。"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -884,8 +1151,8 @@ msgid ""
 "difference for the Legion Go (125hz), as all the other handhelds are "
 "using 400hz by default."
 msgstr ""
-"Steam 依賴 IMU 時間戳來作為觸控板滑鼠和 `陀螺儀到滑鼠 [BETA]`。如果在 2 個報告中發送相同的時間戳，這會導致除以 0 "  
-"以及不穩定。此選項使報告僅在有新的 IMU 時間戳時發送，有效地將控制器的響應速度限制為 IMU 的速度。這只對 Legion Go "  
+"Steam 依賴 IMU 時間戳來作為觸控板滑鼠和 `陀螺儀到滑鼠 [BETA]`。如果在 2 個報告中發送相同的時間戳，這會導致除以 0 "
+"以及不穩定。此選項使報告僅在有新的 IMU 時間戳時發送，有效地將控制器的響應速度限制為 IMU 的速度。這只對 Legion Go "
 "(125hz) 有影響，因為所有其他掌機預設使用 400hz。"
 
 #. Setting: Invert Roll Axis
@@ -895,8 +1162,8 @@ msgid ""
 " for Steam Input, since you want it to be inverted to look left to right,"
 " but an issue in emulators."
 msgstr ""
-"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。對於 Steam 輸入很有用，因為您可能希望它反轉以便從左到右看，"  
-"但在模擬器中會有問題。"
+"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。對於 Steam "
+"輸入很有用，因為您可能希望它反轉以便從左到右看，但在模擬器中會有問題。"
 
 #. Setting: Bluetooth Mode
 #. Field: title
@@ -911,8 +1178,8 @@ msgid ""
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
 msgstr ""
-"模擬控制器藍牙模式而不是 USB 模式。這是預設設定，因為它會減少應用與控制器交互的問題。但是，使用 USB 模式可以改善一些遊戲中的 LED"  
-" 支援(?)。歡迎測試並反饋！"
+"模擬控制器藍牙模式而不是 USB 模式。這是預設設定，因為它會減少應用與控制器交互的問題。但是，使用 USB 模式可以改善一些遊戲中的 LED "
+"支援(?)。歡迎測試並反饋！"
 
 #. Setting: Paused
 #. Field: title
@@ -929,9 +1196,7 @@ msgstr "觸控板模擬"
 msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
-msgstr ""
-"模擬一個觸控板。如果當前模擬控制器本身支持觸控板（例如 Dualsense），則將映射成目標設備自身的觸控板，"  
-"否則會模擬成一個獨立的虛擬觸控板設備。"
+msgstr "模擬一個觸控板。如果當前模擬控制器本身支持觸控板（例如 Dualsense），則將映射成目標設備自身的觸控板，否則會模擬成一個獨立的虛擬觸控板設備。"
 
 #. Setting: Disabled
 #. Field: hint
@@ -953,8 +1218,8 @@ msgid ""
 "in desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
-"添加一個虛擬觸控板。這個觸控板是為在 gamescope 中使用而設計的，預設支援左鍵、右鍵。但是，它會在桌面模式中引起問題，"  
-"並且不允許拖動文件。因此，它會在桌面模式中自動禁用。"
+"添加一個虛擬觸控板。這個觸控板是為在 gamescope "
+"中使用而設計的，預設支援左鍵、右鍵。但是，它會在桌面模式中引起問題，並且不允許拖動文件。因此，它會在桌面模式中自動禁用。"
 
 #. Setting: Disable on Desktop
 #. Field: title
@@ -1009,8 +1274,8 @@ msgid ""
 "to be used as steam input, so short press is unassigned by default and "
 "long press simulates trackpad click."
 msgstr ""
-"使用模擬控制器的觸控板（如果存在）。否則，觸控板保持未映射（仍會顯示在系統中）。用作 Steam 輸入，因此預設情況下短按未分配，"  
-"長按模擬觸控板點擊。"
+"使用模擬控制器的觸控板（如果存在）。否則，觸控板保持未映射（仍會顯示在系統中）。用作 Steam "
+"輸入，因此預設情況下短按未分配，長按模擬觸控板點擊。"
 
 #. Setting: Location
 #. Field: title
@@ -1029,13 +1294,10 @@ msgid ""
 "left and half of the right is right. \"Stretch\" stretches the touchpad "
 "to the whole dualsense surface."
 msgstr ""
-"控制實際觸控板與虛擬觸控板的放置，使用"  
-"Steam 所期望的方式。在 Steam 中，\"左\" 觸控板映射到左半邊，"  
-"\"右\" 觸控板映射到右半邊，而 \"中心\" 映射到整個觸控板。"  
-"因此，虛擬觸控板在左側被裁剪為左側，右側被裁剪為右側，"  
-"在中心擴展為中心。這意味著當設置為中心時，左觸控板的一半"  
-"是左側，右觸控板的一半是右側。\"延伸\" 將觸控板延伸到整個"  
-"雙感應表面。"
+"控制實際觸控板與虛擬觸控板的放置，使用Steam 所期望的方式。在 Steam 中，\"左\" 觸控板映射到左半邊，\"右\" "
+"觸控板映射到右半邊，而 \"中心\" "
+"映射到整個觸控板。因此，虛擬觸控板在左側被裁剪為左側，右側被裁剪為右側，在中心擴展為中心。這意味著當設置為中心時，左觸控板的一半是左側，右觸控板的一半是右側。\"延伸\""
+" 將觸控板延伸到整個雙感應表面。"
 
 #. Setting: Location
 #. Option: right
@@ -1067,8 +1329,8 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"將短觸控（小於 0.2s）映射為觸控板動作。Dualsense 使用物理按鍵作為左鍵，雙擊作為右鍵（雙擊支援因設備而異；"  
-"請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
+"將短觸控（小於 0.2s）映射為觸控板動作。Dualsense "
+"使用物理按鍵作為左鍵，雙擊作為右鍵（雙擊支援因設備而異；請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
 
 #. Setting: Hold Action
 #. Field: hint
@@ -1078,16 +1340,281 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"將長觸控（大於 2s）映射為觸控板動作。Dualsense 使用物理按鍵作為左鍵，雙擊作為右鍵（雙擊支援因設備而異；"  
-"請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
+"將長觸控（大於 2s）映射為觸控板動作。Dualsense "
+"使用物理按鍵作為左鍵，雙擊作為右鍵（雙擊支援因設備而異；請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
+
+msgid "Downloading:"
+msgstr ""
+
+msgid "Importing:"
+msgstr ""
+
+msgid "Deploying:"
+msgstr ""
+
+#, fuzzy
+msgid "Loading"
+msgstr "位置"
+
+#, fuzzy
+msgid "No update available"
+msgstr "更新 (穩定版)"
+
+msgid "Rebasing to "
+msgstr ""
+
+msgid "Updating to latest "
+msgstr ""
+
+msgid "Updating... "
+msgstr ""
+
+msgid "Checking for updates..."
+msgstr ""
+
+msgid "Undoing Update..."
+msgstr ""
+
+msgid "Undoing Revert..."
+msgstr ""
+
+msgid "Reverting to Previous version..."
+msgstr ""
+
+msgid "Loading Versions..."
+msgstr ""
+
+msgid "Removing Customizations..."
+msgstr ""
+
+msgid "Failed to load previous versions"
+msgstr ""
+
+#. Setting: System Image
+#. Field: title
+#, fuzzy
+msgid "System Image"
+msgstr "系統"
+
+#. Setting: System Image
+#. Field: hint
+msgid "Manage the currently installed image with bootc."
+msgstr ""
+
+#. Setting: Image
+#. Field: title
+msgid "Image"
+msgstr ""
+
+#. Setting: Next
+#. Field: title
+msgid "Next"
+msgstr ""
+
+#. Setting: Current
+#. Field: title
+#, fuzzy
+msgid "Current"
+msgstr "置中"
+
+#. Setting: Previous
+#. Field: title
+msgid "Previous"
+msgstr ""
+
+#. Setting: Update
+#. Field: title
+#, fuzzy
+msgid "Update"
+msgstr "更新錯誤"
+
+#. Setting: Update Stage
+#. Field: title
+#, fuzzy
+msgid "Update Stage"
+msgstr "更新 (穩定版)"
+
+#. Setting: Apply Update
+#. Field: title
+msgid "Apply Update"
+msgstr ""
+
+#. Setting: Revert to Previous
+#. Field: title
+msgid "Revert to Previous"
+msgstr ""
+
+#. Setting: Revert to Previous
+#. Field: hint
+msgid "Rollback to the previous image."
+msgstr ""
+
+#. Setting: Change Version (Rebase)
+#. Field: title
+msgid "Change Version (Rebase)"
+msgstr ""
+
+#. Setting: Remove Pin and Update
+#. Field: title
+msgid "Remove Pin and Update"
+msgstr ""
+
+#. Setting: Change Branch (Rebase)
+#. Field: title
+msgid "Change Branch (Rebase)"
+msgstr ""
+
+#. Setting: Check for Updates
+#. Field: title
+msgid "Check for Updates"
+msgstr ""
+
+#. Setting: Reboot
+#. Field: title
+msgid "Reboot"
+msgstr ""
+
+#. Setting: Reboot
+#. Field: hint
+msgid "Reboot to apply the update. Are you sure?"
+msgstr ""
+
+#. Setting: Undo Update
+#. Field: title
+msgid "Undo Update"
+msgstr ""
+
+#. Setting: Undo Revert
+#. Field: title
+msgid "Undo Revert"
+msgstr ""
+
+#. Setting: Choose Version (Rebase)
+#. Field: title
+msgid "Choose Version (Rebase)"
+msgstr ""
+
+#. Setting: Run rpm-ostree reset
+#. Field: title
+msgid "Run rpm-ostree reset"
+msgstr ""
+
+#. Setting: Run rpm-ostree reset
+#. Field: hint
+msgid ""
+"Disable the custom initramfs and remove layers. Your personal data will "
+"not be affected."
+msgstr ""
+
+#. Setting: Cancel
+#. Field: title
+msgid "Cancel"
+msgstr ""
+
+#. Setting: Branch
+#. Field: title
+msgid "Branch"
+msgstr ""
+
+#. Setting: Version Pin
+#. Field: title
+msgid "Version Pin"
+msgstr ""
+
+#. Setting: Apply
+#. Field: title
+msgid "Apply"
+msgstr ""
+
+msgid "Uploading log to fpaste..."
+msgstr ""
+
+msgid "Shutting down..."
+msgstr ""
+
+msgid "Failed to download Handheld Daemon Beta."
+msgstr ""
+
+msgid "Downloading Beta and Restarting..."
+msgstr ""
+
+#. Setting: Bug Report
+#. Field: title
+msgid "Bug Report"
+msgstr ""
+
+#. Setting: Bug Report Link
+#. Field: title
+msgid "Bug Report Link"
+msgstr ""
+
+#. Setting: Upload Error
+#. Field: title
+#, fuzzy
+msgid "Upload Error"
+msgstr "更新錯誤"
+
+#. Setting: Submit Report
+#. Field: title
+msgid "Submit Report"
+msgstr ""
+
+#. Setting: Submit Report
+#. Field: hint
+msgid "Upload a bug report to paste.centos.org"
+msgstr ""
+
+#. Setting: Logs from
+#. Field: title
+msgid "Logs from"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: current
+msgid "Current Boot"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: previous
+msgid "Previous Boot (-1)"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: m2
+msgid "Boot -2"
+msgstr ""
+
+#. Setting: Logs from
+#. Option: m3
+msgid "Boot -3"
+msgstr ""
+
+#. Setting: Development Tools
+#. Field: title
+msgid "Development Tools"
+msgstr ""
+
+#. Setting: Use HHD Beta Until Restart
+#. Field: title
+msgid "Use HHD Beta Until Restart"
+msgstr ""
+
+#. Setting: Use HHD Beta Until Restart
+#. Field: hint
+msgid "Switch to the HHD beta channel until you restart."
+msgstr ""
+
+#. Setting: Go Back to Stable
+#. Field: title
+msgid "Go Back to Stable"
+msgstr ""
 
 #. Setting: System
 #. Field: hint
 msgid ""
 "Basic display settings. Brightness (and framerate TBD). This pane is "
 "meant to replace "
-msgstr ""
-"基本顯示設定。亮度（和幀率待定）。此面板旨在替代"
+msgstr "基本顯示設定。亮度（和幀率待定）。此面板旨在替代"
 
 #. Setting: Brightness
 #. Field: title
@@ -1101,11 +1628,35 @@ msgid ""
 " it is the one that was read."
 msgstr "設定顯示器的亮度級別。僅支持一個顯示器，並且是讀取的顯示器。"
 
-#. Setting: Shortcut Support + Side Button double/triple press (Requires
-#. Restart)
+#. Setting: Display
 #. Field: title
-msgid "Shortcut Support + Side Button double/triple press (Requires Restart)"
-msgstr "快捷鍵支援 + 側邊按鈕雙擊/三擊（需要重啟）"
+msgid "Display"
+msgstr ""
+
+#. Setting: Disable Touchscreen (Until Restart)
+#. Field: title
+msgid "Disable Touchscreen (Until Restart)"
+msgstr "禁用觸控螢幕 (直到重新啟動)"
+
+#. Setting: Disable Touch Gestures (Until Restart)
+#. Field: title
+msgid "Disable Touch Gestures (Until Restart)"
+msgstr "禁用觸控手是 (直到重新啟動)"
+
+#. Setting: Gamescope
+#. Field: title
+msgid "Gamescope"
+msgstr ""
+
+#. Setting: Run Steam at 60/72 Hz
+#. Field: title
+msgid "Run Steam at 60/72 Hz"
+msgstr ""
+
+#. Setting: Poweroff screen before sleep
+#. Field: title
+msgid "Poweroff screen before sleep"
+msgstr ""
 
 #. Setting: All Controllers
 #. Field: title
@@ -1297,15 +1848,52 @@ msgstr ""
 msgid "Ctrl + 4"
 msgstr ""
 
-#. Setting: Disable Touchscreen (Until Restart)
-#. Field: title
-msgid "Disable Touchscreen (Until Restart)"
-msgstr "禁用觸控螢幕 (直到重新啟動)"
+msgid "Failed to hibernate (missing swap file)."
+msgstr ""
 
-#. Setting: Disable Touch Gestures (Until Restart)
+msgid "Failed to create temporary swap."
+msgstr ""
+
+msgid "Failed to hibernate to temporary swap."
+msgstr ""
+
+#. Setting: Power
 #. Field: title
-msgid "Disable Touch Gestures (Until Restart)"
-msgstr "禁用觸控手是 (直到重新啟動)"
+msgid "Power"
+msgstr ""
+
+#. Setting: Reboot into Windows
+#. Field: title
+msgid "Reboot into Windows"
+msgstr ""
+
+#. Setting: Reboot into Windows
+#. Field: hint
+msgid "Make sure you saved your game progress."
+msgstr ""
+
+#. Setting: Hibernate
+#. Field: title
+msgid "Hibernate"
+msgstr ""
+
+#. Setting: Hibernate
+#. Field: hint
+msgid "Saves your progress and powers off the device."
+msgstr ""
+
+#. Setting: Hibernate when device asks and at 5%.
+#. Field: title
+msgid "Hibernate when device asks and at 5%."
+msgstr ""
+
+#. Setting: Hibernate when device asks and at 5%.
+#. Field: hint
+msgid ""
+"Certain devices wake up to force Windows to hibernate. If Linux does not\n"
+"they cause issues. Detect and hibernate on thermal events and on 5%\n"
+"battery.\n"
+msgstr ""
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title
@@ -1319,11 +1907,6 @@ msgid ""
 "powerbutton menu)."
 msgstr "啟用 Steam 電源鍵觸發 (負責睡眠動畫和電源按鈕清單)"
 
-#. Setting: Hue
-#. Field: title
-msgid "Hue"
-msgstr "色調"
-
 #. Setting: Saturation
 #. Field: title
 msgid "Saturation"
@@ -1334,18 +1917,6 @@ msgstr "飽和度"
 #. Setting: Speed
 msgid "Low"
 msgstr "低"
-
-#. Setting: Brightness
-#. Option: medium
-#. Setting: Speed
-msgid "Medium"
-msgstr "中"
-
-#. Setting: Brightness
-#. Option: high
-#. Setting: Speed
-msgid "High"
-msgstr "高"
 
 #. Setting: Stick Style
 #. Field: title
@@ -1422,46 +1993,6 @@ msgstr "速度"
 msgid "Direction"
 msgstr "方向"
 
-#. Setting: Off
-#. Field: title
-msgid "Off"
-msgstr "關閉"
-
-#. Setting: Off
-#. Field: hint
-msgid "Turns the LEDs off."
-msgstr "關閉 LED 燈"
-
-#. Setting: Solid
-#. Field: title
-msgid "Solid"
-msgstr "固定"
-
-#. Setting: Solid
-#. Field: hint
-msgid "Maintains the LEDs at a solid color."
-msgstr "保持 LED 燈為固定顏色"
-
-#. Setting: Pulse
-#. Field: title
-msgid "Pulse"
-msgstr "呼吸"
-
-#. Setting: Pulse
-#. Field: hint
-msgid "Slowly pulses the LEDs as a prespecified color."
-msgstr "LED 按照預設顏色缓慢呼吸"
-
-#. Setting: Rainbow
-#. Field: title
-msgid "Rainbow"
-msgstr "彩虹"
-
-#. Setting: Rainbow
-#. Field: hint
-msgid "Cycles through the different colors."
-msgstr "循環顯示不同顏色"
-
 #. Setting: Spiral
 #. Field: title
 msgid "Spiral"
@@ -1492,11 +2023,6 @@ msgstr ""
 msgid "RGB Settings"
 msgstr "RGB 設定"
 
-#. Setting: RGB Mode
-#. Field: title
-msgid "RGB Mode"
-msgstr "RGB 模式"
-
 #. Setting: Controller RGB
 #. Field: title
 msgid "Controller RGB"
@@ -1506,3 +2032,42 @@ msgstr "控制器 RGB"
 #. Field: title
 msgid "Enable RGB support."
 msgstr "啟用 RGB 支援"
+
+#~ msgid "Bazzite"
+#~ msgstr ""
+
+#~ msgid "Utilities"
+#~ msgstr "工具"
+
+#~ msgid "Simplified Chinese"
+#~ msgstr "简体中文"
+
+#~ msgid "Traditional Chinese"
+#~ msgstr "繁體中文"
+
+#~ msgid ""
+#~ "Sets the sampling frequency for the "
+#~ "IMU. Check "
+#~ "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
+#~ msgstr ""
+#~ "設定 IMU 的採樣頻率。檢查 "
+#~ "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
+
+#~ msgid "Paddles"
+#~ msgstr "背鍵"
+
+#~ msgid "Fix touchpad hold [BROKEN]"
+#~ msgstr "修復觸控板長按 [不可用]"
+
+#~ msgid ""
+#~ "Sets the sampling frequency for the "
+#~ "IMU. 1600 requires an IMU patch. "
+#~ "Check "
+#~ "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`."
+#~ msgstr ""
+#~ "設定 IMU 的取樣頻率。1600 需要一個 IMU 補丁。鍵查 "
+#~ "`/sys/bus/iio/devices/iio:device0/in_anglvel_sampling_frequency_available`"
+
+#~ msgid "Shortcut Support + Side Button double/triple press (Requires Restart)"
+#~ msgstr "快捷鍵支援 + 側邊按鈕雙擊/三擊（需要重啟）"
+
