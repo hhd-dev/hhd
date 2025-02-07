@@ -759,13 +759,13 @@ msgid ""
 "responds faster and prevents throttling. Edge is the temperature of the "
 "chip: responds slower and prevents overheating."
 msgstr ""
-"允許您設置自定義風扇曲線並選擇溫度點（邊緣或接合點）。"
-"溫度點是芯片的最高溫度：反應更快並防止降頻。"
-"邊緣是芯片的溫度：反應較慢並防止過熱。"
+"允許您設置自定義風扇曲線並選擇溫度點（Edge或Junction）。"
+"Junction是晶片的熱點溫度：反應更快並防止降頻。"
+"Edge是晶片的溫度：反應較慢並防止過熱。"
 #. Setting: Manual (Edge, Smooth)
 #. Field: title
 msgid "Manual (Edge, Smooth)"
-msgstr "手動 (邊緣, 平滑)"
+msgstr "手動 (Edge, 平滑)"
 
 #. Setting: Reset to Default
 #. Field: title
