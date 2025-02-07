@@ -98,7 +98,7 @@ class LenovoDriverPlugin(HHDPlugin):
         if self.legion_s:
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["performance"][
                 "unit"
-            ] = f"→ 25W"
+            ] = f"25W"
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"][
                 "unit"
             ] = f"→ 33/40W"
