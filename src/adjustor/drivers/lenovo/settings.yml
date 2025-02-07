@@ -29,14 +29,7 @@ children:
             type: int
             title: TDP
             hint: >-
-              Average TDP Target.
-
-              Sets the values STAMP and Skin Power Limit to it.
-              If boost is enabled, interpolates values for slow and fast TDPs 
-              based on those used by Lenovo.
-              If it is not, it sets the Slow limit equal to TDP and the Fast
-              limit to +2W.
-              Boost is recommended for desktop use.
+              Maximum average TDP. Boost goes a bit higher and is recommended for desktop use.
 
             min: 0
             max: 30
@@ -63,11 +56,7 @@ children:
     type: mode
     title: Custom Fan Curve
     hint: >-
-      Allows you to set a custom fan curve. This fan curve is only officially
-      supported on custom mode, but you can nevertheless use it in other power
-      modes.
-      This fan curve needs to be reapplied and is reapplied every time you switch 
-      TDP modes.
+      Allows you to set a custom fan curve.
     default: disabled
     modes:
       disabled:
@@ -141,7 +130,7 @@ children:
             title: Restore Default
             type: action
             hint: >-
-              Reset to the original fan curve provided by Lenovo in BIOS V28.
+              Reset to the original fan curve for custom mode.
 
   tdp_rgb:
     type: bool

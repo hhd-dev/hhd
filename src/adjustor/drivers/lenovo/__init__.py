@@ -47,13 +47,19 @@ class LenovoDriverPlugin(HHDPlugin):
         self.fan_curve_set = False
         self.legion_s = legion_s
         if legion_s:
-            self.max_watts = 30 # 33W
-            self.max_watts_sppt = 30 # 33W
-            self.max_watts_fppt = 35
+            # AC 40/43/53W
+            # DC 33/33/43W
+            self.max_watts = 40
+            self.max_watts_sppt = 43
+            self.max_watts_fppt = 53
+            self.fppt_ratio = 53 / 40
+            self.performance_tdp = 25
         else:
             self.max_watts = 30
             self.max_watts_sppt = 32
             self.max_watts_fppt = 41
+            self.fppt_ratio = 41/30
+            self.performance_tdp = 20
 
         bios_version = get_bios_version()
         if legion_s:
@@ -90,9 +96,12 @@ class LenovoDriverPlugin(HHDPlugin):
                 "tdp"
             ]["max"] = self.max_watts
         if self.legion_s:
+            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["performance"][
+                "unit"
+            ] = f"→ 25W"
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"][
                 "unit"
-            ] = f"→ {self.max_watts}W"
+            ] = f"→ 33/40W"
         return out
 
     def open(
@@ -181,7 +190,7 @@ class LenovoDriverPlugin(HHDPlugin):
                 mode = "quiet"
             elif new_tdp == 15:
                 mode = "balanced"
-            elif new_tdp == 20:
+            elif new_tdp == self.performance_tdp:
                 mode = "performance"
             else:
                 mode = "custom"
@@ -277,7 +286,7 @@ class LenovoDriverPlugin(HHDPlugin):
                     set_fast_tdp(
                         min(
                             self.max_watts_fppt,
-                            int(steady * self.max_watts_fppt / self.max_watts),
+                            int(steady * self.fppt_ratio),
                         )
                     )
                 else:
@@ -351,7 +360,7 @@ class LenovoDriverPlugin(HHDPlugin):
         if self.sys_tdp:
             conf["tdp.lenovo.cycle_info"] = _("Steam is controlling TDP")
         else:
-            conf["tdp.lenovo.cycle_info"] = _("Legion L + Y changes TDP Mode")
+            conf["tdp.lenovo.cycle_info"] = _("Legion Button + Y changes TDP Mode")
 
         # Save current config
         self.old_conf = conf["tdp.lenovo"]
