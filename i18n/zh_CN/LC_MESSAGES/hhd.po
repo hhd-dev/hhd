@@ -35,17 +35,14 @@ msgstr "控制器"
 #. Section Name for: wincontrols
 #. Setting: WinControls
 #. Field: title
-#, fuzzy
 msgid "WinControls"
-msgstr "Legion 控制器"
+msgstr ""
 
 #. Section Name for: gamemode
-#, fuzzy
 msgid "General"
 msgstr "通用"
 
 #. Section Name for: updates
-#, fuzzy
 msgid "Updates"
 msgstr "更新"
 
@@ -323,7 +320,6 @@ msgstr "模拟不同类型的控制器, 以融合 GPD 设备的特性"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: title
-#, fuzzy
 msgid "Menu/L4/R4 Mapping"
 msgstr "L4/R4 映射"
 
@@ -372,13 +368,11 @@ msgstr "菜单键为组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
-#, fuzzy
 msgid "L4 is Combo"
 msgstr "L4 为组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
-#, fuzzy
 msgid "R4 is Combo"
 msgstr "R4 为组合键"
 
@@ -520,7 +514,6 @@ msgstr "默认（暂停/PrntScr）"
 
 #. Setting: Deadzones
 #. Field: title
-#, fuzzy
 msgid "Deadzones"
 msgstr "死区"
 
@@ -541,31 +534,26 @@ msgstr "使用自定义死区"
 
 #. Setting: Left Stick Center
 #. Field: title
-#, fuzzy
 msgid "Left Stick Center"
-msgstr "左摇杆最小值"
+msgstr "左摇杆中心值"
 
 #. Setting: Left Stick Boundary
 #. Field: title
-#, fuzzy
 msgid "Left Stick Boundary"
-msgstr "左摇杆最小值"
+msgstr "左摇杆边界值"
 
 #. Setting: Right Stick Center
 #. Field: title
-#, fuzzy
 msgid "Right Stick Center"
-msgstr "右摇杆最小值"
+msgstr "右摇杆中心值"
 
 #. Setting: Right Stick Boundary
 #. Field: title
-#, fuzzy
 msgid "Right Stick Boundary"
-msgstr "右摇杆最小值"
+msgstr "右摇杆边界值"
 
 #. Setting: Vibration Strength
 #. Field: title
-#, fuzzy
 msgid "Vibration Strength"
 msgstr "震动强度"
 
@@ -595,13 +583,11 @@ msgstr "错误"
 
 #. Setting: Apply Settings
 #. Field: title
-#, fuzzy
 msgid "Apply Settings"
-msgstr "设置"
+msgstr "应用设置"
 
 #. Setting: Legion Controller
 #. Field: title
-#, fuzzy
 msgid "Legion Controller"
 msgstr "Legion 控制器"
 
@@ -617,13 +603,11 @@ msgstr "模拟模式 (X-Input)"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
-#, fuzzy
 msgid "Emulate different controller types when in X-Input mode."
 msgstr "当 Legion 控制器处于 X-Input 模式时模拟不同类型的控制器"
 
 #. Setting: Motion Support
 #. Field: hint
-#, fuzzy
 msgid "Enable gyroscope/accelerometer (IMU) support"
 msgstr "启用陀螺仪/加速度计 (IMU) 支持"
 
@@ -1390,9 +1374,8 @@ msgstr "加载上一个版本失败"
 
 #. Setting: System Image
 #. Field: title
-#, fuzzy
 msgid "System Image"
-msgstr "系统"
+msgstr "系统镜像"
 
 #. Setting: System Image
 #. Field: hint
@@ -1546,7 +1529,6 @@ msgstr "Bug 报告链接"
 
 #. Setting: Upload Error
 #. Field: title
-#, fuzzy
 msgid "Upload Error"
 msgstr "更新错误"
 

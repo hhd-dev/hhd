@@ -260,7 +260,6 @@ msgstr ""
 
 #. Setting: Custom Scheduler
 #. Option: scx_bpfland
-#, fuzzy
 msgid "bpfland"
 msgstr ""
 
@@ -581,7 +580,6 @@ msgstr "极限待机模式"
 
 #. Setting: Extreme Standby Mode
 #. Field: hint
-#, fuzzy, python-format
 msgid ""
 "Lowers the power consumption of the device from 4% to 1% overnight. "
 "Active only on battery. Turns off the power light and the controller  "
@@ -624,9 +622,8 @@ msgid ""
 "Unchecked, it is still setting TDP to 15W."
 msgstr "允许将 Steam TDP 滑块设置为 1-20W, 而不是 4-15W。未选中时, 仍将 TDP 设置为 15W。"
 
-#, fuzzy
 msgid "Power Light"
-msgstr "电源指示灯(睡眠时)"
+msgstr "电源指示灯"
 
 msgid "Legion L + Y changes TDP Mode"
 msgstr "Legion L + Y 更改 TDP 模式"
