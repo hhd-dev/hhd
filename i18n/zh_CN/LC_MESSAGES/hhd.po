@@ -42,16 +42,16 @@ msgstr "Legion 控制器"
 #. Section Name for: gamemode
 #, fuzzy
 msgid "General"
-msgstr "居中"
+msgstr "通用"
 
 #. Section Name for: updates
 #, fuzzy
 msgid "Updates"
-msgstr "更新 (稳定版)"
+msgstr "更新"
 
 #. Section Name for: debug
 msgid "Bugreport"
-msgstr ""
+msgstr "错误报告"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
@@ -335,10 +335,9 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 HHD）。如果 "
-"禁用，它们将作为键盘按钮。菜单/L4/R4 可以是组合键：菜单是 "
-"单擊呼出快速選單鍵(QAM)，双擊呼出HHD，长按則為Xbox。L4/R4 是单呼出快速選單鍵(QAM)，长按 "
-"HHD（原始）。"
+"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 HHD）。如果禁用，它们将作为键盘按钮。"
+"菜单/L4/R4 可以作为组合键：菜单单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。"
+"L4/R4 是单击呼出快速菜单键(QAM)，长按呼出 HHD 菜单（原始）。"
 #. Option: disabled
 #. Setting: Start/Select do SteamOS Combos
 #. Setting: Disabled
@@ -364,24 +363,24 @@ msgstr "禁用"
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
 msgid "Paddles, no Combo"
-msgstr "背键无组合键"
+msgstr "背键,不做组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
 msgid "Menu is Combo"
-msgstr "菜单是组合键"
+msgstr "菜单键为组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
 #, fuzzy
 msgid "L4 is Combo"
-msgstr "L4是組合建"
+msgstr "L4 为组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
 #, fuzzy
 msgid "R4 is Combo"
-msgstr "R4是是組合建"
+msgstr "R4 为组合键"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: title
@@ -396,13 +395,12 @@ msgid ""
 "screenshot)."
 msgstr ""
 "按住 Select 或 Start 时，如果按下另一个按钮，它们将变为 Xbox 按钮，"
-"允许执行 SteamOS 组合（Select+RT 是屏幕截图）。"
+"可以实现执行 SteamOS 组合键（Select+RT 是屏幕截图）。"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
-#, fuzzy
 msgid "Select Only"
-msgstr "次要"
+msgstr "仅 Select"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: start_select
@@ -503,7 +501,7 @@ msgstr "GPD (RT 为快速鼠标)"
 #. Setting: Mouse Mode Triggers
 #. Option: steamos
 msgid "SteamOS (LT/RT are R/L Clicks)"
-msgstr "SteamOS (LT/RT 為 R/L 点击)"
+msgstr "SteamOS (LT/RT 为 R/L 点击)"
 
 #. Setting: L4/R4 Mapping
 #. Field: title
@@ -524,7 +522,7 @@ msgstr "默认（暂停/PrntScr）"
 #. Field: title
 #, fuzzy
 msgid "Deadzones"
-msgstr "死区和震动"
+msgstr "死区"
 
 #. Setting: Do not change
 #. Field: hint
@@ -627,7 +625,7 @@ msgstr "当 Legion 控制器处于 X-Input 模式时模拟不同类型的控制�
 #. Field: hint
 #, fuzzy
 msgid "Enable gyroscope/accelerometer (IMU) support"
-msgstr "启用陀螺仪/加速度计 (IMU) 支持 (0.3% 后台 CPU 使用)"
+msgstr "启用陀螺仪/加速度计 (IMU) 支持"
 
 #. Setting: Swap Legion with Menu/View
 #. Field: title
@@ -642,17 +640,15 @@ msgstr "启用快捷控制器"
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
 msgid "When in dinput mode, enable a controller for shortcuts."
-msgstr "在 dinput 模式下, 启用一个控制器用于快捷方式"
+msgstr "当处于 dinput 模式时, 启用一个控制器用于快捷设置"
 
 #. Setting: Reset Controller
 #. Field: title
-#, fuzzy
 msgid "Reset Controller"
-msgstr "左控制器"
+msgstr "重置控制器"
 
 #. Setting: Reset Controller
 #. Field: hint
-#, fuzzy
 msgid "Resets the controller to stock settings."
 msgstr "将控制器重置为默认设置"
 
@@ -666,7 +662,7 @@ msgstr "Legion 控制器"
 msgid ""
 "Allows for configuring the Legion controllers using the built in firmware"
 " commands and enabling emulation modes for various controller types."
-msgstr "使用控制器固件内置命令配置 Legion 控制器, 并启用各种控制器类型的模拟模式"
+msgstr "允许使用控制器固件内置命令配置 Legion 控制器, 并启用各种控制器类型的模拟模式"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
@@ -1298,10 +1294,10 @@ msgid ""
 "left and half of the right is right. \"Stretch\" stretches the touchpad "
 "to the whole dualsense surface."
 msgstr ""
-"控制实际触控板与虚拟触控板的放置，使用Steam 所期望的方式。在 Steam 中，\"左\" 触控板映射到左半边，\"右\" "
-"触控板映射到右半边，而 \"中心\" "
-"映射到整个触控板。因此，虚拟触控板在左侧被裁剪为左侧，右侧被裁剪为右侧，在中心扩展为中心。这意味着当设置为中心时，左触控板的一半是左侧，右触控板的一半是右侧。\"拉伸\""
-" 将触控板拉伸到整个双感应表面。"
+"配置真实触控板与虚拟触控板的位置关系，以适配 Steam 设置。在 Steam 中，\"左\" 将触控板映射到左半边，"
+"\"右\" 将触控板映射到右半边，而 \"居中\" 将映射到整个触控板。"
+"因此，虚拟触摸板被裁剪为左侧用于左边，右侧用于右边，并在中心扩展。这意味着当设置为\"居中\"时，左触控板的一半是左侧，右触控板的一半是右侧。\"拉伸\""
+" 将触控板拉伸到整个Dualsense虚拟触控板。"
 
 #. Setting: Location
 #. Option: right
@@ -1356,19 +1352,17 @@ msgstr "导入中:"
 msgid "Deploying:"
 msgstr "部署中:"
 
-#, fuzzy
 msgid "Loading"
-msgstr "位置"
+msgstr "加载中"
 
-#, fuzzy
 msgid "No update available"
-msgstr "更新 (稳定版)"
+msgstr "没有可用的更新"
 
 msgid "Rebasing to "
 msgstr "重置到 "
 
 msgid "Updating to latest "
-msgstr "更新到最新"
+msgstr "更新到最新版本"
 
 msgid "Updating... "
 msgstr "更新中... "
@@ -1417,9 +1411,8 @@ msgstr "下一个"
 
 #. Setting: Current
 #. Field: title
-#, fuzzy
 msgid "Current"
-msgstr "居中"
+msgstr "当前"
 
 #. Setting: Previous
 #. Field: title
@@ -1428,15 +1421,13 @@ msgstr "上一个"
 
 #. Setting: Update
 #. Field: title
-#, fuzzy
 msgid "Update"
-msgstr "更新错误"
+msgstr "更新"
 
 #. Setting: Update Stage
 #. Field: title
-#, fuzzy
 msgid "Update Stage"
-msgstr "更新 (稳定版)"
+msgstr "更新阶段"
 
 #. Setting: Apply Update
 #. Field: title
@@ -1496,7 +1487,7 @@ msgstr "撤销还原"
 #. Setting: Choose Version (Rebase)
 #. Field: title
 msgid "Choose Version (Rebase)"
-msgstr "选择版本 (重置)"
+msgstr "选择版本 (Rebase)"
 
 #. Setting: Run rpm-ostree reset
 #. Field: title
@@ -1546,12 +1537,12 @@ msgstr "下载 Beta 并重启中..."
 #. Setting: Bug Report
 #. Field: title
 msgid "Bug Report"
-msgstr "Bug 回報"
+msgstr "Bug 报告"
 
 #. Setting: Bug Report Link
 #. Field: title
 msgid "Bug Report Link"
-msgstr "Bug 回報链接"
+msgstr "Bug 报告链接"
 
 #. Setting: Upload Error
 #. Field: title
@@ -1656,7 +1647,7 @@ msgstr "游戏范围"
 #. Setting: Run Steam at 60/72 Hz
 #. Field: title
 msgid "Run Steam at 60/72 Hz"
-msgstr "Steam 运行在 60/72 Hz"
+msgstr "让 Steam 运行在 60/72 Hz 刷新率"
 
 #. Setting: Poweroff screen before sleep
 #. Field: title
@@ -1899,7 +1890,7 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"某些设备会唤醒以强制 Windows 进入休眠。如果 Linux 不这样做, 会导致问题。检测并在热事件和 5% 电量时休眠。\n"
+"某些设备会唤醒以强制 Windows 进入休眠。如果 Linux 不这样做, 会导致问题。在热事件和电池剩余5%时检测并休眠。\n"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title

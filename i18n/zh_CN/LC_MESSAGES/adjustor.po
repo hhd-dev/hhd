@@ -758,18 +758,17 @@ msgid ""
 "chip: responds slower and prevents overheating."
 msgstr ""
 "允许您设置自定义风扇曲线并选择温度探头 "  
-"(边缘或接点)。接点是芯片的峰值温度： "  
-"响应更快并防止降频。边缘是芯片的温度： "  
-"响应较慢并防止过热。"  
+"(Edge或Junction)。Junction是芯片的热点温度： "  
+"响应更快并防止降频。Edge是芯片的温度： "  
+"响应较慢并防止过热。"
 
 #. Setting: Manual (Edge, Smooth)
 #. Field: title
 msgid "Manual (Edge, Smooth)"
-msgstr "手动 (边缘, 平滑)"
+msgstr "手动 (Edge, 平滑)"
 
 #. Setting: Reset to Default
 #. Field: title
-#, fuzzy
 msgid "Reset to Default"
 msgstr "恢复默认"
 
