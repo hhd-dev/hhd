@@ -88,6 +88,11 @@ def controller_factory_reset():
         to_bytes("080300"),
         # Disable controller hibernation
         to_bytes("040400"),
+        # Enable gyro
+        to_bytes("040701"),
+        to_bytes("040501"), # hid imu for display rotation
+        # Set controller to 500hz
+        to_bytes("041002"),
         # todo...
     ]
 

@@ -167,7 +167,7 @@ def controller_loop_rest(
         usage=[0x0001],
         report_size=64,
         interface=3,
-        callback=RgbCallback(),
+        callback=rgb_callback,
         required=True,
     ).with_settings(reset=reset)
 
