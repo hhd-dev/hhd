@@ -49,6 +49,7 @@ class UInputDevice(Consumer, Producer):
         cache: bool = False,
         motions_device: bool = False,
         volume_keyboard: bool = False,
+        sync_gyro: bool = False,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -70,6 +71,7 @@ class UInputDevice(Consumer, Producer):
         self.cache = cache
         self.motions_device = motions_device
         self.volume_keyboard = volume_keyboard
+        self.sync_gyro = sync_gyro
         if volume_keyboard:
             self.cache = True
 
@@ -102,9 +104,7 @@ class UInputDevice(Consumer, Producer):
                     and self.input_props == cached.input_props
                     and self.uniq == cached.uniq
                 ):
-                    logger.warning(
-                        f"Using cached controller node for {name}."
-                    )
+                    logger.warning(f"Using cached controller node for {name}.")
                     self.dev = cached.dev
                 else:
                     cached.close(True, in_cache=True)
@@ -160,9 +160,7 @@ class UInputDevice(Consumer, Producer):
             else:
                 name = "controller"
                 _cache.add(self)
-            logger.warning(
-                f"Caching {name} to avoid reconnection."
-            )
+            logger.warning(f"Caching {name} to avoid reconnection.")
         elif self.dev:
             self.dev.close()
             self.dev = None
@@ -174,6 +172,7 @@ class UInputDevice(Consumer, Producer):
         if not self.dev:
             return
 
+        should_syn = not self.sync_gyro
         wrote = {}
         ts = 0
         for ev in reversed(events):
@@ -184,6 +183,9 @@ class UInputDevice(Consumer, Producer):
                 continue
             match ev["type"]:
                 case "axis":
+                    if not should_syn and "imu_ts" in ev["code"]:
+                        should_syn = True
+
                     if ev["code"] in self.axis_map:
                         ax = self.axis_map[ev["code"]]
                         if ev["code"] == "touchpad_x":
@@ -251,7 +253,9 @@ class UInputDevice(Consumer, Producer):
             ts = (time.perf_counter_ns() // 1000) % (2**31)
             self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
 
-        if wrote and (not self.output_imu_timestamps or ts):
+        if (should_syn or (wrote and not self.sync_gyro)) and (
+            not self.output_imu_timestamps or ts
+        ):
             self.dev.syn()
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:

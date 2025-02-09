@@ -117,6 +117,7 @@ def get_outputs(
         case "uinput" | "xbox_elite" | "joycon_pair" | "hori_steam":
             Dualsense.close_cached()
             version = 1
+            sync_gyro = False
             paddles_as = conf.get("uinput.paddles_as", "noob")
             if controller == "joycon_pair":
                 theme = "joycon_pair"
@@ -131,6 +132,7 @@ def get_outputs(
                 button_map = HORIPAD_STEAM_BUTTON_MAP
                 bus = 0x06
                 version = 0
+                sync_gyro = conf.get("hori_steam.sync_gyro", True)
                 has_qam = True
             elif controller == "xbox_elite" or (
                 controller == "uinput" and paddles_as == "steam_input"
@@ -161,6 +163,7 @@ def get_outputs(
                 bus=bus,
                 version=version,
                 cache=True,
+                sync_gyro=sync_gyro and motion,
             )
             producers.append(d)
             consumers.append(d)
