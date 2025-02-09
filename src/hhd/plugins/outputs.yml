@@ -104,6 +104,18 @@ modes:
         hint: >-
           Makes the left paddle bring up a keyboard and the right paddle bring
           up the overlay.
+      sync_gyro:
+        type: bool
+        title: Gyro Output Sync
+        hint: >-
+          Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to Mouse [BETA]`.
+          If the same timestamp is sent in 2 reports, this causes a division by 0 and instability.
+          This option makes it so reports are sent only when there is a new
+          IMU timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU.
+          This only makes a difference for the Legion Go (125hz), as all the other
+          handhelds are using 400hz by default.
+        default: True
       flip_z:
         type: bool
         title: Invert Roll Axis
