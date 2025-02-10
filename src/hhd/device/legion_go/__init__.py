@@ -23,8 +23,8 @@ LEGION_S_CONFS = {
     "83Q2": {
         "name": "Legion Go S",
     },
-    "83N6": {
-        "83Q3": "Legion Go S",
+    "83Q3": {
+        "name": "Legion Go S",
     },
 }
 
