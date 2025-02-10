@@ -85,7 +85,7 @@ modes:
 
   hori_steam:
     type: container
-    tags: [hori_steam]
+    tags: [hori_steam, non-essential]
     title: Steam Controller
     hint: >-
       Allows for gyro, paddles, and has a proper QAM button.
@@ -107,6 +107,7 @@ modes:
       sync_gyro:
         type: bool
         title: Gyro Output Sync
+        tags: [non-essential]
         hint: >-
           Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to Mouse [BETA]`.
           If the same timestamp is sent in 2 reports, this causes a division by 0 and instability.
@@ -115,7 +116,7 @@ modes:
           controller to that of the IMU.
           This only makes a difference for the Legion Go (125hz), as all the other
           handhelds are using 400hz by default.
-        default: True
+        default: False
       flip_z:
         type: bool
         title: Invert Roll Axis
