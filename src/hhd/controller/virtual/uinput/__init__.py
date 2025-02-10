@@ -17,7 +17,7 @@ _cache = ControllerCache()
 _cache_motions = ControllerCache()
 _cache_volume = ControllerCache()
 
-MIN_TIME_FOR_CACHE = 2
+MAX_IMU_SYNC_DELAY = 2
 
 
 class UInputDevice(Consumer, Producer):
@@ -72,6 +72,8 @@ class UInputDevice(Consumer, Producer):
         self.motions_device = motions_device
         self.volume_keyboard = volume_keyboard
         self.sync_gyro = sync_gyro
+        self.imu_failed = False
+        self.last_imu = 0
         if volume_keyboard:
             self.cache = True
 
@@ -141,6 +143,8 @@ class UInputDevice(Consumer, Producer):
         self.touch_id = 1
         self.fd = self.dev.fd
         self.start = time.perf_counter()
+        self.last_imu = time.perf_counter()
+        self.imu_failed = False
 
         if self.ignore_cmds:
             # Do not wake up if we ignore to save utilization
@@ -184,6 +188,8 @@ class UInputDevice(Consumer, Producer):
             match ev["type"]:
                 case "axis":
                     if not should_syn and "imu_ts" in ev["code"]:
+                        self.imu_failed = False
+                        self.last_imu = time.perf_counter()
                         should_syn = True
 
                     if ev["code"] in self.axis_map:
@@ -253,7 +259,15 @@ class UInputDevice(Consumer, Producer):
             ts = (time.perf_counter_ns() // 1000) % (2**31)
             self.dev.write(B("EV_MSC"), B("MSC_TIMESTAMP"), ts)
 
-        if (should_syn or (wrote and not self.sync_gyro)) and (
+        if self.sync_gyro:
+            curr = time.perf_counter()
+            if curr - self.last_imu > MAX_IMU_SYNC_DELAY and not self.imu_failed:
+                self.imu_failed = True
+                logger.error(
+                    f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync."
+                )
+
+        if (should_syn or (wrote and (not self.sync_gyro or self.imu_failed))) and (
             not self.output_imu_timestamps or ts
         ):
             self.dev.syn()

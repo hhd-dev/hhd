@@ -157,6 +157,7 @@ def controller_loop_rest(
             axis_map={None: GOS_INTERFACE_AXIS_MAP},
             btn_map={None: GOS_INTERFACE_BTN_MAP},
             required=True,
+            motion=False,
         ),
         passthrough_pressed=True,
     )
@@ -258,6 +259,7 @@ def controller_loop_xinput(
             axis_map={None: GOS_INTERFACE_AXIS_MAP},
             btn_map={None: GOS_INTERFACE_BTN_MAP},
             required=True,
+            motion=d_params.get("uses_motion", True),
         )
     )
     d_cfg = LegionHidraw(

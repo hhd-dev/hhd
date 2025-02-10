@@ -90,7 +90,7 @@ def controller_factory_reset():
         to_bytes("040400"),
         # Enable gyro
         to_bytes("040701"),
-        to_bytes("040501"), # hid imu for display rotation
+        to_bytes("040501"),  # hid imu for display rotation
         # Set controller to 500hz
         to_bytes("041002"),
         # todo...
@@ -155,7 +155,7 @@ class RgbCallback:
                         mode = "spiral"
                     case _:
                         pass
-                
+
                 # On rgb modes such as the rainbow vomit, reiniting causes
                 # a flicker, so we only update if the values have changed
                 if self.prev_event:
@@ -192,7 +192,9 @@ class RgbCallback:
         except Exception as e:
             logger.error(f"Error while setting RGB:\n{e}")
 
+
 rgb_callback = RgbCallback()
+
 
 class LegionHidraw(GenericGamepadHidraw):
     def with_settings(
@@ -222,14 +224,15 @@ class LegionHidraw(GenericGamepadHidraw):
 
 
 class LegionHidrawTs(GenericGamepadHidraw):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, motion: bool = True, **kwargs):
         super().__init__(*args, **kwargs)
         self.ts_count = 0
+        self.motion = motion
 
     def produce(self, fds: Sequence[int]):
         evs = super().produce(fds)
 
-        if self.fd in fds:
+        if self.motion and self.fd in fds:
             # If fd was readable, 8ms have passed
             self.ts_count += 8_000_000
 
