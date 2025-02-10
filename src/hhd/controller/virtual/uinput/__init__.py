@@ -74,6 +74,7 @@ class UInputDevice(Consumer, Producer):
         self.sync_gyro = sync_gyro
         self.imu_failed = False
         self.last_imu = 0
+        self.wrote = False
         if volume_keyboard:
             self.cache = True
 
@@ -145,6 +146,7 @@ class UInputDevice(Consumer, Producer):
         self.start = time.perf_counter()
         self.last_imu = time.perf_counter()
         self.imu_failed = False
+        self.wrote = False
 
         if self.ignore_cmds:
             # Do not wake up if we ignore to save utilization
@@ -267,10 +269,14 @@ class UInputDevice(Consumer, Producer):
                     f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync."
                 )
 
-        if (should_syn or (wrote and (not self.sync_gyro or self.imu_failed))) and (
-            not self.output_imu_timestamps or ts
+        self.wrote = self.wrote or bool(wrote)
+        if (
+            self.wrote
+            and (should_syn or not self.sync_gyro or self.imu_failed)
+            and (not self.output_imu_timestamps or ts)
         ):
             self.dev.syn()
+            self.wrote = False
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         if self.ignore_cmds or not self.fd or not self.fd in fds or not self.dev:
