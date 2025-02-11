@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
@@ -35,23 +35,20 @@ msgstr "控制器"
 #. Section Name for: wincontrols
 #. Setting: WinControls
 #. Field: title
-#, fuzzy
 msgid "WinControls"
-msgstr "Legion 控制器"
+msgstr "Win控制器"
 
 #. Section Name for: gamemode
-#, fuzzy
 msgid "General"
-msgstr "置中"
+msgstr "一般"
 
 #. Section Name for: updates
-#, fuzzy
 msgid "Updates"
-msgstr "更新 (穩定版)"
+msgstr "更新"
 
 #. Section Name for: debug
 msgid "Bugreport"
-msgstr ""
+msgstr "錯誤報告"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
@@ -86,7 +83,7 @@ msgstr ""
 #. Setting: Language
 #. Option: zh
 msgid "Chinese"
-msgstr ""
+msgstr "中文"
 
 #. Setting: Language
 #. Option: pt
@@ -323,7 +320,6 @@ msgstr "模擬不同類型的控制器，以融合 GPD 設備的特性"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: title
-#, fuzzy
 msgid "Menu/L4/R4 Mapping"
 msgstr "L4/R4 映射"
 
@@ -336,9 +332,9 @@ msgid ""
 " HHD (legacy). "
 msgstr ""
 "將 L4/R4 映射到 Steam 輸入 (需要在 Wincontrols 選項卡中將 L4/R4 設置為 HHD)。"
-"如果禁用，則它們是鍵盤按鈕。"
-"Menu/L4/R4 可以是組合鍵：Menu:單次按下 - 快速選單(QAM)、雙次按下- HHD選單、按住-Xbox。"
-"L4/R4 是單次按下- 快速選單(QAM)，按住-HHD (原始)。"
+"如果禁用，則它們將作為鍵盤按鈕。"
+"選單/L4/R4 可以作為組合鍵：Menu單擊呼叫快速選單(QAM)、雙擊呼叫HHD選單、按住則做為Xbox鍵。"
+"L4/R4 是單擊呼叫快速選單(QAM)，長按呼叫 HHD 選單(原始)。"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: disabled
@@ -366,24 +362,22 @@ msgstr "禁用"
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
 msgid "Paddles, no Combo"
-msgstr "背鍵, 無組合鍵"
+msgstr "背鍵, 不做組合鍵"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
 msgid "Menu is Combo"
-msgstr "選單鍵是組合鍵"
+msgstr "選單鍵為組合鍵"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
-#, fuzzy
 msgid "L4 is Combo"
-msgstr "L4是組合鍵"
+msgstr "L4為組合鍵"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
-#, fuzzy
 msgid "R4 is Combo"
-msgstr "R4是組合鍵"
+msgstr "R4為組合鍵"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: title
@@ -398,13 +392,12 @@ msgid ""
 "screenshot)."
 msgstr ""
 "按住 Select 或 Start 鍵，如果按下另一個按鈕，則它們將成為 Xbox 按鈕，"
-"這樣可以進行 SteamOS 組合鍵 (Select+RT 是截圖)。"
+"這樣可以實現 SteamOS 組合鍵效果 (Select+RT 是截圖)。"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
-#, fuzzy
 msgid "Select Only"
-msgstr "次要"
+msgstr "僅 Select"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: start_select
@@ -505,7 +498,7 @@ msgstr "GPD (RT 是快速鼠標)"
 #. Setting: Mouse Mode Triggers
 #. Option: steamos
 msgid "SteamOS (LT/RT are R/L Clicks)"
-msgstr "SteamOS (LT/RT 是 R/L 點擊)"
+msgstr "SteamOS (LT/RT 為 R/L 點擊)"
 
 #. Setting: L4/R4 Mapping
 #. Field: title
@@ -524,9 +517,8 @@ msgstr "預設 (Pause/PrntScr)"
 
 #. Setting: Deadzones
 #. Field: title
-#, fuzzy
 msgid "Deadzones"
-msgstr "死區和震動"
+msgstr "死區"
 
 #. Setting: Do not change
 #. Field: hint
@@ -545,31 +537,26 @@ msgstr "使用自定義死區"
 
 #. Setting: Left Stick Center
 #. Field: title
-#, fuzzy
 msgid "Left Stick Center"
 msgstr "左搖桿最小值"
 
 #. Setting: Left Stick Boundary
 #. Field: title
-#, fuzzy
 msgid "Left Stick Boundary"
 msgstr "左搖桿最小值"
 
 #. Setting: Right Stick Center
 #. Field: title
-#, fuzzy
 msgid "Right Stick Center"
 msgstr "右搖桿最小值"
 
 #. Setting: Right Stick Boundary
 #. Field: title
-#, fuzzy
 msgid "Right Stick Boundary"
 msgstr "右搖桿最小值"
 
 #. Setting: Vibration Strength
 #. Field: title
-#, fuzzy
 msgid "Vibration Strength"
 msgstr "震動強度"
 
@@ -599,13 +586,11 @@ msgstr "錯誤"
 
 #. Setting: Apply Settings
 #. Field: title
-#, fuzzy
 msgid "Apply Settings"
 msgstr "應用設定"
 
 #. Setting: Legion Controller
 #. Field: title
-#, fuzzy
 msgid "Legion Controller"
 msgstr "Legion 控制器"
 
@@ -621,15 +606,13 @@ msgstr "模擬模式 (X-Input)"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
-#, fuzzy
 msgid "Emulate different controller types when in X-Input mode."
 msgstr "當 Legion 控制器處於 X-Input 模式時，模擬不同類型的控制器。"
 
 #. Setting: Motion Support
 #. Field: hint
-#, fuzzy
 msgid "Enable gyroscope/accelerometer (IMU) support"
-msgstr "啟用陀螺儀/加速度計 (IMU) 支援 (0.3% 背景 CPU 使用)"
+msgstr "啟用陀螺儀/加速度計 (IMU) 支援"
 
 #. Setting: Swap Legion with Menu/View
 #. Field: title
@@ -648,13 +631,11 @@ msgstr "在 dinput 模式下，啟用一個控制器來執行快捷鍵"
 
 #. Setting: Reset Controller
 #. Field: title
-#, fuzzy
 msgid "Reset Controller"
 msgstr "重置控制器"
 
 #. Setting: Reset Controller
 #. Field: hint
-#, fuzzy
 msgid "Resets the controller to stock settings."
 msgstr "將控制器重置為預設設定"
 
@@ -668,7 +649,7 @@ msgstr "Legion 控制器"
 msgid ""
 "Allows for configuring the Legion controllers using the built in firmware"
 " commands and enabling emulation modes for various controller types."
-msgstr "使用控制器韌體內建命令配置 Legion 控制器，並啟用各種控制器類型的模擬模式。"
+msgstr "允許使用控制器韌體內建命令配置 Legion 控制器，並啟用各種控制器類型的模擬模式。"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
@@ -1300,10 +1281,10 @@ msgid ""
 "left and half of the right is right. \"Stretch\" stretches the touchpad "
 "to the whole dualsense surface."
 msgstr ""
-"控制實際觸控板與虛擬觸控板的放置，使用Steam 所期望的方式。在 Steam 中，\"左\" 觸控板映射到左半邊，\"右\" "
-"觸控板映射到右半邊，而 \"中心\" "
-"映射到整個觸控板。因此，虛擬觸控板在左側被裁剪為左側，右側被裁剪為右側，在中心擴展為中心。這意味著當設置為中心時，左觸控板的一半是左側，右觸控板的一半是右側。\"延伸\""
-" 將觸控板延伸到整個雙感應表面。"
+"配置真實觸控板與虛擬觸控板的位置關係，以適配 Steam 設定。在 Steam 中，\"左\" 將觸控板對應到左半邊，"
+"\"右\" 將觸控板對應到右半邊，而 \"置中\" 將對應到整個觸控板。"
+"因此，虛擬觸控板被裁切為左側用於左邊，右側用於右邊，並在中心擴展。這意味著當設置為\"置中\"時，左觸控板的一半是左側，右觸控板的一半是右側。\"延伸\""
+" 將觸控板伸展至整個Dualsense虛擬觸控板。"
 
 #. Setting: Location
 #. Option: right
@@ -1350,27 +1331,25 @@ msgstr ""
 "使用物理按鍵作為左鍵，雙擊作為右鍵（雙擊支援因設備而異；請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
 
 msgid "Downloading:"
-msgstr ""
+msgstr "下載中:"
 
 msgid "Importing:"
-msgstr ""
+msgstr "導入中:"
 
 msgid "Deploying:"
-msgstr ""
+msgstr "部屬中:"
 
-#, fuzzy
 msgid "Loading"
-msgstr "位置"
+msgstr "讀取中"
 
-#, fuzzy
 msgid "No update available"
-msgstr "更新 (穩定版)"
+msgstr "無可用更新"
 
 msgid "Rebasing to "
 msgstr "重新定位到"
 
 msgid "Updating to latest "
-msgstr "更新到最新"
+msgstr "更新到最新版本"
 
 msgid "Updating... "
 msgstr "更新中..."
@@ -1398,7 +1377,6 @@ msgstr "載入上一版本失敗"
 
 #. Setting: System Image
 #. Field: title
-#, fuzzy
 msgid "System Image"
 msgstr "系統"
 
@@ -1419,9 +1397,8 @@ msgstr "下一個"
 
 #. Setting: Current
 #. Field: title
-#, fuzzy
 msgid "Current"
-msgstr "置中"
+msgstr "目前"
 
 #. Setting: Previous
 #. Field: title
@@ -1430,15 +1407,13 @@ msgstr "上一個"
 
 #. Setting: Update
 #. Field: title
-#, fuzzy
 msgid "Update"
-msgstr "更新錯誤"
+msgstr "更新"
 
 #. Setting: Update Stage
 #. Field: title
-#, fuzzy
 msgid "Update Stage"
-msgstr "更新 (穩定版)"
+msgstr "更新階段"
 
 #. Setting: Apply Update
 #. Field: title
@@ -1498,7 +1473,7 @@ msgstr "撤銷還原"
 #. Setting: Choose Version (Rebase)
 #. Field: title
 msgid "Choose Version (Rebase)"
-msgstr  選擇版本 (重新定位)"
+msgstr "選擇版本 (Rebase)"
 
 #. Setting: Run rpm-ostree reset
 #. Field: title
@@ -1513,7 +1488,6 @@ msgid ""
 msgstr ""
 "禁用自定義 initramfs 並移除覆蓋層。"
 "您的個人資料不會受到影響。"
-
 #. Setting: Cancel
 #. Field: title
 msgid "Cancel"
@@ -1549,16 +1523,15 @@ msgstr "下載 Beta 並重新啟動..."
 #. Setting: Bug Report
 #. Field: title
 msgid "Bug Report"
-msgstr "Bug 回報"
+msgstr "Bug 報告"
 
 #. Setting: Bug Report Link
 #. Field: title
 msgid "Bug Report Link"
-msgstr "Bug 回報連結"
+msgstr "Bug 報告連結"
 
 #. Setting: Upload Error
 #. Field: title
-#, fuzzy
 msgid "Upload Error"
 msgstr "更新錯誤"
 
@@ -1622,7 +1595,8 @@ msgstr "返回穩定版"
 msgid ""
 "Basic display settings. Brightness (and framerate TBD). This pane is "
 "meant to replace "
-msgstr "基本顯示設定。亮度（和幀率待定）。"
+msgstr ""
+"基本顯示設定。亮度（和幀率待定）。"
 "此面板旨在替代"
 
 #. Setting: Brightness
@@ -1660,7 +1634,7 @@ msgstr "遊戲範圍"
 #. Setting: Run Steam at 60/72 Hz
 #. Field: title
 msgid "Run Steam at 60/72 Hz"
-msgstr "Steam 在 60/72 Hz 下運行"
+msgstr "Steam 將在 60/72 Hz 下運行"
 
 #. Setting: Poweroff screen before sleep
 #. Field: title
@@ -1879,7 +1853,7 @@ msgstr "重新啟動到 Windows"
 #. Setting: Reboot into Windows
 #. Field: hint
 msgid "Make sure you saved your game progress."
-msgstr "確保您已保存遊戲進度。"
+msgstr "請確保您已保存遊戲進度。"
 
 #. Setting: Hibernate
 #. Field: title
@@ -1905,7 +1879,8 @@ msgid ""
 msgstr ""
 "某些設備會喚醒以強制 Windows 進入睡眠。\n"
 "如果 Linux 不這樣做，它們會引起問題。\n"
-"在溫度事件和在 5% 電池時檢測並進入睡眠。\n"
+"在熱事件和電池剩餘 5% 時檢測並進入睡眠。\n"
+
 #. Setting: Steam Powerbutton Handler
 #. Field: title
 msgid "Steam Powerbutton Handler"
