@@ -580,11 +580,11 @@ msgstr "极限待机模式"
 
 #. Setting: Extreme Standby Mode
 #. Field: hint
-msgid ""
-"Lowers the power consumption of the device from 4% to 1% overnight. "
-"Active only on battery. Turns off the power light and the controller  "
-"requires longer to wake up."
-msgstr "将设备的功耗从 4% 降低到 1%, 仅在电池模式下有效。关闭电源指示灯, 控制器需要更长时间才能唤醒"
+# msgid ""
+# "Lowers the power consumption of the device from 4% to 1% overnight. "
+# "Active only on battery. Turns off the power light and the controller  "
+# "requires longer to wake up."
+# msgstr "将设备的功耗从 4% 降低到 1%, 仅在电池模式下有效。关闭电源指示灯, 控制器需要更长时间才能唤醒"
 
 #. Setting: Power
 #. Field: title
