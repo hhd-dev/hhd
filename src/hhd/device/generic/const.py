@@ -159,6 +159,7 @@ CONFS = {
         **AYA_DEFAULT_CONF,
     },
     "KUN": {"name": "AYANEO 2021 Kun", **AYA_DEFAULT_CONF},
+    "AYANEO KUN": {"name": "AYANEO Kun", **AYA_DEFAULT_CONF},
     # Anbernic
     "Win600": {
         "name": "Anbernic Win600",
