@@ -116,7 +116,7 @@ modes:
           controller to that of the IMU.
           This only makes a difference for the Legion Go (125hz), as all the other
           handhelds are using 400hz by default.
-        default: False
+        default: True
       flip_z:
         type: bool
         title: Invert Roll Axis
