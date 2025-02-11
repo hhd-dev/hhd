@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
@@ -83,7 +83,7 @@ msgstr ""
 #. Setting: Language
 #. Option: zh
 msgid "Chinese"
-msgstr ""
+msgstr "中文"
 
 #. Setting: Language
 #. Option: pt
@@ -1473,7 +1473,7 @@ msgstr "撤銷還原"
 #. Setting: Choose Version (Rebase)
 #. Field: title
 msgid "Choose Version (Rebase)"
-msgstr  "選擇版本 (Rebase)"
+msgstr "選擇版本 (Rebase)"
 
 #. Setting: Run rpm-ostree reset
 #. Field: title
@@ -1488,7 +1488,6 @@ msgid ""
 msgstr ""
 "禁用自定義 initramfs 並移除覆蓋層。"
 "您的個人資料不會受到影響。"
-
 #. Setting: Cancel
 #. Field: title
 msgid "Cancel"
@@ -1596,7 +1595,8 @@ msgstr "返回穩定版"
 msgid ""
 "Basic display settings. Brightness (and framerate TBD). This pane is "
 "meant to replace "
-msgstr "基本顯示設定。亮度（和幀率待定）。"
+msgstr ""
+"基本顯示設定。亮度（和幀率待定）。"
 "此面板旨在替代"
 
 #. Setting: Brightness
@@ -1853,7 +1853,7 @@ msgstr "重新啟動到 Windows"
 #. Setting: Reboot into Windows
 #. Field: hint
 msgid "Make sure you saved your game progress."
-msgstr "確保您已保存遊戲進度。"
+msgstr "請確保您已保存遊戲進度。"
 
 #. Setting: Hibernate
 #. Field: title
@@ -1880,6 +1880,7 @@ msgstr ""
 "某些設備會喚醒以強制 Windows 進入睡眠。\n"
 "如果 Linux 不這樣做，它們會引起問題。\n"
 "在熱事件和電池剩餘 5% 時檢測並進入睡眠。\n"
+
 #. Setting: Steam Powerbutton Handler
 #. Field: title
 msgid "Steam Powerbutton Handler"
