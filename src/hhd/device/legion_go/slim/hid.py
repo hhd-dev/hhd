@@ -16,6 +16,58 @@ def to_bytes(s: str):
     return bytes.fromhex(s.replace(" ", ""))
 
 
+def config_device(
+    os: Literal["steamos", "windows"] | None,
+    turbo: Literal["disabled", "2hz", "5hz", "8hz"] | None,
+    touchpad: Literal["absolute", "relative"] | None,
+    freq: Literal["125hz", "250hz", "500hz", "1000hz"] | None,
+):
+    out = []
+
+    if os:
+        # Disable OS autodetection
+        out.append(to_bytes("040900"))
+
+    if os == "steamos":
+        # set OS type to steamos
+        out.append(to_bytes("040a01"))
+        # set touchpad config (steamos)
+        if touchpad:
+            out.append(bytes([0x06, 0x04, 0x01 if touchpad == "absolute" else 0x00]))
+    elif os == "windows":
+        # set OS type to windows
+        out.append(to_bytes("040a00"))
+        if touchpad:
+            # set touchpad config (windows)
+            out.append(bytes([0x06, 0x03, 0x01 if touchpad == "absolute" else 0x00]))
+
+    # set turbo mode disable
+    if turbo:
+        out.append(bytes([0x12, 0x10, 0x00 if turbo != "disabled" else 0x01]))
+        match turbo:
+            case "2hz":
+                out.append(to_bytes("120301"))
+            case "5hz":
+                out.append(to_bytes("120302"))
+            case "8hz":
+                out.append(to_bytes("120303"))
+            case "disabled":
+                # Disable all turbo mappings to avoid having them stick
+                out.append(to_bytes("12020000000000"))
+
+    match freq:
+        case "125hz":
+            out.append(to_bytes("041000"))
+        case "250hz":
+            out.append(to_bytes("041001"))
+        case "500hz":
+            out.append(to_bytes("041002"))
+        case "1000hz":
+            out.append(to_bytes("041003"))
+
+    return out
+
+
 def rgb_set_profile(
     profile: Literal[1, 2, 3],
     mode: RgbMode,
@@ -198,11 +250,21 @@ rgb_callback = RgbCallback()
 
 
 class LegionHidraw(GenericGamepadHidraw):
+
     def with_settings(
         self,
         reset: bool,
+        os: Literal["steamos", "windows"] | None = None,
+        turbo: Literal["disabled", "2hz", "5hz", "8hz"] | None = None,
+        touchpad: Literal["absolute", "relative"] | None = None,
+        freq: Literal["125hz", "250hz", "500hz", "1000hz"] | None = None,
     ):
         self.reset = reset
+        self.os = os
+        self.turbo = turbo
+        self.touchpad = touchpad
+        self.freq = freq
+
         return self
 
     def open(self):
@@ -218,10 +280,27 @@ class LegionHidraw(GenericGamepadHidraw):
             logger.warning(f"Resetting controllers")
             cmds.extend(controller_factory_reset())
 
+        cmds.extend(config_device(self.os, self.turbo, self.touchpad, self.freq))  # type: ignore
+
         for r in cmds:
             self.dev.write(r)
 
         return out
+
+    def close(self, exit: bool) -> bool:
+        # Reset windows touchpad to relative to avoid windows having issues
+        try:
+            if (
+                exit
+                and self.dev
+                and self.os == "windows"
+                and self.touchpad == "absolute"
+            ):
+                self.dev.write(to_bytes("060300"))
+        except Exception:
+            pass
+
+        return super().close(exit)
 
 
 class LegionHidrawTs(GenericGamepadHidraw):

@@ -22,6 +22,64 @@ children:
       Enable gyroscope/accelerometer (IMU) support
     default: True
 
+  mapping:
+    type: mode
+    title: Mapping Style
+    tags: [ non-essential]
+    hint: >-
+      Choose OS mapping style.
+    default: "windows"
+
+    modes:
+      windows:
+        type: container
+        title: Windows
+        hint: >-
+          Windows style mapping.
+        children:
+          turbo:
+            type: multiple
+            tags: [ non-essential, ordinal ]
+            title: Turbo Mode (Repeat Buttons)
+            hint: >-
+              Hold Y1/Y2 for 2s, then press the buttons that will repeat.
+              To stop, hold Y1/Y2 for 5s.
+            options:
+              disabled: Disabled
+              2hz: 2Hz
+              5hz: 5Hz
+              8hz: 8Hz
+            default: disabled
+
+      steamos:
+        type: container
+        title: SteamOS
+        hint: >-
+          SteamOS style mapping.
+
+  # touchpad:
+  #   type: multiple
+  #   title: Touchpad Emulation
+  #   default: disabled
+  #   tags: [ non-essential, ordinal ]
+  #   hint: >-
+  #     Passthrough the touchpad to the controller (Dualsense only).
+  #   options:
+  #     disabled: Disabled
+  #     gamemode: Gamemode
+  #     always: Always
+    
+  freq:
+    type: multiple
+    title: Controller Frequency
+    tags: [ non-essential, ordinal ]
+    options:
+      125hz: 125Hz
+      250hz: 250Hz
+      500hz: 500Hz
+      1000hz: 1000Hz
+    default: 500hz
+
   swap_legion:
     type: bool
     title: Swap Legion with Menu/View

@@ -262,6 +262,8 @@ def controller_loop_xinput(
             motion=d_params.get("uses_motion", True),
         )
     )
+
+    os = conf.get("mapping.mode", None)
     d_cfg = LegionHidraw(
         vid=[GOS_VID],
         pid=list(GOS_PIDS),
@@ -271,7 +273,12 @@ def controller_loop_xinput(
         interface=3,
         callback=rgb_callback,
         required=True,
-    ).with_settings(reset=reset)
+    ).with_settings(
+        reset=reset,
+        os=os,
+        turbo=conf.get("mapping.windows.turbo", None) if os == "windows" else None,
+        freq=conf.get("freq", None),
+    )
 
     # Mute keyboard shortcuts, mute
     d_shortcuts = GenericGamepadEvdev(
