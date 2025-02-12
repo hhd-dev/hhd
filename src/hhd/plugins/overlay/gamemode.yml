@@ -18,7 +18,7 @@ gamescope:
       tags: [non-essential]
       type: bool
       title: "Run Steam at 60/72 Hz"
-      default: true
+      default: false
     
     dpms:
       tags: [non-essential]
