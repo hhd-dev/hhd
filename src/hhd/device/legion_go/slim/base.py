@@ -263,6 +263,7 @@ def controller_loop_xinput(
         )
     )
 
+    freq = conf.get("freq", None)
     os = conf.get("mapping.mode", None)
     d_cfg = LegionHidraw(
         vid=[GOS_VID],
@@ -277,7 +278,7 @@ def controller_loop_xinput(
         reset=reset,
         os=os,
         turbo=conf.get("mapping.windows.turbo", None) if os == "windows" else None,
-        freq=conf.get("freq", None),
+        freq=freq,
     )
 
     # Mute keyboard shortcuts, mute
@@ -302,7 +303,7 @@ def controller_loop_xinput(
     )
 
     REPORT_FREQ_MIN = 25
-    REPORT_FREQ_MAX = 500
+    REPORT_FREQ_MAX = 1000 if freq == "1000hz" else 500
 
     REPORT_DELAY_MAX = 1 / REPORT_FREQ_MIN
     REPORT_DELAY_MIN = 1 / REPORT_FREQ_MAX
