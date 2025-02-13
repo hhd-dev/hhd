@@ -182,10 +182,11 @@ class RgbCallback:
                     )
                     self.prev_event = ev
 
-                    # Only init sparingly, to speed up execution
-                    self.prev_mode = mode
                 else:
                     reps = [rgb_enable(False)]
+                
+                # Only init sparingly, to speed up execution
+                self.prev_mode = mode
 
                 for r in reps:
                     dev.write(r)
