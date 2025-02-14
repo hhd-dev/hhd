@@ -164,7 +164,7 @@ if __name__ == "__main__":
         orig_fl = fcntl.fcntl(sys.stdin, fcntl.F_GETFL)
         fcntl.fcntl(sys.stdin, fcntl.F_SETFL, orig_fl | os.O_NONBLOCK)
 
-        legacy = True
+        legacy = False
         session_bus = dbus.SystemBus()
         name = dbus.service.BusName(iface(legacy), session_bus)
         object = create_interface(legacy)(session_bus)
