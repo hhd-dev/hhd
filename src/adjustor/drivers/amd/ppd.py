@@ -168,8 +168,22 @@ if __name__ == "__main__":
 
         legacy = False
         session_bus = dbus.SystemBus()
-        name1 = dbus.service.BusName(iface(False), session_bus)
-        name2 = dbus.service.BusName(iface(True), session_bus)
+        
+        claimed = False
+        try:
+            name1 = dbus.service.BusName(iface(False), session_bus)
+            claimed = True
+        except Exception:
+            pass
+        
+        try:
+            name2 = dbus.service.BusName(iface(True), session_bus)
+            claimed = True
+        except Exception:
+            pass
+        
+        if not claimed:
+            sys.exit(1)
 
         services = [
             create_interface(False)(session_bus),
