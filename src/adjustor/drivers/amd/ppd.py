@@ -138,22 +138,24 @@ def create_interface(legacy: bool):
             # TODO
             return handle
 
-        def update_profile(self):
-            for line in sys.stdin:
-                if not line:
-                    break
-                profile = line.strip()
-                if profile not in SUPPORTED_PROFILES_REVERSE:
-                    continue
+        def set_profile(self, profile):
+            if profile not in SUPPORTED_PROFILES_REVERSE:
+                return
 
-                self.profile = profile
-                self.PropertiesChanged(
-                    iface(legacy), {"ActiveProfile": self.profile}, []
-                )
-            return True
+            self.profile = SUPPORTED_PROFILES_REVERSE[profile]
+            self.PropertiesChanged(iface(legacy), {"ActiveProfile": self.profile}, [])
 
     return HhdPpd
 
+def update_profile(services):
+    for line in sys.stdin:
+        if not line:
+            break
+        profile = line.strip()
+        
+        for s in services:
+            s.set_profile(profile)
+    return True
 
 if __name__ == "__main__":
     mainloop = None
@@ -166,10 +168,16 @@ if __name__ == "__main__":
 
         legacy = False
         session_bus = dbus.SystemBus()
-        name = dbus.service.BusName(iface(legacy), session_bus)
-        object = create_interface(legacy)(session_bus)
+        name1 = dbus.service.BusName(iface(False), session_bus)
+        name2 = dbus.service.BusName(iface(True), session_bus)
 
-        GLib.timeout_add(100, object.update_profile)
+        services = [
+            create_interface(False)(session_bus),
+            create_interface(True)(session_bus),
+        ]
+
+        GLib.timeout_add(100, lambda: update_profile(services))
+
         mainloop = GLib.MainLoop()
         mainloop.run()
     except KeyboardInterrupt:
