@@ -462,6 +462,12 @@ class SmuDriverPlugin(HHDPlugin):
                 self.is_set = False
             self.old_pp = new_pp
 
+        # Inform ppd instantly to avoid lag in slider
+        new_target = conf["tdp.smu.energy_policy"].to(str)
+        if new_target != self.old_target:
+            self.old_target = new_target
+            self.emit({"type": "energy", "status": new_target})  # type: ignore
+
         if conf["tdp.smu.apply"].to(bool):
             conf["tdp.smu.apply"] = False
 
@@ -470,11 +476,6 @@ class SmuDriverPlugin(HHDPlugin):
                 if cpp != "disabled":
                     set_platform_profile(cpp)
                     time.sleep(PP_DELAY)
-
-            new_target = conf["tdp.smu.energy_policy"].to(str)
-            if new_target != self.old_target:
-                self.old_target = new_target
-                self.emit({"type": "energy", "status": new_target})  # type: ignore
 
             alib(
                 new_vals,
