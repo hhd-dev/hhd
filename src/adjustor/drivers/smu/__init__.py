@@ -44,8 +44,8 @@ class SmuQamPlugin(HHDPlugin):
     def __init__(
         self,
         dev: dict[str, DeviceParams],
-        pp_map: list[tuple[str, int]] | None,
-        energy_map: list[tuple[str, int]] | None,
+        pp_map: list[tuple[str, list[str], int, int]] | None,
+        pp_enable: bool = True,
         init_tdp: bool = True,
     ) -> None:
         self.name = f"adjustor_smu_qam"
@@ -80,19 +80,15 @@ class SmuQamPlugin(HHDPlugin):
         # startup
         self.init_tdp = init_tdp
 
-        self.energy_map = energy_map
-        if pp_map:
+        self.pp_map = pp_map
+        if pp_enable and pp_map:
             self.pps = get_platform_choices() or []
-            if self.pps:
-                self.pp_map = pp_map
-            else:
+            if not self.pps:
                 logger.warning(
                     f"Platform profile map was provided but device does not have platform profiles."
                 )
-                self.pp_map = None
         else:
             self.pps = []
-            self.pp_map = None
 
     def settings(self):
         if not self.enabled:
@@ -205,18 +201,16 @@ class SmuQamPlugin(HHDPlugin):
             conf["tdp.smu.std.skin_limit"] = new_tdp
             conf["tdp.smu.std.stapm_limit"] = new_tdp
 
-            if self.pp_map and conf["tdp.smu.platform_profile"].to(str) != "disabled":
-                pp = self.pp_map[0][0]
-                for npp, tdp in self.pp_map:
-                    if tdp < new_tdp and npp in self.pps:
-                        pp = npp
-                conf["tdp.smu.platform_profile"] = pp
-
-            if self.energy_map:
-                ep = self.energy_map[0][0]
-                for nep, tdp in self.energy_map:
+            if self.pp_map:
+                pp = ep = self.pp_map[0][0]
+                for nep, npps, tdp, target in self.pp_map:
                     if tdp < new_tdp:
                         ep = nep
+                        for npp in npps:
+                            if npp in self.pps:
+                                pp = npp
+                if self.pps and conf.get("tdp.smu.platform_profile", "disabled") != "disabled":
+                    conf["tdp.smu.platform_profile"] = pp
                 conf["tdp.smu.energy_policy"] = ep
 
             if new_boost:
@@ -310,15 +304,13 @@ class SmuQamPlugin(HHDPlugin):
                 self.new_tdp = ev["tdp"]
                 self.sys_tdp = ev["tdp"] is not None
 
-            if ev["type"] == "ppd":
-                # TODO: Make tunable per device
-                match ev["status"]:
-                    case "power":
-                        self.new_tdp = 8
-                    case "balanced":
-                        self.new_tdp = 15
-                    case "performance":
-                        self.new_tdp = 25
+            if ev["type"] == "ppd" and self.pp_map:
+                for ep, pps, tdp, target in self.pp_map:
+                    if ep == ev["status"]:
+                        self.new_tdp = target
+                        break
+                else:
+                    logger.warning(f"Energy profile '{ev['status']}' not found in map.")
 
             if ev["type"] == "special" and ev.get("event", None) == "wakeup":
                 logger.info(
