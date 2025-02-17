@@ -142,8 +142,8 @@ def controller_loop(
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        vid=[GAMEPAD_VID, MSI_CLAW_VID, TECNO_VID],
-        pid=[GAMEPAD_PID, MSI_CLAW_PID, TECNO_PID],
+        vid=[GAMEPAD_VID, MSI_CLAW_VID, TECNO_VID, ZOTAC_VID],
+        pid=[GAMEPAD_PID, MSI_CLAW_PID, TECNO_PID, ZOTAC_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
