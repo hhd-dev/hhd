@@ -37,6 +37,11 @@ MSI_CLAW_MAPPINGS = {
     B("KEY_F16"): "share",
 }
 
+ZOTAC_ZONE_MAPPINGS = {
+    # ctrl start f17/f18
+    B("KEY_F17"): "mode",
+    B("KEY_F18"): "share",
+}
 
 TECNO_BTN_MAPPINGS = {
     B("KEY_VOLUMEUP"): "key_volumeup",
@@ -182,7 +187,6 @@ CONFS = {
         "extra_buttons": "none",
         "btn_mapping": MSI_CLAW_MAPPINGS,
         "claw": True,
-        "type": "claw",
         "display_gyro": False,
     },
     # TECNO
@@ -191,6 +195,14 @@ CONFS = {
         "extra_buttons": "none",
         "btn_mapping": TECNO_BTN_MAPPINGS,
         "type": "tecno",
+        "display_gyro": False,
+    },
+    # Zotac Zone 1st Gen
+    "ZOTAC GAMING ZONE": {
+        "name": "Zotac Gaming Zone (1st gen)",
+        "extra_buttons": "none", # yet
+        "btn_mapping": ZOTAC_ZONE_MAPPINGS,
+        "type": "zotac",
         "display_gyro": False,
     },
 }
