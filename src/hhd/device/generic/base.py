@@ -247,6 +247,7 @@ def controller_loop(
                 pid=[ZOTAC_PID],
                 required=True,
                 btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
+                capabilities={EC("EV_KEY"): [EC("KEY_F17"), EC("KEY_F18")]},
             )
 
         prepare(d_xinput)
