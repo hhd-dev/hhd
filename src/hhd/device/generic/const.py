@@ -198,9 +198,10 @@ CONFS = {
         "display_gyro": False,
     },
     # Zotac Zone 1st Gen
+    # board name: G0A1W
     "ZOTAC GAMING ZONE": {
         "name": "Zotac Gaming Zone (1st gen)",
-        "extra_buttons": "none", # yet
+        "extra_buttons": "none",  # not yet
         "btn_mapping": ZOTAC_ZONE_MAPPINGS,
         "type": "zotac",
         "display_gyro": False,

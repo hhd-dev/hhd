@@ -71,6 +71,8 @@ def plugin_run(
                     vid = TECNO_VID
                 case "claw":
                     vid = MSI_CLAW_VID
+                case "zotac":
+                    vid = ZOTAC_VID
                 case _:
                     vid = GAMEPAD_VID
             found_device = bool(enumerate_evs(vid=vid))
