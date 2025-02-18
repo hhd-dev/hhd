@@ -103,8 +103,18 @@ class BatteryPlugin(HHDPlugin):
             if os.path.exists(f"{base}/charge_control_end_threshold"):
                 self.charge_limit_fn = f"{base}/charge_control_end_threshold"
             if os.path.exists(f"{base}/charge_type"):
-                self.charge_bypass_fn = f"{base}/charge_type"
+                try:
+                    with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
+                        supports = "ONE-NETBOOK" in f.read()
+                except Exception:
+                    supports = False
 
+                if supports:
+                    self.charge_bypass_fn = f"{base}/charge_type"
+                else:
+                    logger.warning(
+                        "Found charge type, but charge bypass is only supported on OneXPlayer currently."
+                    )
             if self.charge_bypass_fn or self.charge_limit_fn:
                 logger.info(
                     f"Found battery '{bat}' with:\nBattery Bypass:\n{self.charge_bypass_fn}\nBattery Limit:\n{self.charge_limit_fn}."
