@@ -129,21 +129,6 @@ children:
             default: >-
               Asus hardware limits the minimum fan curve depending on TDP mode.
 
-  charge_limit:
-    type: multiple
-    title: Charge Limit (%)
-    tags: [ non-essential, ordinal ]
-    hint: >-
-      Applies a charge limit to the battery, 75% and up.
-    options:
-      p70: 70%
-      p80: 80%
-      p85: 85%
-      p90: 90%
-      p95: 95%
-      disabled: Unset
-    default: disabled
-
   extreme_standby:
     type: multiple
     title: Extreme Standby Mode

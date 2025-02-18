@@ -243,6 +243,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
     from .drivers.amd import AmdGPUPlugin
+    from .drivers.battery import BatteryPlugin
 
     drivers = []
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
@@ -261,9 +262,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     max_tdp = 30
 
     legion_s = prod in LEGION_GO_S_DMIS
-    if (prod == LEGION_GO_DMI or legion_s) and not bool(
-        os.environ.get("HHD_ADJ_ALLY")
-    ):
+    if (prod == LEGION_GO_DMI or legion_s) and not bool(os.environ.get("HHD_ADJ_ALLY")):
         drivers.append(LenovoDriverPlugin(legion_s=legion_s))
         drivers_matched = True
         use_acpi_call = True
@@ -338,11 +337,12 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         logger.info(f"No tdp drivers found for this device, using generic plugin.")
 
         is_steamdeck = "Jupiter" in prod or "Galileo" in prod
-        return [GeneralPowerPlugin(is_steamdeck=is_steamdeck)]
+        return [GeneralPowerPlugin(is_steamdeck=is_steamdeck), BatteryPlugin()]
 
     return [
         *drivers,
         AdjustorInitPlugin(use_acpi_call=use_acpi_call),
         AdjustorPlugin(min_tdp, default_tdp, max_tdp),
+        BatteryPlugin(),
         AmdGPUPlugin(),
     ]
