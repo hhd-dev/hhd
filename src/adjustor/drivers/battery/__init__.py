@@ -119,44 +119,45 @@ class BatteryPlugin(HHDPlugin):
 
         curr = time.time()
 
-        bypass = conf["tdp.battery.charge_bypass"].to(str)
-        if self.charge_bypass_fn and self.charge_bypass_prev != bypass:
-            self.charge_bypass_prev = bypass
+        if self.charge_bypass_fn:
+            bypass = conf["tdp.battery.charge_bypass"].to(str)
+            if self.charge_bypass_prev != bypass:
+                self.charge_bypass_prev = bypass
 
-            if bypass != "disabled" or not self.startup:
-                set_charge_bypass(self.charge_bypass_fn, bypass)
+                if bypass != "disabled" or not self.startup:
+                    set_charge_bypass(self.charge_bypass_fn, bypass)
 
         # Charge limit
-        if not self.charge_limit_fn:
-            return
+        if self.charge_limit_fn:
+            lim = conf["tdp.battery.charge_limit"].to(str)
+            if lim != self.charge_limit_prev:
+                self.queue_charge_limit = curr + APPLY_DELAY
+                self.charge_limit_prev = lim
 
-        lim = conf["tdp.battery.charge_limit"].to(str)
-        if lim != self.charge_limit_prev:
-            self.queue_charge_limit = curr + APPLY_DELAY
-            self.charge_limit_prev = lim
+            if self.startup or (
+                self.queue_charge_limit and self.queue_charge_limit < curr
+            ):
+                self.queue_charge_limit = None
+                self.charge_limit_prev = lim
 
-        if self.startup or (self.queue_charge_limit and self.queue_charge_limit < curr):
-            self.queue_charge_limit = None
-            self.charge_limit_prev = lim
-
-            match lim:
-                case "p65":
-                    set_charge_limit(self.charge_limit_fn, 65)
-                case "p70":
-                    set_charge_limit(self.charge_limit_fn, 70)
-                case "p80":
-                    set_charge_limit(self.charge_limit_fn, 80)
-                case "p85":
-                    set_charge_limit(self.charge_limit_fn, 85)
-                case "p90":
-                    set_charge_limit(self.charge_limit_fn, 90)
-                case "p95":
-                    set_charge_limit(self.charge_limit_fn, 95)
-                case "disabled":
-                    # Avoid writing charge limit on startup if
-                    # disabled, so that if user does not use us
-                    # we do not overwrite their setting.
-                    if not self.startup:
-                        set_charge_limit(self.charge_limit_fn, 100)
+                match lim:
+                    case "p65":
+                        set_charge_limit(self.charge_limit_fn, 65)
+                    case "p70":
+                        set_charge_limit(self.charge_limit_fn, 70)
+                    case "p80":
+                        set_charge_limit(self.charge_limit_fn, 80)
+                    case "p85":
+                        set_charge_limit(self.charge_limit_fn, 85)
+                    case "p90":
+                        set_charge_limit(self.charge_limit_fn, 90)
+                    case "p95":
+                        set_charge_limit(self.charge_limit_fn, 95)
+                    case "disabled":
+                        # Avoid writing charge limit on startup if
+                        # disabled, so that if user does not use us
+                        # we do not overwrite their setting.
+                        if not self.startup:
+                            set_charge_limit(self.charge_limit_fn, 100)
 
         self.startup = False
