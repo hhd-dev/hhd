@@ -38,6 +38,10 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - Mini A07
   - Mini Pro
   - ONE XPLAYER
+- MSI
+  - Claw 1st Gen, 7/8 AI+ (only front buttons; suspend issues)
+- Zotac
+  - Zotac Gaming Zone (1st gen; only front buttons)
 - Ayn
   - Loki MiniPro/Zero/Max
 - Ayaneo
@@ -54,8 +58,6 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - A1 Normal/Pro
 - Anbernic
   - Win600 (no keyboard button yet)
-- MSI
-  - Claw (1st Gen; suspend issues)
 - TECNO
   - Pocket Go (all buttons except bottom switch and gyro; no RGB)
 
