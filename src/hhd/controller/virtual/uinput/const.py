@@ -50,9 +50,9 @@ def B(b: str | Sequence[str], num: int | None = None):
 
     try:
         # .ecodes misses UInput stuff, grab from runtime if it exists
-        import evdev.ecodes_runtime
+        import evdev.ecodes_runtime as ecodes_runtime
 
-        return cast(int, getattr(evdev.ecodes_runtime, b))
+        return cast(int, getattr(ecodes_runtime, b))
     except Exception:
         pass
 
