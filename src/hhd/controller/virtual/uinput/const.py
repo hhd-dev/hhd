@@ -37,7 +37,7 @@ CONTROLLER_THEMES: dict[str, tuple[int, int, str]] = {
     "steam_deck": (0x28DE, 0x1205, "Steam Deck"),
     "steam_controller": (0x28DE, 0x1202, "Steam Controller"),
     "steam_input": (0x28DE, 0x11FF, "Steam Input"),
-    "hori_steam": (0x0f0d, 0x0196, "Steam Controller (HHD)")
+    "hori_steam": (0x0F0D, 0x0196, "Steam Controller (HHD)"),
 }
 
 
@@ -47,6 +47,15 @@ def B(b: str | Sequence[str], num: int | None = None):
     assert b, f"No value provided."
     if not isinstance(b, str):
         b = b[0]
+
+    try:
+        # .ecodes misses UInput stuff, grab from runtime if it exists
+        import evdev.ecodes_runtime
+
+        return cast(int, getattr(evdev.ecodes_runtime, b))
+    except Exception:
+        pass
+
     return cast(int, getattr(evdev.ecodes, b))
 
 
