@@ -211,7 +211,7 @@ Z1_DATA: AsusTDP = {
     "min_tdp": 5,
     "max_tdp_dc": 54,
     "max_tdp": 70,
-    "max_tdp_oc": 100,
+    "max_tdp_oc": 90,
     "supports_cycle": False,
 }
 
