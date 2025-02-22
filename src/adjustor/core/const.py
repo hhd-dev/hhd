@@ -218,5 +218,5 @@ Z1_DATA: AsusTDP = {
 ASUS_DATA: dict[str, AsusTDP] = {
     "ROG Ally RC71L": ALLY_DATA,
     "ROG Ally X RC72L": ALLYX_DATA,
-    "ROG Flow Z13 GZ302EA": Z1_DATA,
+    "ROG Flow Z13 GZ302": Z1_DATA,
 }
