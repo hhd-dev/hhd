@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
 SLEEP_DELAY = 4
-# FIXME: add AC/DC values
-MAX_TDP_BOOST = 35
 
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
 STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
@@ -48,6 +46,11 @@ FAN_CURVE_NAME = "asus_custom_fan_curve"
 POINTS = [30, 40, 50, 60, 70, 80, 90, 100]
 MIN_CURVE = [2, 5, 17, 17, 17, 17, 17, 17]
 DEFAULT_CURVE = [5, 10, 20, 35, 55, 75, 75, 75]
+
+# TODO: Make per device
+MAX_TDP_BOOST = 35
+FPPT_BOOST = 35 / 25
+SPPT_BOOST = 30 / 25
 
 
 def set_thermal_profile(prof: int):
@@ -367,13 +370,13 @@ class AsusDriverPlugin(HHDPlugin):
                     set_tdp(
                         "fast",
                         FTDP_FN,
-                        min(max(steady, MAX_TDP_BOOST), int(steady * 35 / 25)),
+                        min(max(steady, MAX_TDP_BOOST), int(steady * FPPT_BOOST)),
                     )
                     time.sleep(TDP_DELAY)
                     set_tdp(
                         "slow",
                         STDP_FN,
-                        min(max(steady, MAX_TDP_BOOST), int(steady * 30 / 25)),
+                        min(max(steady, MAX_TDP_BOOST), int(steady * SPPT_BOOST)),
                     )
                     time.sleep(TDP_DELAY)
                     set_tdp("steady", CTDP_FN, steady)
