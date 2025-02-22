@@ -10,7 +10,7 @@ from hhd.plugins.plugin import Emitter
 from hhd.utils import expanduser
 
 from adjustor.core.acpi import check_perms, initialize
-from adjustor.core.const import CPU_DATA, DEV_DATA
+from adjustor.core.const import CPU_DATA, DEV_DATA, ASUS_DATA
 
 from .i18n import _
 
@@ -269,15 +269,13 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if legion_s:
         max_tdp = 33
 
-    if (
-        "ROG Ally RC71L" in prod
-        or "ROG Ally X RC72L" in prod
-        or bool(os.environ.get("HHD_ADJ_DEBUG"))
-        or bool(os.environ.get("HHD_ADJ_ALLY"))
-    ):
-        drivers.append(AsusDriverPlugin("RC72L" in prod))
-        drivers_matched = True
-        min_tdp = 7
+    for k, v in ASUS_DATA.items():
+        if k in prod:
+            drivers.append(AsusDriverPlugin(v))
+            drivers_matched = True
+            min_tdp = v['min_tdp']
+            max_tdp = v['max_tdp']
+            break
 
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
         drivers_matched = False

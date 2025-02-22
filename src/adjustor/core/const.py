@@ -27,6 +27,21 @@ class DevideProfile(TypedDict):
     alib: dict[str, AlibParams]
     dev: dict[str, DeviceParams]
 
+
+class AsusTDP(TypedDict):
+    quiet: int
+    balanced_min: int
+    balanced: int
+    performance_min: int
+    performance: int
+    performance_dc: int | None
+    min_tdp: int
+    max_tdp_dc: int | None
+    max_tdp: int
+    max_tdp_oc: int
+    supports_cycle: bool | None
+
+
 # internal name for ppd, platform_profile choices, min TDP for
 # profile to apply, tdp target to apply when selecting profile
 ENERGY_MAP = [
@@ -156,4 +171,52 @@ CPU_DATA: dict[
     # AMD Athlon Silver 3050e (Win600, will it support tdp?)
     "AMD Ryzen AI 9 HX 370": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, ENERGY_MAP),
     "AMD Ryzen AI HX 360": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, ENERGY_MAP),
+}
+
+ALLY_DATA: AsusTDP = {
+    "quiet": 10,
+    "balanced_min": 13,
+    "balanced": 15,
+    "performance_min": 20,
+    "performance_dc": 25,
+    "performance": 30,
+    "min_tdp": 5,
+    "max_tdp_dc": 25,
+    "max_tdp": 30,
+    "max_tdp_oc": 50,
+    "supports_cycle": True,
+}
+
+ALLYX_DATA: AsusTDP = {
+    "quiet": 13,
+    "balanced_min": 15,
+    "balanced": 17,
+    "performance_min": 22,
+    "performance_dc": 25,
+    "performance": 30,
+    "min_tdp": 5,
+    "max_tdp_dc": 25,
+    "max_tdp": 30,
+    "max_tdp_oc": 50,
+    "supports_cycle": True,
+}
+
+Z1_DATA: AsusTDP = {
+    "quiet": 40,
+    "balanced_min": 42,
+    "balanced": 45,
+    "performance_min": 50,
+    "performance_dc": 54,
+    "performance": 70,
+    "min_tdp": 5,
+    "max_tdp_dc": 54,
+    "max_tdp": 70,
+    "max_tdp_oc": 100,
+    "supports_cycle": False,
+}
+
+ASUS_DATA: dict[str, AsusTDP] = {
+    "ROG Ally RC71L": ALLY_DATA,
+    "ROG Ally X RC72L": ALLYX_DATA,
+    "ROG Flow Z13 GZ302EA": Z1_DATA,
 }

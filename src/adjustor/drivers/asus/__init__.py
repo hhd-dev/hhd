@@ -5,7 +5,7 @@ from typing import Sequence
 
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
-from adjustor.core.platform import set_platform_profile
+from adjustor.core.const import AsusTDP
 from adjustor.i18n import _
 
 logger = logging.getLogger(__name__)
@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
 SLEEP_DELAY = 4
-MIN_TDP = 7
-MAX_TDP = 30
 # FIXME: add AC/DC values
 MAX_TDP_BOOST = 35
 
@@ -46,9 +44,23 @@ FAN_CURVE_NAME = "asus_custom_fan_curve"
 # bal   15 20 25
 # power 10 14 17
 
+
 POINTS = [30, 40, 50, 60, 70, 80, 90, 100]
 MIN_CURVE = [2, 5, 17, 17, 17, 17, 17, 17]
 DEFAULT_CURVE = [5, 10, 20, 35, 55, 75, 75, 75]
+
+
+def set_thermal_profile(prof: int):
+    try:
+        logger.info(f"Setting thermal profile to '{prof}'")
+        with open(
+            "/sys/devices/platform/asus-nb-wmi/throttle_thermal_policy", "w"
+        ) as f:
+            f.write(str(prof))
+        return True
+    except Exception as e:
+        logger.error(f"Could not set throttle_thermal_policy with error:\n{e}")
+        return False
 
 
 def set_tdp(pretty: str, fn: str, val: int):
@@ -116,7 +128,7 @@ def disable_fan_curve():
 
 
 class AsusDriverPlugin(HHDPlugin):
-    def __init__(self, allyx: bool = False) -> None:
+    def __init__(self, tdp_data: AsusTDP) -> None:
         self.name = f"adjustor_asus"
         self.priority = 6
         self.log = "adja"
@@ -139,7 +151,7 @@ class AsusDriverPlugin(HHDPlugin):
         self.old_target = None
         self.pp = None
         self.sys_tdp = False
-        self.allyx = allyx
+        self.tdp_data = tdp_data
 
     def settings(self):
         if not self.enabled:
@@ -162,27 +174,55 @@ class AsusDriverPlugin(HHDPlugin):
             del out["tdp"]["asus"]["children"]["extreme_standby"]
 
         # Set units
-        if self.allyx:
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"]["unit"] = "13W"
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"][
-                "unit"
-            ] = "17W"
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
-                "unit"
-            ] = "25/30W"
-        else:
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"]["unit"] = "10W"
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"][
-                "unit"
-            ] = "15W"
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
-                "unit"
-            ] = "25/30W"
+        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"][
+            "unit"
+        ] = f"{self.tdp_data['quiet']}W"
+        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"][
+            "unit"
+        ] = f"{self.tdp_data['balanced']}W"
 
-        if not self.enforce_limits:
+        # Set performance pretty print
+        if (
+            self.tdp_data.get("performance_dc", None)
+            and self.tdp_data["performance_dc"] != self.tdp_data["performance"]
+        ):
+            perf_tdp = (
+                f"{self.tdp_data['performance_dc']}W/{self.tdp_data['performance']}W"
+            )
+        else:
+            perf_tdp = f"{self.tdp_data['performance']}W"
+        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
+            "unit"
+        ] = perf_tdp
+
+        # Set custom pretty print
+        if (
+            self.tdp_data.get("max_tdp_dc", None)
+            and self.tdp_data["max_tdp_dc"] != self.tdp_data["max_tdp"]
+        ):
+            custom_tdp = f"→ {self.tdp_data['max_tdp_dc']}W/{self.tdp_data['max_tdp']}W"
+        else:
+            custom_tdp = f"→ {self.tdp_data['max_tdp']}W"
+        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["unit"] = custom_tdp
+
+        # Fix custom slider
+        custom_sel = out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"][
+            "children"
+        ]["tdp"]
+        custom_sel["min"] = self.tdp_data["min_tdp"]
+        custom_sel["max"] = self.tdp_data["max_tdp"]
+        custom_sel["default"] = self.tdp_data["balanced"]
+
+        # Add overclocking
+        if not self.enforce_limits and self.tdp_data.get("max_tdp_oc", None):
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["children"][
                 "tdp"
-            ]["max"] = 50
+            ]["max"] = f"{self.tdp_data['max_tdp_oc']}W"
+
+        # Remove cycle for laptops (for now)
+        if not self.tdp_data.get("supports_cycle", None):
+            del out["tdp"]["asus"]["children"]["cycle_tdp"]
+
         return out
 
     def open(
@@ -251,13 +291,13 @@ class AsusDriverPlugin(HHDPlugin):
         if tdp_reset and mode != "custom":
             match mode:
                 case "quiet":
-                    set_platform_profile("quiet")
+                    set_thermal_profile(2)
                     new_target = "power"
                 case "balanced":
-                    set_platform_profile("balanced")
+                    set_thermal_profile(0)
                     new_target = "balanced"
                 case _:  # "performance":
-                    set_platform_profile("performance")
+                    set_thermal_profile(1)
                     new_target = "performance"
 
         # In custom mode, re-apply settings with debounce
@@ -271,11 +311,11 @@ class AsusDriverPlugin(HHDPlugin):
                 steady = conf["tdp.asus.tdp_v2.custom.tdp"].to(int)
 
             if self.enforce_limits:
-                if steady < MIN_TDP:
-                    steady = MIN_TDP
+                if steady < self.tdp_data["min_tdp"]:
+                    steady = self.tdp_data["min_tdp"]
                     conf["tdp.asus.tdp_v2.custom.tdp"] = steady
-                elif steady > MAX_TDP:
-                    steady = MAX_TDP
+                elif steady > self.tdp_data["max_tdp"]:
+                    steady = self.tdp_data["max_tdp"]
                     conf["tdp.asus.tdp_v2.custom.tdp"] = steady
 
             steady_updated = steady and steady != self.old_conf["tdp_v2.custom.tdp"].to(
@@ -286,11 +326,15 @@ class AsusDriverPlugin(HHDPlugin):
 
             steady_updated |= tdp_reset
 
-            if self.startup and (steady > MAX_TDP or steady < MIN_TDP):
+            if self.startup and (
+                steady > self.tdp_data["max_tdp"] or steady < self.tdp_data["min_tdp"]
+            ):
                 logger.warning(
                     f"TDP ({steady}) outside the device spec. Resetting for stability reasons."
                 )
-                steady = min(max(steady, MIN_TDP), MAX_TDP)
+                steady = min(
+                    max(steady, self.tdp_data["min_tdp"]), self.tdp_data["max_tdp"]
+                )
                 conf["tdp.asus.tdp_v2.custom.tdp"] = steady
                 steady_updated = True
 
@@ -304,16 +348,16 @@ class AsusDriverPlugin(HHDPlugin):
 
             tdp_set = self.queue_tdp and self.queue_tdp < curr
             if tdp_set:
-                if steady < 5:
+                if steady < self.tdp_data["min_tdp"]:
                     steady = 5
-                if steady < (15 if self.allyx else 13):
-                    set_platform_profile("quiet")
+                if steady < self.tdp_data["balanced_min"]:
+                    set_thermal_profile(2)
                     new_target = "power"
-                elif steady < (22 if self.allyx else 20):
-                    set_platform_profile("balanced")
+                elif steady < self.tdp_data["performance_min"]:
+                    set_thermal_profile(0)
                     new_target = "balanced"
                 else:
-                    set_platform_profile("performance")
+                    set_thermal_profile(1)
                     new_target = "performance"
 
                 self.queue_tdp = None
@@ -419,7 +463,9 @@ class AsusDriverPlugin(HHDPlugin):
             conf["tdp.asus.sys_tdp"] = ""
 
         # Save current config
-        self.cycle_tdp = conf["tdp.asus.cycle_tdp"].to(bool)
+        self.cycle_tdp = self.tdp_data.get("supports_cycle", False) and conf.get(
+            "tdp.asus.cycle_tdp", False
+        )
         self.old_conf = conf["tdp.asus"]
 
         if self.startup:
