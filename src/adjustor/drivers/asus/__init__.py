@@ -220,7 +220,7 @@ class AsusDriverPlugin(HHDPlugin):
         if not self.enforce_limits and self.tdp_data.get("max_tdp_oc", None):
             out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["children"][
                 "tdp"
-            ]["max"] = f"{self.tdp_data['max_tdp_oc']}W"
+            ]["max"] = self.tdp_data['max_tdp_oc']
 
         # Remove cycle for laptops (for now)
         if not self.tdp_data.get("supports_cycle", None):
