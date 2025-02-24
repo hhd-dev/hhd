@@ -207,10 +207,10 @@ Z1_DATA: AsusTDP = {
     "balanced": 45,
     "performance_min": 50,
     "performance_dc": 54,
-    "performance": 70,
+    "performance": 65,
     "min_tdp": 5,
     "max_tdp_dc": 54,
-    "max_tdp": 70,
+    "max_tdp": 65,
     "max_tdp_oc": 90,
     "supports_cycle": False,
 }
