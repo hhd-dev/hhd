@@ -1,0 +1,11 @@
+[Unit]
+Description=Change Product Name
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c "echo %i > /tmp/product_name && mount --bind /tmp/product_name /sys/devices/virtual/dmi/id/product_name"
+ExecStop=/bin/sh -c "umount /sys/devices/virtual/dmi/id/product_name"
+
+[Install]
+WantedBy=multi-user.target
