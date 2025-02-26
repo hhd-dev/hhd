@@ -177,7 +177,6 @@ CONFS = {
         # "hrtimer": True, Uses sensor fusion garbage? From intel? Will need custom work
         "extra_buttons": "none",
         "btn_mapping": MSI_CLAW_MAPPINGS,
-        "claw": True,
         "type": "claw",
         "display_gyro": False,
     },
@@ -185,14 +184,14 @@ CONFS = {
         "name": "MSI Claw 7 (2nd gen)",
         "extra_buttons": "none",
         "btn_mapping": MSI_CLAW_MAPPINGS,
-        "claw": True,
+        "type": "claw",
         "display_gyro": False,
     },
     "Claw 8 AI+ A2VM": {
         "name": "MSI Claw 8",
         "extra_buttons": "none",
         "btn_mapping": MSI_CLAW_MAPPINGS,
-        "claw": True,
+        "type": "claw",
         "display_gyro": False,
     },
     # TECNO
