@@ -176,6 +176,8 @@ def controller_loop(
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         params=d_params,
+        startselect_chord=conf.get("main_chords", "disabled"),
+        swap_guide="select_is_guide" if conf["swap_guide"].to(bool) else None,
         **kargs,
     )
 

@@ -12,6 +12,28 @@ children:
     hint: >-
       Emulate different controller types to fuse your device's features.
 
+  main_chords:
+    type: multiple
+    tags: [ non-essential ]
+    title: Start/Select do SteamOS Combos
+    hint: >-
+      When holding Select or Start, if another button is pressed, they become
+      the Xbox button, which allows doing SteamOS combos (Select+RT is
+      screenshot).
+    options:
+      disabled: "Disabled"
+      select: "Select Only"
+      start_select: "Start+Select"
+    default: select
+
+  swap_guide:
+    type: bool
+    title: Swap Guide and Menu/View
+    tags: [non-essential]
+    hint: >-
+      Swaps the Guide and QAM buttons with start and select.
+    default: False
+
   #
   # Common settings
   #
