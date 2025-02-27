@@ -301,7 +301,7 @@ msgstr "A 与 B 交换, X 与 Y 交换"
 #. Setting: Hold View to Reboot
 #. Field: title
 msgid "Hold View to Reboot"
-msgstr "按住 View 键重启"
+msgstr "长按 View 键重启"
 
 #. Setting: GPD Controller
 #. Field: title
@@ -321,7 +321,7 @@ msgstr "模拟不同类型的控制器, 以融合 GPD 设备的特性"
 #. Setting: Menu/L4/R4 Mapping
 #. Field: title
 msgid "Menu/L4/R4 Mapping"
-msgstr "L4/R4 映射"
+msgstr "菜单/L4/R4 映射"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: hint
@@ -480,7 +480,7 @@ msgstr "GPD 鼠标模式"
 #. Setting: Mouse Mode Mapping
 #. Option: wasd
 msgid "For Games"
-msgstr "於游戏時"
+msgstr "用于游戏"
 
 #. Setting: Mouse Mode Triggers
 #. Field: title
@@ -505,12 +505,12 @@ msgstr "L4/R4 映射"
 #. Setting: L4/R4 Mapping
 #. Option: hhd
 msgid "For HHD (F20/F21)"
-msgstr "於 HHD (F20/F21)"
+msgstr "用于 HHD (F20/F21)"
 
 #. Setting: L4/R4 Mapping
 #. Option: default
 msgid "Default (Pause/PrntScr)"
-msgstr "默认（暂停/PrntScr）"
+msgstr "默认（暂停/PrntScr)"
 
 #. Setting: Deadzones
 #. Field: title
@@ -646,7 +646,7 @@ msgstr "Legion 控制器"
 msgid ""
 "Allows for configuring the Legion controllers using the built in firmware"
 " commands and enabling emulation modes for various controller types."
-msgstr "允许使用控制器固件内置命令配置 Legion 控制器, 并启用各种控制器类型的模拟模式"
+msgstr "通过内置固件命令配置 Legion 控制器，可以启用不同类型的控制器模拟模式"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
@@ -673,14 +673,14 @@ msgstr "右控制器"
 #. Setting: Both Controllers
 #. Field: title
 msgid "Both Controllers"
-msgstr "左右控制器"
+msgstr "双控制器"
 
 #. Setting: Both Controllers
 #. Field: hint
 msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
-msgstr "主控制器使用右侧控制器的运动传感器， 并为左侧控制器的运动传感器创建了一个辅助控制器。"
+msgstr "主控制器会使用右手柄的动作传感器，同时为左手柄的动作传感器创建一个独立的辅助控制器。"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
@@ -729,7 +729,7 @@ msgstr "键盘和 Turbo 按钮用作:"
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: oem
 msgid "Keyboard, Combo"
-msgstr "键盘, Combo"
+msgstr "键盘, 组合键"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: separate
@@ -739,12 +739,12 @@ msgstr "Steam 菜单, HHD"
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo_hhd
 msgid "Combo, HHD"
-msgstr " Combo, HHD"
+msgstr "组合键, HHD"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo
 msgid "Combo, Combo"
-msgstr ""
+msgstr "组合键, 组合键"
 
 #. Setting: Swap View/Menu and Xbox/Kbd
 #. Field: title
@@ -794,12 +794,12 @@ msgstr "交换 Armory Crate/Command center 与 Menu/View 按钮"
 #. Setting: RGB During Boot
 #. Field: title
 msgid "RGB During Boot"
-msgstr "RGB 启动时工作"
+msgstr "启动时的 RGB 灯效"
 
 #. Setting: RGB During Charging Asleep
 #. Field: title
 msgid "RGB During Charging Asleep"
-msgstr "RGB 充电时休眠"
+msgstr "充电时休眠状态下的 RGB 灯效"
 
 #. Setting: Motion Axis
 #. Field: title
@@ -897,7 +897,7 @@ msgstr "配置摇杆和扳机死区, 震动强度"
 #. Setting: Default
 #. Field: hint
 msgid "Uses reasonable values based on hardware."
-msgstr "根据硬件使用合理的值"
+msgstr "根据硬件自动选择合适的值"
 
 #. Setting: Manual
 #. Field: title
@@ -934,7 +934,7 @@ msgstr "左摇杆最小值"
 msgid ""
 "Deadzone for the joystick. The higher the value, the more the joystick "
 "needs to be moved before registering."
-msgstr "摇杆死区。值越高, 摇杆需要移动的距离越大才能激活"
+msgstr "摇杆死区值。数值越大，需要更大的摇杆偏移才会开始响应"
 
 #. Setting: Left Stick Maximum
 #. Field: title
@@ -949,7 +949,7 @@ msgstr "左摇杆最大值"
 msgid ""
 "Maximum value for joystick. The higher the value, the more the joystick "
 "needs to be moved before reaching maximum."
-msgstr "摇杆最大值。值越高, 摇杆需要移动的距离越大才能达到最大值"
+msgstr "摇杆最大阈值。数值越大，需要更大的摇杆偏移才会达到最大输出"
 
 #. Setting: Right Stick Minimum
 #. Field: title
@@ -1006,14 +1006,14 @@ msgstr "禁用控制器。Handheld Daemon 叠加仍然可以在游戏模式下�
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
 msgid "Extra buttons as Keyboard/Overlay"
-msgstr "额外按钮作为键盘/叠加快捷键"
+msgstr "额外按钮作为键盘/叠加菜单快捷键"
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: hint
 msgid ""
 "Makes the left paddle bring up a keyboard and the right paddle bring up "
 "the overlay."
-msgstr "左背键弹出键盘, 右背键弹出叠加层"
+msgstr "使用左背键呼出键盘，右背键呼出菜单叠加层"
 
 #. Setting: Xbox
 #. Field: title
@@ -1030,7 +1030,7 @@ msgstr "额外按钮作为"
 msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be set for Steam Input."
-msgstr "更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为 Steam 输入"
+msgstr "设置额外按钮的功能。可以将左键设为呼出键盘，右键设为呼出菜单叠加层。或者可以设置为 Steam 输入"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1060,7 +1060,7 @@ msgstr "Steam 控制器"
 #. Setting: Steam Controller
 #. Field: hint
 msgid "Allows for gyro, paddles, and has a proper QAM button."
-msgstr "可用陀螺仪、背键, 并且有一个合适的 QAM 按钮"
+msgstr "支持陀螺仪和背键功能，并提供专门的快速访问菜单(QAM)按钮"
 
 #. Setting: Invert Roll Axis
 #. Field: title
@@ -1088,7 +1088,9 @@ msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be left/right touchpad clicks. For the "
 "legion go, top buttons are shortcuts, bottom are touchpad clicks."
-msgstr "更改额外按钮的行为。左按钮为键盘, 右按钮为叠加层。或者可以设置为左/右触摸板模拟。对于 Legion Go, 顶部按钮是快捷键, 底部是触摸板模拟"
+msgstr ""
+"设置额外按钮的功能。可以将左键设为呼出键盘，右键设为呼出菜单叠加层；"
+"或者将它们设置为触摸板的左右点击。在 Legion Go 上，顶部按钮用作快捷键，底部按钮用作触摸板点击"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1103,7 +1105,7 @@ msgstr "触摸板点击"
 #. Setting: Extra buttons as
 #. Option: both
 msgid "Shortcuts + Touchpad Clicks"
-msgstr "快捷键 + 触摸板模拟"
+msgstr "快捷键 + 触摸板点击"
 
 #. Setting: LED Support
 #. Field: title
@@ -1115,7 +1117,7 @@ msgstr "LED 支持"
 msgid ""
 "Passes through the LEDs to the controller, which allows games to control "
 "them."
-msgstr "将设备 LED 灯映射为控制器 LED 灯, 可以使得 Steam 或者游戏能控制 LED 灯"
+msgstr "将设备的 LED 灯光直接映射到控制器，让游戏和 Steam 可以直接控制灯光效果"
 
 #. Setting: Gyro Output Sync
 #. Field: title
@@ -1133,9 +1135,10 @@ msgid ""
 "difference for the Legion Go (125hz), as all the other handhelds are "
 "using 400hz by default."
 msgstr ""
-"Steam 依赖 IMU 时间戳来作为触摸板鼠标和 `陀螺仪到鼠标 [BETA]`。如果在 2 个报告中发送相同的时间戳, 这会导致除以 0 "
-"以及不稳定。此选项使报告仅在有新的 IMU 时间戳时发送, 有效地将控制器的响应速度限制为 IMU 的速度。这只对 Legion Go "
-"(125hz) 有影响, 因为所有其他掌机默认使用 400hz"
+"Steam 在处理触摸板鼠标和`陀螺仪到鼠标 [BETA]`功能时依赖 IMU 时间戳。"
+"如果在 2 个报告中发送相同的时间戳, 这会导致除以 0 造成不稳定。"
+"此选项使报告仅在有新的 IMU 时间戳时发送, 有效地将控制器的响应速度限制为 IMU 的速度。"
+"这只对 Legion Go (125hz) 有影响, 因为所有其他掌机默认使用 400hz"
 
 #. Setting: Invert Roll Axis
 #. Field: hint
@@ -1144,8 +1147,8 @@ msgid ""
 " for Steam Input, since you want it to be inverted to look left to right,"
 " but an issue in emulators."
 msgstr ""
-"与真实 Dualsense 控制器相比, 反转滚动 (Z) 轴。对于 Steam 输入很有用, 因为您可能希望它反转以便从左到右看, "
-"但在模拟器中会有问题"
+"相对于真实的 DualSense 控制器反转滚动轴（Z轴）。在 Steam 输入中这很有用，"
+"因为反转后更符合左右视角移动的习惯，但在模拟器中可能会造成问题"
 
 #. Setting: Bluetooth Mode
 #. Field: title
@@ -1160,8 +1163,8 @@ msgid ""
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
 msgstr ""
-"模拟控制器蓝牙模式而不是 USB 模式。这是默认设置, 因为它会减少应用与控制器交互的问题。但是, 使用 USB 模式可以改善一些游戏中的 LED"
-"  支持。欢迎测试并反馈！"
+"将控制器模拟为蓝牙模式而非 USB 模式。默认使用蓝牙模式是因为这样可以减少应用程序与控制器交互时的问题。"
+"不过在某些游戏中，USB 模式可能会带来更好的 LED 灯光支持。欢迎测试并反馈！"
 
 #. Setting: Paused
 #. Field: title
@@ -1179,15 +1182,15 @@ msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
 msgstr ""
-"模拟一个触摸板。如果当前模拟控制器本身支持触摸板 (例如 Dualsense), 则将映射成目标设备自带触摸板, "
-"否则会模拟成一个独立的虚拟触摸板设备"
+"启用触摸板模拟功能。对于支持触摸板的目标控制器(如 DualSense), 会直接用于其内置触摸板;"
+"对于不支持的目标设备, 将会创建一个虚拟触摸板"
 
 #. Setting: Disabled
 #. Field: hint
 msgid ""
 "Does not modify the touchpad. Short + holding presses will not work "
 "within gamescope."
-msgstr "不修改触摸板设置。可能会导致在 gamescope 中不会工作"
+msgstr "保持触摸板原始设置。在 GameScope 环境下短按和长按功能将无法使用"
 
 #. Setting: Virtual
 #. Field: title
@@ -1202,13 +1205,13 @@ msgid ""
 "in desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
-"添加一个虚拟触摸板。这个触摸板是为在 gamescope 中使用而设计的, 默认支持左键、右键。但是, 它会在桌面模式中引起问题, "
+"添加一个虚拟触摸板。这个触摸板主要用于 GameScope 环境，并且默认支持左右键点击。但可能会在桌面模式中引起问题，"
 "并且不允许拖动文件。因此, 它会在桌面模式中自动禁用"
 
 #. Setting: Disable on Desktop
 #. Field: title
 msgid "Disable on Desktop"
-msgstr "在桌面模式禁用 "
+msgstr "在桌面模式禁用"
 
 #. Setting: Disable on Desktop
 #. Field: hint
@@ -1216,7 +1219,7 @@ msgid ""
 "Touchpad emulation will automatically be disabled when not in gamemode. "
 "Specifically, steam will be periodically be checked to be running in "
 "gamepad mode and if not, touchpad emulation will be disabled."
-msgstr "当不处于游戏模式时, 触摸板模拟将自动禁用。通过定期检查 Steam 是否运行在游戏模式中来实现, 如果不是, 触摸板模拟将被禁用"
+msgstr "不处于游戏模式时会自动停用触摸板模拟。系统会定期检查 Steam 是否运行在手柄模式，如果不是则会停用触摸板模拟"
 
 #. Setting: Short Action
 #. Field: title
@@ -1634,7 +1637,7 @@ msgstr "让 Steam 运行在 60/72 Hz 刷新率"
 #. Setting: Poweroff screen before sleep
 #. Field: title
 msgid "Poweroff screen before sleep"
-msgstr "在休眠前关闭屏幕"
+msgstr "在睡眠前关闭屏幕"
 
 #. Setting: All Controllers
 #. Field: title
@@ -1863,7 +1866,7 @@ msgstr "保存您的进度并关闭设备"
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: title
 msgid "Hibernate when device asks and at 5%."
-msgstr "当设备请求并在 5% 时休眠"
+msgstr "当设备请求休眠且电池电量低于 5% 时自动休眠"
 
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: hint
@@ -1872,7 +1875,8 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"某些设备会唤醒以强制 Windows 进入休眠。如果 Linux 不这样做, 会导致问题。在热事件和电池剩余5%时检测并休眠。\n"
+"某些设备会唤醒并强制 Windows 进入休眠状态。如果 Linux 不执行相同操作，可能会引发问题。"
+"系统将在检测到设备发热且电池电量低于 5% 时自动进入休眠状态。\n"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title

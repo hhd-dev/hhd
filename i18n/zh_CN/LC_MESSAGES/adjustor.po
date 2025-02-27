@@ -251,7 +251,7 @@ msgstr "自定义调度"
 msgid ""
 "Allows attaching a scheduler to the kernel sched_ext. Schedulers need to "
 "be installed and kernel needs to support sched_ext."
-msgstr "允许将调度程序附加到内核 sched_ext。调度程序需要安装, 内核需要支持 sched_ext。"
+msgstr "允许将自定义调度程序附加到内核的 sched_ext。需要先安装调度程序，且内核必须支持 sched_ext"
 
 #. Setting: Custom Scheduler
 #. Option: scx_lavd
@@ -278,7 +278,7 @@ msgstr "GPU 频率"
 msgid ""
 "Pins the GPU to a certain frequency. Helps in certain games that are CPU "
 "or GPU heavy by shifting power to or from the GPU. Has a minor effect."
-msgstr "将 GPU 固定在某个频率。通过将电源从 GPU 转移或转移至 GPU 来帮助在某些 CPU 或 GPU 负载较重的游戏中。有轻微的影响。"
+msgstr "将 GPU 锁定在特定频率。在 CPU 或 GPU 负载较重的游戏中，通过调整 GPU 的功耗分配来提供帮助，但效果较小"
 
 #. Setting: Auto
 #. Field: hint
