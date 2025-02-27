@@ -12,7 +12,8 @@ settings:
       options:
         system: System
         C: English
-        zh: Chinese
+        zh_CN: Simplified Chinese
+        zh_TW: Traditional Chinese
         pt: Portugese
 
     theme:
