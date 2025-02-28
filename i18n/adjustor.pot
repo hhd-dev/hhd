@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-06 18:26+0100\n"
+"POT-Creation-Date: 2025-02-28 12:37+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
 msgstr ""
@@ -514,6 +514,11 @@ msgstr ""
 msgid "Fan Curve Limitation"
 msgstr ""
 
+#. Setting: Battery Settings
+#. Field: title
+msgid "Battery Settings"
+msgstr ""
+
 #. Setting: Charge Limit (%)
 #. Field: title
 msgid "Charge Limit (%)"
@@ -551,6 +556,7 @@ msgstr ""
 
 #. Setting: Charge Limit (%)
 #. Option: disabled
+#. Setting: Charge Bypass
 msgid "Unset"
 msgstr ""
 
@@ -566,6 +572,21 @@ msgid ""
 "Lowers the power consumption of the device from 4% to 1% overnight. "
 "Active only on battery. Turns off the power light and the controller  "
 "requires longer to wake up."
+msgstr ""
+
+#. Setting: Charge Bypass
+#. Field: title
+msgid "Charge Bypass"
+msgstr ""
+
+#. Setting: Charge Bypass
+#. Option: awake
+msgid "While On"
+msgstr ""
+
+#. Setting: Charge Bypass
+#. Option: always
+msgid "Always"
 msgstr ""
 
 #. Setting: Power
@@ -607,7 +628,7 @@ msgstr ""
 msgid "Power Light"
 msgstr ""
 
-msgid "Legion L + Y changes TDP Mode"
+msgid "Legion Button + Y changes TDP Mode"
 msgstr ""
 
 #. Setting: Lenovo TDP
@@ -630,11 +651,8 @@ msgstr ""
 #. Setting: TDP
 #. Field: hint
 msgid ""
-"Average TDP Target.\n"
-"Sets the values STAMP and Skin Power Limit to it. If boost is enabled, "
-"interpolates values for slow and fast TDPs  based on those used by "
-"Lenovo. If it is not, it sets the Slow limit equal to TDP and the Fast "
-"limit to +2W. Boost is recommended for desktop use."
+"Maximum average TDP. Boost goes a bit higher and is recommended for "
+"desktop use."
 msgstr ""
 
 #. Setting: TDP Boost
@@ -645,15 +663,6 @@ msgstr ""
 #. Setting: Set Fan to Full Speed
 #. Field: title
 msgid "Set Fan to Full Speed"
-msgstr ""
-
-#. Setting: Custom Fan Curve
-#. Field: hint
-msgid ""
-"Allows you to set a custom fan curve. This fan curve is only officially "
-"supported on custom mode, but you can nevertheless use it in other power "
-"modes. This fan curve needs to be reapplied and is reapplied every time "
-"you switch  TDP modes."
 msgstr ""
 
 #. Setting: Disabled
@@ -685,7 +694,7 @@ msgstr ""
 
 #. Setting: Restore Default
 #. Field: hint
-msgid "Reset to the original fan curve provided by Lenovo in BIOS V28."
+msgid "Reset to the original fan curve for custom mode."
 msgstr ""
 
 #. Setting: Show TDP changes with RGB

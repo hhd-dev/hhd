@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-06 18:26+0100\n"
+"POT-Creation-Date: 2025-02-28 12:21+0800\n"
 "PO-Revision-Date: 2024-02-07 17:27+0100\n"
 "Last-Translator: Alex <aliceric27@gmail.com>\n"
 "Language: zh_Hans_CN\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
@@ -81,9 +81,14 @@ msgid "English"
 msgstr ""
 
 #. Setting: Language
-#. Option: zh
-msgid "Chinese"
-msgstr ""
+#. Option: zh_CN
+msgid "Simplified Chinese"
+msgstr "简体中文"
+
+#. Setting: Language
+#. Option: zh_TW
+msgid "Traditional Chinese"
+msgstr "繁體中文"
 
 #. Setting: Language
 #. Option: pt
@@ -268,6 +273,21 @@ msgstr "控制器模拟"
 msgid "Emulate different controller types to fuse your device's features."
 msgstr "模拟不同类型的控制器, 以便融合设备特性"
 
+
+
+
+#. Setting: Swap Guide and Menu/View
+#. Field: title
+#, fuzzy
+msgid "Swap Guide and Menu/View"
+msgstr "交换 Guide 与 Menu/View 按钮"
+
+#. Setting: Swap Guide and Menu/View
+#. Field: hint
+#, fuzzy
+msgid "Swaps the Guide and QAM buttons with start and select."
+msgstr "交换 Guide/QAM 按钮与 start/select 按钮"
+
 #. Setting: Motion Support
 #. Field: title
 msgid "Motion Support"
@@ -334,8 +354,10 @@ msgstr ""
 "将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 HHD）。如果禁用，它们将作为键盘按钮。"
 "菜单/L4/R4 可以作为组合键：菜单单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。"
 "L4/R4 是单击呼出快速菜单键(QAM)，长按呼出 HHD 菜单（原始）。"
-#. Option: disabled
+
 #. Setting: Start/Select do SteamOS Combos
+#. Option: disabled
+#. Setting: Menu/L4/R4 Mapping
 #. Setting: Disabled
 #. Field: title
 #. Setting: Extra buttons as
@@ -359,7 +381,7 @@ msgstr "禁用"
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
 msgid "Paddles, no Combo"
-msgstr "背键,不做组合键"
+msgstr "背键, 不做组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
@@ -404,7 +426,7 @@ msgstr ""
 #. Setting: WinControls
 #. Field: hint
 msgid "Specialized settings for GPD devices."
-msgstr "GPD 设备的专门设置"
+msgstr "GPD 设备的专用设置"
 
 #. Setting: RGB Mode
 #. Field: title
@@ -490,12 +512,12 @@ msgstr "鼠标模式触发键"
 #. Setting: Mouse Mode Triggers
 #. Option: gpd
 msgid "GPD (RT is Fast Mouse)"
-msgstr "GPD (RT 为快速鼠标)"
+msgstr "GPD (RT 为鼠标移动加速)"
 
 #. Setting: Mouse Mode Triggers
 #. Option: steamos
 msgid "SteamOS (LT/RT are R/L Clicks)"
-msgstr "SteamOS (LT/RT 为 R/L 点击)"
+msgstr "SteamOS (LT/RT 为 鼠标右键/左键)"
 
 #. Setting: L4/R4 Mapping
 #. Field: title
@@ -510,7 +532,7 @@ msgstr "用于 HHD (F20/F21)"
 #. Setting: L4/R4 Mapping
 #. Option: default
 msgid "Default (Pause/PrntScr)"
-msgstr "默认（暂停/PrntScr)"
+msgstr "默认 (Pause/PrntScr)"
 
 #. Setting: Deadzones
 #. Field: title
@@ -789,7 +811,7 @@ msgstr "交换 ROG Menu/View 按钮"
 #. Setting: Swap ROG and Menu/View
 #. Field: hint
 msgid "Swaps the Armory Crate and Command center buttons with start and select."
-msgstr "交换 Armory Crate/Command center 与 Menu/View 按钮"
+msgstr "交换 Armory Crate/Command center 与 start/select 按钮"
 
 #. Setting: RGB During Boot
 #. Field: title
@@ -1050,7 +1072,7 @@ msgstr "任天堂 QAM 修复"
 #. Setting: Xbox Elite
 #. Field: title
 msgid "Xbox Elite"
-msgstr ""
+msgstr "Xbox 精英手柄"
 
 #. Setting: Steam Controller
 #. Field: title
@@ -1182,7 +1204,7 @@ msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
 msgstr ""
-"启用触摸板模拟功能。对于支持触摸板的目标控制器(如 DualSense), 会直接用于其内置触摸板;"
+"启用触摸板模拟功能。对于支持触摸板的目标控制器(如 DualSense), 会直接用于其内置触摸板; "
 "对于不支持的目标设备, 将会创建一个虚拟触摸板"
 
 #. Setting: Disabled
@@ -1485,8 +1507,7 @@ msgstr "运行 rpm-ostree 重置"
 msgid ""
 "Disable the custom initramfs and remove layers. Your personal data will "
 "not be affected."
-msgstr ""
-"禁用自定义 initramfs 并移除层。您的个人数据不会受到影响"
+msgstr "禁用自定义 initramfs 并移除层。您的个人数据不会受到影响"
 
 #. Setting: Cancel
 #. Field: title
@@ -2265,12 +2286,6 @@ msgstr "启用 RGB 支持"
 #~ msgid "Utilities"
 #~ msgstr "工具"
 
-#~ msgid "Simplified Chinese"
-#~ msgstr "简体中文"
-
-#~ msgid "Traditional Chinese"
-#~ msgstr "繁體中文"
-
 #~ msgid ""
 #~ "Sets the sampling frequency for the "
 #~ "IMU. Check "
@@ -2296,4 +2311,7 @@ msgstr "启用 RGB 支持"
 
 #~ msgid "Shortcut Support + Side Button double/triple press (Requires Restart)"
 #~ msgstr "快捷键支持 + 侧面按钮双击/三击 (需要重启)"
+
+#~ msgid "Chinese"
+#~ msgstr ""
 
