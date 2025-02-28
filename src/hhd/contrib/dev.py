@@ -13,7 +13,7 @@ def evdev(dev: str | None):
     def RV(type: int, code: int):
         if (type, code) not in cache:
             v = ecodes.bytype[type][code]
-            if isinstance(v, list):
+            if isinstance(v, list) or isinstance(v, tuple):
                 v = v[0]
             cache[(type, code)] = v
         else:

@@ -5,7 +5,7 @@ fi
 
 HOST=$1
 RSYNC="rsync -rv --exclude .git --exclude venv --exclude __pycache__'"
-USER=${USER:-bazzite}
+USER=${2:-bazzite}
 
 # python -m venv --system-site-packages ~/hhd-dev/hhd/venv
 # ~/hhd-dev/hhd/venv/bin/pip install -e ~/hhd-dev/adjustor

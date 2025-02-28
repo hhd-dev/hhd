@@ -325,6 +325,7 @@ TouchpadCorrectionType = Literal[
     "left",
     "right",
     "center",
+    "legos",
     "disabled",
 ]
 
@@ -354,7 +355,7 @@ def correct_touchpad(
                     y_mult=new_height,
                     y_ofs=(height - new_height),
                 )
-        case "right":
+        case "right" | "legos":
             if ratio > 2:
                 new_width = width / ratio
                 return TouchpadCorrection(
@@ -474,6 +475,8 @@ def correct_touchpad(
                 )
         case "stretch" | "disabled":
             return TouchpadCorrection(x_mult=width, y_mult=height)
+        # case "legos":
+        #     return TouchpadCorrection(x_mult=800, y_mult=800, x_ofs=1055, y_ofs=140)
 
     logger.error(f"Touchpad correction method '{method}' not found.")
     return TouchpadCorrection(x_mult=width, y_mult=height)

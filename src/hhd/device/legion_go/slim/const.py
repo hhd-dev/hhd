@@ -58,3 +58,17 @@ GOS_INTERFACE_AXIS_MAP: dict[Axis, AM] = {
     "gyro_z": AM(22 << 3, "i16", scale=0.0005325, order="little"),
     "gyro_y": AM(24 << 3, "i16", scale=-0.0005325, order="little"),
 }
+
+GOS_TOUCHPAD_BUTTON_MAP: dict[int, Button] = to_map(
+    {
+        "touchpad_touch": [B("BTN_TOOL_FINGER")],  # also BTN_TOUCH
+        "touchpad_left": [B("BTN_LEFT")],
+    }
+)
+
+GOS_TOUCHPAD_AXIS_MAP: dict[int, Axis] = to_map(
+    {
+        "touchpad_x": [B("ABS_X")],  # also ABS_MT_POSITION_X
+        "touchpad_y": [B("ABS_Y")],  # also ABS_MT_POSITION_Y
+    }
+)

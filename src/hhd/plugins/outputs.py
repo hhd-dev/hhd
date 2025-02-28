@@ -38,6 +38,7 @@ def get_outputs(
     rgb_modes: Mapping[RgbMode, Sequence[RgbSettings]] | None = None,
     rgb_zones: RgbZones = "mono",
     controller_disabled: bool = False,
+    touchpad_enable: Literal["disabled", "gamemode", "always"] | None = None,
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -50,6 +51,10 @@ def get_outputs(
         correction = touch_conf["controller.correction"].to(TouchpadCorrectionType)
         if touchpad in ("emulation", "controller"):
             desktop_disable = touch_conf[touchpad]["desktop_disable"].to(bool)
+    elif touchpad_enable:
+        touchpad = "disabled" if touchpad_enable == "disabled" else "controller"
+        correction = "legos"  # todo: make generic
+        desktop_disable = touchpad_enable == "gamemode"
     else:
         touchpad = "controller"
         correction = "stretch"

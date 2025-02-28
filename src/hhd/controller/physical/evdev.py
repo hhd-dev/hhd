@@ -282,8 +282,12 @@ class GenericGamepadEvdev(Producer, Consumer):
                     if cap_id not in dev_cap:
                         matches = False
                         break
+                    if cap_id != B("EV_ABS"):
+                        dev_caps = dev_cap[cap_id]
+                    else:
+                        dev_caps = [c[0] for c in dev_cap[cap_id]]  # type: ignore
                     for cap in caps:
-                        if cap not in dev_cap[cap_id]:
+                        if cap not in dev_caps:
                             matches = False
                         break
                 if not matches:

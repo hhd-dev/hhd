@@ -283,6 +283,7 @@ class LegionHidraw(GenericGamepadHidraw):
         cmds.extend(config_device(self.os, self.turbo, self.touchpad, self.freq))  # type: ignore
 
         for r in cmds:
+            # logger.info(f"Sending command: {r.hex()}")
             self.dev.write(r)
 
         return out
