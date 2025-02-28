@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-06 18:26+0100\n"
+"POT-Creation-Date: 2025-02-28 12:37+0800\n"
 "PO-Revision-Date: 2024-04-08 19:00+0200\n"
 "Last-Translator: Alex <aliceric27@gmail.com>\n"
 "Language: zh\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
 msgstr "使用下面的按钮禁用 Decky TDP 插件以继续。"
@@ -533,6 +533,13 @@ msgstr "恢复默认的风扇曲线"
 msgid "Fan Curve Limitation"
 msgstr "风扇曲线限制"
 
+
+#. Setting: Battery Settings
+#. Field: title
+#, fuzzy
+msgid "Battery Settings"
+msgstr "电池设置"
+
 #. Setting: Charge Limit (%)
 #. Field: title
 msgid "Charge Limit (%)"
@@ -570,6 +577,7 @@ msgstr ""
 
 #. Setting: Charge Limit (%)
 #. Option: disabled
+#. Setting: Charge Bypass
 msgid "Unset"
 msgstr "不限"
 
@@ -578,13 +586,29 @@ msgstr "不限"
 msgid "Extreme Standby Mode"
 msgstr "极限待机模式"
 
+#. Setting: Charge Bypass
+#. Field: title
+msgid "Charge Bypass"
+msgstr "充电旁路"
+
+#. Setting: Charge Bypass
+#. Option: awake
+msgid "While On"
+msgstr "开启时"
+
+#. Setting: Charge Bypass
+#. Option: always
+msgid "Always"
+msgstr "始终"
+
 #. Setting: Extreme Standby Mode
 #. Field: hint
-# msgid ""
-# "Lowers the power consumption of the device from 4% to 1% overnight. "
-# "Active only on battery. Turns off the power light and the controller  "
-# "requires longer to wake up."
-# msgstr "将设备的功耗从 4% 降低到 1%, 仅在电池模式下有效。关闭电源指示灯, 控制器需要更长时间才能唤醒"
+#, python-format
+msgid ""
+"Lowers the power consumption of the device from 4% to 1% overnight. "
+"Active only on battery. Turns off the power light and the controller  "
+"requires longer to wake up."
+msgstr "将设备的功耗从 4% 降低到 1%, 仅在电池模式下有效。关闭电源指示灯, 控制器需要更长时间才能唤醒"
 
 #. Setting: Power
 #. Field: title
@@ -625,8 +649,9 @@ msgstr "允许将 Steam TDP 滑块设置为 1-20W, 而不是 4-15W。未选中�
 msgid "Power Light"
 msgstr "电源指示灯"
 
-msgid "Legion L + Y changes TDP Mode"
-msgstr "Legion L + Y 更改 TDP 模式"
+#, fuzzy
+msgid "Legion Button + Y changes TDP Mode"
+msgstr "Legion 键 + Y 更改 TDP 模式"
 
 #. Setting: Lenovo TDP
 #. Field: title
@@ -648,15 +673,9 @@ msgstr "安静"
 #. Setting: TDP
 #. Field: hint
 msgid ""
-"Average TDP Target.\n"
-"Sets the values STAMP and Skin Power Limit to it. If boost is enabled, "
-"interpolates values for slow and fast TDPs  based on those used by "
-"Lenovo. If it is not, it sets the Slow limit equal to TDP and the Fast "
-"limit to +2W. Boost is recommended for desktop use."
-msgstr ""
-"平均 TDP 目标。\n"
-"设置 STAMP 和 Skin Power Limit 的值。如果启用了 boost, 则根据联想使用的值插值计算出 slow 和 fast "
-"TDP 的值。如果没有启用, 则将 Slow 限制设置为 TDP, 将 Fast 限制设置为 +2W。建议在桌面使用时启用 boost。"
+"Maximum average TDP. Boost goes a bit higher and is recommended for "
+"desktop use."
+msgstr "最大平均 TDP。TDP 增强更激进，推荐用于桌面使用。"
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -667,17 +686,6 @@ msgstr "允许设备通过设置适当的 slow 和 fast TDP 值来提升性能�
 #. Field: title
 msgid "Set Fan to Full Speed"
 msgstr "将风扇设置为最大速度"
-
-#. Setting: Custom Fan Curve
-#. Field: hint
-msgid ""
-"Allows you to set a custom fan curve. This fan curve is only officially "
-"supported on custom mode, but you can nevertheless use it in other power "
-"modes. This fan curve needs to be reapplied and is reapplied every time "
-"you switch  TDP modes."
-msgstr ""
-"允许您设置自定义风扇曲线。此风扇曲线仅在自定义模式下得到官方支持, 但您仍然可以在其他电源模式下使用。此风扇曲线需要重新应用, 并且在切换 TDP"
-" 模式时重新应用。"
 
 #. Setting: Disabled
 #. Field: hint
@@ -699,7 +707,7 @@ msgstr "20°C"
 #. Setting: Enforce Windows Minimums
 #. Field: title
 msgid "Enforce Windows Minimums"
-msgstr "执行Windows最低要求"
+msgstr "强制Windows最低要求"
 
 #. Setting: Enforce Windows Minimums
 #. Field: hint
@@ -708,8 +716,9 @@ msgstr "强制执行来自 Legion Space 的最低风扇曲线。"
 
 #. Setting: Restore Default
 #. Field: hint
-msgid "Reset to the original fan curve provided by Lenovo in BIOS V28."
-msgstr "重置为 BIOS V28 中由联想提供的原始风扇曲线。"
+#, fuzzy
+msgid "Reset to the original fan curve for custom mode."
+msgstr "重置为原始风扇曲线。"
 
 #. Setting: Show TDP changes with RGB
 #. Field: title
@@ -754,10 +763,8 @@ msgid ""
 "responds faster and prevents throttling. Edge is the temperature of the "
 "chip: responds slower and prevents overheating."
 msgstr ""
-"允许您设置自定义风扇曲线并选择温度探头 "  
-"(Edge或Junction)。Junction是芯片的热点温度： "  
-"响应更快并防止降频。Edge是芯片的温度： "  
-"响应较慢并防止过热。"
+"允许您设置自定义风扇曲线并选择温度探头 (Edge或Junction)。Junction是芯片的热点温度："
+"响应更快并防止降频。Edge是芯片的温度：响应较慢并防止过热。"
 
 #. Setting: Manual (Edge, Smooth)
 #. Field: title
@@ -772,7 +779,7 @@ msgstr "恢复默认"
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
 msgid "Manual (Tctl, Fast)"
-msgstr "手动（Tctl，快速）"
+msgstr "手动 (Tctl, 快速)"
 
 #. Setting: Advanced Configurator
 #. Field: title
@@ -963,4 +970,34 @@ msgstr "启用高级参数"
 #~ "Limits device charging to 80%. Lenovo"
 #~ " EC method. Available since BIOSv29."
 #~ msgstr "将设备充电限制在 80%。联想 EC 方法。自 BIOSv29 起可用。"
+
+#~ msgid ""
+#~ "Average TDP Target.\n"
+#~ "Sets the values STAMP and Skin "
+#~ "Power Limit to it. If boost is "
+#~ "enabled, interpolates values for slow "
+#~ "and fast TDPs  based on those used"
+#~ " by Lenovo. If it is not, it"
+#~ " sets the Slow limit equal to "
+#~ "TDP and the Fast limit to +2W. "
+#~ "Boost is recommended for desktop use."
+#~ msgstr ""
+#~ "平均 TDP 目标。\n"
+#~ "设置 STAMP 和 Skin Power Limit "
+#~ "的值。如果启用了 boost, 则根据联想使用的值插值计算出 slow 和 "
+#~ "fast TDP 的值。如果没有启用, 则将 Slow 限制设置为 "
+#~ "TDP, 将 Fast 限制设置为 +2W。建议在桌面使用时启用 boost。"
+
+#~ msgid ""
+#~ "Allows you to set a custom fan "
+#~ "curve. This fan curve is only "
+#~ "officially supported on custom mode, but"
+#~ " you can nevertheless use it in "
+#~ "other power modes. This fan curve "
+#~ "needs to be reapplied and is "
+#~ "reapplied every time you switch  TDP "
+#~ "modes."
+#~ msgstr ""
+#~ "允许您设置自定义风扇曲线。此风扇曲线仅在自定义模式下得到官方支持, 但您仍然可以在其他电源模式下使用。此风扇曲线需要重新应用,"
+#~ " 并且在切换 TDP 模式时重新应用。"
 

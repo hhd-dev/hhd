@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-06 18:26+0100\n"
+"POT-Creation-Date: 2025-02-28 12:21+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.15.0\n"
+"Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
@@ -80,8 +80,13 @@ msgid "English"
 msgstr ""
 
 #. Setting: Language
-#. Option: zh
-msgid "Chinese"
+#. Option: zh_CN
+msgid "Simplified Chinese"
+msgstr ""
+
+#. Setting: Language
+#. Option: zh_TW
+msgid "Traditional Chinese"
 msgstr ""
 
 #. Setting: Language
@@ -267,6 +272,16 @@ msgstr ""
 msgid "Emulate different controller types to fuse your device's features."
 msgstr ""
 
+#. Setting: Swap Guide and Menu/View
+#. Field: title
+msgid "Swap Guide and Menu/View"
+msgstr ""
+
+#. Setting: Swap Guide and Menu/View
+#. Field: hint
+msgid "Swaps the Guide and QAM buttons with start and select."
+msgstr ""
+
 #. Setting: Motion Support
 #. Field: title
 msgid "Motion Support"
@@ -331,9 +346,9 @@ msgid ""
 " HHD (legacy). "
 msgstr ""
 
-#. Setting: Menu/L4/R4 Mapping
-#. Option: disabled
 #. Setting: Start/Select do SteamOS Combos
+#. Option: disabled
+#. Setting: Menu/L4/R4 Mapping
 #. Setting: Disabled
 #. Field: title
 #. Setting: Extra buttons as
