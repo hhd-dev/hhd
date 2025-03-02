@@ -197,7 +197,16 @@ def prepare_dev(
             ax, atr, scale_usr, max_val = mappings[fn]
             if atr:
                 offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset", "0"))
-                scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale"))
+                try:
+                    scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale"))
+                except Exception as e:
+                    scales = read_sysfs(sensor_dir, f"in_{atr}_scale_available")
+                    scale = float(scales.split(" ", 1)[0])
+                    write_sysfs(sensor_dir, f"in_{atr}_scale", scale)
+
+                    logger.warning(
+                        f"Could not read scale for {atr}, setting it to first choice {scale} (avail: {scales}). Error:\n{e}"
+                    )
             else:
                 offset = 0
                 scale = 1
