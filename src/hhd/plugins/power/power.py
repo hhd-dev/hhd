@@ -194,8 +194,16 @@ def delete_temporary_swap():
         return
 
     logger.info(f"Deleting swapfile {HHD_SWAP_FILE}")
-    subprocess.run(["swapoff", HHD_SWAP_FILE], check=True, stdout=subprocess.DEVNULL)
-    os.remove(HHD_SWAP_FILE)
+    try:
+        subprocess.run(
+            ["swapoff", HHD_SWAP_FILE], check=True, stdout=subprocess.DEVNULL
+        )
+    except Exception as e:
+        logger.error(f"Failed to swapoff {HHD_SWAP_FILE}:\n{e}")
+    try:
+        os.remove(HHD_SWAP_FILE)
+    except Exception as e:
+        logger.error(f"Failed to delete {HHD_SWAP_FILE}:\n{e}")
 
 
 def emergency_shutdown():
