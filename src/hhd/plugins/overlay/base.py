@@ -132,6 +132,7 @@ def loop_manage_overlay(
     requested: bool,
     gsconf: Config,
 ):
+    wake_handler = None
     try:
         status: Status = "closed"
 
