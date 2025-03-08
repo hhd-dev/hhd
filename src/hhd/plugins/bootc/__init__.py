@@ -163,7 +163,7 @@ def _bootc_progress_reader(fd, emit, friendly, lock, obj):
                     value = start + min(length, int((curr / total) * length))
                     unit = f" {friendly} ({curr/1e9:.1f}/{total/1e9 + 0.099:.1f} GB)"
                 case _:
-                    value = None  # indeterminate
+                    continue
 
             with lock:
                 obj.update({"text": text, "value": value, "unit": unit})
