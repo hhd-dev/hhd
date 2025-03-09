@@ -155,8 +155,15 @@ class BatteryPlugin(HHDPlugin):
                     self.bypass_awake = False
             if os.path.exists(f"{base}/charge_behaviour"):
                 self.charge_bypass_fn = f"{base}/charge_behaviour"
-                with open(self.charge_bypass_fn) as f:
-                    self.bypass_awake = "inhibit-charge-s0" in f.read()
+                try:
+                    with open(self.charge_bypass_fn) as f:
+                        self.bypass_awake = "inhibit-charge-s0" in f.read()
+                except Exception:
+                    logger.error(
+                        "Failed to read charge behaviour file, assuming it is not supported."
+                    )
+                    self.charge_bypass_fn = None
+                    self.bypass_awake = False
             if self.charge_bypass_fn or self.charge_limit_fn:
                 logger.info(
                     f"Found battery '{bat}' with:\nBattery Bypass:\n{self.charge_bypass_fn}\nBattery Limit:\n{self.charge_limit_fn}."
