@@ -28,7 +28,7 @@ def set_charge_limit(bat: str, lim: int):
         return False
 
 
-def set_charge_bypass(bat: str, type: str):
+def set_charge_bypass_type(bat: str, type: str):
     match type:
         case "disabled":
             val = "Standard"
@@ -38,7 +38,7 @@ def set_charge_bypass(bat: str, type: str):
             val = "Bypass"
         case _:
             logger.error(f"Invalid charge bypass type: {type}")
-            return
+            return False
 
     try:
         logger.info(f"Setting charge type to '{val}' (for bypass '{type}').")
@@ -47,6 +47,38 @@ def set_charge_bypass(bat: str, type: str):
         return True
     except Exception as e:
         logger.error(f"Failed to write battery bypass with error:\n{e}")
+        return False
+
+
+def set_charge_bypass_behaviour(bat: str, type: str):
+    match type:
+        case "disabled":
+            val = "auto"
+        case "awake":
+            val = "inhibit-charge-s0"
+        case "always":
+            val = "inhibit-charge"
+        case _:
+            logger.error(f"Invalid charge bypass type: {type}")
+            return False
+
+    try:
+        logger.info(f"Setting charge type to '{val}' (for bypass '{type}').")
+        with open(bat, "w") as f:
+            f.write(f"{val}\n")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to write battery bypass with error:\n{e}")
+        return False
+
+
+def set_charge_bypass(bat: str, type: str):
+    if "charge_type" in bat:
+        return set_charge_bypass_type(bat, type)
+    elif "charge_behaviour" in bat:
+        return set_charge_bypass_behaviour(bat, type)
+    else:
+        logger.error(f"Unknown charge bypass file: {bat}")
         return False
 
 
@@ -64,6 +96,7 @@ class BatteryPlugin(HHDPlugin):
 
         self.queue_charge_limit = None
         self.charge_bypass_fn = None
+        self.bypass_awake = True
         self.charge_limit_fn = None
         self.charge_bypass_prev = None
         self.charge_limit_prev = None
@@ -80,6 +113,8 @@ class BatteryPlugin(HHDPlugin):
             del out["tdp"]["battery"]["children"]["charge_limit"]
         if not self.charge_bypass_fn:
             del out["tdp"]["battery"]["children"]["charge_bypass"]
+        elif not self.bypass_awake:
+            del out["tdp"]["battery"]["children"]["charge_bypass"]["options"]["awake"]
 
         return out
 
@@ -111,10 +146,17 @@ class BatteryPlugin(HHDPlugin):
 
                 if supports:
                     self.charge_bypass_fn = f"{base}/charge_type"
+                    self.bypass_awake = True
                 else:
                     logger.warning(
                         "Found charge type, but charge bypass is only supported on OneXPlayer currently."
                     )
+                    self.charge_bypass_fn = None
+                    self.bypass_awake = False
+            if os.path.exists(f"{base}/charge_behaviour"):
+                self.charge_bypass_fn = f"{base}/charge_behaviour"
+                with open(self.charge_bypass_fn) as f:
+                    self.bypass_awake = "inhibit-charge-s0" in f.read()
             if self.charge_bypass_fn or self.charge_limit_fn:
                 logger.info(
                     f"Found battery '{bat}' with:\nBattery Bypass:\n{self.charge_bypass_fn}\nBattery Limit:\n{self.charge_limit_fn}."
