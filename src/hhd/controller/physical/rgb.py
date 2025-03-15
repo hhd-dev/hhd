@@ -8,9 +8,10 @@ from typing import Any, Sequence
 from hhd.controller import Consumer
 from hhd.controller.base import Event, RgbLedEvent
 
+LED_BASE = "/sys/class/leds/"
 LED_PATHS = [
-    "/sys/class/leds/multicolor:chassis/",
-    "/sys/class/leds/ayaneo:rgb:joystick_rings/",
+    "multicolor:chassis",
+    ":rgb:joystick_rings",
 ]
 
 logger = logging.getLogger(__name__)
@@ -33,9 +34,10 @@ def read_sysfs(dir: str, fn: str, default: str | None = None):
 
 
 def get_led_path():
-    for p in LED_PATHS:
-        if os.path.exists(p):
-            return p
+    for fn in os.listdir(LED_BASE):
+        for p in LED_PATHS:
+            if p in fn:
+                return os.path.join(LED_BASE, fn)
     return None
 
 
