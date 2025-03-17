@@ -44,6 +44,11 @@ RPM_OSTREE_RESET = [
     "reset",
 ]
 
+RPM_OSTREE_UPDATE = [
+    "rpm-ostree",
+    "update",
+]
+
 BOOTC_CHECK_CMD = [
     BOOTC_PATH,
     "update",
@@ -237,6 +242,7 @@ class BootcPlugin(HHDPlugin):
         self.staged = ""
         self.cached_version = ""
         self.emit = None
+        self.updating = False
 
         self.branches = {}
         for branch in BRANCHES.split(","):
@@ -280,6 +286,7 @@ class BootcPlugin(HHDPlugin):
 
     def _init(self, conf: Config):
         self.status = get_bootc_status()
+        self.updating = False
 
         if is_incompatible(self.status):
             conf["updates.bootc.stage.mode"] = "incompatible"
@@ -479,6 +486,7 @@ class BootcPlugin(HHDPlugin):
                     elif e == "ready":
                         self.state = "loading_cancellable"
                         self.checked_update = False
+                        self.updating = True
                         if self.bootc_progress:
                             self.proc, self.progress = run_command_threaded_progress(
                                 BOOTC_UPDATE_CMD,
@@ -652,9 +660,23 @@ class BootcPlugin(HHDPlugin):
                 )
                 if self.proc is None:
                     self._init(conf)
-                elif self.proc.poll() is not None:
-                    self._init(conf)
-                    self.proc = None
+                elif exit := self.proc.poll() is not None:
+                    if exit and self.updating:
+                        logger.error(
+                            f"Command failed with exit code {exit}. Fallback to rpm-ostree"
+                        )
+                        self.proc = run_command_threaded(RPM_OSTREE_UPDATE)
+                        conf["updates.bootc.stage.loading_cancellable.progress"] = {
+                            "text": _("Update error. Using alternative method... "),
+                            "value": None,
+                            "unit": None,
+                        }
+
+                        # Prevent fallback running forever
+                        self.updating = False
+                    else:
+                        self._init(conf)
+                        self.proc = None
                 elif cancel:
                     logger.info("User cancelled update. Stopping...")
                     self.proc.send_signal(signal.SIGINT)
