@@ -47,9 +47,7 @@ def _select_branch(fallback, opts):
         # print(f"Stage: {stage}", file=sys.stderr)
         incompatible = stage is None or stage == "incompatible"
 
-        img = state.get("updates.bootc.steamos-target", None)
-        if not img:
-            img = state.get("updates.bootc.image", None).split(":")[-1]
+        img = state.get("updates.bootc.image", None).split(":")[-1]
         assert img is not None
         for k, v in BRANCH_MAP.items():
             if img.startswith(v):
@@ -93,9 +91,8 @@ def _select_branch(fallback, opts):
     if target_os is None:
         print(f"Invalid branch: {target}", file=sys.stderr)
         return 0
-
-    print(f"Setting target to {target_os}", file=sys.stderr)
-    set_state({"updates.bootc.steamos-target": target_os})
+    
+    print("Ignoring request to rebase from SteamOS", file=sys.stderr)
     return 0
 
 

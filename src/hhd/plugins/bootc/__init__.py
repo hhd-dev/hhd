@@ -377,7 +377,6 @@ class BootcPlugin(HHDPlugin):
             self.state = "ready"
             conf[f"updates.bootc.update"] = cached_version
             conf[f"updates.bootc.steamos-update"] = "has-update"
-            conf["updates.bootc.steamos-target"] = None
         elif self.get_version("staged"):
             conf["updates.bootc.stage.mode"] = "ready_updated"
             self.state = "ready_updated"
@@ -420,48 +419,20 @@ class BootcPlugin(HHDPlugin):
                 reboot = conf.get_action(f"updates.bootc.stage.{e}.reboot")
 
                 steamos = conf.get("updates.bootc.steamos-update", None)
-                target = conf.get("updates.bootc.steamos-target", None)
-                if target and (target not in BRANCHES or target == self.branch_name):
-                    target = None
 
                 # Handle steamos polkit
-                steamos_upd = False
                 if steamos == "check":
-                    if target or e == "ready":
+                    if e == "ready":
                         conf["updates.bootc.steamos-update"] = "has-update"
+                    elif e == "ready_rebased":
+                        # Make sure nothing funny happens on the rebase dialog
+                        conf["updates.bootc.steamos-update"] = "ready"
                     else:
                         update = True
-                        steamos_upd = True
                 if steamos == "apply":
-                    if target or e == "ready":
-                        update = True
-                        steamos_upd = True
+                    update = True
 
-                if steamos_upd and target:
-                    curr = get_ref_from_status(self.status)
-                    next_ref = (
-                        (curr[: curr.rindex(":")] if ":" in curr else curr)
-                        + ":"
-                        + target
-                    )
-                    if next_ref == curr:
-                        conf["updates.bootc.steamos-target"] = None
-                        self._init(conf)
-                    self.state = "loading_cancellable"
-                    cmd = [BOOTC_PATH, "switch", next_ref]
-                    if self.bootc_progress:
-                        self.proc, self.progress = run_command_threaded_progress(
-                            cmd, self.emit, target, self.progress_lock
-                        )
-                    else:
-                        self.proc = run_command_threaded(cmd)
-                    conf["updates.bootc.stage.mode"] = "loading_cancellable"
-                    conf["updates.bootc.stage.loading_cancellable.progress"] = {
-                        "text": _("Rebasing to "),
-                        "unit": self.branches.get(target, target),
-                        "value": None,
-                    }
-                elif update:
+                if update:
                     if e == "ready_rebased" and self.branch_ref:
                         self.checked_update = False
                         self.state = "loading_cancellable"
