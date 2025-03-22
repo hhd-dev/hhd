@@ -254,16 +254,16 @@ class BootcPlugin(HHDPlugin):
         self.state: STAGES = "init"
 
     def settings(self) -> HHDSettings:
-        if self.enabled:
-            sets = {"updates": {"bootc": load_relative_yaml("settings.yml")}}
+        sets = {
+            "updates": {"bootc": load_relative_yaml("settings.yml")},
+            "hhd": {"settings": load_relative_yaml("general.yml")},
+        }
 
-            sets["updates"]["bootc"]["children"]["stage"]["modes"]["rebase"][
-                "children"
-            ]["branch"]["options"] = self.branches
+        sets["updates"]["bootc"]["children"]["stage"]["modes"]["rebase"][
+            "children"
+        ]["branch"]["options"] = self.branches
 
-            return sets
-        else:
-            return {}
+        return sets
 
     def open(
         self,
@@ -422,7 +422,10 @@ class BootcPlugin(HHDPlugin):
 
                 # Handle steamos polkit
                 if steamos == "check":
-                    if e == "ready":
+                    if not conf.get("hhd.settings.bootc_steamui", True):
+                        # Updates are disabled, return that there are none
+                        conf["updates.bootc.steamos-update"] = "ready"
+                    elif e == "ready":
                         conf["updates.bootc.steamos-update"] = "has-update"
                     elif e == "ready_rebased":
                         # Make sure nothing funny happens on the rebase dialog
@@ -690,7 +693,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     if not BOOTC_ENABLED:
         return []
-    
+
     if not shutil.which(BOOTC_PATH):
         logger.warning("Bootc is enabled but not found in path.")
         return []

@@ -1,0 +1,9 @@
+type: container
+tags: [non-essential]
+
+children:
+  bootc_steamui:
+    type: bool
+    tags: [non-essential]
+    title: Show updates in SteamUI
+    default: True
