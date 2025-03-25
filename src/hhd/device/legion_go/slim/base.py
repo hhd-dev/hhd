@@ -227,7 +227,7 @@ def controller_loop_xinput(
     debug = DEBUG_MODE
 
     # Output
-    touchpad_enable = conf.get("touchpad", "disabled")
+    touchpad_enable = "disabled"  # conf.get("touchpad", "disabled")
     d_producers, d_outs, d_params = get_outputs(
         conf["xinput"],
         None,

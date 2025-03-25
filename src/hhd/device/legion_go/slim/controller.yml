@@ -57,17 +57,17 @@ children:
         hint: >-
           SteamOS style mapping.
 
-  touchpad:
-    type: multiple
-    title: Touchpad Emulation
-    default: disabled
-    tags: [ non-essential, ordinal ]
-    hint: >-
-      Passthrough the touchpad to the controller (Dualsense only).
-    options:
-      disabled: Disabled
-      gamemode: Gamemode
-      always: Always
+  # touchpad:
+  #   type: multiple
+  #   title: Touchpad Emulation
+  #   default: disabled
+  #   tags: [ non-essential, ordinal ]
+  #   hint: >-
+  #     Passthrough the touchpad to the controller (Dualsense only).
+  #   options:
+  #     disabled: Disabled
+  #     gamemode: Gamemode
+  #     always: Always
     
   freq:
     type: multiple
