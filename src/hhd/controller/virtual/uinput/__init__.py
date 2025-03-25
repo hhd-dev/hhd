@@ -313,7 +313,7 @@ class UInputDevice(Consumer, Producer):
                     if self.rumble:
                         out.append(self.rumble)
                     else:
-                        logger.warn(
+                        logger.warning(
                             f"Rumble requested but a rumble effect has not been uploaded.\n{ev}"
                         )
                 elif ev.type == B("EV_FF") and not ev.value:
