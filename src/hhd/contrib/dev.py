@@ -3,13 +3,29 @@ def evdev(dev: str | None):
     from evdev import list_devices, InputDevice, categorize, ecodes
     from time import sleep, perf_counter
 
+    cache = {}
+
     def B(b: str):
-        return cast(int, getattr(ecodes, b))
+        if b not in cache:
+            cache[b] = getattr(ecodes, b)
+        return cast(int, cache[b])
 
     def RV(type: int, code: int):
-        v = ecodes.bytype[type][code]
-        if isinstance(v, list):
-            return v[0]
+        if (type, code) not in cache:
+            v = ecodes.bytype[type][code]
+            if isinstance(v, list):
+                v = v[0]
+            cache[(type, code)] = v
+        else:
+            v = cache[(type, code)]
+        return v
+
+    def EVT(type):
+        if type not in cache:
+            v = getattr(ecodes, "EV")[type]
+            cache[type] = v
+        else:
+            v = cache[type]
         return v
 
     print("Available Devices with the Current Permissions")
@@ -71,27 +87,28 @@ def evdev(dev: str | None):
     start = perf_counter()
     ofs = None
     prev = 0
+    out = ""
     for ev in d.read_loop():
         if ofs == None:
             ofs = ev.timestamp()
         curr = perf_counter() - start
         hz = f"{1/(curr - prev):6.1f} Hz" if prev and curr != prev else "   NaN Hz"
         if ev.code == 0 and ev.type == 0 and ev.value == 0:
-            print(
-                f"└ SYN ─ {curr:7.3f}s ─ {hz} ─────────────────────────────────────┘"
+            out += (
+                f"└ SYN ─ {curr:7.3f}s ─ {hz} ───────────────────────────────────────┘"
             )
+            print(out)
+            out = ""
             prev = curr
             endcap = True
         else:
             if endcap:
-                print(
-                    "\n┌─────────────────────────────────────────────────────────────────┐"
-                )
+                out += "\n┌───────────────────────────────────────────────────────────────────┐\n"
                 endcap = False
 
             evstr = (
                 f"{ev.timestamp() - ofs:7.3f}s /"
-                + f" {getattr(ecodes, 'EV')[ev.type]:>6s} ({ev.type:02x}) /"
+                + f" {EVT(ev.type):>6s} ({ev.type:02x}) /"
                 + f" {RV(ev.type, ev.code):>21s} (x{ev.code:03x}):"
             )
 
@@ -109,11 +126,11 @@ def evdev(dev: str | None):
             elif ev.type == B("EV_ABS"):
                 evstr += f" {ev.value:8d}"
             else:
-                hexval = f"0x{ev.value:04X}"
+                hexval = f"{ev.value:04X}"
                 evstr += f" {hexval:>8s}"
 
-            print(f"│ {evstr:>58s} │")
-        sleep(0.001)
+            out += f"│ {evstr:>65s} │\n"
+        sleep(0.00005)
 
 def device_str(d):
     from hhd.controller.lib.common import hexify
