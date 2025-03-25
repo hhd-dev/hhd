@@ -14,6 +14,14 @@ if [ "${is_bazzite}" ]; then
   exit
 fi
 
+is_steamos=$(cat /etc/os-release  | grep ID=steamos)
+if [[ -n "${is_steamos}" && -z "${BYPASS_STEAMOS_CHECK}" ]]; then
+  echo "Installing Handheld Daemon on SteamOS is not canon."
+  echo
+  echo "Did you mean to install Bazzite? https://bazzite.gg"
+  exit
+fi
+
 set -e
 
 # Install Handheld Daemon to ~/.local/share/hhd
