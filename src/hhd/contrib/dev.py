@@ -12,7 +12,10 @@ def evdev(dev: str | None):
 
     def RV(type: int, code: int):
         if (type, code) not in cache:
-            v = ecodes.bytype[type][code]
+            try:
+                v = ecodes.bytype[type][code]
+            except KeyError:
+                v = "UNKWN"
             if isinstance(v, list) or isinstance(v, tuple):
                 v = v[0]
             cache[(type, code)] = v

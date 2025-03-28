@@ -11,6 +11,15 @@ from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
+from hhd.controller.physical.evdev import DINPUT_AXIS_POSTPROCESS, AbsAxis
+from hhd.controller.physical.evdev import (
+    GamepadButton,
+    GenericGamepadEvdev,
+    enumerate_evs,
+    to_map,
+)
+from typing import Sequence
+from hhd.controller import DEBUG_MODE, Event, Multiplexer
 
 from .const import MSI_CLAW_MAPPINGS
 
@@ -21,23 +30,93 @@ LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
-
-GAMEPAD_VID = 0x045E
-GAMEPAD_PID = 0x028E
+CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02])
 
 MSI_CLAW_VID = 0x0DB0
-MSI_CLAW_PID = 0x1901
-
-TECNO_VID = 0x2993
-TECNO_PID = 0x2001
-
-ZOTAC_VID = 0x1EE9
-ZOTAC_PID = 0x1590
+MSI_CLAW_XINPUT_PID = 0x1901
+MSI_CLAW_DINPUT_PID = 0x1902
 
 KBD_VID = 0x0001
 KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
+
+
+class ClawDInputHidraw(GenericGamepadHidraw):
+
+    def consume(self, events: Sequence[Event]) -> None:
+        if not self.dev:
+            return
+
+        for ev in events:
+            if ev["type"] != "rumble":
+                continue
+
+            if ev["code"] != "main":
+                logger.warning(
+                    f"Received rumble event with unsupported side: {ev['code']}"
+                )
+                continue
+            
+            # Same as dualshock 4
+            # "0501 0000 right left"
+            cmd = bytes(
+                [
+                    0x05,
+                    0x01,
+                    0x00,
+                    0x00,
+                    min(255, int(ev["weak_magnitude"] * 255)),
+                    min(255, int(ev["strong_magnitude"] * 255)),
+                ]
+            )
+            self.dev.write(cmd)
+
+    def set_dinput_mode(self):
+        if not self.dev:
+            return
+
+        # Set the device to dinput mode
+        self.dev.write(CLAW_SET_DINPUT)
+
+DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
+    {
+        # Gamepad
+        "a": [EC("BTN_B")],
+        "b": [EC("BTN_C")],
+        "x": [EC("BTN_A")],
+        "y": [EC("BTN_NORTH")],
+        # Sticks
+        "ls": [EC("BTN_SELECT")],
+        "rs": [EC("BTN_START")],
+        # Bumpers
+        "lb": [EC("BTN_WEST")],
+        "rb": [EC("BTN_Z")],
+        # Select
+        "start": [EC("BTN_TR2")],
+        "select": [EC("BTN_TL2")],
+        # Misc
+        "extra_l1": [EC("BTN_TRIGGER_HAPPY")],
+        "extra_r1": [0x013F],
+    }
+)
+DINPUT_AXIS_MAP: dict[int, AbsAxis] = to_map(
+    {
+        # Sticks
+        # Values should range from -1 to 1
+        "ls_x": [EC("ABS_X")],
+        "ls_y": [EC("ABS_Y")],
+        "rs_x": [EC("ABS_Z")],
+        "rs_y": [EC("ABS_RZ")],
+        # Triggers
+        # Values should range from -1 to 1
+        "rt": [EC("ABS_RX")],
+        "lt": [EC("ABS_RY")],
+        # Hat, implemented as axis. Either -1, 0, or 1
+        "hat_x": [EC("ABS_HAT0X")],
+        "hat_y": [EC("ABS_HAT0Y")],
+    }
+)
 
 
 def plugin_run(
@@ -47,6 +126,7 @@ def plugin_run(
     should_exit: TEvent,
     updated: TEvent,
     dconf: dict,
+    woke_up: TEvent,
 ):
     first = True
     first_disabled = True
@@ -64,11 +144,31 @@ def plugin_run(
             first_disabled = True
 
         try:
-            found_device = bool(enumerate_evs(vid=MSI_CLAW_VID))
+            is_xinput = bool(enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_XINPUT_PID))
+            found_device = bool(
+                enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_DINPUT_PID)
+            )
         except Exception:
             logger.warning("Failed finding device, skipping check.")
             time.sleep(LONGER_ERROR_DELAY)
             found_device = True
+            is_xinput = False
+
+        if is_xinput:
+            d_vend = ClawDInputHidraw(
+                vid=[MSI_CLAW_VID],
+                pid=[MSI_CLAW_DINPUT_PID],
+                usage_page=[0xFFA0],
+                usage=[0x0001],
+                required=True,
+            )
+            try:
+                d_vend.open()
+                d_vend.set_dinput_mode()
+                d_vend.close(True)
+            except Exception as e:
+                logger.error(f"Failed to set device into dinput mode.\n{type(e)}: {e}")
+                time.sleep(1)
 
         if not found_device:
             if first:
@@ -81,7 +181,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit, woke_up)
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -105,7 +205,12 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
+    conf: Config,
+    should_exit: TEvent,
+    updated: TEvent,
+    dconf: dict,
+    emit: Emitter,
+    woke_up: TEvent,
 ):
     debug = DEBUG_MODE
 
@@ -119,12 +224,15 @@ def controller_loop(
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        vid=[GAMEPAD_VID, MSI_CLAW_VID, TECNO_VID, ZOTAC_VID],
-        pid=[GAMEPAD_PID, MSI_CLAW_PID, TECNO_PID, ZOTAC_PID],
+        vid=[MSI_CLAW_VID],
+        pid=[MSI_CLAW_DINPUT_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
         hide=True,
+        btn_map=DINPUT_BUTTON_MAP,
+        axis_map=DINPUT_AXIS_MAP,
+        postprocess=DINPUT_AXIS_POSTPROCESS,
     )
 
     d_kbd_1 = GenericGamepadEvdev(
@@ -164,11 +272,11 @@ def controller_loop(
         output_timestamps=True,
     )
 
-    d_vend = GenericGamepadHidraw(
+    d_vend = ClawDInputHidraw(
         vid=[MSI_CLAW_VID],
-        pid=[MSI_CLAW_PID],
-        usage_page=[0xFFA0],
-        usage=[0x0001],
+        pid=[MSI_CLAW_DINPUT_PID],
+        usage_page=[0xFFF0],
+        usage=[0x0040],
         required=True,
     )
 
@@ -201,10 +309,7 @@ def controller_loop(
             prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
-
-        d_vend.open()
-        assert d_vend.dev
-        d_vend.dev.write(bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01]))
+        prepare(d_vend)
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
@@ -220,6 +325,10 @@ def controller_loop(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
+            if woke_up.is_set():
+                woke_up.clear()
+                d_vend.set_dinput_mode()
+
             evs = multiplexer.process(evs)
             if evs:
                 if debug:
@@ -227,6 +336,7 @@ def controller_loop(
 
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
+                d_vend.consume(evs)
 
             d_rgb.consume(evs)
             for d in d_outs:
