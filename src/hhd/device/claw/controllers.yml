@@ -1,0 +1,49 @@
+type: container
+tags: [lgc]
+title: Claw Controller
+hint: >-
+  Allows for configuring your handheld's controller to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse your device's features.
+
+  swap_guide:
+    type: bool
+    title: Swap Guide and Menu/View
+    tags: [non-essential]
+    hint: >-
+      Swaps the Guide and QAM buttons with start and select.
+    default: False
+
+  main_chords:
+    type: multiple
+    tags: [ non-essential ]
+    title: Start/Select do SteamOS Combos
+    hint: >-
+      When holding Select or Start, if another button is pressed, they become
+      the Xbox button, which allows doing SteamOS combos (Select+RT is
+      screenshot).
+    options:
+      disabled: "Disabled"
+      select: "Select Only"
+      start_select: "Start+Select"
+    default: disabled
+
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+
+  select_reboots:
+    type: bool
+    tags: [non-essential]
+    title: Hold View to Reboot
+    default: False
