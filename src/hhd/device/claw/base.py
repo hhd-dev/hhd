@@ -157,7 +157,7 @@ def plugin_run(
         if is_xinput:
             d_vend = ClawDInputHidraw(
                 vid=[MSI_CLAW_VID],
-                pid=[MSI_CLAW_DINPUT_PID],
+                pid=[MSI_CLAW_XINPUT_PID],
                 usage_page=[0xFFA0],
                 usage=[0x0001],
                 required=True,
@@ -166,6 +166,7 @@ def plugin_run(
                 d_vend.open()
                 d_vend.set_dinput_mode()
                 d_vend.close(True)
+                time.sleep(2)
             except Exception as e:
                 logger.error(f"Failed to set device into dinput mode.\n{type(e)}: {e}")
                 time.sleep(1)
