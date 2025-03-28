@@ -38,8 +38,8 @@ class PowerbuttondPlugin(HHDPlugin):
 
     def settings(self):
         d = {"hhd": load_relative_yaml("settings.yml")}
-        if self.cfg.unsupported:
-            d["hhd"]["settings"]["children"]["powerbuttond"]["default"] = False
+        # if self.cfg.unsupported:
+        #     d["hhd"]["settings"]["children"]["powerbuttond"]["default"] = False
         return d
 
     def update(self, conf: Config):
