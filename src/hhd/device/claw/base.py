@@ -284,7 +284,22 @@ def controller_loop(
         grab=True,
         btn_map=dconf.get("btn_mapping", MSI_CLAW_MAPPINGS),
     )
-    d_kbd_2 = None
+
+    # Mute these so after suspend we do not get stray keypresses
+    d_kbd_2 = GenericGamepadEvdev(
+        vid=[MSI_CLAW_VID],
+        pid=[MSI_CLAW_DINPUT_PID],
+        required=False,
+        grab=True,
+        capabilities={EC("EV_KEY"): [EC("KEY_ESC")]},
+    )
+    d_mouse = GenericGamepadEvdev(
+        vid=[MSI_CLAW_VID],
+        pid=[MSI_CLAW_DINPUT_PID],
+        required=False,
+        grab=True,
+        capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
+    )
 
     kargs = {}
 
@@ -298,6 +313,7 @@ def controller_loop(
         params=d_params,
         startselect_chord=conf.get("main_chords", "disabled"),
         swap_guide="select_is_guide" if conf["swap_guide"].to(bool) else None,
+        keyboard_no_release=True,
         **kargs,
     )
 
@@ -343,8 +359,8 @@ def controller_loop(
         prepare(d_xinput)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
-        if d_kbd_2:
-            prepare(d_kbd_2)
+        prepare(d_kbd_2)
+        prepare(d_mouse)
         for d in d_producers:
             prepare(d)
         prepare(d_vend)
