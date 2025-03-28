@@ -4,11 +4,12 @@ import time
 from threading import Event as TEvent
 
 from hhd.controller import DEBUG_MODE, Multiplexer
+from hhd.controller.lib.common import AM, BM, CM
+from hhd.controller.lib.hid import MAX_REPORT_SIZE
 from hhd.controller.lib.hide import unhide_all
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
+from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
-from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 from hhd.controller.physical.evdev import DINPUT_AXIS_POSTPROCESS, AbsAxis
@@ -42,35 +43,74 @@ KBD_PID = 0x0001
 BACK_BUTTON_DELAY = 0.1
 
 
+def set_rgb_cmd(brightness, red, green, blue):
+    return bytes(
+        [
+            # Preamble
+            0x0F,
+            0x00,
+            0x00,
+            0x3C,
+            # Write first profile
+            0x21,
+            0x01,
+            # Start at
+            0x01,
+            0xFA,
+            # Write 31 bytes
+            0x20,
+            # Index, Frame num, Effect, Speed, Brightness
+            0x00,
+            0x01,
+            0x09,
+            0x03,
+            max(0, min(100, int(brightness * 100))),
+        ]
+    ) + 9 * bytes([red, green, blue])
+
+
 class ClawDInputHidraw(GenericGamepadHidraw):
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.init = False
 
     def consume(self, events: Sequence[Event]) -> None:
         if not self.dev:
             return
 
         for ev in events:
-            if ev["type"] != "rumble":
-                continue
-
-            if ev["code"] != "main":
-                logger.warning(
-                    f"Received rumble event with unsupported side: {ev['code']}"
+            if ev["type"] == "rumble" and ev["code"] == "main":
+                # Same as dualshock 4
+                # "0501 0000 right left"
+                cmd = bytes(
+                    [
+                        0x05,
+                        0x01,
+                        0x00,
+                        0x00,
+                        min(255, int(ev["weak_magnitude"] * 255)),
+                        min(255, int(ev["strong_magnitude"] * 255)),
+                    ]
                 )
-                continue
-            
-            # Same as dualshock 4
-            # "0501 0000 right left"
-            cmd = bytes(
-                [
-                    0x05,
-                    0x01,
-                    0x00,
-                    0x00,
-                    min(255, int(ev["weak_magnitude"] * 255)),
-                    min(255, int(ev["strong_magnitude"] * 255)),
-                ]
-            )
-            self.dev.write(cmd)
+                self.dev.write(cmd)
+            elif ev["type"] == "led":
+                if ev["mode"] == "solid":
+                    cmd = set_rgb_cmd(
+                        ev["brightness"],
+                        ev["red"],
+                        ev["green"],
+                        ev["blue"],
+                    )
+                    self.dev.write(cmd)
+                elif ev["mode"] == "disabled":
+                    cmd = set_rgb_cmd(
+                        0,
+                        0,
+                        0,
+                        0,
+                    )
+                    self.dev.write(cmd)
 
     def set_dinput_mode(self):
         if not self.dev:
@@ -78,6 +118,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
 
         # Set the device to dinput mode
         self.dev.write(CLAW_SET_DINPUT)
+
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
     {
@@ -220,7 +261,7 @@ def controller_loop(
         conf["controller_mode"],
         None,
         emit=emit,
-        rgb_modes={"disabled": [], "solid": ["color"]} if is_led_supported() else None,
+        rgb_modes={"disabled": [], "solid": ["color"]},
     )
 
     # Inputs
@@ -281,10 +322,6 @@ def controller_loop(
         required=True,
     )
 
-    d_rgb = LedDevice()
-    if d_rgb.supported:
-        logger.info(f"RGB Support activated through kernel driver.")
-
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
 
@@ -339,7 +376,6 @@ def controller_loop(
                 d_xinput.consume(evs)
                 d_vend.consume(evs)
 
-            d_rgb.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
