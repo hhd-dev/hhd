@@ -383,7 +383,8 @@ def controller_loop(
                 # realizes it woke up and switches to desktop mode.
                 # Therefore we need to wait otherwise we race it and
                 # end up stuck in desktop mode.
-                time.sleep(2)
+                if prev:
+                    time.sleep(3)
                 logger.info("Setting controller to dinput mode.")
                 d_vend.set_dinput_mode()
                 prev = time.perf_counter()
