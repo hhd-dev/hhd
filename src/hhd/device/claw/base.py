@@ -3,11 +3,9 @@ import select
 import time
 from threading import Event as TEvent
 
-from hhd.controller import DEBUG_MODE, Multiplexer
-from hhd.controller.lib.common import AM, BM, CM
-from hhd.controller.lib.hid import MAX_REPORT_SIZE
+from hhd.controller import DEBUG_MODE, Multiplexer, can_read
 from hhd.controller.lib.hide import unhide_all
-from hhd.controller.physical.hidraw import EventCallback, GenericGamepadHidraw
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
 from hhd.controller.virtual.uinput import UInputDevice
@@ -245,6 +243,22 @@ def plugin_run(
     unhide_all()
 
 
+class DesktopDetectorEvdev(GenericGamepadEvdev):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.desktop = False
+
+    def produce(self, fds: Sequence[int]):
+        if not self.dev or self.fd not in fds:
+            return []
+
+        while can_read(self.fd):
+            for e in self.dev.read():
+                self.desktop = True
+        
+        return []
+
+
 def controller_loop(
     conf: Config,
     should_exit: TEvent,
@@ -284,14 +298,14 @@ def controller_loop(
     )
 
     # Mute these so after suspend we do not get stray keypresses
-    d_kbd_2 = GenericGamepadEvdev(
+    d_kbd_2 = DesktopDetectorEvdev(
         vid=[MSI_CLAW_VID],
         pid=[MSI_CLAW_DINPUT_PID],
         required=False,
         grab=True,
         capabilities={EC("EV_KEY"): [EC("KEY_ESC")]},
     )
-    d_mouse = GenericGamepadEvdev(
+    d_mouse = DesktopDetectorEvdev(
         vid=[MSI_CLAW_VID],
         pid=[MSI_CLAW_DINPUT_PID],
         required=False,
@@ -364,8 +378,6 @@ def controller_loop(
         prepare(d_vend)
 
         logger.info("Emulated controller launched, have fun!")
-        prev = 0
-        woke_up = 0
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second
@@ -379,19 +391,14 @@ def controller_loop(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
-            # Detect wakeup through pause
-            if start - prev > 1:
-                woke_up = start
-            prev = start
+            # Detect if we are in desktop mode through events
+            desktop_mode = d_mouse.desktop or d_kbd_2.desktop
+            d_mouse.desktop = False
+            d_kbd_2.desktop = False
 
-            # After wakeup, the controller waits a bit until it
-            # realizes it woke up and switches to desktop mode.
-            # Therefore we need to wait otherwise we race it and
-            # end up stuck in desktop mode.
-            if woke_up is not None and start - woke_up > 3:
+            if desktop_mode:
                 logger.info("Setting controller to dinput mode.")
                 d_vend.set_dinput_mode()
-                woke_up = None
 
             evs = multiplexer.process(evs)
             if evs:
