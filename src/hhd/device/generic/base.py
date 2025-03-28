@@ -27,9 +27,6 @@ logger = logging.getLogger(__name__)
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
-MSI_CLAW_VID = 0x0DB0
-MSI_CLAW_PID = 0x1901
-
 TECNO_VID = 0x2993
 TECNO_PID = 0x2001
 
@@ -69,8 +66,6 @@ def plugin_run(
             match dconf.get("type", None):
                 case "tecno":
                     vid = TECNO_VID
-                case "claw":
-                    vid = MSI_CLAW_VID
                 case "zotac":
                     vid = ZOTAC_VID
                 case _:
@@ -144,8 +139,8 @@ def controller_loop(
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        vid=[GAMEPAD_VID, MSI_CLAW_VID, TECNO_VID, ZOTAC_VID],
-        pid=[GAMEPAD_PID, MSI_CLAW_PID, TECNO_PID, ZOTAC_PID],
+        vid=[GAMEPAD_VID, TECNO_VID, ZOTAC_VID],
+        pid=[GAMEPAD_PID, TECNO_PID, ZOTAC_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
@@ -219,23 +214,6 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
-        if dtype == "claw":
-            d_vend = GenericGamepadHidraw(
-                vid=[MSI_CLAW_VID],
-                pid=[MSI_CLAW_PID],
-                usage_page=[0xFFA0],
-                usage=[0x0001],
-                required=True,
-            )
-            try:
-                time.sleep(1)
-                d_vend.open()
-                assert d_vend.dev
-                d_vend.dev.write(
-                    bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00, 0x00])
-                )
-            finally:
-                d_vend.close(True)
         if dtype == "tecno":
             d_kbd_2 = GenericGamepadHidraw(
                 vid=[TECNO_VID],

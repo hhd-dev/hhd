@@ -30,13 +30,6 @@ ANBERNIC_MAPPINGS: dict[int, str] = {
     B("KEY_G"): "mode",
 }
 
-MSI_CLAW_MAPPINGS = {
-    B("KEY_VOLUMEUP"): "key_volumeup",
-    B("KEY_VOLUMEDOWN"): "key_volumedown",
-    B("KEY_F15"): "mode",
-    B("KEY_F16"): "share",
-}
-
 ZOTAC_ZONE_MAPPINGS = {
     # ctrl start f17/f18
     B("KEY_F17"): "mode",
@@ -170,29 +163,6 @@ CONFS = {
         "name": "Anbernic Win600",
         "btn_mapping": ANBERNIC_MAPPINGS,
         "extra_buttons": "none",
-    },
-    # MSI Claw
-    "Claw A1M": {
-        "name": "MSI Claw (1st gen)",
-        # "hrtimer": True, Uses sensor fusion garbage? From intel? Will need custom work
-        "extra_buttons": "none",
-        "btn_mapping": MSI_CLAW_MAPPINGS,
-        "type": "claw",
-        "display_gyro": False,
-    },
-    "Claw 7 AI+ A2VM": {
-        "name": "MSI Claw 7 (2nd gen)",
-        "extra_buttons": "none",
-        "btn_mapping": MSI_CLAW_MAPPINGS,
-        "type": "claw",
-        "display_gyro": False,
-    },
-    "Claw 8 AI+ A2VM": {
-        "name": "MSI Claw 8",
-        "extra_buttons": "none",
-        "btn_mapping": MSI_CLAW_MAPPINGS,
-        "type": "claw",
-        "display_gyro": False,
     },
     # TECNO
     "Pocket Go": {
