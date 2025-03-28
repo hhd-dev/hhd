@@ -29,7 +29,6 @@ class ClawControllerPlugin(HHDPlugin):
         self.t = None
         self.should_exit = None
         self.updated = Event()
-        self.woke_up = Event()
         self.started = False
         self.t = None
 
@@ -45,7 +44,6 @@ class ClawControllerPlugin(HHDPlugin):
         self.emit = emit
         self.context = context
         self.prev = None
-        self.woke_up.set()
 
     def settings(self) -> HHDSettings:
         base = {"controllers": {"claw": load_relative_yaml("controllers.yml")}}
@@ -90,7 +88,6 @@ class ClawControllerPlugin(HHDPlugin):
                 self.should_exit,
                 self.updated,
                 self.dconf,
-                self.woke_up,
             ),
         )
         self.t.start()
@@ -102,14 +99,6 @@ class ClawControllerPlugin(HHDPlugin):
         self.t.join()
         self.should_exit = None
         self.t = None
-
-    def notify(self, events):
-        for ev in events:
-            if ev["type"] == "special" and ev.get("event", None) == "wakeup":
-                logger.info(
-                    f"Woke up from sleep, setting controller to Dinput mode."
-                )
-                self.woke_up.set()
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:

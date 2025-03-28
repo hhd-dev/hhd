@@ -167,7 +167,6 @@ def plugin_run(
     should_exit: TEvent,
     updated: TEvent,
     dconf: dict,
-    woke_up: TEvent,
 ):
     first = True
     first_disabled = True
@@ -223,7 +222,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit, woke_up)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -252,7 +251,6 @@ def controller_loop(
     updated: TEvent,
     dconf: dict,
     emit: Emitter,
-    woke_up: TEvent,
 ):
     debug = DEBUG_MODE
 
@@ -366,6 +364,7 @@ def controller_loop(
         prepare(d_vend)
 
         logger.info("Emulated controller launched, have fun!")
+        prev = 0
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second
@@ -379,9 +378,17 @@ def controller_loop(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
-            if woke_up.is_set():
-                woke_up.clear()
+            if start - prev > 1:
+                # After wakeup, the controller waits a bit until it
+                # realizes it woke up and switches to desktop mode.
+                # Therefore we need to wait otherwise we race it and
+                # end up stuck in desktop mode.
+                time.sleep(2)
+                logger.info("Setting controller to dinput mode.")
                 d_vend.set_dinput_mode()
+                prev = time.perf_counter()
+            else:
+                prev = start
 
             evs = multiplexer.process(evs)
             if evs:
