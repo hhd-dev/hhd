@@ -365,6 +365,7 @@ def controller_loop(
 
         logger.info("Emulated controller launched, have fun!")
         prev = 0
+        woke_up = 0
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second
@@ -378,18 +379,19 @@ def controller_loop(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
 
+            # Detect wakeup through pause
             if start - prev > 1:
-                # After wakeup, the controller waits a bit until it
-                # realizes it woke up and switches to desktop mode.
-                # Therefore we need to wait otherwise we race it and
-                # end up stuck in desktop mode.
-                if prev:
-                    time.sleep(3)
+                woke_up = start
+            prev = start
+
+            # After wakeup, the controller waits a bit until it
+            # realizes it woke up and switches to desktop mode.
+            # Therefore we need to wait otherwise we race it and
+            # end up stuck in desktop mode.
+            if woke_up is not None and start - woke_up > 3:
                 logger.info("Setting controller to dinput mode.")
                 d_vend.set_dinput_mode()
-                prev = time.perf_counter()
-            else:
-                prev = start
+                woke_up = None
 
             evs = multiplexer.process(evs)
             if evs:
