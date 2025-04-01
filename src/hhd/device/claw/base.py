@@ -165,6 +165,7 @@ def plugin_run(
     should_exit: TEvent,
     updated: TEvent,
     dconf: dict,
+    woke_up: TEvent,
 ):
     first = True
     first_disabled = True
@@ -220,7 +221,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit, woke_up)
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -255,7 +256,7 @@ class DesktopDetectorEvdev(GenericGamepadEvdev):
         while can_read(self.fd):
             for e in self.dev.read():
                 self.desktop = True
-        
+
         return []
 
 
@@ -265,6 +266,7 @@ def controller_loop(
     updated: TEvent,
     dconf: dict,
     emit: Emitter,
+    woke_up: TEvent,
 ):
     debug = DEBUG_MODE
 
@@ -378,6 +380,7 @@ def controller_loop(
         prepare(d_vend)
 
         logger.info("Emulated controller launched, have fun!")
+        switch_to_dinput = None
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second
@@ -396,9 +399,16 @@ def controller_loop(
             d_mouse.desktop = False
             d_kbd_2.desktop = False
 
-            if desktop_mode:
+            if desktop_mode or (switch_to_dinput and start > switch_to_dinput):
                 logger.info("Setting controller to dinput mode.")
                 d_vend.set_dinput_mode()
+                switch_to_dinput = None
+            elif woke_up.is_set():
+                woke_up.clear()
+                # Switch to dinput after 4 seconds without input to avoid
+                # being stuck in desktop mode, as not all buttons trigger
+                # the other quirk (especially bumpers)
+                switch_to_dinput = time.perf_counter() + 4
 
             evs = multiplexer.process(evs)
             if evs:

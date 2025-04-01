@@ -29,6 +29,7 @@ class ClawControllerPlugin(HHDPlugin):
         self.t = None
         self.should_exit = None
         self.updated = Event()
+        self.woke_up = Event()
         self.started = False
         self.t = None
 
@@ -88,6 +89,7 @@ class ClawControllerPlugin(HHDPlugin):
                 self.should_exit,
                 self.updated,
                 self.dconf,
+                self.woke_up,
             ),
         )
         self.t.start()
@@ -99,6 +101,11 @@ class ClawControllerPlugin(HHDPlugin):
         self.t.join()
         self.should_exit = None
         self.t = None
+    
+    def notify(self, events: Sequence):
+        for ev in events:
+            if ev["type"] == "special" and ev.get("event", None) == "wakeup":
+                self.woke_up.set()
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
