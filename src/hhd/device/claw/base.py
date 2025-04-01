@@ -412,6 +412,7 @@ def controller_loop(
 
             evs = multiplexer.process(evs)
             if evs:
+                switch_to_dinput = None
                 if debug:
                     logger.info(evs)
 
