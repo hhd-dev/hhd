@@ -403,12 +403,12 @@ def controller_loop(
                 logger.info("Setting controller to dinput mode.")
                 d_vend.set_dinput_mode()
                 switch_to_dinput = None
-            elif woke_up.is_set():
-                woke_up.clear()
-                # Switch to dinput after 4 seconds without input to avoid
-                # being stuck in desktop mode, as not all buttons trigger
-                # the other quirk (especially bumpers)
-                switch_to_dinput = time.perf_counter() + 4
+            # elif woke_up.is_set():
+            #     woke_up.clear()
+            #     # Switch to dinput after 4 seconds without input to avoid
+            #     # being stuck in desktop mode, as not all buttons trigger
+            #     # the other quirk (especially bumpers)
+            #     switch_to_dinput = time.perf_counter() + 4
 
             evs = multiplexer.process(evs)
             if evs:
