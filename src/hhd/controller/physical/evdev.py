@@ -244,6 +244,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         msc_map: Mapping[int, Button] = {},
         msc_delay: float = 0.1,
         postprocess: dict[str, dict] = AXIS_CALIBRATION,
+        requires_start: bool = False,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -265,6 +266,8 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.queue = []
         self.postprocess = postprocess
         self.start_pressed = None
+        self.start_held = False
+        self.requires_start = requires_start
 
     def open(self) -> Sequence[int]:
         for d, info in list_evs(filter_valid=True).items():
@@ -426,7 +429,11 @@ class GenericGamepadEvdev(Producer, Consumer):
         while can_read(self.fd):
             for e in self.dev.read():
                 if e.type == B("EV_KEY"):
-                    if e.code in self.btn_map:
+                    if e.code == B("KEY_LEFTMETA"):
+                        self.start_held = e.value != 0
+                    if e.code in self.btn_map and (
+                        not self.requires_start or self.start_held
+                    ):
                         # Only 1 is valid for press (look at sysrq)
                         if e.code == B("KEY_LEFTMETA") and e.value:
                             # start requires special handling

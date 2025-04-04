@@ -299,6 +299,7 @@ def turbo_loop(
             grab=False,
             btn_map=BTN_MAPPINGS,
             capabilities={EC("EV_KEY"): [EC("BTN_D")]},
+            requires_start=True,
         )
     else:
         d_kbd_1 = GenericGamepadEvdev(
