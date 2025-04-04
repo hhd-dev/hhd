@@ -16,6 +16,7 @@ from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 from .serial import SerialDevice, get_serial
 from .hid_v1 import OxpHidraw
 from .hid_v2 import OxpHidrawV2
+from .hid_v3 import OxpHidrawV3
 from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, BTN_MAPPINGS_NONTURBO
 
 FIND_DELAY = 0.1
@@ -115,6 +116,15 @@ def plugin_run(
                             usage=XFLY_USAGE,
                         )
                     )
+                case "hid_v3":
+                    found_vendor = bool(
+                        enumerate_unique(
+                            vid=XFLY_VID,
+                            pid=XFLY_PID,
+                            usage_page=XFLY_PAGE,
+                            usage=XFLY_USAGE,
+                        )
+                    )
                 case "mixed":
                     found_vendor = bool(
                         enumerate_unique(
@@ -196,6 +206,14 @@ def find_vendor(prepare, turbo, protocol: str | None):
         turbo=turbo,
         required=True,
     )
+    d_hidraw_v3 = OxpHidrawV3(
+        vid=[XFLY_VID],
+        pid=[XFLY_PID],
+        usage_page=[XFLY_PAGE],
+        usage=[XFLY_USAGE],
+        turbo=turbo,
+        required=True,
+    )
 
     if not protocol or protocol in ["serial", "mixed"]:
         try:
@@ -231,6 +249,14 @@ def find_vendor(prepare, turbo, protocol: str | None):
             prepare(d_hidraw_v2)
             logger.info("Found OXP V2 hidraw vendor device.")
             return [d_hidraw_v2]
+        except Exception as e:
+            pass
+
+    if not protocol or protocol == "hid_v3":
+        try:
+            prepare(d_hidraw_v3)
+            logger.info("Found OXP V3 hidraw vendor device.")
+            return [d_hidraw_v3]
         except Exception as e:
             pass
 

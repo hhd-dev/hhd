@@ -122,6 +122,20 @@ CONFS = {
         "protocol": "serial",
         "turbo": False,  # disable turbo takeover so that it can be used for TDP
     },
+    "ONEXPLAYER G1 i": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER G1 (Intel)",
+        "rgb_secondary": True,
+        "protocol": "hid_v3",
+        "turbo": False,  # disable turbo takeover so that it can be used for TDP
+    },
+    "ONEXPLAYER G1 A": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER G1 (AMD)",
+        "rgb_secondary": True,
+        "protocol": "hid_v3",
+        "turbo": True,  # disable turbo takeover so that it can be used for TDP
+    },
 }
 
 
