@@ -498,7 +498,7 @@ def controller_loop(
         required=True,
         grab=False,
         btn_map=BTN_MAPPINGS,
-        capabilities={EC("EV_KEY"): [EC("BTN_D")]},
+        capabilities={EC("EV_KEY"): [EC("KEY_D")]},
         requires_start=True,
     )
 
