@@ -196,6 +196,15 @@ def find_vendor(prepare, turbo, protocol: str | None):
         turbo=turbo,
         required=True,
     )
+    d_hidraw_g1 = OxpHidraw(
+        vid=[X1_MINI_VID],
+        pid=[X1_MINI_PID],
+        usage_page=[X1_MINI_PAGE],
+        usage=[X1_MINI_USAGE],
+        turbo=turbo,
+        required=True,
+        g1=True,
+    )
 
     if protocol in ["serial", "mixed"]:
         try:
@@ -223,6 +232,14 @@ def find_vendor(prepare, turbo, protocol: str | None):
             prepare(d_hidraw)
             logger.info("Found OXP V1 hidraw vendor device.")
             return [d_hidraw]
+        except Exception as e:
+            pass
+
+    if protocol == "hid_v1_g1":
+        try:
+            prepare(d_hidraw_g1)
+            logger.info("Found OXP V1 hidraw vendor device.")
+            return [d_hidraw_g1]
         except Exception as e:
             pass
 

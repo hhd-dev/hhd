@@ -62,8 +62,8 @@ def gen_brightness(
     return gen_cmd(0xB8, [0xFD, 0x00, 0x02, enabled, 0x05, bc])
 
 
-def gen_rgb_solid(r, g, b, side: Literal[0x00, 0x03, 0x04] = 0x00):
-    return gen_cmd(0xB8, [0xFE, 0x00, 0x02] + 18 * [r, g, b] + [r, g])
+def gen_rgb_solid(r, g, b, side: int = 0x00):
+    return gen_cmd(0xB8, [0xFE, side, 0x02] + 18 * [r, g, b] + [r, g])
 
 
 KBD_NAME = "keyboard"
@@ -87,7 +87,7 @@ INITIALIZE = [
         0xB4,
         "02380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220200000000230200000000",
     ),
-    gen_intercept(False)
+    gen_intercept(False),
 ]
 
 INIT_DELAY = 4
@@ -97,8 +97,9 @@ SCAN_DELAY = 1
 
 _init_done = False
 
+
 class OxpHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, turbo: bool = True, **kwargs) -> None:
+    def __init__(self, *args, turbo: bool = True, g1: bool = False, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.prev = {}
         self.queue_kbd = None
@@ -108,6 +109,8 @@ class OxpHidraw(GenericGamepadHidraw):
         self.queue_led = None
         self.turbo = turbo
 
+        self.g1 = g1
+        self.send_init = not g1  # g1 has no extra buttons
         self.prev_brightness = None
         self.prev_stick = None
         self.prev_stick_enabled = None
@@ -121,15 +124,16 @@ class OxpHidraw(GenericGamepadHidraw):
         self.prev = {}
 
         global _init_done
-        if not _init_done:
-            self.next_send = time.perf_counter() + INIT_DELAY
-            self.queue_cmd.extend(INITIALIZE)
-            # Setting the mappings is a bit aggressive and causes the device
-            # to flash its leds. Only do it during boot.
-            _init_done = True
-        else:
-            self.next_send = time.perf_counter() + CONNECT_DELAY
-            self.queue_cmd.append(gen_intercept(False))
+        self.next_send = time.perf_counter() + CONNECT_DELAY
+        if self.send_init:
+            if not _init_done:
+                self.next_send = time.perf_counter() + INIT_DELAY
+                self.queue_cmd.extend(INITIALIZE)
+                # Setting the mappings is a bit aggressive and causes the device
+                # to flash its leds. Only do it during boot.
+                _init_done = True
+            else:
+                self.queue_cmd.append(gen_intercept(False))
         return a
 
     def consume(self, events):
@@ -188,7 +192,7 @@ class OxpHidraw(GenericGamepadHidraw):
                 stick_enabled = False
                 # center_enabled = False
 
-        # Force RGB to not initialize to workaround RGB breaking 
+        # Force RGB to not initialize to workaround RGB breaking
         # rumble when being set
         if self.prev_stick_enabled is None:
             self.prev_stick_enabled = stick_enabled
@@ -205,11 +209,13 @@ class OxpHidraw(GenericGamepadHidraw):
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
 
-        if stick_enabled and stick != self.prev_stick:
+        if stick_enabled and stick and stick != self.prev_stick:
             if isinstance(stick, str):
                 self.queue_cmd.append(gen_rgb_mode(stick))
             else:
-                self.queue_cmd.append(gen_rgb_solid(*stick, side=0x00))
+                sides = [0x01, 0x02, 0x03, 0x04, 0x05] if self.g1 else [0x00]
+                for side in sides:
+                    self.queue_cmd.append(gen_rgb_solid(*stick, side=side))
             self.prev_stick = stick
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
