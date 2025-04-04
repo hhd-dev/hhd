@@ -61,7 +61,12 @@ def gen_brightness(
 
     return gen_cmd(0xB8, [0xFD, 0x00, 0x02, enabled, 0x05, bc])
 
-
+# Sides on the g1
+# 1 = left controller
+# 2 = right controller
+# 3 = center V
+# 4 = touch keyboard
+# 5 = device color on the front (triangle)
 def gen_rgb_solid(r, g, b, side: int = 0x00):
     return gen_cmd(0xB8, [0xFE, side, 0x02] + 18 * [r, g, b] + [r, g])
 
