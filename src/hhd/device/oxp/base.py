@@ -197,7 +197,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         required=True,
     )
 
-    if not protocol or protocol in ["serial", "mixed"]:
+    if protocol in ["serial", "mixed"]:
         try:
             prepare(d_ser)
             # OneXFly uses serial only for the buttons and hidraw for RGB
@@ -218,7 +218,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         except Exception as e:
             pass
 
-    if not protocol or protocol == "hid_v1":
+    if protocol == "hid_v1":
         try:
             prepare(d_hidraw)
             logger.info("Found OXP V1 hidraw vendor device.")
@@ -226,7 +226,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         except Exception as e:
             pass
 
-    if not protocol or protocol == "hid_v2":
+    if protocol == "hid_v2":
         try:
             prepare(d_hidraw_v2)
             logger.info("Found OXP V2 hidraw vendor device.")
