@@ -297,16 +297,6 @@ def turbo_loop(
         grab=True,
         btn_map=BTN_MAPPINGS,
     )
-    # Touchpad keyboard
-    d_kbd_2 = GenericGamepadEvdev(
-        vid=[0x6080],
-        pid=[0x8060],
-        required=True,
-        grab=False,
-        btn_map=BTN_MAPPINGS,
-        capabilities={EC("EV_KEY"): [EC("BTN_D")]},
-        requires_start=True,
-    )
 
     share_reboots = False
     last_controller_check = 0
@@ -382,8 +372,6 @@ def turbo_loop(
             fd_to_dev[f] = m
 
     try:
-        if conf.get("g1", False):
-            prepare(d_kbd_2)
         prepare(d_volume_btn)
         d_vend = find_vendor(prepare, True, dconf.get("protocol", None))
         d_vend_id = [id(d) for d in d_vend]
@@ -503,6 +491,16 @@ def controller_loop(
         grab=True,
         btn_map=mappings,
     )
+    # Touchpad keyboard
+    d_kbd_2 = GenericGamepadEvdev(
+        vid=[0x6080],
+        pid=[0x8060],
+        required=True,
+        grab=False,
+        btn_map=BTN_MAPPINGS,
+        capabilities={EC("EV_KEY"): [EC("BTN_D")]},
+        requires_start=True,
+    )
 
     share_reboots = False
     keyboard_is = "keyboard"
@@ -585,6 +583,8 @@ def controller_loop(
     try:
         d_vend = find_vendor(prepare, turbo, dconf.get("protocol", None))
         d_vend_id = [id(d) for d in d_vend]
+        if conf.get("g1", False):
+            prepare(d_kbd_2)
         prepare(d_xinput)
         if motion:
             start_imu = True
