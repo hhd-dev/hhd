@@ -115,6 +115,15 @@ def plugin_run(
                             usage=XFLY_USAGE,
                         )
                     )
+                case "hid_v1_g1":
+                    found_vendor = bool(
+                        enumerate_unique(
+                            vid=XFLY_VID,
+                            pid=XFLY_PID,
+                            usage_page=XFLY_PAGE,
+                            usage=XFLY_USAGE,
+                        )
+                    )
                 case "mixed":
                     found_vendor = bool(
                         enumerate_unique(
@@ -197,10 +206,10 @@ def find_vendor(prepare, turbo, protocol: str | None):
         required=True,
     )
     d_hidraw_g1 = OxpHidraw(
-        vid=[X1_MINI_VID],
-        pid=[X1_MINI_PID],
-        usage_page=[X1_MINI_PAGE],
-        usage=[X1_MINI_USAGE],
+        vid=[XFLY_VID],
+        pid=[XFLY_PID],
+        usage_page=[XFLY_PAGE],
+        usage=[XFLY_USAGE],
         turbo=turbo,
         required=True,
         g1=True,
