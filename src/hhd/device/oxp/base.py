@@ -290,25 +290,23 @@ def turbo_loop(
         controller_disabled=True,
     )
 
-    if dconf.get("g1", False):
-        # Touchpad keyboard
-        d_kbd_1 = GenericGamepadEvdev(
-            vid=[0x6080],
-            pid=[0x8060],
-            required=True,
-            grab=False,
-            btn_map=BTN_MAPPINGS,
-            capabilities={EC("EV_KEY"): [EC("BTN_D")]},
-            requires_start=True,
-        )
-    else:
-        d_kbd_1 = GenericGamepadEvdev(
-            vid=[KBD_VID],
-            pid=[KBD_PID],
-            required=False,
-            grab=True,
-            btn_map=BTN_MAPPINGS,
-        )
+    d_kbd_1 = GenericGamepadEvdev(
+        vid=[KBD_VID],
+        pid=[KBD_PID],
+        required=False,
+        grab=True,
+        btn_map=BTN_MAPPINGS,
+    )
+    # Touchpad keyboard
+    d_kbd_2 = GenericGamepadEvdev(
+        vid=[0x6080],
+        pid=[0x8060],
+        required=True,
+        grab=False,
+        btn_map=BTN_MAPPINGS,
+        capabilities={EC("EV_KEY"): [EC("BTN_D")]},
+        requires_start=True,
+    )
 
     share_reboots = False
     last_controller_check = 0
@@ -384,9 +382,9 @@ def turbo_loop(
             fd_to_dev[f] = m
 
     try:
-        # G1 KBD is USB
-        if not dconf.get("g1", False):
-            prepare(d_volume_btn)
+        if conf.get("g1", False):
+            prepare(d_kbd_2)
+        prepare(d_volume_btn)
         d_vend = find_vendor(prepare, True, dconf.get("protocol", None))
         d_vend_id = [id(d) for d in d_vend]
 
