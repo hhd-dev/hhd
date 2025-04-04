@@ -583,7 +583,7 @@ def controller_loop(
     try:
         d_vend = find_vendor(prepare, turbo, dconf.get("protocol", None))
         d_vend_id = [id(d) for d in d_vend]
-        if conf.get("g1", False):
+        if dconf.get("g1", False):
             prepare(d_kbd_2)
         prepare(d_xinput)
         if motion:
