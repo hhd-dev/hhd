@@ -213,9 +213,7 @@ class OxpHidraw(GenericGamepadHidraw):
             if isinstance(stick, str):
                 self.queue_cmd.append(gen_rgb_mode(stick))
             else:
-                sides = [0x01, 0x02, 0x03, 0x04, 0x05] if self.g1 else [0x00]
-                for side in sides:
-                    self.queue_cmd.append(gen_rgb_solid(*stick, side=side))
+                self.queue_cmd.append(gen_rgb_solid(*stick, side=0x00))
             self.prev_stick = stick
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
