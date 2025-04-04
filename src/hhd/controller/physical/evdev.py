@@ -432,7 +432,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                     if e.code == B("KEY_LEFTMETA"):
                         self.start_held = e.value != 0
                     if e.code in self.btn_map and (
-                        not self.requires_start or self.start_held
+                        not self.requires_start or self.start_held or not e.value
                     ):
                         # Only 1 is valid for press (look at sysrq)
                         if e.code == B("KEY_LEFTMETA") and e.value:
