@@ -213,6 +213,9 @@ class MsiDriverPlugin(HHDPlugin):
     ):
         self.emit = emit
 
+        # TODO: Remove me once the autoload issue is fixed
+        os.system("modprobe msi_wmi_platform")
+
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
         new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
