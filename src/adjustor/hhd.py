@@ -243,7 +243,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.msi import MsiDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
-    from .drivers.amd import AmdGPUPlugin
+    from .drivers.gpu import GpuPlugin
     from .drivers.battery import BatteryPlugin
 
     drivers = []
@@ -353,5 +353,5 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         AdjustorInitPlugin(use_acpi_call=use_acpi_call),
         AdjustorPlugin(min_tdp, default_tdp, max_tdp),
         BatteryPlugin(),
-        AmdGPUPlugin(),
+        GpuPlugin(),
     ]

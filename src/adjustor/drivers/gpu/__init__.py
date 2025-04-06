@@ -54,7 +54,7 @@ def _open_ppd_server(emit):
     return proc, t
 
 
-class AmdGPUPlugin(HHDPlugin):
+class GpuPlugin(HHDPlugin):
 
     def __init__(
         self,
