@@ -114,7 +114,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match just product name
     # if a device exists here its officially supported
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
+    with open("/sys/devices/virtual/dmi/id/board_name") as f:
         dmi = f.read().strip()
 
     dconf = CONFS.get(dmi, None)
@@ -122,6 +122,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         return [ClawControllerPlugin(dmi, dconf)]
 
     if os.environ.get("HHD_FORCE_CLAW", "0") == "1":
-        return [ClawControllerPlugin("forced", CONFS["Claw 8 AI+ A2VM"])]
+        return [ClawControllerPlugin("forced", CONFS["MS"])]
 
     return []
