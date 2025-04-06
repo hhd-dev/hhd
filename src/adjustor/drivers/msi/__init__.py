@@ -266,21 +266,19 @@ class MsiDriverPlugin(HHDPlugin):
             match mode:
                 case "quiet":
                     set_platform_profile("low-power")
+                    set_tdp("pl1", CTDP_FN, self.tdp_data["quiet"])
+                    set_tdp("pl2", STDP_FN, self.tdp_data["quiet"])
                     new_target = "power"
                 case "balanced":
                     set_platform_profile("balanced")
+                    set_tdp("pl1", CTDP_FN, self.tdp_data["balanced"])
+                    set_tdp("pl2", STDP_FN, self.tdp_data["balanced"])
                     new_target = "balanced"
                 case _:  # "performance":
                     set_platform_profile("performance")
+                    set_tdp("pl1", CTDP_FN, self.tdp_data["performance"])
+                    set_tdp("pl2", STDP_FN, self.tdp_data["performance"])
                     new_target = "performance"
-            # time.sleep(TDP_DELAY)
-            # set_tdp(
-            #     "slow",
-            #     STDP_FN,
-            #     self.tdp_data["max_tdp_boost"] or self.tdp_data["max_tdp"],
-            # )
-            # time.sleep(TDP_DELAY)
-            # set_tdp("steady", CTDP_FN, self.tdp_data["max_tdp"])
 
         # In custom mode, re-apply settings with debounce
         tdp_set = False

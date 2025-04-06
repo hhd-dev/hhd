@@ -243,8 +243,8 @@ CLAW_DATA: DeviceTDP = {
 CLAW_AI_DATA: DeviceTDP = {
     "quiet": 8,
     "balanced_min": 9,
-    "balanced": 12,
-    "performance_min": 13,
+    "balanced": 15,
+    "performance_min": 16,
     "performance_dc": 30,
     "performance": 30,
     "min_tdp": 8,

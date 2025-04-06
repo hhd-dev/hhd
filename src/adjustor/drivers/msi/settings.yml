@@ -11,11 +11,11 @@ children:
     modes:
       quiet:
         type: container
-        title: ECO
+        title: Powersave
         unit: 
       balanced:
         type: container
-        title: Green
+        title: Balanced
         unit: 
       performance:
         type: container
