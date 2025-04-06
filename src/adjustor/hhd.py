@@ -10,7 +10,7 @@ from hhd.plugins.plugin import Emitter
 from hhd.utils import expanduser
 
 from adjustor.core.acpi import check_perms, initialize
-from adjustor.core.const import CPU_DATA, DEV_DATA, ASUS_DATA
+from adjustor.core.const import CPU_DATA, DEV_DATA, ASUS_DATA, MSI_DATA
 
 from .i18n import _
 
@@ -241,6 +241,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     from .drivers.asus import AsusDriverPlugin
     from .drivers.lenovo import LenovoDriverPlugin
+    from .drivers.msi import MsiDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
     from .drivers.amd import AmdGPUPlugin
     from .drivers.battery import BatteryPlugin
@@ -248,11 +249,14 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     drivers = []
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
         prod = f.read().strip()
+    with open("/sys/devices/virtual/dmi/id/board_name") as f:
+        board = f.read().strip()
     with open("/proc/cpuinfo") as f:
         cpuinfo = f.read().strip()
 
     use_acpi_call = False
     drivers_matched = False
+    intel = False
 
     # FIXME: Switch to per device
     # But all devices use the same values
@@ -273,8 +277,17 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         if k in prod:
             drivers.append(AsusDriverPlugin(v))
             drivers_matched = True
-            min_tdp = v['min_tdp']
-            max_tdp = v['max_tdp']
+            min_tdp = v["min_tdp"]
+            max_tdp = v["max_tdp"]
+            break
+
+    for k, v in MSI_DATA.items():
+        if k in board:
+            drivers.append(MsiDriverPlugin(v))
+            drivers_matched = True
+            min_tdp = v["min_tdp"]
+            max_tdp = v["max_tdp"]
+            intel = True
             break
 
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
@@ -337,10 +350,12 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         is_steamdeck = "Jupiter" in prod or "Galileo" in prod
         return [GeneralPowerPlugin(is_steamdeck=is_steamdeck), BatteryPlugin()]
 
+    if not intel:
+        drivers.append(AmdGPUPlugin())
+
     return [
         *drivers,
         AdjustorInitPlugin(use_acpi_call=use_acpi_call),
         AdjustorPlugin(min_tdp, default_tdp, max_tdp),
         BatteryPlugin(),
-        AmdGPUPlugin(),
     ]

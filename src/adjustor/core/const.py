@@ -28,7 +28,7 @@ class DevideProfile(TypedDict):
     dev: dict[str, DeviceParams]
 
 
-class AsusTDP(TypedDict):
+class DeviceTDP(TypedDict):
     quiet: int
     balanced_min: int
     balanced: int
@@ -38,6 +38,7 @@ class AsusTDP(TypedDict):
     min_tdp: int
     max_tdp_dc: int | None
     max_tdp: int
+    max_tdp_boost: int | None
     max_tdp_oc: int
     supports_cycle: bool | None
 
@@ -173,7 +174,7 @@ CPU_DATA: dict[
     "AMD Ryzen AI HX 360": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, ENERGY_MAP),
 }
 
-ALLY_DATA: AsusTDP = {
+ALLY_DATA: DeviceTDP = {
     "quiet": 10,
     "balanced_min": 13,
     "balanced": 15,
@@ -184,10 +185,11 @@ ALLY_DATA: AsusTDP = {
     "max_tdp_dc": 25,
     "max_tdp": 30,
     "max_tdp_oc": 50,
+    "max_tdp_boost": None,
     "supports_cycle": True,
 }
 
-ALLYX_DATA: AsusTDP = {
+ALLYX_DATA: DeviceTDP = {
     "quiet": 13,
     "balanced_min": 15,
     "balanced": 17,
@@ -198,10 +200,11 @@ ALLYX_DATA: AsusTDP = {
     "max_tdp_dc": 25,
     "max_tdp": 30,
     "max_tdp_oc": 50,
+    "max_tdp_boost": None,
     "supports_cycle": True,
 }
 
-Z1_DATA: AsusTDP = {
+Z1_DATA: DeviceTDP = {
     "quiet": 40,
     "balanced_min": 42,
     "balanced": 45,
@@ -212,11 +215,48 @@ Z1_DATA: AsusTDP = {
     "max_tdp_dc": 54,
     "max_tdp": 65,
     "max_tdp_oc": 90,
+    "max_tdp_boost": None,
     "supports_cycle": False,
 }
 
-ASUS_DATA: dict[str, AsusTDP] = {
+ASUS_DATA: dict[str, DeviceTDP] = {
     "ROG Ally RC71L": ALLY_DATA,
     "ROG Ally X RC72L": ALLYX_DATA,
     "ROG Flow Z13 GZ302": Z1_DATA,
+}
+
+CLAW_DATA: DeviceTDP = {
+    "quiet": 20,
+    "balanced_min": 21,
+    "balanced": 35,
+    "performance_min": 36,
+    "performance_dc": 35,
+    "performance": 43,
+    "min_tdp": 20,
+    "max_tdp_dc": 35,
+    "max_tdp": 43,
+    "max_tdp_oc": 45,
+    "max_tdp_boost": 45,
+    "supports_cycle": True,
+}
+
+CLAW_AI_DATA: DeviceTDP = {
+    "quiet": 8,
+    "balanced_min": 9,
+    "balanced": 12,
+    "performance_min": 13,
+    "performance_dc": 30,
+    "performance": 30,
+    "min_tdp": 8,
+    "max_tdp_dc": 30,
+    "max_tdp": 30,
+    "max_tdp_oc": 30,
+    "max_tdp_boost": 37,
+    "supports_cycle": True,
+}
+
+MSI_DATA: dict[str, DeviceTDP] = {
+    "MS-1T41": CLAW_DATA,
+    "MS-1T42": CLAW_AI_DATA,
+    "MS-1T52": CLAW_AI_DATA,
 }

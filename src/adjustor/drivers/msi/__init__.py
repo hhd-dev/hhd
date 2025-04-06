@@ -5,6 +5,7 @@ from typing import Sequence
 
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
+from adjustor.core.platform import set_platform_profile
 from adjustor.core.const import DeviceTDP
 from adjustor.i18n import _
 
@@ -14,56 +15,46 @@ APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
 SLEEP_DELAY = 4
 
-FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
-STDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl2_sppt"
-CTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_pl1_spl"
-EXTREME_FN = "/sys/devices/platform/asus-nb-wmi/mcu_powersave"
-EXTREME_ENABLE = bool(os.environ.get("HHD_ALLY_POWERSAVE", None))
-# This setting can really mess up the controller
-EXTREME_STARTUP_DELAY = 12
-EXTREME_DELAY = 3.8
+STDP_FN = "/sys/class/firmware-attributes/msi-wmi-platform/attributes/ppt_pl2_sppt/current_value"
+CTDP_FN = "/sys/class/firmware-attributes/msi-wmi-platform/attributes/ppt_pl1_spl/current_value"
 
 FAN_CURVE_ENDPOINT = "/sys/class/hwmon"
-FAN_CURVE_NAME = "asus_custom_fan_curve"
+FAN_CURVE_NAME = "msi_wmi_platform"
 
-# Default Ally curve is the following
-# [40 45 55 63 68 74 74 74]
-# [10 20 66 86 132 188 188 188] / 2.55
-# [ 4  8  ]
+# Default MSI Claw AI+ 8 curve is the following
+# [0  50  60  70  80  88] temp (C)
+# [0  40  49  58  67  75] pwm  (%)
+# [0 102 124 147 170 191] / 2.55
 
-# Unplugged values
-#       STAPM Slow Fast
-# perf  25 30 35
-# bal   15 20 25
-# power 10 14 17
+
+# Claw 1st gen
+# DC values
+#       PL1 PL2
+# perf   43  45
+# bal    35  35
+# power  20  20
 #
-# Plugged in values
-# perf  30 43 53
-# bal   15 20 25
-# power 10 14 17
+# AC values
+#       PL1 PL2
+# perf   35  35
+# bal    30  30
+# power  20  20
 
+# Claw AI+
+# DC values
+#       PL1 PL2
+# perf   30  37
+# bal    12  37
+# power   8  37
+#
+# AC values
+#       PL1 PL2
+# perf   30  37
+# bal    12  37
+# power   8  37
 
-POINTS = [30, 40, 50, 60, 70, 80, 90, 100]
-MIN_CURVE = [2, 5, 17, 17, 17, 17, 17, 17]
-DEFAULT_CURVE = [5, 10, 20, 35, 55, 75, 75, 75]
-
-# TODO: Make per device
-MAX_TDP_BOOST = 35
-FPPT_BOOST = 35 / 25
-SPPT_BOOST = 30 / 25
-
-
-def set_thermal_profile(prof: int):
-    try:
-        logger.info(f"Setting thermal profile to '{prof}'")
-        with open(
-            "/sys/devices/platform/asus-nb-wmi/throttle_thermal_policy", "w"
-        ) as f:
-            f.write(str(prof))
-        return True
-    except Exception as e:
-        logger.error(f"Could not set throttle_thermal_policy with error:\n{e}")
-        return False
+POINTS = [0, 50, 60, 70, 80, 88]
+DEFAULT_CURVE = [0, 102, 124, 147, 170, 191]
 
 
 def set_tdp(pretty: str, fn: str, val: int):
@@ -130,11 +121,11 @@ def disable_fan_curve():
     return True
 
 
-class AsusDriverPlugin(HHDPlugin):
+class MsiDriverPlugin(HHDPlugin):
     def __init__(self, tdp_data: DeviceTDP) -> None:
-        self.name = f"adjustor_asus"
+        self.name = f"adjustor_msi"
         self.priority = 6
-        self.log = "adja"
+        self.log = "adjm"
         self.enabled = False
         self.initialized = False
         self.enforce_limits = True
@@ -148,7 +139,6 @@ class AsusDriverPlugin(HHDPlugin):
 
         self.queue_fan = None
         self.queue_tdp = None
-        self.queue_extreme = time.perf_counter() + EXTREME_STARTUP_DELAY
         self.new_tdp = None
         self.new_mode = None
         self.old_target = None
@@ -164,23 +154,13 @@ class AsusDriverPlugin(HHDPlugin):
             return {}
 
         self.initialized = True
-        out = {"tdp": {"asus": load_relative_yaml("settings.yml")}}
-
-        path_exists = os.path.exists(EXTREME_FN)
-        extreme_supported = EXTREME_ENABLE and path_exists
-        if self.extreme_supported is None:
-            logger.info(
-                f"Extreme standby enabled: {EXTREME_ENABLE}, file exists: {extreme_supported}. Enabled: {extreme_supported}"
-            )
-        self.extreme_supported = extreme_supported
-        if not self.extreme_supported:
-            del out["tdp"]["asus"]["children"]["extreme_standby"]
+        out = {"tdp": {"msi": load_relative_yaml("settings.yml")}}
 
         # Set units
-        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["quiet"][
+        out["tdp"]["msi"]["children"]["tdp"]["modes"]["quiet"][
             "unit"
         ] = f"{self.tdp_data['quiet']}W"
-        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["balanced"][
+        out["tdp"]["msi"]["children"]["tdp"]["modes"]["balanced"][
             "unit"
         ] = f"{self.tdp_data['balanced']}W"
 
@@ -194,9 +174,7 @@ class AsusDriverPlugin(HHDPlugin):
             )
         else:
             perf_tdp = f"{self.tdp_data['performance']}W"
-        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["performance"][
-            "unit"
-        ] = perf_tdp
+        out["tdp"]["msi"]["children"]["tdp"]["modes"]["performance"]["unit"] = perf_tdp
 
         # Set custom pretty print
         if (
@@ -206,10 +184,10 @@ class AsusDriverPlugin(HHDPlugin):
             custom_tdp = f"→ {self.tdp_data['max_tdp_dc']}W/{self.tdp_data['max_tdp']}W"
         else:
             custom_tdp = f"→ {self.tdp_data['max_tdp']}W"
-        out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["unit"] = custom_tdp
+        out["tdp"]["msi"]["children"]["tdp"]["modes"]["custom"]["unit"] = custom_tdp
 
         # Fix custom slider
-        custom_sel = out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"][
+        custom_sel = out["tdp"]["msi"]["children"]["tdp"]["modes"]["custom"][
             "children"
         ]["tdp"]
         custom_sel["min"] = self.tdp_data["min_tdp"]
@@ -218,13 +196,13 @@ class AsusDriverPlugin(HHDPlugin):
 
         # Add overclocking
         if not self.enforce_limits and self.tdp_data.get("max_tdp_oc", None):
-            out["tdp"]["asus"]["children"]["tdp_v2"]["modes"]["custom"]["children"][
-                "tdp"
-            ]["max"] = self.tdp_data["max_tdp_oc"]
+            out["tdp"]["msi"]["children"]["tdp"]["modes"]["custom"]["children"]["tdp"][
+                "max"
+            ] = self.tdp_data["max_tdp_oc"]
 
         # Remove cycle for laptops (for now)
         if not self.tdp_data.get("supports_cycle", None):
-            del out["tdp"]["asus"]["children"]["cycle_tdp"]
+            del out["tdp"]["msi"]["children"]["cycle_tdp"]
 
         return out
 
@@ -248,7 +226,7 @@ class AsusDriverPlugin(HHDPlugin):
 
         # If not old config, exit, as values can not be set
         if not self.old_conf:
-            self.old_conf = conf["tdp.asus"]
+            self.old_conf = conf["tdp.msi"]
             return
 
         curr = time.perf_counter()
@@ -262,27 +240,17 @@ class AsusDriverPlugin(HHDPlugin):
         new_mode = self.new_mode
         self.new_mode = None
         if new_tdp:
-            # For TDP values received from steam, set the appropriate
-            # mode to get a better experience.
-            # if new_tdp == (13 if ally_x else 10):
-            #     mode = "quiet"
-            # elif new_tdp == (17 if ally_x else 15):
-            #     mode = "balanced"
-            # elif new_tdp == 25 or new_tdp == 30:
-            #     mode = "performance"
-            # else:
-            #     mode = "custom"
             mode = "custom"
-            conf["tdp.asus.tdp_v2.mode"] = mode
+            conf["tdp.msi.tdp.mode"] = mode
         elif new_mode:
             mode = new_mode
-            conf["tdp.asus.tdp_v2.mode"] = mode
+            conf["tdp.msi.tdp.mode"] = mode
         else:
-            mode = conf["tdp.asus.tdp_v2.mode"].to(str)
+            mode = conf["tdp.msi.tdp.mode"].to(str)
         self.mode = mode
 
         tdp_reset = False
-        if mode is not None and mode != self.old_conf["tdp_v2.mode"].to(str):
+        if mode is not None and mode != self.old_conf["tdp.mode"].to(str):
             if not new_tdp:
                 self.sys_tdp = False
             tdp_reset = True
@@ -294,14 +262,22 @@ class AsusDriverPlugin(HHDPlugin):
         if tdp_reset and mode != "custom":
             match mode:
                 case "quiet":
-                    set_thermal_profile(2)
+                    set_platform_profile("low-power")
                     new_target = "power"
                 case "balanced":
-                    set_thermal_profile(0)
+                    set_platform_profile("balanced")
                     new_target = "balanced"
                 case _:  # "performance":
-                    set_thermal_profile(1)
+                    set_platform_profile("performance")
                     new_target = "performance"
+            # time.sleep(TDP_DELAY)
+            # set_tdp(
+            #     "slow",
+            #     STDP_FN,
+            #     self.tdp_data["max_tdp_boost"] or self.tdp_data["max_tdp"],
+            # )
+            # time.sleep(TDP_DELAY)
+            # set_tdp("steady", CTDP_FN, self.tdp_data["max_tdp"])
 
         # In custom mode, re-apply settings with debounce
         tdp_set = False
@@ -309,19 +285,19 @@ class AsusDriverPlugin(HHDPlugin):
             # Check user changed values
             if new_tdp:
                 steady = new_tdp
-                conf["tdp.asus.tdp_v2.custom.tdp"] = steady
+                conf["tdp.msi.tdp.custom.tdp"] = steady
             else:
-                steady = conf["tdp.asus.tdp_v2.custom.tdp"].to(int)
+                steady = conf["tdp.msi.tdp.custom.tdp"].to(int)
 
             if self.enforce_limits:
                 if steady < self.tdp_data["min_tdp"]:
                     steady = self.tdp_data["min_tdp"]
-                    conf["tdp.asus.tdp_v2.custom.tdp"] = steady
+                    conf["tdp.msi.tdp.custom.tdp"] = steady
                 elif steady > self.tdp_data["max_tdp"]:
                     steady = self.tdp_data["max_tdp"]
-                    conf["tdp.asus.tdp_v2.custom.tdp"] = steady
+                    conf["tdp.msi.tdp.custom.tdp"] = steady
 
-            steady_updated = steady and steady != self.old_conf["tdp_v2.custom.tdp"].to(
+            steady_updated = steady and steady != self.old_conf["tdp.custom.tdp"].to(
                 int
             )
             if not new_tdp and steady_updated:
@@ -338,11 +314,11 @@ class AsusDriverPlugin(HHDPlugin):
                 steady = min(
                     max(steady, self.tdp_data["min_tdp"]), self.tdp_data["max_tdp"]
                 )
-                conf["tdp.asus.tdp_v2.custom.tdp"] = steady
+                conf["tdp.msi.tdp.custom.tdp"] = steady
                 steady_updated = True
 
-            boost = conf["tdp.asus.tdp_v2.custom.boost"].to(bool)
-            boost_updated = boost != self.old_conf["tdp_v2.custom.boost"].to(bool)
+            boost = conf["tdp.msi.tdp.custom.boost"].to(bool)
+            boost_updated = boost != self.old_conf["tdp.custom.boost"].to(bool)
 
             # If yes, queue an update
             # Debounce
@@ -354,35 +330,41 @@ class AsusDriverPlugin(HHDPlugin):
                 if steady < self.tdp_data["min_tdp"]:
                     steady = 5
                 if steady < self.tdp_data["balanced_min"]:
-                    set_thermal_profile(2)
+                    set_platform_profile("low-power")
                     new_target = "power"
                 elif steady < self.tdp_data["performance_min"]:
-                    set_thermal_profile(0)
+                    set_platform_profile("balanced")
                     new_target = "balanced"
                 else:
-                    set_thermal_profile(1)
+                    set_platform_profile("performance")
                     new_target = "performance"
 
                 self.queue_tdp = None
                 if boost:
-                    # TODO: Use different boost values depending on whether plugged in
-                    time.sleep(TDP_DELAY)
-                    set_tdp(
-                        "fast",
-                        FTDP_FN,
-                        min(max(steady, MAX_TDP_BOOST), int(steady * FPPT_BOOST)),
-                    )
                     time.sleep(TDP_DELAY)
                     set_tdp(
                         "slow",
                         STDP_FN,
-                        min(max(steady, MAX_TDP_BOOST), int(steady * SPPT_BOOST)),
+                        min(
+                            max(
+                                steady,
+                                self.tdp_data["max_tdp_boost"]
+                                or self.tdp_data["max_tdp"],
+                            ),
+                            (
+                                int(
+                                    steady
+                                    * self.tdp_data["max_tdp_boost"]
+                                    / self.tdp_data["max_tdp"]
+                                )
+                                if self.tdp_data["max_tdp_boost"]
+                                else steady
+                            ),
+                        ),
                     )
                     time.sleep(TDP_DELAY)
                     set_tdp("steady", CTDP_FN, steady)
                 else:
-                    time.sleep(TDP_DELAY)
-                    set_tdp("fast", FTDP_FN, steady)
                     time.sleep(TDP_DELAY)
                     set_tdp("slow", STDP_FN, steady)
                     time.sleep(TDP_DELAY)
@@ -394,30 +376,12 @@ class AsusDriverPlugin(HHDPlugin):
             self.pp = new_target
 
         # Handle fan curve resets
-        if conf["tdp.asus.fan.manual.reset"].to(bool):
-            conf["tdp.asus.fan.manual.reset"] = False
+        if conf["tdp.msi.fan.manual.reset"].to(bool):
+            conf["tdp.msi.fan.manual.reset"] = False
             for k, v in zip(POINTS, DEFAULT_CURVE):
-                conf[f"tdp.asus.fan.manual.st{k}"] = v
+                conf[f"tdp.msi.fan.manual.st{k}"] = v
 
-        manual_fan_curve = conf["tdp.asus.fan.mode"].to(str) == "manual"
-
-        # Handle fan curve limits by Asus
-        # by enforcing minimum values based on power profile
-        # which is a proxy of the current platform profile but still
-        # a bit of a hack. TODO: Get the exact limits.
-        # FIXME: Revisit limits
-        # if manual_fan_curve:
-        #     match self.pp:
-        #         case "balanced":
-        #             min_val = 45
-        #         case "performance":
-        #             min_val = 60
-        #         case _:  # quiet
-        #             min_val = 17
-
-        #     for k in POINTS:
-        #         if conf[f"tdp.asus.fan.manual.st{k}"].to(int) < min_val:
-        #             conf[f"tdp.asus.fan.manual.st{k}"] = min_val
+        manual_fan_curve = conf["tdp.msi.fan.mode"].to(str) == "manual"
 
         # Check if fan curve has changed
         # Use debounce logic on these changes
@@ -425,14 +389,14 @@ class AsusDriverPlugin(HHDPlugin):
             self.queue_fan = curr + APPLY_DELAY
 
         for i in POINTS:
-            if conf[f"tdp.asus.fan.manual.st{i}"].to(int) != self.old_conf[
+            if conf[f"tdp.msi.fan.manual.st{i}"].to(int) != self.old_conf[
                 f"fan.manual.st{i}"
             ].to(int):
                 self.queue_fan = curr + APPLY_DELAY
         # If mode changes, only apply curve if set to manual
         # otherwise disable and reset tdp
-        if conf["tdp.asus.fan.mode"].to(str) != self.old_conf["fan.mode"].to(str):
-            if conf["tdp.asus.fan.mode"].to(str) == "manual":
+        if conf["tdp.msi.fan.mode"].to(str) != self.old_conf["fan.mode"].to(str):
+            if conf["tdp.msi.fan.mode"].to(str) == "manual":
                 self.queue_fan = curr + APPLY_DELAY
             else:
                 try:
@@ -444,12 +408,12 @@ class AsusDriverPlugin(HHDPlugin):
         apply_curve = self.queue_fan and self.queue_fan < curr
         if apply_curve or tdp_set:
             try:
-                if conf["tdp.asus.fan.mode"].to(str) == "manual":
+                if conf["tdp.msi.fan.mode"].to(str) == "manual":
                     set_fan_curve(
                         POINTS,
                         [
                             min(
-                                int(conf[f"tdp.asus.fan.manual.st{i}"].to(int) * 2.55),
+                                int(conf[f"tdp.msi.fan.manual.st{i}"].to(int) * 2.55),
                                 255,
                             )
                             for i in POINTS
@@ -461,40 +425,18 @@ class AsusDriverPlugin(HHDPlugin):
 
         # Show steam message
         if self.sys_tdp:
-            conf["tdp.asus.sys_tdp"] = _("Steam is controlling TDP")
+            conf["tdp.msi.sys_tdp"] = _("Steam is controlling TDP")
         else:
-            conf["tdp.asus.sys_tdp"] = ""
+            conf["tdp.msi.sys_tdp"] = ""
 
         # Save current config
         self.cycle_tdp = self.tdp_data.get("supports_cycle", False) and conf.get(
-            "tdp.asus.cycle_tdp", False
+            "tdp.msi.cycle_tdp", False
         )
-        self.old_conf = conf["tdp.asus"]
+        self.old_conf = conf["tdp.msi"]
 
         if self.startup:
             self.startup = False
-
-        # Extreme standby
-        if self.extreme_supported:
-            standby = conf["tdp.asus.extreme_standby"].to(bool)
-            if self.extreme_standby is not None and self.extreme_standby != standby:
-                self.queue_extreme = curr + EXTREME_DELAY
-            self.extreme_standby = standby
-
-            if self.queue_extreme and self.queue_extreme < curr:
-                self.queue_extreme = None
-                try:
-                    nval = standby == "enabled"
-                    with open(EXTREME_FN, "r") as f:
-                        cval = f.read().strip() == "1"
-                    if nval != cval:
-                        logger.info(f"Setting extreme standby to '{standby}'")
-                        with open(EXTREME_FN, "w") as f:
-                            f.write("1" if standby == "enabled" else "0")
-                    else:
-                        logger.info(f"Extreme standby already set to '{standby}'")
-                except Exception as e:
-                    logger.error(f"Could not set extreme standby. Error:\n{e}")
 
     def notify(self, events: Sequence[Event]):
         for ev in events:
