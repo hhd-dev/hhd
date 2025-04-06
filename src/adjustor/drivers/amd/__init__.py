@@ -69,6 +69,7 @@ class AmdGPUPlugin(HHDPlugin):
         self.initialized = False
         self.supports_boost = False
         self.supports_sched = False
+        self.supports_freq = False
         self.min_freq = None
         self.avail_scheds = {}
 
@@ -161,28 +162,33 @@ class AmdGPUPlugin(HHDPlugin):
 
         self.initialized = True
 
-        # Initialize frequency settings
-        manual_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["manual"][
-            "children"
-        ]["frequency"]
-        upper_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["upper"][
-            "children"
-        ]["frequency"]
-        min_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"][
-            "children"
-        ]["min"]
-        max_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"][
-            "children"
-        ]["max"]
+        if status.freq_min is not None and status.freq_max is not None:
+            self.supports_freq = True
+            # Initialize frequency settings
+            manual_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["manual"][
+                "children"
+            ]["frequency"]
+            upper_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["upper"][
+                "children"
+            ]["frequency"]
+            min_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"][
+                "children"
+            ]["min"]
+            max_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["range"][
+                "children"
+            ]["max"]
 
-        manual_freq["default"] = ((status.freq_min + status.freq_max) // 200) * 100
-        upper_freq["default"] = status.freq_max
-        min_freq["default"] = status.freq_min
-        max_freq["default"] = status.freq_max
-        for freq in (manual_freq, min_freq, max_freq, upper_freq):
-            freq["min"] = status.freq_min
-            freq["max"] = status.freq_max
-        self.min_freq = status.freq_min
+            manual_freq["default"] = ((status.freq_min + status.freq_max) // 200) * 100
+            upper_freq["default"] = status.freq_max
+            min_freq["default"] = status.freq_min
+            max_freq["default"] = status.freq_max
+            for freq in (manual_freq, min_freq, max_freq, upper_freq):
+                freq["min"] = status.freq_min
+                freq["max"] = status.freq_max
+            self.min_freq = status.freq_min
+        else:
+            self.supports_freq = False
+            del sets["enabled"]["children"]["gpu_freq"]
 
         self.supports_boost = status.cpu_boost is not None
         if self.supports_boost:
@@ -323,7 +329,7 @@ class AmdGPUPlugin(HHDPlugin):
                                 set_epp_mode("balance_power")
                             if self.supports_boost:
                                 set_cpu_boost(True)
-                            set_frequency_scaling(nonlinear=True)
+                            set_frequency_scaling(nonlinear=self.supports_nonlinear)
                         case _:  # power
                             if self.supports_epp:
                                 set_powersave_governor()
@@ -348,15 +354,13 @@ class AmdGPUPlugin(HHDPlugin):
                     self.old_boost = new_boost
                     try:
                         set_cpu_boost(new_boost == "enabled")
-                        # Set frequency scaling again, as max frequency
-                        # changes depending on whether boost is supported
-                        if self.supports_nonlinear:
-                            set_frequency_scaling(
-                                nonlinear=conf[
-                                    "tdp.amd_energy.mode.manual.cpu_min_freq"
-                                ].to(str)
-                                == "nonlinear"
+                        set_frequency_scaling(
+                            nonlinear=self.supports_nonlinear
+                            and conf.get(
+                                "tdp.amd_energy.mode.manual.cpu_min_freq", None
                             )
+                            == "nonlinear"
+                        )
                     except Exception as e:
                         logger.error(f"Failed to set CPU boost:\n{e}")
 
@@ -401,38 +405,39 @@ class AmdGPUPlugin(HHDPlugin):
                             stdout=subprocess.DEVNULL,
                         )
 
-        # Apply GPU settings
-        new_gpu = conf["tdp.amd_energy.gpu_freq.mode"].to(str)
-        match new_gpu:
-            case "manual":
-                f = conf["tdp.amd_energy.gpu_freq.manual.frequency"].to(int)
-                new_freq = (f, f)
-            case "upper":
-                f = conf["tdp.amd_energy.gpu_freq.upper.frequency"].to(int)
-                new_freq = (self.min_freq or f, f)
-            case "range":
-                min_f = conf["tdp.amd_energy.gpu_freq.range.min"].to(int)
-                max_f = conf["tdp.amd_energy.gpu_freq.range.max"].to(int)
-                if max_f < min_f:
-                    max_f = min_f
-                    conf["tdp.amd_energy.gpu_freq.range.max"] = min_f
-                new_freq = (min_f, max_f)
-            case _:
-                new_freq = None
+        if self.supports_freq:
+            # Apply GPU settings
+            new_gpu = conf["tdp.amd_energy.gpu_freq.mode"].to(str)
+            match new_gpu:
+                case "manual":
+                    f = conf["tdp.amd_energy.gpu_freq.manual.frequency"].to(int)
+                    new_freq = (f, f)
+                case "upper":
+                    f = conf["tdp.amd_energy.gpu_freq.upper.frequency"].to(int)
+                    new_freq = (self.min_freq or f, f)
+                case "range":
+                    min_f = conf["tdp.amd_energy.gpu_freq.range.min"].to(int)
+                    max_f = conf["tdp.amd_energy.gpu_freq.range.max"].to(int)
+                    if max_f < min_f:
+                        max_f = min_f
+                        conf["tdp.amd_energy.gpu_freq.range.max"] = min_f
+                    new_freq = (min_f, max_f)
+                case _:
+                    new_freq = None
 
-        if new_freq != self.old_freq:
-            self.old_freq = new_freq
-            self.queue_gpu = curr + APPLY_DELAY
+            if new_freq != self.old_freq:
+                self.old_freq = new_freq
+                self.queue_gpu = curr + APPLY_DELAY
 
-        if self.queue_gpu is not None and curr >= self.queue_gpu:
-            self.queue_gpu = None
-            try:
-                if new_freq:
-                    set_gpu_manual(*new_freq)
-                else:
-                    set_gpu_auto()
-            except Exception as e:
-                logger.error(f"Failed to set GPU mode:\n{e}")
+            if self.queue_gpu is not None and curr >= self.queue_gpu:
+                self.queue_gpu = None
+                try:
+                    if new_freq:
+                        set_gpu_manual(*new_freq)
+                    else:
+                        set_gpu_auto()
+                except Exception as e:
+                    logger.error(f"Failed to set GPU mode:\n{e}")
 
     def close_ppd(self):
         if self.proc is not None:

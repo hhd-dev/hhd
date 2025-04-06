@@ -3,12 +3,14 @@ import os
 from typing import Literal, NamedTuple
 from typing import Sequence
 
-from adjustor.fuse.utils import find_igpu
+from adjustor.fuse.utils import find_igpu as find_amd_igpu
 
 logger = logging.getLogger(__name__)
 GPU_FREQUENCY_PATH = "device/pp_od_clk_voltage"
 GPU_LEVEL_PATH = "device/power_dpm_force_performance_level"
+
 CPU_BOOST_PATH = "/sys/devices/system/cpu/amd_pstate/cpb_boost"
+INTEL_BOOST_PATH = "/sys/devices/system/cpu/intel_pstate/no_turbo"
 
 CPU_PATH = "/sys/devices/system/cpu/"
 CPU_PREFIX = "cpu"
@@ -29,42 +31,72 @@ EppStatus = Literal["performance", "balance_performance", "balance_power", "powe
 
 class GPUStatus(NamedTuple):
     mode: Literal["auto", "manual", "unknown"]
-    freq: int
-    freq_min: int
-    freq_max: int
+    freq: int | None
+    freq_min: int | None
+    freq_max: int | None
     cpu_boost: bool | None
     epp_avail: Sequence[EppStatus] | None
     epp: EppStatus | None
 
 
+def find_intel_igpu():
+    for hw in os.listdir("/sys/class/drm"):
+        if not hw.startswith("card"):
+            continue
+        if not os.path.exists(f"/sys/class/drm/{hw}/device/subsystem_vendor"):
+            continue
+        with open(f"/sys/class/drm/{hw}/device/subsystem_vendor", "r") as f:
+            # intel
+            if "1462" not in f.read():
+                continue
+
+        if not os.path.exists(f"/sys/class/drm/{hw}/device/local_cpulist"):
+            logger.warning(
+                f'No local_cpulist found for "{hw}". Assuming it is a dedicated unit.'
+            )
+            continue
+
+        pth = os.path.realpath(os.path.join("/sys/class/drm", hw))
+        return pth
+
+    return None
+
+
 def get_igpu_status():
-    hwmon = find_igpu()
+    hwmon = find_intel_igpu()
     if not hwmon:
-        return None
+        hwmon = find_amd_igpu()
+        if not hwmon:
+            return None
+        intel = False
+    else:
+        intel = True
 
     freq_min = None
     freq_max = None
     freq = None
+    mode = "unknown"
 
     epp_avail = None
     epp = None
 
-    with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "r") as f:
-        for line in f.readlines():
-            if line.startswith("0:"):
-                freq = int(line.split()[1].replace("Mhz", ""))
-            if line.startswith("SCLK"):
-                freq_min = int(line.split()[1].replace("Mhz", ""))
-                freq_max = int(line.split()[2].replace("Mhz", ""))
+    if not intel:
+        with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "r") as f:
+            for line in f.readlines():
+                if line.startswith("0:"):
+                    freq = int(line.split()[1].replace("Mhz", ""))
+                if line.startswith("SCLK"):
+                    freq_min = int(line.split()[1].replace("Mhz", ""))
+                    freq_max = int(line.split()[2].replace("Mhz", ""))
 
-    with open(os.path.join(hwmon, GPU_LEVEL_PATH), "r") as f:
-        m = f.read()[:-1]
-        if m == "auto":
-            mode = "auto"
-        elif m == "manual":
-            mode = "manual"
-        else:
-            mode = "unknown"
+        with open(os.path.join(hwmon, GPU_LEVEL_PATH), "r") as f:
+            m = f.read()[:-1]
+            if m == "auto":
+                mode = "auto"
+            elif m == "manual":
+                mode = "manual"
+            else:
+                mode = "unknown"
 
     cpu_boost_fn = os.path.join(CPU_PATH, CPU_PREFIX + "0", BOOST_FN)
     if os.path.exists(cpu_boost_fn):
@@ -73,6 +105,9 @@ def get_igpu_status():
     elif os.path.exists(CPU_BOOST_PATH):
         with open(CPU_BOOST_PATH, "r") as f:
             cpu_boost = f.read().strip() == "1"
+    elif os.path.exists(INTEL_BOOST_PATH):
+        with open(INTEL_BOOST_PATH, "r") as f:
+            cpu_boost = f.read().strip() == "0"
     else:
         cpu_boost = None
 
@@ -90,22 +125,20 @@ def get_igpu_status():
             if tmp in EPP_MODES:
                 epp = tmp
 
-    if freq and freq_min and freq_max and mode:
-        return GPUStatus(
-            mode=mode,
-            freq=freq,
-            freq_min=freq_min,
-            freq_max=freq_max,
-            cpu_boost=cpu_boost,
-            epp_avail=epp_avail,
-            epp=epp,
-        )
-    return None
+    return GPUStatus(
+        mode=mode,
+        freq=freq,
+        freq_min=freq_min,
+        freq_max=freq_max,
+        cpu_boost=cpu_boost,
+        epp_avail=epp_avail,
+        epp=epp,
+    )
 
 
 def set_gpu_auto():
     logger.info("Setting GPU mode to 'auto'.")
-    hwmon = find_igpu()
+    hwmon = find_amd_igpu()
     if not hwmon:
         return None
     with open(os.path.join(hwmon, GPU_LEVEL_PATH), "w") as f:
@@ -117,7 +150,7 @@ def set_gpu_manual(min_freq: int, max_freq: int | None = None):
         max_freq = min_freq
 
     logger.info(f"Pinning GPU frequency to '{min_freq}Mhz' - '{max_freq}Mhz'.")
-    hwmon = find_igpu()
+    hwmon = find_amd_igpu()
     if not hwmon:
         return None
     with open(os.path.join(hwmon, GPU_LEVEL_PATH), "w") as f:

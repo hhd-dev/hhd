@@ -256,7 +256,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     use_acpi_call = False
     drivers_matched = False
-    intel = False
 
     # FIXME: Switch to per device
     # But all devices use the same values
@@ -287,7 +286,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             drivers_matched = True
             min_tdp = v["min_tdp"]
             max_tdp = v["max_tdp"]
-            intel = True
             break
 
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
@@ -350,12 +348,10 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         is_steamdeck = "Jupiter" in prod or "Galileo" in prod
         return [GeneralPowerPlugin(is_steamdeck=is_steamdeck), BatteryPlugin()]
 
-    if not intel:
-        drivers.append(AmdGPUPlugin())
-
     return [
         *drivers,
         AdjustorInitPlugin(use_acpi_call=use_acpi_call),
         AdjustorPlugin(min_tdp, default_tdp, max_tdp),
         BatteryPlugin(),
+        AmdGPUPlugin(),
     ]
