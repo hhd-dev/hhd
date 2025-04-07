@@ -185,7 +185,10 @@ def set_per_cpu(fn: str, value: str):
 
 def set_cpu_boost(enable: bool):
     logger.info(f"{'Enabling' if enable else 'Disabling'} CPU boost.")
-    if os.path.exists(CPU_BOOST_PATH):
+    if os.path.exists(INTEL_BOOST_PATH):
+        with open(INTEL_BOOST_PATH, "w") as f:
+            f.write("0" if enable else "1")
+    elif os.path.exists(CPU_BOOST_PATH):
         try:
             with open(CPU_BOOST_PATH, "w") as f:
                 f.write("1" if enable else "0")
