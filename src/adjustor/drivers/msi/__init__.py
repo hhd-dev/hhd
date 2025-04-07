@@ -120,6 +120,9 @@ def disable_fan_curve():
 
     return True
 
+def has_msi_driver():
+    return False
+    return os.path.exists(STDP_FN) and os.path.exists(CTDP_FN)
 
 class MsiDriverPlugin(HHDPlugin):
     def __init__(self, tdp_data: DeviceTDP) -> None:
@@ -152,6 +155,14 @@ class MsiDriverPlugin(HHDPlugin):
             self.old_conf = None
             self.startup = True
             return {}
+
+        if not has_msi_driver():
+            logger.error(
+                "MSI driver not found. Disabling TDP controls."
+            )
+            self.initialized = False
+
+            return {"tdp": {"msi": load_relative_yaml("error.yml")}}
 
         self.initialized = True
         out = {"tdp": {"msi": load_relative_yaml("settings.yml")}}

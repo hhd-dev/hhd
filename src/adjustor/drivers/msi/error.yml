@@ -1,0 +1,13 @@
+title: MSI TDP
+type: container
+tags: [hide-title]
+hint: >-
+  Uses the interface of Armory Crate to set the TDP of the device.
+children:
+  error:
+    type: display
+    title: Missing Driver
+    tags: [ error, non-essential ]
+    default: >-
+      Your kernel version does not contain the required driver for TDP.
+      Install the Bazzite kernel or update.
