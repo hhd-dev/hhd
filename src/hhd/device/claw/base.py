@@ -29,7 +29,15 @@ LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
-CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02])
+CLAW_SET_M1 = bytes(
+    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, 0x00, 0x7A, 0x05, 0x01, 0x00, 0x00, 0x11, 0x00]
+)
+CLAW_SET_M2 = bytes(
+    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, 0x01, 0x1F, 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
+)
+CLAW_SYNC_ROM = bytes([0x0F, 0x00, 0x00, 0x3C, 0x22])
+CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02, 0x00])
+CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
 
 MSI_CLAW_VID = 0x0DB0
 MSI_CLAW_XINPUT_PID = 0x1901
@@ -110,9 +118,16 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                     )
                     self.dev.write(cmd)
 
-    def set_dinput_mode(self):
+    def set_dinput_mode(self, init: bool = False) -> None:
         if not self.dev:
             return
+
+        # Make sure M1/M2 are recognizable
+        if init:
+            self.dev.write(CLAW_SET_M1)
+            self.dev.write(CLAW_SET_M2)
+            self.dev.write(CLAW_SYNC_ROM)
+            self.dev.write(CLAW_SET_MSI)
 
         # Set the device to dinput mode
         self.dev.write(CLAW_SET_DINPUT)
@@ -203,7 +218,7 @@ def plugin_run(
             )
             try:
                 d_vend.open()
-                d_vend.set_dinput_mode()
+                d_vend.set_dinput_mode(init=True)
                 d_vend.close(True)
                 time.sleep(2)
             except Exception as e:
