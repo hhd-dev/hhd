@@ -121,7 +121,6 @@ def disable_fan_curve():
     return True
 
 def has_msi_driver():
-    return False
     return os.path.exists(STDP_FN) and os.path.exists(CTDP_FN)
 
 class MsiDriverPlugin(HHDPlugin):
