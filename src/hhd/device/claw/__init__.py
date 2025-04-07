@@ -46,6 +46,14 @@ class ClawControllerPlugin(HHDPlugin):
         self.context = context
         self.prev = None
 
+        # FIXME: move this somewhere else
+        try:
+            with open("/sys/bus/serio/devices/serio0/power/wakeup", "w") as f:
+                f.write("disabled")
+            logger.warning("Disabling keyboard wakeups so volume button does not wake device.")
+        except Exception as e:
+            logger.error(f"Failed to disable keyboard wakeup wakeup: {e}")
+
     def settings(self) -> HHDSettings:
         base = {"controllers": {"claw": load_relative_yaml("controllers.yml")}}
         base["controllers"]["claw"]["children"]["controller_mode"].update(
