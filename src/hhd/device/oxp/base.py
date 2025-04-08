@@ -500,6 +500,7 @@ def controller_loop(
         btn_map=BTN_MAPPINGS,
         capabilities={EC("EV_KEY"): [EC("KEY_D")]},
         requires_start=True,
+        vibrate_on_press=0.008,
     )
 
     share_reboots = False

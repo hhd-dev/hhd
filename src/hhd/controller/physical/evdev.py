@@ -245,6 +245,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         msc_delay: float = 0.1,
         postprocess: dict[str, dict] = AXIS_CALIBRATION,
         requires_start: bool = False,
+        vibrate_on_press: float = 0
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -268,6 +269,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.start_pressed = None
         self.start_held = False
         self.requires_start = requires_start
+        self.vibrate_on_press = vibrate_on_press
 
     def open(self) -> Sequence[int]:
         for d, info in list_evs(filter_valid=True).items():
@@ -325,6 +327,7 @@ class GenericGamepadEvdev(Producer, Consumer):
                 self.fd = self.dev.fd
                 self.started = True
                 self.effect_id = -1
+                self.effect_on_press_id = -1
                 self.queue = []
             except Exception as e:
                 # Prevent leftover rules in case of error
@@ -395,6 +398,38 @@ class GenericGamepadEvdev(Producer, Consumer):
                         self.effect_id = self.dev.upload_effect(effect)
                         self.dev.write(getattr(ecodes, "EV_FF"), self.effect_id, 1)
 
+                case "vibrate_on_press":
+                    if not self.supports_vibration:
+                        continue
+
+                    # Erase old effect
+                    if self.effect_on_press_id != -1:
+                        self.dev.erase_effect(self.effect_on_press_id)
+                        self.effect_on_press_id = -1
+
+                    if ev["magnitude"] > 0:
+                        magnitude = min(
+                            int(ev["magnitude"] * 0xFFFF), 0xFFFF
+                        )
+
+                        rumble = ff.Rumble(
+                            strong_magnitude=magnitude,
+                            weak_magnitude=magnitude,
+                        )
+
+                        duration_ms = 80
+
+                        effect = ff.Effect(
+                            getattr(ecodes, "FF_RUMBLE"),
+                            -1,
+                            0,
+                            ff.Trigger(0, 0),
+                            ff.Replay(duration_ms, 0),
+                            ff.EffectType(ff_rumble_effect=rumble),
+                        )
+                        self.effect_on_press_id = self.dev.upload_effect(effect)
+                        self.dev.write(getattr(ecodes, "EV_FF"), self.effect_on_press_id, 1)
+
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         out: list[Event] = []
         curr = time.time()
@@ -428,6 +463,15 @@ class GenericGamepadEvdev(Producer, Consumer):
 
         while can_read(self.fd):
             for e in self.dev.read():
+                if self.vibrate_on_press > 0:
+                    out.append(
+                        {
+                            "type": "vibrate_on_press",
+                            "code": "main",
+                            "magnitude": self.vibrate_on_press,
+                        }
+                    )
+
                 if e.type == B("EV_KEY"):
                     if e.code == B("KEY_LEFTMETA"):
                         self.start_held = e.value != 0
