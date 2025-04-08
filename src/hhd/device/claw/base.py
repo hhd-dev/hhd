@@ -125,9 +125,13 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         # Make sure M1/M2 are recognizable
         if init:
             self.dev.write(CLAW_SET_M1)
+            time.sleep(0.3)
             self.dev.write(CLAW_SET_M2)
+            time.sleep(0.3)
             self.dev.write(CLAW_SYNC_ROM)
+            time.sleep(0.3)
             self.dev.write(CLAW_SET_MSI)
+            time.sleep(2)
 
         # Set the device to dinput mode
         self.dev.write(CLAW_SET_DINPUT)
