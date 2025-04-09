@@ -45,7 +45,7 @@ def _ppd_client(emit, proc):
 def _open_ppd_server(emit):
     logger.info("Launching PPD server.")
     proc = subprocess.Popen(
-        [sys.executable, "-m", "adjustor.drivers.amd.ppd"],
+        [sys.executable, "-m", "adjustor.drivers.gpu.ppd"],
         stdout=subprocess.PIPE,
         stdin=subprocess.PIPE,
     )
