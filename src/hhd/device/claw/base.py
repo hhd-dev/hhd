@@ -97,6 +97,8 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                         0x00,
                         min(255, int(ev["weak_magnitude"] * 255)),
                         min(255, int(ev["strong_magnitude"] * 255)),
+                        00,
+                        00,
                     ]
                 )
                 self.dev.write(cmd)
