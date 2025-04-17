@@ -55,7 +55,7 @@ def set_charge_bypass_behaviour(bat: str, type: str):
         case "disabled":
             val = "auto"
         case "awake":
-            val = "inhibit-charge-s0"
+            val = "inhibit-charge-awake"
         case "always":
             val = "inhibit-charge"
         case _:
@@ -157,7 +157,7 @@ class BatteryPlugin(HHDPlugin):
                 self.charge_bypass_fn = f"{base}/charge_behaviour"
                 try:
                     with open(self.charge_bypass_fn) as f:
-                        self.bypass_awake = "inhibit-charge-s0" in f.read()
+                        self.bypass_awake = "inhibit-charge-awake" in f.read()
                 except Exception:
                     logger.error(
                         "Failed to read charge behaviour file, assuming it is not supported."
