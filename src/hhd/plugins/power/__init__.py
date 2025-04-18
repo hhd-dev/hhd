@@ -117,6 +117,8 @@ class PowerPlugin(HHDPlugin):
         self.init = time.time()
         self.therm = {}
         self.bat = None
+        
+        delete_temporary_swap()
 
         try:
             for therm in os.listdir("/sys/class/thermal"):
