@@ -228,6 +228,10 @@ def hidraw(dev: str | None, *cmds: str):
                         return
         return
 
+    print(f"Device Information:")
+    for k, v in devs[sel].items():
+        print(f" - {k:>20s}: {f'0x{v:04x}' if isinstance(v, int) else v}")
+
     try:
         from .hid_desc import print_descriptor
         print('\nDevice HID Descriptor:')
