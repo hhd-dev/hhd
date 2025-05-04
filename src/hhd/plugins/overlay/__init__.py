@@ -76,6 +76,7 @@ class OverlayPlugin(HHDPlugin):
         self.qam_handler_fallback = None
         self.touch_gestures = True
         self.ctx = None
+        self.emit = None
 
         self.images = None
         self.burnt_ids = set()
@@ -145,6 +146,9 @@ class OverlayPlugin(HHDPlugin):
         return set
 
     def update(self, conf: Config):
+        if not self.emit:
+            return
+
         self.emit.set_simple_qam(not self.has_executable)
 
         # Load game information
