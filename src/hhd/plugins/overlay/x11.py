@@ -309,6 +309,12 @@ def prepare_hhd(display, hhd, steam=None):
         hhd.change_property(
             display.get_atom("STEAM_GAME"), Xatom.CARDINAL, 32, [HHD_ID]
         )
+        # If steam is missing, gamescope disables window controls, so we have
+        # to play with the opacity to hide.
+        hhd.change_property(
+            display.get_atom("_NET_WM_WINDOW_OPACITY"), Xatom.CARDINAL, 32, [0]
+        )
+
     hhd.change_property(display.get_atom("STEAM_NOTIFICATION"), Xatom.CARDINAL, 32, [0])
     hhd.change_property(display.get_atom("STEAM_BIGPICTURE"), Xatom.CARDINAL, 32, [1])
     hhd.change_property(display.get_atom("GAMESCOPE_NO_FOCUS"), Xatom.CARDINAL, 32, [1])
@@ -417,6 +423,11 @@ def show_hhd(display, hhd, steam):
         # logger.info(f"Setting HHD as game '{new_id}' to disable steam navigation.")
         # hhd.change_property(stat_game, Xatom.CARDINAL, 32, [new_id])
 
+    if not steam:
+        hhd.change_property(
+            display.get_atom("_NET_WM_WINDOW_OPACITY"), Xatom.CARDINAL, 32, [0xFFFFFFFF]
+        )
+
     if touch_was_set:
         # Give it a bit of time before setting the touch target to avoid steam
         # messing with it
@@ -451,6 +462,11 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
             display.screen().root.change_property(
                 stat_click, Xatom.CARDINAL, 32, [old.touch]
             )
+
+    if not steam:
+        hhd.change_property(
+            display.get_atom("_NET_WM_WINDOW_OPACITY"), Xatom.CARDINAL, 32, [0x0]
+        )
 
     display.flush()
     display.sync()
