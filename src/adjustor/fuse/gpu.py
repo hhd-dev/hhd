@@ -84,10 +84,10 @@ def get_igpu_status():
         with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "r") as f:
             for line in f.readlines():
                 if line.startswith("0:"):
-                    freq = int(line.split()[1].replace("Mhz", ""))
+                    freq = int(line.split()[1].lower().replace("mhz", ""))
                 if line.startswith("SCLK"):
-                    freq_min = int(line.split()[1].replace("Mhz", ""))
-                    freq_max = int(line.split()[2].replace("Mhz", ""))
+                    freq_min = int(line.split()[1].lower().replace("mhz", ""))
+                    freq_max = int(line.split()[2].lower().replace("mhz", ""))
 
         with open(os.path.join(hwmon, GPU_LEVEL_PATH), "r") as f:
             m = f.read()[:-1]
