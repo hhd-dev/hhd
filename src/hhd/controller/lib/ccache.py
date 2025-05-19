@@ -17,11 +17,10 @@ class ControllerCache:
 
     def _close_cached(self):
         with self._cond:
-            start = time.perf_counter()
-            curr = time.perf_counter()
-            while curr - start < self.cache_timeout and not self._should_exit.is_set():
+            delay = 0
+            while delay < self.cache_timeout and not self._should_exit.is_set():
                 self._cond.wait(UPDATE_T)
-                next = time.perf_counter()
+                delay += UPDATE_T
                 if self._cached:
                     # Send fake events to keep everyone happy
                     # Both steam and kernel
@@ -32,10 +31,10 @@ class ControllerCache:
                     # Use .95 to prevent racing ahead of the IMU ts
                     if hasattr(self._cached, "last_imu_ts"):
                         ctime = getattr(self._cached, "last_imu_ts") + int(
-                            (next - curr) * 0.95 * 1e9
+                            delay * 0.95 * 1e9
                         )
                     else:
-                        ctime = int(next * 1e9)
+                        ctime = int(delay * 1e9)
 
                     # Send a lot of noise to the accel value to avoid
                     # steam recalibrating. Only RPCS3 and dolphin might
@@ -54,7 +53,6 @@ class ControllerCache:
                 else:
                     # Exit if cached became null during sleep
                     break
-                curr = next
             if self._cached:
                 self._cached.close(True, in_cache=True)
                 self._cached = None
