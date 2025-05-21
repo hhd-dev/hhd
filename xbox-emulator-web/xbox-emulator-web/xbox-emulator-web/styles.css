@@ -1,0 +1,318 @@
+:root {
+  --xbox-green: #107C10;
+  --xbox-dark: #23272a;
+  --xbox-light: #f0f4f8;
+  --xbox-grey: #333940;
+  --primary-font: 'Segoe UI', 'Arial', sans-serif;
+  --controller-btn: #2e8b57;
+  --controller-btn-active: #38d948;
+  --axis-bg: #13381a;
+  --axis-fg: #38d948;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--xbox-dark);
+  color: var(--xbox-light);
+  font-family: var(--primary-font);
+  min-height: 100vh;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--xbox-green);
+  padding: 0.5em 2em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.logo { display: flex; align-items: center; }
+.logo img { width: 40px; margin-right: 10px; }
+.logo span { font-size: 1.5em; font-weight: bold; letter-spacing: 1px; }
+nav a {
+  color: var(--xbox-light);
+  text-decoration: none;
+  margin-left: 2em;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+nav a.active, nav a:hover { color: #fff; text-shadow: 0 0 5px #fff9; }
+main {
+  max-width: 1200px;
+  margin: 2em auto;
+  padding: 0 1em;
+}
+.section { display: none; }
+.section.active { display: block; }
+.hero {
+  text-align: center;
+  margin-bottom: 3em;
+}
+.hero h1 { font-size: 2.5em; margin-bottom: 0.4em; }
+.hero p { font-size: 1.2em; margin-bottom: 1.4em; }
+.primary-btn {
+  background: var(--xbox-green);
+  color: #fff;
+  padding: 0.8em 2.2em;
+  border: none;
+  border-radius: 30px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #0006;
+  transition: background 0.2s;
+}
+.primary-btn:hover { background: #0e6a0e; }
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+}
+.feature {
+  background: var(--xbox-grey);
+  padding: 1.5em;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 300px;
+  box-shadow: 0 2px 8px #0004;
+}
+.feature img { width: 54px; margin-bottom: 0.5em; }
+.feature h3 { margin: 0.3em 0 0.4em; }
+.game-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+}
+.game-card {
+  background: var(--xbox-grey);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 220px;
+  box-shadow: 0 2px 8px #0003;
+  display: flex;
+  flex-direction: column;
+}
+.game-card img { width: 100%; height: 140px; object-fit: cover; }
+.game-info { padding: 1em; }
+.game-info h4 { margin: 0 0 0.4em; font-size: 1.1em; }
+.play-btn {
+  background: var(--xbox-green);
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  padding: 0.5em 1.4em;
+  cursor: pointer;
+  margin-top: 0.6em;
+  font-weight: 600;
+}
+.add-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  height: 180px;
+  background: #1e252b88;
+  border-radius: 12px;
+}
+.add-game button {
+  background: none;
+  border: 2px dashed var(--xbox-green);
+  color: var(--xbox-green);
+  font-size: 1.4em;
+  border-radius: 12px;
+  padding: 1em 2em;
+  cursor: pointer;
+}
+.settings-group {
+  margin-bottom: 2em;
+  background: var(--xbox-grey);
+  border-radius: 10px;
+  padding: 1.5em;
+}
+.settings-group h3 { margin-top: 0; }
+.settings-group label {
+  display: block;
+  margin-bottom: 1em;
+  font-size: 1.1em;
+}
+input[type="range"] { width: 150px; }
+footer {
+  text-align: center;
+  padding: 2em 0 1em 0;
+  color: #bbb;
+  font-size: 0.95em;
+}
+.cloud-gaming {
+  background: #232a34;
+  border-radius: 14px;
+  padding: 2em;
+  margin: 2em 0;
+  text-align: center;
+  box-shadow: 0 2px 8px #0004;
+}
+.cloud-btn {
+  display: inline-block;
+  background: var(--xbox-green);
+  color: #fff;
+  padding: 0.8em 2em;
+  font-size: 1.2em;
+  border-radius: 30px;
+  font-weight: bold;
+  margin-top: 1em;
+  text-decoration: none;
+  box-shadow: 0 2px 6px #0006;
+  transition: background 0.2s;
+}
+.cloud-btn:hover { background: #0e6a0e; }
+.controller-status {
+  margin: 1.5em 0;
+  background: #222d2f;
+  color: #e0f7d4;
+  padding: 1em 2em;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.1em;
+}
+.controller-details {
+  margin-top: 1em;
+  background: #293940;
+  color: #b2ffc3;
+  border-radius: 8px;
+  padding: 1em;
+  text-align: left;
+  display: inline-block;
+  min-width: 300px;
+}
+.controller-details h4 {
+  margin-top: 0;
+}
+#controller-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 0.5em;
+}
+#controller-list li {
+  margin-bottom: 0.2em;
+  font-size: 1em;
+}
+.button-tester, .axis-tester {
+  margin-top: 0.7em;
+}
+#button-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 0.7em;
+}
+.controller-btn {
+  background: var(--controller-btn);
+  border: none;
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  margin: 0 3px 3px 0;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.controller-btn.active {
+  background: var(--controller-btn-active);
+  color: #222;
+  opacity: 1;
+  box-shadow: 0 0 6px #38d948cc;
+}
+#axis-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 0.6em;
+}
+.axis-bar {
+  background: var(--axis-bg);
+  height: 12px;
+  border-radius: 6px;
+  margin: 2px 0;
+  position: relative;
+  width: 160px;
+  box-shadow: 0 0 2px #111b;
+}
+.axis-indicator {
+  background: var(--axis-fg);
+  height: 12px;
+  border-radius: 6px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 8px;
+  transition: left 0.1s;
+}
+
+body.sx-mode {
+  background: linear-gradient(135deg, #08250a 0%, #222 100%);
+}
+body.sx-mode header {
+  background: #107c10;
+  border-bottom: 4px solid #77e300;
+}
+body.sx-mode .primary-btn,
+body.sx-mode .cloud-btn,
+body.sx-mode .play-btn {
+  background: #77e300;
+  color: #232;
+}
+body.sx-mode .primary-btn:hover,
+body.sx-mode .cloud-btn:hover,
+body.sx-mode .play-btn:hover {
+  background: #b2ff59;
+}
+body.sx-mode .controller-status,
+body.sx-mode .settings-group,
+body.sx-mode .feature,
+body.sx-mode .game-card {
+  background: #162d1a;
+  color: #b2ffc3;
+}
+
+.sx-banner {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #101e0e;
+  color: #b2ff59;
+  border: 2px solid #b2ff59;
+  border-radius: 0 0 16px 16px;
+  padding: 0.5em 2em;
+  z-index: 1000;
+  font-size: 1.18em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 24px #000b;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+.sx-emulator-bar {
+  background: #101e0e;
+  color: #b2ff59;
+  border: 2px solid #b2ff59;
+  border-radius: 0 0 12px 12px;
+  padding: 0.3em 1em;
+  margin-bottom: 8px;
+  font-size: 1.05em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  justify-content: center;
+}
+@media (max-width: 900px) {
+  .features { flex-direction: column; align-items: center; }
+  .game-grid { flex-direction: column; align-items: center; }
+  .controller-details { min-width: 0; width: 98vw; }
+}

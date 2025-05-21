@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Xbox Emulator for Android</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="xbox-icon.png">
+</head>
+<body>
+  <!-- SX Mode Banner (hidden by default) -->
+  <div id="sx-banner" class="sx-banner" style="display:none;">
+    <img src="xbox360-logo.svg" alt="SX Mode" style="height:32px;vertical-align:middle;">
+    <span>XBOX1-360720SX MODE ACTIVE</span>
+  </div>
+  <header>
+    <div class="logo">
+      <img src="xbox-logo.svg" alt="Xbox Emulator Logo" id="main-logo">
+      <span>Xbox Emulator</span>
+    </div>
+    <nav>
+      <a href="#home" class="active">Home</a>
+      <a href="#library">Library</a>
+      <a href="#settings">Settings</a>
+      <a href="#help">Help</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Home Section -->
+    <section id="home" class="section active">
+      <div class="hero">
+        <h1>Play Xbox Games on Android</h1>
+        <p>Experience classic and modern Xbox games right on your Android device. Import ROMs, save your progress, and personalize your gaming experience.</p>
+        <button class="primary-btn" onclick="document.getElementById('file-upload').click()">Import Game ROM</button>
+        <input type="file" id="file-upload" accept=".iso,.xiso,.zip" multiple style="display:none;">
+      </div>
+      <div class="features">
+        <div class="feature">
+          <img src="controller.svg" alt="Controller">
+          <h3>Intuitive Controls</h3>
+          <p>On-screen or Bluetooth gamepad support, customizable layouts.</p>
+        </div>
+        <div class="feature">
+          <img src="library.svg" alt="Library">
+          <h3>Game Library</h3>
+          <p>Organize and launch your favorite games with cover art and details.</p>
+        </div>
+        <div class="feature">
+          <img src="settings.svg" alt="Settings">
+          <h3>Advanced Settings</h3>
+          <p>Adjust graphics, audio, and performance options for the best gameplay.</p>
+        </div>
+      </div>
+
+      <!-- Cloud Gaming Launcher -->
+      <div class="cloud-gaming">
+        <h2>Play Xbox Game Pass Games</h2>
+        <p>Want to play Game Pass games on your device? Launch Xbox Cloud Gaming with full controller support.</p>
+        <a href="https://xbox.com/play" target="_blank" class="cloud-btn">Launch Xbox Cloud Gaming</a>
+      </div>
+
+      <!-- Controller Status -->
+      <div id="controller-status" class="controller-status">
+        <span>Controller: <strong id="controller-connection">Not Connected</strong></span>
+        <div id="controller-details" class="controller-details" style="display:none;">
+          <h4>Detected Controller</h4>
+          <ul id="controller-list"></ul>
+          <div class="button-tester">
+            <label>Test Buttons:</label>
+            <div id="button-grid"></div>
+          </div>
+          <div class="axis-tester">
+            <label>Analog Sticks:</label>
+            <div id="axis-grid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Library Section -->
+    <section id="library" class="section">
+      <h2>Your Game Library</h2>
+      <div class="game-grid">
+        <!-- Example Game Card -->
+        <div class="game-card">
+          <img src="halo-cover.jpg" alt="Halo Cover">
+          <div class="game-info">
+            <h4>Halo: Combat Evolved</h4>
+            <p>Action / Shooter</p>
+            <button class="play-btn">Open in Xbox Emulator</button>
+          </div>
+        </div>
+        <!-- More games can be dynamically loaded here -->
+        <div class="add-game">
+          <button onclick="document.getElementById('file-upload').click()">+ Add Game</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Emulator Controls Overlay (example, hidden by default) -->
+    <div id="emulator-controls" style="display:none;">
+      <div class="sx-emulator-bar" id="sx-emulator-bar" style="display:none;">
+        <img src="xbox360-logo.svg" alt="SX Mode" style="height:24px;vertical-align:middle;">
+        <span>Xbox1-360720SX Emulator Mode ON</span>
+      </div>
+      <div class="screen">
+        <canvas id="game-canvas"></canvas>
+      </div>
+      <div class="controls">
+        <div class="dpad"></div>
+        <div class="buttons">
+          <button class="btn a">A</button>
+          <button class="btn b">B</button>
+          <button class="btn x">X</button>
+          <button class="btn y">Y</button>
+          <button class="btn start">Start</button>
+          <button class="btn back">Back</button>
+        </div>
+      </div>
+      <button class="primary-btn" id="close-emulator">Close Emulator</button>
+    </div>
+
+    <!-- Settings Section (with SX Mode Toggle) -->
+    <section id="settings" class="section">
+      <h2>Settings</h2>
+      <div class="settings-group">
+        <h3>Graphics</h3>
+        <label>Resolution
+          <select>
+            <option>Auto</option>
+            <option>720p</option>
+            <option>1080p</option>
+            <option>4K</option>
+          </select>
+        </label>
+        <label><input type="checkbox"> Enable VSync</label>
+      </div>
+      <div class="settings-group">
+        <h3>Audio</h3>
+        <label>Volume <input type="range" min="0" max="100" value="80"></label>
+        <label><input type="checkbox" checked> Enable Sound</label>
+      </div>
+      <div class="settings-group">
+        <h3>Controller</h3>
+        <label><input type="checkbox" checked> On-Screen Controls</label>
+        <label><input type="checkbox"> Bluetooth Gamepad</label>
+      </div>
+      <!-- SX Mode Toggle -->
+      <div class="settings-group">
+        <h3>Special Modes</h3>
+        <label>
+          <input type="checkbox" id="sx-mode-toggle">
+          Activate XBOX1-360720SX Mode
+        </label>
+        <small>This mode gives the UI an Xbox One & 360-inspired look!</small>
+      </div>
+      <button class="primary-btn">Save Settings</button>
+    </section>
+
+    <!-- Help Section -->
+    <section id="help" class="section">
+      <h2>Help & FAQ</h2>
+      <h3>How to Dump Your Original Xbox Discs for Emulation</h3>
+      <ol>
+        <li>You must own the original Xbox game disc.</li>
+        <li>Use a compatible DVD drive with your PC (not all drives work with Xbox discs).</li>
+        <li>Download the <a href="https://github.com/XboxDev/extract-xiso" target="_blank">extract-xiso</a> tool or similar to create an .iso or .xiso file.</li>
+        <li>Follow the instructions to dump the disc and save the ISO to your PC.</li>
+        <li>Transfer the ISO to your Android device and load it in the emulator.</li>
+        <li>Never download ISOs you do not own. This is illegal and against emulator policy.</li>
+      </ol>
+      <p>For more detailed guides, see <a href="https://xemu.app/docs/disc-dumping/" target="_blank">xemu's official documentation</a>.</p>
+      <h3>Can I play Xbox Game Pass games in this emulator?</h3>
+      <p>No. Xbox Game Pass games are protected by DRM and cannot be run in any emulator. Use the <b>Cloud Gaming</b> launcher above to play Game Pass games via streaming with controller support.</p>
+      <h3>Controller Troubleshooting</h3>
+      <ul>
+        <li>Make sure your Bluetooth controller is paired with your device before launching the emulator.</li>
+        <li>Supported controllers include Xbox, PlayStation, and most Android-compatible Bluetooth gamepads.</li>
+        <li>If your controller is not detected, try reconnecting or refreshing the page/app.</li>
+      </ul>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2025 Xbox Emulator. Not affiliated with Microsoft. For educational use only.</p>
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html>
