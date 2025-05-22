@@ -370,7 +370,7 @@ def get_command(cid: int, ofs: int = 0, payload: bytes = b"") -> bytes:
 
 PAUSE = 0.05
 
-GM_SUPPROTED_VERSIONS = {3: 0x14, 4: 0x09, 5: 0x10}  # Win Max 2  # Win 4  # Win Mini
+GM_SUPPROTED_VERSIONS = {3: 0x15, 4: 0x09, 5: 0x10}  # Win Max 2  # Win 4  # Win Mini
 EXT_SUPPORTED_VERSIONS = {1: 0x23, 4: 0x07, 5: 0x04}
 
 
