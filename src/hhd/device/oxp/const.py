@@ -67,6 +67,7 @@ CONFS = {
     # Aokzoe
     "AOKZOE A1 AR07": AOKZOE_CONF,
     "AOKZOE A1 Pro": AOKZOE_CONF,
+    "AOKZOE A1X": AOKZOE_CONF,
     # Onexplayer
     "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
     "ONEXPLAYER Mini Pro": {
