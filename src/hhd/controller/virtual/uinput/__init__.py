@@ -2,7 +2,10 @@ import logging
 import time
 from typing import Sequence
 
-from evdev import UInput
+try:
+    from evdev.uinput import UInput
+except ImportError:
+    from evdev import UInput # type: ignore[no-redef]
 
 from hhd.controller.base import Consumer, Event, Producer, can_read
 from hhd.controller.const import Axis, Button

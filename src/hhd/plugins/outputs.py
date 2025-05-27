@@ -4,6 +4,7 @@ from typing import Any, Literal, Mapping, Sequence
 import os
 from ..controller.base import Consumer, Producer, RgbMode, RgbSettings, RgbZones
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
+from ..controller.virtual.sd import SteamdeckController
 from ..controller.virtual.uinput import (
     CONTROLLER_THEMES,
     GAMEPAD_BUTTON_MAP,
@@ -78,15 +79,20 @@ def get_outputs(
     if controller_disabled:
         controller = "hidden"
 
+    if controller == "hori_steam" and conf.get("hori_steam.handheld_mode", False):
+        controller = "sd"
+
     match controller:
         case "hidden":
             # NOOP
             UInputDevice.close_cached()
             Dualsense.close_cached()
+            SteamdeckController.close_cached()
             motion = False
             noob_mode = conf.get("hidden.noob_mode", False)
         case "dualsense":
             UInputDevice.close_cached()
+            SteamdeckController.close_cached()
             flip_z = conf["dualsense.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense.led_support", False)
@@ -119,8 +125,19 @@ def get_outputs(
             )
             producers.append(d)
             consumers.append(d)
+        case "sd":
+            UInputDevice.close_cached()
+            Dualsense.close_cached()
+            d = SteamdeckController(
+                name="Steam Controller (HHD)",
+                pid=0x12FF,
+            )
+            producers.append(d)
+            consumers.append(d)
+            has_qam = True
         case "uinput" | "xbox_elite" | "joycon_pair" | "hori_steam":
             Dualsense.close_cached()
+            SteamdeckController.close_cached()
             version = 1
             sync_gyro = False
             paddles_as = conf.get("uinput.paddles_as", "noob")

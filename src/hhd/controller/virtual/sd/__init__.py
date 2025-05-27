@@ -1,21 +1,27 @@
 import logging
 import time
 from collections import defaultdict
-from typing import Sequence
+from typing import Sequence, cast
 
 from hhd.controller import Consumer, Event, Producer
 from hhd.controller.lib.uhid import UhidDevice, BUS_USB
+from hhd.controller.lib.common import encode_axis, set_button
+from hhd.controller.lib.ccache import ControllerCache
 
 from .const import (
     SDCONT_VENDOR,
-    SDCONT_PRODUCT,
     SDCONT_VERSION,
     SDCONT_COUNTRY,
-    SDCONT_NAME,
     SDCONT_DESCRIPTOR,
+    SD_AXIS_MAP,
+    SD_BTN_MAP,
 )
 
+MAX_IMU_SYNC_DELAY = 2
+
 logger = logging.getLogger(__name__)
+
+_cache = ControllerCache()
 
 
 def trim(rep: bytes):
@@ -31,42 +37,84 @@ def pad(rep):
     return bytes(rep) + bytes([0 for _ in range(64 - len(rep))])
 
 
-class SteamdeckOLEDController(Producer, Consumer):
+class SteamdeckController(Producer, Consumer):
+    @staticmethod
+    def close_cached():
+        _cache.close()
+
     def __init__(
         self,
+        pid,
+        name,
+        touchpad: bool = False,
     ) -> None:
         self.available = False
-        self.report = None
         self.dev = None
         self.start = 0
+        self.pid = pid
+        self.name = name
+        self.sync_gyro = False
+        self.enable_touchpad = touchpad
+        self.report = bytearray(64)
+        self.i = 0
         self.last_rep = None
 
     def open(self) -> Sequence[int]:
         self.available = False
-        self.report = bytearray([64] + [0 for _ in range(64)])
-        self.dev = UhidDevice(
-            vid=SDCONT_VENDOR,
-            pid=SDCONT_PRODUCT,
-            bus=BUS_USB,
-            version=SDCONT_VERSION,
-            country=SDCONT_COUNTRY,
-            name=SDCONT_NAME,
-            report_descriptor=SDCONT_DESCRIPTOR,
+        self.report[0] = 0x01
+        self.report[2] = 0x09
+        self.report[3] = 0x40
+        self.i = 0
+
+        # Use cached controller to avoid disconnects
+        cached = cast(
+            SteamdeckController | None,
+            _cache.get(),
         )
+        self.dev = None
+        if cached:
+            if self.pid == cached.pid and self.name == cached.name:
+                logger.warning(
+                    f"Using cached controller node for Steamdeck Controller."
+                )
+                self.dev = cached.dev
+                if self.dev and self.dev.fd:
+                    self.fd = self.dev.fd
+            else:
+                logger.warning(f"Throwing away cached Steamdeck Controller.")
+                cached.close(True, in_cache=True)
+        if not self.dev:
+            self.dev = UhidDevice(
+                vid=SDCONT_VENDOR,
+                pid=self.pid,
+                bus=BUS_USB,
+                version=SDCONT_VERSION,
+                country=SDCONT_COUNTRY,
+                name=bytes(self.name, "utf-8"),
+                report_descriptor=SDCONT_DESCRIPTOR,
+                unique_name=b"",
+                physical_name=b"",
+            )
+            self.fd = self.dev.open()
 
         self.state: dict = defaultdict(lambda: 0)
         self.rumble = False
         self.touchpad_touch = False
-        self.start = time.perf_counter_ns()
-        self.fd = self.dev.open()
+        curr = time.perf_counter()
+        self.start = curr
+        self.touchpad_down = curr
+        self.last_imu = curr
+        self.imu_failed = False
+
+        logger.info(f"Starting '{self.name}'.")
+        assert self.fd
         return [self.fd]
 
-    def close(self, exit: bool) -> bool:
-        if not exit:
-            """This is a consumer, so we would deadlock if it was disabled."""
-            return False
-
-        if self.dev:
+    def close(self, exit: bool, in_cache: bool = False) -> bool:
+        if not in_cache and time.perf_counter() - self.start:
+            logger.warning(f"Caching Steam Controller to avoid reconnection.")
+            _cache.add(self)
+        elif self.dev:
             self.dev.send_destroy()
             self.dev.close()
             self.dev = None
@@ -83,12 +131,67 @@ class SteamdeckOLEDController(Producer, Consumer):
         assert self.dev
         while ev := self.dev.read_event():
             match ev["type"]:
-                case "open":
-                    logger.info(f"OPENED")
-                case "close":
-                    logger.info(f"CLOSED")
+                # case "open":
+                #     logger.info(f"SD OPENED")
+                # case "close":
+                #     logger.info(f"SD CLOSED")
                 case "get_report":
                     match self.last_rep:
+                        case 0x83:
+                            rep = bytes(
+                                [
+                                    0x83,
+                                    0x2D,  # 45/5=9 attrs
+                                    # https://github.com/libsdl-org/SDL/blob/eed94cb0345cbf6dc9088c7bfc3d10828cb19f9d/src/joystick/hidapi/steam/controller_constants.h#L363
+                                    0x01,  # ATTRIB_PRODUCT_ID
+                                    0x05,
+                                    0x12,
+                                    0x00,
+                                    0x00,
+                                    0x02,  # ATTRIB_PRODUCT_REVISON
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x0A,  # ATTRIB_BOOTLOADER_BUILD_TIME
+                                    0x2B,
+                                    0x12,
+                                    0xA9,
+                                    0x62,
+                                    0x04,  # ATTRIB_FIRMWARE_BUILD_TIME
+                                    0xB7,
+                                    0x61,
+                                    0x7C,
+                                    0x67,
+                                    0x09,  # ATTRIB_BOARD_REVISION
+                                    0x2E,
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x0B,  # ATTRIB_CONNECTION_INTERVAL_IN_US
+                                    0xA0,
+                                    0x0F,
+                                    0x00,
+                                    0x00,
+                                    0x0D,  # attr
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x0C,  # attr
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x0E,  # attr
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                    0x00,
+                                ]
+                            )
+                            if not ev["rnum"]:
+                                rep = bytes([0]) + rep
                         case 0xAE:
                             rep = bytes(
                                 [
@@ -107,16 +210,129 @@ class SteamdeckOLEDController(Producer, Consumer):
                     )
                 case "set_report":
                     self.dev.send_set_report_reply(ev["id"], 0)
-                    logger.info(
-                        f"SET_REPORT({ev['rnum']:02x}:{ev['rtype']:02x}): {trim(ev['data']).hex()}"
-                    )
                     self.last_rep = ev["data"][3]
+
+                    match self.last_rep:
+                        case 0xEB:
+                            left = int.from_bytes(
+                                ev["data"][8:10], byteorder="little", signed=True
+                            )
+                            right = int.from_bytes(
+                                ev["data"][10:12], byteorder="little", signed=True
+                            )
+                            out.append(
+                                {
+                                    "type": "rumble",
+                                    "code": "main",
+                                    # For some reason goes to 127
+                                    "strong_magnitude": left / (2**16 - 1),
+                                    "weak_magnitude": right / (2**16 - 1),
+                                }
+                            )
+                        case 0x8f:
+                            pass
+                        case _:
+                            logger.info(
+                                f"SD SET_REPORT({ev['rnum']:02x}:{ev['rtype']:02x}): {trim(ev['data']).hex()}"
+                            )
+
+                    # 410000eb 0901401f 0000 0000 fbfb
+                    # 410000eb 0901401f ff7f ff7f fbfb
                 case "output":
-                    logger.info(f"OUTPUT")
+                    logger.info(f"SD OUTPUT")
                 case _:
-                    logger.warning(f"UKN_EVENT: {ev}")
+                    logger.warning(f"SD UKN_EVENT: {ev}")
 
         return out
 
     def consume(self, events: Sequence[Event]):
-        pass
+        if not self.dev:
+            return
+
+        assert self.report
+
+        # To fix gyro to mouse in latest steam
+        # only send updates when gyro sends a timestamp
+        send = not self.sync_gyro
+        curr = time.perf_counter()
+
+        new_rep = bytearray(self.report)
+        for ev in events:
+            code = ev["code"]
+            match ev["type"]:
+                case "axis":
+                    if not self.enable_touchpad and code.startswith("touchpad"):
+                        continue
+                    if code in SD_AXIS_MAP:
+                        try:
+                            encode_axis(new_rep, SD_AXIS_MAP[code], ev["value"])
+                        except Exception:
+                            logger.warning(
+                                f"Encoding '{ev['code']}' with {ev['value']} overflowed."
+                            )
+                    # DPAD is weird
+                    match code:
+                        case "hat_x":
+                            self.state["hat_x"] = ev["value"]
+                            # patch_dpad_val(
+                            #     new_rep,
+                            #     self.ofs,
+                            #     self.state["hat_x"],
+                            #     self.state["hat_y"],
+                            # )
+                        case "hat_y":
+                            self.state["hat_y"] = ev["value"]
+                            # patch_dpad_val(
+                            #     new_rep,
+                            #     self.ofs,
+                            #     self.state["hat_x"],
+                            #     self.state["hat_y"],
+                            # )
+                        case "gyro_ts" | "accel_ts" | "imu_ts":
+                            send = True
+                            self.last_imu = time.perf_counter()
+                            self.last_imu_ts = ev["value"]
+                            # new_rep[self.ofs + 27 : self.ofs + 31] = int(
+                            #     ev["value"] / DS5_EDGE_DELTA_TIME_NS
+                            # ).to_bytes(8, byteorder="little", signed=False)[:4]
+                case "button":
+                    if code in SD_BTN_MAP:
+                        set_button(new_rep, SD_BTN_MAP[code], ev["value"])
+
+                    # # Fix touchpad click requiring touch
+                    # if code == "touchpad_touch":
+                    #     self.touchpad_touch = ev["value"]
+                    # if code == "touchpad_left":
+                    #     set_button(
+                    #         new_rep,
+                    #         SD_BTN_MAP["touchpad_touch"],
+                    #         ev["value"] or self.touchpad_touch,
+                    #     )
+                    # # Also add right click
+                    # if code == "touchpad_right":
+                    #     set_button(
+                    #         new_rep,
+                    #         SD_BTN_MAP["touchpad_touch"],
+                    #         ev["value"] or self.touchpad_touch,
+                    #     )
+                    #     set_button(
+                    #         new_rep,
+                    #         SD_BTN_MAP["touchpad_touch2"],
+                    #         ev["value"],
+                    #     )
+
+        # If the IMU breaks, smoothly re-enable the controller
+        failover = self.last_imu + MAX_IMU_SYNC_DELAY < curr
+        if self.sync_gyro and failover and not self.imu_failed:
+            self.imu_failed = True
+            logger.error(
+                f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync."
+            )
+
+        self.report = new_rep
+        # sign_crc32_inplace(self.report, DS5_INPUT_CRC32_SEED)
+        if send or failover:
+            new_rep[4:8] = self.i.to_bytes(4, byteorder="little", signed=False)
+            self.i = self.i + 1 if self.i < 0xFFFF else 0
+            self.dev.send_input_report(self.report)
+            # logger.info(self.report.hex())

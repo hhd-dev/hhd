@@ -96,6 +96,14 @@ modes:
         tags: [non-essential]
         default: |
           Allows for gyro, paddles, and has a proper QAM button.
+      handheld_mode:
+        type: bool
+        title: Handheld Mode [ALPHA]
+        tags: [non-essential]
+        default: False
+        hint: >-
+          Uses the new handheld Steam Input profile.
+          May have bugs, especially when it comes to gyro.
       noob_mode:
         type: bool
         title: Extra buttons as Keyboard/Overlay
