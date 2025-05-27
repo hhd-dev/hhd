@@ -3,7 +3,11 @@ import time
 from collections import defaultdict
 from typing import Sequence, cast
 
-from hhd.controller import Consumer, Event, Producer
+from hhd.controller import (
+    Consumer,
+    Event,
+    Producer,
+)
 from hhd.controller.lib.uhid import UhidDevice, BUS_USB
 from hhd.controller.lib.common import encode_axis, set_button
 from hhd.controller.lib.ccache import ControllerCache
@@ -100,6 +104,7 @@ class SteamdeckController(Producer, Consumer):
         self.state: dict = defaultdict(lambda: 0)
         self.rumble = False
         self.touchpad_touch = False
+        self.touchpad_left = False
         curr = time.perf_counter()
         self.start = curr
         self.touchpad_down = curr
@@ -229,7 +234,7 @@ class SteamdeckController(Producer, Consumer):
                                     "weak_magnitude": right / (2**16 - 1),
                                 }
                             )
-                        case 0x8f:
+                        case 0x8F:
                             pass
                         case _:
                             logger.info(
@@ -270,56 +275,41 @@ class SteamdeckController(Producer, Consumer):
                             logger.warning(
                                 f"Encoding '{ev['code']}' with {ev['value']} overflowed."
                             )
-                    # DPAD is weird
                     match code:
-                        case "hat_x":
-                            self.state["hat_x"] = ev["value"]
-                            # patch_dpad_val(
-                            #     new_rep,
-                            #     self.ofs,
-                            #     self.state["hat_x"],
-                            #     self.state["hat_y"],
-                            # )
-                        case "hat_y":
-                            self.state["hat_y"] = ev["value"]
-                            # patch_dpad_val(
-                            #     new_rep,
-                            #     self.ofs,
-                            #     self.state["hat_x"],
-                            #     self.state["hat_y"],
-                            # )
                         case "gyro_ts" | "accel_ts" | "imu_ts":
                             send = True
                             self.last_imu = time.perf_counter()
                             self.last_imu_ts = ev["value"]
-                            # new_rep[self.ofs + 27 : self.ofs + 31] = int(
-                            #     ev["value"] / DS5_EDGE_DELTA_TIME_NS
-                            # ).to_bytes(8, byteorder="little", signed=False)[:4]
                 case "button":
-                    if code in SD_BTN_MAP:
+                    if not self.enable_touchpad and code.startswith("touchpad"):
+                        continue
+                    if code == "touchpad_touch":
+                        self.touchpad_touch = ev["value"]
+                        if not self.touchpad_left:
+                            set_button(
+                                new_rep,
+                                SD_BTN_MAP["touchpad_touch"],
+                                ev["value"] or self.touchpad_touch,
+                            )
+                    elif code == "touchpad_left":
+                        set_button(
+                            new_rep,
+                            SD_BTN_MAP["touchpad_touch"],
+                            ev["value"] or self.touchpad_touch,
+                        )
+                        set_button(
+                            new_rep,
+                            SD_BTN_MAP["touchpad_left"],
+                            ev["value"],
+                        )
+                        encode_axis(
+                            new_rep,
+                            SD_AXIS_MAP["touchpad_force"],
+                            ev["value"],
+                        )
+                        self.touchpad_left = ev["value"]
+                    elif code in SD_BTN_MAP:
                         set_button(new_rep, SD_BTN_MAP[code], ev["value"])
-
-                    # # Fix touchpad click requiring touch
-                    # if code == "touchpad_touch":
-                    #     self.touchpad_touch = ev["value"]
-                    # if code == "touchpad_left":
-                    #     set_button(
-                    #         new_rep,
-                    #         SD_BTN_MAP["touchpad_touch"],
-                    #         ev["value"] or self.touchpad_touch,
-                    #     )
-                    # # Also add right click
-                    # if code == "touchpad_right":
-                    #     set_button(
-                    #         new_rep,
-                    #         SD_BTN_MAP["touchpad_touch"],
-                    #         ev["value"] or self.touchpad_touch,
-                    #     )
-                    #     set_button(
-                    #         new_rep,
-                    #         SD_BTN_MAP["touchpad_touch2"],
-                    #         ev["value"],
-                    #     )
 
         # If the IMU breaks, smoothly re-enable the controller
         failover = self.last_imu + MAX_IMU_SYNC_DELAY < curr

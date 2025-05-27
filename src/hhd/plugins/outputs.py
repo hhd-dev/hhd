@@ -128,9 +128,11 @@ def get_outputs(
         case "sd":
             UInputDevice.close_cached()
             Dualsense.close_cached()
+            uses_touch = touchpad == "controller" and steam_check is not False
             d = SteamdeckController(
                 name="Steam Controller (HHD)",
                 pid=0x12FF,
+                touchpad=uses_touch
             )
             producers.append(d)
             consumers.append(d)
