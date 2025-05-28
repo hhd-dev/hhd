@@ -136,6 +136,7 @@ def get_outputs(
             )
             producers.append(d)
             consumers.append(d)
+            noob_mode = conf.get("hori_steam.noob_mode", False)
             has_qam = True
         case "uinput" | "xbox_elite" | "joycon_pair" | "hori_steam":
             Dualsense.close_cached()
