@@ -41,6 +41,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         product: Sequence[str | re.Pattern] = [],
         usage_page: Sequence[int] = [],
         usage: Sequence[int] = [],
+        application: Sequence[int] = [],
         interface: int | None = None,
         btn_map: dict[int | None, dict[Button, BM]] = {},
         axis_map: dict[int | None, dict[Axis, AM]] = {},
@@ -59,6 +60,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.interface = interface
         self.report_size = report_size
 
+        self.application = application
         self.btn_map = btn_map
         self.axis_map = axis_map
         self.config_map = config_map
@@ -85,6 +87,10 @@ class GenericGamepadHidraw(Producer, Consumer):
             if not matches_patterns(d["usage_page"], self.usage_page):
                 continue
             if not matches_patterns(d["usage"], self.usage):
+                continue
+            if not matches_patterns(
+                (d["usage_page"] << 16) + d["usage"], self.application
+            ):
                 continue
             if (
                 self.interface is not None
@@ -117,6 +123,8 @@ class GenericGamepadHidraw(Producer, Consumer):
             err += f"Usage Page: {hexify(self.usage_page)}\n"
         if self.usage:
             err += f"Usage: {hexify(self.usage)}\n"
+        if self.application:
+            err += f"Application: {hexify(self.application)}\n"
         logger.error(err)
         if self.required:
             raise RuntimeError()

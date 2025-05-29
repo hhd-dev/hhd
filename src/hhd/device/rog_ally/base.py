@@ -353,8 +353,11 @@ def controller_loop(
         d_allyx = AllyXHidraw(
             vid=[ASUS_VID],
             pid=[ALLY_X_PID],
-            usage_page=[0x0F],
-            usage=[0x21],
+            application=[
+                0x000F0002,
+                0x000F0021,
+                0x00010005,
+            ],
             required=True,
         )
     else:
