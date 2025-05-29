@@ -41,6 +41,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         product: Sequence[str | re.Pattern] = [],
         usage_page: Sequence[int] = [],
         usage: Sequence[int] = [],
+        application: Sequence[int] = [],
         interface: int | None = None,
         btn_map: dict[int | None, dict[Button, BM]] = {},
         axis_map: dict[int | None, dict[Axis, AM]] = {},
