@@ -26,6 +26,7 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
 - Asus ROG
   - Ally
   - Ally X
+  - Z13 (2025; needs bazzite kernel, ROG button disables WIFI)
 - GPD Win (all model years)
   - Win 4
   - Win Mini
@@ -39,7 +40,8 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - Mini Pro
   - ONE XPLAYER
 - MSI
-  - Claw 1st Gen, 7/8 AI+ (only front buttons; suspend issues)
+  - Claw 1st Gen (for TDP, needs older bios, has wifi issues after sleep)
+  - Claw 7/8 AI+ (no gyro)
 - Zotac
   - Zotac Gaming Zone (1st gen; only front buttons)
 - Ayn
@@ -56,6 +58,7 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - KUN (only front buttons)
 - AOKZOE (No LEDs)
   - A1 Normal/Pro
+  - A1X
 - Anbernic
   - Win600 (no keyboard button yet)
 - TECNO
