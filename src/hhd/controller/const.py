@@ -20,13 +20,14 @@ AbsAxis = Literal[
     "accel_x",
     "accel_y",
     "accel_z",
-    "accel_ts",
+    "accel_ts",  # deprecated
     # Gyroscope
     # Values should be in deg/s
     "gyro_x",
     "gyro_y",
     "gyro_z",
-    "gyro_ts",
+    "gyro_ts",  # deprecated
+    "imu_ts",
     # Touchpad
     # Both width and height should go from [0, 1]. Aspect ratio is a setting.
     # It is up to the device whether to stretch, crop and how to crop (either
@@ -41,6 +42,7 @@ AbsAxis = Literal[
     "left_gyro_x",
     "left_gyro_y",
     "left_gyro_z",
+    "left_imu_ts",
     "left_touchpad_x",
     "left_touchpad_y",
     # Right
@@ -50,6 +52,7 @@ AbsAxis = Literal[
     "right_gyro_x",
     "right_gyro_y",
     "right_gyro_z",
+    "right_imu_ts",
     "right_touchpad_x",
     "right_touchpad_y",
 ]
@@ -89,8 +92,10 @@ GamepadButton = Literal[
     # Misc
     "mode",
     "share",
+    # Touchpad
     "touchpad_touch",
-    "touchpad_click",
+    "touchpad_left",
+    "touchpad_right",
 ]
 
 MouseButton = Literal["btn_left", "btn_right", "btn_middle", "btn_side", "btn_extra"]
@@ -270,10 +275,13 @@ KeyboardButton = Literal[
     "key_yen",  # 124
     # ?
     "key_unknown",  # 240,
+    # Prog for the ally
+    "key_prog1",
+    "key_prog2",
 ]
 
 Axis = AbsAxis | RelAxis
-Button = GamepadButton | KeyboardButton | MouseButton
+Button = Literal["", "keyboard"] | GamepadButton | KeyboardButton | MouseButton
 
 Configuration = Literal[
     # Misc
@@ -291,4 +299,6 @@ Configuration = Literal[
     "is_connected_right",
     "is_attached_left",
     "is_attached_right",
+    # Commands
+    "steam",
 ]

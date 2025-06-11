@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: MIT and GPL-3.0-only
 # Sourced from library python-uhid
 
 from __future__ import annotations
@@ -311,5 +311,5 @@ class UhidDevice:
         self.send_event(ev)
 
     def send_set_report_reply(self, id: int, err: int):
-        ev = struct.pack("< L L H", UHID_GET_REPORT_REPLY, id, err)
+        ev = struct.pack("< L L H", UHID_SET_REPORT_REPLY, id, err)
         self.send_event(ev)

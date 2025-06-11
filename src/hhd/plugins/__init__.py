@@ -1,29 +1,23 @@
 from .conf import Config
-from .plugin import HHDAutodetect, HHDPlugin, Context, Emitter, Event
+from .inputs import gen_gyro_state, get_gyro_config, get_gyro_state, get_touchpad_config
+from .outputs import (
+    fix_limits,
+    get_limits,
+    get_limits_config,
+    get_outputs,
+    get_outputs_config,
+)
+from .plugin import (
+    Context,
+    Emitter,
+    Event,
+    HHDAutodetect,
+    HHDLocale,
+    HHDLocaleRegister,
+    HHDPlugin,
+)
 from .settings import HHDSettings
-
-
-def get_relative_fn(fn: str):
-    """Returns the directory of a file relative to the script calling this function."""
-    import inspect
-    import os
-
-    script_fn = inspect.currentframe().f_back.f_globals["__file__"]  # type: ignore
-    dirname = os.path.dirname(script_fn)
-    return os.path.join(dirname, fn)
-
-
-def load_relative_yaml(fn: str):
-    """Returns the yaml data of a file in the relative dir provided."""
-    import inspect
-    import os
-    import yaml
-
-    script_fn = inspect.currentframe().f_back.f_globals["__file__"]  # type: ignore
-    dirname = os.path.dirname(script_fn)
-    with open(os.path.join(dirname, fn), "r") as f:
-        return yaml.safe_load(f)
-
+from .utils import get_relative_fn, load_relative_yaml
 
 __all__ = [
     "Config",
@@ -35,4 +29,15 @@ __all__ = [
     "Emitter",
     "Event",
     "Context",
+    "get_outputs_config",
+    "get_outputs",
+    "get_touchpad_config",
+    "get_gyro_config",
+    "get_gyro_state",
+    "gen_gyro_state",
+    "HHDLocale",
+    "HHDLocaleRegister",
+    "get_limits_config",
+    "get_limits",
+    "fix_limits",
 ]

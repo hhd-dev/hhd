@@ -1,0 +1,168 @@
+type: container
+tags: [non-essential]
+title: WinControls
+hint: >-
+  Specialized settings for GPD devices.
+children:
+    leds:
+      type: mode
+      title: RGB Mode
+      default: rainbow
+
+      modes:
+        disabled:
+          type: container
+          title: "Off"
+          tags: [ non-essential, rgb, disabled ]
+          hint: >-
+            Turns the LEDs off.
+
+        solid:
+          type: container
+          title: Solid
+          tags: [ non-essential, rgb, solid ]
+          hint: >-
+            Maintains the LEDs at a solid color.
+          children:
+            hue: &hue
+              type: int
+              tags: [hue, rgb]
+              title: Hue
+              min: 0
+              max: 360
+              step: 5
+              unit: "°"
+              default: 30
+
+            # Required for colors to show
+            saturation: &saturation
+              type: int
+              tags: [saturation, rgb, hidden]
+              min: 0
+              max: 100
+              default: 80
+
+            brightness: &brightness
+              type: int
+              tags: [brightness, rgb, hidden]
+              min: 0
+              max: 100
+              default: 80
+
+        pulse:
+          type: container
+          title: Pulse
+          tags: [ non-essential, rgb, pulse ]
+          hint: >-
+            Slowly pulses the LEDs as a prespecified color.
+          children:
+            hue: *hue
+            saturation: *saturation
+            brightness: *brightness
+
+        rainbow:
+          type: container
+          title: Rainbow
+          tags: [ non-essential, rainbow ]
+          hint: >-
+            Cycles through the different colors.
+    
+    mouse_mode:
+      type: multiple
+      title: Mouse Mode Mapping
+      options:
+        unchanged: "Do not change"
+        mouse: "GPD Mouse Mode"
+        wasd: "For Games"
+      default: unchanged
+
+    mouse_mode_triggers:
+      type: multiple
+      title: Mouse Mode Triggers
+      options:
+        unchanged: "Do not change"
+        gpd: "GPD (RT is Fast Mouse)"
+        steamos: "SteamOS (LT/RT are R/L Clicks)"
+      default: unchanged
+
+    l4r4:
+      type: multiple
+      title: L4/R4 Mapping
+      options:
+        unchanged: "Do not change"
+        hhd: "For HHD (F20/F21)"
+        default: "Default (Pause/PrntScr)"
+      default: hhd
+    
+    deadzones:
+      type: mode
+      title: Deadzones
+      default: unchanged
+
+      modes:
+        unchanged:
+          type: container
+          title: "Do not change"
+          tags: [ non-essential, deadzone, unchanged ]
+          hint: >-
+            Do not change the deadzones.
+
+        custom:
+          type: container
+          title: "Set Deadzones"
+          tags: [ non-essential, deadzone, custom ]
+          hint: >-
+            Use custom deadzones.
+          children:
+            ls_center:
+              type: int
+              title: Left Stick Center
+              min: -10
+              max: 10
+              default: 0
+
+            ls_boundary:
+              type: int
+              title: Left Stick Boundary
+              min: -10
+              max: 10
+              default: 0
+
+            rs_center:
+              type: int
+              title: Right Stick Center
+              min: -10
+              max: 10
+              default: 0
+
+            rs_boundary:
+              type: int
+              title: Right Stick Boundary
+              min: -10
+              max: 10
+              default: 0
+    
+    vibration:
+      type: multiple
+      title: Vibration Strength
+      tags: [ non-essential, vibration, ordinal ]
+      options:
+        "off": "Off"
+        medium: Medium
+        high: High
+      default: medium
+    
+    fwver:
+      type: display
+      title: Firmware
+      tags: [ non-essential, slim ]
+    
+    status:
+      type: display
+      title: Error
+      tags: [ non-essential, slim ]
+    
+    apply:
+      type: action
+      title: Apply Settings
+      tags: [ non-essential, apply ]

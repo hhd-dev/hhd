@@ -1,0 +1,50 @@
+type: mode
+title: Motion Axis
+
+default: default
+tags: [ non-essential ]
+modes:
+  default:
+    type: container
+    title: Default
+    hint: >-
+      The default axis loaded for this device.
+  remapped:
+    type: container
+    title: Override
+    hint: >-
+      Remap and invert the axis of your device. If the axis of your device are
+      wrong, please submit a picture or a text version of the following.
+    children:
+      manufacturer:
+        type: display
+        title: Manufacturer
+      product:
+        type: display
+        title: Product
+      x_axis: &axis
+        type: multiple
+        options:
+          x: "X"
+          y: "Y"
+          z: "Z"
+        title: Axis X
+        default: "x"
+      x_invert: &invert
+        type: bool
+        default: False
+        title: Invert X
+      y_axis:
+        <<: *axis
+        title: Axis Y
+        default: "y"
+      y_invert:
+        <<: *invert
+        title: Invert Y
+      z_axis:
+        <<: *axis
+        title: Axis Z
+        default: "z"
+      z_invert:
+        <<: *invert
+        title: Invert Z

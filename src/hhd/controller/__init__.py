@@ -1,4 +1,19 @@
-from .base import Consumer, Event, Producer, can_read
+from .base import (
+    Consumer,
+    Event,
+    KeyboardWrapper,
+    Multiplexer,
+    Producer,
+    TouchpadCorrection,
+    TouchpadCorrectionType,
+    can_read,
+    correct_touchpad,
+    SpecialEvent,
+    ControllerEmitter,
+    DEBUG_MODE,
+    RgbMode,
+    RgbCapabilities,
+)
 from .const import Axis, Button, Configuration
 
 __all__ = [
@@ -9,4 +24,14 @@ __all__ = [
     "Consumer",
     "Producer",
     "can_read",
+    "TouchpadCorrectionType",
+    "TouchpadCorrection",
+    "correct_touchpad",
+    "KeyboardWrapper",
+    "Multiplexer",
+    "SpecialEvent",
+    "ControllerEmitter",
+    "DEBUG_MODE",
+    "RgbMode",
+    "RgbCapabilities",
 ]

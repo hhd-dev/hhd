@@ -1,0 +1,85 @@
+type: container
+tags: [lgc]
+title: Legion Controllers
+hint: >-
+  Allows for configuring the Legion controllers using the built in firmware
+  commands and enabling emulation modes for various controller types.
+
+children:
+  xinput:
+    type: mode
+    tags: [lgc_xinput]
+    title: Emulation Mode (X-Input)
+    hint: >-
+      Emulate different controller types when the Legion Controllers are in X-Input mode.
+
+  #
+  # Common settings
+  #
+  imu:
+    type: mode
+    title: Controller Motions Device
+    default: left
+    modes:
+      disabled:
+        type: container
+        title: Disabled
+      left:
+        type: container
+        title: Left Controller
+      right:
+        type: container
+        title: Right Controller
+      both:
+        type: container
+        title: Both Controllers
+        hint: >-
+          The main controller uses the right controller's motion sensor, and a 
+          secondary controller is created for the left controller's motion sensor.
+
+  swap_legion_v2:
+    type: bool
+    title: Swap Legion with Menu/View
+    tags: [ non-essential ]
+    default: False
+  
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+    
+  m2_to_mute:
+    type: bool
+    title: M2 As Xbox Share/Dualsense Mic Mute
+    tags: [ non-essential ]
+    hint: >-
+      Maps the M2 to the mute button on Dualsense and the share button on the
+      Xbox Elite controller.
+    default: False
+  
+  select_reboots:
+    type: bool
+    title: Hold View to Reboot
+    tags: [ non-essential ]
+    default: True
+
+  touchpad:
+
+  shortcuts:
+    type: bool
+    title: Enable Shortcuts Controller
+    tags: [ non-essential ]
+    hint: >-
+      When in other modes (dinput, dual dinput, and fps), enable a shortcuts 
+      controller to restore Guide, QAM, and shortcut functionality.
+    default: True
+
+  factory_reset:
+    type: action
+    title: Factory Reset Controllers
+    tags: [ non-essential, verify ]
+    hint: >-
+      Resets the controllers to factory settings.

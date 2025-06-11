@@ -1,0 +1,128 @@
+color:
+  hue: &hue
+    type: int
+    tags: [hue, rgb]
+    title: Hue
+    min: 0
+    max: 360
+    step: 5
+    unit: "°"
+    default: 30
+  saturation: &saturation
+    type: int
+    tags: [saturation, rgb]
+    title: Saturation
+    min: 0
+    max: 100
+    step: 10
+    unit: "%"
+    default: 100
+  brightness: &brightness
+    type: int
+    tags: [brightness, rgb]
+    title: Brightness
+    min: 0
+    max: 100
+    step: 10
+    unit: "%"
+    default: 50
+
+brightnessd:
+  brightnessd: &brightnessd
+    type: multiple
+    title: Brightness
+    tags: [non-essential, ordinal]
+    options:
+      # off: "Off"
+      low: "Low"
+      medium: "Medium"
+      high: "High"
+    default: medium
+
+oxp:
+  mode:
+    type: multiple
+    title: Stick Style
+    tags: [non-essential]
+    default: classic
+    options:
+      monster_woke: "Monster Woke"
+      flowing: "Flowing Light"
+      sunset: "Sunset Afterglow"
+      neon: "Colorful Neon"
+      dreamy: "Dreamy"
+      cyberpunk: "Cyberpunk"
+      colorful: "Colorful"
+      aurora: "Aurora"
+      sun: "Warm Sun"
+      classic: "OXP Classic"
+
+  brightnessd: *brightnessd
+
+oxp-secondary:
+  hue:
+    <<: *hue
+    title: Secondary
+  
+  secondary:
+    type: bool
+    title: Enable Secondary
+    tags: [non-essential]
+    default: true
+
+dual:
+  hue:
+    <<: *hue
+    default: 60
+  hue2:
+    <<: *hue
+    title: Secondary
+    tags: [hue2, rgb]
+  saturation:
+    <<: *saturation
+  brightness:
+    <<: *brightness
+
+speed:
+  speed:
+    type: int
+    tags: [speed]
+    title: Speed
+    min: 0
+    max: 100
+    unit: "%"
+    step: 10
+    default: 50
+
+speedd:
+  speedd:
+    type: multiple
+    title: Speed
+    tags: [non-essential, ordinal]
+    options:
+      # off: "Off"
+      low: "Low"
+      medium: "Medium"
+      high: "High"
+    default: medium
+
+brightness:
+  brightness:
+    type: int
+    tags: [brightness]
+    title: Brightness
+    min: 0
+    max: 100
+    step: 10
+    unit: "%"
+    default: 50
+
+direction:
+  direction:
+    type: multiple
+    title: Direction
+    tags: [non-essential, ordinal]
+    options:
+      left: "Left"
+      right: "Right"
+    default: left

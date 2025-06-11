@@ -1,0 +1,31 @@
+name: Publish to AUR
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy_aur:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create PKGBUILD dir
+        run: mkdir -p ./pkg/
+      - name: Build PKGBUILD
+        run: sed "s/pkgver=VERSION/pkgver=$(cat pyproject.toml | grep -E 'version = "[0-9\.]+"' -o | grep -E "[0-9\.]+" -o)/" PKGBUILD > ./pkg/PKGBUILD
+      - name: Publish AUR package
+        uses: KSXGitHub/github-actions-deploy-aur@v2.7.0
+        with:
+          pkgname: hhd
+          pkgbuild: ./pkg/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: manual update
+          allow_empty_commits: false
+          ssh_keyscan_types: rsa,ecdsa,ed25519
+          updpkgsums: true

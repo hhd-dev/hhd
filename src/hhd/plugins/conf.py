@@ -131,10 +131,15 @@ class Config:
 
             d[seq[-1]] = val
             if isinstance(self._conf, MutableMapping):
+                init = deepcopy(self._conf)
                 parse_conf(cont, self._conf)
+                # FIXME: verify no regressions
+                if init != self._conf:
+                    self._updated = True
             else:
                 self._conf = cont
-        self.updated = True
+                if self._conf != cont:
+                    self._updated = True
 
     def __contains__(self, key: str | tuple[str, ...]):
         with self._lock:
@@ -170,9 +175,22 @@ class Config:
             return self[key].to(type(default))
         except KeyError:
             return default
+        except TypeError:
+            return default
+
+    def get_action(self, key):
+        if key not in self:
+            return False
+        tmp = bool(self[key].conf)
+        if tmp:
+            self[key] = False
+        return tmp
 
     def to(self, t: type[A]) -> A:
         return cast(t, self.conf)
+
+    def copy(self):
+        return Config([self.conf])
 
     @property
     def conf(self):

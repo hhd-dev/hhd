@@ -1,0 +1,27 @@
+rgb:
+  handheld:
+    type: container
+    title: RGB Settings
+    tags: [ hide-title ]
+    children:
+      mode:
+        type: mode
+        title: RGB Mode
+        modes:
+      controller:
+        title: Controller RGB
+        type: display
+        tags: [ non-essential, controller-disclaimer, info ]
+        default: >-
+          Dualsense controls the LEDs.
+          Switch to Xbox or disable Dualsense LEDs.
+
+hhd:
+  settings:
+    type: container
+
+    children:
+      rgb:
+        type: bool
+        title: "Enable RGB support."
+        default: True

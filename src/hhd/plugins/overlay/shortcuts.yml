@@ -1,0 +1,117 @@
+controller:
+  type: container
+  tags: [non-essential]
+  title: "All Controllers"
+  children:
+    xbox_b:
+      type: multiple
+      title: "Xbox or View + B (Press)"
+      options: &shortcuts
+        disabled: "Disabled"
+        keyboard: Steam Keyboard
+        steam_qam: "Steam Side Menu"
+        steam_expanded: "Steam Overlay"
+        hhd_qam: "HHD Side Menu"
+        hhd_expanded: "HHD Overlay"
+        # screenshot: "Screenshot"
+      # default: hhd_qam
+      default: disabled
+    xbox_y:
+      type: multiple
+      title: "Xbox or View + Y"
+      options: 
+        <<: *shortcuts
+        disconnect: Disconnect Controller
+      # default: disconnect
+      default: disabled
+touchscreen:
+  type: container
+  tags: [non-essential]
+  title: "Touchscreen"
+  children:
+    bottom:
+      type: multiple
+      title: "↑ Swipe Up"
+      options: *shortcuts
+      default: keyboard
+    right_top:
+      type: multiple
+      title: "← Swipe Right Side (Top)"
+      options: *shortcuts
+      default: hhd_qam
+    right_bottom:
+      type: multiple
+      title: "← Swipe Right Side (Bottom)"
+      options: *shortcuts
+      default: steam_qam
+    left_top:
+      type: multiple
+      title: "→ Swipe Left Side (Top)"
+      options: *shortcuts
+      default: hhd_expanded
+    left_bottom:
+      type: multiple
+      title: "→ Swipe Left Side (Bottom)"
+      options: *shortcuts
+      default: steam_expanded
+    top:
+      type: multiple
+      title: "↓ Swipe Down"
+      options: *shortcuts
+      default: disabled
+
+    orientation:
+      type: mode
+      title: "Orientation Correction"
+      default: auto
+      modes:
+        auto:
+          title: "Auto"
+          type: container
+        manual:
+          title: "Manual"
+          type: container
+          children:
+            dmi:
+              type: display
+              title: "Device"
+              tags: [slim]
+            portrait:
+              type: bool
+              title: "Portrait"
+              default: false
+            flip_x:
+              type: bool
+              title: "Flip Left-Right"
+              default: false
+            flip_y:
+              type: bool
+              title: "Flip Top-Bottom"
+              default: false
+keyboard:
+  type: container
+  tags: [non-essential]
+  title: "Keyboard (Gaming Only)"
+  children:
+    meta_press:
+      type: multiple
+      title: "Start (Meta) Press"
+      options: *shortcuts
+      # default: steam_qam
+      default: disabled
+    meta_hold:
+      type: multiple
+      title: "Start (Meta) Hold"
+      options: *shortcuts
+      # default: steam_expanded
+      default: disabled
+    ctrl_3:
+      type: multiple
+      title: "Ctrl + 3"
+      options: *shortcuts
+      default: hhd_expanded
+    ctrl_4:
+      type: multiple
+      title: "Ctrl + 4"
+      options: *shortcuts
+      default: hhd_qam

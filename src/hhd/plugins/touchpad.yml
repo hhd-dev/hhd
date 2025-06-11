@@ -1,0 +1,140 @@
+type: mode
+tags: [touchpad]
+title: Touchpad Emulation
+hint: >-
+  Use an emulated touchpad.
+  Part of the controller if it is supported (e.g., Dualsense) or a virtual
+  one if not.
+
+default: emulation
+modes:
+  #
+  # No emulation
+  #
+  disabled:
+    type: container
+    title: Disabled
+    hint: >-
+      Does not modify the touchpad. Short + holding presses will not work
+      within gamescope.
+  #
+  # Virtual emulation
+  #
+  emulation:
+    type: container
+    title: Virtual
+    tags: [non-essential]
+    hint: >-
+      Adds an emulated touchpad. This touchpad is meant for use in gamescope
+      and has left, right click support by default.
+      However, it causes issues in desktop mode, and it doesnt allow dragging
+      files. Therefore, it will autodisable in desktop.
+      
+    children:
+      desktop_disable:
+        type: bool
+        title: Disable on Desktop
+        hint: >-
+          Touchpad emulation will automatically be disabled when not in gamemode.
+          Specifically, steam will be periodically be checked to be running in
+          gamepad mode and if not, touchpad emulation will be disabled.
+        default: True
+
+      short:
+        type: multiple
+        title: Short Action
+        tags: [advanced]
+        hint: >-
+          Maps short touches (less than 0.2s) to a virtual touchpad button.
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "left_click"
+      hold:
+        type: multiple
+        title: Hold Action
+        tags: [advanced]
+        hint: >-
+          Maps long touches (more than 2s) to a virtual touchpad button.
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "right_click"
+  #
+  # Controller emulation
+  #
+  controller:
+    type: container
+    title: Controller
+    tags: [non-essential]
+    hint: >-
+      Uses the touchpad of the emulated controller (if it exists).
+      Otherwise, the touchpad remains unmapped (will still show up in the system).
+      Meant to be used as steam input, so short press is unassigned by
+      default and long press simulates trackpad click.
+    children:
+      desktop_disable:
+        type: bool
+        title: Disable on Desktop
+        hint: >-
+          Touchpad emulation will automatically be disabled when not in gamemode.
+          Specifically, steam will be periodically be checked to be running in
+          gamepad mode and if not, touchpad emulation will be disabled.
+        default: True
+
+      correction:
+        type: multiple
+        title: Location
+        hint: >-
+          Controls the placement of the real touchpad to the virtual one, using
+          what steam expects. In Steam, the "Left" touchpad maps to the left
+          half, the "Right" touchpad maps to the right half, and "Center" maps
+          to the whole touchpad.
+          Therefore, the virtual touchpad is cropped to the left side for left,
+          the right side for right, and expanded in the center for center.
+          This means when set to center, half of the left touchpad is left and
+          half of the right is right.
+          "Stretch" stretches the touchpad to the whole dualsense surface.
+        options:
+          right: "Right"
+          center: "Center"
+          left: "Left"
+          stretch: "Stretch"
+          # crop_center: "Crop Center (Old)"
+          # crop_start: "Crop Start (Old)"
+          # crop_end: "Crop End (Old)"
+          # contain_start: "Contain Start (Old)"
+          # contain_end: "Contain End (Old)"
+          # contain_center: "Contain Center (Old)"
+        default: right
+
+      short:
+        type: multiple
+        title: Short Action
+        tags: [advanced]
+        hint: >-
+          Maps short touches (less than 0.2s) to a touchpad action.
+          Dualsense uses a physical press for left and a double tap for
+          right click (support for double tap varies; enable "Tap to Click"
+          in your desktop's touchpad settings).
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "disabled"
+
+      hold:
+        type: multiple
+        title: Hold Action
+        hint: >-
+          Maps long touches (more than 2s) to a touchpad action.
+          Dualsense uses a physical press for left and a double tap for
+          right click (support for double tap varies; enable "Tap to Click"
+          in your desktop's touchpad settings).
+        options:
+          disabled: Disabled
+          left_click: Left Click
+          right_click: Right Click
+        default: "left_click"

@@ -1,0 +1,73 @@
+type: container
+tags: [lgc]
+title: OneXPlayer Controller
+hint: >-
+  Allows for configuring your handheld's controller to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse your device's features.
+
+  extra_buttons:
+    type: multiple
+    tags: [ non-essential ]
+    title: "Keyboard and Turbo buttons are:"
+    default: combo_hhd
+    options:
+      oem: Keyboard, Combo
+      separate: Steam Menu, HHD
+      combo_hhd: Combo, HHD
+      combo: Combo, Combo
+  
+  swap_face:
+    type: bool
+    tags: [ non-essential ]
+    title: Swap View/Menu and Xbox/Kbd
+    default: False
+
+  turbo_reboots:
+    type: bool
+    tags: [ non-essential ]
+    default: True
+    title: Holding Turbo Reboots
+
+  volume_reverse:
+    type: bool
+    tags: [ non-essential ]
+    title: Reverse Volume Buttons
+    hint: >-
+      Reverse the volume buttons of the X1 style devices to match other tablets.
+    default: False
+
+  #
+  # Common settings
+  #
+  imu:
+    type: bool
+    title: Motion Support
+    hint: >-
+      Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
+    default: True
+
+  imu_hz:
+    type: discrete
+    title: Motion Hz
+    tags: [ non-essential ]
+    hint: >-
+      Sets the sampling frequency for the IMU.
+    options: [100, 200, 400, 800]
+    default: 100
+  
+  imu_axis:
+
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False

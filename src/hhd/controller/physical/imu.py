@@ -1,10 +1,10 @@
+import logging
+import os
 import select
+from threading import Event as TEvent, Thread
 from typing import Any, Generator, Literal, NamedTuple, Sequence
 
-from hhd.controller import Axis, Event, Axis, Producer
-import os
-
-import logging
+from hhd.controller import Axis, Event, Producer
 
 logger = logging.getLogger(__name__)
 
@@ -30,21 +30,37 @@ class DeviceInfo(NamedTuple):
     sysfs: str
 
 
-ACCEL_MAPPINGS: dict[str, tuple[Axis, float | None]] = {
-    "accel_x": ("accel_z", 3),
-    "accel_y": ("accel_x", 3),
-    "accel_z": ("accel_y", 3),
-    "timestamp": ("accel_ts", None),
+ACCEL_NAMES = ["accel_3d"]
+GYRO_NAMES = ["gyro_3d"]
+# FIXME: this :00 needs to be cleaned up
+IMU_NAMES = ["bmi323-imu", "BMI0160", "BMI0260", "i2c-10EC5280:00", "i2c-BOSC0260:00"]
+SYSFS_TRIG_CONFIG_DIR = os.environ.get("HHD_MOUNT_TRIG_SYSFS", "/var/trig_sysfs_config")
+
+ACCEL_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+    "accel_x": ("accel_z", "accel", 1, None),
+    "accel_y": ("accel_x", "accel", 1, None),
+    "accel_z": ("accel_y", "accel", 1, None),
+    "timestamp": ("accel_ts", None, 1, None),
 }
-GYRO_MAPPINGS: dict[str, tuple[Axis, float | None]] = {
-    "anglvel_x": ("gyro_z", None),
-    "anglvel_y": ("gyro_x", None),
-    "anglvel_z": ("gyro_y", None),
-    "timestamp": ("gyro_ts", None),
+GYRO_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+    "anglvel_x": ("gyro_z", "anglvel", 1, None),
+    "anglvel_y": ("gyro_x", "anglvel", 1, None),
+    "anglvel_z": ("gyro_y", "anglvel", 1, None),
+    "timestamp": ("imu_ts", None, 1, None),
+}
+
+BMI_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
+    "accel_x": ("accel_z", "accel", -1, None),
+    "accel_y": ("accel_x", "accel", 1, None),
+    "accel_z": ("accel_y", "accel", -1, None),
+    "anglvel_x": ("gyro_z", "anglvel", -1, None),
+    "anglvel_y": ("gyro_x", "anglvel", 1, None),
+    "anglvel_z": ("gyro_y", "anglvel", -1, None),
+    "timestamp": ("imu_ts", None, 1, None),
 }
 
 
-def find_sensor(sensor: str):
+def find_sensor(sensors: Sequence[str]):
     IIO_BASE_DIR = "/sys/bus/iio/devices/"
 
     for d in os.listdir(IIO_BASE_DIR):
@@ -58,13 +74,13 @@ def find_sensor(sensor: str):
             continue
 
         with open(name_fn, "r") as f:
-            name = f.read()
+            name = f.read().strip()
 
-        if name.strip() == sensor:
-            logger.info(f"Found device '{sensor}' at\n{sensor_dir}")
-            return sensor_dir
+        if any(sensor in name for sensor in sensors):
+            logger.info(f"Found device '{name}' at\n{sensor_dir}")
+            return sensor_dir, name
 
-    return None
+    return None, None
 
 
 def write_sysfs(dir: str, fn: str, val: Any):
@@ -72,17 +88,23 @@ def write_sysfs(dir: str, fn: str, val: Any):
         f.write(str(val))
 
 
-def read_sysfs(dir: str, fn: str):
-    with open(os.path.join(dir, fn), "r") as f:
-        return f.read().strip()
+def read_sysfs(dir: str, fn: str, default: str | None = None):
+    try:
+        with open(os.path.join(dir, fn), "r") as f:
+            return f.read().strip()
+    except Exception as e:
+        if default is not None:
+            return default
+        raise e
 
 
 def prepare_dev(
     sensor_dir: str,
     type: str,
-    attr: str,
-    freq: int | None,
-    mappings: dict[str, tuple[Axis, float | None]],
+    attr: Sequence[str],
+    freq: Sequence[int] | None,
+    scales: Sequence[str | None] | None,
+    mappings: dict[str, tuple[Axis, str | None, float, float | None]],
     update_trigger: bool,
 ) -> DeviceInfo | None:
     # Prepare device buffer
@@ -92,9 +114,42 @@ def prepare_dev(
 
     # Set sampling frequency
     if freq is not None:
-        sfn = os.path.join(sensor_dir, f"in_{attr}_sampling_frequency")
-        if os.path.isfile(sfn):
-            write_sysfs(sensor_dir, f"in_{attr}_sampling_frequency", freq)
+        for a, f in zip(attr, freq):
+            sfn = os.path.join(sensor_dir, f"in_{a}_sampling_frequency")
+            if os.path.isfile(sfn):
+                try:
+                    write_sysfs(sensor_dir, f"in_{a}_sampling_frequency", f)
+                except Exception as e:
+                    logger.error(f"Could not set sampling frequency for {a}:\n{e}")
+                    try:
+                        # Select closest higher frequency instead
+                        sfn = os.path.join(
+                            sensor_dir, f"in_{a}_sampling_frequency_available"
+                        )
+                        if os.path.isfile(sfn):
+                            freqs = map(
+                                float,
+                                read_sysfs(
+                                    sensor_dir, f"in_{a}_sampling_frequency_available"
+                                ).split(),
+                            )
+                            f = next((x for x in freqs if x >= f), None)
+                            if f:
+                                write_sysfs(sensor_dir, f"in_{a}_sampling_frequency", f)
+                                logger.info(
+                                    f"Selected higher sampling frequency {f} for {a}"
+                                )
+                    except Exception as e:
+                        logger.error(f"Could not set higher sampling frequency for {a}:\n{e}")
+
+    # Set scale
+    if scales is not None:
+        for a, s in zip(attr, scales):
+            if not s:
+                continue
+            sfn = os.path.join(sensor_dir, f"in_{a}_scale")
+            if os.path.isfile(sfn):
+                write_sysfs(sensor_dir, f"in_{a}_scale", s)
 
     # Set trigger
     if update_trigger:
@@ -139,20 +194,39 @@ def prepare_dev(
 
         # Prepare scan metadata
         if fn in mappings:
-            ax, max_val = mappings[fn]
+            ax, atr, scale_usr, max_val = mappings[fn]
+            if atr:
+                offset = float(read_sysfs(sensor_dir, f"in_{atr}_offset", "0"))
+                try:
+                    scale = float(read_sysfs(sensor_dir, f"in_{atr}_scale"))
+                except Exception as e:
+                    scales = read_sysfs(sensor_dir, f"in_{atr}_scale_available")
+                    scale = float(scales.split(" ", 1)[0])
+                    write_sysfs(sensor_dir, f"in_{atr}_scale", scale)
+
+                    logger.warning(
+                        f"Could not read scale for {atr}, setting it to first choice {scale} (avail: {scales}). Error:\n{e}"
+                    )
+            else:
+                offset = 0
+                scale = 1
+            scale *= scale_usr
             write_sysfs(sensor_dir, f"scan_elements/in_{fn}_en", 1)
         else:
             ax = max_val = None
-
-        if fn != "timestamp":
-            offset = float(read_sysfs(sensor_dir, f"in_{attr}_offset"))
-            scale = float(read_sysfs(sensor_dir, f"in_{attr}_scale"))
-        else:
             offset = 0
             scale = 1
 
         axis[idx] = ScanElement(
-            ax, endianness, signed, bits, storage_bits, shift, scale, offset, max_val
+            ax,
+            endianness,
+            signed,
+            bits,
+            storage_bits,
+            shift,
+            scale,
+            offset,
+            max_val,
         )
     write_sysfs(sensor_dir, "buffer/enable", 1)
 
@@ -177,33 +251,44 @@ def get_size(dev: DeviceInfo):
 class IioReader(Producer):
     def __init__(
         self,
-        type: str,
-        attr: str,
-        freq: int | None,
-        mappings: dict[str, tuple[Axis, float | None]],
+        types: Sequence[str],
+        attr: Sequence[str],
+        freq: Sequence[int] | None,
+        scale: Sequence[str | None] | None,
+        mappings: dict[str, tuple[Axis, str | None, float, float | None]],
         update_trigger: bool = False,
+        legion_fix: bool = False,
     ) -> None:
-        self.type = type
+        self.types = types
         self.attr = attr
         self.freq = freq
+        self.scale = scale
         self.mappings = mappings
         self.update_trigger = update_trigger
-        self.fd = 0
+        self.fd = -1
+        self.dev = None
+        self.legion_fix = legion_fix
 
     def open(self):
-        sens_dir = find_sensor(self.type)
-        if not sens_dir:
+        sens_dir, type = find_sensor(self.types)
+        if not sens_dir or not type:
             return []
 
         dev = prepare_dev(
             sens_dir,
-            self.type,
+            type,
             self.attr,
             self.freq,
+            self.scale,
             self.mappings,
             self.update_trigger,
         )
+
         if not dev:
+            logger.error(
+                "IMU not found for this device, gyro will not work.\n"
+                + "You need to install the IMU driver for your device, see the readme."
+            )
             return []
 
         self.buf = None
@@ -215,12 +300,14 @@ class IioReader(Producer):
         return [self.fd]
 
     def close(self, exit: bool):
-        if self.fd:
-            os.close(self.fd)
-            self.fd = 0
-        if self.dev:
-            close_dev(self.dev)
-            self.dev = None
+        try:
+            if self.dev:
+                close_dev(self.dev)
+                self.dev = None
+        finally:
+            if self.fd != -1:
+                os.close(self.fd)
+                self.fd = -1
         return True
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
@@ -247,10 +334,10 @@ class IioReader(Producer):
             if se.axis:
                 # TODO: Implement parsing iio fully, by adding shifting and cutoff
                 d = data[ofs >> 3 : (ofs >> 3) + (se.storage_bits >> 3)]
-                d = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
+                d_raw = int.from_bytes(d, byteorder=se.endianness, signed=se.signed)
                 # d = d >> se.shift
                 # d &= (1 << se.bits) - 1
-                d = d * se.scale + se.offset
+                d = d_raw * se.scale + se.offset
 
                 if se.max_val is not None:
                     if d > 0:
@@ -259,13 +346,27 @@ class IioReader(Producer):
                         d = max(d, -se.max_val)
 
                 if se.axis not in self.prev or self.prev[se.axis] != d:
-                    out.append(
-                        {
-                            "type": "axis",
-                            "code": se.axis,
-                            "value": d,
-                        }
-                    )
+                    if not (
+                        self.legion_fix and (d_raw == -124 or d_raw // 1000 == -125)
+                    ):
+                        # Legion go likes to overflow to -124 in both directions
+                        # skip this number to avoid jitters
+                        # With a kernel patch to allow higher resolution, this happens
+                        # with the following numbers
+                        # 4d 95 f3 c7: -124715
+                        # 33 97 f3 c7: -124718
+                        # Reported by hhd: -124422, -124419
+                        # Legion go axis tester
+                        # import time
+                        # if se.axis == "gyro_x":
+                        #     print(f"{time.time() % 1:.3f} {d_raw}")
+                        out.append(
+                            {
+                                "type": "axis",
+                                "code": se.axis,
+                                "value": d,
+                            }
+                        )
                     self.prev[se.axis] = d
             ofs += se.storage_bits
 
@@ -277,13 +378,41 @@ class IioReader(Producer):
 
 
 class AccelImu(IioReader):
-    def __init__(self, freq=None) -> None:
-        super().__init__("accel_3d", "accel", freq, ACCEL_MAPPINGS)
+    def __init__(self, freq=None, scale=None) -> None:
+        super().__init__(
+            ACCEL_NAMES, ["accel"], [freq] if freq else None, [scale], ACCEL_MAPPINGS
+        )
 
 
 class GyroImu(IioReader):
-    def __init__(self, freq=None) -> None:
-        super().__init__("gyro_3d", "anglvel", freq, GYRO_MAPPINGS)
+    def __init__(
+        self, freq=None, scale=None, map=None, legion_fix: bool = False
+    ) -> None:
+        super().__init__(
+            GYRO_NAMES,
+            ["anglvel"],
+            [freq] if freq else None,
+            [scale],
+            map if map else GYRO_MAPPINGS,
+            legion_fix=legion_fix,
+        )
+
+
+class CombinedImu(IioReader):
+    def __init__(
+        self,
+        freq: int = 400,
+        map: dict[str, tuple[Axis, str | None, float, float | None]] | None = None,
+        gyro_scale: str | None = None,
+        accel_scale: str | None = None,
+    ) -> None:
+        super().__init__(
+            IMU_NAMES,
+            ["anglvel", "accel"],
+            [freq, freq] if freq else None,
+            [gyro_scale, accel_scale],
+            map if map is not None else BMI_MAPPINGS,
+        )
 
 
 class ForcedSampler:
@@ -296,7 +425,7 @@ class ForcedSampler:
         self.fds = []
         self.paths = []
         for d in self.devices:
-            f = find_sensor(d)
+            f, _ = find_sensor([d])
             if not f:
                 continue
             if "accel" in d:
@@ -326,60 +455,267 @@ class ForcedSampler:
             os.close(fd)
 
 
-# class SoftwareTrigger(IioReader):
-#     BEGIN_ID: int = 72
-#     ATTEMPTS: int = 3
+class HrtimerTrigger(IioReader):
+    ACCEL_NAMES = ACCEL_NAMES
+    GYRO_NAMES = GYRO_NAMES
+    IMU_NAMES = IMU_NAMES
 
-#     def __init__(self, devices: Sequence[str]) -> None:
-#         self.devices = devices
-#         self.old_triggers = {}
+    def __init__(
+        self,
+        freq: int,
+        devices: Sequence[Sequence[str]] = [IMU_NAMES, GYRO_NAMES, ACCEL_NAMES],
+    ) -> None:
+        self.freq = freq
+        self.devices = devices
+        self.old_triggers = {}
+        self.opened = False
 
-#     def open(self):
-#         for id in range(
-#             SoftwareTrigger.BEGIN_ID,
-#             SoftwareTrigger.BEGIN_ID + SoftwareTrigger.ATTEMPTS,
-#         ):
-#             try:
-#                 with open(
-#                     "/sys/bus/iio/devices/iio_sysfs_trigger/add_trigger", "w"
-#                 ) as f:
-#                     f.write(str(id))
-#                 break
-#             except Exception as e:
-#                 print(e)
-#         else:
-#             logger.error(f"Failed to create software trigger.")
-#             return
-#         self.id = id
+    def open(self):
+        import subprocess
 
-#         self.old_triggers = {}
-#         for d in self.devices:
-#             s = find_sensor(d)
-#             if not s:
-#                 continue
-#             with open(os.path.join(s, "buffer/enable"), "w") as f:
-#                 f.write("0")
-#             trig_fn = os.path.join(s, "trigger/current_trigger")
-#             with open(trig_fn, "r") as f:
-#                 self.old_triggers[trig_fn] = f.read()
-#             with open(trig_fn, "w") as f:
-#                 f.write(f"sysfstrig{self.id}")
+        # Initialize modules
+        try:
+            subprocess.run(["modprobe", "industrialio-sw-trigger"], capture_output=True)
+            subprocess.run(["modprobe", "iio-trig-sysfs"], capture_output=True)
+            subprocess.run(["modprobe", "iio-trig-hrtimer"], capture_output=True)
+            os.makedirs(SYSFS_TRIG_CONFIG_DIR, exist_ok=True)
+            subprocess.run(
+                ["mount", "-t", "configfs", "none", SYSFS_TRIG_CONFIG_DIR],
+                capture_output=True,
+            )
+        except Exception as e:
+            logger.warning(
+                f"Could not initialize software hrtimer. It may be initialized. Error:\n{e}"
+            )
 
-#     def close(self):
-#         for trig, name in self.old_triggers.items():
-#             try:
-#                 with open(trig, "w") as f:
-#                     f.write(name)
-#             except Exception:
-#                 logger.error(f"Could not restore original trigger:\n{trig} to {name}")
+        # Create trigger
+        try:
+            trig_dir = os.path.join(SYSFS_TRIG_CONFIG_DIR, "iio/triggers/hrtimer/hhd")
+            if not os.path.isdir(trig_dir):
+                os.makedirs(trig_dir, exist_ok=True)
+        except Exception as e:
+            logger.error(
+                f"Could not create 'hhd' trigger. IMU will not work. Error:\n{e}"
+            )
+            return False
+        self.opened = True
 
-#         try:
-#             with open(
-#                 "/sys/bus/iio/devices/iio_sysfs_trigger/remove_trigger", "w"
-#             ) as f:
-#                 f.write(str(self.id))
-#         except Exception:
-#             logger.error(f"Could not delete sysfs trigger with id {self.id}")
+        # Find trigger
+        trig = None
+        for fn in os.listdir("/sys/bus/iio/devices"):
+            if not fn.startswith("trigger"):
+                continue
+            with open(os.path.join("/sys/bus/iio/devices", fn, "name"), "r") as f:
+                if f.read().strip() == "hhd":
+                    trig = fn
+                    break
+        if not trig:
+            logger.warning("Imu timer trigger not found, IMU will not work.")
+            return False
+
+        # Set frequency
+        try:
+            with open(
+                os.path.join("/sys/bus/iio/devices", trig, "sampling_frequency"), "w"
+            ) as f:
+                f.write(str(self.freq))
+        except Exception as e:
+            logger.warning("Could not set sampling frequency, IMU will not work.")
+            return False
+
+        self.old_triggers = {}
+        found = False
+        for d in self.devices:
+            s, _ = find_sensor(d)
+            if not s:
+                continue
+
+            buff_fn = os.path.join(s, "buffer/enable")
+            trig_fn = os.path.join(s, "trigger/current_trigger")
+            with open(buff_fn, "w") as f:
+                f.write("0")
+            with open(trig_fn, "r") as f:
+                self.old_triggers[trig_fn] = (f.read(), buff_fn)
+            with open(trig_fn, "w") as f:
+                f.write(f"hhd")
+            found = True
+
+        if not found:
+            self.close()
+            logger.error(
+                "IMU not found for this device, gyro will not work.\n"
+                + "You need to install the IMU driver for your device, see the readme."
+            )
+            return False
+
+        return True
+
+    def close(self):
+        if not self.opened:
+            return
+        self.opened = False
+
+        for trig, (name, buff) in self.old_triggers.items():
+            try:
+                with open(buff, "w") as f:
+                    f.write("0")
+                with open(trig, "w") as f:
+                    f.write(name)
+            except Exception:
+                logger.error(f"Could not restore original trigger:\n{trig} to {name}")
+
+        try:
+            trig_dir = os.path.join(SYSFS_TRIG_CONFIG_DIR, "iio/triggers/hrtimer/hhd")
+            os.rmdir(trig_dir)
+        except Exception as e:
+            logger.error(f"Could not delete hrtimer trigger. Error:\n{e}")
 
 
-__all__ = ["IioReader", "AccelImu", "GyroImu"]
+def _sysfs_trig_sampler(ev: TEvent, trigger: int, rate: int = 65):
+    import time
+
+    trig = None
+    for fn in os.listdir("/sys/bus/iio/devices/"):
+        if not fn.startswith("trigger"):
+            continue
+        tmp = os.path.join("/sys/bus/iio/devices/", fn)
+        with open(os.path.join(tmp, "name")) as f:
+            name = f.read().strip()
+
+        if name == f"sysfstrig{trigger}":
+            trig = os.path.join(tmp, "trigger_now")
+            break
+
+    if trig is None:
+        logger.warning(f"Trigger `sysfstrig{trigger}` not found.")
+        return
+
+    fd = -1
+    delay = 1 / rate
+    try:
+        fd = os.open(trig, os.O_WRONLY)
+        while not ev.is_set():
+            os.write(fd, b"1")
+            os.lseek(fd, 0, os.SEEK_SET)
+            time.sleep(delay)
+    except KeyboardInterrupt:
+        raise
+    except Exception as e:
+        logger.warning(f"Trig sampler failed with error:\n{e}")
+    finally:
+        if fd != -1:
+            os.close(fd)
+
+
+class SoftwareTrigger(IioReader):
+    ACCEL_NAMES = ACCEL_NAMES
+    GYRO_NAMES = GYRO_NAMES
+    IMU_NAMES = IMU_NAMES
+
+    BEGIN_ID: int = 5335
+    ATTEMPTS: int = 900
+
+    def __init__(
+        self,
+        freq: int,
+        devices: Sequence[Sequence[str]] = [IMU_NAMES, GYRO_NAMES, ACCEL_NAMES],
+    ) -> None:
+        self.devices = devices
+        self.old_triggers = {}
+        self.freq = freq
+        self.opened = False
+        self.ev = None
+        self.thread = None
+
+    def open(self):
+        import time
+
+        try:
+            os.system("modprobe iio-trig-sysfs")
+        except Exception:
+            logger.warning(f"Could not modprobe software triggers")
+
+        for id in range(
+            SoftwareTrigger.BEGIN_ID,
+            SoftwareTrigger.BEGIN_ID + SoftwareTrigger.ATTEMPTS,
+        ):
+            # Try to remove stale trigger
+            try:
+                with open(
+                    "/sys/bus/iio/devices/iio_sysfs_trigger/remove_trigger", "w"
+                ) as f:
+                    f.write(str(id))
+            except Exception:
+                pass
+            # Add new trigger
+            try:
+                with open(
+                    "/sys/bus/iio/devices/iio_sysfs_trigger/add_trigger", "w"
+                ) as f:
+                    f.write(str(id))
+                break
+            except Exception:
+                pass
+            time.sleep(0.02)
+        else:
+            logger.error(f"Failed to create software trigger.")
+            return False
+        self.id = id
+
+        self.old_triggers = {}
+        for d in self.devices:
+            s, _ = find_sensor(d)
+            if not s:
+                continue
+
+            buff_fn = os.path.join(s, "buffer/enable")
+            trig_fn = os.path.join(s, "trigger/current_trigger")
+            with open(buff_fn, "w") as f:
+                f.write("0")
+            with open(trig_fn, "r") as f:
+                self.old_triggers[trig_fn] = (f.read(), buff_fn)
+            with open(trig_fn, "w") as f:
+                f.write(f"sysfstrig{self.id}")
+
+        self.ev = TEvent()
+        self.thread = Thread(target=_sysfs_trig_sampler, args=(self.ev, id, self.freq))
+        self.thread.start()
+        self.opened = True
+
+        return True
+
+    def close(self):
+        if not self.opened:
+            return
+
+        # Stop trigger
+        self.opened = False
+        if self.ev:
+            self.ev.set()
+        if self.thread:
+            self.thread.join()
+        self.ev = None
+        self.thread = None
+
+        # Remove from current sensors
+        for trig, (name, buff) in self.old_triggers.items():
+            try:
+                with open(buff, "w") as f:
+                    f.write("0")
+                with open(trig, "w") as f:
+                    f.write(name)
+            except Exception:
+                logger.error(f"Could not restore original trigger:\n{trig} to {name}")
+
+        # Delete trigger
+        try:
+            logger.info(f"Closing trigger {self.id}")
+            with open(
+                "/sys/bus/iio/devices/iio_sysfs_trigger/remove_trigger", "w"
+            ) as f:
+                f.write(str(self.id))
+        except Exception:
+            logger.error(f"Could not delete sysfs trigger with id {self.id}")
+
+
+__all__ = ["IioReader", "AccelImu", "GyroImu", "HrtimerTrigger"]

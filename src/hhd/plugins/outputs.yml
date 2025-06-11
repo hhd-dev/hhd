@@ -1,0 +1,214 @@
+default: dualsense
+modes:
+  #
+  # No emulation
+  #
+  hidden:
+    type: container
+    tags: [lgc_emulation_disabled]
+    title: Hidden
+    hint: >-
+      Disables the controller. Handheld Daemon overlay will still work in gamemode.
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Disables the built-in controller.
+          External controllers will be slot 1.
+          Overlay will still work.
+      noob_mode:
+        type: bool
+        title: Extra buttons as Keyboard/Overlay
+        tags: [non-essential]
+        default: True
+        hint: >-
+          Makes the left paddle bring up a keyboard and the right paddle bring
+          up the overlay.
+  #
+  # evdev through uinput
+  #
+  uinput:
+    type: container
+    tags: [uinput]
+    title: Xbox
+    children:
+      # flip_z:
+      #   type: bool
+      #   title: Invert Roll Axis
+      #   tags: [non-essential]
+      #   default: True
+      #   hint: >-
+      #     Inverts the roll (Z) axis compared to a real Dualsense controller.
+      #     Useful for Steam Input, since you want it to be inverted to look
+      #     left to right, but an issue in emulators.
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Simple Xbox controller. 
+          Universal compatibility.
+          Extra buttons are shortcuts or Steam Input.
+
+      paddles_as:
+        type: multiple
+        title: Extra buttons as
+        tags: [non-essential]
+        hint: >-
+          Changes the behavior of the extra buttons.
+          Left button is Keyboard, right button is Overlay.
+          Or they can be set for Steam Input.
+        options:
+          steam_input: Steam Input (Elite)
+          noob: Keyboard/Overlay
+          disabled: Disabled
+        default: noob
+
+      nintendo_qam:
+        type: bool
+        title: Nintendo QAM Fix
+        tags: [advanced, expert]
+        default: False
+  xbox_elite:
+    type: container
+    tags: [xbox_elite]
+    title: Xbox Elite
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Extra buttons in Steam Input.
+
+  hori_steam:
+    type: container
+    tags: [hori_steam, non-essential]
+    title: Steam Controller
+    hint: >-
+      Allows for gyro, paddles, and has a proper QAM button.
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Allows for gyro, paddles, and has a proper QAM button.
+      noob_mode:
+        type: bool
+        title: Extra buttons as Keyboard/Overlay
+        tags: [non-essential]
+        default: False
+        hint: >-
+          Makes the left paddle bring up a keyboard and the right paddle bring
+          up the overlay.
+      sync_gyro:
+        type: bool
+        title: Gyro Output Sync
+        tags: [non-essential]
+        hint: >-
+          Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to Mouse [BETA]`.
+          If the same timestamp is sent in 2 reports, this causes a division by 0 and instability.
+          This option makes it so reports are sent only when there is a new
+          IMU timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU.
+          This only makes a difference for the Legion Go (125hz), as all the other
+          handhelds are using 400hz by default.
+        default: True
+      flip_z:
+        type: bool
+        title: Invert Roll Axis
+        tags: [non-essential]
+        default: True
+        hint: >-
+          Inverts the roll (Z) axis compared to a real Horipad controller.
+          Useful for Steam Input, since you want it to be inverted to look
+          left to right, but an issue in emulators.
+  #
+  # Dualsense 5
+  #
+  dualsense:
+    type: container
+    tags: [lgc_emulation_dualsense, dualsense, non-essential]
+    title: Dualsense
+
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Touchpad, gyro, and RGB support. Extra buttons are remappable.
+
+      paddles_as:
+        type: multiple
+        title: Extra buttons as
+        hint: >-
+          Changes the behavior of the extra buttons.
+          Left button is Keyboard, right button is Overlay.
+          Or they can be left/right touchpad clicks.
+          For the legion go, top buttons are shortcuts, bottom are
+          touchpad clicks.
+        options:
+          steam_input: Steam Input (Edge)
+          noob: Keyboard/Overlay
+          touchpad: Touchpad Clicks
+          both: Shortcuts + Touchpad Clicks
+          disabled: Disabled
+        default: steam_input
+
+      led_support:
+        type: bool
+        title: LED Support
+        hint: >-
+          Passes through the LEDs to the controller, which allows games
+          to control them.
+        default: False
+
+      sync_gyro:
+        type: bool
+        title: Gyro Output Sync
+        hint: >-
+          Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to Mouse [BETA]`.
+          If the same timestamp is sent in 2 reports, this causes a division by 0 and instability.
+          This option makes it so reports are sent only when there is a new
+          IMU timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU.
+          This only makes a difference for the Legion Go (125hz), as all the other
+          handhelds are using 400hz by default.
+        default: True
+
+      flip_z:
+        type: bool
+        title: Invert Roll Axis
+        default: True
+        hint: >-
+          Inverts the roll (Z) axis compared to a real Dualsense controller.
+          Useful for Steam Input, since you want it to be inverted to look
+          left to right, but an issue in emulators.
+
+      bluetooth_mode:
+        type: bool
+        title: Bluetooth Mode
+        tags: [advanced, expert]
+        hint: >-
+          Emulates the controller in bluetooth mode instead of USB mode.
+          This is the default as it causes less issues with how apps
+          interact with the controller.
+          However, using USB mode can improve LED support (?) in some games.
+          Test and report back!
+        default: True
+
+  disabled:
+    type: container
+    tags: [lgc_emulation_disabled, expert, non-essential]
+    title: Paused
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Pauses controller emulation.

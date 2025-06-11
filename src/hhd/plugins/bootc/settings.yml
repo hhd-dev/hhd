@@ -1,0 +1,204 @@
+type: container
+tags: [system, non-essential]
+title: System Image
+hint: >-
+  Manage the currently installed image with bootc.
+
+children:
+  steamos-target:
+    type: display
+    tags: [hidden]
+  
+  steamos-update:
+    type: display
+    tags: [hidden]
+
+  image:
+    tags: [slim, bold]
+    type: display
+    title: Image
+    default: bazzite-deck:stable
+
+  staged:
+    tags: [slim, bold]
+    type: display
+    title: Next
+
+  booted:
+    tags: [slim]
+    type: display
+    title: Current
+  
+  rollback:
+    tags: [slim]
+    type: display
+    title: Previous
+  
+  update:
+    tags: [slim, bold]
+    type: display
+    title: Update
+
+  stage:
+    type: mode
+    tags: [no_dropdown]
+    title: Update Stage
+
+    modes:
+      ready:
+        type: container
+        children:
+          update:
+            type: action
+            title: Apply Update
+
+          revert:
+            type: action
+            title: Revert to Previous
+            hint: >-
+              Rollback to the previous image.
+          
+          rebase:
+            type: action
+            title: Change Version (Rebase)
+          
+      ready_rebased:
+        type: container
+        children:
+          update:
+            type: action
+            title: Remove Pin and Update
+
+          revert:
+            type: action
+            title: Revert to Previous
+            hint: >-
+              Rollback to the previous image.
+          
+          rebase:
+            type: action
+            title: Change Branch (Rebase)
+
+      ready_check:
+        type: container
+        children:
+          update:
+            type: action
+            title: Check for Updates
+
+          revert:
+            type: action
+            title: Revert to Previous
+            hint: >-
+              Rollback to the previous image.
+          
+          rebase:
+            type: action
+            title: Change Branch (Rebase)
+
+      ready_updated:
+        type: container
+        children:
+          reboot:
+            type: action
+            title: Reboot
+            tags: [verify]
+            hint: >-
+              Reboot to apply the update. Are you sure?
+
+          revert:
+            type: action
+            title: Undo Update
+            
+          update:
+            type: action
+            title: Check for Updates
+          
+          rebase:
+            type: action
+            title: Change Branch (Rebase)
+          
+      ready_reverted:
+        type: container
+        children:
+          reboot:
+            type: action
+            title: Reboot
+            tags: [verify]
+            hint: >-
+              Reboot to apply the update. Are you sure?
+
+          revert:
+            type: action
+            title: Undo Revert
+            
+          update:
+            type: action
+            title: Check for Updates
+          
+          rebase:
+            type: action
+            title: Choose Version (Rebase)
+
+      incompatible:
+        type: container
+        children:
+          error:
+            type: display
+            tags: [error]
+            title: Error
+            default: >
+              Due to layering or custom initramfs, you cannot update from here.
+              You can undo those with the button below.
+
+          reset:
+            type: action
+            title: Run rpm-ostree reset
+            tag: [verify]
+            hint: >-
+              Disable the custom initramfs and remove layers. Your personal
+              data will not be affected.
+              
+      loading_cancellable:
+        type: container
+        children:
+          progress:
+            type: custom
+            tags: [progress]
+          
+          cancel:
+            type: action
+            title: Cancel
+      
+      loading:
+        type: container
+        children:
+          progress:
+            type: custom
+            tags: [progress]
+
+      rebase:
+        type: container
+        children:
+          branch:
+            type: multiple
+            title: Branch
+            options:
+
+          version:
+            type: custom
+            title: Version Pin
+            tags: [dropdown]
+          
+          version_error:
+            type: display
+            title: Error
+            tags: [error, slim]
+
+          apply:
+            type: action
+            title: Apply   
+
+          cancel:
+            type: action
+            title: Cancel

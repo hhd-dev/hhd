@@ -1,0 +1,10 @@
+sections:
+  tdp: TDP
+  rgb: RGB
+  controllers: Controller
+  wincontrols: WinControls
+  gamemode: General
+  updates: Updates
+  debug: Bugreport
+  shortcuts: Shortcuts
+  hhd: Settings

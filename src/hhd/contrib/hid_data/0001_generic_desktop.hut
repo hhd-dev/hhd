@@ -1,0 +1,109 @@
+(01)	Generic Desktop
+00	Undefined
+01	Pointer
+02	Mouse
+03	Reserved
+04	Joystick
+05	Game Pad
+06	Keyboard
+07	Keypad
+08	Multi Axis
+09	Reserved
+0A	Water Cooling Device
+0B	Computer Chassis Device
+0C	Wireless Radio Controls
+0D	Portable Device Control
+0E	System Multi-Axis Controller
+0F	Spatial Controller
+10	Assistive Control
+11-2F	Reserved
+30	X
+31	Y
+32	Z
+33	Rx
+34	Ry
+35	Rz
+36	Slider
+37	Dial
+38	Wheel
+39	Hat switch
+3A	Counted Buffer
+3B	Byte Count
+3C	Motion
+3D	Start
+3E	Select
+3F	Reserved
+40	Vx
+41	Vy
+42	Vz
+43	Vbrx
+44	Vbry
+45	Vbrz
+46	Vno
+47	Feature
+48	Resolution Multiplier
+49	Qx
+4A	Qy
+4B	Qz
+4C	Qw
+4D-7F	Reserved
+80	System Control
+81	System Power Down
+82	System Sleep
+83	System Wake Up
+84	System Context Menu
+85	System Main Menu
+86	System App Menu
+87	System Help Menu
+88	System Menu Exit
+89	System Menu Select
+8A	System Menu Right
+8B	System Menu Left
+8C	System Menu Up
+8D	System Menu Down
+8E	System Cold Restart
+8F	System Warm Restart
+90	D-Pad Up
+91	D-Pad Down
+92	D-Pad Right
+93	D-Pad Left
+94	Index Trigger
+95	Palm Trigger
+96	Thumbstick
+97	System Function Shift
+98	System Function Shift Lock
+99	System Function Shift Lock Indicator
+9A	System Dismiss Notification
+9B-9F	Reserved
+A0	System Dock
+A1	System UnDock
+A2	System Setup
+A3	System Break
+A4	System Debugger Break
+A5	Application Break
+A6	Application Debugger Break
+A7	System Speaker Mute
+A8	System Hibernate
+A9-AF	Reserved
+B0	System Display Invert
+B1	System Display Internal
+B2	System Display External
+B3	System Display Both
+B4	System Display Dual
+B5	System Display Toggle Internal External
+B6	System Display Swap Primary Secondary
+B7	System Display LCDAuto Scale
+B8-BF	Reserved
+C0	Sensor Zone
+C1	RPM
+C2	Coolant Level
+C3	Coolant Critical Level
+C4	Coolant Pump
+C5	Chassis Enclosure
+C6	Wireless Radio Button
+C7	Wireless Radio LED
+C8	Wireless Radio Slider Switch
+C9	System Display Rotation Lock Button
+CA	System Display Rotation Lock Slider Switch
+CB	Control Enable
+CC-FFFF	Reserved

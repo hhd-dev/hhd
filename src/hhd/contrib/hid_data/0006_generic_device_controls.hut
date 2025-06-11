@@ -1,0 +1,29 @@
+(06)	Generic Device Controls
+00	Unidentified
+01	Background Controls
+02-1F	Reserved
+20	Battery Strength
+21	Wireless Channel
+22	Wireless ID
+23	Discover Wireless Control
+24	Security Code Character Entered
+25	Security Code Character Erased
+26	Security Code Cleared
+27	Sequence ID
+28	Sequence ID Reset
+29	RF Signal Strength
+2A	Software Version
+2B	Protocol Version
+2C	Hardware Version
+2D	Major
+2E	Minor
+2F	Revision
+30	Handedness
+31	Either Hand
+32	Left Hand
+33	Right Hand
+34	Both Hands
+35-3F	Reserved
+40	Grip Pose Offset
+41	Pointer Pose Offset
+42-FFFF	Reserved

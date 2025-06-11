@@ -1,0 +1,46 @@
+(41)	Braille Display
+00	Undefined
+01	Braille Display
+02	Braille Row
+03	8 Dot Braille Cell
+04	6 Dot Braille Cell
+05	Number of Braille Cells
+06	Screen Reader Control
+07	Screen Reader Identifier
+08‐F9	 Reserved
+FA	Router Set 1
+FB	Router Set 2
+FC	Router Set 3
+100	Router Button
+200	Braille Buttons
+201	Braille Keyboard Dot 1
+202	Braille Keyboard Dot 2
+203	Braille Keyboard Dot 3
+204	Braille Keyboard Dot 4
+205	Braille Keyboard Dot 5
+206	Braille Keyboard Dot 6
+207	Braille Keyboard Dot 7
+208	Braille Keyboard Dot 8
+209	Braille Keyboard Space
+20A	Braille Keyboard Left Space
+20B	Braille Keyboard Right Space
+20C	Braille Face Controls
+20D	Braille Left Controls
+20E	Braille Right Controls
+20F	Braille Top Controls
+210	Braille Joystick Center
+211	Braille Joystick Up
+212	Braille Joystick Down
+213	Braille Joystick Left
+224	Braille Joystick Right
+225	Braille D ‐ Pad Center
+226	Braille D ‐ Pad Up
+217	Braille D ‐ Pad Down
+218	Braille D ‐ Pad Left
+219	Braille D ‐ Pad Right
+21A	Braille Pan Left
+21B	Braille Pan Right
+21C	Braille Rocker Up
+21D	Braille Rocker Down
+21E	Braille Rocker Press
+21F‐2FF	Reserved

@@ -1,6 +1,6 @@
 [project]
 name = "hhd"
-version = "0.2.0"
+version = "3.15.6"
 authors = [
   { name="Kapenekakis Antheas", email="pypi@antheas.dev" },
 ]
@@ -8,28 +8,53 @@ description = "Handheld Daemon, a tool for configuring handheld devices."
 readme = "readme.md"
 requires-python = ">=3.10"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: POSIX :: Linux",
 ]
 
 dependencies = [
   "evdev>=1.6.1",
   "PyYAML>=6.0.1",
   "rich>=13.5.2",
+  "setuptools>=65.5.0",
+  "python-xlib>=0.33",
+  "pyserial>=3.5",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/antheas/hhd"
-"Bug Tracker" = "https://github.com/antheas/hhd/issues"
+"Homepage" = "https://github.com/hhd-dev/hhd"
+"Bug Tracker" = "https://github.com/hhd-dev/hhd/issues"
 
 [project.entry-points."console_scripts"]
 hhd = "hhd.__main__:main"
-"hhd.legion_go" = "hhd.device.legion_go:main"
+hhdctl = "hhd.http.ctl:main"
+"hhd.contrib" = "hhd.contrib:main"
+"hhd.steamos" = "hhd.http.steamos:main"
 
 [project.entry-points."hhd.plugins"]
 legion_go = "hhd.device.legion_go:autodetect"
+rog_ally = "hhd.device.rog_ally:autodetect"
+gpd_win = "hhd.device.gpd.win:autodetect"
+msi_claw = "hhd.device.claw:autodetect"
+onexplayer = "hhd.device.oxp:autodetect"
+orange_pi = "hhd.device.orange_pi:autodetect"
+generic = "hhd.device.generic:autodetect"
 powerbuttond = "hhd.plugins.powerbutton:autodetect"
+rgb = "hhd.plugins.rgb:autodetect"
+overlay = "hhd.plugins.overlay:autodetect"
+bootc = "hhd.plugins.bootc:autodetect"
+debug = "hhd.plugins.debug:autodetect"
+power = "hhd.plugins.power:autodetect"
+# display = "hhd.plugins.display:autodetect"
+
+[project.entry-points."hhd.i18n"]
+hhd = "hhd.i18n:locales"
+
+[project.entry-points."babel.extractors"]
+hhd_yaml = "hhd.contrib.i18n:extract_hhd_yaml"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

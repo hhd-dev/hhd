@@ -1,13 +1,40 @@
+
+# NOT NEEDED ANYMORE
 # Legion go specific quirk
 # Disable accelerometer use from iio-sensor-proxy to avoid messing up the driver
 # https://askubuntu.com/questions/803845/what-process-is-responsible-for-auto-screen-rotation-i-want-to-disable-it-on-1
 # overrides /lib/udev/rules.d/80-iio-sensor-proxy.rules to disable using the accelerometer for orientation
-KERNELS=="0020:1022:*", SUBSYSTEM=="iio", TEST=="in_accel_x_raw", TEST=="in_accel_y_raw", TEST=="in_accel_z_raw", ENV{IIO_SENSOR_PROXY_TYPE}=""
+# KERNELS=="0020:1022:*", SUBSYSTEM=="iio", TEST=="in_accel_x_raw", TEST=="in_accel_y_raw", TEST=="in_accel_z_raw", ENV{IIO_SENSOR_PROXY_TYPE}=""
+
+# Remove buffer polling from iio to prevent it messing with the controllers
+SUBSYSTEM=="iio", TEST=="in_accel_x_raw", TEST=="in_accel_y_raw", TEST=="in_accel_z_raw", TEST=="scan_elements/in_accel_x_en", TEST=="scan_elements/in_accel_y_en", TEST=="scan_elements/in_accel_z_en", ENV{IIO_SENSOR_PROXY_TYPE}="iio-poll-accel"
 
 #
 # Allow steam to access the raw controllers
 #
 
+# Sony DualSense Wireless-Controller; Bluetooth; USB
+KERNEL=="hidraw*", KERNELS=="*054C:0CE6*", MODE="0666", TAG+="uaccess"
+KERNEL=="hidraw*", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0ce6", MODE="0666", TAG+="uaccess"
+
 # Sony DualSense Edge Wireless-Controller; Bluetooth; USB
 KERNEL=="hidraw*", KERNELS=="*054C:0DF2*", MODE="0666", TAG+="uaccess"
 KERNEL=="hidraw*", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0df2", MODE="0666", TAG+="uaccess"
+
+# Handheld Daemon Emulated Controllers
+# VID is not reserved at the time of this writing
+ATTRS{idVendor}=="5335", MODE="0666", TAG+="uaccess"
+ATTRS{id/vendor}=="5335", MODE="0666", TAG+="uaccess"
+
+# The following rule is required for the Dualsense evdev to be used from userspace
+# (e.g., Dolphin) 
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="*Motion Sensors", MODE="0666", TAG+="uaccess"
+
+# Enable xpad for the MSI Claw
+ATTRS{idVendor}=="0db0", ATTRS{idProduct}=="1901", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 0db0 1901 > /sys/bus/usb/drivers/xpad/new_id'"
+
+# Enable xpad for the TECNO Pocket Go
+ATTRS{idVendor}=="2993", ATTRS{idProduct}=="2001", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 2993 2001 > /sys/bus/usb/drivers/xpad/new_id'"
+
+# Enable xpad for the Legion Go S
+ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e310", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 1a86 e310 > /sys/bus/usb/drivers/xpad/new_id'"

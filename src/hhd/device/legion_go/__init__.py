@@ -1,56 +1,32 @@
-from threading import Event, Thread
-from typing import Any, Sequence
+from typing import Sequence
 
-from hhd.plugins import Config, Context, Emitter, HHDPlugin, load_relative_yaml
-from hhd.plugins.settings import HHDSettings
+from hhd.plugins import (
+    HHDPlugin,
+)
 
+from .slim import LegionGoSControllerPlugin
+from .tablet import LegionGoControllersPlugin
 
-class LegionControllersPlugin(HHDPlugin):
-    name = "legion_go_controllers"
-    priority = 18
-    log = "llgo"
+LEGION_GO_CONFS = {
+    "83E1": {
+        "name": "Legion Go",
+    },
+}
 
-    def __init__(self) -> None:
-        self.t = None
-        self.event = None
-
-    def open(
-        self,
-        emit: Emitter,
-        context: Context,
-    ):
-        self.emit = emit
-        self.context = context
-        self.prev = None
-
-    def settings(self) -> HHDSettings:
-        return {"controllers": {"legion_go": load_relative_yaml("controllers.yaml")}}
-
-    def update(self, conf: Config):
-        if conf["controllers.legion_go"] == self.prev:
-            return
-        self.prev = conf["controllers.legion_go"]
-
-        self.start(self.prev)
-
-    def start(self, conf):
-        from .base import plugin_run
-
-        self.close()
-        self.event = Event()
-        self.t = Thread(
-            target=plugin_run,
-            args=(conf, self.emit, self.context, self.event),
-        )
-        self.t.start()
-
-    def close(self):
-        if not self.event or not self.t:
-            return
-        self.event.set()
-        self.t.join()
-        self.event = None
-        self.t = None
+LEGION_S_CONFS = {
+    "83L3": {
+        "name": "Legion Go S Z2 Go",
+    },
+    "83N6": {
+        "name": "Legion Go S Z1E",
+    },
+    "83Q2": {
+        "name": "Legion Go S",
+    },
+    "83Q3": {
+        "name": "Legion Go S",
+    },
+}
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
@@ -59,7 +35,12 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match just product number, should be enough for now
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        if not f.read().strip() == "83E1":
-            return []
+        dmi = f.read().strip()
 
-    return [LegionControllersPlugin()]
+    if dmi in LEGION_S_CONFS:
+        return [LegionGoSControllerPlugin(dconf=LEGION_S_CONFS[dmi])]
+
+    if dmi in LEGION_GO_CONFS:
+        return [LegionGoControllersPlugin(dconf=LEGION_GO_CONFS[dmi])]
+
+    return []

@@ -1,0 +1,28 @@
+# Add f buttons to Ayaneo devices
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnAYANEO:*
+  FORCE_INPUT_UACCESS=1
+  KEYBOARD_KEY_66=f15
+  KEYBOARD_KEY_67=f16
+  KEYBOARD_KEY_68=f17
+  KEYBOARD_KEY_69=f18
+
+# OrangePi G1621-02/NEO-01 (OrangePi Neo)
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnG1621-02:*
+  KEYBOARD_KEY_64=f15
+  KEYBOARD_KEY_65=f16
+  KEYBOARD_KEY_66=f15
+  KEYBOARD_KEY_67=f16
+  KEYBOARD_KEY_68=f17
+  KEYBOARD_KEY_69=f18
+
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
+  KEYBOARD_KEY_66=f15
+  KEYBOARD_KEY_67=f16
+
+# From systemd
+# MSI Claw A1M, MSI Claw 7 AI+ A2VM, MSI Claw 8 AI+ A2VM
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClawA1M:*
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClaw7AI+A2VM:*
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClaw8AI+A2VM:*
+  KEYBOARD_KEY_b9=f15     # Right Face Button
+  KEYBOARD_KEY_ba=f16     # Left Face Button

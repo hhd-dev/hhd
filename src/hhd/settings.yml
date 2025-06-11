@@ -1,34 +1,119 @@
+settings:
+  type: container
+  title: Core Settings
+  tags: [non-essential]
+
+  children:
+    language:
+      type: multiple
+      tags: [i18n, non-essential, language]
+      title: Language
+      default: system
+      options:
+        system: System
+        C: English
+        zh_CN: Simplified Chinese
+        zh_TW: Traditional Chinese
+        pt: Portugese
+
+    theme:
+      type: multiple
+      tags: [theme-selector, advanced]
+      title: "Theme"
+      hint: >-
+        Allows changing the theme in the UI.
+        Default is either Diavolo or your distribution's theme.
+      default: default
+      options:
+        default: Default
+        diavolo: Diavolo
+        ocean: Atlantis
+        vapor: Vapor
+        blood_orange: Blood Orange
+      
+    reset:
+      type: action
+      tags: [ reset-button, verify ]
+      title: Reset Settings
+      hint: >-
+        Resets all Handheld Daemon settings to their default values.
+
+    decky_deprecation:
+      type: display
+      tags: [hhd-version-display-decky, text]
+      title: "It is no longer possible to update Decky from here. If you see this, update the Decky plugin manually."
+      default: " "
+
+    version:
+      type: display
+      tags: [hhd-version-display, text]
+      title: Handheld Daemon Version
+      hint: "Displays the Handheld Daemon version."
+
+    version_ui:
+      type: display
+      tags: [hhd-version-display, text]
+      title: Handheld Daemon UI Version
+      hint: "Displays the Handheld Daemon version."
+
+    version_adj:
+      type: display
+      tags: [hhd-version-display, text]
+      title: Adjustor (TDP) Version
+      hint: "Displays the Handheld Daemon version."
+
+    update_stable:
+      type: action
+      tags: [hhd-update-stable, verify]
+      title: Update (Stable)
+      hint: "Updates to the latest version from PyPi (local install only)."
+
+    update_beta:
+      type: action
+      tags: [hhd-update-beta, verify]
+      title: Update (Unstable)
+      hint: "Updates to the master branch from git (local install only)."
+
+    update_error:
+      title: Update Error
+      type: display
+      tags: [ error, non-essential ]
+
 http:
   type: container
-  tags: [hhd-http]
-  title: REST API Configuration
+  tags: [hhd-http, advanced, expert]
+  title: API Configuration
   hint: >-
     Settings for configuring the http endpoint of HHD.
 
   children:
     enable:
       type: bool
-      title: Enable REST API.
+      title: Enable the API
+      tags: [advanced]
       hint: >-
-        Enables the rest API of Handheld Daemon
-      default: False
+        Enables the API of Handheld Daemon (required for decky and ui).
+      default: True
     port:
-      type: integer
-      title: REST API Port
+      type: int
+      title: API Port
+      tags: [advanced, hhd-port, port, dropdown]
       hint: >-
-        Which port should the REST API be on?
+        Which port should the API be on?
       min: 1024
       max: 49151
       default: 5335
     localhost:
       type: bool
       title: Limit Access to localhost
+      tags: [advanced]
       hint: >-
         Sets the API target to '127.0.0.1' instead '0.0.0.0'.
       default: True
     token:
       type: bool
       title: Use Security token
+      tags: [advanced]
       hint: >-
         Generates a security token in `~/.config/hhd/token` that is required for
         authentication.

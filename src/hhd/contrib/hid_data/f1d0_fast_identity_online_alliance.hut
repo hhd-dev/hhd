@@ -1,0 +1,7 @@
+(F1D0)	FIDO Alliance
+00	Undefined
+01	U2F Authenticator Device
+02-1F	Reserved
+20	Input Report Data
+21	Output Report Data
+22-FFFF	Reserved

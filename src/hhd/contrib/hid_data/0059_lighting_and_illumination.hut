@@ -1,0 +1,40 @@
+(59)	Lighting and Illumination
+00	Undefined
+01	Lamp Array
+02	Lamp Array Attributes Report
+03	Lamp Count
+04	Bounding Box Width In Micrometers
+05	Bounding Box Height In Micrometers
+06	Bounding Box Depth In Micrometers
+07	Lamp Array Kind
+08	Min Update Interval In Microseconds
+09-1F	Reserved
+20	Lamp Attributes Request Report
+21	Lamp Id
+22	Lamp Attributes Response Report
+23	Position X In Micrometers
+24	Position Y In Micrometers
+25	Position Z In Micrometers
+26	Lamp Purposes
+27	Update Latency In Microseconds
+28	Red Level Count
+29	Green Level Count
+2A	Blue Level Count
+2B	Intensity Level Count
+2C	Is Programmable
+2D	Input Binding
+2E-4F	Reserved
+50	Lamp Multi Update Report
+51	Red Update Channel
+52	Green Update Channel
+53	Blue Update Channel
+54	Intensity Update Channel
+55	Lamp Update Flags
+56-5F	Reserved
+60	Lamp Range Update Report
+61	Lamp Id Start
+62	Lamp Id End
+63-6F	Reserved
+70	Lamp Array Control Report
+71	Autonomous Mode
+72-FFFF	Reserved

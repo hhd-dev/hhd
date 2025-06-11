@@ -41,12 +41,14 @@ class GenericGamepadHidraw(Producer, Consumer):
         product: Sequence[str | re.Pattern] = [],
         usage_page: Sequence[int] = [],
         usage: Sequence[int] = [],
+        interface: int | None = None,
         btn_map: dict[int | None, dict[Button, BM]] = {},
         axis_map: dict[int | None, dict[Axis, AM]] = {},
         config_map: dict[int | None, dict[Configuration, CM]] = {},
         callback: EventCallback | None = None,
         report_size: int = MAX_REPORT_SIZE,
         required: bool = True,
+        lossless: bool = True,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -54,6 +56,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.product = product
         self.usage_page = usage_page
         self.usage = usage
+        self.interface = interface
         self.report_size = report_size
 
         self.btn_map = btn_map
@@ -61,6 +64,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.config_map = config_map
         self.callback = callback
         self.required = required
+        self.lossless = lossless
 
         self.path = None
         self.dev: Device | None = None
@@ -81,6 +85,11 @@ class GenericGamepadHidraw(Producer, Consumer):
             if not matches_patterns(d["usage_page"], self.usage_page):
                 continue
             if not matches_patterns(d["usage"], self.usage):
+                continue
+            if (
+                self.interface is not None
+                and d.get("interface_number", None) != self.interface
+            ):
                 continue
             self.path = d["path"]
             self.dev = Device(path=self.path)
@@ -119,9 +128,13 @@ class GenericGamepadHidraw(Producer, Consumer):
             return []
         rep = None
 
-        # Throw away stale events
-        while can_read(self.fd):
+        if self.lossless:
+            # Keep all events
             rep = self.dev.read(self.report_size)
+        else:
+            # Throw away stale events
+            while can_read(self.fd):
+                rep = self.dev.read(self.report_size)
 
         # If we could not read (?) return
         if not rep:
@@ -169,6 +182,12 @@ class GenericGamepadHidraw(Producer, Consumer):
     def consume(self, events: Sequence[Event]):
         if self.callback and self.dev:
             self.callback(self.dev, events)
+
+    def close(self, exit: bool) -> bool:
+        if self.dev:
+            self.dev.close()
+            self.dev = None
+        return True
 
 
 __all__ = ["GenericGamepadHidraw", "BM", "AM"]

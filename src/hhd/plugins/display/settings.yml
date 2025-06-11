@@ -1,0 +1,17 @@
+type: container
+tags: [system, non_steamdeck]
+title: System
+hint: >-
+  Basic display settings. Brightness (and framerate TBD).
+  This pane is meant to replace 
+
+children:
+  brightness:
+    type: int
+    tags: [display_brightness, non_steamdeck]
+    title: Brightness
+    hint: >-
+      Sets the brightness level of a display. Only one display is supported and
+      it is the one that was read.
+    min: 0
+    max: 100

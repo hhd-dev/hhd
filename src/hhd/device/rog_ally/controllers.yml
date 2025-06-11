@@ -1,0 +1,69 @@
+type: container
+tags: [lgc]
+title: Ally Controller
+hint: >-
+  Allows for configuring the ROG Ally controllers to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [rog_controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse ROG features.
+
+  #
+  # Common settings
+  #
+
+  swap_armory:
+    type: bool
+    title: Swap ROG and Menu/View
+    tags: [non-essential]
+    hint: >-
+      Swaps the Armory Crate and Command center buttons with start and select.
+    default: False
+
+  imu:
+    type: bool
+    title: Motion Support
+    hint: >-
+      Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
+    default: True
+
+  imu_hz:
+    type: discrete
+    title: Motion Hz
+    tags: [non-essential]
+    hint: >-
+      Sets the sampling frequency for the IMU.
+    options: [100, 200, 400, 800]
+    default: 200
+
+  limits:
+
+  select_reboots:
+    type: bool
+    tags: [non-essential]
+    title: Hold View to Reboot
+    default: False
+
+  nintendo_mode:
+    type: bool
+    tags: [non-essential]
+    title: Nintendo Mode (A-B Swap)
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+
+  rgb_boot:
+    type: bool
+    tags: [advanced]
+    title: RGB During Boot
+    default: False
+
+  rgb_charging:
+    type: bool
+    tags: [advanced]
+    title: RGB During Charging Asleep
+    default: False

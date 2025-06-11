@@ -1,0 +1,77 @@
+type: mode
+tags: [limits, non-essential]
+title: Deadzones & Vibration
+hint: >-
+  Configure joystick and trigger deadzones, vibration intensity.
+
+default: default
+modes:
+  default:
+    type: container
+    title: Default
+    hint: >-
+      Uses reasonable values based on hardware.
+  manual:
+    type: container
+    title: Manual
+    hint: >-
+      Allows for manual configuration of deadzones and vibration intensity.
+    children:
+      vibration:
+        type: int
+        title: Vibration Intensity
+        hint: >-
+          Intensity of the vibration. The higher the value, the stronger the vibration.
+        default: 100
+        unit: "%"
+        min: 0
+        max: 100
+        step: 20
+
+      ls_min: &s_min
+        type: int
+        title: Left Stick Minimum
+        hint: >-
+          Deadzone for the joystick. The higher the value, the more the joystick
+          needs to be moved before registering.
+        default: 5
+        unit: "%"
+        min: 0
+        max: 100
+        step: 2
+      ls_max: &s_max
+        type: int
+        title: Left Stick Maximum
+        hint: >-
+          Maximum value for joystick. The higher the value, the more the joystick
+          needs to be moved before reaching maximum.
+        default: 95
+        unit: "%"
+        min: 0
+        max: 100
+        step: 2
+      rs_min:
+        <<: *s_min
+        title: Right Stick Minimum
+      rs_max:
+        <<: *s_max
+        title: Right Stick Maximum
+
+      lt_min:
+        <<: *s_min
+        title: Left Trigger Minimum
+      lt_max:
+        <<: *s_max
+        title: Left Trigger Maximum
+      rt_min:
+        <<: *s_min
+        title: Right Trigger Minimum
+      rt_max:
+        <<: *s_max
+        title: Right Trigger Maximum
+
+      reset:
+        type: action
+        title: Reset to Default
+        hint: >-
+          Reset all values to default.

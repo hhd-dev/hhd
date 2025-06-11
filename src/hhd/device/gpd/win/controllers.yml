@@ -1,0 +1,75 @@
+type: container
+tags: [lgc]
+title: GPD Controller
+hint: >-
+  Allows for configuring the gpd win controllers to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [gpd_gen_3_controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse gpd features.
+
+  l4r4:
+    type: multiple
+    tags: [ non-essential ]
+    title: Menu/L4/R4 Mapping
+    options:
+      disabled: "Disabled"
+      generic: "Paddles, no Combo"
+      menu: "Menu is Combo"
+      l4: "L4 is Combo"
+      r4: "R4 is Combo"
+    default: menu
+    hint: >-
+      Maps L4/R4 to Steam Input (requires L4/R4 as HHD in Wincontrols
+      tab). If disabled, they are keyboard buttons. Menu/L4/R4 can be
+      combos: Menu is single-press QAM, double HHD, hold
+      Xbox. L4/R4 are single-press QAM, hold HHD (legacy). 
+
+  main_chords:
+    type: multiple
+    tags: [ non-essential ]
+    title: Start/Select do SteamOS Combos
+    hint: >-
+      When holding Select or Start, if another button is pressed, they become
+      the Xbox button, which allows doing SteamOS combos (Select+RT is
+      screenshot).
+    options:
+      disabled: "Disabled"
+      select: "Select Only"
+      start_select: "Start+Select"
+    default: select
+
+  #
+  # Common settings
+  #
+  imu:
+    type: bool
+    title: Motion Support
+    hint: >-
+      Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
+    default: True
+
+  imu_hz:
+    type: discrete
+    title: Motion Hz
+    tags: [ non-essential ]
+    hint: >-
+      Sets the sampling frequency for the IMU.
+    options: [100, 200, 400, 800]
+    default: 400
+
+  imu_axis:
+
+  touchpad:
+  
+  nintendo_mode:
+    type: bool
+    tags: [ non-essential ]
+    title: Nintendo Mode (A-B Swap)
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False

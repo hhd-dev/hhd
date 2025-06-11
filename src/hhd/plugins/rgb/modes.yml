@@ -1,0 +1,46 @@
+disabled:
+  type: container
+  title: "Off"
+  tags: [ non-essential, rgb, disabled ]
+  hint: >-
+    Turns the LEDs off.
+
+solid:
+  type: container
+  title: Solid
+  tags: [ non-essential, rgb, solid ]
+  hint: >-
+    Maintains the LEDs at a solid color.
+
+pulse:
+  type: container
+  title: Pulse
+  tags: [ non-essential, rgb, pulse ]
+  hint: >-
+    Slowly pulses the LEDs as a prespecified color.
+
+rainbow:
+  type: container
+  title: Rainbow
+  tags: [ non-essential, rainbow ]
+  hint: >-
+    Cycles through the different colors.
+
+spiral:
+  type: container
+  title: Spiral
+  tags: [ non-essential, spiral ]
+  hint: >-
+    Creates an RGB spiral around the stick.
+
+duality:
+  type: container
+  title: Duality
+  tags: [ non-essential, rgb, duality ]
+  hint: >-
+    Alternates between two colors.
+
+oxp:
+  type: container
+  title: OneXPlayer
+  tags: [ non-essential, rainbow ]

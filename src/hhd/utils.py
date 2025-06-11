@@ -1,136 +1,157 @@
 import logging
 import os
-import subprocess
-from typing import NamedTuple
 
-from hhd.plugins import Context
+from hhd.plugins.plugin import (
+    Context,
+    expanduser,
+    fix_perms,
+    get_context,
+    is_steam_gamepad_running,
+    restore_priviledge,
+    run_steam_command,
+    switch_priviledge,
+)
 
 logger = logging.getLogger(__name__)
 
+DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch")
+GIT_HHD = "git+https://github.com/hhd-dev/hhd"
+GIT_ADJ = "git+https://github.com/hhd-dev/adjustor"
+HHD_DEV_DIR = "/run/hhd/dev"
 
-def get_context(user: str | None) -> Context | None:
+
+def get_distro_color():
+    match get_os():
+        case "manjaro":
+            return 115
+        case "bazzite":
+            return 265
+        case "arch":
+            return 195
+        case "ubuntu":
+            return 340
+        case "red_gold" | "red_gold_ba":
+            return 28
+        case "blood_orange" | "blood_orange_ba":
+            return 18
+        case _:
+            return 30
+
+
+def hsb_to_rgb(h: int, s: int | float, v: int | float):
+    # https://www.rapidtables.com/convert/color/hsv-to-rgb.html
+    if h >= 360:
+        h = 359
+    s = s / 100
+    v = v / 100
+
+    c = v * s
+    x = c * (1 - abs((h / 60) % 2 - 1))
+    m = v - c
+
+    if h < 60:
+        rgb = (c, x, 0)
+    elif h < 120:
+        rgb = (x, c, 0)
+    elif h < 180:
+        rgb = (0, c, x)
+    elif h < 240:
+        rgb = (0, x, c)
+    elif h < 300:
+        rgb = (x, 0, c)
+    else:
+        rgb = (c, 0, x)
+
+    return [int((v + m) * 255) for v in rgb]
+
+
+def get_os() -> str:
+    if name := os.environ.get("HHD_DISTRO", None):
+        logger.warning(f"Distro override using an environment variable to '{name}'.")
+        return name
+
     try:
-        uid = os.getuid()
-        gid = os.getgid()
+        with open("/etc/os-release") as f:
+            os_release = f.read().strip().lower()
+    except Exception as e:
+        logger.error(f"Could not read os information, error:\n{e}")
+        return "ukn"
 
-        if not user:
-            if not uid or not gid:
-                print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                print(
-                    "Running as root without a specified user (`--user`). Configs will be placed at `/root/.config`."
-                )
-                print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            return Context(uid, gid, uid, gid, "root")
+    distro = None
+    for name in DISTRO_NAMES:
+        if name in os_release:
+            logger.info(f"Running under Linux distro '{name}'.")
+            distro = name
 
-        euid = int(
-            subprocess.run(
-                ["id", "-u", user], capture_output=True, check=True
-            ).stdout.decode()
-        )
-        egid = int(
-            subprocess.run(
-                ["id", "-g", user], capture_output=True, check=True
-            ).stdout.decode()
-        )
+    try:
+        # Match just product name
+        # if a device exists here its officially supported
+        with open("/sys/devices/virtual/dmi/id/product_name") as f:
+            dmi = f.read().strip()
 
-        if (uid or gid) and (uid != euid or gid != egid):
-            print(
-                f"The user specified with --user is not the user this process was started with."
+        # if "jupiter" in dmi.lower() or "onexplayer" in dmi.lower():
+        #     if distro == "bazzite":
+        #         distro = "blood_orange_ba"
+        #     else:
+        #         distro = "blood_orange"
+
+        if "ONEXPLAYER F1 EVA-02" in dmi:
+            if distro == "bazzite":
+                distro = "red_gold_ba"
+            else:
+                distro = "red_gold"
+    except Exception as e:
+        logger.error(f"Could not read product name, error:\n{e}")
+
+    if distro is not None:
+        return distro
+
+    logger.info(f"Running under an unknown Linux distro.")
+    return "ukn"
+
+
+def get_ac_status_fn() -> str | None:
+    BASE_DIR = "/sys/class/power_supply"
+    fn = None
+    try:
+        for name in os.listdir(BASE_DIR):
+            if name.startswith("AC") or name.startswith("ADP"):
+                fn = name
+                break
+        if fn is None:
+            logger.error(
+                f"Could not find AC status file. Power supply directory:\n{os.listdir(BASE_DIR)}"
             )
             return None
 
-        return Context(euid, egid, uid, gid, user)
-    except subprocess.CalledProcessError as e:
-        print(f"Getting the user uid/gid returned an error:\n{e.stderr.decode()}")
-        return None
+        return os.path.join(BASE_DIR, fn, "online")
     except Exception as e:
-        print(f"Failed getting permissions with error:\n{e}")
+        logger.error(f"Could not read power supply directory, error:\n{e}")
         return None
 
 
-def switch_priviledge(p: Context, escalate=False):
-    uid = os.geteuid()
-    gid = os.getegid()
-
-    if escalate:
-        os.seteuid(p.uid)
-        os.setegid(p.gid)
-    else:
-        os.setegid(p.egid)
-        os.seteuid(p.euid)
-
-    return uid, gid
-
-
-def restore_priviledge(old: tuple[int, int]):
-    uid, gid = old
-    # Try writing group first in case of root
-    # and fail silently
+def get_ac_status(fn: str | None) -> bool | None:
+    if fn is None:
+        return None
+    if not os.path.exists(fn):
+        return None
     try:
-        os.setegid(gid)
-    except Exception:
-        pass
-    os.seteuid(uid)
-    os.setegid(gid)
-    pass
+        with open(fn) as f:
+            return f.read().strip() != "Discharging"
+    except Exception as e:
+        return None
 
 
-def expanduser(path: str, user: int | str | Context | None = None):
-    """Expand ~ and ~user constructions.  If user or $HOME is unknown,
-    do nothing.
-
-    Modified from the python implementation to support using the target userid/user."""
-
-    path = os.fspath(path)
-
-    if not path.startswith("~"):
-        return path
-
-    i = path.find("/", 1)
-    if i < 0:
-        i = len(path)
-    if i == 1:
-        if "HOME" in os.environ and not user:
-            # Fallback to environ only if user not set
-            userhome = os.environ["HOME"]
-        else:
-            try:
-                import pwd
-            except ImportError:
-                # pwd module unavailable, return path unchanged
-                return path
-            try:
-                if not user:
-                    userhome = pwd.getpwuid(os.getuid()).pw_dir
-                elif isinstance(user, int):
-                    userhome = pwd.getpwuid(user).pw_dir
-                elif isinstance(user, Context):
-                    userhome = pwd.getpwuid(user.euid).pw_dir
-                else:
-                    userhome = pwd.getpwnam(user).pw_dir
-            except KeyError:
-                # bpo-10496: if the current user identifier doesn't exist in the
-                # password database, return the path unchanged
-                return path
-    else:
-        try:
-            import pwd
-        except ImportError:
-            # pwd module unavailable, return path unchanged
-            return path
-        name = path[1:i]
-        try:
-            pwent = pwd.getpwnam(name)
-        except KeyError:
-            # bpo-10496: if the user name from the path doesn't exist in the
-            # password database, return the path unchanged
-            return path
-        userhome = pwent.pw_dir
-
-    root = "/"
-    userhome = userhome.rstrip(root)
-    return (userhome + path[i:]) or root
-
-
-def fix_perms(fn: str, ctx: Context):
-    os.chown(fn, ctx.euid, ctx.gid)
+__all__ = [
+    "get_os",
+    "is_steam_gamepad_running",
+    "fix_perms",
+    "expanduser",
+    "restore_priviledge",
+    "switch_priviledge",
+    "get_context",
+    "Context",
+    "run_steam_command",
+    "get_ac_status",
+    "get_ac_status_fn",
+]
