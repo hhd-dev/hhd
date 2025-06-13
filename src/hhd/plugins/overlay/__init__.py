@@ -130,6 +130,19 @@ class OverlayPlugin(HHDPlugin):
         if not SUPPORTS_DPMS:
             del set["gamemode"]["gamescope"]["children"]["dpms"]
 
+        # Enable Armoury button only on ASUS laptops
+        try:
+            with open("/sys/devices/virtual/dmi/id/sys_vendor", "r") as f:
+                sys = f.read()
+            with open("/sys/devices/virtual/dmi/id/product_name", "r") as f:
+                name = f.read()
+
+            ARMOURY_BUTTON = "ASUSTeK COMPUTER INC" in sys and "ROG Ally" not in name
+        except Exception:
+            ARMOURY_BUTTON = False
+        if not ARMOURY_BUTTON:
+            del set["shortcuts"]["custom"]["children"]["armoury"]
+
         if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
             "HHD_ALLOW_CORRECTION", None
         ):
@@ -197,11 +210,10 @@ class OverlayPlugin(HHDPlugin):
                 )
 
             custom = False
-            for v in ("armoury", ):
+            for v in ("armoury",):
                 custom = (
                     custom
-                    or conf.get(f"shortcuts.custom.{v}", "disabled")
-                    != "disabled"
+                    or conf.get(f"shortcuts.custom.{v}", "disabled") != "disabled"
                 )
 
             touch = False
