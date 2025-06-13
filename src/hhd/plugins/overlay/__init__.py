@@ -195,6 +195,15 @@ class OverlayPlugin(HHDPlugin):
                 kbd = (
                     kbd or conf.get(f"shortcuts.keyboard.{v}", "disabled") != "disabled"
                 )
+
+            custom = False
+            for v in ("armoury", ):
+                custom = (
+                    custom
+                    or conf.get(f"shortcuts.custom.{v}", "disabled")
+                    != "disabled"
+                )
+
             touch = False
             for v in ("bottom", "left_top", "left_bottom", "right_top", "right_bottom"):
                 touch = (
@@ -210,9 +219,9 @@ class OverlayPlugin(HHDPlugin):
             # if self.ovf:
             #     self.ovf.interceptionSupported = True
 
-            if kbd or touch or ctrl or disable_touch:
+            if kbd or custom or touch or ctrl or disable_touch:
                 logger.info(
-                    f"Starting shortcut loop with:\nkbd: {kbd}, touch: {touch}, ctrl: {ctrl}, disable_touch: {disable_touch}"
+                    f"Starting shortcut loop with:\nkbd: {kbd}, touch: {touch}, custom: {custom}, ctrl: {ctrl}, disable_touch: {disable_touch}"
                 )
                 self.short_should_exit = TEvent()
                 touch_correction = (
@@ -263,6 +272,10 @@ class OverlayPlugin(HHDPlugin):
                         # Cannot be used in big picture because KDE/GNOME
                         side = gesture[len("kbd_") :]
                         section = "keyboard"
+                    cmd = None
+                case gesture if gesture.startswith("custom_"):
+                    side = gesture[len("custom_") :]
+                    section = "custom"
                     cmd = None
                 case "xbox_b":
                     side = "xbox_b"

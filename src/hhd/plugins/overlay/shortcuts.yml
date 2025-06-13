@@ -115,3 +115,13 @@ keyboard:
       title: "Ctrl + 4"
       options: *shortcuts
       default: hhd_qam
+custom:
+  type: container
+  tags: [non-essential]
+  title: "Device Buttons"
+  children:
+    armoury:
+      type: multiple
+      title: "Armoury Crate"
+      options: *shortcuts
+      default: hhd_expanded

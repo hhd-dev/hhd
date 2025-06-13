@@ -70,6 +70,12 @@ KEYBOARD_WAKE_KEY: dict[int, str] = to_map(
         "ctrl": [B("KEY_LEFTCTRL")],
         "3": [B("KEY_3")],
         "4": [B("KEY_4")],
+        "armoury": [B("KEY_PROG3")],
+    }
+)
+CUSTOM_WAKE_KEY: dict[int, str] = to_map(
+    {
+        "armoury": [B("KEY_PROG3")],
     }
 )
 
@@ -254,11 +260,25 @@ def find_devices(
                 is_keyboard = False
                 break
 
-        if is_touchscreen or is_controller or is_keyboard:
+        is_custom = False
+        for cap, v in CUSTOM_WAKE_KEY.items():
+            major = cap >> 3
+            minor = cap & 0x07
+
+            # Only bind armoury to Asus WMI hotkeys
+            if v == "armoury" and "Asus WMI hotkeys" not in dev.get("name", ""):
+                continue
+            
+            if len(keys) > major and keys[major] & (1 << minor):
+                is_custom = True
+                break
+
+        if is_touchscreen or is_controller or is_keyboard or is_custom:
             out[name] = {
                 "is_touchscreen": is_touchscreen,
                 "is_controller": is_controller,
                 "is_keyboard": is_keyboard,
+                "is_custom": is_custom,
                 "pretty": dev.get("name", ""),
                 "hash": dev.get("hash", ""),
                 "vid": dev.get("vendor", 0),
@@ -374,6 +394,9 @@ def process_touch(emit, state, ev, val):
         state["last_y"] = 0
         state["grab"] = False
 
+def process_custom(emit, ev, val):
+    if ev == "armoury" and val and emit:
+        emit({"type": "special", "event": "custom_armoury"})
 
 def process_kbd(emit, state, ev, val):
     if ev == "ctrl":
@@ -483,6 +506,16 @@ def process_events(emit, dev, evs):
                 if ev.value == 2:
                     continue
                 log += f"\n - {KEYBOARD_WAKE_KEY[code]}: {ev.value}"
+        elif dev["is_custom"]:
+            for ev in evs:
+                if ev.type != EV_KEY:
+                    continue
+                code = ev.code
+                if code not in CUSTOM_WAKE_KEY:
+                    continue
+                if ev.value == 2:
+                    continue
+                log += f"\n - {CUSTOM_WAKE_KEY[code]}: {ev.value}"
         if log:
             logger.info(f"'{dev['pretty']}':{log}")
 
@@ -508,6 +541,8 @@ def process_events(emit, dev, evs):
         if dev["is_keyboard"] and ev.type == EV_KEY and ev.code in KEYBOARD_WAKE_KEY:
             process_kbd(emit, dev["state_kbd"], KEYBOARD_WAKE_KEY[ev.code], ev.value)
 
+        if dev["is_custom"] and ev.type == EV_KEY and ev.code in CUSTOM_WAKE_KEY:
+            process_custom(emit, CUSTOM_WAKE_KEY[ev.code], ev.value)
 
 def refresh_events(emit, dev):
     # if dev["is_touchscreen"]:
@@ -533,6 +568,7 @@ def intercept_devices(devs, activate: bool):
                         **CONTROLLER_WAKE_BUTTON,
                         **KEYBOARD_WAKE_KEY,
                         **OVERLAY_BUTTON_MAP,
+                        **CUSTOM_WAKE_KEY,
                     },
                 )
                 grab_buttons(d.fd, B("EV_ABS"), OVERLAY_AXIS_MAP)
@@ -564,6 +600,7 @@ def intercept_devices(devs, activate: bool):
                     {
                         **CONTROLLER_WAKE_BUTTON,
                         **KEYBOARD_WAKE_KEY,
+                        **CUSTOM_WAKE_KEY,
                     },
                 )
                 grab_buttons(d.fd, B("EV_ABS"), {})
@@ -749,11 +786,11 @@ def device_shortcut_loop(
 
                 # Add event filters to avoid CPU use
                 # Do controllers and keyboards together as buttons do not consume much
-                if cand["is_controller"] or cand["is_keyboard"]:
+                if cand["is_controller"] or cand["is_keyboard"] or cand["is_custom"]:
                     grab_buttons(
                         dev.fd,
                         B("EV_KEY"),
-                        {**CONTROLLER_WAKE_BUTTON, **KEYBOARD_WAKE_KEY},
+                        {**CONTROLLER_WAKE_BUTTON, **KEYBOARD_WAKE_KEY, **CUSTOM_WAKE_KEY},
                     )
                 else:
                     grab_buttons(dev.fd, B("EV_KEY"), {})
@@ -831,6 +868,8 @@ def device_shortcut_loop(
                     caps.append(f"Controller[dinput={dinput}, smax={stick_max}]")
                 if cand["is_keyboard"]:
                     caps.append("Keyboard")
+                if cand["is_custom"]:
+                    caps.append("Custom")
                 log += f"\n - '{cand['pretty']}' [{cand['vid']:04x}:{cand['pid']:04x}] ({', '.join(caps)})"
             except Exception as e:
                 logger.error(f"Failed to open device '{cand['pretty']}'. Error:\n{e}")
