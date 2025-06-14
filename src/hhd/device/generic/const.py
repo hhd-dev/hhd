@@ -139,6 +139,8 @@ CONFS = {
     "GEEK 1S": {"name": "AYANEO GEEK 1S", **AYA_DEFAULT_CONF},
     "AIR": {"name": "AYANEO AIR", **AYA_DEFAULT_CONF},
     "AIR Pro": {"name": "AYANEO AIR Pro", **AYA_DEFAULT_CONF},
+    "FLIP DS": {"name": "AYANEO FLIP DS", **AYA_DEFAULT_CONF},
+    "FLIP KB": {"name": "AYANEO FLIP KB", **AYA_DEFAULT_CONF},
     "NEXT Advance": {"name": "AYANEO NEXT Advance", **AYA_DEFAULT_CONF},
     "NEXT Lite": {"name": "AYANEO NEXT Lite", **AYA_DEFAULT_CONF},
     "NEXT Pro": {"name": "AYANEO NEXT Pro", **AYA_DEFAULT_CONF},
