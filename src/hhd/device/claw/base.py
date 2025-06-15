@@ -42,6 +42,7 @@ CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
 MSI_CLAW_VID = 0x0DB0
 MSI_CLAW_XINPUT_PID = 0x1901
 MSI_CLAW_DINPUT_PID = 0x1902
+MSI_CLAW_TEST_PID = 0x1903
 
 KBD_VID = 0x0001
 KBD_PID = 0x0001
@@ -77,9 +78,10 @@ def set_rgb_cmd(brightness, red, green, blue):
 
 class ClawDInputHidraw(GenericGamepadHidraw):
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args, test_mode: bool = False, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.init = False
+        self.test_mode = test_mode
 
     def consume(self, events: Sequence[Event]) -> None:
         if not self.dev:
@@ -105,7 +107,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                     ]
                 )
                 self.dev.write(cmd)
-            elif ev["type"] == "led":
+            elif ev["type"] == "led" and not self.test_mode:
                 if ev["mode"] == "solid":
                     cmd = set_rgb_cmd(
                         ev["brightness"],
@@ -211,6 +213,7 @@ def plugin_run(
             found_device = bool(
                 enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_DINPUT_PID)
             )
+            test_mode = bool(enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_TEST_PID))
         except Exception:
             logger.warning("Failed finding device, skipping check.")
             time.sleep(LONGER_ERROR_DELAY)
@@ -234,7 +237,7 @@ def plugin_run(
                 logger.error(f"Failed to set device into dinput mode.\n{type(e)}: {e}")
                 time.sleep(1)
 
-        if not found_device:
+        if not found_device and not test_mode:
             if first:
                 logger.info("Controller not found. Waiting...")
             time.sleep(FIND_DELAY)
@@ -245,7 +248,15 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit, woke_up)
+            controller_loop(
+                conf.copy(),
+                should_exit,
+                updated,
+                dconf,
+                emit,
+                woke_up,
+                test_mode=test_mode,
+            )
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -291,9 +302,11 @@ def controller_loop(
     dconf: dict,
     emit: Emitter,
     woke_up: TEvent,
+    test_mode: bool = False,
 ):
     debug = DEBUG_MODE
 
+    logger.info(f"Test mode: {test_mode}")
     # Output
     d_producers, d_outs, d_params = get_outputs(
         conf["controller_mode"],
@@ -305,7 +318,7 @@ def controller_loop(
     # Inputs
     d_xinput = GenericGamepadEvdev(
         vid=[MSI_CLAW_VID],
-        pid=[MSI_CLAW_DINPUT_PID],
+        pid=[MSI_CLAW_DINPUT_PID, MSI_CLAW_TEST_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
@@ -368,13 +381,26 @@ def controller_loop(
         output_timestamps=True,
     )
 
-    d_vend = ClawDInputHidraw(
-        vid=[MSI_CLAW_VID],
-        pid=[MSI_CLAW_DINPUT_PID],
-        usage_page=[0xFFF0],
-        usage=[0x0040],
-        required=True,
-    )
+    if test_mode:
+        d_vend = ClawDInputHidraw(
+            vid=[MSI_CLAW_VID],
+            pid=[MSI_CLAW_TEST_PID],
+            application=[
+                0xFFF00040,
+                0x00010005,
+                0xFF000000,
+            ],
+            required=True,
+            test_mode=True,
+        )
+    else:
+        d_vend = ClawDInputHidraw(
+            vid=[MSI_CLAW_VID],
+            pid=[MSI_CLAW_DINPUT_PID],
+            usage_page=[0xFFF0],
+            usage=[0x0040],
+            required=True,
+        )
 
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
@@ -397,8 +423,9 @@ def controller_loop(
         prepare(d_xinput)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
-        prepare(d_kbd_2)
-        prepare(d_mouse)
+        if not test_mode:
+            prepare(d_kbd_2)
+            prepare(d_mouse)
         for d in d_producers:
             prepare(d)
         prepare(d_vend)

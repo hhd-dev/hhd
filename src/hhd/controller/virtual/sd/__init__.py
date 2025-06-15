@@ -323,6 +323,6 @@ class SteamdeckController(Producer, Consumer):
         # sign_crc32_inplace(self.report, DS5_INPUT_CRC32_SEED)
         if send or failover:
             new_rep[4:8] = self.i.to_bytes(4, byteorder="little", signed=False)
-            self.i = self.i + 1 if self.i < 0xFFFF else 0
+            self.i = self.i + 1 if self.i < 0xFFFFFFFF else 0
             self.dev.send_input_report(self.report)
             # logger.info(self.report.hex())
