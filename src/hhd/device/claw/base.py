@@ -82,6 +82,11 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         super().__init__(*args, **kwargs)
         self.init = False
         self.test_mode = test_mode
+    
+    def write(self, cmd: bytes) -> None:
+        if not self.dev:
+            return
+        self.dev.write(cmd + bytes([0x00] * (64 - len(cmd))))
 
     def consume(self, events: Sequence[Event]) -> None:
         if not self.dev:
@@ -106,7 +111,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                         00,
                     ]
                 )
-                self.dev.write(cmd)
+                self.write(cmd)
             elif ev["type"] == "led" and not self.test_mode:
                 if ev["mode"] == "solid":
                     cmd = set_rgb_cmd(
@@ -115,7 +120,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                         ev["green"],
                         ev["blue"],
                     )
-                    self.dev.write(cmd)
+                    self.write(cmd)
                 elif ev["mode"] == "disabled":
                     cmd = set_rgb_cmd(
                         0,
@@ -123,7 +128,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                         0,
                         0,
                     )
-                    self.dev.write(cmd)
+                    self.write(cmd)
 
     def set_dinput_mode(self, init: bool = False) -> None:
         if not self.dev:
@@ -131,17 +136,17 @@ class ClawDInputHidraw(GenericGamepadHidraw):
 
         # Make sure M1/M2 are recognizable
         if init:
-            self.dev.write(CLAW_SET_M1)
+            self.write(CLAW_SET_M1)
             time.sleep(0.3)
-            self.dev.write(CLAW_SET_M2)
+            self.write(CLAW_SET_M2)
             time.sleep(0.3)
-            self.dev.write(CLAW_SYNC_ROM)
+            self.write(CLAW_SYNC_ROM)
             time.sleep(0.3)
-            self.dev.write(CLAW_SET_MSI)
+            self.write(CLAW_SET_MSI)
             time.sleep(2)
 
         # Set the device to dinput mode
-        self.dev.write(CLAW_SET_DINPUT)
+        self.write(CLAW_SET_DINPUT)
 
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
