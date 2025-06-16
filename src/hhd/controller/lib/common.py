@@ -111,55 +111,55 @@ def encode_axis(buff: bytearray, t: AM, val: float):
 
     match t.type:
         case "i32":
-            if not new_val:
+            if new_val is None:
                 new_val = int(((1 << 31) - 1) * val)
             buff[t.loc >> 3 : (t.loc >> 3) + 4] = int.to_bytes(
                 new_val, 4, t.order, signed=True
             )
         case "u32":
-            if not new_val:
+            if new_val is None:
                 new_val = int(((1 << 32) - 1) * val)
             buff[t.loc >> 3 : (t.loc >> 3) + 4] = int.to_bytes(
                 new_val, 4, t.order, signed=False
             )
         case "m32":
-            if not new_val:
+            if new_val is None:
                 new_val = int(round(((1 << 31) - 1) * val + (1 << 31) - 1))
             buff[t.loc >> 3 : (t.loc >> 3) + 4] = int.to_bytes(
                 new_val, 4, t.order, signed=False
             )
         case "i16":
-            if not new_val:
+            if new_val is None:
                 new_val = int(((1 << 15) - 1) * val)
             buff[t.loc >> 3 : (t.loc >> 3) + 2] = int.to_bytes(
                 new_val, 2, t.order, signed=True
             )
         case "u16":
-            if not new_val:
+            if new_val is None:
                 new_val = int(((1 << 16) - 1) * val)
             buff[t.loc >> 3 : (t.loc >> 3) + 2] = int.to_bytes(
                 new_val, 2, t.order, signed=False
             )
         case "m16":
-            if not new_val:
+            if new_val is None:
                 new_val = int(round(((1 << 15) - 1) * val + (1 << 15) - 1))
             buff[t.loc >> 3 : (t.loc >> 3) + 2] = int.to_bytes(
                 new_val, 2, t.order, signed=False
             )
         case "i8":
-            if not new_val:
+            if new_val is None:
                 new_val = int(((1 << 7) - 1) * val)
             buff[t.loc >> 3 : (t.loc >> 3) + 1] = int.to_bytes(
                 new_val, 1, t.order, signed=True
             )
         case "u8":
-            if not new_val:
+            if new_val is None:
                 new_val = int(((1 << 8) - 1) * val)
             buff[t.loc >> 3 : (t.loc >> 3) + 1] = int.to_bytes(
                 new_val, 1, t.order, signed=False
             )
         case "m8":
-            if not new_val:
+            if new_val is None:
                 new_val = int(round(((1 << 7) - 1) * val + (1 << 7) - 1))
             buff[t.loc >> 3 : (t.loc >> 3) + 1] = int.to_bytes(
                 new_val, 1, t.order, signed=False
