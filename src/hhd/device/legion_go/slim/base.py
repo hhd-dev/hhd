@@ -231,7 +231,7 @@ def controller_loop_xinput(
     d_producers, d_outs, d_params = get_outputs(
         conf["xinput"],
         None,
-        conf["imu"].to(bool),
+        motion=True,
         emit=emit,
         touchpad_enable=touchpad_enable,  # type: ignore
         rgb_modes={

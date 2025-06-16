@@ -15,13 +15,6 @@ children:
   #
   # Common settings
   #
-  imu:
-    type: bool
-    title: Motion Support
-    hint: >-
-      Enable gyroscope/accelerometer (IMU) support
-    default: True
-
   mapping:
     type: mode
     title: Mapping Style
