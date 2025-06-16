@@ -132,7 +132,8 @@ def get_outputs(
             d = SteamdeckController(
                 name="Steam Controller (HHD)",
                 pid=0x12FF,
-                touchpad=uses_touch
+                touchpad=uses_touch,
+                sync_gyro=conf.get("hori_steam.sync_gyro", True),
             )
             producers.append(d)
             consumers.append(d)

@@ -51,13 +51,14 @@ class SteamdeckController(Producer, Consumer):
         pid,
         name,
         touchpad: bool = False,
+        sync_gyro: bool = True,
     ) -> None:
         self.available = False
         self.dev = None
         self.start = 0
         self.pid = pid
         self.name = name
-        self.sync_gyro = False
+        self.sync_gyro = sync_gyro
         self.enable_touchpad = touchpad
         self.report = bytearray(64)
         self.i = 0
