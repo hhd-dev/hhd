@@ -51,9 +51,15 @@ SD_AXIS_MAP = {
     "touchpad_x": AM((20 << 3), "u16", scale=2**14 - 2, offset=2**14),
     "touchpad_y": AM((22 << 3), "u16", scale=2**14 - 2, offset=2**14),
     "touchpad_force": AM((58 << 3), "u16", scale=2**14 - 2),
-    "accel_x": AM((24 << 3), "i16", scale=1600, bounds=(-(2**15) + 2, 2**15 - 1)),
-    "accel_y": AM((26 << 3), "i16", scale=-1600, bounds=(-(2**15) + 2, 2**15 - 1)),
-    "accel_z": AM((28 << 3), "i16", scale=1600, bounds=(-(2**15) + 2, 2**15 - 1)),
+    "accel_x": AM(
+        (24 << 3), "i16", scale=16384 / 9.80665, bounds=(-(2**15) + 2, 2**15 - 1)
+    ),
+    "accel_y": AM(
+        (26 << 3), "i16", scale=-16384 / 9.80665, bounds=(-(2**15) + 2, 2**15 - 1)
+    ),
+    "accel_z": AM(
+        (28 << 3), "i16", scale=16384 / 9.80665, bounds=(-(2**15) + 2, 2**15 - 1)
+    ),
     "gyro_x": AM((30 << 3), "i16", scale=16 * 180 / 3.14),
     "gyro_z": AM((32 << 3), "i16", scale=-16 * 180 / 3.14),
     "gyro_y": AM((34 << 3), "i16", scale=16 * 180 / 3.14),
