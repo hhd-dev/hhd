@@ -35,7 +35,6 @@ CLAW_SET_M1 = bytes(
 CLAW_SET_M2 = bytes(
     [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, 0x01, 0x1F, 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
 )
-CLAW_SYNC_ROM = bytes([0x0F, 0x00, 0x00, 0x3C, 0x22])
 CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02, 0x00])
 CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
 
@@ -82,7 +81,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         super().__init__(*args, **kwargs)
         self.init = False
         self.test_mode = test_mode
-    
+
     def write(self, cmd: bytes) -> None:
         if not self.dev:
             return
@@ -134,19 +133,10 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         if not self.dev:
             return
 
-        # Make sure M1/M2 are recognizable
-        if init:
-            self.write(CLAW_SET_M1)
-            time.sleep(0.3)
-            self.write(CLAW_SET_M2)
-            # time.sleep(0.3)
-            # self.write(CLAW_SYNC_ROM)
-            time.sleep(0.3)
-            self.write(CLAW_SET_MSI)
-            time.sleep(2)
-
         # Set the device to dinput mode
         self.write(CLAW_SET_DINPUT)
+        self.write(CLAW_SET_M1)
+        self.write(CLAW_SET_M2)
 
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
