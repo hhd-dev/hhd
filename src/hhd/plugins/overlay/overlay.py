@@ -44,12 +44,12 @@ def inject_overlay(fn: str, display: str, ctx: Context):
     return out
 
 
-def launch_overlay_de(fn: str, display: str, auth: str, ctx: Context):
+def launch_overlay_de(fn: str, display: str, auth: str | None, ctx: Context):
     out = subprocess.Popen(
         [fn],
         env={
             "HOME": expanduser("~", ctx),
-            "XAUTHORITY": auth,
+            "XAUTHORITY": auth or "",
             "DISPLAY": display,
             "HHD_MANAGED": "1",
         },

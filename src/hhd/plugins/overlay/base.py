@@ -407,7 +407,7 @@ class OverlayService:
         auth = find_x11_auth(self.ctx)
         if not auth:
             logger.warning("Could not find X11 authority file.")
-            return False
+            # return False
         logger.info(f"Found X11 authority file:\n'{auth}'")
         disp = find_x11_display(self.ctx)
         if not disp:
