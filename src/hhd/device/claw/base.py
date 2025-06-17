@@ -55,8 +55,8 @@ ADDR_0163 = {
 }
 ADDR_0166 = {
     "rgb": [0x02, 0x4A],
-    "m1": [0x00, 0x7A],
-    "m2": [0x01, 0x1F],
+    "m1": [0x00, 0xbA],
+    "m2": [0x01, 0x63],
 }
 ADDR_DEFAULT = ADDR_0163
 
@@ -99,6 +99,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
 
         if self.addr is None:
             ver = (self.info or {}).get("release_number", 0x0)
+            logger.info(f"Device version: {ver:#04x}")
             if ver < 0x0166:
                 self.addr = ADDR_0163
             else:
@@ -157,10 +158,15 @@ class ClawDInputHidraw(GenericGamepadHidraw):
 
         # Set the device to dinput mode
         self.write(CLAW_SET_DINPUT)
-        self.write(CLAW_SET_M1(self.addr or ADDR_DEFAULT))
-        self.write(CLAW_SET_M2(self.addr or ADDR_DEFAULT))
-        self.write(CLAW_SET_MSI)
-        self.write(CLAW_SET_DINPUT)
+        if init:
+            time.sleep(0.1)
+            self.write(CLAW_SET_M1(self.addr or ADDR_DEFAULT))
+            time.sleep(0.1)
+            self.write(CLAW_SET_M2(self.addr or ADDR_DEFAULT))
+            time.sleep(0.1)
+            self.write(CLAW_SET_MSI)
+            time.sleep(0.1)
+            self.write(CLAW_SET_DINPUT)
 
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
@@ -250,7 +256,7 @@ def plugin_run(
             )
             try:
                 d_vend.open()
-                d_vend.set_dinput_mode()
+                d_vend.set_dinput_mode(init=True)
                 has_init = True
                 d_vend.close(True)
                 time.sleep(2)
@@ -475,7 +481,7 @@ def controller_loop(
 
             if not has_init or desktop_mode or (switch_to_dinput and start > switch_to_dinput):
                 logger.info("Setting controller to dinput mode.")
-                d_vend.set_dinput_mode()
+                d_vend.set_dinput_mode(init=not has_init)
                 has_init = True
                 switch_to_dinput = None
             elif woke_up.is_set():
