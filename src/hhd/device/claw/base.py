@@ -53,16 +53,10 @@ ADDR_0163 = {
     "m1": [0x00, 0x7A],
     "m2": [0x01, 0x1F],
 }
-
 ADDR_0166 = {
     "rgb": [0x02, 0x4A],
     "m1": [0x00, 0x7A],
     "m2": [0x01, 0x1F],
-}
-
-ADDRS = {
-    0x0163: ADDR_0163,
-    0x0166: ADDR_0166,
 }
 ADDR_DEFAULT = ADDR_0163
 
@@ -104,9 +98,11 @@ class ClawDInputHidraw(GenericGamepadHidraw):
             return
 
         if self.addr is None:
-            self.addr = ADDRS.get(
-                (self.info or {}).get("release_number", 0x0), ADDR_DEFAULT
-            )
+            ver = (self.info or {}).get("release_number", 0x0)
+            if ver < 0x0166:
+                self.addr = ADDR_0163
+            else:
+                self.addr = ADDR_0166
 
         self.dev.write(cmd + bytes([0x00] * (64 - len(cmd))))
         logger.debug(f"Sent command: {cmd.hex()}")
