@@ -33,7 +33,7 @@ CLAW_SET_M1 = lambda a: bytes(
     [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a["m1"], 0x05, 0x01, 0x00, 0x00, 0x11, 0x00]
 )
 CLAW_SET_M2 = lambda a: bytes(
-    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a["m1"], 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
+    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a["m2"], 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
 )
 CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02, 0x00])
 CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
@@ -159,6 +159,8 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         self.write(CLAW_SET_DINPUT)
         self.write(CLAW_SET_M1(self.addr or ADDR_DEFAULT))
         self.write(CLAW_SET_M2(self.addr or ADDR_DEFAULT))
+        self.write(CLAW_SET_MSI)
+        self.write(CLAW_SET_DINPUT)
 
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
@@ -237,6 +239,7 @@ def plugin_run(
             found_device = True
             is_xinput = False
 
+        has_init = False
         if is_xinput:
             d_vend = ClawDInputHidraw(
                 vid=[MSI_CLAW_VID],
@@ -247,7 +250,8 @@ def plugin_run(
             )
             try:
                 d_vend.open()
-                d_vend.set_dinput_mode(init=True)
+                d_vend.set_dinput_mode()
+                has_init = True
                 d_vend.close(True)
                 time.sleep(2)
             except Exception as e:
@@ -273,6 +277,7 @@ def plugin_run(
                 emit,
                 woke_up,
                 test_mode=test_mode,
+                has_init=has_init,
             )
             repeated_fail = False
         except Exception as e:
@@ -320,6 +325,7 @@ def controller_loop(
     emit: Emitter,
     woke_up: TEvent,
     test_mode: bool = False,
+    has_init: bool = False,
 ):
     debug = DEBUG_MODE
 
@@ -467,16 +473,16 @@ def controller_loop(
             d_mouse.desktop = False
             d_kbd_2.desktop = False
 
-            if desktop_mode or (switch_to_dinput and start > switch_to_dinput):
+            if not has_init or desktop_mode or (switch_to_dinput and start > switch_to_dinput):
                 logger.info("Setting controller to dinput mode.")
                 d_vend.set_dinput_mode()
+                has_init = True
                 switch_to_dinput = None
-            # elif woke_up.is_set():
-            #     woke_up.clear()
-            #     # Switch to dinput after 4 seconds without input to avoid
-            #     # being stuck in desktop mode, as not all buttons trigger
-            #     # the other quirk (especially bumpers)
-            #     switch_to_dinput = time.perf_counter() + 4
+            elif woke_up.is_set():
+                woke_up.clear()
+                # Switch to dinput after 2 seconds without input to avoid
+                # being stuck in desktop mode
+                switch_to_dinput = time.perf_counter() + 2
 
             evs = multiplexer.process(evs)
             if evs:
