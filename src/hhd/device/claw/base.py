@@ -29,11 +29,11 @@ LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
-CLAW_SET_M1 = bytes(
-    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, 0x00, 0x7A, 0x05, 0x01, 0x00, 0x00, 0x11, 0x00]
+CLAW_SET_M1 = lambda a: bytes(
+    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a["m1"], 0x05, 0x01, 0x00, 0x00, 0x11, 0x00]
 )
-CLAW_SET_M2 = bytes(
-    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, 0x01, 0x1F, 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
+CLAW_SET_M2 = lambda a: bytes(
+    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a["m1"], 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
 )
 CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02, 0x00])
 CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
@@ -48,8 +48,25 @@ KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
 
+ADDR_0163 = {
+    "rgb": [0x01, 0xFA],
+    "m1": [0x00, 0x7A],
+    "m2": [0x01, 0x1F],
+}
 
-def set_rgb_cmd(brightness, red, green, blue):
+ADDR_0166 = {
+    "rgb": [0x02, 0x4A],
+    "m1": [0x00, 0x7A],
+    "m2": [0x01, 0x1F],
+}
+
+ADDRS = {
+    0x0163: ADDR_0163,
+    0x0166: ADDR_0166,
+}
+ADDR_DEFAULT = ADDR_0163
+
+def set_rgb_cmd(brightness, red, green, blue, addr: dict = ADDR_DEFAULT) -> bytes:
     return bytes(
         [
             # Preamble
@@ -61,8 +78,7 @@ def set_rgb_cmd(brightness, red, green, blue):
             0x21,
             0x01,
             # Start at
-            0x01,
-            0xFA,
+            *addr["rgb"],
             # Write 31 bytes
             0x20,
             # Index, Frame num, Effect, Speed, Brightness
@@ -81,11 +97,19 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         super().__init__(*args, **kwargs)
         self.init = False
         self.test_mode = test_mode
+        self.addr = None
 
     def write(self, cmd: bytes) -> None:
         if not self.dev:
             return
+
+        if self.addr is None:
+            self.addr = ADDRS.get(
+                (self.info or {}).get("release_number", 0x0), ADDR_DEFAULT
+            )
+
         self.dev.write(cmd + bytes([0x00] * (64 - len(cmd))))
+        logger.debug(f"Sent command: {cmd.hex()}")
 
     def consume(self, events: Sequence[Event]) -> None:
         if not self.dev:
@@ -118,6 +142,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                         ev["red"],
                         ev["green"],
                         ev["blue"],
+                        self.addr or ADDR_DEFAULT,
                     )
                     self.write(cmd)
                 elif ev["mode"] == "disabled":
@@ -126,6 +151,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                         0,
                         0,
                         0,
+                        self.addr or ADDR_DEFAULT,
                     )
                     self.write(cmd)
 
@@ -135,8 +161,8 @@ class ClawDInputHidraw(GenericGamepadHidraw):
 
         # Set the device to dinput mode
         self.write(CLAW_SET_DINPUT)
-        self.write(CLAW_SET_M1)
-        self.write(CLAW_SET_M2)
+        self.write(CLAW_SET_M1(self.addr or ADDR_DEFAULT))
+        self.write(CLAW_SET_M2(self.addr or ADDR_DEFAULT))
 
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(

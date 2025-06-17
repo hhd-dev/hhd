@@ -58,6 +58,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.usage_page = usage_page
         self.usage = usage
         self.interface = interface
+        self.info = None
         self.report_size = report_size
 
         self.application = application
@@ -99,6 +100,7 @@ class GenericGamepadHidraw(Producer, Consumer):
                 continue
             self.path = d["path"]
             self.dev = Device(path=self.path)
+            self.info = d
             self.fd = self.dev.fd
             logger.info(
                 f"Found device {hexify(d['vendor_id'])}:{hexify(d['product_id'])}:\n"
