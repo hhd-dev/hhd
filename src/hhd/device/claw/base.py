@@ -48,11 +48,13 @@ KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
 
+# 0211
 ADDR_0163 = {
     "rgb": [0x01, 0xFA],
     "m1": [0x00, 0x7A],
     "m2": [0x01, 0x1F],
 }
+# 0217
 ADDR_0166 = {
     "rgb": [0x02, 0x4A],
     "m1": [0x00, 0xBA],
@@ -101,11 +103,12 @@ class ClawDInputHidraw(GenericGamepadHidraw):
 
         if self.addr is None:
             ver = (self.info or {}).get("release_number", 0x0)
+            major = ver >> 8
             logger.info(f"Device version: {ver:#04x}")
-            if ver < 0x0166:
-                self.addr = ADDR_0163
-            else:
+            if (major == 1 and ver >= 0x0166) or (major == 2 and ver >= 0x0217):
                 self.addr = ADDR_0166
+            else:
+                self.addr = ADDR_0163
 
         return out
 
