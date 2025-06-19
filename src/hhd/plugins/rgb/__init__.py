@@ -9,7 +9,7 @@ from hhd.utils import get_distro_color, hsb_to_rgb
 logger = logging.getLogger(__name__)
 
 RGB_SET_TIMES = 2
-RGB_SET_INTERVAL = 5
+RGB_SET_INTERVAL = 10
 RGB_MIN_INTERVAL = 0.1
 RGB_QUEUE_RGB = 1.5
 
