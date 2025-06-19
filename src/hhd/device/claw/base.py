@@ -30,21 +30,7 @@ LONGER_ERROR_MARGIN = 1.3
 logger = logging.getLogger(__name__)
 
 CLAW_SET_M1M2 = lambda a, btn: bytes(
-    [
-        0x0F,
-        0x00,
-        0x00,
-        0x3C,
-        0x21,
-        0x01,
-        *a[btn],
-        0x05,
-        0x01,
-        0x00,
-        0x00,
-        0x12,
-        0x00
-    ]
+    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a[btn], 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
 )
 CLAW_SYNC_ROM = bytes([0x0F, 0x00, 0x00, 0x3C, 0x22])
 
@@ -127,7 +113,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         if not self.dev:
             return
 
-        self.dev.write(cmd + bytes([0x00] * (64 - len(cmd))))
+        self.dev.write(cmd + bytes([0x00] * ((64 - len(cmd)) if len(cmd) < 64 else 0)))
         logger.info(f"Sent command: {cmd.hex()}")
         # # Receive ack
         # for _ in range(10):
