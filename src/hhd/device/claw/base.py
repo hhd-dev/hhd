@@ -29,14 +29,28 @@ LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
-CLAW_SET_M1 = lambda a: bytes(
-    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a["m1"], 0x05, 0x01, 0x00, 0x00, 0x11, 0x00]
+CLAW_SET_M1M2 = lambda a, btn: bytes(
+    [
+        0x0F,
+        0x00,
+        0x00,
+        0x3C,
+        0x21,
+        0x01,
+        *a[btn],
+        0x05,
+        0x01,
+        0x00,
+        0x00,
+        0x12,
+        0x00
+    ]
 )
-CLAW_SET_M2 = lambda a: bytes(
-    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a["m2"], 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
-)
+CLAW_SYNC_ROM = bytes([0x0F, 0x00, 0x00, 0x3C, 0x22])
+
 CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02, 0x00])
 CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
+CLAW_SET_DESKTOP = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x04, 0x00])
 
 MSI_CLAW_VID = 0x0DB0
 MSI_CLAW_XINPUT_PID = 0x1901
@@ -55,10 +69,11 @@ ADDR_0163 = {
 }
 ADDR_0166 = {
     "rgb": [0x02, 0x4A],
-    "m1": [0x00, 0xbA],
+    "m1": [0x00, 0xBA],
     "m2": [0x01, 0x63],
 }
 ADDR_DEFAULT = ADDR_0163
+
 
 def set_rgb_cmd(brightness, red, green, blue, addr: dict = ADDR_DEFAULT) -> bytes:
     return bytes(
@@ -93,9 +108,10 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         self.test_mode = test_mode
         self.addr = None
 
-    def write(self, cmd: bytes) -> None:
-        if not self.dev:
-            return
+    def open(self):
+        out = super().open()
+        if not out:
+            return out
 
         if self.addr is None:
             ver = (self.info or {}).get("release_number", 0x0)
@@ -105,8 +121,20 @@ class ClawDInputHidraw(GenericGamepadHidraw):
             else:
                 self.addr = ADDR_0166
 
+        return out
+
+    def write(self, cmd: bytes) -> None:
+        if not self.dev:
+            return
+
         self.dev.write(cmd + bytes([0x00] * (64 - len(cmd))))
-        logger.debug(f"Sent command: {cmd.hex()}")
+        logger.info(f"Sent command: {cmd.hex()}")
+        # # Receive ack
+        # for _ in range(10):
+        #     # 10 00 00 3c 06
+        #     cmd = self.dev.read(64)
+        #     if cmd and cmd[4] == 0x06:
+        #         break
 
     def consume(self, events: Sequence[Event]) -> None:
         if not self.dev:
@@ -131,7 +159,7 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                         00,
                     ]
                 )
-                self.write(cmd)
+                self.dev.write(cmd)
             elif ev["type"] == "led" and not self.test_mode:
                 if ev["mode"] == "solid":
                     cmd = set_rgb_cmd(
@@ -156,17 +184,20 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         if not self.dev:
             return
 
+        # Make sure M1/M2 are recognizable
+        if init:
+            time.sleep(0.3)
+            self.write(CLAW_SET_M1M2(self.addr or ADDR_DEFAULT, "m1"))
+            time.sleep(0.5)
+            self.write(CLAW_SET_M1M2(self.addr or ADDR_DEFAULT, "m2"))
+            time.sleep(0.5)
+            self.write(CLAW_SYNC_ROM)
+            time.sleep(0.5)
+            self.write(CLAW_SET_MSI)
+            time.sleep(2)
+
         # Set the device to dinput mode
         self.write(CLAW_SET_DINPUT)
-        if init:
-            time.sleep(0.1)
-            self.write(CLAW_SET_M1(self.addr or ADDR_DEFAULT))
-            time.sleep(0.1)
-            self.write(CLAW_SET_M2(self.addr or ADDR_DEFAULT))
-            time.sleep(0.1)
-            self.write(CLAW_SET_MSI)
-            time.sleep(0.1)
-            self.write(CLAW_SET_DINPUT)
 
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
@@ -245,7 +276,6 @@ def plugin_run(
             found_device = True
             is_xinput = False
 
-        has_init = False
         if is_xinput:
             d_vend = ClawDInputHidraw(
                 vid=[MSI_CLAW_VID],
@@ -257,7 +287,6 @@ def plugin_run(
             try:
                 d_vend.open()
                 d_vend.set_dinput_mode(init=True)
-                has_init = True
                 d_vend.close(True)
                 time.sleep(2)
             except Exception as e:
@@ -283,7 +312,6 @@ def plugin_run(
                 emit,
                 woke_up,
                 test_mode=test_mode,
-                has_init=has_init,
             )
             repeated_fail = False
         except Exception as e:
@@ -331,7 +359,6 @@ def controller_loop(
     emit: Emitter,
     woke_up: TEvent,
     test_mode: bool = False,
-    has_init: bool = False,
 ):
     debug = DEBUG_MODE
 
@@ -479,10 +506,9 @@ def controller_loop(
             d_mouse.desktop = False
             d_kbd_2.desktop = False
 
-            if not has_init or desktop_mode or (switch_to_dinput and start > switch_to_dinput):
+            if desktop_mode or (switch_to_dinput and start > switch_to_dinput):
                 logger.info("Setting controller to dinput mode.")
-                d_vend.set_dinput_mode(init=not has_init)
-                has_init = True
+                d_vend.set_dinput_mode()
                 switch_to_dinput = None
             elif woke_up.is_set():
                 woke_up.clear()
