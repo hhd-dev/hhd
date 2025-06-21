@@ -517,6 +517,7 @@ class AuraPlugin(HHDPlugin):
     ):
         self.emit = emit
         self.queue_apply = {}
+        self.tdp_changes = False
         self.context = context
         self.enabled = False
         self.loaded_devices = set()
@@ -612,6 +613,8 @@ class AuraPlugin(HHDPlugin):
         curr = conf["rgb.aura"]
         if self.prev_cfg is not None:
             power_settings = conf.get("rgb.aura.power", None)
+            if power_settings is not None:
+                self.tdp_changes = power_settings.get("tdp_changes", False)
 
             # Set per device settings
             for d in self.devices.values():
@@ -737,6 +740,10 @@ class AuraPlugin(HHDPlugin):
         self.devices = {}
 
     def notify(self, events):
+        if not self.tdp_changes:
+            return
+
+        color = None
         for ev in events:
             if ev["type"] == "special":
                 match ev["event"]:
@@ -751,35 +758,41 @@ class AuraPlugin(HHDPlugin):
                     case _:
                         color = None
 
-                if color is not None:
-                    for d in self.devices.values():
-                        if d["disabled"]:
-                            continue
-                        try:
-                            cmd = rgb_command(
-                                "solid",
-                                "left",
-                                "medium",
-                                *color,
-                                0,  # o_red
-                                0,  # o_green
-                                0,  # o_blue
-                            )
-                            d["dev"].send_feature_report(cmd)
-                            d["dev"].send_feature_report(RGB_SET(RGB_AURA_ID))
-                            self.queue_apply[d["cfg_name"]] = (
-                                time.perf_counter() + RGB_TDP_DELAY
-                            )
-                        except Exception as e:
-                            logger.error(
-                                f"Failed to set TDP cycle color on {d['name']} ({d['vid']:04x}:{d['pid']:04x}): {e}",
-                            )
-                            d["disabled"] = True
-                            try:
-                                d["dev"].close()
-                            except Exception:
-                                pass
+        if color is None:
+            return
 
+        error = False
+        for d in self.devices.values():
+            if d["disabled"]:
+                continue
+            try:
+                cmd = rgb_command(
+                    "solid",
+                    "left",
+                    "medium",
+                    *color,
+                    0,  # o_red
+                    0,  # o_green
+                    0,  # o_blue
+                )
+                d["dev"].send_feature_report(cmd)
+                d["dev"].send_feature_report(RGB_SET(RGB_AURA_ID))
+                self.queue_apply[d["cfg_name"]] = (
+                    time.perf_counter() + RGB_TDP_DELAY
+                )
+            except Exception as e:
+                logger.error(
+                    f"Failed to set TDP cycle color on {d['name']} ({d['vid']:04x}:{d['pid']:04x}): {e}",
+                )
+                d["disabled"] = True
+                error = True
+                try:
+                    d["dev"].close()
+                except Exception:
+                    pass
+
+        if error:
+            self.emit({"type": "settings"})
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):

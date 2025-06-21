@@ -20,6 +20,12 @@ rgb:
         title: RGB Power Settings
         tags: [non-essential, power]
         children:
+          tdp_changes:
+            type: bool
+            title: "On TDP Changes"
+            default: True
+            tags: [non-essential, power-tdp]
+
           boot:
             type: bool
             title: "Boot"
@@ -43,12 +49,6 @@ rgb:
             title: "Shutdown"
             default: False
             tags: [non-essential, power-shutdown]
-          
-          tdp_changes:
-            type: bool
-            title: "On TDP Changes"
-            default: True
-            tags: [non-essential, power-tdp]
 
 hhd:
   settings:
