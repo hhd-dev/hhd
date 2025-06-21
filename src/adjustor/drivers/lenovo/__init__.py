@@ -61,10 +61,10 @@ class LenovoDriverPlugin(HHDPlugin):
             self.fppt_ratio = 41/30
             self.performance_tdp = 20
 
-        bios_version = get_bios_version()
         if legion_s:
             self.power_light_v2 = False
         else:
+            bios_version = get_bios_version()
             logger.info(f"Lenovo BIOS version: {bios_version}")
             self.power_light_v2 = bios_version >= 35
 
