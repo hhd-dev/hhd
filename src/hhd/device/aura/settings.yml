@@ -1,0 +1,26 @@
+rgb:
+  aura:
+    type: container
+    title: Aura Settings
+    tags: [ hide-title ]
+    children:
+      brightness:
+        type: multiple
+        title: Brightness
+        tags: [non-essential, ordinal]
+        options:
+          disabled: "Off"
+          low: "Low"
+          medium: "Medium"
+          high: "High"
+        default: medium
+
+hhd:
+  settings:
+    type: container
+
+    children:
+      aura:
+        type: bool
+        title: "Enable Aura RGB support."
+        default: True

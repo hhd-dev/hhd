@@ -19,6 +19,13 @@ pulse:
   hint: >-
     Slowly pulses the LEDs as a prespecified color.
 
+strobe:
+  type: container
+  title: Strobe
+  tags: [ non-essential, rgb, pulse ]
+  hint: >-
+    Strobes the LEDs as a prespecified color.
+
 rainbow:
   type: container
   title: Rainbow
@@ -32,6 +39,13 @@ spiral:
   tags: [ non-essential, spiral ]
   hint: >-
     Creates an RGB spiral around the stick.
+
+cycle:
+  type: container
+  title: Cycle
+  tags: [ non-essential, spiral ]
+  hint: >-
+    Cycles through the different colors.
 
 duality:
   type: container
