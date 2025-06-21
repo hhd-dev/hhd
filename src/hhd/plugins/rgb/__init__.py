@@ -33,6 +33,7 @@ class RgbPlugin(HHDPlugin):
         self.uniq = None
         self.restore = None
         self.last_ev = None
+        self.restore_on_ac = False
 
         self.prev = None
 
@@ -48,7 +49,11 @@ class RgbPlugin(HHDPlugin):
         for ev in events:
             # Certain ayaneo devices reset LEDs when being
             # plugged in
-            if ev["type"] == "acpi" and ev["event"] in ("ac", "dc"):
+            if (
+                self.restore_on_ac
+                and ev["type"] == "acpi"
+                and ev["event"] in ("ac", "dc")
+            ):
                 self.init = True
                 self.init_count = RGB_SET_TIMES - 1
             elif ev["type"] == "special":
@@ -214,6 +219,7 @@ class RgbPlugin(HHDPlugin):
 
         rgb = ccap["rgb"]
         refresh_settings = False
+        self.restore_on_ac = ccap.get("rgb_resets_on_ac", False)
         if rgb:
             # Refresh on initial load
             if not self.modes:

@@ -38,6 +38,7 @@ def get_outputs(
     dual_motion: bool = False,
     rgb_modes: Mapping[RgbMode, Sequence[RgbSettings]] | None = None,
     rgb_zones: RgbZones = "mono",
+    rgb_resets_on_ac: bool = False,
     controller_disabled: bool = False,
     touchpad_enable: Literal["disabled", "gamemode", "always"] | None = None,
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
@@ -269,6 +270,7 @@ def get_outputs(
             "noob_mode": noob_mode,
             "has_qam": has_qam,
             "supports_qam": not controller_disabled and controller != "hidden",
+            "rgb_resets_on_ac": rgb_resets_on_ac,
         },
     )
 

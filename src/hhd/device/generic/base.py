@@ -124,6 +124,7 @@ def controller_loop(
         dgyro and conf["imu"].to(bool),
         emit=emit,
         rgb_modes={"disabled": [], "solid": ["color"]} if is_led_supported() else None,
+        rgb_resets_on_ac=is_led_supported(),
     )
     motion = d_params.get("uses_motion", True)
 

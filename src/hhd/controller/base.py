@@ -170,6 +170,7 @@ class ConfigurationEvent(TypedDict):
 class RgbCapabilities(TypedDict):
     modes: dict[RgbMode, Sequence[RgbSettings]] | None
     controller: bool
+    resets_on_ac: bool
     zones: RgbZones
 
 
@@ -666,6 +667,7 @@ class Multiplexer:
                     "buttons": {},
                     "rgb": rgb,
                     "supports_qam": params.get("supports_qam", True),
+                    "resets_on_ac": params.get("rgb_resets_on_ac", False),
                 },
             )
 
