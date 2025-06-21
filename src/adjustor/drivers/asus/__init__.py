@@ -523,7 +523,9 @@ class AsusDriverPlugin(HHDPlugin):
                     f"Power adapter status switched to '{ev['event']}', resetting TDP."
                 )
                 self.queue_tdp = time.time() + APPLY_DELAY
-            elif self.cycle_tdp and ev["type"] == "special" and ev["event"] == "xbox_y":
+            elif (
+                self.cycle_tdp and ev["type"] == "special" and ev["event"] == "xbox_y"
+            ) or (ev["type"] == "special" and ev["event"] == "tdp_cycle"):
                 match self.mode:
                     case "quiet":
                         self.new_mode = "balanced"
