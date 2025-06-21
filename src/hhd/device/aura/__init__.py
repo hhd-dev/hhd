@@ -107,6 +107,7 @@ def init_rgb_dev(key: int, dev: HIDDevice):
     # for cmd in RGB_INIT_OTHER(key):
     #     dev.send_feature_report(cmd)
 
+
 class AuraDevice(TypedDict):
     vid: int
     pid: int
@@ -139,8 +140,13 @@ def monitor_brightness(emit, should_exit: Event):
             v = p.poll(2000)
             if not v:
                 continue
-            f.read()
-            f.seek(0)
+            try:
+                f.read()
+                f.seek(0)
+            except OSError as e:
+                if e.errno == 61:
+                    continue
+                raise
             emit({"type": "special", "event": "brightness_changed"})
 
 
@@ -407,9 +413,82 @@ def set_aura_brightness(
 
     error = False
     for dev in devices.values():
+        if dev["disabled"]:
+            continue
         try:
             # Set brightness on the device
             dev["dev"].send_feature_report(buf([RGB_INPUT_ID, 0xBA, 0xC5, 0xC4, c]))
+        except Exception as e:
+            logger.error(
+                "Failed to set brightness for Aura device %s (%04x:%04x): %s",
+                dev["fn"],
+                dev["vid"],
+                dev["pid"],
+                e,
+            )
+            dev["disabled"] = True
+            try:
+                dev["dev"].close()
+            except Exception:
+                pass
+            error = True
+    return error
+
+
+def get_aura_power_cmd(power) -> bytes:
+    boot = power.get("boot", False)
+    awake = power.get("awake", False)
+    sleep = power.get("sleep", False)
+    shutdown = power.get("shutdown", False)
+
+    keyb = 0
+    bar = 0
+    lid_rear = 0
+
+    if boot:
+        keyb |= (1 << 0) | (1 << 1)
+        bar |= 1 << 1
+        lid_rear |= (1 << 0) | (1 << 4)
+
+    if awake:
+        keyb |= (1 << 2) | (1 << 3)
+        bar |= (1 << 0) | (1 << 2)
+        lid_rear |= (1 << 1) | (1 << 5)
+
+    if sleep:
+        keyb |= (1 << 4) | (1 << 5)
+        bar |= 1 << 3
+        lid_rear |= (1 << 2) | (1 << 6)
+
+    if shutdown:
+        keyb |= (1 << 6) | (1 << 7)
+        bar |= 1 << 4
+        lid_rear |= (1 << 3) | (1 << 7)
+
+    return bytes(
+        [
+            RGB_AURA_ID,
+            0xBD,
+            0x01,
+            keyb,
+            bar,
+            lid_rear,
+            lid_rear,
+            0xFF,
+        ]
+    )
+
+
+def set_aura_power(power, devs) -> bool:
+    error = False
+    cmd = get_aura_power_cmd(power)
+
+    for dev in devs.values():
+        if dev["disabled"]:
+            continue
+        try:
+            # Set brightness on the device
+            dev["dev"].send_feature_report(cmd)
         except Exception as e:
             logger.error(
                 "Failed to set brightness for Aura device %s (%04x:%04x): %s",
@@ -511,9 +590,11 @@ class AuraPlugin(HHDPlugin):
             cfgs[d["cfg_name"]] = cfg
             self.loaded_devices.add(d["cfg_name"])
 
+        base_settings = base["rgb"]["aura"]["children"]
         base["rgb"]["aura"]["children"] = {
-            **base["rgb"]["aura"]["children"],
+            "brightness": base_settings["brightness"],
             **cfgs,
+            "power": base_settings["power"],
         }
 
         if self.has_wmi:
@@ -531,14 +612,9 @@ class AuraPlugin(HHDPlugin):
         error = False
         curr = conf["rgb.aura"]
         if self.prev_cfg is not None:
-            brightness = curr.get("brightness", None)
-            if brightness is not None and (
-                brightness != self.prev_cfg.get("brightness", None)
-                or self.init_brightness
-            ):
-                error |= set_aura_brightness(brightness, self.devices, self.has_wmi)
-                self.init_brightness = False
+            power_settings = conf.get("rgb.aura.power", None)
 
+            # Set per device settings
             for d in self.devices.values():
                 k = d["cfg_name"]
                 if k not in self.loaded_devices:
@@ -571,6 +647,12 @@ class AuraPlugin(HHDPlugin):
                 try:
                     if init:
                         init_rgb_dev(RGB_AURA_ID, d["dev"])
+                        if power_settings is not None:
+                            # Set power settings on init
+                            d["dev"].send_feature_report(
+                                get_aura_power_cmd(power_settings),
+                            )
+
                         # Needs time to initialize, get it next cycle
                         self.queue_apply[k] = curr_t + RGB_APPLY_DELAY
                     else:
@@ -594,6 +676,22 @@ class AuraPlugin(HHDPlugin):
                         pass
                     error = True
                     continue
+
+            # Set common settings (allow to init)
+            brightness = curr.get("brightness", None)
+            if brightness is not None and (
+                brightness != self.prev_cfg.get("brightness", None)
+                or self.init_brightness
+            ):
+                error |= set_aura_brightness(brightness, self.devices, self.has_wmi)
+                self.init_brightness = False
+
+            if (
+                power_settings is not None
+                and self.prev_cfg.get("power", None)
+                and (power_settings != self.prev_cfg.get("power", None))
+            ):
+                error |= set_aura_power(power_settings, self.devices)
 
         self.devices, updated = get_aura_devices(self.devices)
         if updated:

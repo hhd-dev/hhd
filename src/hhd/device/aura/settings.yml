@@ -14,6 +14,35 @@ rgb:
           medium: "Medium"
           high: "High"
         default: medium
+      
+      power:
+        type: container
+        title: RGB Power Settings
+        tags: [non-essential, power]
+        children:
+          boot:
+            type: bool
+            title: "Boot"
+            default: True
+            tags: [non-essential, power-on]
+          
+          awake:
+            type: bool
+            title: "Awake"
+            default: True
+            tags: [non-essential, power-sleep]
+          
+          sleep:
+            type: bool
+            title: "Sleep while Charging"
+            default: False
+            tags: [non-essential, power-sleep]
+          
+          shutdown:
+            type: bool
+            title: "Shutdown"
+            default: False
+            tags: [non-essential, power-shutdown]
 
 hhd:
   settings:
