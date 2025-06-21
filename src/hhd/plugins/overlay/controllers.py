@@ -196,6 +196,13 @@ def grab_buttons(fd: int, typ: int, btns: dict[int, str] | None):
     # ioctl(fd, EVIOCGMASK, data)
     # print(bytes(mask).hex())
 
+def is_ally():
+    try:
+        with open("/sys/devices/virtual/dmi/id/product_name", "r") as f:
+            product_name = f.read().strip().lower()
+            return "ally" in product_name
+    except Exception:
+        return False
 
 def find_devices(
     current: dict[str, Any] = {},
@@ -267,10 +274,10 @@ def find_devices(
             minor = cap & 0x07
 
             # Only bind armoury to Asus WMI hotkeys
-            if v == "armoury" and "Asus WMI hotkeys" not in dev.get("name", ""):
+            if v == "armoury" and "Asus WMI hotkeys" not in dev.get("name", "") and not is_ally():
                 continue
             
-            if v == "fan" and "asus" not in dev.get("name", "").lower():
+            if v == "fan" and "asus" not in dev.get("name", "").lower() and not is_ally():
                 continue
             
             if len(keys) > major and keys[major] & (1 << minor):
