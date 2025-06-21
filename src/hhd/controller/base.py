@@ -45,10 +45,12 @@ class SpecialEvent(TypedDict):
         "tdp_cycle_balanced",
         "tdp_cycle_performance",
         "tdp_cycle_custom",
+        "tdp_cycle",
         # Sleep information
         "wakeup",
         # General Events
         "brightness_changed",
+        "custom_armoury",
         # Powerbutton presses
         "pbtn_short",
         "pbtn_long",

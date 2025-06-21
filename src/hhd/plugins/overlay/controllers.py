@@ -76,6 +76,7 @@ KEYBOARD_WAKE_KEY: dict[int, str] = to_map(
 CUSTOM_WAKE_KEY: dict[int, str] = to_map(
     {
         "armoury": [B("KEY_PROG3")],
+        "fan": [B("KEY_PROG4")],
     }
 )
 
@@ -269,6 +270,9 @@ def find_devices(
             if v == "armoury" and "Asus WMI hotkeys" not in dev.get("name", ""):
                 continue
             
+            if v == "fan" and "asus" not in dev.get("name", "").lower():
+                continue
+            
             if len(keys) > major and keys[major] & (1 << minor):
                 is_custom = True
                 break
@@ -397,6 +401,8 @@ def process_touch(emit, state, ev, val):
 def process_custom(emit, ev, val):
     if ev == "armoury" and val and emit:
         emit({"type": "special", "event": "custom_armoury"})
+    if ev == "fan" and val and emit:
+        emit({"type": "special", "event": "tdp_cycle"})
 
 def process_kbd(emit, state, ev, val):
     if ev == "ctrl":
