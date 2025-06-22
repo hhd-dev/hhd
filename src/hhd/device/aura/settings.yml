@@ -57,5 +57,5 @@ hhd:
     children:
       aura:
         type: bool
-        title: "Enable Aura RGB support."
+        title: Enable Aura RGB support
         default: True

@@ -604,7 +604,12 @@ class AuraPlugin(HHDPlugin):
         return base
 
     def update(self, conf: Config):
+        enabled_prev = self.enabled
         self.enabled = conf.get("hhd.settings.aura", False)
+
+        if enabled_prev != self.enabled:
+            self.emit({"type": "settings"})
+
         if not self.enabled:
             return
 
