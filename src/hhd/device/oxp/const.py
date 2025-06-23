@@ -93,7 +93,14 @@ CONFS = {
     # X1 Line
     "ONEXPLAYER X1 mini": {
         **ONEX_DEFAULT_CONF,
-        "name": "ONEXPLAYER X1 mini",
+        "name": "ONEXPLAYER X1 Mini",
+        "x1": True,
+        "mapping": X1_MINI_MAPPING,
+        "protocol": "hid_v1",
+    },
+    "ONEXPLAYER X1Mini Pro": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER X1 Mini Pro",
         "x1": True,
         "mapping": X1_MINI_MAPPING,
         "protocol": "hid_v1",
