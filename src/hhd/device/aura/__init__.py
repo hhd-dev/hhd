@@ -87,8 +87,8 @@ RGB_INIT_OTHER = lambda key: [
     bytes([key, 0x05, 0x20, 0x31, 0, 0x1A]),
 ]
 DYN_RGB_INIT = lambda key: buf([key, 0xC0, 0x03, 0x01])
-RGB_APPLY = lambda key: bytes([key, 0xB4])
-RGB_SET = lambda key: bytes([key, 0xB5, 0, 0, 0])
+RGB_APPLY = lambda key: buf([key, 0xB4])
+RGB_SET = lambda key: buf([key, 0xB5, 0, 0, 0])
 RGB_APPLY_DELAY = 1
 RGB_TDP_DELAY = 1.5
 
@@ -296,7 +296,7 @@ def rgb_command(
                 c_speed = 0xF5
 
     c_zone = 0x00
-    return bytes(
+    return buf(
         [
             RGB_AURA_ID,
             0xB3,
@@ -617,7 +617,7 @@ class AuraPlugin(HHDPlugin):
         error = False
         curr = conf["rgb.aura"]
         if self.prev_cfg is not None:
-            power_settings = conf.get("rgb.aura.power", None)
+            power_settings = curr.get("power", None)
             if power_settings is not None:
                 self.tdp_changes = power_settings.get("tdp_changes", False)
 
@@ -665,7 +665,7 @@ class AuraPlugin(HHDPlugin):
                         d["dev"].send_feature_report(cmd)
                         d["last_mode"] = new_mode
 
-                        if chanded_mode or queued or always_init:
+                        if chanded_mode or queued or always_init or init:
                             d["dev"].send_feature_report(RGB_SET(RGB_AURA_ID))
                             d["dev"].send_feature_report(RGB_APPLY(RGB_AURA_ID))
                         else:
@@ -720,9 +720,9 @@ class AuraPlugin(HHDPlugin):
                 brightness = int(f.read().strip())
             br_str = BRIGHTNESS_MAP[min(3, brightness)]
             conf["rgb.aura.brightness"] = br_str
-            curr["brightness"] = br_str
-
-        self.prev_cfg = curr
+        
+        if self.loaded_devices:
+            self.prev_cfg = conf["rgb.aura"].copy()
 
     def close(self):
         if self.t is not None:
@@ -760,6 +760,11 @@ class AuraPlugin(HHDPlugin):
                         color = (255, 0, 0)
                     case "tdp_cycle_custom":
                         color = (157, 0, 255)
+                    # case "wakeup":
+                    #     for d in self.devices.values():
+                    #         if d["disabled"]:
+                    #             continue
+                    #         d['init'] = True
                     case _:
                         color = None
 
