@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 
 # Old devices were 2f24:0135
 # New 2025 Win mini uses 045e:002d
-GPD_WIN_VIDS = [0x2F24, 0x045e]
-GPD_WIN_PIDS = [0x0135, 0x002d]
+GPD_WIN_VIDS = [0x2F24, 0x045E]
+GPD_WIN_PIDS = [0x0135, 0x002D]
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
@@ -194,6 +194,7 @@ def plugin_run(
             # Raise exception
             if DEBUG_MODE:
                 import traceback
+
                 logger.error(traceback.format_exc())
             time.sleep(sleep_time)
 
@@ -342,10 +343,23 @@ def controller_loop(
         prepare(d_xinput)
         if motion:
             start_imu = True
-            if dconf.get("hrtimer", False):
-                start_imu = d_timer.open()
-            if start_imu:
-                prepare(d_imu)
+            try:
+                if dconf.get("hrtimer", False):
+                    start_imu = d_timer.open()
+                if start_imu:
+                    prepare(d_imu)
+            except Exception as e:
+                motion = False
+                try:
+                    d_timer.close()
+                except Exception:
+                    pass
+
+                logger.error("Failed to open IMU, disabling motion support. Error:")
+                # Print stacktrace
+                import traceback
+
+                traceback.print_exc()
         if has_touchpad and d_params["uses_touch"]:
             prepare(d_touch)
         for d in d_producers:
