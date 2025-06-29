@@ -10,6 +10,7 @@ from hhd.controller.base import Multiplexer
 from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.virtual.uinput import HHD_PID_VENDOR, UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 
@@ -17,11 +18,10 @@ from .const import (
     GOS_INTERFACE_AXIS_MAP,
     GOS_INTERFACE_BTN_ESSENTIALS,
     GOS_INTERFACE_BTN_MAP,
-    GOS_TOUCHPAD_BUTTON_MAP,
-    GOS_TOUCHPAD_AXIS_MAP,
+    GOS_TOUCHPAD_AXIS_MAP_HID,
+    GOS_TOUCHPAD_BUTTON_MAP_HID,
 )
 from .hid import LegionHidraw, LegionHidrawTs, rgb_callback
-
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.5
@@ -268,16 +268,25 @@ def controller_loop_xinput(
     )
 
     uses_touch = d_params.get("uses_touch", False)
-    d_touch = GenericGamepadEvdev(
+    d_touch_mute = GenericGamepadEvdev(
         vid=[GOS_VID],
         pid=list(GOS_PIDS),
         capabilities={
             EC("EV_KEY"): [EC("BTN_LEFT")],
             EC("EV_ABS"): [EC("ABS_MT_POSITION_Y")],
         },
-        btn_map=GOS_TOUCHPAD_BUTTON_MAP,
-        axis_map=GOS_TOUCHPAD_AXIS_MAP,
-        aspect_ratio=1,
+        btn_map={},
+        axis_map={},
+        # aspect_ratio=1,
+        required=True,
+    )
+    d_touch = GenericGamepadHidraw(
+        vid=[GOS_VID],
+        pid=list(GOS_PIDS),
+        application=[0x000D0022],
+        btn_map=GOS_TOUCHPAD_BUTTON_MAP_HID,
+        axis_map=GOS_TOUCHPAD_AXIS_MAP_HID,
+        # aspect_ratio=1,
         required=True,
     )
 
@@ -342,6 +351,7 @@ def controller_loop_xinput(
         prepare(d_xinput)
         prepare(d_shortcuts)
         if uses_touch:
+            prepare(d_touch_mute)
             prepare(d_touch)
         prepare(d_cfg)
         prepare(d_raw)
@@ -349,6 +359,7 @@ def controller_loop_xinput(
             prepare(d)
 
         logger.info("Emulated controller launched, have fun!")
+
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
             # Add timeout to call consumers a minimum amount of times per second

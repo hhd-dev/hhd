@@ -72,3 +72,16 @@ GOS_TOUCHPAD_AXIS_MAP: dict[int, Axis] = to_map(
         "touchpad_y": [B("ABS_Y")],  # also ABS_MT_POSITION_Y
     }
 )
+
+GOS_TOUCHPAD_AXIS_MAP_HID: dict[int | None, dict[Axis, AM]] = {
+    None: {
+        "touchpad_x": AM(2 << 3, "i16", scale=1/400),
+        "touchpad_y": AM(4 << 3, "i16", scale=1/400),
+    }
+}
+GOS_TOUCHPAD_BUTTON_MAP_HID: dict[int | None, dict[Button, BM]] = {
+    None: {
+        "touchpad_touch": BM((8 << 3) + 7),
+        "touchpad_left": BM((9 << 3) + 7),
+    }
+}
