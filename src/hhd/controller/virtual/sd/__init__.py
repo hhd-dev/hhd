@@ -7,6 +7,7 @@ from hhd.controller import (
     Consumer,
     Event,
     Producer,
+    DEBUG_MODE,
 )
 from hhd.controller.lib.uhid import UhidDevice, BUS_USB
 from hhd.controller.lib.common import encode_axis, set_button
@@ -19,6 +20,7 @@ from .const import (
     SDCONT_DESCRIPTOR,
     SD_AXIS_MAP,
     SD_BTN_MAP,
+    SD_SETTINGS,
 )
 
 MAX_IMU_SYNC_DELAY = 2
@@ -137,10 +139,14 @@ class SteamdeckController(Producer, Consumer):
         assert self.dev
         while ev := self.dev.read_event():
             match ev["type"]:
-                # case "open":
-                #     logger.info(f"SD OPENED")
-                # case "close":
-                #     logger.info(f"SD CLOSED")
+                case "open":
+                    # logger.info(f"SD OPENED")
+                    pass
+                case "close":
+                    # logger.info(f"SD CLOSED")
+                    pass
+                case "start":
+                    pass
                 case "get_report":
                     match self.last_rep:
                         case 0x83:
@@ -235,12 +241,35 @@ class SteamdeckController(Producer, Consumer):
                                     "weak_magnitude": right / (2**16 - 1),
                                 }
                             )
-                        case 0x8F:
+                        case 0xea:
+                            # Touchpad stuff
                             pass
+                        case 0x8F:
+                            # logger.info(f"SD Received Haptics ({time.perf_counter()*1000:.3f}ms):\n{ev['data'].hex().rstrip(' 0')}")
+                            pass
+                        case 0x87:
+                            if DEBUG_MODE:
+                                rnum = ev["data"][4]
+                                ss = []
+                                for i in range(0, rnum, 3):
+                                    rtype = ev["data"][5 + i]
+                                    rdata = int.from_bytes(
+                                        ev["data"][6 + i : 8 + i],
+                                        byteorder="little",
+                                        signed=False,
+                                    )
+                                    ss.append(
+                                        f"{SD_SETTINGS[rtype] if rtype < len(SD_SETTINGS) else "UKNOWN"} ({rtype:02d}): {rdata:02x}"
+                                    )
+                                mlen = max(map(len, ss))
+                                logger.info(
+                                    f"SD Received Settings (n={rnum // 3}):{''.join(map(lambda x: '\n > ' + ' '*(mlen - len(x)) + x, ss))}"
+                                )
                         case _:
-                            logger.info(
-                                f"SD SET_REPORT({ev['rnum']:02x}:{ev['rtype']:02x}): {trim(ev['data']).hex()}"
-                            )
+                            if DEBUG_MODE:
+                                logger.info(
+                                    f"SD SET_REPORT({ev['rnum']:02x}:{ev['rtype']:02x}): {trim(ev['data']).hex()}"
+                                )
 
                     # 410000eb 0901401f 0000 0000 fbfb
                     # 410000eb 0901401f ff7f ff7f fbfb
@@ -311,6 +340,18 @@ class SteamdeckController(Producer, Consumer):
                         self.touchpad_left = ev["value"]
                     elif code in SD_BTN_MAP:
                         set_button(new_rep, SD_BTN_MAP[code], ev["value"])
+
+        if not self.touchpad_touch:
+            encode_axis(
+                new_rep,
+                SD_AXIS_MAP["touchpad_x"],
+                0.5,
+            )
+            encode_axis(
+                new_rep,
+                SD_AXIS_MAP["touchpad_y"],
+                0.5,
+            )
 
         # If the IMU breaks, smoothly re-enable the controller
         failover = self.last_imu + MAX_IMU_SYNC_DELAY < curr

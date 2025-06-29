@@ -52,7 +52,7 @@ children:
 
   touchpad:
     type: multiple
-    title: Touchpad Emulation [ALPHA]
+    title: Touchpad Emulation [BETA]
     default: disabled
     tags: [ non-essential, ordinal ]
     hint: >-

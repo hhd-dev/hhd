@@ -98,7 +98,7 @@ modes:
           Allows for gyro, paddles, and has a proper QAM button.
       handheld_mode:
         type: bool
-        title: Handheld Mode [ALPHA]
+        title: Handheld Mode [BETA]
         tags: [non-essential]
         default: False
         hint: >-
