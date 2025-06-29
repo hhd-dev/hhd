@@ -351,8 +351,10 @@ def controller_loop_xinput(
         prepare(d_xinput)
         prepare(d_shortcuts)
         if uses_touch:
-            prepare(d_touch_mute)
+            d_touch_mute.open()
             prepare(d_touch)
+        else:
+            d_touch_mute = None
         prepare(d_cfg)
         prepare(d_raw)
         for d in d_producers:
@@ -398,6 +400,16 @@ def controller_loop_xinput(
                 d.close(not updated.is_set())
             except Exception as e:
                 logger.error(f"Error while closing device '{d}' with exception:\n{e}")
+                if debug:
+                    raise e
+
+        if d_touch_mute:
+            try:
+                d_touch_mute.close(True)
+            except Exception as e:
+                logger.error(
+                    f"Error while closing touch mute device with exception:\n{e}"
+                )
                 if debug:
                     raise e
 
