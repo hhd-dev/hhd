@@ -323,7 +323,7 @@ def controller_loop_xinput(
         trigger="analog_to_discrete",
         dpad="both",
         share_to_qam=True,
-        swap_guide="guide_is_select" if swap_legion else None,
+        swap_guide="select_is_guide" if swap_legion else None,
         select_reboots=conf["select_reboots"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
