@@ -283,7 +283,7 @@ def controller_loop_xinput(
     d_touch = GenericGamepadHidraw(
         vid=[GOS_VID],
         pid=list(GOS_PIDS),
-        application=[0x000D0022],
+        interface=2,
         btn_map=GOS_TOUCHPAD_BUTTON_MAP_HID,
         axis_map=GOS_TOUCHPAD_AXIS_MAP_HID,
         # aspect_ratio=1,
