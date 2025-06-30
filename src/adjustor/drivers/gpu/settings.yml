@@ -74,6 +74,7 @@ enabled:
                 scx_lavd: LAVD
                 scx_bpfland: bpfland 
                 scx_rusty: rusty
+                scx_p2dq: P2DQ
               default: disabled
     gpu_freq:
       type: mode
