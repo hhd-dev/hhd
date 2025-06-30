@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 APPLY_DELAY = 0.25
 SLEEP_DELAY = 4.5
 
+
 def _ppd_client(emit, proc):
     os.set_blocking(proc.stdin.fileno(), False)
 
@@ -103,6 +104,7 @@ class GpuPlugin(HHDPlugin):
             logger.error(f"Failed to get AMD GPU status:\n{e}")
 
             import traceback
+
             logger.error(traceback.format_exc())
             status = None
 
@@ -281,7 +283,7 @@ class GpuPlugin(HHDPlugin):
                 logger.info(
                     f"Waking up from sleep, resetting gpu settings after {SLEEP_DELAY:.1f} seconds."
                 )
-                self.queue = time.time() + SLEEP_DELAY
+                self.queue = time.perf_counter() + SLEEP_DELAY
 
     def update(self, conf: Config):
         self.core_enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -317,13 +319,16 @@ class GpuPlugin(HHDPlugin):
                 self.close_ppd()
 
         curr = time.perf_counter()
+        queue = self.queue is not None and curr >= self.queue
+        if queue:
+            self.queue = None
+
         if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
             if self.target != self.old_target:
                 self.old_target = self.target
                 self.queue = curr + APPLY_DELAY
 
-            if self.queue is not None and curr >= self.queue:
-                self.queue = None
+            if queue:
                 logger.info(
                     f"Handling energy settings for power profile '{self.target}'."
                 )
@@ -363,7 +368,7 @@ class GpuPlugin(HHDPlugin):
             self.old_target = None
             if self.supports_boost:
                 new_boost = conf["tdp.amd_energy.mode.manual.cpu_boost"].to(bool)
-                if new_boost != self.old_boost:
+                if new_boost != self.old_boost or queue:
                     self.old_boost = new_boost
                     try:
                         set_cpu_boost(new_boost == "enabled")
@@ -379,7 +384,7 @@ class GpuPlugin(HHDPlugin):
 
             if self.supports_epp:
                 new_epp = conf["tdp.amd_energy.mode.manual.cpu_pref"].to(str)
-                if new_epp != self.old_epp:
+                if new_epp != self.old_epp or queue:
                     self.old_epp = new_epp
                     try:
                         # Set governor to powersave as well
@@ -390,7 +395,7 @@ class GpuPlugin(HHDPlugin):
 
             if self.supports_nonlinear:
                 new_min_freq = conf["tdp.amd_energy.mode.manual.cpu_min_freq"].to(str)
-                if new_min_freq != self.old_min_freq:
+                if new_min_freq != self.old_min_freq or queue:
                     self.old_min_freq = new_min_freq
                     try:
                         set_frequency_scaling(nonlinear=new_min_freq == "nonlinear")
@@ -442,7 +447,7 @@ class GpuPlugin(HHDPlugin):
                 self.old_freq = new_freq
                 self.queue_gpu = curr + APPLY_DELAY
 
-            if self.queue_gpu is not None and curr >= self.queue_gpu:
+            if (self.queue_gpu is not None and curr >= self.queue_gpu) or queue:
                 self.queue_gpu = None
                 try:
                     if new_freq:
