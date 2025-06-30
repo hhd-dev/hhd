@@ -97,7 +97,15 @@ class GpuPlugin(HHDPlugin):
             self.core_available = False
             return {}
 
-        status = get_igpu_status()
+        try:
+            status = get_igpu_status()
+        except Exception as e:
+            logger.error(f"Failed to get AMD GPU status:\n{e}")
+            
+            import traceback
+            logger.error(traceback.format_exc())
+            status = None
+
         if not status:
             self.core_available = False
             if not self.logged_error:
