@@ -25,7 +25,7 @@ from adjustor.fuse.gpu import (
 logger = logging.getLogger(__name__)
 
 APPLY_DELAY = 0.25
-
+SLEEP_DELAY = 4.5
 
 def _ppd_client(emit, proc):
     os.set_blocking(proc.stdin.fileno(), False)
@@ -101,7 +101,7 @@ class GpuPlugin(HHDPlugin):
             status = get_igpu_status()
         except Exception as e:
             logger.error(f"Failed to get AMD GPU status:\n{e}")
-            
+
             import traceback
             logger.error(traceback.format_exc())
             status = None
@@ -267,9 +267,9 @@ class GpuPlugin(HHDPlugin):
         self.emit = emit
 
     def notify(self, events):
-        for event in events:
-            if event["type"] == "energy":
-                self.target = event["status"]
+        for ev in events:
+            if ev["type"] == "energy":
+                self.target = ev["status"]
                 try:
                     if self.proc and self.proc.stdin:
                         self.proc.stdin.write(f"{self.target}\n".encode())
@@ -277,6 +277,11 @@ class GpuPlugin(HHDPlugin):
                 except Exception as e:
                     logger.error(f"Failed to send PPD mode:\n{e}")
                     self.close_ppd()
+            elif ev["type"] == "special" and ev.get("event", None) == "wakeup":
+                logger.info(
+                    f"Waking up from sleep, resetting gpu settings after {SLEEP_DELAY:.1f} seconds."
+                )
+                self.queue = time.time() + SLEEP_DELAY
 
     def update(self, conf: Config):
         self.core_enabled = conf["hhd.settings.tdp_enable"].to(bool)
