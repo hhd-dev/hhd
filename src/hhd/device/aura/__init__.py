@@ -615,8 +615,8 @@ class AuraPlugin(HHDPlugin):
 
         curr_t = time.perf_counter()
         error = False
-        curr = conf["rgb.aura"]
-        if self.prev_cfg is not None:
+        if self.prev_cfg is not None and "rgb.aura" in conf:
+            curr = conf["rgb.aura"]
             power_settings = curr.get("power", None)
             if power_settings is not None:
                 self.tdp_changes = power_settings.get("tdp_changes", False)
@@ -722,7 +722,7 @@ class AuraPlugin(HHDPlugin):
             conf["rgb.aura.brightness"] = br_str
         
         if self.loaded_devices:
-            self.prev_cfg = conf["rgb.aura"].copy()
+            self.prev_cfg = conf.get("rgb.aura", {})
 
     def close(self):
         if self.t is not None:
