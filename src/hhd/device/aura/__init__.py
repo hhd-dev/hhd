@@ -721,8 +721,8 @@ class AuraPlugin(HHDPlugin):
             br_str = BRIGHTNESS_MAP[min(3, brightness)]
             conf["rgb.aura.brightness"] = br_str
         
-        if self.loaded_devices:
-            self.prev_cfg = conf.get("rgb.aura", {})
+        if self.loaded_devices and "rgb.aura" in conf:
+            self.prev_cfg = conf["rgb.aura"]
 
     def close(self):
         if self.t is not None:
