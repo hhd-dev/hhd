@@ -84,9 +84,7 @@ def set_charge_bypass(bat: str, type: str):
 
 class BatteryPlugin(HHDPlugin):
 
-    def __init__(
-        self,
-    ) -> None:
+    def __init__(self, always_enable: bool = False) -> None:
         self.name = f"adjustor_battery"
         self.priority = 9
         self.log = "batt"
@@ -100,6 +98,8 @@ class BatteryPlugin(HHDPlugin):
         self.charge_limit_fn = None
         self.charge_bypass_prev = None
         self.charge_limit_prev = None
+
+        self.always_enable = always_enable
 
     def settings(self):
         if not self.enabled:
@@ -171,7 +171,7 @@ class BatteryPlugin(HHDPlugin):
                 break
 
     def update(self, conf: Config):
-        self.enabled = conf.get("hhd.settings.tdp_enable", False)
+        self.enabled = self.always_enable or conf.get("hhd.settings.tdp_enable", False)
 
         if not self.initialized:
             return
