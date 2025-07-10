@@ -7,7 +7,6 @@ from typing import Sequence
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
 from hhd.plugins.plugin import Emitter
-from hhd.utils import expanduser
 
 from adjustor.core.acpi import check_perms, initialize
 from adjustor.core.const import CPU_DATA, DEV_DATA, ASUS_DATA, MSI_DATA
@@ -17,8 +16,8 @@ from .i18n import _
 logger = logging.getLogger(__name__)
 
 CONFLICTING_PLUGINS = {
-    "SimpleDeckyTDP": "~/homebrew/plugins/SimpleDeckyTDP",
-    "PowerControl": "~/homebrew/plugins/PowerControl",
+    "SimpleDeckyTDP": "homebrew/plugins/SimpleDeckyTDP",
+    "PowerControl": "homebrew/plugins/PowerControl",
 }
 
 
@@ -62,35 +61,36 @@ class AdjustorInitPlugin(HHDPlugin):
             self.has_decky = False
             self.failed = False
 
-            move_path = expanduser("~/homebrew/plugins/hhd-disabled", self.context)
-            if os.path.exists(move_path):
-                logger.warning(f"Removing old backup path: '{move_path}'")
-                os.system(f"rm -rf {move_path}")
-            os.makedirs(
-                move_path,
-                exist_ok=True,
-            )
+            for usr in os.listdir("/home"):
+                move_path = os.path.join("/home", usr, "homebrew/plugins/hhd-disabled")
+                if os.path.exists(move_path):
+                    logger.warning(f"Removing old backup path: '{move_path}'")
+                    os.system(f"rm -rf {move_path}")
+                os.makedirs(
+                    move_path,
+                    exist_ok=True,
+                )
 
-            logger.warning("Stopping Decky.")
-            try:
-                os.system("systemctl stop plugin_loader")
-            except Exception as e:
-                logger.error(f"Failed to restart Decky:\n{e}")
+                logger.warning("Stopping Decky.")
+                try:
+                    os.system("systemctl stop plugin_loader")
+                except Exception as e:
+                    logger.error(f"Failed to restart Decky:\n{e}")
 
-            for name, ppath in CONFLICTING_PLUGINS.items():
-                path = expanduser(ppath, self.context)
-                if os.path.exists(path):
-                    new_path = os.path.join(move_path, name)
-                    logger.warning(
-                        f"Moving plugin '{name}' from:\n{path}\nto:\n{new_path}"
-                    )
-                    os.rename(path, new_path)
+                for name, ppath in CONFLICTING_PLUGINS.items():
+                    path = os.path.join("/home", usr, ppath)
+                    if os.path.exists(path):
+                        new_path = os.path.join(move_path, name)
+                        logger.warning(
+                            f"Moving plugin '{name}' from:\n{path}\nto:\n{new_path}"
+                        )
+                        os.rename(path, new_path)
 
-            logger.warning("Restarting Decky.")
-            try:
-                os.system("systemctl start plugin_loader")
-            except Exception as e:
-                logger.error(f"Failed to restart Decky:\n{e}")
+                logger.warning("Restarting Decky.")
+                try:
+                    os.system("systemctl start plugin_loader")
+                except Exception as e:
+                    logger.error(f"Failed to restart Decky:\n{e}")
 
             # TDP controls are already enabled.
             logger.warning(f"Enabling TDP controls.")
@@ -108,19 +108,20 @@ class AdjustorInitPlugin(HHDPlugin):
         if self.init or not old_enabled:
             return
 
-        for name, path in CONFLICTING_PLUGINS.items():
-            if os.path.exists(expanduser(path, self.context)):
-                err = f'Found "{name}" at:\n{path}\n' + _(
-                    "Disable Decky TDP plugins using the button below to continue."
-                )
-                self.emit({"type": "settings"})
-                self.has_decky = True
-                conf["tdp.tdp.tdp_error"] = err
-                conf["hhd.settings.tdp_enable"] = False
-                logger.error(err)
-                self.failed = True
-                self.enabled = False
-                return
+        for usr in os.listdir("/home"):
+            for name, path in CONFLICTING_PLUGINS.items():
+                if os.path.exists(os.path.join(usr, path)):
+                    err = f'Found "{name}" at:\n{path}\n' + _(
+                        "Disable Decky TDP plugins using the button below to continue."
+                    )
+                    self.emit({"type": "settings"})
+                    self.has_decky = True
+                    conf["tdp.tdp.tdp_error"] = err
+                    conf["hhd.settings.tdp_enable"] = False
+                    logger.error(err)
+                    self.failed = True
+                    self.enabled = False
+                    return
 
         if self.use_acpi_call:
             initialize()
