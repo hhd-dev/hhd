@@ -38,7 +38,10 @@ LEN_PIDS = {
     0x6184: "dual_dinput",
     0x6185: "fps",
     # 2025 Firmware
-    0x61eb: "xinput",
+    0x61EB: "xinput",
+    0x61EC: "dinput",
+    0x61ED: "dual_dinput",
+    0x61EE: "fps",
 }
 
 
@@ -132,6 +135,7 @@ def plugin_run(
 
     # Unhide all devices before exiting
     unhide_all()
+
 
 def controller_loop_rest(
     mode: str,
@@ -255,7 +259,7 @@ def controller_loop_xinput(
     # Inputs
     d_xinput = GenericGamepadEvdev(
         vid=[0x17EF],
-        pid=[0x6182, 0x61eb],
+        pid=[0x6182, 0x61EB],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
