@@ -107,11 +107,6 @@ class RestHandler(BaseHTTPRequestHandler):
         if not self.token:
             return True
 
-        # Skip auth for localhost to avoid errors
-        # localhost clients can read the token anyway
-        if self.address_string() == "127.0.0.1":
-            return True
-
         auth = self.headers["Authorization"]
         if not auth:
             return False
