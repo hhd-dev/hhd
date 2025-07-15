@@ -456,46 +456,46 @@ def main():
                 prev_http_cfg = http_cfg
                 if https:
                     https.close()
-                if http_cfg["enable"].to(bool):
-                    from .http import HHDHTTPServer
 
-                    port = http_cfg["port"].to(int)
-                    localhost = http_cfg["localhost"].to(bool)
-                    use_token = http_cfg["token"].to(bool)
+                from .http import HHDHTTPServer
 
-                    # Generate security token
-                    if use_token:
-                        if not os.path.isfile(token_fn):
-                            import hashlib
-                            import random
+                port = 5335
+                localhost = http_cfg["localhost"].to(bool)
+                use_token = http_cfg["token"].to(bool)
 
-                            token = hashlib.sha256(
-                                str(random.random()).encode()
-                            ).hexdigest()[:12]
-                            with open(token_fn, "w") as f:
-                                os.chmod(token_fn, 0o600)
-                                f.write(token)
-                            fix_perms(token_fn, ctx)
-                        else:
-                            with open(token_fn, "r") as f:
-                                token = f.read().strip()
+                # Generate security token
+                if use_token:
+                    if not os.path.isfile(token_fn):
+                        import hashlib
+                        import random
+
+                        token = hashlib.sha256(
+                            str(random.random()).encode()
+                        ).hexdigest()[:12]
+                        with open(token_fn, "w") as f:
+                            os.chmod(token_fn, 0o600)
+                            f.write(token)
+                        fix_perms(token_fn, ctx)
                     else:
-                        token = None
+                        with open(token_fn, "r") as f:
+                            token = f.read().strip()
+                else:
+                    token = None
 
-                    set_log_plugin("rest")
-                    https = HHDHTTPServer(localhost, port, token)
-                    https.update(settings, conf, info, profiles, emit, locales, ctx)
-                    try:
-                        https.open()
-                    except Exception as e:
-                        logger.error(
-                            f"Could not start http API on port {port}.\n"
-                            + "Is another version of Handheld Daemon open?\n"
-                            + "Closing."
-                        )
-                        return
-                    update_log_plugins()
-                    set_log_plugin("main")
+                set_log_plugin("rest")
+                https = HHDHTTPServer(localhost, port, token)
+                https.update(settings, conf, info, profiles, emit, locales, ctx)
+                try:
+                    https.open()
+                except Exception as e:
+                    logger.error(
+                        f"Could not start http API on port {port}.\n"
+                        + "Is another version of Handheld Daemon open?\n"
+                        + "Closing."
+                    )
+                    return
+                update_log_plugins()
+                set_log_plugin("main")
 
             #
             # Plugin loop
@@ -584,7 +584,9 @@ def main():
                 logger.info(f"Reloading settings.")
 
                 # Settings
-                settings_base = {k: {} for k in load_relative_yaml("sections.yml")['sections']}
+                settings_base = {
+                    k: {} for k in load_relative_yaml("sections.yml")["sections"]
+                }
                 hhd_settings = {"hhd": load_relative_yaml("settings.yml")}
                 # TODO: Improve check
                 try:

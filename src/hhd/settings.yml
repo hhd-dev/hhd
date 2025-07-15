@@ -87,22 +87,6 @@ http:
     Settings for configuring the http endpoint of HHD.
 
   children:
-    enable:
-      type: bool
-      title: Enable the API
-      tags: [advanced]
-      hint: >-
-        Enables the API of Handheld Daemon (required for decky and ui).
-      default: True
-    port:
-      type: int
-      title: API Port
-      tags: [advanced, hhd-port, port, dropdown]
-      hint: >-
-        Which port should the API be on?
-      min: 1024
-      max: 49151
-      default: 5335
     localhost:
       type: bool
       title: Limit Access to localhost
