@@ -37,6 +37,8 @@ LEN_PIDS = {
     0x6183: "dinput",
     0x6184: "dual_dinput",
     0x6185: "fps",
+    # 2025 Firmware
+    0x61eb: "xinput",
 }
 
 
@@ -253,7 +255,7 @@ def controller_loop_xinput(
     # Inputs
     d_xinput = GenericGamepadEvdev(
         vid=[0x17EF],
-        pid=[0x6182],
+        pid=[0x6182, 0x61eb],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
@@ -261,7 +263,7 @@ def controller_loop_xinput(
     )
     d_touch = GenericGamepadEvdev(
         vid=[0x17EF],
-        pid=[0x6182],
+        pid=[0x6182, 0x61EB],
         name=[re.compile(".+Touchpad")],  # "  Legion Controller for Windows  Touchpad"
         capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
         btn_map=LGO_TOUCHPAD_BUTTON_MAP,
