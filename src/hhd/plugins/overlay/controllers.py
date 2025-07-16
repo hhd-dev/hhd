@@ -31,6 +31,8 @@ OVERLAY_BUTTON_MAP: dict[int, str] = to_map(
         "y": [B("BTN_Y")],
         "lb": [B("BTN_TL")],
         "rb": [B("BTN_TR")],
+        "mode": [B("BTN_MODE")],
+        "select": [B("BTN_SELECT")],
     }
 )
 OVERLAY_AXIS_MAP: dict[int, str] = to_map(
@@ -194,7 +196,9 @@ def grab_buttons(fd: int, typ: int, btns: dict[int, str] | None):
     # ioctl(fd, EVIOCGMASK, data)
     # print(bytes(mask).hex())
 
+
 _is_ally = None
+
 
 def is_ally():
     global _is_ally
@@ -209,6 +213,7 @@ def is_ally():
             return _is_ally
     except Exception:
         return False
+
 
 def find_devices(
     current: dict[str, Any] = {},
@@ -280,12 +285,14 @@ def find_devices(
             minor = cap & 0x07
 
             # Only bind armoury to Asus WMI hotkeys
-            if v == "armoury" and ("Asus WMI hotkeys" not in dev.get("name", "") or is_ally()):
+            if v == "armoury" and (
+                "Asus WMI hotkeys" not in dev.get("name", "") or is_ally()
+            ):
                 continue
-            
+
             if v == "fan" and ("asus" not in dev.get("name", "").lower() or is_ally()):
                 continue
-            
+
             if len(keys) > major and keys[major] & (1 << minor):
                 is_custom = True
                 break
@@ -411,11 +418,13 @@ def process_touch(emit, state, ev, val):
         state["last_y"] = 0
         state["grab"] = False
 
+
 def process_custom(emit, ev, val):
     if ev == "armoury" and val and emit:
         emit({"type": "special", "event": "custom_armoury"})
     if ev == "fan" and val and emit:
         emit({"type": "special", "event": "tdp_cycle"})
+
 
 def process_kbd(emit, state, ev, val):
     if ev == "ctrl":
@@ -562,6 +571,7 @@ def process_events(emit, dev, evs):
 
         if dev["is_custom"] and ev.type == EV_KEY and ev.code in CUSTOM_WAKE_KEY:
             process_custom(emit, CUSTOM_WAKE_KEY[ev.code], ev.value)
+
 
 def refresh_events(emit, dev):
     # if dev["is_touchscreen"]:
@@ -793,7 +803,11 @@ def device_shortcut_loop(
                     grab_buttons(
                         dev.fd,
                         B("EV_KEY"),
-                        {**CONTROLLER_WAKE_BUTTON, **KEYBOARD_WAKE_KEY, **CUSTOM_WAKE_KEY},
+                        {
+                            **CONTROLLER_WAKE_BUTTON,
+                            **KEYBOARD_WAKE_KEY,
+                            **CUSTOM_WAKE_KEY,
+                        },
                     )
                 else:
                     grab_buttons(dev.fd, B("EV_KEY"), {})
@@ -952,6 +966,7 @@ class OverlayWriter:
                         "rb",
                         "lb",
                         "mode",
+                        "select",
                     ):
                         continue
                     val = ev["value"]
@@ -963,7 +978,7 @@ class OverlayWriter:
                         self.state[cid][code] = curr + REPEAT_INITIAL if val else None
 
         # Ignore guide combos
-        if self.state[cid].get("mode", None):
+        if self.state[cid].get("mode", None) or self.state[cid].get("select", None):
             return
 
         # Allow holds
