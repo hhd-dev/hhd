@@ -524,7 +524,9 @@ class AsusDriverPlugin(HHDPlugin):
                 )
                 self.queue_tdp = time.time() + APPLY_DELAY
             elif (
-                self.cycle_tdp and ev["type"] == "special" and ev["event"] == "xbox_y"
+                self.cycle_tdp
+                and ev["type"] == "special"
+                and ev["event"] == "xbox_y_internal"
             ) or (ev["type"] == "special" and ev["event"] == "tdp_cycle"):
                 match self.mode:
                     case "quiet":

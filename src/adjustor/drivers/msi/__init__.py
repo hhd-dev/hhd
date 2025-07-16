@@ -120,8 +120,10 @@ def disable_fan_curve():
 
     return True
 
+
 def has_msi_driver():
     return os.path.exists(STDP_FN) and os.path.exists(CTDP_FN)
+
 
 class MsiDriverPlugin(HHDPlugin):
     def __init__(self, tdp_data: DeviceTDP) -> None:
@@ -156,9 +158,7 @@ class MsiDriverPlugin(HHDPlugin):
             return {}
 
         if not has_msi_driver():
-            logger.error(
-                "MSI driver not found. Disabling TDP controls."
-            )
+            logger.error("MSI driver not found. Disabling TDP controls.")
             self.initialized = False
 
             return {"tdp": {"msi": load_relative_yaml("error.yml")}}
@@ -476,7 +476,11 @@ class MsiDriverPlugin(HHDPlugin):
                     f"Power adapter status switched to '{ev['event']}', resetting TDP."
                 )
                 self.queue_tdp = time.time() + APPLY_DELAY
-            elif self.cycle_tdp and ev["type"] == "special" and ev["event"] == "xbox_y":
+            elif (
+                self.cycle_tdp
+                and ev["type"] == "special"
+                and ev["event"] == "xbox_y_internal"
+            ) or (ev["type"] == "special" and ev["event"] == "tdp_cycle"):
                 match self.mode:
                     case "quiet":
                         self.new_mode = "balanced"
