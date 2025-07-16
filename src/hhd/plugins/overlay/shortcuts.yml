@@ -24,17 +24,17 @@ custom:
 controller:
   type: container
   tags: [non-essential]
-  title: "All Controllers"
+  title: "External Controllers"
   children:
     xbox_b:
       type: multiple
-      title: "Xbox or View + B (Press)"
+      title: "Xbox + B (Press)"
       options: *shortcuts
       # default: hhd_qam
       default: disabled
     xbox_y:
       type: multiple
-      title: "Xbox or View + Y"
+      title: "Xbox + Y"
       options: 
         <<: *shortcuts
         disconnect: Disconnect Controller

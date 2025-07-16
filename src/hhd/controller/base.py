@@ -32,7 +32,9 @@ class SpecialEvent(TypedDict):
         "overlay",
         # Shortcuts
         "xbox_b",
+        "xbox_b_internal",
         "xbox_y",
+        "xbox_y_internal",
         "kbd_meta_press",
         "kbd_meta_hold",
         "swipe_left_top",
@@ -1276,7 +1278,7 @@ class Multiplexer:
                         and ev["code"] == "y"
                         and ev["value"]
                     ):
-                        self.emit({"type": "special", "event": "xbox_y"})
+                        self.emit({"type": "special", "event": "xbox_y_internal"})
 
                     # Assume we can only use Xbox + B for short presses
                     if (
@@ -1291,7 +1293,7 @@ class Multiplexer:
                                 self.send_xbox_b
                                 and time.time() - self.send_xbox_b < 0.3
                             ):
-                                self.emit({"type": "special", "event": "xbox_b"})
+                                self.emit({"type": "special", "event": "xbox_b_internal"})
                             self.send_xbox_b = None
 
                     # Apply start/select qam
