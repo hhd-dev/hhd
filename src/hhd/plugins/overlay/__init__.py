@@ -143,6 +143,7 @@ class OverlayPlugin(HHDPlugin):
             ARMOURY_BUTTON = False
         if not ARMOURY_BUTTON:
             del set["shortcuts"]["custom"]["children"]["armoury"]
+            del set["shortcuts"]["custom"]["children"]["fan"]
 
         if get_touchscreen_quirk(None, None)[0] and not os.environ.get(
             "HHD_ALLOW_CORRECTION", None
@@ -330,6 +331,7 @@ class OverlayPlugin(HHDPlugin):
                 logger.info(f"Gesture: {ev['event']}, section: {section}, key: {side}")
                 cmd_raw = self.old_shortcuts.get(f"{section}.{side}", "disabled")
                 cmd = None
+                assert self.emit
                 match cmd_raw:
                     case "disconnect":
                         d = ev.get("data", None)
@@ -371,6 +373,9 @@ class OverlayPlugin(HHDPlugin):
                             getattr(self.qam_handler, "screenshot")()
                         elif self.qam_handler_fallback:
                             self.qam_handler_fallback.screenshot()
+                    case "tdp_cycle":
+                        logger.info("Cycling TDP.")
+                        self.emit({"type": "special", "event": "tdp_cycle"})
 
             if self.ovf and cmd:
                 init = "close" not in cmd

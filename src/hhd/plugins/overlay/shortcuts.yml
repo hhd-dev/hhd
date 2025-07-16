@@ -1,3 +1,26 @@
+custom:
+  type: container
+  tags: [non-essential]
+  title: "Device Buttons"
+  children:
+    armoury:
+      type: multiple
+      title: "Armoury Crate"
+      options: &shortcuts
+        disabled: "Disabled"
+        keyboard: Steam Keyboard
+        steam_qam: "Steam Side Menu"
+        steam_expanded: "Steam Overlay"
+        hhd_qam: "HHD Side Menu"
+        hhd_expanded: "HHD Overlay"
+        tdp_cycle: "Cycle TDP"
+        # screenshot: "Screenshot"
+      default: hhd_expanded
+    fan:
+      type: multiple
+      title: "Fan Key"
+      options: *shortcuts
+      default: tdp_cycle
 controller:
   type: container
   tags: [non-essential]
@@ -6,14 +29,7 @@ controller:
     xbox_b:
       type: multiple
       title: "Xbox or View + B (Press)"
-      options: &shortcuts
-        disabled: "Disabled"
-        keyboard: Steam Keyboard
-        steam_qam: "Steam Side Menu"
-        steam_expanded: "Steam Overlay"
-        hhd_qam: "HHD Side Menu"
-        hhd_expanded: "HHD Overlay"
-        # screenshot: "Screenshot"
+      options: *shortcuts
       # default: hhd_qam
       default: disabled
     xbox_y:
@@ -115,13 +131,3 @@ keyboard:
       title: "Ctrl + 4"
       options: *shortcuts
       default: hhd_qam
-custom:
-  type: container
-  tags: [non-essential]
-  title: "Device Buttons"
-  children:
-    armoury:
-      type: multiple
-      title: "Armoury Crate"
-      options: *shortcuts
-      default: hhd_expanded

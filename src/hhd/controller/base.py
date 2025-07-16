@@ -51,6 +51,7 @@ class SpecialEvent(TypedDict):
         # General Events
         "brightness_changed",
         "custom_armoury",
+        "custom_fan",
         # Powerbutton presses
         "pbtn_short",
         "pbtn_long",

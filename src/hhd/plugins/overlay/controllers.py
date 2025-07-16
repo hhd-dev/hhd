@@ -450,7 +450,7 @@ def process_custom(emit, ev, val):
     if ev == "armoury" and val and emit:
         emit({"type": "special", "event": "custom_armoury"})
     if ev == "fan" and val and emit:
-        emit({"type": "special", "event": "tdp_cycle"})
+        emit({"type": "special", "event": "custom_fan"})
 
 
 def process_kbd(emit, state, ev, val):
