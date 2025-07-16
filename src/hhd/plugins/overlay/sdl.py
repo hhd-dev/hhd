@@ -232,10 +232,18 @@ def map_gamepad(bindings, jaxes, jbuttons, jhats):
         if val.startswith("a"):
             ax = jaxes[int(val[1:])]
             if hhd_ax:
-                axes[ax] = (hhd_ax, flip, True)
+                axes[ax] = {
+                    "type": "axis",
+                    "code": hhd_ax,
+                    "flip": flip,
+                }
             else:
                 assert hhd_btn
-                axes[ax] = (hhd_btn, flip, False)
+                axes[ax] = {
+                    "type": "button",
+                    "code": hhd_btn,
+                    "flip": flip,
+                }
 
         elif val.startswith("b"):
             btn = jbuttons[int(val[1:])]
@@ -250,13 +258,29 @@ def map_gamepad(bindings, jaxes, jbuttons, jhats):
 
             match int(hat_ofs):
                 case 1:
-                    axes[hat_y] = (hhd_btn, True, False)
+                    axes[hat_y] = {
+                        "type": "hat",
+                        "up_code": axes.get(hat_y, {}).get("up_code", None),
+                        "down_code": hhd_btn,
+                    }
                 case 2:
-                    axes[hat_x] = (hhd_btn, False, False)
+                    axes[hat_x] = {
+                        "type": "hat",
+                        "up_code": hhd_btn,
+                        "down_code": axes.get(hat_x, {}).get("down_code", None),
+                    }
                 case 4:
-                    axes[hat_y] = (hhd_btn, False, False)
+                    axes[hat_y] = {
+                        "type": "hat",
+                        "up_code": hhd_btn,
+                        "down_code": axes.get(hat_y, {}).get("down_code", None),
+                    }
                 case 8:
-                    axes[hat_x] = (hhd_btn, True, False)
+                    axes[hat_x] = {
+                        "type": "hat",
+                        "up_code": axes.get(hat_x, {}).get("up_code", None),
+                        "down_code": hhd_btn,
+                    }
                 case _:
                     assert False, f"Unknown hat offset {hat_ofs}"
 
@@ -289,7 +313,8 @@ def match_gamepad(device, mappings):
     overlay_axes = [
         ax
         for ax, data in axes.items()
-        if data[0] in OVERLAY_AXES or data[0] in OVERLAY_KEYS
+        if data.get("code", None) in OVERLAY_AXES
+        or data.get("code", data.get("up_code", None)) in OVERLAY_KEYS
     ]
     overlay_buttons = [
         btn for btn, hhd_btn in buttons.items() if hhd_btn in OVERLAY_KEYS

@@ -693,12 +693,6 @@ def intercept_events(emit, intercept_num, cid, abs, sdl, evs):
         elif ev.type == EV_ABS and ev.code in overlay_axes:
             code = overlay_axes[ev.code]
 
-            if isinstance(code, tuple):
-                code, invert, is_axis = code
-            else:
-                invert = False
-                is_axis = False
-
             smin = abs[ev.code]["min"]
             smax = abs[ev.code]["max"]
             v = min(
@@ -709,13 +703,21 @@ def intercept_events(emit, intercept_num, cid, abs, sdl, evs):
                 ),
             )
 
+            if isinstance(code, dict):
+                dtype = code['type']
+                info = code
+                code = info.get("code", "")
+            else:
+                dtype = "axis"
+                info = {}
+
+            if info.get("flip", False):
+                v = 1 - v
+
             if "trigger" not in code:
                 v = v * 2 - 1
 
-            if invert:
-                v = -v
-
-            if is_axis:
+            if dtype == "axis":
                 out.append(
                     {
                         "type": "axis",
@@ -723,7 +725,7 @@ def intercept_events(emit, intercept_num, cid, abs, sdl, evs):
                         "value": v,
                     }
                 )
-            else:
+            elif dtype == "button":
                 if v > AXIS_LIMIT:
                     v = 1
                 else:
@@ -733,6 +735,28 @@ def intercept_events(emit, intercept_num, cid, abs, sdl, evs):
                         "type": "button",
                         "code": code,
                         "value": v,
+                    }
+                )
+            elif dtype == "hat":
+                vu = 0
+                vd = 0
+                if v > AXIS_LIMIT:
+                    vu = 1
+                elif v < -AXIS_LIMIT:
+                    vd = 1
+
+                out.append(
+                    {
+                        "type": "button",
+                        "code": info['up_code'],
+                        "value": vu,
+                    }
+                )
+                out.append(
+                    {
+                        "type": "button",
+                        "code": info["down_code"],
+                        "value": vd,
                     }
                 )
 
