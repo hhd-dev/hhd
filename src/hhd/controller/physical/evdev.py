@@ -181,7 +181,7 @@ def list_evs(filter_valid: bool = False, fn: str = "/proc/bus/input/devices"):
                 continue
             match line[0]:
                 case "I":
-                    for attr in line[3:-1].split(" "):
+                    for attr in line[3:].split(" "):
                         name, val = attr.split("=")
                         out[name.lower()] = int(val, 16)
                 case "N":

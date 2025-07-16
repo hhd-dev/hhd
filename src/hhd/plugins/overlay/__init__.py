@@ -77,6 +77,7 @@ class OverlayPlugin(HHDPlugin):
         self.touch_gestures = True
         self.ctx = None
         self.emit = None
+        self.sdl_mappings = None
 
         self.images = None
         self.burnt_ids = set()
@@ -243,6 +244,18 @@ class OverlayPlugin(HHDPlugin):
                     == "manual"
                     else None
                 )
+
+                if ctrl and not self.sdl_mappings:
+                    from .sdl import load_mappings
+
+                    try:
+                        self.sdl_mappings = load_mappings()
+                    except Exception as e:
+                        logger.warning(
+                            f"Could not load SDL mappings, dinput gamepads may not map correctly: {e}"
+                        )
+                        self.sdl_mappings = None
+
                 self.short_t = Thread(
                     target=device_shortcut_loop,
                     args=(
@@ -254,6 +267,7 @@ class OverlayPlugin(HHDPlugin):
                         touch,
                         disable_touch,
                         touch_correction,
+                        self.sdl_mappings,
                     ),
                 )
                 self.short_t.start()
