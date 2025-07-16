@@ -170,34 +170,39 @@ def get_joypad_axes(dev):
 def load_mappings(fn: str = CONTROLLERDB_FN):
     mappings = {}
 
-    with open(fn, "r") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-
-            try:
-                guid_str, name, *bindings = line.split(",")
-                if guid_str == "xinput":
+    try:
+        with open(fn, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
                     continue
 
-                # Check platform
-                different_platform = False
-                for bind in bindings:
-                    if not bind.startswith("platform:"):
+                try:
+                    guid_str, name, *bindings = line.split(",")
+                    if guid_str == "xinput":
                         continue
 
-                    platform = bind.split(":")[1].strip().lower()
-                    if platform != "linux":
-                        different_platform = True
-                        break
-                if different_platform:
-                    continue
+                    # Check platform
+                    different_platform = False
+                    for bind in bindings:
+                        if not bind.startswith("platform:"):
+                            continue
 
-                mappings[bytes.fromhex(guid_str)] = (name, bindings)
-            except Exception as e:
-                logger.info(f"Error parsing line '{line}': {e}")
+                        platform = bind.split(":")[1].strip().lower()
+                        if platform != "linux":
+                            different_platform = True
+                            break
+                    if different_platform:
+                        continue
 
+                    mappings[bytes.fromhex(guid_str)] = (name, bindings)
+                except Exception as e:
+                    logger.info(f"Error parsing line '{line}': {e}")
+    except Exception as e:
+        logger.error(f"Failed to load SDL gamepad mappings from {fn}: {e}")
+        return {}
+
+    logger.info(f"Loaded {len(mappings)} SDL gamepad mappings from:\n{fn}")
     return mappings
 
 
