@@ -9,7 +9,7 @@ from hhd.utils import expanduser
 
 from ..plugin import open_steam_kbd
 from .const import get_system_info, get_touchscreen_quirk
-from .controllers import QamHandlerKeyboard, device_shortcut_loop
+from .controllers import QamHandlerKeyboard, device_shortcut_loop, has_touchscreen
 from .steam import get_games
 from .x11 import is_gamescope_running
 
@@ -78,6 +78,7 @@ class OverlayPlugin(HHDPlugin):
         self.ctx = None
         self.emit = None
         self.sdl_mappings = None
+        self.has_touchscreen = False
 
         self.images = None
         self.burnt_ids = set()
@@ -158,6 +159,14 @@ class OverlayPlugin(HHDPlugin):
             ]["children"]["dmi"]["default"] = " - ".join(
                 map(lambda x: f'"{x}"', get_system_info())
             )
+
+        # Hide touchscreen shortcuts if we do not have a touchscreen
+        self.has_touchscreen = has_touchscreen()
+        if not self.has_touchscreen:
+            # If we do not have a touchscreen, remove the touchscreen shortcuts
+            del set["shortcuts"]["touchscreen"]
+            self.has_correction = False
+
         return set
 
     def update(self, conf: Config):
@@ -286,7 +295,6 @@ class OverlayPlugin(HHDPlugin):
 
             side = None
             section = None
-            override_enable = False
             match ev["event"]:
                 case gesture if gesture.startswith("swipe_"):
                     if self.touch_gestures:
@@ -319,7 +327,6 @@ class OverlayPlugin(HHDPlugin):
                     # Preferred bind for QAM is dual press
                     cmd = "open_qam"
                 case "overlay":
-                    override_enable = True
                     cmd = "open_qam"
                 case "qam_triple":
                     # Allow opening expanded menu with tripple press

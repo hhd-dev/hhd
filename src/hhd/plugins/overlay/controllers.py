@@ -219,6 +219,21 @@ def is_ally():
     except Exception:
         return False
 
+def has_touchscreen():
+    try:
+        for dev in list_evs():
+            keys = dev.get("byte", {}).get("key", bytes())
+            major = B("BTN_TOUCH") >> 3
+            minor = B("BTN_TOUCH") & 0x07
+            has_touch = len(keys) > major and keys[major] & (1 << minor)
+            major = B("BTN_TOOL_FINGER") >> 3
+            minor = B("BTN_TOOL_FINGER") & 0x07
+            has_finger = len(keys) > major and keys[major] & (1 << minor)
+            if has_touch and not has_finger:
+                return True
+    except Exception:
+        return True
+    return False
 
 def find_devices(
     current: dict[str, Any] = {},
