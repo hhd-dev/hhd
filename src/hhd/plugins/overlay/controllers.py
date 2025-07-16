@@ -18,7 +18,7 @@ from hhd.controller.virtual.uinput.monkey import UInput, UInputMonkey
 
 from .const import get_touchscreen_quirk
 from .x11 import is_gamescope_running
-from .sdl import BTN_GAMEPAD, load_mappings, match_gamepad, create_joystick_guid
+from .sdl import BTN_GAMEPAD, match_gamepad, create_joystick_guid
 
 logger = logging.getLogger(__name__)
 
@@ -279,6 +279,7 @@ def find_devices(
         cap = BTN_GAMEPAD
         major = cap >> 3
         minor = cap & 0x07
+        guid = create_joystick_guid(dev)
         if (
             sdl_mappings
             and controllers
@@ -331,6 +332,7 @@ def find_devices(
                 "hash": dev.get("hash", ""),
                 "vid": dev.get("vendor", 0),
                 "pid": dev.get("product", 0),
+                "guid": guid.hex(),
                 "sdl_info": sdl_info,
             }
 
@@ -704,7 +706,7 @@ def intercept_events(emit, intercept_num, cid, abs, sdl, evs):
             )
 
             if isinstance(code, dict):
-                dtype = code['type']
+                dtype = code["type"]
                 info = code
                 code = info.get("code", "")
             else:
@@ -748,7 +750,7 @@ def intercept_events(emit, intercept_num, cid, abs, sdl, evs):
                 out.append(
                     {
                         "type": "button",
-                        "code": info['up_code'],
+                        "code": info["up_code"],
                         "value": vu,
                     }
                 )
@@ -983,7 +985,7 @@ def device_shortcut_loop(
                     devs[name]["state_ctrl"].update({"uniq": dev.uniq})
                 # Controller
                 if cand["is_controller"]:
-                    caps.append(f"Controller[ukn={create_joystick_guid(dev)}]")
+                    caps.append(f"Controller[ukn={cand['guid']}]")
                 if cand["sdl_info"]:
                     pretty = cand["sdl_info"].get("name", "Unknown")
                     guid = cand["sdl_info"].get("guid", None)
