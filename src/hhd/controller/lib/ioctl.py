@@ -232,6 +232,7 @@ def _IOWR(request_type, request_nr, size):
 # };
 EVIOCGMASK = _IOR("E", 0x92, 4 + 4 + 8)
 EVIOCSMASK = _IOW("E", 0x93, 4 + 4 + 8)
+EVIOCGRAB = _IOW("E", 0x90, 4)
 # char * is 8
 UINPUT_IOCTL_BASE = "U"
 UI_SET_UNIQ_STR = lambda l: _IOC("w", UINPUT_IOCTL_BASE, 112, l)
@@ -241,8 +242,6 @@ UI_GET_SYSNAME = lambda l: _IOC("r", UINPUT_IOCTL_BASE, 44, l)
 EVIOCREVOKEALL = _IOW("E", 0x94, 4)
 JSIOCREVOKEALL = _IOW("j", 0x94, 4)
 
-# Grab clean ioctl
-EVIOCGRABCLEAN = _IOW("E", 0x95, 4)
 
 # Hidraw Descriptors
 HIDIOCGRDESCSIZE = _IOR("H", 0x01, 4)
