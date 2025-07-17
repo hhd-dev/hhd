@@ -53,8 +53,10 @@ CONTROLLER_WAKE_BUTTON: dict[int, str] = to_map(
     {
         # "select": [B("BTN_SELECT")],
         "mode": [B("BTN_MODE")],
+        "a": [B("BTN_A")],
         "b": [B("BTN_B")],
         "y": [B("BTN_Y")],
+        "x": [B("BTN_X")],
     }
 )
 
@@ -526,7 +528,7 @@ def process_ctrl(emit, state, ev, val):
         state["select"] = val
         return
 
-    if ev != "b" and ev != "y":
+    if ev != "a" and ev != "b" and ev != "y" and ev != "x":
         return
 
     # Mode needs to be pressed

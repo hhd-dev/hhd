@@ -35,6 +35,8 @@ class SpecialEvent(TypedDict):
         "xbox_b_internal",
         "xbox_y",
         "xbox_y_internal",
+        "xbox_a",
+        "xbox_x",
         "kbd_meta_press",
         "kbd_meta_hold",
         "swipe_left_top",

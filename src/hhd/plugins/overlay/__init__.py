@@ -319,6 +319,12 @@ class OverlayPlugin(HHDPlugin):
                 case "xbox_y":
                     side = "xbox_y"
                     section = "controller"
+                case "xbox_a":
+                    side = "xbox_a"
+                    section = "controller"
+                case "xbox_b":
+                    side = "xbox_b"
+                    section = "controller"
                 case "qam_hold":
                     # Open QAM with hold for accessibility
                     cmd = "open_qam"

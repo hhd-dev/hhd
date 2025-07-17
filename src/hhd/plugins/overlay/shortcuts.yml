@@ -26,12 +26,6 @@ controller:
   tags: [non-essential]
   title: "External Controllers"
   children:
-    xbox_b:
-      type: multiple
-      title: "Xbox + B (Press)"
-      options: *shortcuts
-      # default: hhd_qam
-      default: hhd_expanded
     xbox_y:
       type: multiple
       title: "Xbox + Y"
@@ -40,6 +34,24 @@ controller:
         disconnect: Disconnect Controller
       # default: disconnect
       default: tdp_cycle
+    xbox_b:
+      type: multiple
+      title: "Xbox + B"
+      options: *shortcuts
+      # default: hhd_qam
+      default: hhd_expanded
+    xbox_a:
+      type: multiple
+      title: "Xbox + A"
+      options: *shortcuts
+      # default: hhd_qam
+      default: disabled
+    xbox_x:
+      type: multiple
+      title: "Xbox + X"
+      options: *shortcuts
+      # default: hhd_qam
+      default: disabled
 touchscreen:
   type: container
   tags: [non-essential]

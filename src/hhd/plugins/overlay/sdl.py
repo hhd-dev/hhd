@@ -58,6 +58,8 @@ WAKE_KEYS = [
     "mode",
     "b",
     "y",
+    "a",
+    "x",
 ]
 
 OVERLAY_KEYS = [
