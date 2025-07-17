@@ -16,7 +16,7 @@ HHD_PID_MOTION = 0x11
 HHD_PID_VENDOR = 0x7000
 
 CONTROLLER_THEMES: dict[str, tuple[int, int, str]] = {
-    "hhd": (0x5335, 0x0001, "Handheld Daemon Controller"),
+    "hhd": (0x045E, 0x028F, "Handheld Daemon Controller"),
     # Sony
     "ps3": (0x054C, 0x0268, "DualShock 3"),
     "ps4": (0x054C, 0x05C4, "DualShock 4"),
