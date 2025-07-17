@@ -31,7 +31,7 @@ controller:
       title: "Xbox + B (Press)"
       options: *shortcuts
       # default: hhd_qam
-      default: disabled
+      default: hhd_expanded
     xbox_y:
       type: multiple
       title: "Xbox + Y"
@@ -39,7 +39,7 @@ controller:
         <<: *shortcuts
         disconnect: Disconnect Controller
       # default: disconnect
-      default: disabled
+      default: tdp_cycle
 touchscreen:
   type: container
   tags: [non-essential]
