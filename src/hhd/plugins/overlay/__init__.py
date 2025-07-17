@@ -205,11 +205,17 @@ class OverlayPlugin(HHDPlugin):
             conf["gamemode.display.touchscreen_disable"] = False
 
         asus_cycle = conf.get("tdp.asus.cycle_tdp", False)
-        if self.initialized and (
-            not self.old_shortcuts
-            or self.old_shortcuts != conf["shortcuts"]
-            or self.old_touch != disable_touch
-            or self.old_asus_cycle != asus_cycle
+        if (
+            self.initialized
+            and (
+                not self.old_shortcuts
+                or self.old_shortcuts != conf["shortcuts"]
+                or self.old_touch != disable_touch
+                or self.old_asus_cycle != asus_cycle
+            )
+            and (
+                self.emit and not self.emit.should_intercept()
+            )  # avoid breaking interception
         ):
             self.old_asus_cycle = asus_cycle
             self.old_shortcuts = conf["shortcuts"].copy()
