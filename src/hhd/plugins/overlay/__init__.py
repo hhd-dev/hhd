@@ -161,7 +161,7 @@ class OverlayPlugin(HHDPlugin):
             )
 
         # Hide touchscreen shortcuts if we do not have a touchscreen
-        self.has_touchscreen = has_touchscreen() and False
+        self.has_touchscreen = has_touchscreen()
         if not self.has_touchscreen:
             # If we do not have a touchscreen, remove the touchscreen shortcuts
             del set["shortcuts"]["touchscreen"]
