@@ -4,7 +4,7 @@ from typing import Literal, NamedTuple, Sequence, TypedDict
 class PowerButtonConfig(NamedTuple):
     device: str
     prod_name: str
-    type: Literal["hold_emitted", "hold_isa", "only_press"] = "hold_isa"
+    type: Literal["hold_emitted", "hold_isa", "only_press", "disabled"] = "hold_isa"
     phys: Sequence[str] = ["LNXPWRBN", "PNP0C0C"]
     hold_phys: Sequence[str] = ["phys-hhd-powerbutton", "isa0060"]
     hold_grab: bool = False
@@ -35,18 +35,16 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
     PBC("OrangePi G1621-02/G1621-02", "G1621-02"),
     PBC("OrangePi NEO-01/NEO-01", "NEO-01"),
     # breaks volume buttons, use the valve original script and hope steam inhibits systemd
-    # PBC(
-    #     "Steam Deck LCD",
-    #     "Jupiter",
-    #     type="hold_emitted",
-    #     phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
-    # ),
-    # PBC(
-    #     "Steam Deck OLED",
-    #     "Galileo",
-    #     type="hold_emitted",
-    #     phys=["isa0060", "PNP0C0C", "LNXPWRBN"],
-    # ),
+    PBC(
+        "Steam Deck LCD",
+        "Jupiter",
+        type="disabled",
+    ),
+    PBC(
+        "Steam Deck OLED",
+        "Galileo",
+        type="disabled",
+    ),
     PBC(
         "AOKZOE A1",
         "AOKZOE A1 AR07",

@@ -103,6 +103,10 @@ def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event, e
                 f"Starting isa keyboard powerbutton handler for device '{cfg.device}'."
             )
             power_button_isa(cfg, ctx, should_exit, emit)
+        case "disabled":
+            logger.info(
+                f"Power button plugin disabled for device '{cfg.device}', not starting."
+            )
         case _:
             logger.error(f"Invalid type in config '{cfg.type}'. Exiting.")
 
