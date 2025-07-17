@@ -152,9 +152,8 @@ def get_joypad_axes(dev):
             if not (b & (1 << j)):
                 continue
             key = i * 8 + j
-            if key < ABS_HAT0X:
-                abs.append(key)
-            else:
+            abs.append(key)
+            if key >= ABS_HAT0X:
                 hats.append(key)
 
     hats_x = [x for x in hats if x % 2 == 0]
