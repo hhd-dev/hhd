@@ -15,6 +15,7 @@ from hhd.controller import Event as ControllerEvent
 from hhd.controller.lib.ioctl import EVIOCSMASK, EVIOCGRAB
 from hhd.controller.physical.evdev import B, list_evs, to_map
 from hhd.controller.virtual.uinput.monkey import UInput, UInputMonkey
+from hhd.utils import freeze_steam
 
 from .const import get_touchscreen_quirk
 from .x11 import is_gamescope_running
@@ -219,6 +220,7 @@ def is_ally():
     except Exception:
         return False
 
+
 def has_touchscreen():
     try:
         for dev in list_evs():
@@ -234,6 +236,7 @@ def has_touchscreen():
     except Exception:
         return True
     return False
+
 
 def find_devices(
     current: dict[str, Any] = {},
@@ -795,6 +798,7 @@ def device_shortcut_loop(
     last_check = 0
     intercept = False
     intercept_num = 0
+    steam_frozen = False
     devs = {}
     while not should_exit or not should_exit.is_set():
         if devs:
@@ -820,10 +824,19 @@ def device_shortcut_loop(
                 intercept_num += 1
                 logger.info("Intercepting other controllers:")
                 failed = intercept_devices(devs, True)
+
+                if emit and not steam_frozen and len(devs) > len(failed):
+                    steam_frozen = freeze_steam(True, emit.ctx)
+                    if steam_frozen:
+                        logger.info("Froze Steam (to avoid HID device dual input)")
             elif intercept and not should_intercept:
                 intercept = False
                 logger.info("Stopping intercepting other controllers:")
                 failed = intercept_devices(devs, False)
+
+                if emit and steam_frozen:
+                    logger.info("Unfreezing Steam (to avoid HID device dual input)")
+                    freeze_steam(False, emit.ctx)
             for id, f in failed:
                 blacklist.add(f["hash"])
                 try:

@@ -342,3 +342,27 @@ def open_steam_kbd(emit, open: bool = True):
             f"steam://{'open' if open else 'close'}/keyboard", emit.ctx
         )
     )
+
+
+def freeze_steam(freeze: bool, ctx: Context):
+    pid = None
+    try:
+        import signal
+
+        with open(expanduser(STEAM_PID, ctx)) as f:
+            pid = f.read().strip()
+
+        steam_cmd_path = f"/proc/{pid}/cmdline"
+        if not os.path.exists(steam_cmd_path):
+            return False
+
+        os.kill(
+            int(pid),
+            signal.SIGSTOP if freeze else signal.SIGCONT,
+        )
+        return True
+    except Exception:
+        import traceback
+
+        traceback.print_exc()
+        return False
