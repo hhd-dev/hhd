@@ -835,8 +835,12 @@ def device_shortcut_loop(
                 failed = intercept_devices(devs, False)
 
                 if emit and steam_frozen:
-                    logger.info("Unfreezing Steam (to avoid HID device dual input)")
+                    # Give time for the B event to be lost
+                    time.sleep(0.25)
+                    logger.info("Unfreezing Steam")
                     freeze_steam(False, emit.ctx)
+                    steam_frozen = False
+
             for id, f in failed:
                 blacklist.add(f["hash"])
                 try:
@@ -1138,7 +1142,13 @@ class OverlayWriter:
         # Process changed events
         cmds = ""
         for code, val in changed:
-            if val:
+            if code == "b":
+                # This is tricky, if we do not wait for release,
+                # input will leak to steam and into the game.
+                # So for b specifically, wait for up
+                if not val:
+                    cmds += f"action:b\n"
+            elif val:
                 cmds += f"action:{code}\n"
             elif code == "x":
                 cmds += f"action:x_up\n"
