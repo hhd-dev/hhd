@@ -305,16 +305,18 @@ def turbo_loop(
     qam_no_release = False
     if conf.get("turbo_reboots", False):
         share_reboots = True
-    match conf.get("extra_buttons", "separate"):
-        case "separate":
-            keyboard_is = "steam_qam"
-            qam_hhd = True
-        case "combo":
-            keyboard_is = "qam"
-            qam_hhd = False
-        case "combo_hhd":
-            keyboard_is = "qam"
-            qam_hhd = True
+    
+    if not dconf.get("g1", False):
+        match conf.get("extra_buttons", "separate"):
+            case "separate":
+                keyboard_is = "steam_qam"
+                qam_hhd = True
+            case "combo":
+                keyboard_is = "qam"
+                qam_hhd = False
+            case "combo_hhd":
+                keyboard_is = "qam"
+                qam_hhd = True
 
     multiplexer = Multiplexer(
         trigger="analog_to_discrete",

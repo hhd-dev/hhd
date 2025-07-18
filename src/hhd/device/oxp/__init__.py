@@ -113,6 +113,9 @@ class GenericControllersPlugin(HHDPlugin):
         if not self.turbo:
             del base["controllers"]["oxp"]["children"]["extra_buttons"]
             del base["controllers"]["oxp"]["children"]["turbo_reboots"]
+        elif self.dconf.get("g1"):
+            # No Keyboard button means turbo needs to do combo
+            del base["controllers"]["oxp"]["children"]["extra_buttons"]
 
         return base
 
