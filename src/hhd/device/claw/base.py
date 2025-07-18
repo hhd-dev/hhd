@@ -271,7 +271,7 @@ def plugin_run(
             found_device = True
             is_xinput = False
 
-        if is_xinput or (found_device and not initialized):
+        if is_xinput or (found_device and not test_mode and not initialized):
             d_vend = ClawDInputHidraw(
                 vid=[MSI_CLAW_VID],
                 pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
