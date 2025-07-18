@@ -24,5 +24,6 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClawA1M:*
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClaw7AI+A2VM:*
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClaw8AI+A2VM:*
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMicro-StarInternationalCo.,Ltd.:pnClawA8BZ2EM:*
   KEYBOARD_KEY_b9=f15     # Right Face Button
   KEYBOARD_KEY_ba=f16     # Left Face Button
