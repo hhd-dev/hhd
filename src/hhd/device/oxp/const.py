@@ -115,11 +115,20 @@ CONFS = {
     },
     "ONEXPLAYER X1Pro": {
         **ONEX_DEFAULT_CONF,
-        "name": "ONEXPLAYER X1 (AMD)",
+        "name": "ONEXPLAYER X1 Pro (AMD)",
         "x1": True,
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
         "protocol": "serial",
+    },
+    "ONEXPLAYER X1Pro EVA-02": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER X1Pro EVA-02 (Intel)",
+        "x1": True,
+        "rgb_secondary": True,
+        "mapping": X1_MAPPING,
+        "protocol": "serial",
+        "turbo": True,  # disable turbo takeover so that it can be used for TDP
     },
     "ONEXPLAYER X1 i": {
         **ONEX_DEFAULT_CONF,
