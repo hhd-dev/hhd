@@ -279,6 +279,7 @@ def plugin_run(
                     0xFFF00040,
                     0x00010005,
                     0xFF000000,
+                    0xFFA00001,
                 ],
                 required=True,
             )
