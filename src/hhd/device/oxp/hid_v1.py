@@ -74,7 +74,7 @@ def gen_rgb_solid(r, g, b, side: int = 0x00):
 KBD_NAME = "keyboard"
 HOME_NAME = "guide"
 KBD_NAME_NON_TURBO = "share"
-KBD_HOLD = 0.12
+KBD_HOLD = 0.2
 OXP_BUTTONS = {
     0x24: KBD_NAME,
     0x21: HOME_NAME,
