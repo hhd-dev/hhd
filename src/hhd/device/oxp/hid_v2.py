@@ -68,7 +68,7 @@ def gen_rgb_solid(r, g, b):
 KBD_NAME = "keyboard"
 HOME_NAME = "guide"
 KBD_NAME_NON_TURBO = "share"
-KBD_HOLD = 0.2
+KBD_HOLD = 0.3
 OXP_BUTTONS = {
     0x24: KBD_NAME,
     0x21: HOME_NAME,
@@ -159,11 +159,11 @@ class OxpHidrawV2(GenericGamepadHidraw):
                 stick = ev["oxp"]
                 if stick == "classic":
                     # Classic mode is a cherry red
-                    stick = 0xb7, 0x30, 0x00
+                    stick = 0xB7, 0x30, 0x00
             case _:  # "disabled":
                 stick_enabled = False
-        
-        # Force RGB to not initialize to workaround RGB breaking 
+
+        # Force RGB to not initialize to workaround RGB breaking
         # rumble when being set
         if self.prev_stick_enabled is None:
             self.prev_stick_enabled = stick_enabled

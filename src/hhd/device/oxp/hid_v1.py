@@ -61,6 +61,7 @@ def gen_brightness(
 
     return gen_cmd(0xB8, [0xFD, 0x00, 0x02, enabled, 0x05, bc])
 
+
 # Sides on the g1
 # 1 = left controller
 # 2 = right controller
@@ -74,7 +75,7 @@ def gen_rgb_solid(r, g, b, side: int = 0x00):
 KBD_NAME = "keyboard"
 HOME_NAME = "guide"
 KBD_NAME_NON_TURBO = "share"
-KBD_HOLD = 0.2
+KBD_HOLD = 0.3
 OXP_BUTTONS = {
     0x24: KBD_NAME,
     0x21: HOME_NAME,
