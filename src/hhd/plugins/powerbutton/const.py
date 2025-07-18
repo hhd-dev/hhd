@@ -74,6 +74,12 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         type="only_press",
         phys=["LNXPWRBN"],
     ),
+    PBC(
+        "MSI Claw A8",
+        "Claw A8 BZ2EM",
+        type="only_press",
+        phys=["LNXPWRBN"],
+    ),
 ]
 
 
