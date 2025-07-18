@@ -245,6 +245,7 @@ def plugin_run(
 ):
     first = True
     first_disabled = True
+    initialized = False
     init = time.perf_counter()
     repeated_fail = False
     while not should_exit.is_set():
@@ -270,28 +271,18 @@ def plugin_run(
             found_device = True
             is_xinput = False
 
-        if is_xinput:
+        if is_xinput or (found_device and not initialized):
             d_vend = ClawDInputHidraw(
                 vid=[MSI_CLAW_VID],
-                pid=[MSI_CLAW_XINPUT_PID],
-                usage_page=[0xFFA0],
-                usage=[0x0001],
+                pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
+                application=[
+                    0xFFF00040,
+                    0x00010005,
+                    0xFF000000,
+                ],
                 required=True,
             )
-            try:
-                d_vend.open()
-                d_vend.set_dinput_mode(init=True)
-                d_vend.close(True)
-                time.sleep(2)
-            except Exception as e:
-                logger.error(f"Failed to set device into dinput mode.\n{type(e)}: {e}")
-                time.sleep(1)
-        elif found_device:
-            d_vend = ClawDInputHidraw(
-                vid=[MSI_CLAW_VID],
-                pid=[MSI_CLAW_DINPUT_PID],
-                required=True,
-            )
+            initialized = True
             try:
                 d_vend.open()
                 d_vend.set_dinput_mode(init=True)
@@ -461,8 +452,11 @@ def controller_loop(
         d_vend = ClawDInputHidraw(
             vid=[MSI_CLAW_VID],
             pid=[MSI_CLAW_DINPUT_PID],
-            usage_page=[0xFFF0],
-            usage=[0x0040],
+            application=[
+                0xFFF00040,
+                0x00010005,
+                0xFF000000,
+            ],
             required=True,
         )
 
