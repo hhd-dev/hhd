@@ -55,12 +55,13 @@ ADDR_0163 = {
     "m2": [0x01, 0x1F],
 }
 # 0217
+# 0308 (?)
 ADDR_0166 = {
     "rgb": [0x02, 0x4A],
     "m1": [0x00, 0xBA],
     "m2": [0x01, 0x63],
 }
-ADDR_DEFAULT = ADDR_0163
+ADDR_DEFAULT = ADDR_0166
 
 
 def set_rgb_cmd(brightness, red, green, blue, addr: dict = ADDR_DEFAULT) -> bytes:
@@ -105,7 +106,11 @@ class ClawDInputHidraw(GenericGamepadHidraw):
             ver = (self.info or {}).get("release_number", 0x0)
             major = ver >> 8
             logger.info(f"Device version: {ver:#04x}")
-            if (major == 1 and ver >= 0x0166) or (major == 2 and ver >= 0x0217):
+            if (
+                (major == 1 and ver >= 0x0166)
+                or (major == 2 and ver >= 0x0217)
+                or (major >= 3)
+            ):
                 self.addr = ADDR_0166
             else:
                 self.addr = ADDR_0163
