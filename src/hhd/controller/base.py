@@ -570,7 +570,7 @@ class Multiplexer:
         ) = None,
         status: None | Literal["both_to_main"] = None,
         share_to_qam: bool = False,
-        trigger_discrete_lvl: float = 0.99,
+        trigger_discrete_lvl: float = 0.8,
         touchpad_short: TouchpadAction = "disabled",
         touchpad_right: TouchpadAction = "left_click",
         touchpad_hold: TouchpadAction = "disabled",
