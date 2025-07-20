@@ -200,7 +200,7 @@ def load_mappings(fn: str = CONTROLLERDB_FN):
                 except Exception as e:
                     logger.info(f"Error parsing line '{line}': {e}")
     except Exception as e:
-        logger.error(f"Failed to load SDL gamepad mappings from {fn}: {e}")
+        logger.error(f"Failed to load SDL gamepad mappings from {fn}:\n{e}")
         return {}
 
     logger.info(f"Loaded {len(mappings)} SDL gamepad mappings from:\n{fn}")
