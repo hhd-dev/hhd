@@ -43,6 +43,22 @@ class DeviceTDP(TypedDict):
     supports_cycle: bool | None
 
 
+class DeviceTDPv2(TypedDict):
+    quiet: tuple[int, int, int | None]
+    balanced_min: int
+    balanced: tuple[int, int, int | None]
+    performance_min: int
+    performance: tuple[int, int, int | None]
+    performance_dc: int | None
+    min_tdp: int
+    max_tdp_dc: int | None
+    max_tdp: int
+    max_tdp_oc: int
+    max_tdp_sppt: int | None
+    max_tdp_fppt: int | None
+    supports_cycle: bool | None
+
+
 # internal name for ppd, platform_profile choices, min TDP for
 # profile to apply, tdp target to apply when selecting profile
 ENERGY_MAP = [
@@ -225,38 +241,57 @@ ASUS_DATA: dict[str, DeviceTDP] = {
     "ROG Flow Z13 GZ302": Z1_DATA,
 }
 
-CLAW_DATA: DeviceTDP = {
-    "quiet": 20,
+CLAW_DATA: DeviceTDPv2 = {
+    "quiet": (20, 20, None),
     "balanced_min": 21,
-    "balanced": 35,
+    "balanced": (30, 30, None),
     "performance_min": 36,
     "performance_dc": 35,
-    "performance": 43,
+    "performance": (35, 35, None),
     "min_tdp": 20,
     "max_tdp_dc": 35,
     "max_tdp": 43,
     "max_tdp_oc": 45,
-    "max_tdp_boost": 45,
+    "max_tdp_sppt": 45,
+    "max_tdp_fppt": None,
     "supports_cycle": True,
 }
 
-CLAW_AI_DATA: DeviceTDP = {
-    "quiet": 8,
+CLAW_AI_DATA: DeviceTDPv2 = {
+    "quiet": (8, 37, None),
     "balanced_min": 9,
-    "balanced": 15,
+    "balanced": (12, 37, None),
     "performance_min": 16,
     "performance_dc": 30,
-    "performance": 30,
+    "performance": (30, 37, None),
     "min_tdp": 8,
     "max_tdp_dc": 30,
     "max_tdp": 30,
     "max_tdp_oc": 30,
-    "max_tdp_boost": 37,
+    "max_tdp_sppt": 37,
+    "max_tdp_fppt": None,
     "supports_cycle": True,
 }
 
-MSI_DATA: dict[str, DeviceTDP] = {
+CLAW_8A_DATA: DeviceTDPv2 = {
+    "quiet": (28, 45, 55),
+    "balanced_min": 9,
+    "balanced": (30, 33, 43),
+    "performance_min": 16,
+    "performance_dc": 30,
+    "performance": (15, 28, 33),
+    "min_tdp": 8,
+    "max_tdp_dc": 30,
+    "max_tdp": 30,
+    "max_tdp_oc": 30,
+    "max_tdp_sppt": 37,
+    "max_tdp_fppt": 55,
+    "supports_cycle": True,
+}
+
+MSI_DATA: dict[str, DeviceTDPv2] = {
     "MS-1T41": CLAW_DATA,
     "MS-1T42": CLAW_AI_DATA,
     "MS-1T52": CLAW_AI_DATA,
+    "MS-1T8K": CLAW_8A_DATA,
 }
