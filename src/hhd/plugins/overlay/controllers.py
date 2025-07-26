@@ -837,12 +837,12 @@ def device_shortcut_loop(
                 logger.info("Stopping intercepting other controllers:")
                 failed = intercept_devices(devs, False)
 
-                if emit and steam_frozen:
-                    # Give time for the B event to be lost
-                    time.sleep(0.25)
-                    logger.info("Unfreezing Steam")
-                    freeze_steam(False, emit.ctx)
-                    steam_frozen = False
+            if emit and steam_frozen and not should_intercept:
+                # Give time for the B event to be lost
+                time.sleep(0.25)
+                logger.info("Unfreezing Steam")
+                freeze_steam(False, emit.ctx)
+                steam_frozen = False
 
             for id, f in failed:
                 blacklist.add(f["hash"])
