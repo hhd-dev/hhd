@@ -310,10 +310,10 @@ msgstr "Modalità Standby Estremo"
 #. Field: hint
 #, python-format
 msgid ""
-"Lowers the power consumption of the device from 4% to 1% overnight. "
+"Lowers the power consumption of the device from 4%% to 1%% overnight. "
 "Active only on battery. Turns off the power light and the controller  "
 "requires longer to wake up."
-msgstr "Riduce il consumo energetico del dispositivo dal 4% all'1% durante la notte. Attivo solo a batteria. Spegne la spia di alimentazione e il controller richiede più tempo per riattivarsi."
+msgstr "Riduce il consumo energetico del dispositivo dal 4%% all'1%% durante la notte. Attivo solo a batteria. Spegne la spia di alimentazione e il controller richiede più tempo per riattivarsi."
 
 #. Setting: Extreme Standby Mode
 #. Option: enabled
