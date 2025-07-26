@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-28 12:21+0800\n"
+"POT-Creation-Date: 2025-07-25 17:08+0200\n"
 "PO-Revision-Date: 2024-02-07 17:27+0100\n"
 "Last-Translator: Alex <aliceric27@gmail.com>\n"
 "Language: zh_Hans_CN\n"
@@ -105,7 +105,7 @@ msgstr "主题"
 msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
-msgstr "在 HHD-UI 中更改主题。默认为 Diavolo 或您的发行版主题"
+msgstr "更改用户界面主题。默认为 Diavolo 或您的发行版主题。"
 
 #. Setting: Theme
 #. Option: default
@@ -142,7 +142,7 @@ msgstr "重置设置"
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr "将所有 Handheld Daemon 设置重置为默认值"
+msgstr "将所有 Handheld Daemon 设置恢复为默认值。"
 
 #. Setting: It is no longer possible to update Decky from here. If you see
 #. this, update the Decky plugin manually.
@@ -150,7 +150,7 @@ msgstr "将所有 Handheld Daemon 设置重置为默认值"
 msgid ""
 "It is no longer possible to update Decky from here. If you see this, "
 "update the Decky plugin manually."
-msgstr "Decky 插件不再支持从这里更新。如果您看到此消息, 请手动更新 Decky 插件"
+msgstr "Decky 插件不再支持从这里更新。如果您看到此消息，请手动更新 Decky 插件。"
 
 #. Setting: Handheld Daemon Version
 #. Field: title
@@ -209,26 +209,6 @@ msgstr "API 配置"
 msgid "Settings for configuring the http endpoint of HHD."
 msgstr "HHD 的 http 端点的设置"
 
-#. Setting: Enable the API
-#. Field: title
-msgid "Enable the API"
-msgstr "启用 API"
-
-#. Setting: Enable the API
-#. Field: hint
-msgid "Enables the API of Handheld Daemon (required for decky and ui)."
-msgstr "启用 Handheld Daemon 的 API (decky 和 hhd-ui 必需) "
-
-#. Setting: API Port
-#. Field: title
-msgid "API Port"
-msgstr "API 端口"
-
-#. Setting: API Port
-#. Field: hint
-msgid "Which port should the API be on?"
-msgstr "API 要使用哪个端口？"
-
 #. Setting: Limit Access to localhost
 #. Field: title
 msgid "Limit Access to localhost"
@@ -249,19 +229,100 @@ msgstr "使用安全令牌"
 msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
-msgstr "在 `~/.config/hhd/token` 生成一个安全令牌, 用于认证"
+msgstr "在 `~/.config/hhd/token` 生成一个安全令牌，用于认证。"
 
-#. Setting: Handheld
+msgid "Lightbar"
+msgstr "光条"
+
+msgid "Keyboard"
+msgstr "键盘"
+
+#. Setting: Aura Settings
 #. Field: title
-msgid "Handheld"
-msgstr "掌机"
+msgid "Aura Settings"
+msgstr "Aura 设置"
 
-#. Setting: Handheld
+#. Setting: Brightness
+#. Field: title
+msgid "Brightness"
+msgstr "亮度"
+
+#. Setting: Brightness
+#. Option: disabled
+#. Setting: Off
+#. Field: title
+#. Setting: Vibration Strength
+#. Option: off
+msgid "Off"
+msgstr "关闭"
+
+#. Setting: Brightness
+#. Option: low
+#. Setting: Speed
+msgid "Low"
+msgstr "低"
+
+#. Setting: Brightness
+#. Option: medium
+#. Setting: Vibration Strength
+#. Setting: Speed
+msgid "Medium"
+msgstr "中"
+
+#. Setting: Brightness
+#. Option: high
+#. Setting: Vibration Strength
+#. Setting: Speed
+msgid "High"
+msgstr "高"
+
+#. Setting: RGB Power Settings
+#. Field: title
+msgid "RGB Power Settings"
+msgstr "RGB 电源设置"
+
+#. Setting: On TDP Changes
+#. Field: title
+msgid "On TDP Changes"
+msgstr ""
+
+#. Setting: Boot
+#. Field: title
+msgid "Boot"
+msgstr "启动"
+
+#. Setting: Awake
+#. Field: title
+msgid "Awake"
+msgstr ""
+
+#. Setting: Sleep while Charging
+#. Field: title
+msgid "Sleep while Charging"
+msgstr ""
+
+#. Setting: Shutdown
+#. Field: title
+msgid "Shutdown"
+msgstr "关机"
+
+#. Setting: Enable Aura RGB support
+#. Field: title
+msgid "Enable Aura RGB support"
+msgstr "启用 Aura RGB 支持"
+
+#. Setting: Claw Controller
+#. Field: title
+msgid "Claw Controller"
+msgstr "Claw 控制器"
+
+#. Setting: Claw Controller
 #. Field: hint
+#. Setting: Handheld
 #. Setting: Orange Pi Neo
 #. Setting: OneXPlayer Controller
 msgid "Allows for configuring your handheld's controller to a unified output."
-msgstr "可以配置您的掌机控制器为统一设备输出"
+msgstr "可以配置您的掌机控制器为统一设备输出。"
 
 #. Setting: Controller Emulation
 #. Field: title
@@ -271,22 +332,91 @@ msgstr "控制器模拟"
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse your device's features."
-msgstr "模拟不同类型的控制器, 以便融合设备特性"
-
-
-
+msgstr "模拟不同类型的控制器，以便融合设备特性。"
 
 #. Setting: Swap Guide and Menu/View
 #. Field: title
-#, fuzzy
 msgid "Swap Guide and Menu/View"
 msgstr "交换 Guide 与 Menu/View 按钮"
 
 #. Setting: Swap Guide and Menu/View
 #. Field: hint
-#, fuzzy
 msgid "Swaps the Guide and QAM buttons with start and select."
-msgstr "交换 Guide/QAM 按钮与 start/select 按钮"
+msgstr "交换 Guide/QAM 按钮与 start/select 按钮。"
+
+#. Setting: Start/Select do SteamOS Combos
+#. Field: title
+msgid "Start/Select do SteamOS Combos"
+msgstr "Start/Select 键作为 SteamOS 组合键"
+
+#. Setting: Start/Select do SteamOS Combos
+#. Field: hint
+msgid ""
+"When holding Select or Start, if another button is pressed, they become "
+"the Xbox button, which allows doing SteamOS combos (Select+RT is "
+"screenshot)."
+msgstr ""
+"按住 Select 或 Start 时，如果按下另一个按钮，它们将变为 Xbox 按钮，可以实现执行 SteamOS 组合键（Select+RT "
+"是屏幕截图）。"
+
+#. Setting: Start/Select do SteamOS Combos
+#. Option: disabled
+#. Setting: Menu/L4/R4 Mapping
+#. Setting: Turbo Mode (Repeat Buttons)
+#. Setting: Touchpad Emulation [BETA]
+#. Setting: Disabled
+#. Field: title
+#. Setting: Extra buttons as
+#. Setting: Short Action
+#. Setting: Hold Action
+#. Setting: Armoury Crate
+#. Setting: Fan Key
+#. Setting: Xbox + Y
+#. Setting: Xbox + B
+#. Setting: Xbox + A
+#. Setting: Xbox + X
+#. Setting: ↑ Swipe Up
+#. Setting: ← Swipe Right Side (Top)
+#. Setting: ← Swipe Right Side (Bottom)
+#. Setting: → Swipe Left Side (Top)
+#. Setting: → Swipe Left Side (Bottom)
+#. Setting: ↓ Swipe Down
+#. Setting: Start (Meta) Press
+#. Setting: Start (Meta) Hold
+#. Setting: Ctrl + 3
+#. Setting: Ctrl + 4
+msgid "Disabled"
+msgstr "禁用"
+
+#. Setting: Start/Select do SteamOS Combos
+#. Option: select
+msgid "Select Only"
+msgstr "仅 Select"
+
+#. Setting: Start/Select do SteamOS Combos
+#. Option: start_select
+msgid "Start+Select"
+msgstr ""
+
+#. Setting: Nintendo Mode (A-B Swap)
+#. Field: title
+msgid "Nintendo Mode (A-B Swap)"
+msgstr "任天堂模式 (A-B 交换)"
+
+#. Setting: Nintendo Mode (A-B Swap)
+#. Field: hint
+msgid "Swaps A with B and X with Y."
+msgstr "A 与 B 交换，X 与 Y 交换。"
+
+#. Setting: Hold View to Reboot
+#. Field: title
+msgid "Hold View to Reboot"
+msgstr "长按 View 键重启"
+
+#. Setting: Handheld
+#. Field: title
+msgid "Handheld"
+msgstr "掌机"
 
 #. Setting: Motion Support
 #. Field: title
@@ -308,21 +438,6 @@ msgstr "体感采样率"
 msgid "Sets the sampling frequency for the IMU."
 msgstr "设置IMU的采样频率"
 
-#. Setting: Nintendo Mode (A-B Swap)
-#. Field: title
-msgid "Nintendo Mode (A-B Swap)"
-msgstr "任天堂模式 (A-B 交换)"
-
-#. Setting: Nintendo Mode (A-B Swap)
-#. Field: hint
-msgid "Swaps A with B and X with Y."
-msgstr "A 与 B 交换, X 与 Y 交换"
-
-#. Setting: Hold View to Reboot
-#. Field: title
-msgid "Hold View to Reboot"
-msgstr "长按 View 键重启"
-
 #. Setting: GPD Controller
 #. Field: title
 msgid "GPD Controller"
@@ -336,12 +451,12 @@ msgstr "可以配置您的 GPD 控制器为统一设备输出"
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse gpd features."
-msgstr "模拟不同类型的控制器, 以融合 GPD 设备的特性"
+msgstr "模拟不同类型的控制器，以融合 GPD 设备的特性。"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: title
 msgid "Menu/L4/R4 Mapping"
-msgstr "菜单/L4/R4 映射"
+msgstr "Menu/L4/R4 映射"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: hint
@@ -351,37 +466,15 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 HHD）。如果禁用，它们将作为键盘按钮。"
-"菜单/L4/R4 可以作为组合键：菜单单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。"
-"L4/R4 是单击呼出快速菜单键(QAM)，长按呼出 HHD 菜单（原始）。"
-
-#. Setting: Start/Select do SteamOS Combos
-#. Option: disabled
-#. Setting: Menu/L4/R4 Mapping
-#. Setting: Disabled
-#. Field: title
-#. Setting: Extra buttons as
-#. Setting: Short Action
-#. Setting: Hold Action
-#. Setting: Xbox or View + B (Press)
-#. Setting: Xbox or View + Y
-#. Setting: ↑ Swipe Up
-#. Setting: ← Swipe Right Side (Top)
-#. Setting: ← Swipe Right Side (Bottom)
-#. Setting: → Swipe Left Side (Top)
-#. Setting: → Swipe Left Side (Bottom)
-#. Setting: ↓ Swipe Down
-#. Setting: Start (Meta) Press
-#. Setting: Start (Meta) Hold
-#. Setting: Ctrl + 3
-#. Setting: Ctrl + 4
-msgid "Disabled"
-msgstr "禁用"
+"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 "
+"HHD）。如果禁用，它们将作为键盘按钮。 Menu/L4/R4 "
+"可以作为组合键：Menu单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。L4/R4 是单击呼出快速菜单键(QAM)，长按呼出 HHD "
+"菜单（传统模式）。"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
 msgid "Paddles, no Combo"
-msgstr "背键, 不做组合键"
+msgstr "背键 (不用作组合键)"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
@@ -391,37 +484,12 @@ msgstr "菜单键为组合键"
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
 msgid "L4 is Combo"
-msgstr "L4 为组合键"
+msgstr "L4 用作组合键"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
 msgid "R4 is Combo"
-msgstr "R4 为组合键"
-
-#. Setting: Start/Select do SteamOS Combos
-#. Field: title
-msgid "Start/Select do SteamOS Combos"
-msgstr "Start/Select 键作为 SteamOS 组合键"
-
-#. Setting: Start/Select do SteamOS Combos
-#. Field: hint
-msgid ""
-"When holding Select or Start, if another button is pressed, they become "
-"the Xbox button, which allows doing SteamOS combos (Select+RT is "
-"screenshot)."
-msgstr ""
-"按住 Select 或 Start 时，如果按下另一个按钮，它们将变为 Xbox 按钮，"
-"可以实现执行 SteamOS 组合键（Select+RT 是屏幕截图）。"
-
-#. Setting: Start/Select do SteamOS Combos
-#. Option: select
-msgid "Select Only"
-msgstr "仅 Select"
-
-#. Setting: Start/Select do SteamOS Combos
-#. Option: start_select
-msgid "Start+Select"
-msgstr ""
+msgstr "R4 用作组合键"
 
 #. Setting: WinControls
 #. Field: hint
@@ -432,13 +500,6 @@ msgstr "GPD 设备的专用设置"
 #. Field: title
 msgid "RGB Mode"
 msgstr "RGB 模式"
-
-#. Setting: Off
-#. Field: title
-#. Setting: Vibration Strength
-#. Option: off
-msgid "Off"
-msgstr "关闭"
 
 #. Setting: Off
 #. Field: hint
@@ -477,6 +538,7 @@ msgstr "彩虹"
 
 #. Setting: Rainbow
 #. Field: hint
+#. Setting: Cycle
 msgid "Cycles through the different colors."
 msgstr "循环显示不同颜色"
 
@@ -579,20 +641,6 @@ msgstr "右摇杆边界值"
 msgid "Vibration Strength"
 msgstr "震动强度"
 
-#. Setting: Vibration Strength
-#. Option: medium
-#. Setting: Brightness
-#. Setting: Speed
-msgid "Medium"
-msgstr "中"
-
-#. Setting: Vibration Strength
-#. Option: high
-#. Setting: Brightness
-#. Setting: Speed
-msgid "High"
-msgstr "高"
-
 #. Setting: Firmware
 #. Field: title
 msgid "Firmware"
@@ -628,10 +676,107 @@ msgstr "模拟模式 (X-Input)"
 msgid "Emulate different controller types when in X-Input mode."
 msgstr "当 Legion 控制器处于 X-Input 模式时模拟不同类型的控制器"
 
-#. Setting: Motion Support
+#. Setting: Mapping Style
+#. Field: title
+msgid "Mapping Style"
+msgstr ""
+
+#. Setting: Mapping Style
 #. Field: hint
-msgid "Enable gyroscope/accelerometer (IMU) support"
-msgstr "启用陀螺仪/加速度计 (IMU) 支持"
+msgid "Choose OS mapping style."
+msgstr "选择操作系统映射风格。"
+
+#. Setting: Windows
+#. Field: title
+msgid "Windows"
+msgstr ""
+
+#. Setting: Windows
+#. Field: hint
+msgid "Windows style mapping."
+msgstr "Windows 风格映射。"
+
+#. Setting: Turbo Mode (Repeat Buttons)
+#. Field: title
+msgid "Turbo Mode (Repeat Buttons)"
+msgstr ""
+
+#. Setting: Turbo Mode (Repeat Buttons)
+#. Field: hint
+msgid ""
+"Hold Y1/Y2 for 2s, then press the buttons that will repeat. To stop, hold"
+" Y1/Y2 for 5s."
+msgstr ""
+
+#. Setting: Turbo Mode (Repeat Buttons)
+#. Option: 2hz
+msgid "2Hz"
+msgstr ""
+
+#. Setting: Turbo Mode (Repeat Buttons)
+#. Option: 5hz
+msgid "5Hz"
+msgstr ""
+
+#. Setting: Turbo Mode (Repeat Buttons)
+#. Option: 8hz
+msgid "8Hz"
+msgstr ""
+
+#. Setting: SteamOS
+#. Field: title
+msgid "SteamOS"
+msgstr "SteamOS"
+
+#. Setting: SteamOS
+#. Field: hint
+msgid "SteamOS style mapping."
+msgstr "SteamOS 风格映射。"
+
+#. Setting: Touchpad Emulation [BETA]
+#. Field: title
+msgid "Touchpad Emulation [BETA]"
+msgstr "触摸板模拟 [BETA]"
+
+#. Setting: Touchpad Emulation [BETA]
+#. Field: hint
+msgid "Passthrough the touchpad to the controller."
+msgstr ""
+
+#. Setting: Touchpad Emulation [BETA]
+#. Option: gamemode
+msgid "Gamemode"
+msgstr "Gamemode"
+
+#. Setting: Touchpad Emulation [BETA]
+#. Option: always
+msgid "Always"
+msgstr ""
+
+#. Setting: Controller Frequency
+#. Field: title
+msgid "Controller Frequency"
+msgstr "控制器频率"
+
+#. Setting: Controller Frequency
+#. Option: 125hz
+msgid "125Hz"
+msgstr ""
+
+#. Setting: Controller Frequency
+#. Option: 250hz
+msgid "250Hz"
+msgstr ""
+
+#. Setting: Controller Frequency
+#. Option: 500hz
+msgid "500Hz"
+msgstr ""
+
+#. Setting: Controller Frequency
+#. Option: 1000hz
+msgid "1000Hz"
+msgstr ""
 
 #. Setting: Swap Legion with Menu/View
 #. Field: title
@@ -1028,14 +1173,14 @@ msgstr "禁用控制器。Handheld Daemon 叠加仍然可以在游戏模式下�
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
 msgid "Extra buttons as Keyboard/Overlay"
-msgstr "额外按钮作为键盘/叠加菜单快捷键"
+msgstr "扩展按钮作为键盘/叠加菜单快捷键"
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: hint
 msgid ""
 "Makes the left paddle bring up a keyboard and the right paddle bring up "
 "the overlay."
-msgstr "使用左背键呼出键盘，右背键呼出菜单叠加层"
+msgstr "左侧扩展按钮呼出键盘，右侧扩展按钮呼出叠加层。"
 
 #. Setting: Xbox
 #. Field: title
@@ -1045,14 +1190,14 @@ msgstr ""
 #. Setting: Extra buttons as
 #. Field: title
 msgid "Extra buttons as"
-msgstr "额外按钮作为"
+msgstr "扩展按钮功能"
 
 #. Setting: Extra buttons as
 #. Field: hint
 msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be set for Steam Input."
-msgstr "设置额外按钮的功能。可以将左键设为呼出键盘，右键设为呼出菜单叠加层。或者可以设置为 Steam 输入"
+msgstr "配置扩展按钮功能。可以将左键设为呼出键盘，右键设为呼出叠加层，或者设置为 Steam 输入。"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1084,6 +1229,38 @@ msgstr "Steam 控制器"
 msgid "Allows for gyro, paddles, and has a proper QAM button."
 msgstr "支持陀螺仪和背键功能，并提供专门的快速访问菜单(QAM)按钮"
 
+#. Setting: Handheld Mode [BETA]
+#. Field: title
+msgid "Handheld Mode [BETA]"
+msgstr "掌机模式 [BETA]"
+
+#. Setting: Handheld Mode [BETA]
+#. Field: hint
+msgid ""
+"Uses the new handheld Steam Input profile. May have bugs, especially when"
+" it comes to gyro."
+msgstr "新的 Steam 输入配置（掌机模式）。可能会有问题，特别是在陀螺仪方面"
+
+#. Setting: Gyro Output Sync
+#. Field: title
+msgid "Gyro Output Sync"
+msgstr "陀螺仪输出同步"
+
+#. Setting: Gyro Output Sync
+#. Field: hint
+msgid ""
+"Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to "
+"Mouse [BETA]`. If the same timestamp is sent in 2 reports, this causes a "
+"division by 0 and instability. This option makes it so reports are sent "
+"only when there is a new IMU timestamp, effectively limiting the "
+"responsiveness of the controller to that of the IMU. This only makes a "
+"difference for the Legion Go (125hz), as all the other handhelds are "
+"using 400hz by default."
+msgstr ""
+"Steam 在处理触摸板鼠标和`陀螺仪到鼠标 [BETA]`功能时依赖 IMU 时间戳。如果在 2 个报告中发送相同的时间戳, 这会导致除以 0 "
+"造成不稳定。此选项使报告仅在有新的 IMU 时间戳时发送, 有效地将控制器的响应速度限制为 IMU 的速度。这只对 Legion Go "
+"(125hz) 有影响, 因为所有其他掌机默认使用 400hz"
+
 #. Setting: Invert Roll Axis
 #. Field: title
 msgid "Invert Roll Axis"
@@ -1111,8 +1288,8 @@ msgid ""
 " button is Overlay. Or they can be left/right touchpad clicks. For the "
 "legion go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
-"设置额外按钮的功能。可以将左键设为呼出键盘，右键设为呼出菜单叠加层；"
-"或者将它们设置为触摸板的左右点击。在 Legion Go 上，顶部按钮用作快捷键，底部按钮用作触摸板点击"
+"配置扩展按钮功能。可以将左键设为呼出键盘，右键设为呼出叠加层；或者设置为触摸板左右点击。在 Legion Go "
+"上，顶部按钮用作快捷键，底部按钮用作触摸板点击。"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1141,27 +1318,6 @@ msgid ""
 "them."
 msgstr "将设备的 LED 灯光直接映射到控制器，让游戏和 Steam 可以直接控制灯光效果"
 
-#. Setting: Gyro Output Sync
-#. Field: title
-msgid "Gyro Output Sync"
-msgstr "陀螺仪输出同步"
-
-#. Setting: Gyro Output Sync
-#. Field: hint
-msgid ""
-"Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to "
-"Mouse [BETA]`. If the same timestamp is sent in 2 reports, this causes a "
-"division by 0 and instability. This option makes it so reports are sent "
-"only when there is a new IMU timestamp, effectively limiting the "
-"responsiveness of the controller to that of the IMU. This only makes a "
-"difference for the Legion Go (125hz), as all the other handhelds are "
-"using 400hz by default."
-msgstr ""
-"Steam 在处理触摸板鼠标和`陀螺仪到鼠标 [BETA]`功能时依赖 IMU 时间戳。"
-"如果在 2 个报告中发送相同的时间戳, 这会导致除以 0 造成不稳定。"
-"此选项使报告仅在有新的 IMU 时间戳时发送, 有效地将控制器的响应速度限制为 IMU 的速度。"
-"这只对 Legion Go (125hz) 有影响, 因为所有其他掌机默认使用 400hz"
-
 #. Setting: Invert Roll Axis
 #. Field: hint
 msgid ""
@@ -1169,8 +1325,8 @@ msgid ""
 " for Steam Input, since you want it to be inverted to look left to right,"
 " but an issue in emulators."
 msgstr ""
-"相对于真实的 DualSense 控制器反转滚动轴（Z轴）。在 Steam 输入中这很有用，"
-"因为反转后更符合左右视角移动的习惯，但在模拟器中可能会造成问题"
+"相对于真实的 DualSense 控制器反转滚动轴（Z轴）。在 Steam "
+"输入中这很有用，因为反转后更符合左右视角移动的习惯，但在模拟器中可能会造成问题"
 
 #. Setting: Bluetooth Mode
 #. Field: title
@@ -1185,8 +1341,8 @@ msgid ""
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
 msgstr ""
-"将控制器模拟为蓝牙模式而非 USB 模式。默认使用蓝牙模式是因为这样可以减少应用程序与控制器交互时的问题。"
-"不过在某些游戏中，USB 模式可能会带来更好的 LED 灯光支持。欢迎测试并反馈！"
+"将控制器模拟为蓝牙模式而非 USB 模式。默认使用蓝牙模式是因为这样可以减少应用程序与控制器交互时的问题。不过在某些游戏中，USB "
+"模式可能会带来更好的 LED 灯光支持。欢迎测试并反馈！"
 
 #. Setting: Paused
 #. Field: title
@@ -1203,9 +1359,7 @@ msgstr "触摸板模拟"
 msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
-msgstr ""
-"启用触摸板模拟功能。对于支持触摸板的目标控制器(如 DualSense), 会直接用于其内置触摸板; "
-"对于不支持的目标设备, 将会创建一个虚拟触摸板"
+msgstr "启用触摸板模拟功能。对于支持触摸板的目标控制器(如 DualSense), 会直接用于其内置触摸板; 对于不支持的目标设备, 将会创建一个虚拟触摸板"
 
 #. Setting: Disabled
 #. Field: hint
@@ -1227,8 +1381,8 @@ msgid ""
 "in desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
-"添加一个虚拟触摸板。这个触摸板主要用于 GameScope 环境，并且默认支持左右键点击。但可能会在桌面模式中引起问题，"
-"并且不允许拖动文件。因此, 它会在桌面模式中自动禁用"
+"添加一个虚拟触摸板。这个触摸板主要用于 GameScope 环境，并且默认支持左右键点击。但可能会在桌面模式中引起问题，并且不允许拖动文件。因此,"
+" 它会在桌面模式中自动禁用"
 
 #. Setting: Disable on Desktop
 #. Field: title
@@ -1303,9 +1457,9 @@ msgid ""
 "left and half of the right is right. \"Stretch\" stretches the touchpad "
 "to the whole dualsense surface."
 msgstr ""
-"配置真实触控板与虚拟触控板的位置关系，以适配 Steam 设置。在 Steam 中，\"左\" 将触控板映射到左半边，"
-"\"右\" 将触控板映射到右半边，而 \"居中\" 将映射到整个触控板。"
-"因此，虚拟触摸板被裁剪为左侧用于左边，右侧用于右边，并在中心扩展。这意味着当设置为\"居中\"时，左触控板的一半是左侧，右触控板的一半是右侧。\"拉伸\""
+"配置真实触控板与虚拟触控板的位置关系，以适配 Steam 设置。在 Steam 中，\"左\" 将触控板映射到左半边，\"右\" "
+"将触控板映射到右半边，而 \"居中\" "
+"将映射到整个触控板。因此，虚拟触摸板被裁剪为左侧用于左边，右侧用于右边，并在中心扩展。这意味着当设置为\"居中\"时，左触控板的一半是左侧，右触控板的一半是右侧。\"拉伸\""
 " 将触控板拉伸到整个Dualsense虚拟触控板。"
 
 #. Setting: Location
@@ -1367,9 +1521,6 @@ msgstr "加载中"
 msgid "No update available"
 msgstr "没有可用的更新"
 
-msgid "Rebasing to "
-msgstr "重置到 "
-
 msgid "Updating to latest "
 msgstr "更新到最新版本"
 
@@ -1396,6 +1547,17 @@ msgstr "移除自定义设置中..."
 
 msgid "Failed to load previous versions"
 msgstr "加载上一个版本失败"
+
+msgid "Rebasing to "
+msgstr "重置到 "
+
+msgid "Update error. Using alternative method... "
+msgstr ""
+
+#. Setting: Show updates in SteamUI
+#. Field: title
+msgid "Show updates in SteamUI"
+msgstr ""
 
 #. Setting: System Image
 #. Field: title
@@ -1619,11 +1781,6 @@ msgid ""
 msgstr "基本显示设置。亮度（和帧率待定）。此面板旨在替代"
 
 #. Setting: Brightness
-#. Field: title
-msgid "Brightness"
-msgstr "亮度"
-
-#. Setting: Brightness
 #. Field: hint
 msgid ""
 "Sets the brightness level of a display. Only one display is supported and"
@@ -1648,7 +1805,7 @@ msgstr "禁用触摸手势 (直到重启)"
 #. Setting: Gamescope
 #. Field: title
 msgid "Gamescope"
-msgstr "游戏范围"
+msgstr "Gamescope"
 
 #. Setting: Run Steam at 60/72 Hz
 #. Field: title
@@ -1660,19 +1817,23 @@ msgstr "让 Steam 运行在 60/72 Hz 刷新率"
 msgid "Poweroff screen before sleep"
 msgstr "在睡眠前关闭屏幕"
 
-#. Setting: All Controllers
+#. Setting: Device Buttons
 #. Field: title
-msgid "All Controllers"
-msgstr "所有控制器"
+msgid "Device Buttons"
+msgstr "设备按钮"
 
-#. Setting: Xbox or View + B (Press)
+#. Setting: Armoury Crate
 #. Field: title
-msgid "Xbox or View + B (Press)"
-msgstr "Xbox 或 View + B (按下)"
+msgid "Armoury Crate"
+msgstr ""
 
-#. Setting: Xbox or View + B (Press)
+#. Setting: Armoury Crate
 #. Option: keyboard
-#. Setting: Xbox or View + Y
+#. Setting: Fan Key
+#. Setting: Xbox + Y
+#. Setting: Xbox + B
+#. Setting: Xbox + A
+#. Setting: Xbox + X
 #. Setting: ↑ Swipe Up
 #. Setting: ← Swipe Right Side (Top)
 #. Setting: ← Swipe Right Side (Bottom)
@@ -1686,9 +1847,13 @@ msgstr "Xbox 或 View + B (按下)"
 msgid "Steam Keyboard"
 msgstr "Steam 键盘"
 
-#. Setting: Xbox or View + B (Press)
+#. Setting: Armoury Crate
 #. Option: steam_qam
-#. Setting: Xbox or View + Y
+#. Setting: Fan Key
+#. Setting: Xbox + Y
+#. Setting: Xbox + B
+#. Setting: Xbox + A
+#. Setting: Xbox + X
 #. Setting: ↑ Swipe Up
 #. Setting: ← Swipe Right Side (Top)
 #. Setting: ← Swipe Right Side (Bottom)
@@ -1702,9 +1867,13 @@ msgstr "Steam 键盘"
 msgid "Steam Side Menu"
 msgstr "Steam 侧边菜单"
 
-#. Setting: Xbox or View + B (Press)
+#. Setting: Armoury Crate
 #. Option: steam_expanded
-#. Setting: Xbox or View + Y
+#. Setting: Fan Key
+#. Setting: Xbox + Y
+#. Setting: Xbox + B
+#. Setting: Xbox + A
+#. Setting: Xbox + X
 #. Setting: ↑ Swipe Up
 #. Setting: ← Swipe Right Side (Top)
 #. Setting: ← Swipe Right Side (Bottom)
@@ -1718,9 +1887,13 @@ msgstr "Steam 侧边菜单"
 msgid "Steam Overlay"
 msgstr "Steam 叠加层"
 
-#. Setting: Xbox or View + B (Press)
+#. Setting: Armoury Crate
 #. Option: hhd_qam
-#. Setting: Xbox or View + Y
+#. Setting: Fan Key
+#. Setting: Xbox + Y
+#. Setting: Xbox + B
+#. Setting: Xbox + A
+#. Setting: Xbox + X
 #. Setting: ↑ Swipe Up
 #. Setting: ← Swipe Right Side (Top)
 #. Setting: ← Swipe Right Side (Bottom)
@@ -1734,9 +1907,13 @@ msgstr "Steam 叠加层"
 msgid "HHD Side Menu"
 msgstr "HHD 侧边菜单"
 
-#. Setting: Xbox or View + B (Press)
+#. Setting: Armoury Crate
 #. Option: hhd_expanded
-#. Setting: Xbox or View + Y
+#. Setting: Fan Key
+#. Setting: Xbox + Y
+#. Setting: Xbox + B
+#. Setting: Xbox + A
+#. Setting: Xbox + X
 #. Setting: ↑ Swipe Up
 #. Setting: ← Swipe Right Side (Top)
 #. Setting: ← Swipe Right Side (Bottom)
@@ -1750,15 +1927,60 @@ msgstr "HHD 侧边菜单"
 msgid "HHD Overlay"
 msgstr "HHD 叠加层"
 
-#. Setting: Xbox or View + Y
-#. Field: title
-msgid "Xbox or View + Y"
-msgstr "Xbox 或 View + Y"
+#. Setting: Armoury Crate
+#. Option: tdp_cycle
+#. Setting: Fan Key
+#. Setting: Xbox + Y
+#. Setting: Xbox + B
+#. Setting: Xbox + A
+#. Setting: Xbox + X
+#. Setting: ↑ Swipe Up
+#. Setting: ← Swipe Right Side (Top)
+#. Setting: ← Swipe Right Side (Bottom)
+#. Setting: → Swipe Left Side (Top)
+#. Setting: → Swipe Left Side (Bottom)
+#. Setting: ↓ Swipe Down
+#. Setting: Start (Meta) Press
+#. Setting: Start (Meta) Hold
+#. Setting: Ctrl + 3
+#. Setting: Ctrl + 4
+msgid "Cycle TDP"
+msgstr ""
 
-#. Setting: Xbox or View + Y
+#. Setting: Fan Key
+#. Field: title
+msgid "Fan Key"
+msgstr ""
+
+#. Setting: External Controllers
+#. Field: title
+msgid "External Controllers"
+msgstr "外部控制器"
+
+#. Setting: Xbox + Y
+#. Field: title
+msgid "Xbox + Y"
+msgstr "Xbox + Y"
+
+#. Setting: Xbox + Y
 #. Option: disconnect
 msgid "Disconnect Controller"
 msgstr "断开控制器连接"
+
+#. Setting: Xbox + B
+#. Field: title
+msgid "Xbox + B"
+msgstr ""
+
+#. Setting: Xbox + A
+#. Field: title
+msgid "Xbox + A"
+msgstr ""
+
+#. Setting: Xbox + X
+#. Field: title
+msgid "Xbox + X"
+msgstr ""
 
 #. Setting: Touchscreen
 #. Field: title
@@ -1896,8 +2118,8 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"某些设备会唤醒并强制 Windows 进入休眠状态。如果 Linux 不执行相同操作，可能会引发问题。"
-"系统将在检测到设备发热且电池电量低于 5% 时自动进入休眠状态。\n"
+"某些设备会唤醒并强制 Windows 进入休眠状态。如果 Linux 不执行相同操作，可能会引发问题。系统将在检测到设备发热且电池电量低于 5% "
+"时自动进入休眠状态。\n"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title
@@ -1915,12 +2137,6 @@ msgstr "启用 Steam 电源按钮处理 (负责睡眠动画和电源按钮菜单
 #. Field: title
 msgid "Saturation"
 msgstr "饱和度"
-
-#. Setting: Brightness
-#. Option: low
-#. Setting: Speed
-msgid "Low"
-msgstr "低"
 
 #. Setting: Stick Style
 #. Field: title
@@ -1997,6 +2213,16 @@ msgstr "速度"
 msgid "Direction"
 msgstr "方向"
 
+#. Setting: Strobe
+#. Field: title
+msgid "Strobe"
+msgstr "闪烁"
+
+#. Setting: Strobe
+#. Field: hint
+msgid "Strobes the LEDs as a prespecified color."
+msgstr "LED 按预设颜色进行闪烁。"
+
 #. Setting: Spiral
 #. Field: title
 msgid "Spiral"
@@ -2006,6 +2232,11 @@ msgstr "螺旋"
 #. Field: hint
 msgid "Creates an RGB spiral around the stick."
 msgstr "在摇杆周围创建一个 RGB 螺旋"
+
+#. Setting: Cycle
+#. Field: title
+msgid "Cycle"
+msgstr ""
 
 #. Setting: Duality
 #. Field: title
@@ -2314,4 +2545,22 @@ msgstr "启用 RGB 支持"
 
 #~ msgid "Chinese"
 #~ msgstr ""
+
+#~ msgid "Enable the API"
+#~ msgstr "启用 API"
+
+#~ msgid "Enables the API of Handheld Daemon (required for decky and ui)."
+#~ msgstr "启用 Handheld Daemon 的 API (decky 和 hhd-ui 必需) "
+
+#~ msgid "API Port"
+#~ msgstr "API 端口"
+
+#~ msgid "Which port should the API be on?"
+#~ msgstr "API 要使用哪个端口？"
+
+#~ msgid "Enable gyroscope/accelerometer (IMU) support"
+#~ msgstr "启用陀螺仪/加速度计 (IMU) 支持"
+
+#~ msgid "Xbox or View + B (Press)"
+#~ msgstr "Xbox 或 View + B (按下)"
 
