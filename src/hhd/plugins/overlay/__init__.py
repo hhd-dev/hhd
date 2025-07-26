@@ -285,6 +285,7 @@ class OverlayPlugin(HHDPlugin):
                         disable_touch,
                         touch_correction,
                         self.sdl_mappings,
+                        conf.get("shortcuts.controller.allow_select", False),
                     ),
                 )
                 self.short_t.start()

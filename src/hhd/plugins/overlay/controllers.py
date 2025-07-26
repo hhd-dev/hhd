@@ -35,7 +35,7 @@ OVERLAY_BUTTON_MAP: dict[int, str] = to_map(
         "lb": [B("BTN_TL")],
         "rb": [B("BTN_TR")],
         "mode": [B("BTN_MODE")],
-        # "select": [B("BTN_SELECT")],
+        "select": [B("BTN_SELECT")],
     }
 )
 OVERLAY_AXIS_MAP: dict[int, str] = to_map(
@@ -51,7 +51,7 @@ OVERLAY_AXIS_MAP: dict[int, str] = to_map(
 
 CONTROLLER_WAKE_BUTTON: dict[int, str] = to_map(
     {
-        # "select": [B("BTN_SELECT")],
+        "select": [B("BTN_SELECT")],
         "mode": [B("BTN_MODE")],
         "a": [B("BTN_A")],
         "b": [B("BTN_B")],
@@ -516,7 +516,7 @@ def refresh_kbd(emit, state):
         state["last_pressed"] = 0
 
 
-def process_ctrl(emit, state, ev, val):
+def process_ctrl(emit, state, ev, val, allow_select=True):
     # Here, we capture the shortcut xbox+b
     # This is a shortcut that is used by steam
     # but only when it is held, so we can use
@@ -532,7 +532,7 @@ def process_ctrl(emit, state, ev, val):
         return
 
     # Mode needs to be pressed
-    if not state.get("mode", None) and not state.get("select", None):
+    if not state.get("mode", None) and not (state.get("select", None) and allow_select):
         return
 
     if val:
@@ -551,7 +551,7 @@ def process_ctrl(emit, state, ev, val):
         state[ev] = None
 
 
-def process_events(emit, dev, evs):
+def process_events(emit, dev, evs, allow_select=True):
     # Some nice logging to make things easier
     if HHD_DEBUG:
         log = ""
@@ -610,7 +610,7 @@ def process_events(emit, dev, evs):
             and ev.code in CONTROLLER_WAKE_BUTTON
         ):
             process_ctrl(
-                emit, dev["state_ctrl"], CONTROLLER_WAKE_BUTTON[ev.code], ev.value
+                emit, dev["state_ctrl"], CONTROLLER_WAKE_BUTTON[ev.code], ev.value, allow_select=allow_select
             )
 
         if (
@@ -795,6 +795,7 @@ def device_shortcut_loop(
     disable_touchscreens: bool = False,
     touch_correction: dict | None = None,
     sdl_mappings: Any | None = None,
+    allow_select: bool = True,
 ):
     blacklist = set()
     last_check = 0
@@ -881,7 +882,7 @@ def device_shortcut_loop(
 
                 e = list(d.read())
                 # print(e)
-                process_events(emit, dev, e)
+                process_events(emit, dev, e, allow_select=allow_select)
                 if should_intercept and (dev["is_controller"] or dev["sdl_info"]):
                     intercept_events(
                         emit,

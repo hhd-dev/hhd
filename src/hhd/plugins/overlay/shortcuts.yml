@@ -52,6 +52,10 @@ controller:
       options: *shortcuts
       # default: hhd_qam
       default: disabled
+    allow_select:
+      type: bool
+      title: "Use Select as alternative to Xbox"
+      default: true
 touchscreen:
   type: container
   tags: [non-essential]

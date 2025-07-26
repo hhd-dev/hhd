@@ -55,6 +55,7 @@ AXES_FROM_SDL = {
 }
 
 WAKE_KEYS = [
+    "select",
     "mode",
     "b",
     "y",
@@ -70,6 +71,7 @@ OVERLAY_KEYS = [
     "lb",
     "rb",
     "mode",
+    "select",
     "dpad_up",
     "dpad_down",
     "dpad_left",
