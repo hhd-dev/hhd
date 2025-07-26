@@ -254,7 +254,11 @@ def map_gamepad(bindings, jaxes, jbuttons, jhats):
                 }
 
         elif val.startswith("b"):
-            btn = jbuttons[int(val[1:])]
+            try:
+                btn = jbuttons[int(val[1:])]
+            except IndexError:
+                # TODO: add error
+                continue
             assert hhd_btn
             buttons[btn] = hhd_btn
 
