@@ -137,9 +137,11 @@ def get_joypad_buttons(dev):
                 continue
             key = i * 8 + j
 
-            # Ignore smaller than BTN_MISC keys
-            if key < BTN_MISC:
-                continue
+            # Joydev kernel driver does the following\
+            # but on e.g., 8bitdo KEY_MENU is used and missed
+            # # Ignore smaller than BTN_MISC keys
+            # if key < BTN_MISC:
+            #     continue
             if key < BTN_JOYSTICK:
                 before_js.append(key)
             else:
