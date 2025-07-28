@@ -336,7 +336,7 @@ msgid ""
 "Active only on battery. Turns off the power light and the controller  "
 "requires longer to wake up."
 msgstr ""
-"Riduce il consumo energetico del dispositivo dal 4%% all'1%% durante la "
+"Riduce il consumo energetico del dispositivo dal 4% all' 1% durante la "
 "notte. Attivo solo a batteria. Spegne la spia di alimentazione e il "
 "controller richiede più tempo per riattivarsi."
 
