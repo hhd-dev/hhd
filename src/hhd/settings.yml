@@ -14,7 +14,7 @@ settings:
         C: English
         zh_CN: Simplified Chinese
         zh_TW: Traditional Chinese
-        pt: Portugese
+        pt_BR: Portugese (Brazil)
 
     theme:
       type: multiple

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-25 17:08+0200\n"
+"POT-Creation-Date: 2025-07-28 15:44+0200\n"
 "PO-Revision-Date: 2024-02-07 17:27+0100\n"
 "Last-Translator: Alex <aliceric27@gmail.com>\n"
 "Language: zh_Hans_CN\n"
@@ -91,8 +91,9 @@ msgid "Traditional Chinese"
 msgstr "繁體中文"
 
 #. Setting: Language
-#. Option: pt
-msgid "Portugese"
+#. Option: pt_BR
+#, fuzzy
+msgid "Portugese (Brazil)"
 msgstr "Português"
 
 #. Setting: Theme
@@ -466,10 +467,9 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 "
-"HHD）。如果禁用，它们将作为键盘按钮。 Menu/L4/R4 "
-"可以作为组合键：Menu单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。L4/R4 是单击呼出快速菜单键(QAM)，长按呼出 HHD "
-"菜单（传统模式）。"
+"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 HHD）。如果禁用，它们将作为键盘按钮。"
+" Menu/L4/R4 可以作为组合键：Menu单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。L4/R4 "
+"是单击呼出快速菜单键(QAM)，长按呼出 HHD 菜单（传统模式）。"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
@@ -1980,6 +1980,11 @@ msgstr ""
 #. Setting: Xbox + X
 #. Field: title
 msgid "Xbox + X"
+msgstr ""
+
+#. Setting: Use Select as alternative to Xbox
+#. Field: title
+msgid "Use Select as alternative to Xbox"
 msgstr ""
 
 #. Setting: Touchscreen

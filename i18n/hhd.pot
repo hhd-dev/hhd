@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-25 17:08+0200\n"
+"POT-Creation-Date: 2025-07-28 15:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,8 +90,8 @@ msgid "Traditional Chinese"
 msgstr ""
 
 #. Setting: Language
-#. Option: pt
-msgid "Portugese"
+#. Option: pt_BR
+msgid "Portugese (Brazil)"
 msgstr ""
 
 #. Setting: Theme
@@ -1950,6 +1950,11 @@ msgstr ""
 #. Setting: Xbox + X
 #. Field: title
 msgid "Xbox + X"
+msgstr ""
+
+#. Setting: Use Select as alternative to Xbox
+#. Field: title
+msgid "Use Select as alternative to Xbox"
 msgstr ""
 
 #. Setting: Touchscreen
