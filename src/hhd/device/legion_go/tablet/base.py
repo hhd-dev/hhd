@@ -37,7 +37,7 @@ LEN_PIDS = {
     0x6183: "dinput",
     0x6184: "dual_dinput",
     0x6185: "fps",
-    # 2025 Firmware
+    # Legion Go 2/1 with 2025 Firmware
     0x61EB: "xinput",
     0x61EC: "dinput",
     0x61ED: "dual_dinput",
