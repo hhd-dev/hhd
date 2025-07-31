@@ -266,6 +266,11 @@ def find_devices(
         if dev.get("vendor", 0) == 0x28DE and dev.get("product", 0) == 0x11FF:
             continue
 
+        # Skip SInput devices
+        # Vendor=28de Product=11ff
+        if dev.get("vendor", 0) == 0x2E8A and dev.get("product", 0) == 0x10C6:
+            continue
+
         abs = dev.get("byte", {}).get("abs", bytes())
         keys = dev.get("byte", {}).get("key", bytes())
 

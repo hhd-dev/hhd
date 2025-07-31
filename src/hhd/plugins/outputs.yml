@@ -209,6 +209,64 @@ modes:
           Test and report back!
         default: True
 
+  sinput:
+    type: container
+    tags: [sinput, non-essential]
+    title: SInput
+    hint: >-
+      Allows for gyro, paddles, and has a proper QAM button.
+    children:
+      info:
+        type: display
+        # title: Capabilities
+        tags: [non-essential]
+        default: |
+          Allows for gyro, paddles, and has a proper QAM button.
+      paddles_as:
+        type: multiple
+        title: Extra buttons as
+        hint: >-
+          Changes the behavior of the extra buttons.
+          Left button is Keyboard, right button is Overlay.
+          Or they can be left/right touchpad clicks.
+          For the legion go, top buttons are shortcuts, bottom are
+          touchpad clicks.
+        options:
+          steam_input: Steam Input
+          noob: Keyboard/Overlay
+          disabled: Disabled
+        default: noob
+      glyphs:
+        type: multiple
+        title: Glyphs
+        options:
+          standard: Standard
+          xbox: Xbox
+          sony: Sony
+          nintendo: Nintendo
+        default: standard
+
+      led_support:
+        type: bool
+        title: LED Support
+        hint: >-
+          Passes through the LEDs to the controller, which allows games
+          to control them.
+        default: False
+      sync_gyro:
+        type: bool
+        title: Gyro Output Sync
+        tags: [non-essential]
+        hint: >-
+          Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to Mouse [BETA]`.
+          If the same timestamp is sent in 2 reports, this causes a division by 0 and instability.
+          This option makes it so reports are sent only when there is a new
+          IMU timestamp, effectively limiting the responsiveness of the
+          controller to that of the IMU.
+          This only makes a difference for the Legion Go (125hz), as all the other
+          handhelds are using 400hz by default.
+        default: True
+
   disabled:
     type: container
     tags: [lgc_emulation_disabled, expert, non-essential]
