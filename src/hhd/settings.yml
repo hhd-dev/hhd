@@ -15,7 +15,7 @@ settings:
         zh_CN: Simplified Chinese
         zh_TW: Traditional Chinese
         pt_BR: Portugese (Brazil)
-        ru: Russian
+        ru_RU: Russian
 
     theme:
       type: multiple
