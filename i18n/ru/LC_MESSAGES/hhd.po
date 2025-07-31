@@ -99,7 +99,7 @@ msgid "Portugese (Brazil)"
 msgstr "Португальский (Бразилия)"
 
 #. Setting: Language
-#. Option: ru
+#. Option: ru_RU
 msgid "Russian"
 msgstr "Русский"
 
