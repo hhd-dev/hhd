@@ -144,6 +144,84 @@ class SInputController(Producer, Consumer):
 
         return True
 
+    def _prepare_features(self, feat: bool) -> bytearray:
+        # Feature report
+        feats = bytearray(64)
+        feats[0] = 0x02
+        feats[1] = 0x02
+
+        if feat:
+            feats[2:4] = b"SI"
+            ofs = 4
+        else:
+            ofs = 2
+
+        #
+        # Features
+        #
+
+        # Protocol version
+        feats[ofs : ofs + 2] = (0x01, 0x00)
+
+        # Enable all features except player led
+        feats[ofs + 2] = (
+            0x01 + self.enable_gyro * (0x04 + 0x08) + 0x10 + 0x20 + 0x40 + 0x80
+        )
+        # We are a handheld, with touchpad, and rgb
+        feats[ofs + 3] = self.enable_touchpad * 0x01 + self.enable_rgb * 0x02 + 0x04
+
+        # Set SDL types based on available buttons
+        gtype = 0x02
+        if self.touchpad_click:
+            match self.paddles:
+                case "none":
+                    gtype = SDL_SUBTYPE_XINPUT_SHARE_NONE_CLICK
+                case "dual":
+                    gtype = SDL_SUBTYPE_XINPUT_SHARE_DUAL_CLICK
+                case "quad":
+                    gtype = SDL_SUBTYPE_XINPUT_SHARE_QUAD_CLICK
+        else:
+            match self.paddles:
+                case "none":
+                    gtype = SDL_SUBTYPE_XINPUT_SHARE_NONE
+                case "dual":
+                    gtype = SDL_SUBTYPE_XINPUT_SHARE_DUAL
+                case "quad":
+                    gtype = SDL_SUBTYPE_XINPUT_SHARE_QUAD
+
+        match self.glyphs:
+            case "standard":
+                feats[ofs + 4] = 0x01
+                feats[ofs + 5] = (1 << 5) | gtype
+            case "xbox":
+                feats[ofs + 4] = 0x03
+                feats[ofs + 5] = (1 << 5) | gtype
+            case "sony":
+                feats[ofs + 4] = 0x06
+                feats[ofs + 5] = (4 << 5) | gtype
+            case "nintendo":
+                feats[ofs + 4] = 0x07
+                feats[ofs + 5] = (3 << 5) | gtype
+
+        feats[ofs + 6] = 5
+        # Accelerometer scale
+        feats[ofs + 8 : ofs + 10] = int.to_bytes(ACCEL_MAX_G, 2, "little")
+        feats[ofs + 10 : ofs + 12] = int.to_bytes(GYRO_MAX_DPS, 2, "little")
+
+        bmask = get_button_mask(ofs + 12)
+        self.btns = SINPUT_AVAILABLE_BUTTONS[gtype]
+        for key in self.btns:
+            set_button(feats, bmask[key], True)
+
+        #
+        # Serial
+        #
+        feats[ofs + 18] = 0x53
+        feats[ofs + 19] = 0x35
+        feats[ofs + 23] = self.controller_id
+
+        return feats
+
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         if self.fd not in fds:
             return []
@@ -168,92 +246,7 @@ class SInputController(Producer, Consumer):
 
                     match rep[1]:
                         case 0x02:
-                            # Feature report
-                            feats = bytearray(64)
-                            feats[0] = 0x02
-                            feats[1] = 0x02
-
-                            #
-                            # Features
-                            #
-
-                            ofs = 2
-
-                            # Protocol version
-                            feats[ofs : ofs + 2] = (0x01, 0x00)
-
-                            # Enable all features except player led
-                            feats[ofs + 2] = (
-                                0x01
-                                + self.enable_gyro * (0x04 + 0x08)
-                                + 0x10
-                                + 0x20
-                                + 0x40
-                                + 0x80
-                            )
-                            # We are a handheld, with touchpad, and rgb
-                            feats[ofs + 3] = (
-                                self.enable_touchpad * 0x01
-                                + self.enable_rgb * 0x02
-                                + 0x04
-                            )
-
-                            # Set SDL types based on available buttons
-                            gtype = 0x02
-                            if self.touchpad_click:
-                                match self.paddles:
-                                    case "none":
-                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_NONE_CLICK
-                                    case "dual":
-                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_DUAL_CLICK
-                                    case "quad":
-                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_QUAD_CLICK
-                            else:
-                                match self.paddles:
-                                    case "none":
-                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_NONE
-                                    case "dual":
-                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_DUAL
-                                    case "quad":
-                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_QUAD
-
-                            match self.glyphs:
-                                case "standard":
-                                    feats[ofs + 4] = 0x01
-                                    feats[ofs + 5] = (1 << 5) | gtype
-                                case "xbox":
-                                    feats[ofs + 4] = 0x03
-                                    feats[ofs + 5] = (1 << 5) | gtype
-                                case "sony":
-                                    feats[ofs + 4] = 0x06
-                                    feats[ofs + 5] = (4 << 5) | gtype
-                                case "nintendo":
-                                    feats[ofs + 4] = 0x07
-                                    feats[ofs + 5] = (3 << 5) | gtype
-
-                            feats[ofs + 6] = 5
-                            # Accelerometer scale
-                            feats[ofs + 8 : ofs + 10] = int.to_bytes(
-                                ACCEL_MAX_G, 2, "little"
-                            )
-                            feats[ofs + 10 : ofs + 12] = int.to_bytes(
-                                GYRO_MAX_DPS, 2, "little"
-                            )
-
-                            bmask = get_button_mask(ofs + 12)
-                            self.btns = SINPUT_AVAILABLE_BUTTONS[gtype]
-                            for key in self.btns:
-                                set_button(feats, bmask[key], True)
-
-                            #
-                            # Serial
-                            #
-                            feats[ofs + 18] = 0x53
-                            feats[ofs + 19] = 0x35
-                            feats[ofs + 23] = self.controller_id
-
-                            logger.info(feats.hex())
-                            self.dev.send_input_report(feats)
+                            self.dev.send_input_report(self._prepare_features(False))
                         case 1:
                             if rep[2] != 0x02:
                                 continue
@@ -301,8 +294,32 @@ class SInputController(Producer, Consumer):
                             )
                         case _:
                             logger.info(rep.hex())
+                case "set_report":
+                    d = ev["data"]
+                    rid = d[2]
+                    if rid != 0x02:
+                        logger.info(
+                            f"Received set report with unexpected ID {rid:02x}.\n{d.hex()}"
+                        )
+                        self.dev.send_set_report_reply(ev["id"], 1)
+
+                    cmd = d[3]
+                    if cmd == 0x02:
+                        self.dev.send_set_report_reply(
+                            ev["id"], 0 if d[4:10] == b"SINPUT" else 1
+                        )
+                        continue
+
+                    logger.info(
+                        f"Received set report with command {cmd:02x}.\n{d.hex()}"
+                    )
+
+                case "get_report":
+                    self.dev.send_get_report_reply(
+                        ev["id"], 0, self._prepare_features(True)
+                    )
                 case _:
-                    logger.debug(f"Received unhandled report:\n{ev}")
+                    logger.info(f"Received unhandled report:\n{ev}")
         return out
 
     def consume(self, events: Sequence[Event]):

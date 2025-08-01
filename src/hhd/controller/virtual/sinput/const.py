@@ -83,6 +83,16 @@ SINPUT_HID_REPORT = bytes([
     0x75, 0x08,                    #   Report Size (8 bits)
     0x95, 0x3F,                    #   Report Count (63) - 64 bytes minus report ID
     0x81, 0x02,                    #   Input (Data,Var,Abs)
+    
+    # FEATURE REPORT ID 0x02 - Vendor Feature data
+    0x09, 0x24,                    #   Usage (Vendor Usage 0x24)
+    0x19, 0x00,                    #   Usage Minimum (0)
+    0x2a, 0xff, 0x00,              #   Usage Maximum (255)
+    0x15, 0x00,                    #   Logical Minimum (0)
+    0x26, 0xff, 0x00,              #   Logical Maximum (255)
+    0x75, 0x08,                    #   Report Size (8)
+    0x95, 0x3f,                    #   Report Count (63)
+    0xb1, 0x00,                    #   Feature (Data,Arr,Abs)
 
     # OUTPUT REPORT ID 0x03 - Vendor COMMAND data
     0x85, 0x03,                    #   Report ID (3)
