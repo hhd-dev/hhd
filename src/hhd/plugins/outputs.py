@@ -100,6 +100,7 @@ def get_outputs(
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("sinput.led_support", False)
             paddles_as = conf.get("sinput.paddles_as", "noob")
+            noob_mode = paddles_as == "noob"
             glyphs = conf.get("sinput.glyphs", "standard")
             has_qam = True
 
