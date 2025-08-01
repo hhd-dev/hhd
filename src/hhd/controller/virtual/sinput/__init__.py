@@ -223,7 +223,7 @@ class SInputController(Producer, Consumer):
                             # bmask = get_button_mask(ofs + 12)
                             # for key in btns:
                             #     set_button(feats, bmask[key], True)
-                            feats[12:16] = 0xff, 0xff, 0xff, 0xff
+                            feats[12:16] = 0xFF, 0xFF, 0xFF, 0xFF
 
                             #
                             # Serial
@@ -246,13 +246,15 @@ class SInputController(Producer, Consumer):
                                 }
                             )
                         case 4:
-                            logger.info(f"Changing leds to RGB: {red} {green} {blue}")
+                            red, green, blue = rep[2:5]
 
                             # Crunch lower values since steam is bugged
                             if red < 3 and green < 3 and blue < 3:
                                 red = 0
                                 green = 0
                                 blue = 0
+
+                            logger.info(f"Changing leds to RGB: {red} {green} {blue}")
 
                             out.append(
                                 {
@@ -268,9 +270,9 @@ class SInputController(Producer, Consumer):
                                     "brightness": 1,
                                     "speedd": "high",
                                     "brightnessd": "high",
-                                    "red": rep[3],
-                                    "blue": rep[4],
-                                    "green": rep[5],
+                                    "red": red,
+                                    "blue": blue,
+                                    "green": green,
                                     "red2": 0,  # disable for OXP
                                     "blue2": 0,
                                     "green2": 0,
@@ -316,7 +318,7 @@ class SInputController(Producer, Consumer):
                 case "button":
                     if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
-                    
+
                     if self.paddles == "none" and code in QUAD_PADDLES:
                         continue
 
