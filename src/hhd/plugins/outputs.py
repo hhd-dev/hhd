@@ -101,6 +101,7 @@ def get_outputs(
             uses_leds = conf.get("sinput.led_support", False)
             paddles_as = conf.get("sinput.paddles_as", "noob")
             glyphs = conf.get("sinput.glyphs", "standard")
+            has_qam = True
 
             d = SInputController(
                 enable_touchpad=uses_touch,
@@ -124,7 +125,6 @@ def get_outputs(
             paddles_as = conf.get("dualsense.paddles_as", "noob")
             noob_mode = paddles_as in ("noob", "both")
             edge_mode = False
-            has_qam = True
 
             if paddles_as == "both":
                 paddles_to_clicks = "bottom"
