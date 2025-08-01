@@ -316,6 +316,9 @@ class SInputController(Producer, Consumer):
                 case "button":
                     if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
+                    
+                    if self.paddles == "none" and code in QUAD_PADDLES:
+                        continue
 
                     if code in SINPUT_BTN_MAP:
                         set_button(new_rep, SINPUT_BTN_MAP[code], ev["value"])
