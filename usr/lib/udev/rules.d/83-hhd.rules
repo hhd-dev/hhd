@@ -42,3 +42,22 @@ ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e310", RUN+="/sbin/modprobe xpad" RU
 # Banish Ally HID devices to oblivion since they crash SDL/Proton controller handlers
 SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="1b4c", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/%k"
 SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="1abe", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/%k"
+
+#
+# SInput
+#
+
+# Generic SInput Device; Bluetooth; USB
+KERNEL=="hidraw*", KERNELS=="*2E8A:10C6*", MODE="0660", TAG+="uaccess"
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="10c6", MODE="0660", TAG+="uaccess"
+
+# ProGCC in SInput Mode; Bluetooth; USB
+KERNEL=="hidraw*", KERNELS=="*2E8A:10DF*", MODE="0660", TAG+="uaccess"
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="10df", MODE="0660", TAG+="uaccess"
+
+# GC Ultimate in SInput Mode; Bluetooth; USB
+KERNEL=="hidraw*", KERNELS=="*2E8A:10DD*", MODE="0660", TAG+="uaccess"
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="10dd", MODE="0660", TAG+="uaccess"
+
+# Firebird in SInput Mode; USB
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="10e0", MODE="0660", TAG+="uaccess"
