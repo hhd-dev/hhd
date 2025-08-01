@@ -14,14 +14,18 @@ from hhd.controller.lib.ccache import ControllerCache
 
 from .const import (
     SINPUT_HID_REPORT,
-    STANDARD_BUTTONS,
     SINPUT_BTN_MAP,
     SINPUT_AXIS_MAP,
-    QUAD_PADDLES,
-    DUAL_PADDLES,
     get_button_mask,
     GYRO_MAX_DPS,
     ACCEL_MAX_G,
+    SINPUT_AVAILABLE_BUTTONS,
+    SDL_SUBTYPE_XINPUT_SHARE_NONE,
+    SDL_SUBTYPE_XINPUT_SHARE_DUAL,
+    SDL_SUBTYPE_XINPUT_SHARE_QUAD,
+    SDL_SUBTYPE_XINPUT_SHARE_NONE_CLICK,
+    SDL_SUBTYPE_XINPUT_SHARE_DUAL_CLICK,
+    SDL_SUBTYPE_XINPUT_SHARE_QUAD_CLICK,
 )
 
 SINPUT_NANE = "S-Input (HHD)"
@@ -49,6 +53,7 @@ class SInputController(Producer, Consumer):
     def __init__(
         self,
         enable_touchpad: bool = True,
+        touchpad_click: bool = False,
         enable_rgb: bool = True,
         enable_gyro: bool = True,
         sync_gyro: bool = False,
@@ -64,6 +69,8 @@ class SInputController(Producer, Consumer):
         self.controller_id = controller_id
         self.glyphs = glyphs
         self.paddles = paddles
+        self.touchpad_click = touchpad_click
+        self.btns = {}
 
         self.settings = (
             enable_touchpad,
@@ -192,14 +199,24 @@ class SInputController(Producer, Consumer):
                             )
 
                             # Set SDL types based on available buttons
-                            gtype = 0x01
-                            # match self.paddles:
-                            #     case "none":
-                            #         gtype = 0x02
-                            #     case "dual":
-                            #         gtype = 0x03
-                            #     case "quad":
-                            #         gtype = 0x04
+                            gtype = 0x02
+                            if self.touchpad_click:
+                                match self.paddles:
+                                    case "none":
+                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_NONE_CLICK
+                                    case "dual":
+                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_DUAL_CLICK
+                                    case "quad":
+                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_QUAD_CLICK
+                            else:
+                                match self.paddles:
+                                    case "none":
+                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_NONE
+                                    case "dual":
+                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_DUAL
+                                    case "quad":
+                                        gtype = SDL_SUBTYPE_XINPUT_SHARE_QUAD
+
                             match self.glyphs:
                                 case "standard":
                                     feats[ofs + 4] = 0x01
@@ -223,18 +240,10 @@ class SInputController(Producer, Consumer):
                                 GYRO_MAX_DPS, 2, "little"
                             )
 
-                            # match self.paddles:
-                            #     case "quad":
-                            #         btns = QUAD_PADDLES
-                            #     case "dual":
-                            #         btns = DUAL_PADDLES
-                            #     case _:
-                            #         btns = STANDARD_BUTTONS
-
-                            # bmask = get_button_mask(ofs + 12)
-                            # for key in btns:
-                            #     set_button(feats, bmask[key], True)
-                            feats[ofs + 12 : ofs + 16] = 0xFF, 0xFF, 0xFF, 0xFF
+                            bmask = get_button_mask(ofs + 12)
+                            self.btns = SINPUT_AVAILABLE_BUTTONS[gtype]
+                            for key in self.btns:
+                                set_button(feats, bmask[key], True)
 
                             #
                             # Serial
@@ -330,10 +339,7 @@ class SInputController(Producer, Consumer):
                     if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
 
-                    if self.paddles == "none" and code in QUAD_PADDLES:
-                        continue
-
-                    if code in SINPUT_BTN_MAP:
+                    if code in self.btns and code in SINPUT_BTN_MAP:
                         set_button(new_rep, SINPUT_BTN_MAP[code], ev["value"])
 
                     # Fix touchpad click requiring touch

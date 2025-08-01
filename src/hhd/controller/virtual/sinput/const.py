@@ -106,8 +106,8 @@ SINPUT_AXIS_MAP = {
     "ls_y": AM((9 << 3), "i16"),
     "rs_x": AM((11 << 3), "i16"),
     "rs_y": AM((13 << 3), "i16"),
-    "rt": AM((15 << 3), "i16", scale=2**16 -1, offset=-(2**15 -1)),
-    "lt": AM((17 << 3), "i16", scale=2**16 -1, offset=-(2**15 -1)),
+    "rt": AM((15 << 3), "i16", scale=2**16 - 1, offset=-(2**15 - 1)),
+    "lt": AM((17 << 3), "i16", scale=2**16 - 1, offset=-(2**15 - 1)),
     "accel_x": AM(
         (23 << 3), "i16", scale=ACCEL_SCALE, bounds=(-(2**15) + 2, 2**15 - 1)
     ),
@@ -148,24 +148,61 @@ get_button_mask = lambda ofs: {
     "share": BM(((ofs + 2) << 3) + 4),
     "extra_r2": BM(((ofs + 2) << 3) + 3),
     "extra_l2": BM(((ofs + 2) << 3) + 2),
-    "touchpad_left": BM(((ofs + 2) << 3)),
+    "touchpad_left": BM(((ofs + 2) << 3) + 1),
 }
 
 SINPUT_BTN_MAP = get_button_mask(3)
 
-STANDARD_BUTTONS = [
-    "b", "a", "y", "x",
-    "dpad_up", "dpad_down", "dpad_left", "dpad_right",
-    "ls", "rs", "lb", "rb",
-    "lt", "rt",
-    "start", "select", "mode", "share",
+XINPUT = [
+    "b",
+    "a",
+    "y",
+    "x",
+    "dpad_up",
+    "dpad_down",
+    "dpad_left",
+    "dpad_right",
+    "ls",
+    "rs",
+    "lb",
+    "rb",
+    "start",
+    "select",
+    "mode",
+]
+
+STANDARD_BUTTONS = XINPUT + [
+    "share",
 ]
 
 DUAL_PADDLES = [
-    "extra_l1", "extra_r1",
+    "extra_l1",
+    "extra_r1",
 ] + STANDARD_BUTTONS
 
 QUAD_PADDLES = [
-    "extra_l1", "extra_r1",
-    "extra_l2", "extra_r2",
+    "extra_l1",
+    "extra_r1",
+    "extra_l2",
+    "extra_r2",
 ] + STANDARD_BUTTONS
+
+SDL_SUBTYPE_FULL_MAPPING = 0x00
+SDL_SUBTYPE_XINPUT_ONLY = 0x01
+SDL_SUBTYPE_XINPUT_SHARE_NONE = 0x02
+SDL_SUBTYPE_XINPUT_SHARE_DUAL = 0x03
+SDL_SUBTYPE_XINPUT_SHARE_QUAD = 0x04
+SDL_SUBTYPE_XINPUT_SHARE_NONE_CLICK = 0x05
+SDL_SUBTYPE_XINPUT_SHARE_DUAL_CLICK = 0x06
+SDL_SUBTYPE_XINPUT_SHARE_QUAD_CLICK = 0x07
+SDL_SUBTYPE_LOAD_FIRMWARE = 0xFF
+
+SINPUT_AVAILABLE_BUTTONS = {
+    SDL_SUBTYPE_XINPUT_ONLY: STANDARD_BUTTONS,
+    SDL_SUBTYPE_XINPUT_SHARE_NONE: STANDARD_BUTTONS,
+    SDL_SUBTYPE_XINPUT_SHARE_DUAL: DUAL_PADDLES,
+    SDL_SUBTYPE_XINPUT_SHARE_QUAD: QUAD_PADDLES,
+    SDL_SUBTYPE_XINPUT_SHARE_NONE_CLICK: STANDARD_BUTTONS + ["touchpad_left"],
+    SDL_SUBTYPE_XINPUT_SHARE_DUAL_CLICK: DUAL_PADDLES + ["touchpad_left"],
+    SDL_SUBTYPE_XINPUT_SHARE_QUAD_CLICK: QUAD_PADDLES + ["touchpad_left"],
+}
