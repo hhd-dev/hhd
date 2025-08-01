@@ -20,6 +20,8 @@ from .const import (
     QUAD_PADDLES,
     DUAL_PADDLES,
     get_button_mask,
+    GYRO_MAX_DPS,
+    ACCEL_MAX_G,
 )
 
 SINPUT_NANE = "S-Input (HHD)"
@@ -34,6 +36,8 @@ def prefill_report():
     """Prefill the report with zeros."""
     report = bytearray(64)
     report[0] = 0x01  # Report type
+    encode_axis(report, SINPUT_AXIS_MAP["lt"], 0)
+    encode_axis(report, SINPUT_AXIS_MAP["rt"], 0)
     return report
 
 
@@ -210,7 +214,14 @@ class SInputController(Producer, Consumer):
                                     feats[ofs + 4] = 0x07
                                     feats[ofs + 5] = (3 << 5) | gtype
 
-                            feats[ofs + 6] = 1
+                            feats[ofs + 6] = 5
+                            # Accelerometer scale
+                            feats[ofs + 8 : ofs + 10] = int.to_bytes(
+                                ACCEL_MAX_G, 2, "little"
+                            )
+                            feats[ofs + 10 : ofs + 12] = int.to_bytes(
+                                GYRO_MAX_DPS, 2, "little"
+                            )
 
                             # match self.paddles:
                             #     case "quad":
@@ -223,7 +234,7 @@ class SInputController(Producer, Consumer):
                             # bmask = get_button_mask(ofs + 12)
                             # for key in btns:
                             #     set_button(feats, bmask[key], True)
-                            feats[12:16] = 0xFF, 0xFF, 0xFF, 0xFF
+                            feats[ofs + 12 : ofs + 16] = 0xFF, 0xFF, 0xFF, 0xFF
 
                             #
                             # Serial
