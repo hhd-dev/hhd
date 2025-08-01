@@ -288,6 +288,7 @@ def turbo_loop(
         emit=emit,
         rgb_modes=rgb_modes,  # type: ignore
         controller_disabled=True,
+        extra_buttons=dconf.get("extra_buttons", "dual"),
     )
 
     d_kbd_1 = GenericGamepadEvdev(
