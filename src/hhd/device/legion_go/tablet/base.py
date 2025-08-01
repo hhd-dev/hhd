@@ -247,6 +247,7 @@ def controller_loop_xinput(
             "rainbow": ["brightness", "speed"],
             "spiral": ["brightness", "speed"],
         },
+        extra_buttons="quad",
     )
     motion = d_params.get("uses_motion", True)
     dual_motion = d_params.get("uses_dual_motion", True)

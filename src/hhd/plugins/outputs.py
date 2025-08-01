@@ -42,6 +42,7 @@ def get_outputs(
     rgb_resets_on_ac: bool = False,
     controller_disabled: bool = False,
     touchpad_enable: Literal["disabled", "gamemode", "always"] | None = None,
+    extra_buttons: Literal["none", "dual", "quad"] = "dual",
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -109,7 +110,7 @@ def get_outputs(
                 enable_rgb=uses_leds,
                 enable_gyro=motion,
                 sync_gyro=conf["sinput.sync_gyro"].to(bool) and motion,
-                paddles="dual" if paddles_as == "steam_input" else "none",
+                paddles=extra_buttons if paddles_as == "steam_input" else "none",
                 glyphs=glyphs,
                 controller_id=controller_id,
                 cache=True,
