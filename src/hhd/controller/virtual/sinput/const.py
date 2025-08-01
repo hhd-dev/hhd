@@ -96,25 +96,30 @@ SINPUT_HID_REPORT = bytes([
     0xC0                           # End Collection 
 ])
 
+ACCEL_MAX_G = 3
+ACCEL_SCALE = (2**15 - 1) / ACCEL_MAX_G / 9.80665
+GYRO_MAX_DPS = 1600
+GYRO_SCALE = -(2**15 - 1) * 180 / 3.14 / GYRO_MAX_DPS
+
 SINPUT_AXIS_MAP = {
     "ls_x": AM((7 << 3), "i16"),
     "ls_y": AM((9 << 3), "i16"),
     "rs_x": AM((11 << 3), "i16"),
     "rs_y": AM((13 << 3), "i16"),
-    "rt": AM((15 << 3), "i16"),
-    "lt": AM((17 << 3), "i16"),
+    "rt": AM((15 << 3), "i16", scale=2**16 -1, offset=-(2**15 -1)),
+    "lt": AM((17 << 3), "i16", scale=2**16 -1, offset=-(2**15 -1)),
     "accel_x": AM(
-        (23 << 3), "i16", scale=1019, bounds=(-(2**15) + 2, 2**15 - 1)
+        (23 << 3), "i16", scale=ACCEL_SCALE, bounds=(-(2**15) + 2, 2**15 - 1)
     ),
     "accel_y": AM(
-        (25 << 3), "i16", scale=1019, bounds=(-(2**15) + 2, 2**15 - 1)
+        (25 << 3), "i16", scale=ACCEL_SCALE, bounds=(-(2**15) + 2, 2**15 - 1)
     ),
     "accel_z": AM(
-        (27 << 3), "i16", scale=1019, bounds=(-(2**15) + 2, 2**15 - 1)
+        (27 << 3), "i16", scale=ACCEL_SCALE, bounds=(-(2**15) + 2, 2**15 - 1)
     ),
-    "gyro_x": AM((29 << 3), "i16", scale=20 * 180 / 3.14),
-    "gyro_y": AM((31 << 3), "i16", scale=20 * 180 / 3.14),
-    "gyro_z": AM((33 << 3), "i16", scale=20 * 180 / 3.14),
+    "gyro_x": AM((29 << 3), "i16", scale=GYRO_SCALE),
+    "gyro_y": AM((31 << 3), "i16", scale=GYRO_SCALE),
+    "gyro_z": AM((33 << 3), "i16", scale=GYRO_SCALE),
 }
 
 get_button_mask = lambda ofs: {
