@@ -297,7 +297,6 @@ class SInputController(Producer, Consumer):
                         case 0x02:
                             self.dev.send_input_report(self._prepare_features(False))
                         case 1:
-                            logger.info(rep.hex())
                             if self.version < 2:
                                 if rep[2] != 0x02:
                                     continue
