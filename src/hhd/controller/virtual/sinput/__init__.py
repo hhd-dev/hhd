@@ -214,7 +214,9 @@ class SInputController(Producer, Consumer):
                 feats[ofs + 3] = sdl_subtype
                 serial_ofs = ofs + 4
 
-                feats[ofs + 10: ofs + 12] = int.to_bytes(1000, 2, "little") # todo: make this dynamic
+                feats[ofs + 10 : ofs + 12] = int.to_bytes(
+                    1000, 2, "little"
+                )  # todo: make this dynamic
                 feats[ofs + 12 : ofs + 14] = int.to_bytes(ACCEL_SCALE_V2, 2, "little")
                 feats[ofs + 14 : ofs + 16] = int.to_bytes(GYRO_SCALE_V2, 2, "little")
 
@@ -295,16 +297,33 @@ class SInputController(Producer, Consumer):
                         case 0x02:
                             self.dev.send_input_report(self._prepare_features(False))
                         case 1:
-                            if rep[2] != 0x02:
-                                continue
-                            out.append(
-                                {
-                                    "type": "rumble",
-                                    "code": "main",
-                                    "strong_magnitude": rep[3] / 255,
-                                    "weak_magnitude": rep[5] / 255,
-                                }
-                            )
+                            logger.info(rep.hex())
+                            if self.version < 2:
+                                if rep[2] != 0x02:
+                                    continue
+                                out.append(
+                                    {
+                                        "type": "rumble",
+                                        "code": "main",
+                                        "strong_magnitude": rep[3] / 255,
+                                        "weak_magnitude": rep[5] / 255,
+                                    }
+                                )
+                            else:
+                                out.append(
+                                    {
+                                        "type": "rumble",
+                                        "code": "main",
+                                        "strong_magnitude": int.from_bytes(
+                                            rep[2:4], "little"
+                                        )
+                                        / 2**16,
+                                        "weak_magnitude": int.from_bytes(
+                                            rep[6:8], "little"
+                                        )
+                                        / 2**16,
+                                    }
+                                )
                         case 4:
                             red, green, blue = rep[2:5]
 
