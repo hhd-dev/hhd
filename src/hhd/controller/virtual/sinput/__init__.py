@@ -86,7 +86,7 @@ class SInputController(Producer, Consumer):
             paddles,
         )
 
-        self.version = 2
+        self.version = 1
         if self.version == 2:
             self.axis = SINPUT_AXIS_MAP_V2
         else:
@@ -117,8 +117,8 @@ class SInputController(Producer, Consumer):
                 cached.close(True, in_cache=True)
         if not self.dev:
             self.dev = UhidDevice(
-                vid=0x2E8A,
-                pid=0x10C6,
+                vid=0x16D0,
+                pid=0x145B,
                 bus=BUS_USB,
                 version=256,
                 country=0,
@@ -229,8 +229,7 @@ class SInputController(Producer, Consumer):
                 feats[ofs + 23] = (
                     self.enable_touchpad * 0x01 + 0x10 + self.enable_rgb * 0x20
                 )
-
-            case _:
+            case 0 | 1:
                 # Protocol version
                 feats[ofs : ofs + 2] = (0x01, 0x00)
 
@@ -252,11 +251,9 @@ class SInputController(Producer, Consumer):
                 feats[ofs + 10 : ofs + 12] = int.to_bytes(GYRO_MAX_DPS, 2, "little")
 
                 bmask = get_button_mask(ofs + 12)
-                self.btns = SINPUT_AVAILABLE_BUTTONS[gtype]
-                for key in self.btns:
-                    set_button(feats, bmask[key], True)
-
                 serial_ofs = ofs + 18
+            case _:
+                raise ValueError(f"Unsupported SInput version {self.version}.")
 
         # Set button mask
         self.btns = SINPUT_AVAILABLE_BUTTONS[gtype]
