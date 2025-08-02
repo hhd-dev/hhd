@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-28 16:03+0200\n"
+"POT-Creation-Date: 2025-08-02 16:37+0200\n"
 "PO-Revision-Date: 2025-07-31 10:22+0300\n"
 "Last-Translator: Alex Flyme <flymecompany@yandex.ru>\n"
 "Language: ru\n"
@@ -114,8 +114,8 @@ msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
 msgstr ""
-"Позволяет изменить тему интерфейса. По умолчанию используется Diavolo или "
-"тема вашего дистрибутива."
+"Позволяет изменить тему интерфейса. По умолчанию используется Diavolo или"
+" тема вашего дистрибутива."
 
 #. Setting: Theme
 #. Option: default
@@ -242,8 +242,8 @@ msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
 msgstr ""
-"Генерирует токен безопасности в `~/.config/hhd/token`, который требуется для "
-"аутентификации."
+"Генерирует токен безопасности в `~/.config/hhd/token`, который требуется "
+"для аутентификации."
 
 msgid "Lightbar"
 msgstr "Световая панель"
@@ -346,7 +346,9 @@ msgstr "Эмуляция контроллера"
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse your device's features."
-msgstr "Эмулирует различные типы контроллеров для объединения функций вашего устройства."
+msgstr ""
+"Эмулирует различные типы контроллеров для объединения функций вашего "
+"устройства."
 
 #. Setting: Swap Guide and Menu/View
 #. Field: title
@@ -370,9 +372,9 @@ msgid ""
 "the Xbox button, which allows doing SteamOS combos (Select+RT is "
 "screenshot)."
 msgstr ""
-"При удержании Select или Start, если нажата другая кнопка, они становятся "
-"кнопкой Xbox, что позволяет использовать комбинации SteamOS (Select+RT - "
-"скриншот)."
+"При удержании Select или Start, если нажата другая кнопка, они становятся"
+" кнопкой Xbox, что позволяет использовать комбинации SteamOS (Select+RT -"
+" скриншот)."
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -441,7 +443,9 @@ msgstr "Поддержка движений"
 #. Setting: Motion Support
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
-msgstr "Включить поддержку гироскопа/акселерометра (IMU) (использование CPU в фоне 0.3%)"
+msgstr ""
+"Включить поддержку гироскопа/акселерометра (IMU) (использование CPU в "
+"фоне 0.3%)"
 
 #. Setting: Motion Hz
 #. Field: title
@@ -481,10 +485,11 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-"Назначает L4/R4 для Steam Input (требуется установка L4/R4 как HHD во вкладке "
-"Wincontrols). Если отключено, это клавиши клавиатуры. Menu/L4/R4 могут быть "
-"комбинациями: Menu - однократное нажатие QAM, двойное HHD, удержание Xbox. "
-"L4/R4 - однократное нажатие QAM, удержание HHD (устаревшее)."
+"Назначает L4/R4 для Steam Input (требуется установка L4/R4 как HHD во "
+"вкладке Wincontrols). Если отключено, это клавиши клавиатуры. Menu/L4/R4 "
+"могут быть комбинациями: Menu - однократное нажатие QAM, двойное HHD, "
+"удержание Xbox. L4/R4 - однократное нажатие QAM, удержание HHD "
+"(устаревшее)."
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
@@ -840,8 +845,8 @@ msgid ""
 "Emulate different controller types when the Legion Controllers are in "
 "X-Input mode."
 msgstr ""
-"Эмулирует различные типы контроллеров, когда контроллеры Legion находятся "
-"в режиме X-Input."
+"Эмулирует различные типы контроллеров, когда контроллеры Legion находятся"
+" в режиме X-Input."
 
 #. Setting: Controller Motions Device
 #. Field: title
@@ -958,7 +963,9 @@ msgstr "Обратные кнопки громкости"
 #. Setting: Reverse Volume Buttons
 #. Field: hint
 msgid "Reverse the volume buttons of the X1 style devices to match other tablets."
-msgstr "Инвертирует кнопки громкости устройств стиля X1 для соответствия другим планшетам."
+msgstr ""
+"Инвертирует кнопки громкости устройств стиля X1 для соответствия другим "
+"планшетам."
 
 #. Setting: Ally Controller
 #. Field: title
@@ -1116,8 +1123,7 @@ msgstr "Интенсивность вибрации"
 msgid ""
 "Intensity of the vibration. The higher the value, the stronger the "
 "vibration."
-msgstr ""
-"Интенсивность вибрации. Чем выше значение, тем сильнее вибрация."
+msgstr "Интенсивность вибрации. Чем выше значение, тем сильнее вибрация."
 
 #. Setting: Left Stick Minimum
 #. Field: title
@@ -1204,8 +1210,8 @@ msgid ""
 "Disables the controller. Handheld Daemon overlay will still work in "
 "gamemode."
 msgstr ""
-"Отключает контроллер. Оверлей Handheld Daemon будет продолжать работать в "
-"игровом режиме."
+"Отключает контроллер. Оверлей Handheld Daemon будет продолжать работать в"
+" игровом режиме."
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
@@ -1217,8 +1223,7 @@ msgstr "Доп. кнопки как клавиатура/оверлей"
 msgid ""
 "Makes the left paddle bring up a keyboard and the right paddle bring up "
 "the overlay."
-msgstr ""
-"Левая кнопка вызывает клавиатуру, правая - оверлей."
+msgstr "Левая кнопка вызывает клавиатуру, правая - оверлей."
 
 #. Setting: Xbox
 #. Field: title
@@ -1268,8 +1273,8 @@ msgstr "Steam Controller"
 #. Field: hint
 msgid "Allows for gyro, paddles, and has a proper QAM button."
 msgstr ""
-"Позволяет использовать гироскоп, дополнительные кнопки и имеет "
-"правильную кнопку QAM."
+"Позволяет использовать гироскоп, дополнительные кнопки и имеет правильную"
+" кнопку QAM."
 
 #. Setting: Handheld Mode [BETA]
 #. Field: title
@@ -1306,8 +1311,8 @@ msgstr ""
 "2 отчетах, это вызывает деление на 0 и нестабильность. Эта опция "
 "гарантирует, что отчеты отправляются только при наличии новой метки "
 "времени IMU, эффективно ограничивая отзывчивость контроллера до уровня "
-"IMU. Это имеет значение только для Legion Go (125 Гц), так как все другие "
-"портативные устройства по умолчанию используют 400 Гц."
+"IMU. Это имеет значение только для Legion Go (125 Гц), так как все другие"
+" портативные устройства по умолчанию используют 400 Гц."
 
 #. Setting: Invert Roll Axis
 #. Field: title
@@ -1366,8 +1371,7 @@ msgstr "Поддержка LED"
 msgid ""
 "Passes through the LEDs to the controller, which allows games to control "
 "them."
-msgstr ""
-"Передает управление LED контроллеру, что позволяет играм управлять ими."
+msgstr "Передает управление LED контроллеру, что позволяет играм управлять ими."
 
 #. Setting: Invert Roll Axis
 #. Field: hint
@@ -1376,8 +1380,8 @@ msgid ""
 " for Steam Input, since you want it to be inverted to look left to right,"
 " but an issue in emulators."
 msgstr ""
-"Инвертирует ось крена (Z) по сравнению с реальным контроллером Dualsense. "
-"Полезно для Steam Input, так как требуется инверсия для взгляда "
+"Инвертирует ось крена (Z) по сравнению с реальным контроллером Dualsense."
+" Полезно для Steam Input, так как требуется инверсия для взгляда "
 "влево-вправо, но вызывает проблемы в эмуляторах."
 
 #. Setting: Bluetooth Mode
@@ -1394,8 +1398,8 @@ msgid ""
 "games. Test and report back!"
 msgstr ""
 "Эмулирует контроллер в режиме Bluetooth вместо USB. Это значение по "
-"умолчанию, так как вызывает меньше проблем с взаимодействием приложений "
-"с контроллером. Однако использование USB-режима может улучшить поддержку "
+"умолчанию, так как вызывает меньше проблем с взаимодействием приложений с"
+" контроллером. Однако использование USB-режима может улучшить поддержку "
 "LED (?) в некоторых играх. Протестируйте и сообщите!"
 
 #. Setting: Paused
@@ -1505,8 +1509,8 @@ msgid ""
 "to be used as steam input, so short press is unassigned by default and "
 "long press simulates trackpad click."
 msgstr ""
-"Использует сенсорную панель эмулированного контроллера (если она есть). "
-"В противном случае сенсорная панель остается несопоставленной (все равно "
+"Использует сенсорную панель эмулированного контроллера (если она есть). В"
+" противном случае сенсорная панель остается несопоставленной (все равно "
 "будет отображаться в системе). Предназначена для использования как Steam "
 "Input, поэтому короткое нажатие по умолчанию не назначено, а длинное "
 "имитирует клик по тачпаду."
@@ -1862,8 +1866,8 @@ msgid ""
 "Basic display settings. Brightness (and framerate TBD). This pane is "
 "meant to replace "
 msgstr ""
-"Основные настройки дисплея. Яркость (и частота кадров - будет добавлено). "
-"Эта панель предназначена для замены "
+"Основные настройки дисплея. Яркость (и частота кадров - будет добавлено)."
+" Эта панель предназначена для замены "
 
 #. Setting: Brightness
 #. Field: hint
@@ -1871,8 +1875,8 @@ msgid ""
 "Sets the brightness level of a display. Only one display is supported and"
 " it is the one that was read."
 msgstr ""
-"Устанавливает уровень яркости дисплея. Поддерживается только один дисплей "
-"- тот, который был считан."
+"Устанавливает уровень яркости дисплея. Поддерживается только один дисплей"
+" - тот, который был считан."
 
 #. Setting: Display
 #. Field: title
@@ -2210,7 +2214,8 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"Некоторые устройства просыпаются, чтобы принудительно перевести Windows в гибернацию. Если Linux этого не делает,\n"
+"Некоторые устройства просыпаются, чтобы принудительно перевести Windows в"
+" гибернацию. Если Linux этого не делает,\n"
 "возникают проблемы. Определять события перегрева и 5% заряда батареи\n"
 "и переводить в гибернацию.\n"
 
@@ -2362,3 +2367,4 @@ msgstr "RGB контроллера"
 #. Field: title
 msgid "Enable RGB support."
 msgstr "Включить поддержку RGB."
+

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-28 16:03+0200\n"
+"POT-Creation-Date: 2025-08-02 16:37+0200\n"
 "PO-Revision-Date: 2024-04-09 14:25-0300\n"
 "Last-Translator: Victor Borges <victor1882@outlook.com>\n"
 "Language: pt_BR\n"
@@ -101,6 +101,11 @@ msgstr "繁體中文"
 #, fuzzy
 msgid "Portugese (Brazil)"
 msgstr "Português"
+
+#. Setting: Language
+#. Option: ru_RU
+msgid "Russian"
+msgstr ""
 
 #. Setting: Theme
 #. Field: title

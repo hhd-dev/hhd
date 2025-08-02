@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-28 16:03+0200\n"
+"POT-Creation-Date: 2025-08-02 16:37+0200\n"
 "PO-Revision-Date: 2025-07-25 17:11+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: it_IT\n"
@@ -95,6 +95,11 @@ msgstr "Cinese Tradizionale"
 #, fuzzy
 msgid "Portugese (Brazil)"
 msgstr "Portoghese"
+
+#. Setting: Language
+#. Option: ru_RU
+msgid "Russian"
+msgstr ""
 
 #. Setting: Theme
 #. Field: title
