@@ -823,10 +823,12 @@ def main():
             from hhd.controller.virtual.dualsense import Dualsense
             from hhd.controller.virtual.uinput import UInputDevice
             from hhd.controller.virtual.sd import SteamdeckController
+            from hhd.controller.virtual.sinput import SInputController
 
             UInputDevice.close_cached()
             Dualsense.close_cached()
             SteamdeckController.close_cached()
+            SInputController.close_cached()
         except Exception as e:
             logger.error("Could not close cached controllers with error:\n{e}")
 

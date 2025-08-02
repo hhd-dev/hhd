@@ -241,6 +241,7 @@ def controller_loop_xinput(
             "rainbow": ["brightness", "speed"],
             "spiral": ["brightness", "speed"],
         },
+        extra_buttons="dual",
     )
     swap_legion = conf["swap_legion"].to(bool)
 
