@@ -38,3 +38,7 @@ ATTRS{idVendor}=="2993", ATTRS{idProduct}=="2001", RUN+="/sbin/modprobe xpad" RU
 
 # Enable xpad for the Legion Go S
 ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e310", RUN+="/sbin/modprobe xpad" RUN+="/bin/sh -c 'echo 1a86 e310 > /sys/bus/usb/drivers/xpad/new_id'"
+
+# Banish Ally HID devices to oblivion since they crash SDL/Proton controller handlers
+SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="1b4c", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/%k"
+SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="1abe", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/%k"
