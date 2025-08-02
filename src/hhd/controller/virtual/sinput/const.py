@@ -111,13 +111,13 @@ ACCEL_SCALE = (2**15 - 1) / ACCEL_MAX_G / 9.80665
 GYRO_MAX_DPS = 1600
 GYRO_SCALE = -(2**15 - 1) * 180 / 3.14 / GYRO_MAX_DPS
 
-SINPUT_AXIS_MAP = {
+SINPUT_AXIS_MAP_V1 = {
     "ls_x": AM((7 << 3), "i16"),
     "ls_y": AM((9 << 3), "i16"),
     "rs_x": AM((11 << 3), "i16"),
     "rs_y": AM((13 << 3), "i16"),
-    "rt": AM((15 << 3), "i16", scale=2**16 - 1, offset=-(2**15 - 1)),
-    "lt": AM((17 << 3), "i16", scale=2**16 - 1, offset=-(2**15 - 1)),
+    "rt": AM((15 << 3), "i16", scale=2**16 - 2, offset=-(2**15 - 1)),
+    "lt": AM((17 << 3), "i16", scale=2**16 - 2, offset=-(2**15 - 1)),
     "accel_x": AM(
         (23 << 3), "i16", scale=ACCEL_SCALE, bounds=(-(2**15) + 2, 2**15 - 1)
     ),
@@ -130,6 +130,30 @@ SINPUT_AXIS_MAP = {
     "gyro_x": AM((29 << 3), "i16", scale=GYRO_SCALE),
     "gyro_y": AM((31 << 3), "i16", scale=GYRO_SCALE),
     "gyro_z": AM((33 << 3), "i16", scale=GYRO_SCALE),
+}
+
+ACCEL_SCALE_V2 = 10197
+GYRO_SCALE_V2 = 11465
+
+SINPUT_AXIS_MAP_V2 = {
+    "ls_x": AM((7 << 3), "i16"),
+    "ls_y": AM((9 << 3), "i16"),
+    "rs_x": AM((11 << 3), "i16"),
+    "rs_y": AM((13 << 3), "i16"),
+    "rt": AM((15 << 3), "i16", scale=2**16 - 2, offset=-(2**15 - 1)),
+    "lt": AM((17 << 3), "i16", scale=2**16 - 2, offset=-(2**15 - 1)),
+    "accel_x": AM(
+        (23 << 3), "i16", scale=ACCEL_SCALE_V2 / 10, bounds=(-(2**15) + 2, 2**15 - 1)
+    ),
+    "accel_y": AM(
+        (25 << 3), "i16", scale=ACCEL_SCALE_V2 / 10, bounds=(-(2**15) + 2, 2**15 - 1)
+    ),
+    "accel_z": AM(
+        (27 << 3), "i16", scale=ACCEL_SCALE_V2 / 10, bounds=(-(2**15) + 2, 2**15 - 1)
+    ),
+    "gyro_x": AM((29 << 3), "i16", scale=-GYRO_SCALE_V2 / 10),
+    "gyro_y": AM((31 << 3), "i16", scale=-GYRO_SCALE_V2 / 10),
+    "gyro_z": AM((33 << 3), "i16", scale=-GYRO_SCALE_V2 / 10),
 }
 
 get_button_mask = lambda ofs: {

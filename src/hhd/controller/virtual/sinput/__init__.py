@@ -15,7 +15,10 @@ from hhd.controller.lib.ccache import ControllerCache
 from .const import (
     SINPUT_HID_REPORT,
     SINPUT_BTN_MAP,
-    SINPUT_AXIS_MAP,
+    SINPUT_AXIS_MAP_V1,
+    SINPUT_AXIS_MAP_V2,
+    GYRO_SCALE_V2,
+    ACCEL_SCALE_V2,
     get_button_mask,
     GYRO_MAX_DPS,
     ACCEL_MAX_G,
@@ -36,12 +39,12 @@ logger = logging.getLogger(__name__)
 _cache = ControllerCache()
 
 
-def prefill_report():
+def prefill_report(axis) -> bytearray:
     """Prefill the report with zeros."""
     report = bytearray(64)
     report[0] = 0x01  # Report type
-    encode_axis(report, SINPUT_AXIS_MAP["lt"], 0)
-    encode_axis(report, SINPUT_AXIS_MAP["rt"], 0)
+    encode_axis(report, axis["lt"], 0)
+    encode_axis(report, axis["rt"], 0)
     return report
 
 
@@ -70,6 +73,7 @@ class SInputController(Producer, Consumer):
         self.glyphs = glyphs
         self.paddles = paddles
         self.touchpad_click = touchpad_click
+        self.axis = {}
         self.btns = {}
 
         self.settings = (
@@ -82,15 +86,21 @@ class SInputController(Producer, Consumer):
             paddles,
         )
 
+        self.version = 2
+        if self.version == 2:
+            self.axis = SINPUT_AXIS_MAP_V2
+        else:
+            self.axis = SINPUT_AXIS_MAP_V1
+
         self.cache = cache
-        self.report = prefill_report()
+        self.report = prefill_report(self.axis)
         self.dev: UhidDevice | None = None
         self.fd: int | None = None
         self.available = False
 
     def open(self) -> Sequence[int]:
         self.available = False
-        self.report = prefill_report()
+        self.report = prefill_report(self.axis)
 
         cached = cast(SInputController | None, _cache.get())
 
@@ -160,16 +170,6 @@ class SInputController(Producer, Consumer):
         # Features
         #
 
-        # Protocol version
-        feats[ofs : ofs + 2] = (0x01, 0x00)
-
-        # Enable all features except player led
-        feats[ofs + 2] = (
-            0x01 + self.enable_gyro * (0x04 + 0x08) + 0x10 + 0x20 + 0x40 + 0x80
-        )
-        # We are a handheld, with touchpad, and rgb
-        feats[ofs + 3] = self.enable_touchpad * 0x01 + self.enable_rgb * 0x02 + 0x04
-
         # Set SDL types based on available buttons
         gtype = 0x02
         if self.touchpad_click:
@@ -191,24 +191,72 @@ class SInputController(Producer, Consumer):
 
         match self.glyphs:
             case "standard":
-                feats[ofs + 4] = 0x01
-                feats[ofs + 5] = (1 << 5) | gtype
+                sdl_type = 0x01
+                sdl_subtype = (1 << 5) | gtype
             case "xbox":
-                feats[ofs + 4] = 0x03
-                feats[ofs + 5] = (1 << 5) | gtype
+                sdl_type = 0x03
+                sdl_subtype = (1 << 5) | gtype
             case "sony":
-                feats[ofs + 4] = 0x06
-                feats[ofs + 5] = (4 << 5) | gtype
+                sdl_type = 0x06
+                sdl_subtype = (4 << 5) | gtype
             case "nintendo":
-                feats[ofs + 4] = 0x07
-                feats[ofs + 5] = (3 << 5) | gtype
+                sdl_type = 0x07
+                sdl_subtype = (3 << 5) | gtype
 
-        feats[ofs + 6] = 5
-        # Accelerometer scale
-        feats[ofs + 8 : ofs + 10] = int.to_bytes(ACCEL_MAX_G, 2, "little")
-        feats[ofs + 10 : ofs + 12] = int.to_bytes(GYRO_MAX_DPS, 2, "little")
+        # Set values depending on mask
+        match self.version:
+            case 2:
+                # Protocol version
+                feats[ofs : ofs + 2] = (0x02, 0x00)
 
-        bmask = get_button_mask(ofs + 12)
+                sdl_type = 12  # handheld type, supported by V2
+                feats[ofs + 2] = sdl_type
+                feats[ofs + 3] = sdl_subtype
+                serial_ofs = ofs + 4
+
+                feats[ofs + 10: ofs + 12] = int.to_bytes(1000, 2, "little") # todo: make this dynamic
+                feats[ofs + 12 : ofs + 14] = int.to_bytes(ACCEL_SCALE_V2, 2, "little")
+                feats[ofs + 14 : ofs + 16] = int.to_bytes(GYRO_SCALE_V2, 2, "little")
+
+                # Enable all features except player led
+                bmask = get_button_mask(ofs + 18)
+                feats[ofs + 22] = (
+                    0x01 + self.enable_gyro * (0x04 + 0x08) + 0x10 + 0x20 + 0x40 + 0x80
+                )
+                # We are a handheld, with touchpad, and rgb
+                feats[ofs + 23] = (
+                    self.enable_touchpad * 0x01 + 0x10 + self.enable_rgb * 0x20
+                )
+
+            case _:
+                # Protocol version
+                feats[ofs : ofs + 2] = (0x01, 0x00)
+
+                feats[ofs + 4] = sdl_type
+                feats[ofs + 5] = sdl_subtype
+
+                # Enable all features except player led
+                feats[ofs + 2] = (
+                    0x01 + self.enable_gyro * (0x04 + 0x08) + 0x10 + 0x20 + 0x40 + 0x80
+                )
+                # We are a handheld, with touchpad, and rgb
+                feats[ofs + 3] = (
+                    self.enable_touchpad * 0x01 + self.enable_rgb * 0x02 + 0x04
+                )
+
+                feats[ofs + 6] = 5
+                # Accelerometer scale
+                feats[ofs + 8 : ofs + 10] = int.to_bytes(ACCEL_MAX_G, 2, "little")
+                feats[ofs + 10 : ofs + 12] = int.to_bytes(GYRO_MAX_DPS, 2, "little")
+
+                bmask = get_button_mask(ofs + 12)
+                self.btns = SINPUT_AVAILABLE_BUTTONS[gtype]
+                for key in self.btns:
+                    set_button(feats, bmask[key], True)
+
+                serial_ofs = ofs + 18
+
+        # Set button mask
         self.btns = SINPUT_AVAILABLE_BUTTONS[gtype]
         for key in self.btns:
             set_button(feats, bmask[key], True)
@@ -216,9 +264,9 @@ class SInputController(Producer, Consumer):
         #
         # Serial
         #
-        feats[ofs + 18] = 0x53
-        feats[ofs + 19] = 0x35
-        feats[ofs + 23] = self.controller_id
+        feats[serial_ofs] = 0x53
+        feats[serial_ofs + 1] = 0x35
+        feats[serial_ofs + 5] = self.controller_id
 
         return feats
 
@@ -237,7 +285,6 @@ class SInputController(Producer, Consumer):
                     self.available = False
                 case "output":
                     rep = ev["data"]
-                    logger.info(rep.hex())
                     if rep[0] != 0x03:
                         logger.warning(
                             f"Received unexpected report type {rep[0]:02x}: {rep.hex()}"
@@ -336,9 +383,9 @@ class SInputController(Producer, Consumer):
                 case "axis":
                     if not self.enable_touchpad and code.startswith("touchpad"):
                         continue
-                    if code in SINPUT_AXIS_MAP:
+                    if code in self.axis:
                         try:
-                            encode_axis(new_rep, SINPUT_AXIS_MAP[code], ev["value"])
+                            encode_axis(new_rep, self.axis[code], ev["value"])
                         except Exception:
                             logger.warning(
                                 f"Encoding '{ev['code']}' with {ev['value']} overflowed."
