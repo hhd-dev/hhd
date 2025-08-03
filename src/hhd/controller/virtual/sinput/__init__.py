@@ -135,6 +135,7 @@ class SInputController(Producer, Consumer):
         self.last_imu = curr
         self.imu_failed = False
         self.start = time.perf_counter()
+        self._prepare_features(False)
 
         logger.info(
             f"Starting S-Input controller with RGB={self.enable_rgb}, touchpad={self.enable_touchpad}."
