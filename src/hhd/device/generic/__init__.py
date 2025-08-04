@@ -123,6 +123,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             vendor = f.read().strip().lower()
         if vendor == "ayn":
             return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYN"))]
+        if vendor == "tectoy":
+            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYN"))]
     except Exception:
         pass
 
