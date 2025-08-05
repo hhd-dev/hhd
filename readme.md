@@ -47,6 +47,8 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - Zotac Gaming Zone (1st gen; only front buttons; be in gamepad mode before installing Linux)
 - Ayn
   - Loki MiniPro/Zero/Max
+- TECTOY
+  - Zeenix Pro (rebranded Loki Max)
 - Ayaneo
   - Air Standard/Plus/Pro
   - 1S/1S Limited
