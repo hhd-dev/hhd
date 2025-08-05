@@ -227,10 +227,10 @@ class SteamdeckController(Producer, Consumer):
                     match self.last_rep:
                         case 0xEB:
                             left = int.from_bytes(
-                                ev["data"][8:10], byteorder="little", signed=True
+                                ev["data"][8:10], byteorder="little", signed=False
                             )
                             right = int.from_bytes(
-                                ev["data"][10:12], byteorder="little", signed=True
+                                ev["data"][10:12], byteorder="little", signed=False
                             )
                             out.append(
                                 {
