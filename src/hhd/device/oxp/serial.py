@@ -109,12 +109,9 @@ _mappings_init = True
 
 
 def get_serial():
-
     VID = "1a86"
     PID = "7523"
 
-    dev = None
-    buttons_only = False
     for d in os.listdir("/dev"):
         if not d.startswith("ttyUSB"):
             continue
@@ -134,9 +131,9 @@ def get_serial():
         if f"ID_MODEL_ID={PID}" not in out.stdout:
             continue
 
-        dev = path
-        break
+        return path, False
 
+    dev = None
     for d in os.listdir("/dev"):
         if not d.startswith("ttyS"):
             continue
@@ -144,7 +141,7 @@ def get_serial():
         path = os.path.join("/dev", d)
 
         out = subprocess.run(
-            ["udevadm", "info", "--name", path],
+            ["udevadm", "info", "--attribute-walk", "--name", path],
             check=True,
             capture_output=True,
             text=True,
@@ -155,12 +152,15 @@ def get_serial():
             continue
 
         # TODO: We need to get a baseline to quirk this type properly
+        # Loop through all serial ports and print their information
         logger.info(f"Serial port information:\n{out.stdout}")
 
-        dev = path
-        buttons_only = True
-        break
-    return dev, buttons_only
+        # Always keep the first serial port, but prefer the one with the
+        # 0x3E8 port, as that's the one used in OneXFly, which have 2 ports
+        if dev is None or r'ATTR{port}=="0x3E8"' in out.stdout:
+            dev = path
+
+    return dev, True
 
 
 def init_serial():
