@@ -665,6 +665,7 @@ class Multiplexer:
                     "modes": rgb_modes,
                     "controller": uses_rgb,
                     "zones": rgb_zones,
+                    "resets_on_ac": params.get("rgb_resets_on_ac", False),
                 }
             self.emit.set_capabilities(
                 self.unique,
@@ -672,7 +673,6 @@ class Multiplexer:
                     "buttons": {},
                     "rgb": rgb,
                     "supports_qam": params.get("supports_qam", True),
-                    "resets_on_ac": params.get("rgb_resets_on_ac", False),
                 },
             )
 

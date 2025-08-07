@@ -219,8 +219,9 @@ class RgbPlugin(HHDPlugin):
 
         rgb = ccap["rgb"]
         refresh_settings = False
-        self.restore_on_ac = ccap.get("rgb_resets_on_ac", False)
         if rgb:
+            self.restore_on_ac = rgb.get("resets_on_ac", False)
+
             # Refresh on initial load
             if not self.modes:
                 refresh_settings = True
