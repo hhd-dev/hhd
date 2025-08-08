@@ -69,7 +69,7 @@ def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
 _supports_sleep = None
 
 
-def run_steam_shortpress(perms: Context):
+def run_steam_shortpress():
     global _supports_sleep
     # FIXME: This should be patched in systemd instead
     if _supports_sleep is None:
@@ -82,27 +82,27 @@ def run_steam_shortpress(perms: Context):
         return True
 
 
-def run_steam_longpress(perms: Context):
+def run_steam_longpress():
     return run_steam_command("steam://longpowerpress")
 
 
-def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event, emit):
+def power_button_run(cfg: PowerButtonConfig, should_exit: Event, emit):
     match cfg.type:
         case "only_press":
             logger.info(
                 f"Starting multi-device powerbutton handler for device '{cfg.device}'."
             )
-            power_button_multidev(cfg, ctx, should_exit, emit)
+            power_button_multidev(cfg, should_exit, emit)
         case "hold_emitted":
             logger.info(
                 f"Starting timer based powerbutton handler for device '{cfg.device}'."
             )
-            power_button_timer(cfg, ctx, should_exit, emit)
+            power_button_timer(cfg, should_exit, emit)
         case "hold_isa":
             logger.info(
                 f"Starting isa keyboard powerbutton handler for device '{cfg.device}'."
             )
-            power_button_isa(cfg, ctx, should_exit, emit)
+            power_button_isa(cfg, should_exit, emit)
         case "disabled":
             logger.info(
                 f"Power button plugin disabled for device '{cfg.device}', not starting."
@@ -111,7 +111,7 @@ def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event, e
             logger.error(f"Invalid type in config '{cfg.type}'. Exiting.")
 
 
-def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event, emit):
+def power_button_isa(cfg: PowerButtonConfig, should_exit: Event, emit):
     press_dev = None
     press_devs = []
     hold_dev = None
@@ -163,13 +163,13 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event,
                 ev = press_dev.read_one()
                 if ev.type == B("EV_KEY") and ev.code == B("KEY_POWER") and ev.value:
                     logger.info("Executing short press.")
-                    issue_systemctl = not run_steam_shortpress(perms)
+                    issue_systemctl = not run_steam_shortpress()
                     emit({"type": "special", "event": "pbtn_short"})
             elif hold_dev and fd == hold_dev.fd:
                 ev = hold_dev.read_one()
                 if ev.type == B("EV_KEY") and ev.code == cfg.hold_code and ev.value:
                     logger.info("Executing long press.")
-                    issue_systemctl = not run_steam_longpress(perms)
+                    issue_systemctl = not run_steam_longpress()
                     emit({"type": "special", "event": "pbtn_long"})
 
             if issue_systemctl:
@@ -184,7 +184,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event,
 
 
 def power_button_timer(
-    cfg: PowerButtonConfig, perms: Context, should_exit: Event, emit
+    cfg: PowerButtonConfig, should_exit: Event, emit
 ):
     dev = None
     devs = []
@@ -251,11 +251,11 @@ def power_button_timer(
             match press_type:
                 case "long_press":
                     logger.info("Executing long press.")
-                    issue_systemctl = not run_steam_longpress(perms)
+                    issue_systemctl = not run_steam_longpress()
                     emit({"type": "special", "event": "pbtn_long"})
                 case "short_press":
                     logger.info("Executing short press.")
-                    issue_systemctl = not run_steam_shortpress(perms)
+                    issue_systemctl = not run_steam_shortpress()
                     emit({"type": "special", "event": "pbtn_short"})
                 case "initial_press":
                     logger.info("Power button pressed down.")
@@ -280,7 +280,7 @@ def power_button_timer(
 
 
 def power_button_multidev(
-    cfg: PowerButtonConfig, perms: Context, should_exit: Event, emit
+    cfg: PowerButtonConfig, should_exit: Event, emit
 ):
     devs = []
     fds = []
@@ -328,7 +328,7 @@ def power_button_multidev(
 
             if issue_power:
                 logger.info("Executing short press.")
-                issue_systemctl = not run_steam_shortpress(perms)
+                issue_systemctl = not run_steam_shortpress()
                 emit({"type": "special", "event": "pbtn_short"})
 
             if issue_systemctl:

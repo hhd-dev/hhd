@@ -54,7 +54,7 @@ class PowerbuttondPlugin(HHDPlugin):
 
         self.event = Event()
         self.t = Thread(
-            target=power_button_run, args=(self.cfg, self.context, self.event, self.emit)
+            target=power_button_run, args=(self.cfg, self.event, self.emit)
         )
         self.t.start()
         self.started = True
