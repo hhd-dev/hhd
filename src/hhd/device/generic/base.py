@@ -125,6 +125,7 @@ def controller_loop(
         emit=emit,
         rgb_modes={"disabled": [], "solid": ["color"]} if is_led_supported() else None,
         rgb_resets_on_ac=is_led_supported(),
+        extra_buttons=dconf.get("extra_buttons", "dual"),
     )
     motion = d_params.get("uses_motion", True)
 

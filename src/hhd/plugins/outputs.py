@@ -5,6 +5,7 @@ import os
 from ..controller.base import Consumer, Producer, RgbMode, RgbSettings, RgbZones
 from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.sd import SteamdeckController
+from ..controller.virtual.sinput import SInputController
 from ..controller.virtual.uinput import (
     CONTROLLER_THEMES,
     GAMEPAD_BUTTON_MAP,
@@ -41,6 +42,7 @@ def get_outputs(
     rgb_resets_on_ac: bool = False,
     controller_disabled: bool = False,
     touchpad_enable: Literal["disabled", "gamemode", "always"] | None = None,
+    extra_buttons: Literal["none", "dual", "quad"] = "dual",
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -58,7 +60,7 @@ def get_outputs(
         correction = "legos"  # todo: make generic
         desktop_disable = touchpad_enable == "gamemode"
     else:
-        touchpad = "controller"
+        touchpad = "disabled"
         correction = "stretch"
 
     # Run steam check for touchpad
@@ -89,11 +91,36 @@ def get_outputs(
             UInputDevice.close_cached()
             Dualsense.close_cached()
             SteamdeckController.close_cached()
+            SInputController.close_cached()
             motion = False
             noob_mode = conf.get("hidden.noob_mode", False)
+        case "sinput":
+            UInputDevice.close_cached()
+            Dualsense.close_cached()
+            SteamdeckController.close_cached()
+            uses_touch = touchpad == "controller" and steam_check is not False
+            uses_leds = conf.get("sinput.led_support", False)
+            paddles_as = conf.get("sinput.paddles_as", "noob")
+            noob_mode = paddles_as == "noob"
+            glyphs = conf.get("sinput.glyphs", "standard")
+            has_qam = True
+
+            d = SInputController(
+                enable_touchpad=uses_touch,
+                enable_rgb=uses_leds,
+                enable_gyro=motion,
+                sync_gyro=conf["sinput.sync_gyro"].to(bool) and motion,
+                paddles=extra_buttons if paddles_as == "steam_input" else "none",
+                glyphs=glyphs,
+                controller_id=controller_id,
+                cache=True,
+            )
+            producers.append(d)
+            consumers.append(d)
         case "dualsense":
             UInputDevice.close_cached()
             SteamdeckController.close_cached()
+            SInputController.close_cached()
             flip_z = conf["dualsense.flip_z"].to(bool)
             uses_touch = touchpad == "controller" and steam_check is not False
             uses_leds = conf.get("dualsense.led_support", False)
@@ -129,6 +156,7 @@ def get_outputs(
         case "sd":
             UInputDevice.close_cached()
             Dualsense.close_cached()
+            SInputController.close_cached()
             uses_touch = touchpad == "controller" and steam_check is not False
             d = SteamdeckController(
                 name="Steam Controller (HHD)",
@@ -143,6 +171,7 @@ def get_outputs(
         case "uinput" | "xbox_elite" | "joycon_pair" | "hori_steam":
             Dualsense.close_cached()
             SteamdeckController.close_cached()
+            SInputController.close_cached()
             version = 1
             sync_gyro = False
             paddles_as = conf.get("uinput.paddles_as", "noob")
@@ -288,6 +317,7 @@ def get_outputs_config(
             del s["modes"]["disabled"]
         if not has_leds:
             del s["modes"]["dualsense"]["children"]["led_support"]
+            del s["modes"]["sinput"]["children"]["led_support"]
 
         if extra_buttons == "none":
             del s["modes"]["dualsense"]["children"]["paddles_as"]
