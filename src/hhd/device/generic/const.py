@@ -94,6 +94,8 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
     # Air mappings
     B("KEY_F11"): "extra_l1",  # LC Button [87, 97, 125] F11 + LCTRL + LMETA
     B("KEY_F10"): "extra_r1",  # Rc Button [68, 97, 125] F10 + LCTRL + LMETA
+    # Ayaneo 3 mappings
+    B("KEY_F23"): "share",
 }
 
 AYA_DEFAULT_CONF = {
@@ -141,6 +143,7 @@ CONFS = {
     "AIR 1S Limited": {"name": "AIR 1S Limited", **AYA_DEFAULT_CONF},
     "AYANEO 2": {"name": "AYANEO 2", **AYA_DEFAULT_CONF},
     "AYANEO 2S": {"name": "AYANEO S2", **AYA_DEFAULT_CONF},
+    "AYANEO 3": {"name": "AYANEO 3", **AYA_DEFAULT_CONF},
     "GEEK": {"name": "AYANEO GEEK", **AYA_DEFAULT_CONF},
     "GEEK 1S": {"name": "AYANEO GEEK 1S", **AYA_DEFAULT_CONF},
     "AIR": {"name": "AYANEO AIR", **AYA_DEFAULT_CONF},
