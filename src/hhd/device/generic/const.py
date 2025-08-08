@@ -96,7 +96,6 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
     B("KEY_F10"): "extra_r1",  # Rc Button [68, 97, 125] F10 + LCTRL + LMETA
     # Ayaneo 3 mappings
     B("KEY_F23"): "share",
-    B("KEY_F24"): "mode",
 }
 
 AYA_DEFAULT_CONF = {
