@@ -211,6 +211,20 @@ def main():
         except Exception as e:
             logger.error(f"Could not migrate state file. Error:\n{e}")
 
+        # Lock a file to ensure hhd is only running once, or wait to unlock
+        # THis is for legacy enabled services with --user
+        lock_fn = join(hhd_dir, "lock")
+        lock_fd = -1
+        if os.environ.get("HHD_SWITCH_ROOT", None) != "1":
+            try:
+                logger.info("Trying to acquire hhd lock...")
+                lock_fd = os.open(lock_fn, os.O_RDWR | os.O_CREAT)
+                fcntl.flock(lock_fd, fcntl.LOCK_EX)
+            except Exception as e:
+                logger.error(
+                    f"Could not acquire lock for hhd.\nError:\n{e}"
+                )
+
         # Get OS Info
         info["os"] = get_os()
 
