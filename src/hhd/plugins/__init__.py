@@ -15,6 +15,7 @@ from .plugin import (
     HHDLocale,
     HHDLocaleRegister,
     HHDPlugin,
+    get_gid,
 )
 from .settings import HHDSettings
 from .utils import get_relative_fn, load_relative_yaml
@@ -39,5 +40,6 @@ __all__ = [
     "HHDLocaleRegister",
     "get_limits_config",
     "get_limits",
+    "get_gid",
     "fix_limits",
 ]

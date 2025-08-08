@@ -829,7 +829,7 @@ def device_shortcut_loop(
                 failed = intercept_devices(devs, True)
 
                 if emit and not steam_frozen and len(devs) > len(failed):
-                    steam_frozen = freeze_steam(True, emit.ctx)
+                    steam_frozen = freeze_steam(True)
                     if steam_frozen:
                         logger.info("Froze Steam (to avoid HID device dual input)")
             elif intercept and not should_intercept:
@@ -848,7 +848,7 @@ def device_shortcut_loop(
             # Give time for the B event to be lost
             time.sleep(0.25)
             logger.info("Unfreezing Steam")
-            freeze_steam(False, emit.ctx)
+            freeze_steam(False)
             steam_frozen = False
 
         for name, dev in list(devs.items()):

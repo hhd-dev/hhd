@@ -56,10 +56,11 @@ GAME_CHECK_INTERVAL = 2
 
 SUPPORTS_STANDBY = os.environ.get("HHD_GS_STANDBY", "0") == "1"
 
+
 def standby_transition(state: str):
     if not SUPPORTS_STANDBY:
         return
-    
+
     try:
         if not os.path.exists("/sys/power/standby"):
             return
@@ -69,6 +70,7 @@ def standby_transition(state: str):
             f.write(state)
     except Exception as e:
         logger.error(f"Failed to set standby state to {state}:\n{e}")
+
 
 def loop_manage_desktop(
     proc: subprocess.Popen,
@@ -356,7 +358,7 @@ class OverlayService:
         if requested:
             logger.debug(f"Found the following gamescope displays: {displays}")
 
-        res = get_overlay_display(displays, self.ctx)
+        res = get_overlay_display(displays)
         if not res:
             if requested:
                 logger.error(
@@ -366,16 +368,16 @@ class OverlayService:
 
         logger.info("Attempting to launch overlay.")
 
-        exe = find_overlay_exe(self.ctx)
+        disp, name, uid = res
+        exe = find_overlay_exe(uid)
         if not exe:
             logger.warning("Overlay is not installed, not launching.")
             self.installed = False
             return False
         logger.info(f"Found overlay executable '{exe}'")
-        disp, name = res
         logger.debug(f"Overlay display is the following: DISPLAY={name}")
 
-        self.proc = inject_overlay(exe, name, self.ctx)
+        self.proc = inject_overlay(exe, name, uid)
         self.writer = OverlayWriter(self.proc.stdin, mute=self.interceptionSupported)
         self.emit.register_intercept(self.writer)
         self.should_exit = TEvent()
@@ -404,22 +406,38 @@ class OverlayService:
             return True
 
         # Launch the overlay
-        auth = find_x11_auth(self.ctx)
-        if not auth:
-            logger.warning("Could not find X11 authority file.")
-            # return False
-        logger.info(f"Found X11 authority file:\n'{auth}'")
-        disp = find_x11_display(self.ctx)
+        disp, uid = find_x11_display()
         if not disp:
             logger.warning(
                 "Tried to find a wayland display to launch the overlay as an application and could not find it."
             )
             return False
+
+        auth = find_x11_auth(uid)
+        if not auth:
+            logger.warning("Could not find X11 authority file.")
+        else:
+            logger.info(f"Found X11 authority file:\n'{auth}'")
+
         logger.info(f"Launching hhd-ui in display: {disp}")
-        exe = find_overlay_exe(self.ctx)
+        exe = find_overlay_exe(uid)
         if not exe:
             return False
-        self.proc = launch_overlay_de(exe, disp, auth, self.ctx)
+
+        try:
+            gid = int(
+                subprocess.run(
+                    ["id", "-g", str(uid)],
+                    text=True,
+                    capture_output=True,
+                    check=True,
+                ).stdout.strip()
+            )
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to get group id for user {uid}:\n{e}")
+            return False
+
+        self.proc = launch_overlay_de(exe, disp, auth, uid, gid)
 
         # Start a managing thread
         self.writer = OverlayWriter(self.proc.stdin, mute=self.interceptionSupported)
@@ -489,13 +507,13 @@ class OverlayService:
             return
         if not self.gsconf or not self.gsconf.get("dpms", False):
             return
-        
+
         for ev in events:
             if ev.get("type", None) != "special":
                 continue
             if ev.get("event", None) != "pbtn_short":
                 continue
-            
+
             # If steam does not suspend us the following breaks:
             # # Fire screen_off while the powerbutton event is happening
             # logger.info("Powerbutton event detected, transitioning to standby.")

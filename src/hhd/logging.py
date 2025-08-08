@@ -3,11 +3,11 @@ import logging
 import os
 import pathlib
 from logging.handlers import RotatingFileHandler
-from typing import Sequence, Any
+from typing import Any
 
 from rich.logging import RichHandler
-from threading import local, Lock, get_ident, enumerate
-from .utils import Context, expanduser, fix_perms
+from threading import Lock, get_ident, enumerate
+from .utils import Context
 
 logger = logging.getLogger(__name__)
 
@@ -188,21 +188,12 @@ class UserRotatingFileHandler(RotatingFileHandler):
         self.ctx = ctx
         super().__init__(filename, mode, maxBytes, backupCount, encoding, delay, errors)
 
-    def _open(self):
-        d = super()._open()
-        if self.ctx:
-            os.chown(self.baseFilename, self.ctx.euid, self.ctx.egid)
-        return d
-
 
 def setup_logger(
     log_dir: str | None = None, init: bool = True, ctx: Context | None = None
 ):
     from rich import get_console
     from rich.traceback import install
-
-    if log_dir:
-        log_dir = expanduser(log_dir, ctx)
 
     # Do not print time when running as a systemd service
     is_systemd = bool(os.environ.get("JOURNAL_STREAM", None))
@@ -216,8 +207,6 @@ def setup_logger(
     )
     if log_dir:
         os.makedirs(log_dir, exist_ok=True)
-        if ctx:
-            fix_perms(log_dir, ctx)
         handler = UserRotatingFileHandler(
             os.path.join(log_dir, "hhd.log"),
             maxBytes=10_000_000,

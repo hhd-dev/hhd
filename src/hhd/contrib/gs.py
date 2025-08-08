@@ -1,3 +1,5 @@
+import os
+
 from Xlib.display import Display
 
 from hhd.plugins.overlay.x11 import (
@@ -5,6 +7,7 @@ from hhd.plugins.overlay.x11 import (
     get_gamescope_displays,
     get_overlay_display,
     print_debug,
+    switch_priviledge,
 )
 
 
@@ -35,10 +38,15 @@ def gamescope_debug(args: list[str]):
         if not d:
             print(f"Overlay display not found, exitting...")
             return
-        d, name = d
+        d, name, _ = d
     else:
         did = args[0]
         name = did
+
+        pth = "/tmp/.X11-unix/X" + did.lstrip(":")
+        uid = os.stat(pth).st_uid
+        switch_priviledge(uid)
+
         d = Display(did)
         args = args[1:]
     print(f"Overlay display is '{name}'")

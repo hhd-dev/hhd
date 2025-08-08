@@ -23,7 +23,7 @@ SUPPORTS_HALVING = os.environ.get("HHD_GS_STEAMUI_HALFHZ", "0") == "1"
 SUPPORTS_DPMS = os.environ.get("HHD_GS_DPMS", "0") == "1"
 
 
-def load_steam_games(ctx: Context, emit, burnt_ids: set):
+def load_steam_games(emit, burnt_ids: set):
     # Defer loading until we enter a game
     info = emit.info
     curr = info.get("game.id", None)
@@ -44,7 +44,7 @@ def load_steam_games(ctx: Context, emit, burnt_ids: set):
 
     try:
         # Load the games
-        games, images = get_games(expanduser("~/.local/share/Steam/appcache/", ctx))
+        games, images = get_games(expanduser("~/.local/share/Steam/appcache/", uid))
         logger.info(f"Loaded info for {len(games)} steam games.")
 
         # Add correct game data after refreshing the database (e.g., the user
@@ -75,7 +75,6 @@ class OverlayPlugin(HHDPlugin):
         self.qam_handler = None
         self.qam_handler_fallback = None
         self.touch_gestures = True
-        self.ctx = None
         self.emit = None
         self.sdl_mappings = None
         self.has_touchscreen = False
@@ -94,7 +93,6 @@ class OverlayPlugin(HHDPlugin):
             from .x11 import QamHandlerGamescope
 
             self.ovf = OverlayService(context, emit)
-            self.ctx = context
             self.has_executable = bool(find_overlay_exe(context))
 
             if bool(os.environ.get("HHD_QAM_KEYBOARD", None)):
@@ -177,10 +175,10 @@ class OverlayPlugin(HHDPlugin):
         self.emit.set_simple_qam(not self.has_executable)
 
         # Load game information
-        if self.ctx:
-            games, images = load_steam_games(self.ctx, self.emit, self.burnt_ids)
-            if games and images:
-                self.emit.set_gamedata(games, images)
+        # TODO: Fix this when user binding is a thing
+        # games, images = load_steam_games(self.emit, self.burnt_ids)
+        # if games and images:
+        #     self.emit.set_gamedata(games, images)
         if FORCE_GAME:
             self.emit.info["game.id"] = FORCE_GAME
             self.emit.info["game.is_steam"] = False
@@ -373,16 +371,21 @@ class OverlayPlugin(HHDPlugin):
                     case "steam_qam":
                         logger.info("Opening steam qam.")
                         if (
-                            not self.emit.open_steam(False)
+                            self.emit
+                            and not self.emit.open_steam(False)
                             and self.qam_handler_fallback
                         ):
                             self.qam_handler_fallback(False)
                     case "steam_expanded":
                         logger.info("Opening steam expanded.")
-                        if not self.emit.open_steam(True) and self.qam_handler_fallback:
+                        if (
+                            self.emit
+                            and not self.emit.open_steam(True)
+                            and self.qam_handler_fallback
+                        ):
                             self.qam_handler_fallback(True)
                     case "keyboard":
-                        if open_steam_kbd(self.emit, True):
+                        if open_steam_kbd(True):
                             logger.info("Opened Steam keyboard.")
                         else:
                             logger.warning(

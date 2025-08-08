@@ -44,17 +44,17 @@ from .utils import (
     GIT_HHD,
     HHD_DEV_DIR,
     expanduser,
-    fix_perms,
     get_ac_status,
     get_ac_status_fn,
     get_context,
     get_os,
     switch_priviledge,
+    refresh_is_steam_running,
 )
 
 logger = logging.getLogger(__name__)
 
-CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "~/.config/hhd")
+CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "/etc/hhd")
 PLUGIN_WHITELIST = os.environ.get("HHD_PLUGINS", "")
 
 ERROR_DELAY = 5
@@ -108,7 +108,7 @@ def get_wakeup_count():
 
 
 def print_token(ctx):
-    token_fn = expanduser(join(CONFIG_DIR, "token"), ctx)
+    token_fn = join(CONFIG_DIR, "token")
 
     try:
         with open(token_fn, "r") as f:
@@ -117,11 +117,6 @@ def print_token(ctx):
         logger.info(f'Current HHD token (for user "{ctx.name}") is: "{token}"')
     except Exception as e:
         logger.error(f"Token not found or could not be read, error:\n{e}")
-        logger.info(
-            "Enable the http endpoint to generate a token automatically.\n"
-            + "Or place it under '~/.config/hhd/token' manually.\n"
-            + "'chown 600 ~/.config/hhd/token' for security reasons!"
-        )
 
 
 def main():
@@ -146,10 +141,11 @@ def main():
     user = args.user
 
     # Setup temporary logger for permission retrieval
-    ctx = get_context(user)
-    if not ctx:
-        print(f"Could not get user information. Exiting...")
-        return
+    # ctx = get_context(user)
+    # if not ctx:
+    #     print(f"Could not get user information. Exiting...")
+    #     return
+    ctx = None
 
     detectors: dict[str, HHDAutodetect] = {}
     plugins: dict[str, Sequence[HHDPlugin]] = {}
@@ -174,12 +170,9 @@ def main():
         # Create nested hhd dir
         # This might mess up permissions in upward directories
         # So try to deescalate
-        hhd_dir = expanduser(CONFIG_DIR, ctx)
+        hhd_dir = CONFIG_DIR
         try:
-            switch_priviledge(ctx, False)
             os.makedirs(hhd_dir, exist_ok=True)
-            switch_priviledge(ctx, True)
-            fix_perms(hhd_dir, ctx)
         except Exception:
             pass
 
@@ -225,7 +218,6 @@ def main():
 
         # Save new blacklist file
         save_blacklist_yaml(blacklist_fn, detector_names, blacklist)
-        fix_perms(blacklist_fn, ctx)
 
         logger.info(f"Found plugin providers: {', '.join(list(detectors))}")
 
@@ -281,8 +273,8 @@ def main():
         set_log_plugin("main")
 
         # Compile initial configuration
-        state_fn = expanduser(join(CONFIG_DIR, "state.yml"), ctx)
-        token_fn = expanduser(join(CONFIG_DIR, "token"), ctx)
+        state_fn = join(CONFIG_DIR, "state.yml")
+        token_fn = join(CONFIG_DIR, "token")
         settings: HHDSettings = {}
         shash = None
 
@@ -290,9 +282,8 @@ def main():
         profiles = {}
         templates = {}
         conf = Config({})
-        profile_dir = expanduser(join(CONFIG_DIR, "profiles"), ctx)
+        profile_dir = join(CONFIG_DIR, "profiles")
         os.makedirs(profile_dir, exist_ok=True)
-        fix_perms(profile_dir, ctx)
 
         # Monitor config files for changes
         should_initialize = TEvent()
@@ -394,7 +385,6 @@ def main():
                 profiles = {}
                 templates = {}
                 os.makedirs(profile_dir, exist_ok=True)
-                fix_perms(profile_dir, ctx)
                 for fn in os.listdir(profile_dir):
                     if not fn.endswith(".yml"):
                         continue
@@ -431,7 +421,7 @@ def main():
                 for fn in cfg_fns:
                     fd = -1
                     try:
-                        fd = os.open(expanduser(fn, ctx), os.O_RDONLY)
+                        fd = os.open(fn, os.O_RDONLY)
                         fcntl.fcntl(
                             fd,
                             fcntl.F_NOTIFY,
@@ -473,9 +463,8 @@ def main():
                             str(random.random()).encode()
                         ).hexdigest()[:12]
                         with open(token_fn, "w") as f:
-                            os.chmod(token_fn, 0o600)
+                            os.chmod(token_fn, 0o644)
                             f.write(token)
-                        fix_perms(token_fn, ctx)
                     else:
                         with open(token_fn, "r") as f:
                             token = f.read().strip()
@@ -578,6 +567,10 @@ def main():
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")
 
+            # Refresh steam status
+            # TODO: Move this?
+            refresh_is_steam_running()
+
             # If settings changed, the configuration needs to reload
             # but it needs to be saved first
             if settings_changed:
@@ -653,13 +646,11 @@ def main():
             saved = False
             # Save existing profiles if open
             if save_state_yaml(state_fn, settings, conf, shash):
-                fix_perms(state_fn, ctx)
                 saved = True
                 conf.updated = False
             for name, prof in profiles.items():
                 fn = join(profile_dir, name + ".yml")
                 if save_profile_yaml(fn, settings, prof, shash):
-                    fix_perms(fn, ctx)
                     saved = True
                     prof.updated = False
             for prof in os.listdir(profile_dir):
@@ -677,17 +668,6 @@ def main():
                             f"Failed removing profile {name} at:\n{fn}\nWith error:\n{e}"
                         )
 
-            # Causes unnecessary writes, is not used anyway.
-            # # Add template config
-            # if save_profile_yaml(
-            #     join(profile_dir, "_template.yml"),
-            #     settings,
-            #     templates.get("_template", None),
-            #     shash,
-            # ):
-            #     fix_perms(join(profile_dir, "_template.yml"), ctx)
-            #     saved = True
-
             if not has_new and saved:
                 # We triggered the interrupt, clear
                 should_initialize.clear()
@@ -700,7 +680,7 @@ def main():
                 conf["hhd.settings.update_stable"] = False
                 conf["hhd.settings.update_beta"] = False
 
-                switch_priviledge(ctx, False)
+                switch_priviledge(ctx.uid)
                 try:
                     logger.info(f"Updating Handheld Daemon.")
                     if "venv" in exe_python:
@@ -777,7 +757,7 @@ def main():
                     err = f"Error while updating:\n{e}"
                     conf["hhd.settings.update_error"] = err
                     logger.error(err)
-                switch_priviledge(ctx, True)
+                switch_priviledge(0)
 
                 if updated:
                     should_exit.set()

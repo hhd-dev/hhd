@@ -10,8 +10,8 @@ import Xlib
 from Xlib import XK, X, Xatom, display, error
 from Xlib.ext.xtest import fake_input
 
-from hhd.plugins import Context, Emitter, Config
-from hhd.utils import restore_priviledge, switch_priviledge
+from hhd.plugins import Emitter, Config
+from hhd.utils import save_priviledge, restore_priviledge, switch_priviledge
 
 logger = logging.getLogger(__name__)
 
@@ -112,9 +112,9 @@ class QamHandlerGamescope:
                 pass
 
 
-def find_x11_auth(ctx: Context):
+def find_x11_auth(uid: int):
     # TODO: Fix hardcoding runtime dir
-    LOCATION = f"/run/user/{ctx.euid}"
+    LOCATION = f"/run/user/{uid}"
     for fn in sorted(os.listdir(LOCATION)):
         if (
             # KDE
@@ -125,10 +125,11 @@ def find_x11_auth(ctx: Context):
             return os.path.join(LOCATION, fn)
 
 
-def find_x11_display(ctx: Context):
+def find_x11_display():
     for fn in sorted(os.listdir(X11_DIR)):
-        if fn and os.stat(X11_DIR + fn).st_uid == ctx.euid:
-            return ":" + fn[1:].decode()
+        return ":" + fn[1:].decode(), os.stat(X11_DIR + fn).st_uid
+
+    return None, 0
 
 
 def get_gamescope_displays():
@@ -145,7 +146,7 @@ def get_gamescope_displays():
 
         fn = ln.split(b" ")[0]
         disp = ":" + fn[len(X11_DIR) + 1 :].decode()
-        out.append(disp)
+        out.append((disp, os.stat(fn).st_uid))
     return out
 
 
@@ -153,47 +154,52 @@ def is_gamescope_running():
     return bool(get_gamescope_displays())
 
 
-def get_overlay_display(displays: Sequence[str], ctx=None):
+def get_overlay_display(displays: Sequence[tuple[str, int]]):
     """Probes the provided gamescope displays to find the overlay one."""
 
     # FIXME: Fix authentication without priviledge deescalation
-    if ctx:
-        old = switch_priviledge(ctx, False)
-    else:
-        old = None
+    old = save_priviledge()
 
     try:
-        for disp in displays:
+        for disp, uid in displays:
             try:
+                restore_priviledge(old)
+                switch_priviledge(uid)
+
                 d = display.Display(disp)
 
                 atoms = [d.get_atom_name(v) for v in d.screen().root.list_properties()]
                 if "GAMESCOPE_FOCUSED_WINDOW" in atoms:
-                    return d, disp
+                    return d, disp, uid
 
                 d.close()
-            except Exception:
-                pass
+            except Exception as e:
+                import traceback
+
+                traceback.print_exc()
     finally:
-        if old:
-            restore_priviledge(old)
+        restore_priviledge(old)
 
 
 def apply_gamescope_config(display: display.Display, config: Config, prev: dict):
     apply = False
-    
+
     halfhz = config.get("steamui_halfhz", None)
     halfhz_rev = prev.get("steamui_halfhz", None)
     if halfhz is not None and halfhz != halfhz_rev:
         display.screen().root.change_property(
-            display.get_atom("GAMESCOPE_STEAMUI_HALFHZ"), Xatom.CARDINAL, 32, [int(halfhz)]
+            display.get_atom("GAMESCOPE_STEAMUI_HALFHZ"),
+            Xatom.CARDINAL,
+            32,
+            [int(halfhz)],
         )
         logger.info(f"Setting SteamUI halfhz to {halfhz}.")
         prev["steamui_halfhz"] = halfhz
         apply = True
-    
+
     if apply:
         display.flush()
+
 
 def find_wins(display: display.Display, win: list[str], atoms: list[str] = []):
     n = display.get_atom("WM_CLASS")
@@ -333,6 +339,7 @@ def process_events(disp):
     except Exception as e:
         logger.warning(f"Failed to process display events with error:\n{e}")
     return True
+
 
 def get_current_game(display):
     stat_game = display.get_atom("GAMESCOPE_FOCUSED_APP_GFX")
@@ -534,12 +541,12 @@ def monitor_gamescope(emit: Emitter, ctx, should_exit: TEvent):
     while not should_exit.is_set():
         # Wait for gamescope
         try:
-            res = get_overlay_display(get_gamescope_displays(), ctx)
+            res = get_overlay_display(get_gamescope_displays())
             if not res:
                 time.sleep(GAMESCOPE_WAIT)
                 continue
 
-            d, name = res
+            d, name, _ = res
             logger.info(f"Found gamescope display {name}")
             r = d.screen().root
             r.change_attributes(event_mask=X.PropertyChangeMask)

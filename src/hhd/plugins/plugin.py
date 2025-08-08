@@ -4,6 +4,8 @@ import os
 import subprocess
 from typing import Any, Literal, Mapping, NamedTuple, Protocol, Sequence, TypedDict
 
+from threading import Lock
+
 from hhd.controller import Axis, Button, Configuration, ControllerEmitter, SpecialEvent
 
 from .conf import Config
@@ -200,16 +202,33 @@ def get_context(user: str | None) -> Context | None:
         return None
 
 
-def switch_priviledge(p: Context, escalate=False):
+def get_gid(uid: int):
+    return int(
+        subprocess.run(
+            ["id", "-g", str(uid)], capture_output=True, check=True
+        ).stdout.decode()
+    )
+
+
+def switch_priviledge(nuid: int) -> tuple[int, int]:
     uid = os.geteuid()
     gid = os.getegid()
 
-    if escalate:
-        os.seteuid(p.uid)
-        os.setegid(p.gid)
-    else:
-        os.setegid(p.egid)
-        os.seteuid(p.euid)
+    ngid = get_gid(nuid)
+    if uid != nuid or gid != ngid:
+        os.seteuid(0)
+
+    if gid != ngid:
+        os.setegid(ngid)
+    if uid != nuid:
+        os.seteuid(nuid)
+
+    return uid, gid
+
+
+def save_priviledge() -> tuple[int, int]:
+    uid = os.geteuid()
+    gid = os.getegid()
 
     return uid, gid
 
@@ -224,7 +243,6 @@ def restore_priviledge(old: tuple[int, int]):
         pass
     os.seteuid(uid)
     os.setegid(gid)
-    pass
 
 
 def expanduser(path: str, user: int | str | Context | None = None):
@@ -284,49 +302,70 @@ def expanduser(path: str, user: int | str | Context | None = None):
     return (userhome + path[i:]) or root
 
 
-def fix_perms(fn: str, ctx: Context):
-    os.chown(fn, ctx.euid, ctx.egid)
+def get_steam_location(gamepadui: bool = True):
+    for p in os.listdir("/proc"):
+        try:
+            if not p.isdigit():
+                continue
+            with open(f"/proc/{p}/cmdline", "rb") as f:
+                cmd = f.read().split(b"\0")
+
+            steamp = False
+            for c in cmd[:2]:
+                if c.endswith(b"/steam"):
+                    steamp = c
+                    break
+            if not steamp:
+                continue
+            if gamepadui and b"-gamepadui" not in cmd:
+                continue
+
+            # We need the executable for shortpress to work, if it ends in .sh
+            # it will not. Moreover, flatpak resolving requires the ps path.
+            uid = os.stat(f"/proc/{p}/").st_uid
+            return expanduser(STEAM_EXE, uid), int(p), uid
+        except Exception:
+            pass
+    return None, None, None
+
+_run_lock = Lock()
+_running = False
 
 
-def is_steam_gamepad_running(ctx: Context | None, gamepadui: bool = True):
-    pid = None
-    try:
-        with open(expanduser(STEAM_PID, ctx)) as f:
-            pid = f.read().strip()
+def refresh_is_steam_running():
+    global _running
 
-        steam_cmd_path = f"/proc/{pid}/cmdline"
-        if not os.path.exists(steam_cmd_path):
-            return False
+    with _run_lock:
+        _running = get_steam_location()[0] is not None
 
-        # The command line is irrelevant if we just want to know if Steam is running.
-        if not gamepadui:
-            return True
 
-        # Use this and line to determine if Steam is running in DeckUI mode.
-        with open(steam_cmd_path, "rb") as f:
-            steam_cmd = f.read()
-        is_deck_ui = b"-gamepadui" in steam_cmd
-        if not is_deck_ui:
-            return False
-    except Exception:
+def is_steam_gamepad_running(gamepadui: bool = True) -> bool:
+    with _run_lock:
+        return _running
+
+
+def run_steam_command(command: str):
+    steam, _, uid = get_steam_location(False)
+
+    if steam is None or uid is None:
+        logger.error("Steam is not running or could not be found.")
         return False
-    return True
 
-
-def run_steam_command(command: str, ctx: Context):
-    global home_path
     try:
-        if ctx.euid != ctx.uid:
-            result = subprocess.run(
-                [
-                    "su",
-                    ctx.name,
-                    "-c",
-                    f"{expanduser(STEAM_EXE, ctx)} -ifrunning {command}",
-                ]
-            )
-        else:
-            result = subprocess.run([expanduser(STEAM_EXE, ctx), "-ifrunning", command])
+        gid = get_gid(uid)
+        result = subprocess.run(
+            [steam, "-ifrunning", command],
+            check=False,
+            user=uid,
+            group=gid,
+            env={
+                "HOME": expanduser("~", uid),
+            },
+        )
+
+        logger.info(
+            f"Running steam command `{[steam, "-ifrunning", command]}` with uid={uid} gid={gid} result: {result}"
+        )
 
         return result.returncode == 0
     except Exception as e:
@@ -334,26 +373,18 @@ def run_steam_command(command: str, ctx: Context):
     return False
 
 
-def open_steam_kbd(emit, open: bool = True):
-    return (
-        emit
-        and is_steam_gamepad_running(emit.ctx, False)
-        and run_steam_command(
-            f"steam://{'open' if open else 'close'}/keyboard", emit.ctx
-        )
-    )
+def open_steam_kbd(open: bool = True):
+    return run_steam_command(f"steam://{'open' if open else 'close'}/keyboard")
 
 
-def freeze_steam(freeze: bool, ctx: Context):
+def freeze_steam(freeze: bool):
     pid = None
     try:
         import signal
 
-        with open(expanduser(STEAM_PID, ctx)) as f:
-            pid = f.read().strip()
+        _, pid, _ = get_steam_location(False)
 
-        steam_cmd_path = f"/proc/{pid}/cmdline"
-        if not os.path.exists(steam_cmd_path):
+        if pid is None:
             return False
 
         os.kill(

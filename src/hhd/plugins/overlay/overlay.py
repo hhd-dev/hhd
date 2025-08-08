@@ -2,11 +2,11 @@ import os
 import shutil
 import subprocess
 
-from hhd.plugins import Context
+from hhd.plugins import Context, get_gid
 from hhd.utils import expanduser
 
 
-def find_overlay_exe(ctx: Context):
+def find_overlay_exe(uid: Context | int | None = None) -> str | None:
     INSTALLED_PATHS = ["hhd-ui.AppImage", "hhd-ui-dbg", "hhd-ui"]
 
     usr = os.environ.get("HHD_OVERLAY")
@@ -18,10 +18,11 @@ def find_overlay_exe(ctx: Context):
     # FIXME: Potential priviledge escalation attack!
     # Runs as the user in `inject_overlay`, so this should
     # not be the case. Will still be executed.
-    for fn in INSTALLED_PATHS:
-        local = shutil.which(fn, path=expanduser("~/.local/bin", ctx))
-        if local:
-            return local
+    if uid is not None:
+        for fn in INSTALLED_PATHS:
+            local = shutil.which(fn, path=expanduser("~/.local/bin", uid))
+            if local:
+                return local
 
     for fn in INSTALLED_PATHS:
         system = shutil.which(fn)
@@ -29,26 +30,26 @@ def find_overlay_exe(ctx: Context):
             return system
 
 
-def inject_overlay(fn: str, display: str, ctx: Context):
+def inject_overlay(fn: str, display: str, uid: int):
     out = subprocess.Popen(
         [fn],
-        env={"HOME": expanduser("~", ctx), "DISPLAY": display, "STEAM_OVERLAY": "1"},
+        env={"HOME": expanduser("~", uid), "DISPLAY": display, "STEAM_OVERLAY": "1"},
         text=True,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         preexec_fn=lambda: os.setpgrp(), # allow closing the overlay smoothly
-        user=ctx.euid,
-        group=ctx.egid,
+        user=uid,
+        group=get_gid(uid),
     )
     return out
 
 
-def launch_overlay_de(fn: str, display: str, auth: str | None, ctx: Context):
+def launch_overlay_de(fn: str, display: str, auth: str | None, uid: int, gid: int):
     out = subprocess.Popen(
         [fn],
         env={
-            "HOME": expanduser("~", ctx),
+            "HOME": expanduser("~", uid),
             "XAUTHORITY": auth or "",
             "DISPLAY": display,
             "HHD_MANAGED": "1",
@@ -57,8 +58,8 @@ def launch_overlay_de(fn: str, display: str, auth: str | None, ctx: Context):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        user=ctx.euid,
-        group=ctx.egid,
+        user=uid,
+        group=gid,
     )
     return out
 
@@ -66,12 +67,9 @@ def launch_overlay_de(fn: str, display: str, auth: str | None, ctx: Context):
 def get_overlay_version(fn: str, ctx: Context):
     return subprocess.run(
         [fn, "--version"],
-        env={"HOME": expanduser("~", ctx)},
         text=True,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        user=ctx.euid,
-        group=ctx.egid,
         timeout=5,
     ).stdout.strip()

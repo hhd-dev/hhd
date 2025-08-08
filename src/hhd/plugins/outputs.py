@@ -62,9 +62,7 @@ def get_outputs(
         correction = "stretch"
 
     # Run steam check for touchpad
-    steam_check = (
-        is_steam_gamepad_running(emit.ctx) if emit and desktop_disable else None
-    )
+    steam_check = is_steam_gamepad_running() if desktop_disable else None
     match steam_check:
         case True:
             logger.info("Gamepadui active. Activating touchpad emulation.")
@@ -262,8 +260,8 @@ def get_outputs(
             "rgb_zones": rgb_zones,
             "is_dual": False,
             "steam_check": steam_check,
-            "steam_check_fn": lambda: emit and is_steam_gamepad_running(emit.ctx),
-            "steam_kbd": lambda open: open_steam_kbd(emit, open),
+            "steam_check_fn": lambda: is_steam_gamepad_running(),
+            "steam_kbd": lambda open: open_steam_kbd(open),
             "nintendo_qam": nintendo_qam,
             "uses_motion": motion,
             "uses_dual_motion": dual_motion,

@@ -4,10 +4,11 @@ import os
 from hhd.plugins.plugin import (
     Context,
     expanduser,
-    fix_perms,
     get_context,
+    refresh_is_steam_running,
     is_steam_gamepad_running,
     freeze_steam,
+    save_priviledge,
     restore_priviledge,
     run_steam_command,
     switch_priviledge,
@@ -145,10 +146,11 @@ def get_ac_status(fn: str | None) -> bool | None:
 
 __all__ = [
     "get_os",
+    "refresh_is_steam_running",
     "is_steam_gamepad_running",
     "freeze_steam",
-    "fix_perms",
     "expanduser",
+    "save_priviledge",
     "restore_priviledge",
     "switch_priviledge",
     "get_context",

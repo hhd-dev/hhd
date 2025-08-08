@@ -46,6 +46,12 @@ SUPPORTED_DEVICES: Sequence[PowerButtonConfig] = [
         type="disabled",
     ),
     PBC(
+        "ROG Flow Z13",
+        "ROG Flow Z13",
+        type="only_press",
+        phys=["gpio-keys"],
+    ),
+    PBC(
         "AOKZOE A1",
         "AOKZOE A1 AR07",
         type="only_press",

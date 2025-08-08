@@ -76,14 +76,14 @@ def run_steam_shortpress(perms: Context):
         _supports_sleep = supports_sleep()
 
     if _supports_sleep:
-        return run_steam_command("steam://shortpowerpress", perms)
+        return run_steam_command("steam://shortpowerpress")
     else:
         emergency_hibernate(shutdown=False)
         return True
 
 
 def run_steam_longpress(perms: Context):
-    return run_steam_command("steam://longpowerpress", perms)
+    return run_steam_command("steam://longpowerpress")
 
 
 def power_button_run(cfg: PowerButtonConfig, ctx: Context, should_exit: Event, emit):
@@ -118,7 +118,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event,
     try:
         while not should_exit.is_set():
             # Initial check for steam
-            if not is_steam_gamepad_running(perms):
+            if not is_steam_gamepad_running():
                 # Close devices
                 if press_devs:
                     for d in press_devs:
@@ -131,7 +131,7 @@ def power_button_isa(cfg: PowerButtonConfig, perms: Context, should_exit: Event,
                     hold_dev.close()
                     hold_dev = None
                 logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamepad_running(perms):
+                while not is_steam_gamepad_running():
                     if should_exit.is_set():
                         return
                     sleep(STEAM_WAIT_DELAY)
@@ -192,7 +192,7 @@ def power_button_timer(
         pressed_time = None
         while not should_exit.is_set():
             # Initial check for steam
-            if not is_steam_gamepad_running(perms):
+            if not is_steam_gamepad_running():
                 # Close devices
                 if devs:
                     for d in devs:
@@ -202,7 +202,7 @@ def power_button_timer(
                         dev.close()
                         dev = None
                 logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamepad_running(perms):
+                while not is_steam_gamepad_running():
                     if should_exit.is_set():
                         return
                     sleep(STEAM_WAIT_DELAY)
@@ -288,13 +288,13 @@ def power_button_multidev(
     try:
         while not should_exit.is_set():
             # Initial check for steam
-            if not is_steam_gamepad_running(perms):
+            if not is_steam_gamepad_running():
                 for d in devs:
                     d.close()
                 devs = []
                 fds = []
                 logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamepad_running(perms):
+                while not is_steam_gamepad_running():
                     if should_exit.is_set():
                         return
                     sleep(STEAM_WAIT_DELAY)
