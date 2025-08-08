@@ -128,7 +128,7 @@ def main():
         "-u",
         "--user",
         default=None,
-        help="The user whose home directory will be used to store the files (~/.config/hhd).",
+        help="This argument has been deprecated. Handheld Daemon will always use /etc/hhd moving forward.",
         dest="user",
     )
     parser.add_argument(
@@ -141,7 +141,7 @@ def main():
     user = args.user
 
     # Setup temporary logger for permission retrieval
-    # ctx = get_context(user)
+    ctx_old = get_context(user)
     # if not ctx:
     #     print(f"Could not get user information. Exiting...")
     #     return
@@ -176,14 +176,6 @@ def main():
         except Exception:
             pass
 
-        # Remove old dir
-        try:
-            os.rename(
-                join(hhd_dir, "plugins"), join(hhd_dir, "plugins_old_USE_STATEYML")
-            )
-        except Exception:
-            pass
-
         set_log_plugin("main")
         setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
 
@@ -193,6 +185,31 @@ def main():
                 return
             else:
                 logger.error(f"Command '{args.command[0]}' is unknown. Ignoring...")
+
+        # Run a one time migration
+        # TODO: remove this e.g., after a year
+        try:
+            migrate_fn = join(hhd_dir, ".migrated")
+            state_fn = join(CONFIG_DIR, "state.yml")
+            if not os.path.isfile(migrate_fn) and not os.path.isfile(state_fn):
+                # Always touch migration file so we only run on a fresh install
+                with open(migrate_fn, "w") as f:
+                    f.write("")
+
+                for user in os.listdir("/home"):
+                    old_state = expanduser("~/.config/hhd/state.yml", ctx_old)
+                    if os.path.isfile(old_state):
+                        import shutil
+
+                        shutil.copy(old_state, state_fn)
+                        os.chmod(state_fn, 0o644)
+                        os.chown(state_fn, 0, 0)
+                        logger.warning(
+                            f"Migrated state file {old_state} to {state_fn}."
+                        )
+                        break
+        except Exception as e:
+            logger.error(f"Could not migrate state file. Error:\n{e}")
 
         # Get OS Info
         info["os"] = get_os()
