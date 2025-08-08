@@ -141,11 +141,10 @@ def main():
     user = args.user
 
     # Setup temporary logger for permission retrieval
-    ctx_old = get_context(user)
-    # if not ctx:
-    #     print(f"Could not get user information. Exiting...")
-    #     return
-    ctx = None
+    if user:
+        ctx = get_context(user)
+    else:
+        ctx = None
 
     detectors: dict[str, HHDAutodetect] = {}
     plugins: dict[str, Sequence[HHDPlugin]] = {}
@@ -197,7 +196,7 @@ def main():
                     f.write("")
 
                 for user in os.listdir("/home"):
-                    old_state = expanduser("~/.config/hhd/state.yml", ctx_old)
+                    old_state = expanduser("~/.config/hhd/state.yml", ctx)
                     if os.path.isfile(old_state):
                         import shutil
 
