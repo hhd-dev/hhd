@@ -2,22 +2,22 @@ import copy
 import os
 import subprocess
 from gettext import GNUTranslations, find
-from typing import Mapping, Sequence, cast
+from typing import Mapping, Sequence
 
-from hhd.plugins import Config, Context, HHDLocale, HHDSettings
+from hhd.plugins import Config, Context, HHDLocale, HHDSettings, get_gid
 
 _translations = {}
 
 
-def get_user_lang(ctx: Context):
-    if not ctx:
+def get_user_lang(uid: int):
+    if not uid:
         return None
     try:
         out = subprocess.check_output(
             ["sh", "-l", "-c", "locale"],
             env={},
-            user=ctx.euid,
-            group=ctx.egid,
+            user=uid,
+            group=get_gid(uid),
         )
         for ln in out.decode().split("\n"):
             if "LANG" in ln:

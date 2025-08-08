@@ -462,7 +462,6 @@ class HHDHTTPServer:
         profiles: Mapping[str, Config],
         emit: Emitter,
         locales: Sequence[HHDLocale],
-        ctx: Context,
     ):
         with self.cond:
             for handler in [self.handler, self.uhandler]:
@@ -472,10 +471,9 @@ class HHDHTTPServer:
                 handler.profiles = profiles
                 handler.emit = emit
                 handler.locales = locales
-                handler.ctx = ctx
             if not hasattr(self.handler, "user_lang"):
                 # Only load user lang once to avoid weirdness
-                self.handler.user_lang = get_user_lang(ctx)
+                self.handler.user_lang = None #get_user_lang(uid)
                 self.uhandler.user_lang = self.handler.user_lang
             self.cond.notify_all()
 

@@ -64,7 +64,7 @@ def launch_overlay_de(fn: str, display: str, auth: str | None, uid: int, gid: in
     return out
 
 
-def get_overlay_version(fn: str, ctx: Context):
+def get_overlay_version(fn: str):
     return subprocess.run(
         [fn, "--version"],
         text=True,

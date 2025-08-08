@@ -298,7 +298,7 @@ def main():
         emit = EmitHolder(cond, ctx, info)
         for p in sorted_plugins:
             set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-            p.open(emit, ctx)
+            p.open(emit, ctx) # type: ignore
             update_log_plugins()
         set_log_plugin("main")
 
@@ -402,7 +402,7 @@ def main():
 
                     exe = find_overlay_exe(ctx)
                     if exe:
-                        ver = get_overlay_version(exe, ctx)
+                        ver = get_overlay_version(exe)
                         conf["hhd.settings.version_ui"] = ver
                         logger.info(f"Overlay Version: {ver}")
                     else:
@@ -503,7 +503,7 @@ def main():
 
                 set_log_plugin("rest")
                 https = HHDHTTPServer(localhost, port, token)
-                https.update(settings, conf, info, profiles, emit, locales, ctx)
+                https.update(settings, conf, info, profiles, emit, locales)
                 try:
                     https.open()
                 except Exception as e:
@@ -666,7 +666,7 @@ def main():
             # Notify that events were applied
             # Before saving to reduce delay (yaml files take 100ms :( )
             if https:
-                https.update(settings, conf, info, profiles, emit, locales, ctx)
+                https.update(settings, conf, info, profiles, emit, locales)
 
             #
             # Save loop
@@ -710,7 +710,8 @@ def main():
                 conf["hhd.settings.update_stable"] = False
                 conf["hhd.settings.update_beta"] = False
 
-                switch_priviledge(ctx.uid)
+                if ctx:
+                    switch_priviledge(ctx.uid)
                 try:
                     logger.info(f"Updating Handheld Daemon.")
                     if "venv" in exe_python:
