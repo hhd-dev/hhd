@@ -16,7 +16,7 @@ from hhd.controller.physical.evdev import (
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
-from .const import DEFAULT_MAPPINGS, AYA3_INIT, get_cfg_commands
+from .const import DEFAULT_MAPPINGS, AYA3_INIT, AYA_CHECK, AYA_CUSTOM, get_cfg_commands
 
 
 def to_bytes(s: str):
@@ -39,7 +39,66 @@ KBD_PID = 0x0001
 AYA_VID = 0x1C4F
 AYA_PID = 0x0002
 
-AYA_TIMEOUT = 100
+AYA_TIMEOUT = 300
+AYA_ATTEMPTS = 3
+
+_reset = True
+
+
+def write_cmd(dev, r: bytes):
+    logger.info(f"Send: {r.hex()}")
+    dev.write(r)
+
+    # Read response
+    for _ in range(AYA_ATTEMPTS):
+        res = dev.read(timeout=AYA_TIMEOUT)
+        logger.info(f"Recv: {res.hex() if res else 'None'}")
+        # Match IDs
+        if res[3] == r[4]:
+            break
+
+    return res
+
+
+class Ayaneo3Hidraw(GenericGamepadHidraw):
+    def init(self):
+        # Perform standard initialization
+        for r in AYA3_INIT:
+            write_cmd(self.dev, to_bytes(r))
+
+        return write_cmd(self.dev, AYA_CHECK)
+
+    def switch_modes(self):
+        write_cmd(self.dev, AYA_CUSTOM)
+
+    def consume(self, events):
+        global _reset
+
+        if not self.dev:
+            return
+
+        for ev in events:
+            if ev["type"] != "led":
+                continue
+
+            mode = ev["mode"]
+
+            if mode not in ["disabled", "solid", "pulse", "rainbow"]:
+                logger.error(f"Invalid RGB mode: {mode}")
+                continue
+
+            cmds = get_cfg_commands(
+                rgb_mode=mode,
+                r=ev["red"],
+                g=ev["green"],
+                b=ev["blue"],
+                brightness=ev.get("brightness", 1),
+                reset=_reset,
+            )
+            _reset = False
+            for cmd in cmds:
+                write_cmd(self.dev, cmd)
+
 
 def plugin_run(
     conf: Config,
@@ -104,55 +163,6 @@ def plugin_run(
     # Unhide all devices before exiting and close keyboard cache
     UInputDevice.close_volume_cached()
     unhide_all()
-
-_reset = True
-
-class Ayaneo3Hidraw(GenericGamepadHidraw):
-    def open(self):
-        out = super().open()
-        if not out:
-            return out
-        if not self.dev:
-            return out
-
-        for r in AYA3_INIT:
-            r = to_bytes(r)
-            logger.info(f"Send: {r.hex()}")
-            self.dev.write(r)
-            res = self.dev.read(timeout=AYA_TIMEOUT)
-            logger.info(f"Recv: {res.hex() if res else 'None'}")
-        return out
-
-    def consume(self, events):
-        global _reset
-
-        if not self.dev:
-            return
-
-        for ev in events:
-            if ev["type"] != "led":
-                continue
-
-            mode = ev["mode"]
-
-            if mode not in ["disabled", "solid", "pulse", "rainbow"]:
-                logger.error(f"Invalid RGB mode: {mode}")
-                continue
-
-            cmds = get_cfg_commands(
-                rgb_mode=mode,
-                r=ev["red"],
-                g=ev["green"],
-                b=ev["blue"],
-                brightness=ev.get("brightness", 1),
-                reset=_reset,
-            )
-            _reset = False
-            for cmd in cmds:
-                logger.info(f"Send: {cmd.hex()}")
-                self.dev.write(cmd)
-                res = self.dev.read(timeout=AYA_TIMEOUT)
-                logger.info(f"Recv: {res.hex() if res else 'None'}")
 
 
 def controller_loop(
@@ -277,6 +287,12 @@ def controller_loop(
             if start_imu:
                 prepare(d_imu)
         prepare(d_vend)
+        res = d_vend.init()
+        # Custom mode is 2
+        # Xinput is 1
+        # KBD/Green mode is 3
+        if res[18] != 0x02:
+            d_vend.switch_modes()
         prepare(d_kbd_1)
         if d_kbd_2:
             prepare(d_kbd_2)
