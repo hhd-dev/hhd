@@ -74,23 +74,26 @@ def calculate_checksum_inplace(buf: bytes | list[int]):
     return pad(data)
 
 
-def get_cfg_commands(rgb_mode: str, r, g, b):
+def get_cfg_commands(rgb_mode: str, r, g, b, brightness: float):
     match rgb_mode:
         case "disabled":
-            mode = 1
-            r = g = b = 0
+            mode = 0xFF
         case "solid":
             mode = 1
         case "pulse":
             mode = 2
         case "rainbow":
             mode = 3
+            # This has issues
+            r, g, b = hsb_to_rgb(275, 100, min(int(brightness * 100), 100))
         case _:
             raise ValueError(f"Invalid RGB mode: {rgb_mode}")
     
-    h, s, v = rgb_to_hsb(r, g, b)
-    h = (h + 10) % 360  # Adjust hue slightly to color correct
-    r, g, b = hsb_to_rgb(h, s, v)
+    # Adjust hue slightly to color correct
+    if rgb_mode in ["solid", "pulse"]:
+        h, s, v = rgb_to_hsb(r, g, b)
+        h = (h + 10) % 360 
+        r, g, b = hsb_to_rgb(h, s, v)
 
     cmd = [
         # Random init bytes
@@ -138,4 +141,4 @@ def get_cfg_commands(rgb_mode: str, r, g, b):
         0x64,
         0x64,
     ]
-    return [calculate_checksum_inplace(cmd), pad([0x00, 0x00, 0x00, 0x08])]
+    return [calculate_checksum_inplace(cmd)]

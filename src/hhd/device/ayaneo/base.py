@@ -143,6 +143,7 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
                 r=ev["red"],
                 g=ev["green"],
                 b=ev["blue"],
+                brightness=ev.get("brightness", 1),
             )
             for cmd in cmds:
                 logger.info(f"Send: {cmd.hex()}")
