@@ -66,6 +66,28 @@ def hsb_to_rgb(h: int, s: int | float, v: int | float):
 
     return [int((v + m) * 255) for v in rgb]
 
+def rgb_to_hsb(r, g, b):
+    r /= 255
+    g /= 255
+    b /= 255
+
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    c = mx - mn
+
+    if c == 0:
+        h = 0
+    elif mx == r:
+        h = (60 * ((g - b) / c) + 360) % 360
+    elif mx == g:
+        h = (60 * ((b - r) / c) + 120) % 360
+    else:
+        h = (60 * ((r - g) / c) + 240) % 360
+
+    s = 0 if mx == 0 else c / mx
+    v = mx
+
+    return [int(h), int(s * 100), int(v * 100)]
 
 def get_os() -> str:
     if name := os.environ.get("HHD_DISTRO", None):

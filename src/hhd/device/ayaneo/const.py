@@ -1,4 +1,5 @@
 from hhd.controller import Axis
+from hhd.utils import rgb_to_hsb, hsb_to_rgb
 
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
@@ -61,3 +62,80 @@ AYA3_INIT = [
     "00000b07200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
     "00000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
 ]
+
+
+def pad(data: bytes | list[int], length: int = 64) -> bytes:
+    return bytes(data).ljust(length, b"\x00")
+
+
+def calculate_checksum_inplace(buf: bytes | list[int]):
+    data = bytearray(buf)
+    data[:2] = sum(data[6:]).to_bytes(2, byteorder="little")
+    return pad(data)
+
+
+def get_cfg_commands(rgb_mode: str, r, g, b):
+    match rgb_mode:
+        case "disabled":
+            mode = 1
+            r = g = b = 0
+        case "solid":
+            mode = 1
+        case "pulse":
+            mode = 2
+        case "rainbow":
+            mode = 3
+        case _:
+            raise ValueError(f"Invalid RGB mode: {rgb_mode}")
+    
+    h, s, v = rgb_to_hsb(r, g, b)
+    h = (h + 10) % 360  # Adjust hue slightly to color correct
+    r, g, b = hsb_to_rgb(h, s, v)
+
+    cmd = [
+        # Random init bytes
+        0xDE,
+        0x03,
+        # Command
+        0x21,
+        0x09,
+        # Unknown
+        0x00,
+        0x00,
+        0x00,
+        # Right RGB, mode, color
+        mode,
+        r,
+        g,
+        b,
+        # Left RGB, mode, color
+        mode,
+        r,
+        g,
+        b,
+        # Uknown
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x33,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x01,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x64,
+        0x64,
+    ]
+    return [calculate_checksum_inplace(cmd), pad([0x00, 0x00, 0x00, 0x08])]

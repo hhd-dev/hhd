@@ -14,10 +14,9 @@ from hhd.controller.physical.evdev import (
     XBOX_BUTTON_MAP,
 )
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
-from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
-from .const import DEFAULT_MAPPINGS, AYA3_INIT
+from .const import DEFAULT_MAPPINGS, AYA3_INIT, get_cfg_commands
 
 
 def to_bytes(s: str):
@@ -105,6 +104,7 @@ def plugin_run(
     UInputDevice.close_volume_cached()
     unhide_all()
 
+
 class Ayaneo3Hidraw(GenericGamepadHidraw):
     def open(self):
         out = super().open()
@@ -124,6 +124,33 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
                 pass
         return out
 
+    def consume(self, events):
+        if not self.dev:
+            return
+
+        for ev in events:
+            if ev["type"] != "led":
+                continue
+
+            mode = ev["mode"]
+
+            if mode not in ["disabled", "solid", "pulse", "rainbow"]:
+                logger.error(f"Invalid RGB mode: {mode}")
+                continue
+
+            cmds = get_cfg_commands(
+                rgb_mode=mode,
+                r=ev["red"],
+                g=ev["green"],
+                b=ev["blue"],
+            )
+            for cmd in cmds:
+                logger.info(f"Send: {cmd.hex()}")
+                self.dev.write(cmd)
+                res = self.dev.read(timeout=50)
+                logger.info(f"Recv: {res.hex() if res else 'None'}")
+
+
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
 ):
@@ -137,8 +164,11 @@ def controller_loop(
         None,
         dgyro and conf["imu"].to(bool),
         emit=emit,
-        rgb_modes={"disabled": [], "solid": ["color"]} if is_led_supported() else None,
-        rgb_resets_on_ac=is_led_supported(),
+        rgb_modes=(
+            {"disabled": [], "solid": ["color"], "pulse": ["color"], "rainbow": []}
+            if dconf.get("rgb", False)
+            else None
+        ),
     )
     motion = d_params.get("uses_motion", True)
 
@@ -189,7 +219,7 @@ def controller_loop(
         vid=[AYA_VID],
         pid=[AYA_PID],
         required=True,
-        application=[0xff000001],
+        application=[0xFF000001],
     )
 
     kargs = {}
@@ -270,6 +300,8 @@ def controller_loop(
 
                 d_xinput.consume(evs)
 
+            if d_vend:
+                d_vend.consume(evs)
             for d in d_outs:
                 d.consume(evs)
 
