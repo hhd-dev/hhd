@@ -117,11 +117,6 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             r = to_bytes(r)
             logger.info(f"Send: {r.hex()}")
             self.dev.write(r)
-            try:
-                res = self.dev.read(timeout=50)
-                logger.info(f"Recv: {res.hex() if res else 'None'}")
-            except Exception as e:
-                pass
         return out
 
     def consume(self, events):
