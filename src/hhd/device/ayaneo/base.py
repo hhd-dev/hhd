@@ -39,6 +39,7 @@ KBD_PID = 0x0001
 AYA_VID = 0x1C4F
 AYA_PID = 0x0002
 
+AYA_TIMEOUT = 100
 
 def plugin_run(
     conf: Config,
@@ -104,6 +105,7 @@ def plugin_run(
     UInputDevice.close_volume_cached()
     unhide_all()
 
+_reset = True
 
 class Ayaneo3Hidraw(GenericGamepadHidraw):
     def open(self):
@@ -117,9 +119,13 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             r = to_bytes(r)
             logger.info(f"Send: {r.hex()}")
             self.dev.write(r)
+            res = self.dev.read(timeout=AYA_TIMEOUT)
+            logger.info(f"Recv: {res.hex() if res else 'None'}")
         return out
 
     def consume(self, events):
+        global _reset
+
         if not self.dev:
             return
 
@@ -139,11 +145,13 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
                 g=ev["green"],
                 b=ev["blue"],
                 brightness=ev.get("brightness", 1),
+                reset=_reset,
             )
+            _reset = False
             for cmd in cmds:
                 logger.info(f"Send: {cmd.hex()}")
                 self.dev.write(cmd)
-                res = self.dev.read(timeout=50)
+                res = self.dev.read(timeout=AYA_TIMEOUT)
                 logger.info(f"Recv: {res.hex() if res else 'None'}")
 
 
