@@ -8,12 +8,21 @@ from hhd.controller import DEBUG_MODE, Multiplexer
 from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs, XBOX_BUTTON_MAP
+from hhd.controller.physical.evdev import (
+    GenericGamepadEvdev,
+    enumerate_evs,
+    XBOX_BUTTON_MAP,
+)
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
-from .const import DEFAULT_MAPPINGS
+from .const import DEFAULT_MAPPINGS, AYA3_INIT
+
+
+def to_bytes(s: str):
+    return bytes.fromhex(s.replace(" ", ""))
+
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
@@ -28,8 +37,9 @@ GAMEPAD_PID = 0x028E
 KBD_VID = 0x0001
 KBD_PID = 0x0001
 
-AYA_VID = 0x1c4f
+AYA_VID = 0x1C4F
 AYA_PID = 0x0002
+
 
 def plugin_run(
     conf: Config,
@@ -95,6 +105,24 @@ def plugin_run(
     UInputDevice.close_volume_cached()
     unhide_all()
 
+class Ayaneo3Hidraw(GenericGamepadHidraw):
+    def open(self):
+        out = super().open()
+        if not out:
+            return out
+        if not self.dev:
+            return out
+
+        for r in AYA3_INIT:
+            r = to_bytes(r)
+            logger.info(f"Send: {r.hex()}")
+            self.dev.write(r)
+            try:
+                res = self.dev.read(timeout=50)
+                logger.info(f"Recv: {res.hex() if res else 'None'}")
+            except Exception as e:
+                pass
+        return out
 
 def controller_loop(
     conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
@@ -153,7 +181,15 @@ def controller_loop(
             EC("KEY_F24"): "keyboard",
             EC("KEY_F21"): "extra_l2",
             EC("KEY_F22"): "extra_r2",
+            EC("KEY_L"): "extra_l1",
+            EC("KEY_R"): "extra_r1",
         },
+    )
+    d_vend = Ayaneo3Hidraw(
+        vid=[AYA_VID],
+        pid=[AYA_PID],
+        required=True,
+        application=[0xff000001],
     )
 
     kargs = {}
@@ -206,6 +242,7 @@ def controller_loop(
                 start_imu = d_timer.open()
             if start_imu:
                 prepare(d_imu)
+        prepare(d_vend)
         prepare(d_kbd_1)
         if d_kbd_2:
             prepare(d_kbd_2)
