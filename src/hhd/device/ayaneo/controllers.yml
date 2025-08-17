@@ -1,0 +1,59 @@
+type: container
+tags: [lgc]
+title: AyaNeo Controller
+hint: >-
+  Allows for configuring your handheld's controller to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse your device's features.
+
+  swap_guide:
+    type: multiple
+    title: Aya Button Map (Left, Right)
+    tags: [non-essential]
+    hint: >-
+      Swaps the Guide and QAM buttons with start and select.
+    options:
+      oem: Start/Select, Guide/QAM
+      traditional: Guide/Select, Start/QAM
+      traditional_rev: Guide/Select, Start/QAM
+
+  #
+  # Common settings
+  #
+  imu:
+    type: bool
+    title: Motion Support
+    hint: >-
+      Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
+    default: True
+
+  imu_hz:
+    type: discrete
+    title: Motion Hz
+    tags: [ non-essential ]
+    hint: >-
+      Sets the sampling frequency for the IMU.
+    options: [100, 200, 400, 800]
+    default: 400
+  
+  imu_axis:
+
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+
+  select_reboots:
+    type: bool
+    tags: [non-essential]
+    title: Hold View to Reboot
+    default: False

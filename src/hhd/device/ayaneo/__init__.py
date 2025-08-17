@@ -1,7 +1,6 @@
 from threading import Event, Thread
-from typing import Any, Sequence
+from typing import Sequence
 
-from hhd.controller.physical.rgb import is_led_supported
 from hhd.plugins import (
     Config,
     Context,
@@ -13,11 +12,11 @@ from hhd.plugins import (
 )
 from hhd.plugins.settings import HHDSettings
 
-from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
+from .const import CONFS, DEFAULT_MAPPINGS
 
 
-class GenericControllersPlugin(HHDPlugin):
-    name = "generic_controllers"
+class AyaneoControllersPlugin(HHDPlugin):
+    name = "ayaneo_controllers"
     priority = 18
     log = "genc"
 
@@ -46,9 +45,9 @@ class GenericControllersPlugin(HHDPlugin):
         base["controllers"]["handheld"]["children"]["controller_mode"].update(
             get_outputs_config(
                 can_disable=True,
-                has_leds=is_led_supported(),
+                has_leds=self.dconf.get("rgb", False),
                 start_disabled=self.dconf.get("untested", False),
-                extra_buttons=self.dconf.get("extra_buttons", "dual"),
+                extra_buttons=self.dconf.get("extra_buttons", "quad"),
             )
         )
 
@@ -116,24 +115,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     dconf = CONFS.get(dmi, None)
     if dconf:
-        return [GenericControllersPlugin(dmi, dconf)]
-
-    try:
-        with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
-            vendor = f.read().strip().lower()
-        if vendor == "ayn" or vendor == "tectoy":
-            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYN"))]
-    except Exception:
-        pass
-
-    # Fallback to chassis vendor for aya
-    try:
-        with open("/sys/class/dmi/id/board_vendor") as f:
-            vendor = f.read().lower().strip()
-
-        if "ayaneo" in vendor and 'AYANEO 3' not in dmi:
-            return [GenericControllersPlugin(dmi, get_default_config(dmi, "AYA"))]
-    except Exception:
-        return []
+        return [AyaneoControllersPlugin(dmi, dconf)]
 
     return []
