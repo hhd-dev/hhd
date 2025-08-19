@@ -187,6 +187,51 @@ def plugin_run(
     unhide_all()
 
 
+class OxpAtKbd(GenericGamepadEvdev):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            *args,
+            **kwargs,
+        )
+        self.queued = []
+
+    def produce(self, fds):
+        evs = list(super().produce(fds))
+        curr = time.perf_counter()
+
+        if evs:
+            rem = []
+            for i, ev in enumerate(evs):
+                if ev["type"] == "button" and ev["code"] in (
+                    "mode",
+                    "keyboard",
+                    "share",
+                ):
+                    if ev["value"]:
+                        # Remove unqueue if re-pressed
+                        rem2 = []
+                        for i, chk in enumerate(self.queued):
+                            ce = chk[1]
+                            if ce["type"] == "button" and ce["code"] == ev["code"]:
+                                rem2.append(i)
+                        for i in reversed(rem2):
+                            del self.queued[i]
+                    else:
+                        # Queue the event
+                        self.queued.append((curr + 0.2, ev))
+                        rem.append(i)
+
+            # Remove events that are queued
+            for i in reversed(rem):
+                del evs[i]
+
+        # Queue events
+        while self.queued and self.queued[0][0] < curr:
+            evs.append(self.queued.pop(0)[1])
+
+        return evs
+
+
 def find_vendor(prepare, turbo, protocol: str | None):
     d_ser = SerialDevice(turbo=turbo, required=True)
     d_hidraw = OxpHidraw(
@@ -290,7 +335,7 @@ def turbo_loop(
         controller_disabled=True,
     )
 
-    d_kbd_1 = GenericGamepadEvdev(
+    d_kbd_1 = OxpAtKbd(
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
@@ -305,7 +350,7 @@ def turbo_loop(
     qam_no_release = False
     if conf.get("turbo_reboots", False):
         share_reboots = True
-    
+
     if not dconf.get("g1", False):
         match conf.get("extra_buttons", "separate"):
             case "separate":
@@ -410,6 +455,9 @@ def turbo_loop(
                 if d_id in to_run or d_id in d_vend_id:
                     evs.extend(d.produce(r))
 
+            # Read delayed events
+            evs.extend(d_kbd_1.produce([]))
+
             evs = multiplexer.process(evs)
             if evs:
                 if debug:
@@ -486,7 +534,7 @@ def controller_loop(
     else:
         mappings = BTN_MAPPINGS_NONTURBO
 
-    d_kbd_1 = GenericGamepadEvdev(
+    d_kbd_1 = OxpAtKbd(
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
@@ -614,6 +662,9 @@ def controller_loop(
                 d_id = id(d)
                 if d_id in to_run or d_id in d_vend_id:
                     evs.extend(d.produce(r))
+
+            # Read delayed events
+            evs.extend(d_kbd_1.produce([]))
 
             evs = multiplexer.process(evs)
             if evs:
