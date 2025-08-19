@@ -218,7 +218,7 @@ class OxpAtKbd(GenericGamepadEvdev):
                             del self.queued[i]
                     else:
                         # Queue the event
-                        self.queued.append((curr + 0.2, ev))
+                        self.queued.append((curr + 0.13, ev))
                         rem.append(i)
 
             # Remove events that are queued
