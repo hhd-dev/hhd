@@ -53,8 +53,8 @@ OXP_2_CONF = {
     **ONEX_DEFAULT_CONF,
     "protocol": "mixed",
     "rgb": False,
-    "buttons": "none",
     "protocol": "none",  # explicitly disable
+    "extra_buttons": "none",
 }
 AOKZOE_CONF = {
     "name": "AOKZOE A1",
@@ -62,6 +62,7 @@ AOKZOE_CONF = {
     "protocol": "none",
     "rgb": False,
     "aok": True,
+    "extra_buttons": "none",
 }
 
 CONFS = {
@@ -73,6 +74,7 @@ CONFS = {
         "hrtimer": True,
         "protocol": "hid_v2",
         "aok": True,
+        "extra_buttons": "none",
     },
     # Onexplayer
     "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
