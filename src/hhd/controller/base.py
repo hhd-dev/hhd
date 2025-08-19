@@ -176,6 +176,7 @@ class RgbCapabilities(TypedDict):
     modes: dict[RgbMode, Sequence[RgbSettings]] | None
     controller: bool
     resets_on_ac: bool
+    init_times: NotRequired[int | None]
     zones: RgbZones
 
 
@@ -254,8 +255,9 @@ class ControllerEmitter:
                     )
                     self.grab(False)
                     return False
-                elif evs and self._controller_cb:
-                    self._controller_cb(cid, evs)
+                elif self._controller_cb:
+                    if evs:
+                        self._controller_cb(cid, evs)
                     return True
                 else:
                     return False
@@ -666,6 +668,7 @@ class Multiplexer:
                     "controller": uses_rgb,
                     "zones": rgb_zones,
                     "resets_on_ac": params.get("rgb_resets_on_ac", False),
+                    "init_times": params.get("rgb_init_times", None),
                 }
             self.emit.set_capabilities(
                 self.unique,

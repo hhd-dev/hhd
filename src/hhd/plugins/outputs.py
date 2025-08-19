@@ -41,6 +41,7 @@ def get_outputs(
     rgb_resets_on_ac: bool = False,
     controller_disabled: bool = False,
     touchpad_enable: Literal["disabled", "gamemode", "always"] | None = None,
+    rgb_init_times: int | None = None,
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -269,6 +270,7 @@ def get_outputs(
             "has_qam": has_qam,
             "supports_qam": not controller_disabled and controller != "hidden",
             "rgb_resets_on_ac": rgb_resets_on_ac,
+            "rgb_init_times": rgb_init_times,
         },
     )
 
