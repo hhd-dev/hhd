@@ -105,11 +105,6 @@ class GenericControllersPlugin(HHDPlugin):
             self.dconf.get("mapping", DEFAULT_MAPPINGS)
         )
 
-        if not self.dconf.get("x1", False):
-            del base["controllers"]["oxp"]["children"]["volume_reverse"]
-            # Maybe it is helpful for OneXFly users
-            # del base["controllers"]["oxp"]["children"]["swap_face"]
-
         if not self.turbo:
             del base["controllers"]["oxp"]["children"]["extra_buttons"]
             del base["controllers"]["oxp"]["children"]["turbo_reboots"]
