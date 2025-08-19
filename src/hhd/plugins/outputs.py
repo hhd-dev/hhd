@@ -291,6 +291,7 @@ def get_outputs_config(
             del s["modes"]["dualsense"]["children"]["paddles_as"]
             del s["modes"]["uinput"]["children"]["paddles_as"]
             del s["modes"]["hidden"]["children"]["noob_mode"]
+            del s["modes"]["hori_steam"]["children"]["noob_mode"]
             del s["modes"]["xbox_elite"]
         elif extra_buttons == "dual":
             del s["modes"]["dualsense"]["children"]["paddles_as"]["options"]["both"]
