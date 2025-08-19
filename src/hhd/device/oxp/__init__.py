@@ -13,6 +13,7 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.i18n import _
 
 from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
 
@@ -104,6 +105,9 @@ class GenericControllersPlugin(HHDPlugin):
         base["controllers"]["oxp"]["children"]["imu_axis"] = get_gyro_config(
             self.dconf.get("mapping", DEFAULT_MAPPINGS)
         )
+
+        if self.dconf.get("aok", False):
+            base["controllers"]["oxp"]["title"] = _("AOKZOE Controller")
 
         if not self.turbo:
             del base["controllers"]["oxp"]["children"]["extra_buttons"]

@@ -61,6 +61,7 @@ AOKZOE_CONF = {
     "hrtimer": True,
     "protocol": "none",
     "rgb": False,
+    "aok": True,
 }
 
 CONFS = {
@@ -71,6 +72,7 @@ CONFS = {
         "name": "AOKZOE A1X",
         "hrtimer": True,
         "protocol": "hid_v2",
+        "aok": True,
     },
     # Onexplayer
     "ONE XPLAYER": {"name": "ONE XPLAYER", **ONEX_DEFAULT_CONF},
