@@ -1,5 +1,5 @@
 type: container
-tags: [lgc]
+tags: [lgc, hide_title]
 title: Magic Modules
 
 children:

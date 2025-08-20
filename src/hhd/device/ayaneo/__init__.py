@@ -43,14 +43,20 @@ class AyaneoControllersPlugin(HHDPlugin):
 
     def settings(self) -> HHDSettings:
         if self.magic_modules:
-            base = {"controllers": {
-                "magic_modules": load_relative_yaml("modules.yml"),
-                "ayaneo": load_relative_yaml("controllers.yml"),
-            }}
+            base = {
+                "controllers": {
+                    "ayaneo": load_relative_yaml("controllers.yml"),
+                },
+                "magic_modules": {
+                    "magic_modules": load_relative_yaml("modules.yml"),
+                },
+            }
         else:
-            base = {"controllers": {
-                "ayaneo": load_relative_yaml("controllers.yml"),
-            }}
+            base = {
+                "controllers": {
+                    "ayaneo": load_relative_yaml("controllers.yml"),
+                }
+            }
 
         base["controllers"]["ayaneo"]["children"]["controller_mode"].update(
             get_outputs_config(
@@ -75,23 +81,29 @@ class AyaneoControllersPlugin(HHDPlugin):
         new_conf = conf["controllers.ayaneo"]
 
         if self.magic_modules:
-            pop_both = conf.get_action("controllers.magic_modules.pop_both")
-            pop_left = conf.get_action("controllers.magic_modules.pop_left")
-            pop_right = conf.get_action("controllers.magic_modules.pop_right")
-            reset = conf.get_action("controllers.magic_modules.reset")
+            pop_both = conf.get_action("magic_modules.magic_modules.pop_both")
+            pop_left = conf.get_action("magic_modules.magic_modules.pop_left")
+            pop_right = conf.get_action("magic_modules.magic_modules.pop_right")
+            reset = conf.get_action("magic_modules.magic_modules.reset")
         else:
             pop_both = False
             pop_left = False
             pop_right = False
             reset = False
 
-        if new_conf == self.prev and not pop_both and not pop_left and not pop_right and not reset:
+        if (
+            new_conf == self.prev
+            and not pop_both
+            and not pop_left
+            and not pop_right
+            and not reset
+        ):
             return
         if self.prev is None:
             self.prev = new_conf
         else:
             self.prev.update(new_conf.conf)
-        
+
         if pop_both:
             pop = "both"
         elif pop_left:

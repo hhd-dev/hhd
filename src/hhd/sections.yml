@@ -2,6 +2,7 @@ sections:
   tdp: TDP
   rgb: RGB
   controllers: Controller
+  magic_modules: Modules
   wincontrols: WinControls
   gamemode: General
   updates: Updates
