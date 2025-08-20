@@ -115,7 +115,14 @@ class QamHandlerGamescope:
 def find_x11_auth(uid: int):
     # TODO: Fix hardcoding runtime dir
     LOCATION = f"/run/user/{uid}"
-    for fn in sorted(os.listdir(LOCATION)):
+    
+    try:
+        files = sorted(os.listdir(LOCATION))
+    except FileNotFoundError:
+        logger.warning(f"Could not find X11 auth files in {LOCATION}.")
+        return None
+
+    for fn in files:
         if (
             # KDE
             fn.startswith("xauth_")
@@ -126,7 +133,9 @@ def find_x11_auth(uid: int):
 
 
 def find_x11_display():
-    for fn in sorted(os.listdir(X11_DIR)):
+    for fn in reversed(sorted(os.listdir(X11_DIR))):
+        if not fn.startswith(b"X"):
+            continue
         return ":" + fn[1:].decode(), os.stat(X11_DIR + fn).st_uid
 
     return None, 0
