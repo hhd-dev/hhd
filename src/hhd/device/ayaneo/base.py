@@ -77,6 +77,11 @@ def write_cmd(dev, r: bytes):
 
 
 class Ayaneo3Hidraw(GenericGamepadHidraw):
+
+    def __init__(self, *args, vibration: str, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.vibration = vibration
+
     def init(self):
         if not self.dev:
             return
@@ -98,6 +103,7 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             reset=reset,
             eject_left=left,
             eject_right=right,
+            vibration=self.vibration, # type: ignore[call-arg]
         )
         for cmd in cmds:
             write_cmd(self.dev, cmd)
@@ -166,7 +172,7 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             if mode not in ["disabled", "solid", "pulse", "rainbow"]:
                 logger.error(f"Invalid RGB mode: {mode}")
                 continue
-            
+
             # Only send RGB command if colors change
             got_rgb = (
                 _cfg["mode"] != mode
@@ -252,6 +258,7 @@ def plugin_run(
                 pid=[AYA_PID],
                 required=True,
                 application=[0xFF000001],
+                vibration=conf.get("vibration", "medium"),
             )
             try:
                 d_vend.open()
@@ -384,6 +391,7 @@ def controller_loop(
         pid=[AYA_PID],
         required=True,
         application=[0xFF000001],
+        vibration=conf.get("vibration", "medium"),
     )
 
     kargs = {}

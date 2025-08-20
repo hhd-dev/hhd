@@ -1,5 +1,7 @@
+from typing import Literal
+
 from hhd.controller import Axis
-from hhd.utils import rgb_to_hsb, hsb_to_rgb
+from hhd.utils import hsb_to_rgb, rgb_to_hsb
 
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
@@ -88,6 +90,7 @@ def get_cfg_commands(
     eject_left: bool = False,
     eject_right: bool = False,
     reset: bool = False,
+    vibration: Literal["disabled", "low", "medium", "high"] = "medium",
 ):
     match rgb_mode:
         case "disabled":
@@ -115,6 +118,21 @@ def get_cfg_commands(
         ccmd = 0x88
     if eject_left or eject_right:
         ccmd = (0x07 if eject_left else 0x00) + (0x70 if eject_right else 0x00)
+
+    match vibration:
+        case "low":
+            c_vibration = 0x01
+        case "medium":
+            c_vibration = 0x02
+        case "high":
+            c_vibration = 0x03
+        case _:  # "disabled":
+            c_vibration = 0x04
+
+    # Joystick sensitivity
+    # 50-100-150% 1-3
+    # Right, Left
+    c_joysens = 0x22
 
     cmd = [
         # Report id
@@ -147,8 +165,8 @@ def get_cfg_commands(
         ccmd,
         0x00,
         0x33,
-        0x00,
-        0x00,
+        c_joysens,
+        c_vibration << 4,
         0x00,
         0x00,
         0x00,

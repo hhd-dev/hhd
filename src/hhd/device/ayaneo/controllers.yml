@@ -12,18 +12,6 @@ children:
     hint: >-
       Emulate different controller types to fuse your device's features.
 
-  swap_guide:
-    type: multiple
-    title: Aya Button Map (Left, Right)
-    tags: [non-essential]
-    hint: >-
-      Swaps the Guide and QAM buttons with start and select.
-    options:
-      oem: Default (Select/Start, Guide/QAM)
-      traditional: Traditional (Guide/Select, Start/QAM)
-      traditional_rev: Traditional Rev. (Select/Guide, QAM/Start)
-    default: oem
-
   #
   # Common settings
   #
@@ -44,6 +32,29 @@ children:
     default: 400
   
   imu_axis:
+
+  swap_guide:
+    type: multiple
+    title: Aya Button Map (Left, Right)
+    tags: [non-essential]
+    hint: >-
+      Swaps the Guide and QAM buttons with start and select.
+    options:
+      oem: Default (Select/Start, Guide/QAM)
+      traditional: Traditional (Guide/Select, Start/QAM)
+      traditional_rev: Traditional Rev. (Select/Guide, QAM/Start)
+    default: oem
+
+  vibration:
+    type: multiple
+    title: Vibration
+    tags: [non-essential, ordinal]
+    options:
+      disabled: "Off"
+      low: Low
+      medium: Medium
+      high: High
+    default: medium
 
   nintendo_mode:
     type: bool
