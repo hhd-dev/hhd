@@ -106,13 +106,13 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
         self.send_cfg(reset=True)
         self.send_cfg(reset=False)
 
-    def check(self):
+    def check(self, init=False):
         res = write_cmd(self.dev, AYA_CHECK)
-        # if res and res[19] != 0:
-        #     logger.error("Controller modules are inconsistent. Going into eject routine.")
-        #     self.handle_eject(True)
-        # el
+        # if res and res[38] == 2:
+        #     logger.warning("Green mode. Going into eject routine.")
+        #     self.eject(True, True)
         if res and res[18] == 1:
+            logger.info("Switching into custom mode.")
             time.sleep(1)
             write_cmd(self.dev, AYA_CUSTOM)
             time.sleep(2)
