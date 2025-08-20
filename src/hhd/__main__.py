@@ -55,6 +55,7 @@ from .utils import (
 logger = logging.getLogger(__name__)
 
 CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "/etc/hhd")
+TOKEN_FILE = os.environ.get("HHD_TOKEN_FILE", "/tmp/hhd/token")
 PLUGIN_WHITELIST = os.environ.get("HHD_PLUGINS", "")
 
 ERROR_DELAY = 5
@@ -108,10 +109,8 @@ def get_wakeup_count():
 
 
 def print_token(ctx):
-    token_fn = join(CONFIG_DIR, "token")
-
     try:
-        with open(token_fn, "r") as f:
+        with open(TOKEN_FILE, "r") as f:
             token = f.read().strip()
 
         logger.info(f'Current HHD token (for user "{ctx.name}") is: "{token}"')
@@ -304,7 +303,7 @@ def main():
 
         # Compile initial configuration
         state_fn = join(CONFIG_DIR, "state.yml")
-        token_fn = join(CONFIG_DIR, "token")
+        token_fn = join(CONFIG_DIR, ".token")
         settings: HHDSettings = {}
         shash = None
 
@@ -483,8 +482,8 @@ def main():
                 localhost = http_cfg["localhost"].to(bool)
                 use_token = http_cfg["token"].to(bool)
 
-                # Generate security token
                 if use_token:
+                    # Generate security token
                     if not os.path.isfile(token_fn):
                         import hashlib
                         import random
@@ -498,6 +497,14 @@ def main():
                     else:
                         with open(token_fn, "r") as f:
                             token = f.read().strip()
+                    
+                    # Save the token to an ephemeral dir
+                    os.makedirs(
+                        os.path.dirname(TOKEN_FILE), exist_ok=True
+                    )
+                    with open(TOKEN_FILE, "w") as f:
+                        os.chmod(TOKEN_FILE, 0o644)
+                        f.write(token)
                 else:
                     token = None
 
