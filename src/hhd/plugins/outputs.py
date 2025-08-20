@@ -281,6 +281,7 @@ def get_outputs_config(
     start_disabled: bool = False,
     default_device: str | None = None,
     extra_buttons: Literal["none", "dual", "quad"] = "dual",
+    noob_default: bool = True,
 ):
     s = load_relative_yaml("outputs.yml")
     try:
@@ -288,6 +289,10 @@ def get_outputs_config(
             del s["modes"]["disabled"]
         if not has_leds:
             del s["modes"]["dualsense"]["children"]["led_support"]
+
+        if not noob_default:
+            s["modes"]["hidden"]["children"]["noob_mode"]["default"] = False
+            s["modes"]["uinput"]["children"]["paddles_as"]["default"] = "steam_input"
 
         if extra_buttons == "none":
             del s["modes"]["dualsense"]["children"]["paddles_as"]

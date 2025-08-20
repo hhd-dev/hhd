@@ -64,6 +64,7 @@ class AyaneoControllersPlugin(HHDPlugin):
                 has_leds=self.dconf.get("rgb", False),
                 start_disabled=self.dconf.get("untested", False),
                 extra_buttons=self.dconf.get("extra_buttons", "quad"),
+                noob_default=False,
             )
         )
 
