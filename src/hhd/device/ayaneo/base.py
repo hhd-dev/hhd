@@ -141,6 +141,9 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
                 f.write("off")
             time.sleep(0.5)
             logger.info("Controller power turned off.")
+        else:
+            logger.warning("Kernel driver for modules is missing. Sleeping.")
+            os.system("systemctl suspend")
 
         if throw:
             raise RuntimeError("Turned off controller. Restarting.")
