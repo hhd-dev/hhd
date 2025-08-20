@@ -60,13 +60,15 @@ CONTROLLER_MODULES = "/sys/class/firmware-attributes/ayaneo-ec/attributes/contro
 
 
 def write_cmd(dev, r: bytes):
-    logger.info(f"Send: {r[1:].hex()}")
+    if DEBUG_MODE:
+        logger.info(f"Send: {r[1:].hex()}")
     dev.write(r)
 
     # Read response
     for _ in range(AYA_ATTEMPTS):
         res = dev.read(timeout=AYA_TIMEOUT)
-        logger.info(f"Recv: {res.hex() if res else 'None'}")
+        if DEBUG_MODE:
+            logger.info(f"Recv: {res.hex() if res else 'None'}")
         # Match IDs
         if res and res[3] == r[4]:
             break
