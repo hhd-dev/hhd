@@ -996,7 +996,11 @@ class Multiplexer:
                                         ev["code"] = "select"
                             case "share":
                                 match self.swap_guide:
-                                    case "start_is_keyboard" | "aya_traditional_rev":
+                                    case "aya_traditional":
+                                        pass
+                                    case "aya_traditional_rev":
+                                        pass
+                                    case "start_is_keyboard":
                                         pass
                                     case "guide_is_start":
                                         ev["code"] = "select"
