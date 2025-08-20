@@ -18,7 +18,7 @@ from .const import CONFS, DEFAULT_MAPPINGS
 class AyaneoControllersPlugin(HHDPlugin):
     name = "ayaneo_controllers"
     priority = 18
-    log = "genc"
+    log = "ayac"
 
     def __init__(self, dmi: str, dconf: dict) -> None:
         self.t = None
@@ -29,7 +29,8 @@ class AyaneoControllersPlugin(HHDPlugin):
 
         self.dmi = dmi
         self.dconf = dconf
-        self.name = f"generic_controllers@'{dconf.get('name', 'ukn')}'"
+        self.magic_modules = dconf.get("magic_modules", False)
+        self.name = f"ayaneo_controllers@'{dconf.get('name', 'ukn')}'"
 
     def open(
         self,
@@ -41,8 +42,17 @@ class AyaneoControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
-        base = {"controllers": {"handheld": load_relative_yaml("controllers.yml")}}
-        base["controllers"]["handheld"]["children"]["controller_mode"].update(
+        if self.magic_modules:
+            base = {"controllers": {
+                "magic_modules": load_relative_yaml("modules.yml"),
+                "ayaneo": load_relative_yaml("controllers.yml"),
+            }}
+        else:
+            base = {"controllers": {
+                "ayaneo": load_relative_yaml("controllers.yml"),
+            }}
+
+        base["controllers"]["ayaneo"]["children"]["controller_mode"].update(
             get_outputs_config(
                 can_disable=True,
                 has_leds=self.dconf.get("rgb", False),
@@ -52,28 +62,52 @@ class AyaneoControllersPlugin(HHDPlugin):
         )
 
         if self.dconf.get("display_gyro", True):
-            base["controllers"]["handheld"]["children"]["imu_axis"] = get_gyro_config(
+            base["controllers"]["ayaneo"]["children"]["imu_axis"] = get_gyro_config(
                 self.dconf.get("mapping", DEFAULT_MAPPINGS)
             )
         else:
-            del base["controllers"]["handheld"]["children"]["imu_axis"]
-            del base["controllers"]["handheld"]["children"]["imu"]
+            del base["controllers"]["ayaneo"]["children"]["imu_axis"]
+            del base["controllers"]["ayaneo"]["children"]["imu"]
 
         return base
 
     def update(self, conf: Config):
-        new_conf = conf["controllers.handheld"]
-        if new_conf == self.prev:
+        new_conf = conf["controllers.ayaneo"]
+
+        if self.magic_modules:
+            pop_both = conf.get_action("controllers.magic_modules.pop_both")
+            pop_left = conf.get_action("controllers.magic_modules.pop_left")
+            pop_right = conf.get_action("controllers.magic_modules.pop_right")
+            reset = conf.get_action("controllers.magic_modules.reset")
+        else:
+            pop_both = False
+            pop_left = False
+            pop_right = False
+            reset = False
+
+        if new_conf == self.prev and not pop_both and not pop_left and not pop_right and not reset:
             return
         if self.prev is None:
             self.prev = new_conf
         else:
             self.prev.update(new_conf.conf)
+        
+        if pop_both:
+            pop = "both"
+        elif pop_left:
+            pop = "left"
+        elif pop_right:
+            pop = "right"
+        else:
+            pop = None
 
-        self.updated.set()
-        self.start(self.prev)
+        if pop_both or pop_left or pop_right or reset:
+            self.started = False
+        else:
+            self.updated.set()
+        self.start(self.prev, pop=pop, reset=reset)
 
-    def start(self, conf):
+    def start(self, conf, pop=None, reset=False):
         from .base import plugin_run
 
         if self.started:
@@ -91,6 +125,7 @@ class AyaneoControllersPlugin(HHDPlugin):
                 self.should_exit,
                 self.updated,
                 self.dconf,
+                {"pop": pop, "reset": reset},
             ),
         )
         self.t.start()

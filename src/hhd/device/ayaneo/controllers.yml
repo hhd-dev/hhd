@@ -1,6 +1,6 @@
 type: container
 tags: [lgc]
-title: AyaNeo Controller
+title: Ayaneo Controller
 hint: >-
   Allows for configuring your handheld's controller to a unified output.
 
@@ -19,9 +19,10 @@ children:
     hint: >-
       Swaps the Guide and QAM buttons with start and select.
     options:
-      oem: Start/Select, Guide/QAM
-      traditional: Guide/Select, Start/QAM
-      traditional_rev: Guide/Select, Start/QAM
+      oem: Default (Select/Start, Guide/QAM)
+      traditional: Traditional (Guide/Select, Start/QAM)
+      traditional_rev: Traditional Rev. (Select/Guide, QAM/Start)
+    default: oem
 
   #
   # Common settings

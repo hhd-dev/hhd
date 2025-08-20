@@ -21,6 +21,7 @@ CONFS = {
     "AYANEO 3": {
         "name": "AYANEO 3",
         "extra_buttons": "quad",
+        "magic_modules": True,
         "rgb": True,
         **AYA_DEFAULT_CONF,
     },
@@ -75,7 +76,8 @@ def calculate_checksum_inplace(buf: bytes | list[int]):
 
 
 AYA_CHECK = pad([0x00, 0x00, 0x00, 0x00, 0x08])
-AYA_CUSTOM = pad([0x00, 0x00, 0x00, 0x00, 0x0a, 0x02])
+AYA_CUSTOM = pad([0x00, 0x00, 0x00, 0x00, 0x0A, 0x02])
+
 
 def get_cfg_commands(
     rgb_mode: str,
@@ -107,6 +109,13 @@ def get_cfg_commands(
         h = (h + 10) % 360
         r, g, b = hsb_to_rgb(h, s, v)
 
+    ccmd = 0x00
+
+    if reset:
+        ccmd = 0x88
+    if eject_left or eject_right:
+        ccmd = (0x07 if eject_left else 0x00) + (0x70 if eject_right else 0x00)
+
     cmd = [
         # Report id
         0x00,
@@ -135,11 +144,7 @@ def get_cfg_commands(
         0x00,
         0x00,
         0x00,
-        (
-            0x88
-            if reset
-            else (0x70 if eject_left else 00) + (0x07 if eject_right else 0x00)
-        ),
+        ccmd,
         0x00,
         0x33,
         0x00,

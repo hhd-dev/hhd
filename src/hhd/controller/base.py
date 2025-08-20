@@ -557,6 +557,8 @@ class Multiplexer:
                 "guide_is_select",
                 "select_is_guide",
                 "start_is_keyboard",
+                "aya_traditional",
+                "aya_traditional_rev",
             ]
         ) = None,
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
@@ -960,6 +962,10 @@ class Multiplexer:
                             # the arguments do not make sense.
                             case "start":
                                 match self.swap_guide:
+                                    case "aya_traditional":
+                                        ev["code"] = "select"
+                                    case "aya_traditional_rev":
+                                        ev["code"] = "mode"
                                     case "start_is_keyboard":
                                         ev["code"] = "keyboard"
                                     case "select_is_guide":
@@ -968,6 +974,10 @@ class Multiplexer:
                                         ev["code"] = "mode"
                             case "select":
                                 match self.swap_guide:
+                                    case "aya_traditional":
+                                        ev["code"] = "mode"
+                                    case "aya_traditional_rev":
+                                        pass
                                     case "start_is_keyboard":
                                         ev["code"] = "mode"
                                     case "select_is_guide":
@@ -975,21 +985,29 @@ class Multiplexer:
                                     case _:
                                         ev["code"] = "share"
                             case "mode":
-                                if self.swap_guide == "guide_is_start":
-                                    ev["code"] = "start"
-                                else:
-                                    ev["code"] = "select"
+                                match self.swap_guide:
+                                    case "aya_traditional":
+                                        ev["code"] = "start"
+                                    case "aya_traditional_rev":
+                                        ev["code"] = "keyboard"
+                                    case "guide_is_start":
+                                        ev["code"] = "start"
+                                    case _:
+                                        ev["code"] = "select"
                             case "share":
                                 match self.swap_guide:
-                                    case "start_is_keyboard":
+                                    case "start_is_keyboard" | "aya_traditional_rev":
                                         pass
                                     case "guide_is_start":
                                         ev["code"] = "select"
                                     case _:
                                         ev["code"] = "start"
                             case "keyboard":
-                                if self.swap_guide == "start_is_keyboard":
-                                    ev["code"] = "start"
+                                match self.swap_guide:
+                                    case "start_is_keyboard":
+                                        ev["code"] = "start"
+                                    case "aya_traditional_rev":
+                                        ev["code"] = "start"
 
                     if (
                         self.startselect_chord != "disabled" and ev["code"] == "select"

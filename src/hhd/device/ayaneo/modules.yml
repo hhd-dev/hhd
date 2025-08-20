@@ -1,0 +1,31 @@
+type: container
+tags: [lgc]
+title: Magic Modules
+
+children:
+  pop_both:
+    type: action
+    tags: []
+    title: Pop Both Modules
+    hint: >-
+      Pops the left and right Ayaneo Magic Modules modules.
+  
+  pop_left:
+    type: action
+    tags: [non-essential]
+    title: Pop Left Module
+    hint: >-
+      Pops the left and right Ayaneo Magic Modules modules.
+  pop_right:
+    type: action
+    tags: [non-essential]
+    title: Pop Right Module
+    hint: >-
+      Pops the left and right Ayaneo Magic Modules modules.
+
+  reset:
+    type: action
+    tags: [non-essential]
+    title: Quick Reset
+    hint: >-
+      Re-initializes the Ayaneo Magic Modules modules.

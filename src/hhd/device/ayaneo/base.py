@@ -41,12 +41,26 @@ AYA_PID = 0x0002
 
 AYA_TIMEOUT = 300
 AYA_ATTEMPTS = 3
+AYA_VERIFY_EJECT = 20
+AYA_MIN_EJECT = 3
 
 _reset = True
+_cfg = {
+    "mode": None,
+    "red": 0,
+    "green": 0,
+    "blue": 0,
+    "brightness": 1,
+}
+
+CONTROLLER_POWER = (
+    "/sys/class/firmware-attributes/ayaneo-ec/attributes/controller_power/current_value"
+)
+CONTROLLER_MODULES = "/sys/class/firmware-attributes/ayaneo-ec/attributes/controller_modules/current_value"
 
 
 def write_cmd(dev, r: bytes):
-    logger.info(f"Send: {r.hex()}")
+    logger.info(f"Send: {r[1:].hex()}")
     dev.write(r)
 
     # Read response
@@ -54,7 +68,7 @@ def write_cmd(dev, r: bytes):
         res = dev.read(timeout=AYA_TIMEOUT)
         logger.info(f"Recv: {res.hex() if res else 'None'}")
         # Match IDs
-        if res[3] == r[4]:
+        if res and res[3] == r[4]:
             break
 
     return res
@@ -62,14 +76,74 @@ def write_cmd(dev, r: bytes):
 
 class Ayaneo3Hidraw(GenericGamepadHidraw):
     def init(self):
-        # Perform standard initialization
-        for r in AYA3_INIT:
-            write_cmd(self.dev, to_bytes(r))
+        if not self.dev:
+            return
 
-        return write_cmd(self.dev, AYA_CHECK)
+        for cmd in AYA3_INIT:
+            write_cmd(self.dev, to_bytes(cmd))
 
-    def switch_modes(self):
-        write_cmd(self.dev, AYA_CUSTOM)
+        # Send init immediately after sleep
+        if _cfg["mode"] is not None:
+            self.send_cfg(reset=False)
+
+    def send_cfg(self, reset: bool = False, left: bool = False, right: bool = False):
+        cmds = get_cfg_commands(
+            rgb_mode=_cfg["mode"] or "disabled",
+            r=_cfg["red"],
+            g=_cfg["green"],
+            b=_cfg["blue"],
+            brightness=_cfg["brightness"],
+            reset=reset,
+            eject_left=left,
+            eject_right=right,
+        )
+        for cmd in cmds:
+            write_cmd(self.dev, cmd)
+
+    def reset(self):
+        self.send_cfg(reset=True)
+        self.send_cfg(reset=False)
+
+    def check(self):
+        res = write_cmd(self.dev, AYA_CHECK)
+        # if res and res[19] != 0:
+        #     logger.error("Controller modules are inconsistent. Going into eject routine.")
+        #     self.handle_eject(True)
+        # el
+        if res and res[18] == 1:
+            time.sleep(1)
+            write_cmd(self.dev, AYA_CUSTOM)
+            time.sleep(2)
+            write_cmd(self.dev, AYA_CHECK)
+        else:
+            logger.info("Controller module check passed.")
+
+    def eject(self, left: bool = False, right: bool = False):
+        self.send_cfg(reset=False, left=left, right=right)
+        self.handle_eject()
+
+    def handle_eject(self, throw=False):
+        start = time.perf_counter()
+        for _ in range(AYA_VERIFY_EJECT):
+            res = write_cmd(self.dev, AYA_CHECK)
+            time.sleep(0.4)
+            # wait after last check too
+            if res and res[19] & ~0x11 == 0:
+                logger.info("Eject verified.")
+                break
+
+        time_waited = time.perf_counter() - start
+        if time_waited < AYA_MIN_EJECT:
+            time.sleep(AYA_MIN_EJECT - time_waited)
+
+        if os.path.exists(CONTROLLER_POWER):
+            with open(CONTROLLER_POWER, "w") as f:
+                f.write("off")
+            time.sleep(0.5)
+            logger.info("Controller power turned off.")
+
+        if throw:
+            raise RuntimeError("Turned off controller. Restarting.")
 
     def consume(self, events):
         global _reset
@@ -77,6 +151,7 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
         if not self.dev:
             return
 
+        got_rgb = False
         for ev in events:
             if ev["type"] != "led":
                 continue
@@ -86,18 +161,26 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             if mode not in ["disabled", "solid", "pulse", "rainbow"]:
                 logger.error(f"Invalid RGB mode: {mode}")
                 continue
-
-            cmds = get_cfg_commands(
-                rgb_mode=mode,
-                r=ev["red"],
-                g=ev["green"],
-                b=ev["blue"],
-                brightness=ev.get("brightness", 1),
-                reset=_reset,
+            
+            # Only send RGB command if colors change
+            got_rgb = (
+                _cfg["mode"] != mode
+                or _cfg["red"] != ev["red"]
+                or _cfg["green"] != ev["green"]
+                or _cfg["blue"] != ev["blue"]
+                or _cfg["brightness"] != ev.get("brightness", 1)
             )
+            _cfg["mode"] = mode
+            _cfg["red"] = ev["red"]
+            _cfg["green"] = ev["green"]
+            _cfg["blue"] = ev["blue"]
+            _cfg["brightness"] = ev.get("brightness", 1)
+
+        if got_rgb:
+            self.send_cfg(reset=_reset)
+            if _reset:
+                self.send_cfg(reset=False)
             _reset = False
-            for cmd in cmds:
-                write_cmd(self.dev, cmd)
 
 
 def plugin_run(
@@ -107,11 +190,13 @@ def plugin_run(
     should_exit: TEvent,
     updated: TEvent,
     dconf: dict,
+    others: dict,
 ):
     first = True
     first_disabled = True
     init = time.perf_counter()
     repeated_fail = False
+
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
@@ -123,13 +208,65 @@ def plugin_run(
         else:
             first_disabled = True
 
+        found_device = True
+        if os.path.exists(CONTROLLER_MODULES):
+            with open(CONTROLLER_MODULES, "r") as f:
+                modules = f.read().strip()
+            if modules == "both":
+                found_device = True
+            else:
+                if first:
+                    logger.info(
+                        f"Controller modules are set to '{modules}', waiting for 'both' to be connected."
+                    )
+                found_device = False
+
+                # Turning off controller power if not connected
+                if os.path.exists(CONTROLLER_POWER):
+                    with open(CONTROLLER_POWER, "w") as f:
+                        f.write("off")
+
+        if found_device and os.path.exists(CONTROLLER_POWER):
+            with open(CONTROLLER_POWER, "r") as f:
+                power = f.read().strip()
+            if power != "on":
+                logger.info(
+                    f"Controller power is set to '{power}', powering on controller."
+                )
+                with open(CONTROLLER_POWER, "w") as f:
+                    f.write("on")
+                time.sleep(1)
+
+        pop = others.pop("pop", None)
+        if pop:
+            others.pop("reset", False)
+        if pop and found_device:
+            logger.info(f"Popping controller module {pop}.")
+            d_vend = Ayaneo3Hidraw(
+                vid=[AYA_VID],
+                pid=[AYA_PID],
+                required=True,
+                application=[0xFF000001],
+            )
+            try:
+                d_vend.open()
+                d_vend.eject(
+                    left=pop in ["both", "left"], right=pop in ["both", "right"]
+                )
+                found_device = False
+            except Exception as e:
+                logger.error(f"Failed to pop controller module {pop} with error:\n{e}")
+                if DEBUG_MODE:
+                    raise e
+            finally:
+                d_vend.close(True)
+
         try:
-            vid = GAMEPAD_VID
-            found_device = bool(enumerate_evs(vid=vid))
+            if not bool(enumerate_evs(vid=GAMEPAD_VID, pid=GAMEPAD_PID)):
+                found_device = False
         except Exception:
             logger.warning("Failed finding device, skipping check.")
             time.sleep(LONGER_ERROR_DELAY)
-            found_device = True
 
         if not found_device:
             if first:
@@ -142,7 +279,8 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit)
+            reset = others.pop("reset", False)
+            controller_loop(conf.copy(), should_exit, updated, dconf, emit, reset)
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -166,7 +304,12 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, dconf: dict, emit: Emitter
+    conf: Config,
+    should_exit: TEvent,
+    updated: TEvent,
+    dconf: dict,
+    emit: Emitter,
+    reset: bool = False,
 ):
     debug = DEBUG_MODE
     dtype = dconf.get("type", "generic")
@@ -183,6 +326,7 @@ def controller_loop(
             if dconf.get("rgb", False)
             else None
         ),
+        rgb_init_times=1,
     )
     motion = d_params.get("uses_motion", True)
 
@@ -223,6 +367,7 @@ def controller_loop(
         capabilities={EC("EV_KEY"): [EC("KEY_F21")]},
         btn_map={
             EC("KEY_F24"): "keyboard",
+            EC("KEY_D"): "keyboard",
             EC("KEY_F21"): "extra_l2",
             EC("KEY_F22"): "extra_r2",
             EC("KEY_L"): "extra_l1",
@@ -243,6 +388,14 @@ def controller_loop(
             "qam_hhd": True,
         }
 
+    match conf.get("swap_guide", "oem"):
+        case "traditional":
+            swap_guide = "aya_traditional"
+        case "traditional_rev":
+            swap_guide = "aya_traditional_rev"
+        case _:
+            swap_guide = None
+
     multiplexer = Multiplexer(
         trigger="analog_to_discrete",
         dpad="analog_to_discrete",
@@ -254,7 +407,7 @@ def controller_loop(
         startselect_chord=conf.get("main_chords", "disabled"),
         keyboard_is="qam",
         qam_hhd=True,
-        swap_guide="select_is_guide" if conf["swap_guide"].to(bool) else None,
+        swap_guide=swap_guide,
         **kargs,
     )
 
@@ -286,18 +439,18 @@ def controller_loop(
                 start_imu = d_timer.open()
             if start_imu:
                 prepare(d_imu)
-        prepare(d_vend)
-        res = d_vend.init()
-        # Custom mode is 2
-        # Xinput is 1
-        # KBD/Green mode is 3
-        if res[18] != 0x02:
-            d_vend.switch_modes()
         prepare(d_kbd_1)
         if d_kbd_2:
             prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
+
+        prepare(d_vend)
+        d_vend.init()
+        d_vend.check()
+        if reset:
+            d_vend.reset()
+            reset = False
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():

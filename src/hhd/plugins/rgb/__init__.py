@@ -255,7 +255,7 @@ class RgbPlugin(HHDPlugin):
             return
 
         curr = time.perf_counter()
-        init = False
+        init = self.init
 
         rgb_conf = conf["rgb"]["handheld"]["mode"]
         if self.prev and self.prev != rgb_conf:
