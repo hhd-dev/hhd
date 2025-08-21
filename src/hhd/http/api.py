@@ -20,7 +20,7 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 
-from .i18n import get_user_lang, translate, translate_ver
+from .i18n import translate, translate_ver
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,6 @@ class RestHandler(BaseHTTPRequestHandler):
     emit: Emitter
     locales: Sequence[HHDLocale]
     ctx: Context
-    user_lang: str | None
     token: str | None
 
     def set_response(self, code: int, headers: dict[str, str] = {}):
@@ -273,6 +272,8 @@ class RestHandler(BaseHTTPRequestHandler):
         segments, params = parse_path(self.path)
         langs = params.get("lang", params.get("locale", None))
         lang = langs[0] if langs else None
+        user_langs = params.get("i18n", None)
+        user_lang = user_langs[0] if user_langs else None
 
         if not segments:
             return self.send_not_found(f"Empty path.")
@@ -297,7 +298,7 @@ class RestHandler(BaseHTTPRequestHandler):
             case "profile":
                 self.handle_profile(segments[3:], params, content)
             case "settings":
-                v = translate_ver(self.conf, lang=lang, user_lang=self.user_lang)
+                v = translate_ver(self.conf, lang=lang, user_lang=user_lang)
                 self.set_response_ok({"Version": v})
                 with self.cond:
                     s = dict(deepcopy(self.settings))
@@ -310,7 +311,7 @@ class RestHandler(BaseHTTPRequestHandler):
                     except Exception as e:
                         logger.error(f"Error while writing version hash to response.")
                     s = translate(
-                        s, self.conf, self.locales, lang=lang, user_lang=self.user_lang
+                        s, self.conf, self.locales, lang=lang, user_lang=user_lang
                     )
                     self.wfile.write(json.dumps(s).encode())
             case "state":
@@ -328,14 +329,14 @@ class RestHandler(BaseHTTPRequestHandler):
                         self.cond.wait()
                     out = {**cast(dict, self.conf.conf), "info": self.info.conf}
                     out["version"] = translate_ver(
-                        self.conf, lang=lang, user_lang=self.user_lang
+                        self.conf, lang=lang, user_lang=user_lang
                     )
                     out = translate(
                         out,
                         self.conf,
                         self.locales,
                         lang=lang,
-                        user_lang=self.user_lang,
+                        user_lang=user_lang,
                     )
                     self.wfile.write(json.dumps(out).encode())
             case "version":
@@ -347,7 +348,7 @@ class RestHandler(BaseHTTPRequestHandler):
                         self.conf,
                         self.locales,
                         lang=lang,
-                        user_lang=self.user_lang,
+                        user_lang=user_lang,
                     )
                 )
             case other:
