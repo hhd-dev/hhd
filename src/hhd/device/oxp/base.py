@@ -4,19 +4,19 @@ import select
 import time
 from threading import Event as TEvent
 
-
-from hhd.controller import Multiplexer, DEBUG_MODE
+from hhd.controller import DEBUG_MODE, Multiplexer
 from hhd.controller.lib.hide import unhide_all
 from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
+from hhd.controller.physical.hidraw import enumerate_unique
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
-from hhd.controller.physical.hidraw import enumerate_unique
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
-from .serial import SerialDevice, get_serial
+
+from .const import BTN_MAPPINGS, BTN_MAPPINGS_NONTURBO, DEFAULT_MAPPINGS
 from .hid_v1 import OxpHidraw
 from .hid_v2 import OxpHidrawV2
-from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, BTN_MAPPINGS_NONTURBO
+from .serial import SerialDevice, get_serial
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
@@ -44,7 +44,7 @@ XFLY_PID = 0xB001
 XFLY_PAGE = 0xFF01
 XFLY_USAGE = 0x0001
 
-BACK_BUTTON_DELAY = 0.1
+BUTTON_MIN_DELAY = 0.13
 
 RGB_MODES_FULL = {
     "disabled": [],
@@ -193,41 +193,34 @@ class OxpAtKbd(GenericGamepadEvdev):
             *args,
             **kwargs,
         )
+        self.state = {}
         self.queued = []
 
     def produce(self, fds):
         evs = list(super().produce(fds))
         curr = time.perf_counter()
 
-        if evs:
-            rem = []
-            for i, ev in enumerate(evs):
-                if ev["type"] == "button" and ev["code"] in (
-                    "mode",
-                    "keyboard",
-                    "share",
-                ):
-                    if ev["value"]:
-                        # Remove unqueue if re-pressed
-                        rem2 = []
-                        for i, chk in enumerate(self.queued):
-                            ce = chk[1]
-                            if ce["type"] == "button" and ce["code"] == ev["code"]:
-                                rem2.append(i)
-                        for i in reversed(rem2):
-                            del self.queued[i]
-                    else:
-                        # Queue the event
-                        self.queued.append((curr + 0.13, ev))
-                        rem.append(i)
+        for i, ev in enumerate(evs):
+            if ev["type"] == "button" and ev["code"] in (
+                "mode",
+                "keyboard",
+            ):
+                if ev["value"]:
+                    self.state[ev["code"]] = curr
+                else:
+                    t = self.state.pop(ev["code"], None)
 
-            # Remove events that are queued
-            for i in reversed(rem):
-                del evs[i]
+                    if t and curr - t < BUTTON_MIN_DELAY:
+                        self.queued.append((ev["code"], t + BUTTON_MIN_DELAY))
 
-        # Queue events
-        while self.queued and self.queued[0][0] < curr:
-            evs.append(self.queued.pop(0)[1])
+        while self.queued and self.queued[0][1] < curr:
+            evs.append(
+                {
+                    "type": "button",
+                    "code": self.queued.pop(0)[0],
+                    "value": 0,
+                }  # type: ignore
+            )
 
         return evs
 
