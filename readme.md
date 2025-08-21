@@ -43,6 +43,7 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
 - MSI
   - Claw 1st Gen (for TDP, needs older bios, has wifi issues after sleep)
   - Claw 7/8 AI+ (no gyro)
+  - Claw A8 (minor TDP issues, no gyro)
 - Zotac
   - Zotac Gaming Zone (1st gen; only front buttons; be in gamepad mode before installing Linux)
 - Ayn
@@ -50,17 +51,18 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
 - TECTOY
   - Zeenix Pro (rebranded Loki Max)
 - Ayaneo
+  - Ayaneo 3 (full support including magic modules) 
   - Air Standard/Plus/Pro
   - 1S/1S Limited
-  - 2/2S 
+  - 2/2S
   - GEEK, GEEK 1S 
   - NEXT Lite/Pro/Advance
   - SLIDE
   - 2021 Standard/Pro/Pro Retro Power
   - NEO 2021/Founder
   - KUN (only front buttons)
-- AOKZOE (No LEDs, extra buttons)
-  - A1 Normal/Pro
+- AOKZOE
+  - A1 Normal/Pro (No LEDs, extra buttons)
   - A1X
 - Anbernic
   - Win600 (no keyboard button yet)
