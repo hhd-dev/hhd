@@ -10,12 +10,23 @@ children:
     hint: >-
       Pops the left and right Ayaneo Magic Modules modules.
   
+  info_left:
+    type: display
+    tags: [slim]
+    title: Left
+
   pop_left:
     type: action
     tags: [non-essential]
     title: Pop Left Module
     hint: >-
       Pops the left and right Ayaneo Magic Modules modules.
+  
+  info_right:
+    type: display
+    tags: [slim]
+    title: Right
+
   pop_right:
     type: action
     tags: [non-essential]

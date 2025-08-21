@@ -32,6 +32,8 @@ class AyaneoControllersPlugin(HHDPlugin):
         self.magic_modules = dconf.get("magic_modules", False)
         self.name = f"ayaneo_controllers@'{dconf.get('name', 'ukn')}'"
 
+        self.config = Config()
+
     def open(
         self,
         emit: Emitter,
@@ -86,6 +88,13 @@ class AyaneoControllersPlugin(HHDPlugin):
             pop_left = conf.get_action("magic_modules.magic_modules.pop_left")
             pop_right = conf.get_action("magic_modules.magic_modules.pop_right")
             reset = conf.get_action("magic_modules.magic_modules.reset")
+
+            conf["magic_modules.magic_modules.info_right"] = self.config.get(
+                "info_right", None
+            )
+            conf["magic_modules.magic_modules.info_left"] = self.config.get(
+                "info_left", None
+            )
         else:
             pop_both = False
             pop_left = False
@@ -129,6 +138,8 @@ class AyaneoControllersPlugin(HHDPlugin):
 
         self.close()
         self.should_exit = Event()
+        self.config["pop"] = pop
+        self.config["reset"] = reset
         self.t = Thread(
             target=plugin_run,
             args=(
@@ -138,7 +149,7 @@ class AyaneoControllersPlugin(HHDPlugin):
                 self.should_exit,
                 self.updated,
                 self.dconf,
-                {"pop": pop, "reset": reset},
+                self.config,
             ),
         )
         self.t.start()

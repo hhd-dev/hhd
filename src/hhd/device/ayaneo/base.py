@@ -6,17 +6,23 @@ from threading import Event as TEvent
 
 from hhd.controller import DEBUG_MODE, Multiplexer
 from hhd.controller.lib.hide import unhide_all
-from hhd.controller.physical.hidraw import GenericGamepadHidraw
+from hhd.controller.physical.evdev import XBOX_BUTTON_MAP
 from hhd.controller.physical.evdev import B as EC
-from hhd.controller.physical.evdev import (
-    GenericGamepadEvdev,
-    enumerate_evs,
-    XBOX_BUTTON_MAP,
-)
+from hhd.controller.physical.evdev import GenericGamepadEvdev, enumerate_evs
+from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
+from hhd.i18n import _
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
-from .const import DEFAULT_MAPPINGS, AYA3_INIT, AYA_CHECK, AYA_CUSTOM, get_cfg_commands
+
+from .const import (
+    AYA3_INIT,
+    AYA_CHECK,
+    AYA_CUSTOM,
+    DEFAULT_MAPPINGS,
+    AYA_SAVE,
+    get_cfg_commands,
+)
 
 
 def to_bytes(s: str):
@@ -40,6 +46,7 @@ AYA_VID = 0x1C4F
 AYA_PID = 0x0002
 
 AYA_TIMEOUT = 300
+AYA_SAVE_TIMEOUT = 1500
 AYA_ATTEMPTS = 3
 AYA_VERIFY_EJECT = 20
 AYA_MIN_EJECT = 3
@@ -59,14 +66,14 @@ CONTROLLER_POWER = (
 CONTROLLER_MODULES = "/sys/class/firmware-attributes/ayaneo-ec/attributes/controller_modules/current_value"
 
 
-def write_cmd(dev, r: bytes):
+def write_cmd(dev, r: bytes, timeout: int = AYA_TIMEOUT):
     if DEBUG_MODE:
         logger.info(f"Send: {r[1:].hex()}")
     dev.write(r)
 
     # Read response
     for _ in range(AYA_ATTEMPTS):
-        res = dev.read(timeout=AYA_TIMEOUT)
+        res = dev.read(timeout=timeout)
         if DEBUG_MODE:
             logger.info(f"Recv: {res.hex() if res else 'None'}")
         # Match IDs
@@ -76,11 +83,40 @@ def write_cmd(dev, r: bytes):
     return res
 
 
+LEFT_MODULES = {
+    0x02: _("Cross Film / Joystick"),
+    0x04: _("Cross / Joystick"),
+    0x06: _("Cross / Touchpad"),
+    0x08: _("Direction / Joystick"),
+    0x42: _("Joystick / Cross Film"),
+    0x44: _("Joystick / Cross"),
+    0x46: _("Touchpad / Cross"),
+    0x48: _("Joystick / Direction"),
+}
+
+RIGHT_MODULES = {
+    0x10: _("ABXY \\ Joystick"),
+    0x12: _("ABXY \\ Touchpad"),
+    0x14: _("ABXYCZ"),
+    0x16: _("ABXY Film \\ Joystick"),
+    0x50: _("Joystick \\ ABXY"),
+    0x52: _("Touchpad \\ ABXY"),
+    0x54: _("ABXYCZ [R]"),
+    0x56: _("Joystick \\ ABXY Film"),
+}
+
+MODULE_UKN = _("Unknown")
+MODULE_UNPOWERED = _("Unpowered")
+MODULE_DISCONNECTED = _("Disconnected")
+
+
 class Ayaneo3Hidraw(GenericGamepadHidraw):
 
-    def __init__(self, *args, vibration: str, **kwargs):
+    def __init__(self, *args, vibration: str, config: Config, emit, **kwargs):
         super().__init__(*args, **kwargs)
         self.vibration = vibration
+        self.config = config
+        self.emit = emit
 
     def init(self):
         if not self.dev:
@@ -89,6 +125,7 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
         for cmd in AYA3_INIT:
             write_cmd(self.dev, to_bytes(cmd))
 
+    def cfg(self):
         # Send init immediately after sleep
         if _cfg["mode"] is not None:
             self.send_cfg(reset=False)
@@ -103,30 +140,68 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             reset=reset,
             eject_left=left,
             eject_right=right,
-            vibration=self.vibration, # type: ignore[call-arg]
+            vibration=self.vibration,  # type: ignore[call-arg]
         )
         for cmd in cmds:
             write_cmd(self.dev, cmd)
 
+    def save(self):
+        if not self.dev:
+            return
+
+        # Save current config
+        write_cmd(self.dev, AYA_SAVE, timeout=AYA_SAVE_TIMEOUT)
+
     def reset(self):
         self.send_cfg(reset=True)
+        time.sleep(0.5)
         self.send_cfg(reset=False)
 
     def check(self, init=False):
-        res = write_cmd(self.dev, AYA_CHECK)
-        # if res and res[38] == 2:
-        #     logger.warning("Green mode. Going into eject routine.")
-        #     self.eject(True, True)
+        for i in range(AYA_ATTEMPTS):
+            res = write_cmd(self.dev, AYA_CHECK)
+            if not res:
+                time.sleep(0.3)
+                continue
+            left = res[32]
+            right = res[33]
+            if not right or not left:
+                time.sleep(0.3)
+                continue
+
+            # left_module = left & 0x3F
+            # left_rotated = left >> 6
+            vl = LEFT_MODULES.get(left, MODULE_UKN)
+            refresh = self.config.get("info_left", None) != vl
+            self.config["info_left"] = vl
+            # right_module = right & 0x3F
+            # right_rotated = right >> 6
+            vr = RIGHT_MODULES.get(right, MODULE_UKN)
+            refresh |= self.config.get("info_right", None) != vr
+            self.config["info_right"] = vr
+            if refresh:
+                self.emit([])
+            break
+
         if res and res[18] == 1:
             logger.info("Switching into custom mode.")
             time.sleep(1)
             write_cmd(self.dev, AYA_CUSTOM)
             time.sleep(2)
             write_cmd(self.dev, AYA_CHECK)
+            return True
         else:
             logger.info("Controller module check passed.")
 
     def eject(self, left: bool = False, right: bool = False):
+        v = _("Ejecting...")
+        if left:
+            self.config["info_left"] = v
+        if right:
+            self.config["info_right"] = v
+        if left or right:
+            self.emit([])
+
         self.send_cfg(reset=False, left=left, right=right)
         self.handle_eject()
 
@@ -157,8 +232,6 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             raise RuntimeError("Turned off controller. Restarting.")
 
     def consume(self, events):
-        global _reset
-
         if not self.dev:
             return
 
@@ -188,10 +261,7 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             _cfg["brightness"] = ev.get("brightness", 1)
 
         if got_rgb:
-            self.send_cfg(reset=_reset)
-            if _reset:
-                self.send_cfg(reset=False)
-            _reset = False
+            self.send_cfg()
 
 
 def plugin_run(
@@ -201,12 +271,17 @@ def plugin_run(
     should_exit: TEvent,
     updated: TEvent,
     dconf: dict,
-    others: dict,
+    others: Config,
 ):
     first = True
     first_disabled = True
     init = time.perf_counter()
     repeated_fail = False
+
+    if others.get("info_left", None) is None:
+        others["info_left"] = MODULE_UNPOWERED
+    if others.get("info_right", None) is None:
+        others["info_right"] = MODULE_UNPOWERED
 
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
@@ -232,12 +307,31 @@ def plugin_run(
                     )
                 found_device = False
 
+                refresh = False
+                if modules != "left":
+                    refresh |= others.get("info_left", None) != MODULE_DISCONNECTED
+                    others["info_left"] = MODULE_DISCONNECTED
+                    if others.get("info_right", None) == MODULE_DISCONNECTED:
+                        others["info_right"] = MODULE_UNPOWERED
+                        refresh = True
+                if modules != "right":
+                    refresh |= others.get("info_left", None) != MODULE_DISCONNECTED
+                    others["info_right"] = MODULE_DISCONNECTED
+                    if others.get("info_left", None) == MODULE_DISCONNECTED:
+                        others["info_left"] = MODULE_UNPOWERED
+                        refresh = True
+                if refresh:
+                    emit([])
+
                 # Turning off controller power if not connected
                 if os.path.exists(CONTROLLER_POWER):
                     with open(CONTROLLER_POWER, "w") as f:
                         f.write("off")
 
-        if found_device and os.path.exists(CONTROLLER_POWER):
+        pop = others.pop("pop", None)
+        if pop:
+            others.pop("reset", False)
+        if (found_device or pop) and os.path.exists(CONTROLLER_POWER):
             with open(CONTROLLER_POWER, "r") as f:
                 power = f.read().strip()
             if power != "on":
@@ -248,10 +342,7 @@ def plugin_run(
                     f.write("on")
                 time.sleep(1)
 
-        pop = others.pop("pop", None)
         if pop:
-            others.pop("reset", False)
-        if pop and found_device:
             logger.info(f"Popping controller module {pop}.")
             d_vend = Ayaneo3Hidraw(
                 vid=[AYA_VID],
@@ -259,6 +350,8 @@ def plugin_run(
                 required=True,
                 application=[0xFF000001],
                 vibration=conf.get("vibration", "medium"),
+                config=others,
+                emit=emit,
             )
             try:
                 d_vend.open()
@@ -292,7 +385,9 @@ def plugin_run(
             updated.clear()
             init = time.perf_counter()
             reset = others.pop("reset", False)
-            controller_loop(conf.copy(), should_exit, updated, dconf, emit, reset)
+            controller_loop(
+                conf.copy(), should_exit, updated, dconf, emit, others, reset
+            )
             repeated_fail = False
         except Exception as e:
             failed_fast = init + LONGER_ERROR_MARGIN > time.perf_counter()
@@ -321,8 +416,11 @@ def controller_loop(
     updated: TEvent,
     dconf: dict,
     emit: Emitter,
+    others: Config,
     reset: bool = False,
 ):
+    global _reset
+
     debug = DEBUG_MODE
     dtype = dconf.get("type", "generic")
     dgyro = dconf.get("display_gyro", True)
@@ -392,6 +490,8 @@ def controller_loop(
         required=True,
         application=[0xFF000001],
         vibration=conf.get("vibration", "medium"),
+        config=others,
+        emit=emit,
     )
 
     kargs = {}
@@ -459,11 +559,16 @@ def controller_loop(
             prepare(d)
 
         prepare(d_vend)
-        d_vend.init()
-        d_vend.check()
-        if reset:
-            d_vend.reset()
+        changed_mode = d_vend.check()
+        if reset or _reset or changed_mode:
+            d_vend.init()
+            if not changed_mode:
+                d_vend.reset()
+            d_vend.save()
             reset = False
+            _reset = False
+        else:
+            d_vend.cfg()
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():

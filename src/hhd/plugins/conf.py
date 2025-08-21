@@ -178,6 +178,16 @@ class Config:
         except TypeError:
             return default
 
+    def pop(self, key, default: A) -> A:
+        try:
+            val = self[key].to(type(default))
+            del self[key]
+            return val
+        except KeyError:
+            return default
+        except TypeError:
+            return default
+
     def get_action(self, key):
         if key not in self:
             return False
