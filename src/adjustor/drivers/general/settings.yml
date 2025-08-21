@@ -1,0 +1,36 @@
+title: Power
+tags: [hide-title]
+type: container
+children:
+  profile:
+    type: multiple
+    # tags: [ordinal] # Steamdeck has issues with this
+    title: Power Profile
+    hint: >-
+      Allows setting the power profile of the system using Power Profiles Daemon.
+    options:
+      power-saver: Powersave
+      balanced: Balanced
+      performance: Performance
+    default: balanced
+  sched:
+    type: multiple
+    title: Custom Scheduler
+    hint: >-
+      Allows attaching a scheduler to the kernel sched_ext.
+      Schedulers need to be installed and kernel needs to support sched_ext.
+    options:
+      disabled: Disabled
+      scx_lavd: LAVD
+      scx_bpfland: bpfland 
+      scx_rusty: rusty
+    default: disabled
+
+  steamdeck_ovr:
+    type: bool
+    tags: [advanced,expert]
+    title: Steamdeck Overclock (Requires Reboot)
+    hint: >-
+      Allows setting the Steam TDP slider from 1-20W instead of 4-15W.
+      Unchecked, it is still setting TDP to 15W.
+    default: False

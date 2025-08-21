@@ -25,7 +25,7 @@ jobs:
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: manual update
+          commit_message: manual update from actions
           allow_empty_commits: false
           ssh_keyscan_types: rsa,ecdsa,ed25519
           updpkgsums: true

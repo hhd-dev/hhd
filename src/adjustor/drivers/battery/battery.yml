@@ -1,0 +1,28 @@
+title: Battery Settings
+type: container
+tags: [ hide-title ]
+children:
+  charge_limit:
+    type: multiple
+    title: Charge Limit (%)
+    tags: [ non-essential, ordinal ]
+    hint: >-
+      Applies a charge limit to the battery, 75% and up.
+    options:
+      p70: 70%
+      p80: 80%
+      p85: 85%
+      p90: 90%
+      p95: 95%
+      disabled: Unset
+    default: disabled
+
+  charge_bypass:
+    type: multiple
+    title: Charge Bypass
+    tags: [ non-essential, ordinal ]
+    options:
+      disabled: Unset
+      awake: While On
+      always: Always
+    default: disabled

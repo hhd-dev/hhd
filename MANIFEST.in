@@ -2,6 +2,9 @@ recursive-include src/hhd *.yml
 recursive-include src/hhd *.yaml
 recursive-include src/hhd *.mo
 recursive-include src/hhd *.hut
+recursive-include src/adjustor *.yml
+recursive-include src/adjustor *.yaml
+recursive-include src/adjustor *.xml.in
 
 graft usr/
 graft src/hhd/http/static

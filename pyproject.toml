@@ -22,6 +22,11 @@ dependencies = [
   "setuptools>=65.5.0",
   "python-xlib>=0.33",
   "pyserial>=3.5",
+  "pyroute2>=0.7.3",
+# FUSE cannot be installed in distros without gcc
+#  "fuse-python>=1.0.7",
+  "PyGObject>=3.46.0",
+  "dbus-python>=1.3.2",
 ]
 
 [project.urls]
@@ -51,6 +56,7 @@ bootc = "hhd.plugins.bootc:autodetect"
 debug = "hhd.plugins.debug:autodetect"
 power = "hhd.plugins.power:autodetect"
 # display = "hhd.plugins.display:autodetect"
+adjustor = "adjustor.hhd:autodetect"
 
 [project.entry-points."hhd.i18n"]
 hhd = "hhd.i18n:locales"
@@ -64,4 +70,4 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]  # list of folders that contain the packages (["."] by default)
-include = ["hhd*"]  # package names should match these glob patterns (["*"] by default)
+include = ["hhd*", "adjustor*"]  # package names should match these glob patterns (["*"] by default)
