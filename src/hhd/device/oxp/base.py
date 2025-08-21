@@ -59,7 +59,7 @@ RGB_MODES_STICKS = {
 }
 RGB_MODES_STICKS_AOK = {
     "disabled": [],
-    "aok": ["oxp"],
+    "aok": ["aok"],
     "solid": ["color"],
 }
 

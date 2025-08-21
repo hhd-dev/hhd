@@ -356,7 +356,7 @@ class RgbPlugin(HHDPlugin):
                 case "direction":
                     log += f", direction: {info['direction']}"
                     direction = cast(Literal["left", "right"], info["direction"])
-                case "oxp":
+                case "oxp" | "aok":
                     brightnessd = cast(
                         Literal["low", "medium", "high"], info["brightnessd"]
                     )
