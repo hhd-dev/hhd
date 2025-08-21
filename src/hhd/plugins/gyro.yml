@@ -19,9 +19,11 @@ modes:
       manufacturer:
         type: display
         title: Manufacturer
+        tags: [ slim ]
       product:
         type: display
         title: Product
+        tags: [ slim ]
       x_axis: &axis
         type: multiple
         options:
