@@ -596,7 +596,7 @@ def controller_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
-    if dconf.get("x1", False) and conf.get("volume_reverse", False):
+    if conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
         btn_map = {
             "key_volumedown": EC("KEY_VOLUMEUP"),
