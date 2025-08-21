@@ -25,4 +25,4 @@ children:
       disabled: Unset
       awake: While On
       always: Always
-    default: Unset
+    default: disabled
