@@ -298,8 +298,19 @@ def plugin_run(
         if os.path.exists(CONTROLLER_MODULES):
             with open(CONTROLLER_MODULES, "r") as f:
                 modules = f.read().strip()
+
+            # Check if status should be refreshed
+            refresh = False
             if modules == "both":
                 found_device = True
+
+                # Update status
+                if others.get("info_right", None) == MODULE_DISCONNECTED:
+                    others["info_right"] = MODULE_UNPOWERED
+                    refresh = True
+                if others.get("info_left", None) == MODULE_DISCONNECTED:
+                    others["info_left"] = MODULE_UNPOWERED
+                    refresh = True
             else:
                 if first:
                     logger.info(
@@ -307,26 +318,29 @@ def plugin_run(
                     )
                 found_device = False
 
-                refresh = False
+                # Update status
                 if modules != "left":
                     refresh |= others.get("info_left", None) != MODULE_DISCONNECTED
                     others["info_left"] = MODULE_DISCONNECTED
+                if modules != "right":
+                    refresh |= others.get("info_right", None) != MODULE_DISCONNECTED
+                    others["info_right"] = MODULE_DISCONNECTED
+                if modules == "right":
                     if others.get("info_right", None) == MODULE_DISCONNECTED:
                         others["info_right"] = MODULE_UNPOWERED
                         refresh = True
-                if modules != "right":
-                    refresh |= others.get("info_left", None) != MODULE_DISCONNECTED
-                    others["info_right"] = MODULE_DISCONNECTED
+                if modules == "left":
                     if others.get("info_left", None) == MODULE_DISCONNECTED:
                         others["info_left"] = MODULE_UNPOWERED
                         refresh = True
-                if refresh:
-                    emit([])
 
                 # Turning off controller power if not connected
                 if os.path.exists(CONTROLLER_POWER):
                     with open(CONTROLLER_POWER, "w") as f:
                         f.write("off")
+            
+            if refresh:
+                emit([])
 
         pop = others.pop("pop", None)
         if pop:
