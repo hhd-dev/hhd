@@ -1,0 +1,16 @@
+[Unit]
+Description=Handheld Daemon Service
+
+[Service]
+ExecStart=/usr/bin/hhd
+Nice=-12
+Restart=on-failure
+RestartSec=5
+
+# Required for bootc to work correctly, otherwise
+# the default SELinux context is enough
+# FIXME: lower this in the future
+SELinuxContext=system_u:unconfined_r:unconfined_t:s0
+
+[Install]
+WantedBy=multi-user.target
