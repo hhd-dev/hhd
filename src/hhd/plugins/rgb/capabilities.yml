@@ -42,7 +42,7 @@ brightnessd:
 oxp:
   mode:
     type: multiple
-    title: Stick Style
+    title: Style
     tags: [non-essential]
     default: classic
     options:

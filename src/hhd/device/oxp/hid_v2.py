@@ -154,7 +154,7 @@ class OxpHidrawV2(GenericGamepadHidraw):
         match ev["mode"]:
             case "solid":
                 stick = ev["red"], ev["green"], ev["blue"]
-            case "oxp":
+            case "oxp" | "aok":
                 brightness = ev["brightnessd"]
                 stick = ev["oxp"]
                 if stick == "classic":
@@ -162,8 +162,8 @@ class OxpHidrawV2(GenericGamepadHidraw):
                     stick = 0xb7, 0x30, 0x00
             case _:  # "disabled":
                 stick_enabled = False
-        
-        # Force RGB to not initialize to workaround RGB breaking 
+
+        # Force RGB to not initialize to workaround RGB breaking
         # rumble when being set
         if self.prev_stick_enabled is None:
             self.prev_stick_enabled = stick_enabled

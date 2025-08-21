@@ -58,3 +58,8 @@ oxp:
   type: container
   title: OneXPlayer
   tags: [ non-essential, rainbow ]
+
+aok:
+  type: container
+  title: AOKZOE
+  tags: [ non-essential, rainbow ]

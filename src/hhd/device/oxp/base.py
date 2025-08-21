@@ -57,6 +57,11 @@ RGB_MODES_STICKS = {
     "oxp": ["oxp"],
     "solid": ["color"],
 }
+RGB_MODES_STICKS_AOK = {
+    "disabled": [],
+    "aok": ["oxp"],
+    "solid": ["color"],
+}
 
 
 def plugin_run(
@@ -315,7 +320,10 @@ def turbo_loop(
     if dconf.get("rgb_secondary", False):
         rgb_modes = RGB_MODES_FULL
     elif dconf.get("rgb", True):
-        rgb_modes = RGB_MODES_STICKS
+        if dconf.get("aok", False):
+            rgb_modes = RGB_MODES_STICKS_AOK
+        else:
+            rgb_modes = RGB_MODES_STICKS
     else:
         rgb_modes = None
 
@@ -490,15 +498,23 @@ def controller_loop(
 ):
     debug = DEBUG_MODE
 
+    if dconf.get("rgb_secondary", False):
+        rgb_modes = RGB_MODES_FULL
+    elif dconf.get("rgb", True):
+        if dconf.get("aok", False):
+            rgb_modes = RGB_MODES_STICKS_AOK
+        else:
+            rgb_modes = RGB_MODES_STICKS
+    else:
+        rgb_modes = None
+
     # Output
     d_producers, d_outs, d_params = get_outputs(
         conf["controller_mode"],
         None,
         conf["imu"].to(bool),
         emit=emit,
-        rgb_modes=(
-            RGB_MODES_FULL if dconf.get("rgb_secondary", False) else RGB_MODES_STICKS  # type: ignore
-        ),
+        rgb_modes=rgb_modes,  # type: ignore
     )
     motion = d_params.get("uses_motion", True)
 

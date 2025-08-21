@@ -243,7 +243,7 @@ class SerialDevice(Consumer, Producer):
             logger.info(f"OXP C: {cmd.hex()}")
             self.ser.write(cmd)
             self.last_sent = time.perf_counter()
-        
+
         # No LEDs, skip the rest
         if self.buttons_only:
             return
@@ -271,7 +271,7 @@ class SerialDevice(Consumer, Producer):
             case "duality":
                 stick = ev["red"], ev["green"], ev["blue"]
                 center = ev["red2"], ev["green2"], ev["blue2"]
-            case "oxp":
+            case "oxp" | "aok":
                 brightness = ev["brightnessd"]
                 stick = ev["oxp"]
                 if stick == "classic":
