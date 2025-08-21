@@ -32,6 +32,10 @@ msgstr ""
 msgid "Controller"
 msgstr "控制器"
 
+#. Section Name for: magic_modules
+msgid "Modules"
+msgstr ""
+
 #. Section Name for: wincontrols
 #. Setting: WinControls
 #. Field: title
@@ -258,6 +262,7 @@ msgstr "亮度"
 
 #. Setting: Brightness
 #. Option: disabled
+#. Setting: Vibration
 #. Setting: Off
 #. Field: title
 #. Setting: Vibration Strength
@@ -267,12 +272,14 @@ msgstr "關閉"
 
 #. Setting: Brightness
 #. Option: low
+#. Setting: Vibration
 #. Setting: Speed
 msgid "Low"
 msgstr "低"
 
 #. Setting: Brightness
 #. Option: medium
+#. Setting: Vibration
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "Medium"
@@ -280,6 +287,7 @@ msgstr "中"
 
 #. Setting: Brightness
 #. Option: high
+#. Setting: Vibration
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "High"
@@ -324,14 +332,82 @@ msgstr "關機中..."
 msgid "Enable Aura RGB support"
 msgstr "啟用 RGB 支援"
 
-#. Setting: Claw Controller
+msgid "Cross Film / Joystick"
+msgstr ""
+
+msgid "Cross / Joystick"
+msgstr ""
+
+msgid "Cross / Touchpad"
+msgstr ""
+
+#, fuzzy
+msgid "Direction / Joystick"
+msgstr "方向"
+
+msgid "Joystick / Cross Film"
+msgstr ""
+
+msgid "Joystick / Cross"
+msgstr ""
+
+#, fuzzy
+msgid "Touchpad / Cross"
+msgstr "觸控板點擊"
+
+#, fuzzy
+msgid "Joystick / Direction"
+msgstr "方向"
+
+msgid "ABXY \\ Joystick"
+msgstr ""
+
+msgid "ABXY \\ Touchpad"
+msgstr ""
+
+msgid "ABXYCZ"
+msgstr ""
+
+msgid "ABXY Film \\ Joystick"
+msgstr ""
+
+msgid "Joystick \\ ABXY"
+msgstr ""
+
+#, fuzzy
+msgid "Touchpad \\ ABXY"
+msgstr "觸控板模擬"
+
+msgid "ABXYCZ [R]"
+msgstr ""
+
+msgid "Joystick \\ ABXY Film"
+msgstr ""
+
+msgid "Unknown"
+msgstr ""
+
+#, fuzzy
+msgid "Unpowered"
+msgstr "電源"
+
+#, fuzzy
+msgid "Disconnected"
+msgstr "中斷控制器連接"
+
+#, fuzzy
+msgid "Ejecting..."
+msgstr "更新中..."
+
+#. Setting: Ayaneo Controller
 #. Field: title
 #, fuzzy
-msgid "Claw Controller"
-msgstr "左控制器"
+msgid "Ayaneo Controller"
+msgstr "Ally 控制器"
 
-#. Setting: Claw Controller
+#. Setting: Ayaneo Controller
 #. Field: hint
+#. Setting: Claw Controller
 #. Setting: Handheld
 #. Setting: Orange Pi Neo
 #. Setting: OneXPlayer Controller
@@ -348,17 +424,139 @@ msgstr "控制器模擬"
 msgid "Emulate different controller types to fuse your device's features."
 msgstr "模擬不同類型的控制器, 以便融合設備特性"
 
+#. Setting: Motion Support
+#. Field: title
+msgid "Motion Support"
+msgstr "體感支援"
+
+#. Setting: Motion Support
+#. Field: hint
+msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
+msgstr "啟用陀螺儀/加速度計 (IMU) 支援 (0.3% 背景 CPU 使用)"
+
+#. Setting: Motion Hz
+#. Field: title
+msgid "Motion Hz"
+msgstr "體感取樣率"
+
+#. Setting: Motion Hz
+#. Field: hint
+msgid "Sets the sampling frequency for the IMU."
+msgstr "IMU 的取樣頻率"
+
+#. Setting: Aya Button Map (Left, Right)
+#. Field: title
+msgid "Aya Button Map (Left, Right)"
+msgstr ""
+
+#. Setting: Aya Button Map (Left, Right)
+#. Field: hint
+#. Setting: Swap Guide and Menu/View
+#, fuzzy
+msgid "Swaps the Guide and QAM buttons with start and select."
+msgstr "交換 Armory Crate/Command center 與 Menu/View 按鈕"
+
+#. Setting: Aya Button Map (Left, Right)
+#. Option: oem
+msgid "Default (Select/Start, Guide/QAM)"
+msgstr ""
+
+#. Setting: Aya Button Map (Left, Right)
+#. Option: traditional
+msgid "Traditional (Guide/Select, Start/QAM)"
+msgstr ""
+
+#. Setting: Aya Button Map (Left, Right)
+#. Option: traditional_rev
+msgid "Traditional Rev. (Select/Guide, QAM/Start)"
+msgstr ""
+
+#. Setting: Vibration
+#. Field: title
+#, fuzzy
+msgid "Vibration"
+msgstr "震動強度"
+
+#. Setting: Nintendo Mode (A-B Swap)
+#. Field: title
+msgid "Nintendo Mode (A-B Swap)"
+msgstr "任天堂模式 (A-B 交換)"
+
+#. Setting: Nintendo Mode (A-B Swap)
+#. Field: hint
+msgid "Swaps A with B and X with Y."
+msgstr "A 與 B 交換，X 與 Y 交換"
+
+#. Setting: Hold View to Reboot
+#. Field: title
+msgid "Hold View to Reboot"
+msgstr "按住 View 鍵重啟"
+
+#. Setting: Magic Modules
+#. Field: title
+msgid "Magic Modules"
+msgstr ""
+
+#. Setting: Pop Both Modules
+#. Field: title
+#, fuzzy
+msgid "Pop Both Modules"
+msgstr "藍牙模式"
+
+#. Setting: Pop Both Modules
+#. Field: hint
+#. Setting: Pop Left Module
+#. Setting: Pop Right Module
+msgid "Pops the left and right Ayaneo Magic Modules modules."
+msgstr ""
+
+#. Setting: Left
+#. Field: title
+#. Setting: Location
+#. Option: left
+#. Setting: Direction
+msgid "Left"
+msgstr "左"
+
+#. Setting: Pop Left Module
+#. Field: title
+msgid "Pop Left Module"
+msgstr ""
+
+#. Setting: Right
+#. Field: title
+#. Setting: Location
+#. Option: right
+#. Setting: Direction
+msgid "Right"
+msgstr "右"
+
+#. Setting: Pop Right Module
+#. Field: title
+msgid "Pop Right Module"
+msgstr ""
+
+#. Setting: Quick Reset
+#. Field: title
+msgid "Quick Reset"
+msgstr ""
+
+#. Setting: Quick Reset
+#. Field: hint
+msgid "Re-initializes the Ayaneo Magic Modules modules."
+msgstr ""
+
+#. Setting: Claw Controller
+#. Field: title
+#, fuzzy
+msgid "Claw Controller"
+msgstr "左控制器"
+
 #. Setting: Swap Guide and Menu/View
 #. Field: title
 #, fuzzy
 msgid "Swap Guide and Menu/View"
 msgstr "交換 ROG Menu/View 按鈕"
-
-#. Setting: Swap Guide and Menu/View
-#. Field: hint
-#, fuzzy
-msgid "Swaps the Guide and QAM buttons with start and select."
-msgstr "交換 Armory Crate/Command center 與 Menu/View 按鈕"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: title
@@ -414,45 +612,10 @@ msgstr "僅 Select"
 msgid "Start+Select"
 msgstr "Start+Select 鍵"
 
-#. Setting: Nintendo Mode (A-B Swap)
-#. Field: title
-msgid "Nintendo Mode (A-B Swap)"
-msgstr "任天堂模式 (A-B 交換)"
-
-#. Setting: Nintendo Mode (A-B Swap)
-#. Field: hint
-msgid "Swaps A with B and X with Y."
-msgstr "A 與 B 交換，X 與 Y 交換"
-
-#. Setting: Hold View to Reboot
-#. Field: title
-msgid "Hold View to Reboot"
-msgstr "按住 View 鍵重啟"
-
 #. Setting: Handheld
 #. Field: title
 msgid "Handheld"
 msgstr "掌機"
-
-#. Setting: Motion Support
-#. Field: title
-msgid "Motion Support"
-msgstr "體感支援"
-
-#. Setting: Motion Support
-#. Field: hint
-msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
-msgstr "啟用陀螺儀/加速度計 (IMU) 支援 (0.3% 背景 CPU 使用)"
-
-#. Setting: Motion Hz
-#. Field: title
-msgid "Motion Hz"
-msgstr "體感取樣率"
-
-#. Setting: Motion Hz
-#. Field: hint
-msgid "Sets the sampling frequency for the IMU."
-msgstr "IMU 的取樣頻率"
 
 #. Setting: GPD Controller
 #. Field: title
@@ -905,6 +1068,10 @@ msgstr "將控制器重置為預設設定"
 #. Field: title
 msgid "Orange Pi Neo"
 msgstr "香橙派 Neo"
+
+#, fuzzy
+msgid "AOKZOE Controller"
+msgstr "左控制器"
 
 #. Setting: OneXPlayer Controller
 #. Field: title
@@ -1487,21 +1654,9 @@ msgstr ""
 " 將觸控板伸展至整個Dualsense虛擬觸控板。"
 
 #. Setting: Location
-#. Option: right
-#. Setting: Direction
-msgid "Right"
-msgstr "右"
-
-#. Setting: Location
 #. Option: center
 msgid "Center"
 msgstr "置中"
-
-#. Setting: Location
-#. Option: left
-#. Setting: Direction
-msgid "Left"
-msgstr "左"
 
 #. Setting: Location
 #. Option: stretch
@@ -2171,59 +2326,65 @@ msgstr "啟用 Steam 電源鍵觸發 (負責睡眠動畫和電源按鈕清單)"
 msgid "Saturation"
 msgstr "飽和度"
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Field: title
-msgid "Stick Style"
+#, fuzzy
+msgid "Style"
 msgstr "搖桿樣式"
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: monster_woke
 msgid "Monster Woke"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: flowing
 msgid "Flowing Light"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: sunset
 msgid "Sunset Afterglow"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: neon
 msgid "Colorful Neon"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: dreamy
 msgid "Dreamy"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: cyberpunk
 msgid "Cyberpunk"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: colorful
 msgid "Colorful"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: aurora
 msgid "Aurora"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: sun
 msgid "Warm Sun"
 msgstr ""
 
-#. Setting: Stick Style
+#. Setting: Style
 #. Option: classic
 msgid "OXP Classic"
+msgstr ""
+
+#. Setting: Style
+#. Option: aok
+msgid "AOK Classic"
 msgstr ""
 
 #. Setting: Secondary
@@ -2286,6 +2447,11 @@ msgstr "在兩種顏色之間交替"
 #. Setting: OneXPlayer
 #. Field: title
 msgid "OneXPlayer"
+msgstr ""
+
+#. Setting: AOKZOE
+#. Field: title
+msgid "AOKZOE"
 msgstr ""
 
 #. Setting: RGB Settings
