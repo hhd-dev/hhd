@@ -133,10 +133,16 @@ def find_x11_auth(uid: int):
 
 
 def find_x11_display():
-    for fn in reversed(sorted(os.listdir(X11_DIR))):
-        if not fn.startswith(b"X"):
-            continue
-        return ":" + fn[1:].decode(), os.stat(X11_DIR + fn).st_uid
+    # First, try to find an X11 display owned by the current user
+    # If not found, try to find one owned by root
+    for skip_root in (True, False):
+        for fn in sorted(os.listdir(X11_DIR)):
+            if not fn.startswith(b"X"):
+                continue
+            uid = os.stat(X11_DIR + fn).st_uid
+            if skip_root and uid == 0:
+                continue
+            return ":" + fn[1:].decode(), uid
 
     return None, 0
 
