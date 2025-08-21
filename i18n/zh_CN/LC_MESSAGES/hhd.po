@@ -381,6 +381,14 @@ msgid "Unknown"
 msgstr ""
 
 #, fuzzy
+msgid "Ejecting..."
+msgstr "更新中... "
+
+#, fuzzy
+msgid "Activating..."
+msgstr "更新中... "
+
+#, fuzzy
 msgid "Unpowered"
 msgstr "电源"
 
@@ -388,9 +396,10 @@ msgstr "电源"
 msgid "Disconnected"
 msgstr "断开控制器连接"
 
-#, fuzzy
-msgid "Ejecting..."
-msgstr "更新中... "
+#. Setting: Paused
+#. Field: title
+msgid "Paused"
+msgstr "暂停"
 
 #. Setting: Ayaneo Controller
 #. Field: title
@@ -1515,11 +1524,6 @@ msgid ""
 msgstr ""
 "将控制器模拟为蓝牙模式而非 USB 模式。默认使用蓝牙模式是因为这样可以减少应用程序与控制器交互时的问题。不过在某些游戏中，USB "
 "模式可能会带来更好的 LED 灯光支持。欢迎测试并反馈！"
-
-#. Setting: Paused
-#. Field: title
-msgid "Paused"
-msgstr "暂停"
 
 #. Setting: Touchpad Emulation
 #. Field: title

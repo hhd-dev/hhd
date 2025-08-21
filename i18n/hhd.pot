@@ -374,13 +374,21 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
+msgid "Ejecting..."
+msgstr ""
+
+msgid "Activating..."
+msgstr ""
+
 msgid "Unpowered"
 msgstr ""
 
 msgid "Disconnected"
 msgstr ""
 
-msgid "Ejecting..."
+#. Setting: Paused
+#. Field: title
+msgid "Paused"
 msgstr ""
 
 #. Setting: Ayaneo Controller
@@ -1485,11 +1493,6 @@ msgid ""
 "the default as it causes less issues with how apps interact with the "
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
-msgstr ""
-
-#. Setting: Paused
-#. Field: title
-msgid "Paused"
 msgstr ""
 
 #. Setting: Touchpad Emulation

@@ -397,6 +397,12 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
+msgid "Ejecting..."
+msgstr ""
+
+msgid "Activating..."
+msgstr ""
+
 msgid "Unpowered"
 msgstr ""
 
@@ -404,7 +410,9 @@ msgstr ""
 msgid "Disconnected"
 msgstr "Controle Esquerdo"
 
-msgid "Ejecting..."
+#. Setting: Paused
+#. Field: title
+msgid "Paused"
 msgstr ""
 
 #. Setting: Ayaneo Controller
@@ -1586,11 +1594,6 @@ msgstr ""
 "já que causa menos problemas em como os aplicativos interagem com o "
 "controle. Porém, usar o modo USB pode melhorar o suporte para LED (?) em "
 "alguns jogos. Teste e nos avise!"
-
-#. Setting: Paused
-#. Field: title
-msgid "Paused"
-msgstr ""
 
 #. Setting: Touchpad Emulation
 #. Field: title

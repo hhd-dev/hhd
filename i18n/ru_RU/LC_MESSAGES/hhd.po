@@ -389,6 +389,14 @@ msgid "Unknown"
 msgstr ""
 
 #, fuzzy
+msgid "Ejecting..."
+msgstr "Обновление... "
+
+#, fuzzy
+msgid "Activating..."
+msgstr "Обновление... "
+
+#, fuzzy
 msgid "Unpowered"
 msgstr "Питание"
 
@@ -396,9 +404,10 @@ msgstr "Питание"
 msgid "Disconnected"
 msgstr "Отключить контроллер"
 
-#, fuzzy
-msgid "Ejecting..."
-msgstr "Обновление... "
+#. Setting: Paused
+#. Field: title
+msgid "Paused"
+msgstr "Приостановлено"
 
 #. Setting: Ayaneo Controller
 #. Field: title
@@ -1568,11 +1577,6 @@ msgstr ""
 "умолчанию, так как вызывает меньше проблем с взаимодействием приложений с"
 " контроллером. Однако использование USB-режима может улучшить поддержку "
 "LED (?) в некоторых играх. Протестируйте и сообщите!"
-
-#. Setting: Paused
-#. Field: title
-msgid "Paused"
-msgstr "Приостановлено"
 
 #. Setting: Touchpad Emulation
 #. Field: title

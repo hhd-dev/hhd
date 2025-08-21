@@ -389,6 +389,14 @@ msgid "Unknown"
 msgstr ""
 
 #, fuzzy
+msgid "Ejecting..."
+msgstr "Aggiornamento in corso... "
+
+#, fuzzy
+msgid "Activating..."
+msgstr "Aggiornamento in corso... "
+
+#, fuzzy
 msgid "Unpowered"
 msgstr "Alimentazione"
 
@@ -396,9 +404,10 @@ msgstr "Alimentazione"
 msgid "Disconnected"
 msgstr "Disconnetti Controller"
 
-#, fuzzy
-msgid "Ejecting..."
-msgstr "Aggiornamento in corso... "
+#. Setting: Paused
+#. Field: title
+msgid "Paused"
+msgstr "In Pausa"
 
 #. Setting: Ayaneo Controller
 #. Field: title
@@ -1580,11 +1589,6 @@ msgstr ""
 "modo in cui le app interagiscono con il controller. Tuttavia, l'uso della"
 " modalità USB può migliorare il supporto LED (?) in alcuni giochi. Prova "
 "e facci sapere!"
-
-#. Setting: Paused
-#. Field: title
-msgid "Paused"
-msgstr "In Pausa"
 
 #. Setting: Touchpad Emulation
 #. Field: title
