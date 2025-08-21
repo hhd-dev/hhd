@@ -106,8 +106,11 @@ RIGHT_MODULES = {
 }
 
 MODULE_UKN = _("Unknown")
+MODULE_EJECTING = _("Ejecting...")
+MODULE_ACTIVATING = _("Activating...")
 MODULE_UNPOWERED = _("Unpowered")
 MODULE_DISCONNECTED = _("Disconnected")
+MODULE_DISABLED = _("Paused")
 
 
 class Ayaneo3Hidraw(GenericGamepadHidraw):
@@ -194,11 +197,10 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
             logger.info("Controller module check passed.")
 
     def eject(self, left: bool = False, right: bool = False):
-        v = _("Ejecting...")
         if left:
-            self.config["info_left"] = v
+            self.config["info_left"] = MODULE_EJECTING
         if right:
-            self.config["info_right"] = v
+            self.config["info_right"] = MODULE_EJECTING
         if left or right:
             self.emit([])
 
@@ -285,6 +287,12 @@ def plugin_run(
 
     while not should_exit.is_set():
         if conf["controller_mode.mode"].to(str) == "disabled":
+            # Disable module handling
+            others["info_left"] = MODULE_DISABLED
+            others["info_right"] = MODULE_DISABLED
+            others.pop("reset", False)
+            others.pop("pop", None)
+
             time.sleep(ERROR_DELAY)
             if first_disabled:
                 UInputDevice.close_volume_cached()
@@ -305,11 +313,17 @@ def plugin_run(
                 found_device = True
 
                 # Update status
-                if others.get("info_right", None) == MODULE_DISCONNECTED:
-                    others["info_right"] = MODULE_UNPOWERED
+                if others.get("info_right", None) in (
+                    MODULE_DISCONNECTED,
+                    MODULE_UNPOWERED,
+                ):
+                    others["info_right"] = MODULE_ACTIVATING
                     refresh = True
-                if others.get("info_left", None) == MODULE_DISCONNECTED:
-                    others["info_left"] = MODULE_UNPOWERED
+                if others.get("info_left", None) in (
+                    MODULE_DISCONNECTED,
+                    MODULE_UNPOWERED,
+                ):
+                    others["info_left"] = MODULE_ACTIVATING
                     refresh = True
             else:
                 if first:
@@ -338,7 +352,7 @@ def plugin_run(
                 if os.path.exists(CONTROLLER_POWER):
                     with open(CONTROLLER_POWER, "w") as f:
                         f.write("off")
-            
+
             if refresh:
                 emit([])
 
