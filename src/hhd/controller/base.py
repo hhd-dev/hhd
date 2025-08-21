@@ -696,10 +696,10 @@ class Multiplexer:
             if ev == "reboot":
                 if self.reboot_is_held:
                     try:
-                        import os
+                        import subprocess
 
-                        os.system("systemctl reboot")
-                        logger.info("rebooting")
+                        subprocess.run(["reboot"])
+                        logger.info("Rebooting")
                     except Exception as e:
                         logger.error(f"Rebooting failed with error:\n{type(e)}:{e}")
             elif self.reboot_is_held or not ev.get("from_reboot", False):

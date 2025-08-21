@@ -536,7 +536,7 @@ class BootcPlugin(HHDPlugin):
                         self.state = "loading_rebase"
                 elif reboot:
                     logger.info("User pressed reboot in updater. Rebooting...")
-                    subprocess.run(["systemctl", "reboot"])
+                    subprocess.run(["reboot"])
 
             # Incompatible
             case "incompatible":

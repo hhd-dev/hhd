@@ -38,7 +38,7 @@ def boot_windows():
     try:
         subprocess.run(["efibootmgr", "-n", str(bootnum)])
         logger.info(f"Booting Windows with bootnum {bootnum}")
-        subprocess.run(["systemctl", "reboot"])
+        subprocess.run(["reboot"])
     except Exception as e:
         logger.error(f"Failed to boot Windows: {e}")
 
