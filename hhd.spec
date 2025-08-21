@@ -52,3 +52,4 @@ install -m644 usr/lib/systemd/system/%{name}.service %{buildroot}%{_unitdir}/%{n
 %{_udevrulesdir}/83-%{name}.rules
 %{_sysconfdir}/udev/hwdb.d/83-%{name}.hwdb
 %{_unitdir}/%{name}@.service
+%{_unitdir}/%{name}.service
