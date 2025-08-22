@@ -214,6 +214,7 @@ def controller_loop(
         conf["touchpad"] if has_touchpad else None,
         conf["imu"].to(bool),
         emit=emit,
+        extra_buttons=dconf.get("extra_buttons", "dual"),
     )
     motion = d_params.get("uses_motion", True)
 

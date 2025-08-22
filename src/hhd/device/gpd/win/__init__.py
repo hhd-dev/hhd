@@ -26,6 +26,7 @@ GPD_CONFS = {
         "name": "GPD Win 3",
         "touchpad": False,
         "hrtimer": False,
+        "extra_buttons": "none",
     },
     "G1618-04": {
         "name": "GPD Win 4",
@@ -102,6 +103,7 @@ class GpdWinControllersPlugin(HHDPlugin):
                 can_disable=True,
                 has_leds=False,
                 start_disabled=self.dconf.get("untested", False),
+                extra_buttons=self.dconf.get("extra_buttons", "dual"),
             )
         )
 

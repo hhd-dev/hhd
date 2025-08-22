@@ -369,6 +369,7 @@ def controller_loop(
         None,
         emit=emit,
         rgb_modes={"disabled": [], "solid": ["color"]},
+        extra_buttons=dconf.get("extra_buttons", "dual"),
     )
 
     # Inputs

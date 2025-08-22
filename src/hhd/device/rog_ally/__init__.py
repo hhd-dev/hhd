@@ -41,7 +41,7 @@ class RogAllyControllersPlugin(HHDPlugin):
 
         base = {"controllers": {"rog_ally": load_relative_yaml("controllers.yml")}}
         base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
-            get_outputs_config(can_disable=False)
+            get_outputs_config(can_disable=False, extra_buttons="dual")
         )
         base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config(
             LIMIT_DEFAULTS(self.ally_x)

@@ -465,6 +465,7 @@ def controller_loop(
             else None
         ),
         rgb_init_times=1,
+        extra_buttons=dconf.get("extra_buttons", "dual"),
     )
     motion = d_params.get("uses_motion", True)
 

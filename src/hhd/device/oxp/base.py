@@ -515,6 +515,7 @@ def controller_loop(
         conf["imu"].to(bool),
         emit=emit,
         rgb_modes=rgb_modes,  # type: ignore
+        extra_buttons=dconf.get("extra_buttons", "dual"),
     )
     motion = d_params.get("uses_motion", True)
 

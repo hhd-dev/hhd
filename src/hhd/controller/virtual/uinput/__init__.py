@@ -53,6 +53,7 @@ class UInputDevice(Consumer, Producer):
         motions_device: bool = False,
         volume_keyboard: bool = False,
         sync_gyro: bool = False,
+        gyro: bool = True,
     ) -> None:
         self.capabilities = capabilities
         self.btn_map = btn_map
@@ -78,6 +79,7 @@ class UInputDevice(Consumer, Producer):
         self.imu_failed = False
         self.last_imu = 0
         self.wrote = False
+        self.gyro = gyro
         if volume_keyboard:
             self.cache = True
 
@@ -106,9 +108,11 @@ class UInputDevice(Consumer, Producer):
                     and self.vid == cached.vid
                     and self.pid == cached.pid
                     and self.bus == cached.bus
+                    and self.version == cached.version
                     and self.phys == cached.phys
                     and self.input_props == cached.input_props
                     and self.uniq == cached.uniq
+                    and self.gyro == cached.gyro
                 ):
                     logger.warning(f"Using cached controller node for {name}.")
                     self.dev = cached.dev

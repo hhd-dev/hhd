@@ -90,7 +90,7 @@ def plugin_run(
             ):
                 logger.info("Launching emulated controller.")
                 init = time.perf_counter()
-                controller_loop_xinput(conf_copy, should_exit, updated, emit, reset)
+                controller_loop_xinput(conf_copy, should_exit, updated, emit, reset, dconf)
             else:
                 if controller_mode != "xinput":
                     logger.info(
@@ -222,7 +222,7 @@ def controller_loop_rest(
 
 
 def controller_loop_xinput(
-    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, reset: bool
+    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, reset: bool, dconf
 ):
     debug = DEBUG_MODE
 
@@ -241,6 +241,7 @@ def controller_loop_xinput(
             "rainbow": ["brightness", "speed"],
             "spiral": ["brightness", "speed"],
         },
+        extra_buttons=dconf.get("extra_buttons", "dual"),
     )
     swap_legion = conf["swap_legion"].to(bool)
 

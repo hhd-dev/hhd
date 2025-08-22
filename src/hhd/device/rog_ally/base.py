@@ -330,6 +330,7 @@ def controller_loop(
             "spiral": ["brightnessd", "speedd", "direction"],
         },
         rgb_zones="quad",
+        extra_buttons="dual",
     )
     motion = d_params.get("uses_motion", True)
 

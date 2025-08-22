@@ -42,6 +42,7 @@ def get_outputs(
     controller_disabled: bool = False,
     touchpad_enable: Literal["disabled", "gamemode", "always"] | None = None,
     rgb_init_times: int | None = None,
+    extra_buttons: Literal["none", "dual", "quad"] = "dual",
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
     consumers = []
@@ -157,7 +158,16 @@ def get_outputs(
                 flip_z = conf["hori_steam.flip_z"].to(bool)
                 button_map = HORIPAD_STEAM_BUTTON_MAP
                 bus = 0x06
-                version = 0
+                if noob_mode:
+                    version = 1
+                else:
+                    match extra_buttons:
+                        case "none":
+                            version = 1
+                        case "dual":
+                            version = 2
+                        case _: # "quad"
+                            version = 3
                 sync_gyro = conf.get("hori_steam.sync_gyro", True)
                 has_qam = True
             elif controller == "xbox_elite" or (
@@ -190,6 +200,7 @@ def get_outputs(
                 version=version,
                 cache=True,
                 sync_gyro=sync_gyro and motion,
+                gyro=motion,
             )
             producers.append(d)
             consumers.append(d)
