@@ -17,7 +17,6 @@ class GeneralPowerPlugin(HHDPlugin):
 
     def __init__(
         self,
-        is_steamdeck: bool = False,
     ) -> None:
         self.name = f"adjustor_general"
         self.priority = 8
@@ -28,7 +27,6 @@ class GeneralPowerPlugin(HHDPlugin):
         self.sched_proc = None
         self.ppd_supported = None
         self.tuned_supported = None
-        self.is_steamdeck = is_steamdeck
         self.ovr_enabled = False
         self.should_exit = Event()
         self.t_sys = None
@@ -98,9 +96,6 @@ class GeneralPowerPlugin(HHDPlugin):
             sets["children"]["sched"]["options"] = avail_pretty
         else:
             del sets["children"]["sched"]
-
-        if not self.is_steamdeck:
-            del sets["children"]["steamdeck_ovr"]
 
         self.logged_boost = True
         return {
@@ -214,24 +209,6 @@ class GeneralPowerPlugin(HHDPlugin):
                         self.avail_scheds[new_sched],
                         stderr=subprocess.DEVNULL,
                         stdout=subprocess.DEVNULL,
-                    )
-        
-        # Handle steamdeck_ovr
-        if self.is_steamdeck:
-            new_ovr = conf.get("tdp.general.steamdeck_ovr", False)
-            if new_ovr and not self.ovr_enabled:
-                self.ovr_enabled = True
-                logger.info("Starting FUSE mount for /sys (Overclock).")
-                from ...fuse import prepare_tdp_mount, start_tdp_client
-
-                stat = prepare_tdp_mount(passhtrough=True)
-                if stat:
-                    self.t_sys = start_tdp_client(
-                        self.should_exit,
-                        None,
-                        1,
-                        15,
-                        20,
                     )
 
     def close_sched(self):

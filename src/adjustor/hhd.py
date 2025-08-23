@@ -347,8 +347,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
         logger.info(f"No tdp drivers found for this device, using generic plugin.")
 
-        is_steamdeck = "Jupiter" in prod or "Galileo" in prod
-        return [GeneralPowerPlugin(is_steamdeck=is_steamdeck), BatteryPlugin(always_enable=True)]
+        return [GeneralPowerPlugin(), BatteryPlugin(always_enable=True)]
 
     return [
         *drivers,

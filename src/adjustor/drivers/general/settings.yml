@@ -25,12 +25,3 @@ children:
       scx_bpfland: bpfland 
       scx_rusty: rusty
     default: disabled
-
-  steamdeck_ovr:
-    type: bool
-    tags: [advanced,expert]
-    title: Steamdeck Overclock (Requires Reboot)
-    hint: >-
-      Allows setting the Steam TDP slider from 1-20W instead of 4-15W.
-      Unchecked, it is still setting TDP to 15W.
-    default: False
