@@ -347,7 +347,7 @@ class GpuPlugin(HHDPlugin):
                                 set_epp_mode("balance_power")
                             if self.supports_boost:
                                 set_cpu_boost(True)
-                            set_frequency_scaling(nonlinear=self.supports_nonlinear)
+                            set_frequency_scaling(nonlinear=False)
                         case _:  # power
                             if self.supports_epp:
                                 set_powersave_governor()
