@@ -75,6 +75,7 @@ enabled:
                 scx_bpfland: bpfland 
                 scx_rusty: rusty
                 scx_p2dq: P2DQ
+                scx_flash: Flash
               default: disabled
     gpu_freq:
       type: mode
