@@ -10,7 +10,64 @@ from hhd.plugins.conf import Config
 from threading import Event
 import logging
 
+from hhd.plugins.plugin import Emitter
+
 logger = logging.getLogger(__name__)
+
+PROFILES = ["performance", "balanced", "power-saver"]
+PTYPE = Literal["performance", "balanced", "power-saver"]
+
+def set_power_profile(profile):
+    try:
+        busctl = shutil.which("busctl")
+        if not busctl:
+            return None
+        subprocess.run(
+            [
+                busctl,
+                "set-property",
+                "org.freedesktop.UPower.PowerProfiles",
+                "/org/freedesktop/UPower/PowerProfiles",
+                "org.freedesktop.UPower.PowerProfiles",
+                "ActiveProfile",
+                "s",
+                profile,
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except Exception as e:
+        logger.warning(f"Could set power profile to '{profile}': {e}")
+
+
+def get_current_power_profile() -> (
+    PTYPE | None
+):
+    try:
+        busctl = shutil.which("busctl")
+        if not busctl:
+            return None
+        res = subprocess.run(
+            [
+                busctl,
+                "get-property",
+                "org.freedesktop.UPower.PowerProfiles",
+                "/org/freedesktop/UPower/PowerProfiles",
+                "org.freedesktop.UPower.PowerProfiles",
+                "ActiveProfile",
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        profile = res.stdout.decode().strip()
+        for p in PROFILES:
+            if p in profile:
+                return p # type: ignore
+    except Exception:
+        pass
+    logger.warning(f"Could not read power profile. Disabling profile support.")
 
 
 class GeneralPowerPlugin(HHDPlugin):
@@ -26,74 +83,39 @@ class GeneralPowerPlugin(HHDPlugin):
         self.old_sched = None
         self.sched_proc = None
         self.ppd_supported = None
-        self.tuned_supported = None
         self.ovr_enabled = False
         self.should_exit = Event()
         self.t_sys = None
         self.currentTarget = None
 
-    def settings(self):
-        sets = load_relative_yaml("./settings.yml")
-
-        # PPD
-        if self.ppd_supported is None:
-            self.ppd_supported = False
-            if ppc := shutil.which('powerprofilesctl'):
-                try:
-                    if os.environ.get("HHD_PPD_MASK", None):
-                        logger.info("Unmasking Power Profiles Daemon in the case it was masked.")
-                        os.system('systemctl unmask power-profiles-daemon')
-                    subprocess.run(
-                        [ppc],
-                        check=True,
-                        stdin=subprocess.DEVNULL,
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                    )
-                    self.ppd_supported = True
-                except Exception as e:
-                    logger.warning(f"powerprofilectl returned with error:\n{e}")
-
-        # TuneD
-        if self.tuned_supported is None:
-            self.tuned_supported = False
-            if tuned := shutil.which('tuned-adm'):
-                try:
-                    if os.environ.get("HHD_PPD_MASK", None):
-                        logger.info("Unmasking TuneD in the case it was masked.")
-                        os.system('systemctl unmask tuned')
-                    subprocess.run(
-                        [tuned,'active'],
-                        check=True,
-                        stdin=subprocess.DEVNULL,
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                    )
-                    self.tuned_supported = True
-                except Exception as e:
-                    logger.warning(f"tuned-adm returned with error:\n{e}")
-
-
-        if not self.ppd_supported and not self.tuned_supported:
-            del sets["children"]["profile"]
+    def open(self, emit: Emitter, context: Context):
+        self.emit = emit
+        self.ppd_supported = get_current_power_profile() is not None
 
         # SchedExt
+        self.sets = load_relative_yaml("./settings.yml")
         self.avail_scheds = {}
-        avail_pretty = {}
+        self.avail_pretty = {}
         kernel_supports = os.path.isfile("/sys/kernel/sched_ext/state")
         if kernel_supports:
-            for sched, pretty in sets["children"]["sched"]["options"].items():
+            for sched, pretty in self.sets["children"]["sched"]["options"].items():
                 if sched == "disabled":
-                    avail_pretty[sched] = pretty
+                    self.avail_pretty[sched] = pretty
                     continue
 
                 exe = shutil.which(sched)
                 if exe:
                     self.avail_scheds[sched] = exe
-                    avail_pretty[sched] = pretty
+                    self.avail_pretty[sched] = pretty
+
+    def settings(self):
+        sets = self.sets
+
+        if not self.ppd_supported:
+            del sets["children"]["profile"]
 
         if self.avail_scheds:
-            sets["children"]["sched"]["options"] = avail_pretty
+            sets["children"]["sched"]["options"] = self.avail_pretty
         else:
             del sets["children"]["sched"]
 
@@ -109,85 +131,18 @@ class GeneralPowerPlugin(HHDPlugin):
             new_profile = conf.get("tdp.general.profile", self.target)
             if new_profile != self.target and new_profile and self.target:
                 logger.info(f"Setting power profile to '{new_profile}'")
+                set_power_profile(new_profile)
                 self.target = new_profile
-                try:
-                    subprocess.run(
-                        [shutil.which('powerprofilesctl'), "set", new_profile],
-                        check=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                    )
-                except Exception as e:
-                    self.ppd_supported = False
-                    logger.warning(f"powerprofilesctl returned with error:\n{e}")
-                    self.ppd_supported = False
             elif not self.last_check or curr - self.last_check > 2:
                 # Update profile every 2 seconds
                 self.last_check = curr
-                try:
-                    res = subprocess.run(
-                        [shutil.which('powerprofilesctl'), "get"],
-                        check=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                    )
-                    self.target = res.stdout.decode().strip()  # type: ignore
-                    if self.target != conf["tdp.general.profile"].to(str):
-                        conf["tdp.general.profile"] = self.target
-                except Exception as e:
+                self.target = get_current_power_profile()
+                if self.target is None:
                     self.ppd_supported = False
-                    logger.warning(f"powerprofilectl returned with error:\n{e}")
-                    self.ppd_supported = False
-
-        # Handle TuneD
-        if self.tuned_supported:
-            curr = time.time()
-            ppd_tuned_mapping = {
-                "power-saver": "powersave",
-                "balanced": "balanced",
-                "performance": "throughput-performance"
-            }
-
-            new_profile = ppd_tuned_mapping.get(conf.get("tdp.general.profile", self.target))
-            if new_profile != self.currentTarget and new_profile and self.currentTarget:
-                logger.info(f"Setting TuneD profile to '{new_profile}' from '{self.target}'")
-                self.currentTarget = new_profile
-                try:
-                    subprocess.run(
-                        [shutil.which('tuned-adm'), "profile", new_profile],
-                        check=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                    )
-
-                except Exception as e:
-                    self.tuned_supported = False
-                    logger.warning(f"tuned-adm returned with error:\n{e}")
-                    self.tuned_supported = False
-            elif not self.last_check or curr - self.last_check > 2:
-                # Update profile every 2 seconds
-                self.last_check = curr
-                try:
-                    res = subprocess.run(
-                        [shutil.which('tuned-adm'), "active"],
-                        check=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                    )
-                    tuned_ppd_mapping = {
-                        "powersave": "power-saver",
-                        "balanced": "balanced",
-                        "throughput-performance": "performance"
-                    }
-                    self.currentTarget = res.stdout.decode().split(":")[1].strip()
-                    self.target = tuned_ppd_mapping.get(self.currentTarget)  # type: ignore
-
-                    if self.target != conf["tdp.general.profile"].to(str):
-                        conf["tdp.general.profile"] = self.target
-                except Exception as e:
-                    self.tuned_supported = False
-                    logger.warning(f"tuned-adm returned with error:\n{e}")
-                    self.tuned_supported = False
+                    logger.info(f"Power profile support seems to be gone. Disabling.")
+                    self.emit({"type": "settings"})
+                elif self.target != conf["tdp.general.profile"].to(str):
+                    conf["tdp.general.profile"] = self.target
 
         # Handle sched
         if self.avail_scheds:
