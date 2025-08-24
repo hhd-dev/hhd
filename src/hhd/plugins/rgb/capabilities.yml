@@ -57,6 +57,8 @@ oxp:
       sun: "Warm Sun"
       classic: "OXP Classic"
 
+  brightnessd: *brightnessd
+
 aok:
   mode:
     type: multiple
