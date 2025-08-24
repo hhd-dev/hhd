@@ -452,18 +452,6 @@ msgstr ""
 msgid "rusty"
 msgstr ""
 
-#. Setting: Steamdeck Overclock (Requires Reboot)
-#. Field: title
-msgid "Steamdeck Overclock (Requires Reboot)"
-msgstr "Steamdeck 超頻 (需要重新啟動)"
-
-#. Setting: Steamdeck Overclock (Requires Reboot)
-#. Field: hint
-msgid ""
-"Allows setting the Steam TDP slider from 1-20W instead of 4-15W. "
-"Unchecked, it is still setting TDP to 15W."
-msgstr "允許 Steam TDP 設定為 1-20W, 而不是 4-15W。未選擇時, 仍將 TDP 設定為 15W。"
-
 #. Setting: Processor Settings
 #. Field: title
 msgid "Processor Settings"
@@ -561,6 +549,11 @@ msgstr "啟用或禁用 CPU 加速頻率。禁用可以將總消耗降低 2W，�
 #. Setting: Custom Scheduler
 #. Option: scx_p2dq
 msgid "P2DQ"
+msgstr ""
+
+#. Setting: Custom Scheduler
+#. Option: scx_flash
+msgid "Flash"
 msgstr ""
 
 #. Setting: GPU Frequency
@@ -996,4 +989,14 @@ msgstr "啟用進階參數"
 #~ msgstr ""
 #~ "允許您自定義風扇曲線。此風扇曲線僅在自定義模式下得到官方支援，但您仍然可以在其他電源模式下使用。此風扇曲線需要重新應用，並且在切換 "
 #~ "TDP 模式時重新應用。"
+
+#~ msgid "Steamdeck Overclock (Requires Reboot)"
+#~ msgstr "Steamdeck 超頻 (需要重新啟動)"
+
+#~ msgid ""
+#~ "Allows setting the Steam TDP slider "
+#~ "from 1-20W instead of 4-15W. Unchecked,"
+#~ " it is still setting TDP to "
+#~ "15W."
+#~ msgstr "允許 Steam TDP 設定為 1-20W, 而不是 4-15W。未選擇時, 仍將 TDP 設定為 15W。"
 

@@ -433,18 +433,6 @@ msgstr ""
 msgid "rusty"
 msgstr ""
 
-#. Setting: Steamdeck Overclock (Requires Reboot)
-#. Field: title
-msgid "Steamdeck Overclock (Requires Reboot)"
-msgstr ""
-
-#. Setting: Steamdeck Overclock (Requires Reboot)
-#. Field: hint
-msgid ""
-"Allows setting the Steam TDP slider from 1-20W instead of 4-15W. "
-"Unchecked, it is still setting TDP to 15W."
-msgstr ""
-
 #. Setting: Processor Settings
 #. Field: title
 msgid "Processor Settings"
@@ -536,6 +524,11 @@ msgstr ""
 #. Setting: Custom Scheduler
 #. Option: scx_p2dq
 msgid "P2DQ"
+msgstr ""
+
+#. Setting: Custom Scheduler
+#. Option: scx_flash
+msgid "Flash"
 msgstr ""
 
 #. Setting: GPU Frequency

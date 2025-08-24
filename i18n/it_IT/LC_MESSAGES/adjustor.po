@@ -475,20 +475,6 @@ msgstr "bpfland"
 msgid "rusty"
 msgstr "rusty"
 
-#. Setting: Steamdeck Overclock (Requires Reboot)
-#. Field: title
-msgid "Steamdeck Overclock (Requires Reboot)"
-msgstr "Overclock Steam Deck (Richiede Riavvio)"
-
-#. Setting: Steamdeck Overclock (Requires Reboot)
-#. Field: hint
-msgid ""
-"Allows setting the Steam TDP slider from 1-20W instead of 4-15W. "
-"Unchecked, it is still setting TDP to 15W."
-msgstr ""
-"Consente di impostare lo slider TDP di Steam da 1-20W invece di 4-15W. Se"
-" non selezionato, imposta comunque il TDP a 15W."
-
 #. Setting: Processor Settings
 #. Field: title
 msgid "Processor Settings"
@@ -594,6 +580,11 @@ msgstr ""
 #. Option: scx_p2dq
 msgid "P2DQ"
 msgstr "P2DQ"
+
+#. Setting: Custom Scheduler
+#. Option: scx_flash
+msgid "Flash"
+msgstr ""
 
 #. Setting: GPU Frequency
 #. Field: title
@@ -1032,4 +1023,18 @@ msgstr "Tempo Integrazione Limite STAPM"
 #. Field: title
 msgid "Enable Advanced Parameters"
 msgstr "Abilita Parametri Avanzati"
+
+#~ msgid "Steamdeck Overclock (Requires Reboot)"
+#~ msgstr "Overclock Steam Deck (Richiede Riavvio)"
+
+#~ msgid ""
+#~ "Allows setting the Steam TDP slider "
+#~ "from 1-20W instead of 4-15W. Unchecked,"
+#~ " it is still setting TDP to "
+#~ "15W."
+#~ msgstr ""
+#~ "Consente di impostare lo slider TDP "
+#~ "di Steam da 1-20W invece di 4-15W."
+#~ " Se non selezionato, imposta comunque "
+#~ "il TDP a 15W."
 
