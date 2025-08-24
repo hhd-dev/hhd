@@ -634,7 +634,8 @@ class BootcPlugin(HHDPlugin):
                 )
                 if self.proc is None:
                     self._init(conf)
-                elif exit := self.proc.poll() is not None:
+                elif self.proc.poll() is not None:
+                    exit = self.proc.poll()
                     if exit and self.updating:
                         logger.error(
                             f"Command failed with exit code {exit}. Fallback to rpm-ostree"
