@@ -34,6 +34,7 @@ CLAW_SET_M1M2 = lambda a, btn: bytes(
 )
 CLAW_SYNC_ROM = bytes([0x0F, 0x00, 0x00, 0x3C, 0x22])
 
+CLAW_SET_XINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00])
 CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02, 0x00])
 CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
 CLAW_SET_DESKTOP = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x04, 0x00])
@@ -42,6 +43,13 @@ MSI_CLAW_VID = 0x0DB0
 MSI_CLAW_XINPUT_PID = 0x1901
 MSI_CLAW_DINPUT_PID = 0x1902
 MSI_CLAW_TEST_PID = 0x1903
+
+MSI_VENDOR_APPLICATIONS = [
+    0xFFF00040,
+    0x00010005,
+    0xFF000000,
+    0xFFA00001,
+]
 
 KBD_VID = 0x0001
 KBD_PID = 0x0001
@@ -174,12 +182,13 @@ class ClawDInputHidraw(GenericGamepadHidraw):
                     )
                     self.write(cmd)
 
-    def set_dinput_mode(self, init: bool = False) -> None:
+    def set_controller_mode(self, dinput: bool = False, init: bool = False) -> None:
         if not self.dev:
             return
 
-        # Make sure M1/M2 are recognizable
-        if init:
+        # Make sure M1/M2 are recognizable in dinput mode
+        # Otherwise dont remap them. So users can modify them in Windows
+        if init and dinput:
             time.sleep(0.3)
             self.write(CLAW_SET_M1M2(self.addr or ADDR_DEFAULT, "m1"))
             time.sleep(0.5)
@@ -190,8 +199,11 @@ class ClawDInputHidraw(GenericGamepadHidraw):
             self.write(CLAW_SET_MSI)
             time.sleep(2)
 
-        # Set the device to dinput mode
-        self.write(CLAW_SET_DINPUT)
+        if dinput:
+            # Set the device to dinput mode
+            self.write(CLAW_SET_DINPUT)
+        else:
+            self.write(CLAW_SET_XINPUT)
 
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
@@ -259,34 +271,34 @@ def plugin_run(
         else:
             first_disabled = True
 
+        use_dinput = conf.get("dinput_mode", False)
         try:
             is_xinput = bool(enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_XINPUT_PID))
-            found_device = bool(
-                enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_DINPUT_PID)
-            )
+            is_dinput = bool(enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_DINPUT_PID))
+            found_device = is_xinput or is_dinput
             test_mode = bool(enumerate_evs(vid=MSI_CLAW_VID, pid=MSI_CLAW_TEST_PID))
         except Exception:
             logger.warning("Failed finding device, skipping check.")
             time.sleep(LONGER_ERROR_DELAY)
             found_device = True
             is_xinput = False
+            is_dinput = False
 
-        if is_xinput or (found_device and not test_mode and not initialized):
+        if (
+            (is_xinput and use_dinput)
+            or (is_dinput and not use_dinput)
+            or (found_device and not test_mode and not initialized)
+        ):
             d_vend = ClawDInputHidraw(
                 vid=[MSI_CLAW_VID],
                 pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
-                application=[
-                    0xFFF00040,
-                    0x00010005,
-                    0xFF000000,
-                    0xFFA00001,
-                ],
+                application=MSI_VENDOR_APPLICATIONS,
                 required=True,
             )
             initialized = True
             try:
                 d_vend.open()
-                d_vend.set_dinput_mode(init=True)
+                d_vend.set_controller_mode(conf.get("dinput_mode", False), init=True)
                 d_vend.close(True)
                 time.sleep(2)
             except Exception as e:
@@ -312,6 +324,7 @@ def plugin_run(
                 emit,
                 woke_up,
                 test_mode=test_mode,
+                use_dinput=use_dinput,
             )
             repeated_fail = False
         except Exception as e:
@@ -359,6 +372,7 @@ def controller_loop(
     emit: Emitter,
     woke_up: TEvent,
     test_mode: bool = False,
+    use_dinput: bool = False,
 ):
     debug = DEBUG_MODE
 
@@ -369,20 +383,23 @@ def controller_loop(
         None,
         emit=emit,
         rgb_modes={"disabled": [], "solid": ["color"]},
-        extra_buttons=dconf.get("extra_buttons", "dual"),
+        extra_buttons=dconf.get("extra_buttons", "dual") if use_dinput else "none",
     )
 
     # Inputs
+    extra_args = {
+        "btn_map": DINPUT_BUTTON_MAP,
+        "axis_map": DINPUT_AXIS_MAP,
+        "postprocess": DINPUT_AXIS_POSTPROCESS,
+    }
     d_xinput = GenericGamepadEvdev(
         vid=[MSI_CLAW_VID],
-        pid=[MSI_CLAW_DINPUT_PID, MSI_CLAW_TEST_PID],
+        pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID, MSI_CLAW_TEST_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
         hide=True,
-        btn_map=DINPUT_BUTTON_MAP,
-        axis_map=DINPUT_AXIS_MAP,
-        postprocess=DINPUT_AXIS_POSTPROCESS,
+        **(extra_args if use_dinput else {}),
     )
 
     d_kbd_1 = GenericGamepadEvdev(
@@ -396,14 +413,14 @@ def controller_loop(
     # Mute these so after suspend we do not get stray keypresses
     d_kbd_2 = DesktopDetectorEvdev(
         vid=[MSI_CLAW_VID],
-        pid=[MSI_CLAW_DINPUT_PID],
+        pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
         required=False,
         grab=True,
         capabilities={EC("EV_KEY"): [EC("KEY_ESC")]},
     )
     d_mouse = DesktopDetectorEvdev(
         vid=[MSI_CLAW_VID],
-        pid=[MSI_CLAW_DINPUT_PID],
+        pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
         required=False,
         grab=True,
         capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
@@ -442,23 +459,15 @@ def controller_loop(
         d_vend = ClawDInputHidraw(
             vid=[MSI_CLAW_VID],
             pid=[MSI_CLAW_TEST_PID],
-            application=[
-                0xFFF00040,
-                0x00010005,
-                0xFF000000,
-            ],
+            application=MSI_VENDOR_APPLICATIONS,
             required=True,
             test_mode=True,
         )
     else:
         d_vend = ClawDInputHidraw(
             vid=[MSI_CLAW_VID],
-            pid=[MSI_CLAW_DINPUT_PID],
-            application=[
-                0xFFF00040,
-                0x00010005,
-                0xFF000000,
-            ],
+            pid=[MSI_CLAW_DINPUT_PID, MSI_CLAW_XINPUT_PID],
+            application=MSI_VENDOR_APPLICATIONS,
             required=True,
         )
 
@@ -511,8 +520,10 @@ def controller_loop(
             d_kbd_2.desktop = False
 
             if desktop_mode or (switch_to_dinput and start > switch_to_dinput):
-                logger.info("Setting controller to dinput mode.")
-                d_vend.set_dinput_mode()
+                logger.info(
+                    f"Setting controller to {'dinput' if use_dinput else 'xinput'} mode."
+                )
+                d_vend.set_controller_mode(dinput=use_dinput)
                 switch_to_dinput = None
             # elif woke_up.is_set():
             #     woke_up.clear()

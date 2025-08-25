@@ -11,6 +11,12 @@ children:
     title: Controller Emulation
     hint: >-
       Emulate different controller types to fuse your device's features.
+  
+  dinput_mode:
+    type: bool
+    title: DInput Mode (Enables Paddles, Beta)
+    tags: [non-essential]
+    default: False
 
   swap_guide:
     type: bool
