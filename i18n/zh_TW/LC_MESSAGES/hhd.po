@@ -561,6 +561,11 @@ msgstr ""
 msgid "Claw Controller"
 msgstr "左控制器"
 
+#. Setting: DInput Mode (Enables Paddles, Beta)
+#. Field: title
+msgid "DInput Mode (Enables Paddles, Beta)"
+msgstr ""
+
 #. Setting: Swap Guide and Menu/View
 #. Field: title
 #, fuzzy
