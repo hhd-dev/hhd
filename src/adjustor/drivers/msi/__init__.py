@@ -191,7 +191,7 @@ class MsiDriverPlugin(HHDPlugin):
                 f"{self.tdp_data['performance_dc']}W/{self.tdp_data['performance'][0]}W"
             )
         else:
-            perf_tdp = f"{self.tdp_data['performance']}W"
+            perf_tdp = f"{self.tdp_data['performance'][0]}W"
         out["tdp"]["msi"]["children"]["tdp"]["modes"]["performance"]["unit"] = perf_tdp
 
         # Set custom pretty print
