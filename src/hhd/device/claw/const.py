@@ -5,6 +5,7 @@ MSI_CLAW_MAPPINGS = {
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     B("KEY_F15"): "mode",
     B("KEY_F16"): "share",
+    B("KEY_G"): "share", # claw a8 after bios 104, it is KEY_LEFTMETA + KEY_G
 }
 
 CONFS = { 
