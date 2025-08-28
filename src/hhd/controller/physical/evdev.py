@@ -350,6 +350,12 @@ class GenericGamepadEvdev(Producer, Consumer):
 
     def close(self, exit: bool) -> bool:
         if self.dev:
+            try:
+                if self.grab:
+                    self.dev.ungrab()
+            except Exception as e:
+                logger.warning(f"Failed to ungrab device {self.dev.path}: {e}")
+            
             if self.hidden and exit:
                 unhide_gamepad(self.dev.path, self.hidden)
             self.dev.close()
