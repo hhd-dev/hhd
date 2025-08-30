@@ -9,6 +9,7 @@
 [![PyPI package version](https://badge.fury.io/py/hhd.svg)](https://pypi.org/project/hhd/)
 [![Python version 3.10+](https://img.shields.io/badge/python-3.10%2B-informational.svg)](https://pypi.org/project/pasteur/)
 [![Code style is Black](https://img.shields.io/badge/code%20style-black-black.svg)](https://github.com/psf/black)
+[![Translations on Weblate](https://hosted.weblate.org/widget/hhd/hhd/svg-badge.svg)](https://hosted.weblate.org/engage/hhd/)
 <!-- [![]()]() -->
 
 # Handheld Daemon
@@ -211,10 +212,18 @@ The override setting also displays the make and model of your device, which
 are required to add the mappings to Handheld Daemon.
 
 ### Localizing Handheld Daemon
-Handheld Daemon fully supports localization through standard `PO`, `POT` files.
-Contribution instructions in progress!!!
+
+#### On Weblate (Recommended)
+[![Translations on Weblate](https://hosted.weblate.org/widget/hhd/hhd/svg-badge.svg)](https://hosted.weblate.org/engage/hhd/)
+
+You can help translate Handheld Daemon on [Weblate](https://hosted.weblate.org/engage/hhd/).
+It is a free service for open source projects, and it makes it easy to contribute
+translations without having to deal with `git` or `po` files.
+You can also use it to see the current translation status of Handheld Daemon.
 
 #### For maintainers
+Handheld Daemon fully supports localization through standard `PO`, `POT` files.
+
 You can find `pot` and `po` files for Handheld Daemon under the `i18n` directory.
 You can clone/download this repository and open the `./i18n` directory.
 Then, just copy the `*.pot` files into `<your_locale>/LC_MESSAGES/*.po`
