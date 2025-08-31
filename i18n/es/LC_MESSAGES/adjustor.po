@@ -8,28 +8,32 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-08-31 08:15+0000\n"
+"Last-Translator: Haru <harumn97@outlook.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/hhd/adjustor/es/>"
+"\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.13.1-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
 msgstr ""
+"Desactiva los plugins de Decky relativos al TDP, usa el botón de debajo para "
+"continuar."
 
 #. Setting: TDP Controls
 #. Field: title
 msgid "TDP Controls"
-msgstr ""
+msgstr "Controles de TDP"
 
 #. Setting: Enable TDP Controls
 #. Field: title
 msgid "Enable TDP Controls"
-msgstr ""
+msgstr "Activa los controles de TDP"
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -38,26 +42,31 @@ msgid ""
 " will set and maintain the TDP limits set on start-up and during other "
 "device changes (ac/dc)."
 msgstr ""
+"Activa la gestión del TDP por Handheld Daemon. Mientras este activado, "
+"Handheld Daemon establecerá y mantendrá los limites establecidos durante la "
+"puesta en marcha del dispositivo, entre otros cambios (ac/dc)."
 
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #. Setting: Error
 #. Option: nowrite
 msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
 msgstr ""
+"No se ha podido escribir al archivo ACPI Call. ACPI Call es necesario para "
+"el TDP."
 
 #. Setting: TDP Capabilities
 #. Field: title
 msgid "TDP Capabilities"
-msgstr ""
+msgstr "Capacidades de TDP"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: title
 msgid "Disable Decky TDP Plugins"
-msgstr ""
+msgstr "Desactiva los plugins de TDP de Decky"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: hint
@@ -67,6 +76,10 @@ msgid ""
 "restarts Decky. This might cause Steam to restart. Move them back and "
 "reboot to re-enable."
 msgstr ""
+"Desactiva los plugins de TDP de Decky (Powercontrol, SimpleDeckyTDP) "
+"moviéndolos de ~/homebrew/plugins a ~/homebrew/plugins/hhd-disabled. Tras "
+"esto se reinicia Decky. Esto hará que Steam se reinicie. Si quieres "
+"reactivarlos muevelos de vuelta y reinicia."
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -152,7 +165,7 @@ msgstr ""
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Setting: TDP
 #. Field: hint
@@ -208,7 +221,7 @@ msgstr ""
 #. Setting: Custom Scheduler
 #. Setting: CPU Boost
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivado"
 
 #. Setting: Disabled
 #. Field: hint
@@ -218,7 +231,7 @@ msgstr ""
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #. Setting: 30C
 #. Field: title
@@ -368,14 +381,14 @@ msgstr ""
 #. Setting: Charge Bypass
 #. Option: always
 msgid "Always"
-msgstr ""
+msgstr "Siempre"
 
 #. Setting: Power
 #. Field: title
 #. Setting: Energy Policy
 #. Option: power
 msgid "Power"
-msgstr ""
+msgstr "Fuente de Alimentación"
 
 #. Setting: Power Profile
 #. Field: title
@@ -447,7 +460,7 @@ msgstr ""
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. Setting: Auto
 #. Field: hint
@@ -480,12 +493,12 @@ msgstr ""
 #. Setting: CPU Power (EPP)
 #. Option: power
 msgid "Low"
-msgstr ""
+msgstr "Bajo"
 
 #. Setting: CPU Power (EPP)
 #. Option: balance_performance
 msgid "High"
-msgstr ""
+msgstr "Alto"
 
 #. Setting: CPU Minimum Frequency
 #. Field: title
@@ -774,7 +787,7 @@ msgstr ""
 #. Setting: Reset to Default
 #. Field: title
 msgid "Reset to Default"
-msgstr ""
+msgstr "Restaurar valores predeterminados"
 
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
@@ -789,7 +802,7 @@ msgstr ""
 #. Setting: Apply Settings
 #. Field: title
 msgid "Apply Settings"
-msgstr ""
+msgstr "Aplicar ajustes"
 
 #. Setting: TDP Status
 #. Field: title
