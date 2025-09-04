@@ -204,6 +204,7 @@ class OxpAtKbd(GenericGamepadEvdev):
     def produce(self, fds):
         evs = list(super().produce(fds))
         curr = time.perf_counter()
+        skip = []
 
         for i, ev in enumerate(evs):
             if ev["type"] == "button" and ev["code"] in (
@@ -217,13 +218,17 @@ class OxpAtKbd(GenericGamepadEvdev):
 
                     if t and curr - t < BUTTON_MIN_DELAY:
                         self.queued.append((ev["code"], t + BUTTON_MIN_DELAY))
+                        skip.append(i)
+
+        for i in reversed(skip):
+            evs.pop(i)
 
         while self.queued and self.queued[0][1] < curr:
             evs.append(
                 {
                     "type": "button",
                     "code": self.queued.pop(0)[0],
-                    "value": 0,
+                    "value": False,
                 }  # type: ignore
             )
 

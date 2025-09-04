@@ -55,6 +55,7 @@ KBD_VID = 0x0001
 KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.1
+BUTTON_MIN_DELAY = 0.13
 
 # 0211
 ADDR_0163 = {
@@ -62,6 +63,7 @@ ADDR_0163 = {
     "m1": [0x00, 0x7A],
     "m2": [0x01, 0x1F],
 }
+# 0166 0168
 # 0217
 # 0308 (?)
 ADDR_0166 = {
@@ -70,6 +72,49 @@ ADDR_0166 = {
     "m2": [0x01, 0x63],
 }
 ADDR_DEFAULT = ADDR_0166
+
+
+class MsiAtKbd(GenericGamepadEvdev):
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            *args,
+            **kwargs,
+        )
+        self.state = {}
+        self.queued = []
+
+    def produce(self, fds):
+        evs = list(super().produce(fds))
+        curr = time.perf_counter()
+        skip = []
+
+        for i, ev in enumerate(evs):
+            if ev["type"] == "button" and ev["code"] in (
+                "mode",
+                "share",
+            ):
+                if ev["value"]:
+                    self.state[ev["code"]] = curr
+                else:
+                    t = self.state.pop(ev["code"], None)
+
+                    if t and curr - t < BUTTON_MIN_DELAY:
+                        self.queued.append((ev["code"], t + BUTTON_MIN_DELAY))
+                        skip.append(i)
+        
+        for i in reversed(skip):
+            evs.pop(i)
+
+        while self.queued and self.queued[0][1] < curr:
+            evs.append(
+                {
+                    "type": "button",
+                    "code": self.queued.pop(0)[0],
+                    "value": 0,
+                }  # type: ignore
+            )
+
+        return evs
 
 
 def set_rgb_cmd(brightness, red, green, blue, addr: dict = ADDR_DEFAULT) -> bytes:
@@ -402,7 +447,7 @@ def controller_loop(
         **(extra_args if use_dinput else {}),
     )
 
-    d_kbd_1 = GenericGamepadEvdev(
+    d_kbd_1 = MsiAtKbd(
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
@@ -530,6 +575,9 @@ def controller_loop(
             #     # Switch to dinput after 2 seconds without input to avoid
             #     # being stuck in desktop mode
             #     switch_to_dinput = time.perf_counter() + 2
+
+            # Read delayed events
+            evs.extend(d_kbd_1.produce([]))
 
             evs = multiplexer.process(evs)
             if evs:
