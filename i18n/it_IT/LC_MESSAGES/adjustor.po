@@ -8,20 +8,21 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-07-25 17:11+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2025-09-04 13:53+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/hhd/adjustor/it/>"
+"\n"
 "Language: it_IT\n"
-"Language-Team: it_IT <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.13.1-rc\n"
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
 msgstr ""
-"Disabilita i plugin TDP di Decky usando il pulsante qui sotto per "
-"continuare."
+"Disabilita i plugin TDP di Decky usando il pulsante qui sotto per continuare."
 
 #. Setting: TDP Controls
 #. Field: title
@@ -40,10 +41,9 @@ msgid ""
 " will set and maintain the TDP limits set on start-up and during other "
 "device changes (ac/dc)."
 msgstr ""
-"Abilita la gestione del TDP da parte di Handheld Daemon. Quando "
-"abilitato, Handheld Daemon imposterà e manterrà i limiti TDP impostati "
-"all'avvio e durante altre modifiche del dispositivo (alimentazione "
-"AC/DC)."
+"Abilita la gestione del TDP da parte di Handheld Daemon. Quando abilitato, "
+"Handheld Daemon imposterà e manterrà i limiti TDP impostati all'avvio e "
+"durante altre modifiche del dispositivo (alimentazione AC/DC)."
 
 #. Setting: Error
 #. Field: title
@@ -53,7 +53,8 @@ msgstr "Errore"
 #. Setting: Error
 #. Option: nowrite
 msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
-msgstr "Impossibile scrivere sul file ACPI Call. ACPI Call è richiesto per il TDP."
+msgstr ""
+"Impossibile scrivere sul file ACPI Call. ACPI Call è richiesto per il TDP."
 
 #. Setting: TDP Capabilities
 #. Field: title
@@ -73,11 +74,11 @@ msgid ""
 "restarts Decky. This might cause Steam to restart. Move them back and "
 "reboot to re-enable."
 msgstr ""
-"Disabilita i plugin TDP di Decky (Powercontrol, SimpleDeckyTDP) "
-"spostandoli da ~/homebrew/plugins a ~/homebrew/plugins/hhd-disabled. "
-"Successivamente, riavvia Decky. Questo potrebbe causare il riavvio di "
-"Steam. Per riabilitarli, spostali nuovamente nella cartella originale e "
-"riavvia il dispositivo."
+"Disabilita i plugin TDP di Decky (Powercontrol, SimpleDeckyTDP) spostandoli "
+"da ~/homebrew/plugins a ~/homebrew/plugins/hhd-disabled. Successivamente, "
+"riavvia Decky. Questo potrebbe causare il riavvio di Steam. Per "
+"riabilitarli, spostali nuovamente nella cartella originale e riavvia il "
+"dispositivo."
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -87,12 +88,11 @@ msgid ""
 "other device changes (ac/dc).\n"
 "If the device crashes, TDP setting will be disabled on next startup."
 msgstr ""
-"Abilita la gestione del TDP da parte di Handheld Daemon. Quando "
-"abilitato, Handheld Daemon imposterà e manterrà i limiti TDP impostati "
-"all'avvio e durante altre modifiche del dispositivo (alimentazione "
-"AC/DC).\n"
-"In caso di crash del dispositivo, l'impostazione TDP verrà disabilitata "
-"al prossimo avvio."
+"Abilita la gestione del TDP da parte di Handheld Daemon. Quando abilitato, "
+"Handheld Daemon imposterà e manterrà i limiti TDP impostati all'avvio e "
+"durante altre modifiche del dispositivo (alimentazione AC/DC).\n"
+"In caso di crash del dispositivo, l'impostazione TDP verrà disabilitata al "
+"prossimo avvio."
 
 #. Setting: Add TDP to /sys for Steam (Requires Restart)
 #. Field: title
@@ -125,13 +125,12 @@ msgid ""
 "after rebooting."
 msgstr ""
 "Quando questa opzione è attiva, le impostazioni aderiranno ai limiti "
-"stabiliti dal produttore del dispositivo, in base alla loro "
-"disponibilità.\n"
-"Quando è disattivata, gli intervalli delle impostazioni TDP si "
-"espanderanno a ciò che è logicamente possibile per il dispositivo "
-"corrente (indipendentemente dalle specifiche del produttore).\n"
-"Tutte le impostazioni al di fuori delle specifiche verranno impostate "
-"sulle specifiche di sistema dopo il riavvio."
+"stabiliti dal produttore del dispositivo, in base alla loro disponibilità.\n"
+"Quando è disattivata, gli intervalli delle impostazioni TDP si espanderanno "
+"a ciò che è logicamente possibile per il dispositivo corrente ("
+"indipendentemente dalle specifiche del produttore).\n"
+"Tutte le impostazioni al di fuori delle specifiche verranno impostate sulle "
+"specifiche di sistema dopo il riavvio."
 
 msgid "Steam is controlling TDP"
 msgstr "Steam sta controllando il TDP"
@@ -201,8 +200,8 @@ msgid ""
 "Allows the device to temporarily boost by setting appropriate slow and "
 "fast TDPs."
 msgstr ""
-"Consente al dispositivo di aumentare temporaneamente la potenza "
-"impostando TDP lenti e veloci appropriati."
+"Consente al dispositivo di aumentare temporaneamente la potenza impostando "
+"TDP lenti e veloci appropriati."
 
 #. Setting:
 #. Field: title
@@ -221,8 +220,8 @@ msgid ""
 "Recommended to use with ROG Swap, as the View button will be muted to "
 "games."
 msgstr ""
-"Consente di scorrere le modalità TDP con la combinazione di tasti View+Y."
-" Si consiglia di utilizzarlo con ROG Swap, poiché il pulsante View verrà "
+"Consente di scorrere le modalità TDP con la combinazione di tasti View+Y. Si "
+"consiglia di utilizzarlo con ROG Swap, poiché il pulsante View verrà "
 "disattivato per i giochi."
 
 #. Setting: Custom Fan Curve
@@ -247,7 +246,8 @@ msgstr "Disabilitato"
 #. Setting: Disabled
 #. Field: hint
 msgid "Lets the device manage the fan curve on its own."
-msgstr "Lascia che il dispositivo gestisca autonomamente la curva della ventola."
+msgstr ""
+"Lascia che il dispositivo gestisca autonomamente la curva della ventola."
 
 #. Setting: Manual
 #. Field: title
@@ -457,8 +457,8 @@ msgid ""
 "Allows attaching a scheduler to the kernel sched_ext. Schedulers need to "
 "be installed and kernel needs to support sched_ext."
 msgstr ""
-"Consente di collegare uno scheduler a sched_ext del kernel. Gli scheduler"
-" devono essere installati e il kernel deve supportare sched_ext."
+"Consente di collegare uno scheduler a sched_ext del kernel. Gli scheduler "
+"devono essere installati e il kernel deve supportare sched_ext."
 
 #. Setting: Custom Scheduler
 #. Option: scx_lavd
@@ -498,15 +498,16 @@ msgid ""
 "low TDPs, the CPU will be tuned down and at other TDPs, it will use "
 "balanced settings."
 msgstr ""
-"Handheld Daemon gestirà le impostazioni di gestione energetica. Ciò "
-"include il governor della CPU, il boost della CPU, la frequenza della GPU"
-" e le preferenze di alimentazione della CPU. A bassi TDP, la CPU verrà "
+"Handheld Daemon gestirà le impostazioni di gestione energetica. Ciò include "
+"il governor della CPU, il boost della CPU, la frequenza della GPU e le "
+"preferenze di alimentazione della CPU. A bassi TDP, la CPU verrà "
 "depotenziata e ad altri TDP, utilizzerà impostazioni bilanciate."
 
 #. Setting: Manual
 #. Field: hint
 msgid "Allows you to set the energy management settings manually."
-msgstr "Consente di impostare manualmente le impostazioni di gestione energetica."
+msgstr ""
+"Consente di impostare manualmente le impostazioni di gestione energetica."
 
 #. Setting: CPU Power (EPP)
 #. Field: title
@@ -522,9 +523,9 @@ msgid ""
 "included."
 msgstr ""
 "Imposta la preferenza di prestazione energetica per la CPU. Mantenere su "
-"bilanciato per buone prestazioni a tutti i TDP. Le opzioni corrispondono "
-"a `power`, `balance_power`, `balance_performance`. La modalità "
-"Performance non è raccomandata e non è inclusa."
+"bilanciato per buone prestazioni a tutti i TDP. Le opzioni corrispondono a "
+"`power`, `balance_power`, `balance_performance`. La modalità Performance non "
+"è raccomandata e non è inclusa."
 
 #. Setting: CPU Power (EPP)
 #. Option: power
@@ -548,8 +549,8 @@ msgid ""
 " light games. However, the delay of increasing the frequency may cause "
 "minor stutters, especially in VRR displays."
 msgstr ""
-"Imposta la frequenza minima per la CPU. Usare 400MHz risparmierà batteria"
-" nei giochi leggeri. Tuttavia, il ritardo nell'aumentare la frequenza "
+"Imposta la frequenza minima per la CPU. Usare 400MHz risparmierà batteria "
+"nei giochi leggeri. Tuttavia, il ritardo nell'aumentare la frequenza "
 "potrebbe causare piccoli scatti, specialmente su schermi VRR."
 
 #. Setting: CPU Minimum Frequency
@@ -573,8 +574,8 @@ msgid ""
 "Enables or disables the CPU boost frequencies. Disabling lowers total "
 "consumption by 2W with  minimal performance impact."
 msgstr ""
-"Abilita o disabilita le frequenze di boost della CPU. Disabilitarlo "
-"riduce il consumo totale di 2W con un impatto minimo sulle prestazioni."
+"Abilita o disabilita le frequenze di boost della CPU. Disabilitarlo riduce "
+"il consumo totale di 2W con un impatto minimo sulle prestazioni."
 
 #. Setting: Custom Scheduler
 #. Option: scx_p2dq
@@ -597,9 +598,9 @@ msgid ""
 "Pins the GPU to a certain frequency. Helps in certain games that are CPU "
 "or GPU heavy by shifting power to or from the GPU. Has a minor effect."
 msgstr ""
-"Fissa la GPU a una certa frequenza. Aiuta in alcuni giochi che sono "
-"pesanti per la CPU o la GPU spostando l'alimentazione da o verso la GPU. "
-"Ha un effetto minore."
+"Fissa la GPU a una certa frequenza. Aiuta in alcuni giochi che sono pesanti "
+"per la CPU o la GPU spostando l'alimentazione da o verso la GPU. Ha un "
+"effetto minore."
 
 #. Setting: Auto
 #. Field: hint
@@ -718,8 +719,8 @@ msgid ""
 "Maximum average TDP. Boost goes a bit higher and is recommended for "
 "desktop use."
 msgstr ""
-"TDP medio massimo. Il Boost va un po' più in alto ed è consigliato per "
-"l'uso desktop."
+"TDP medio massimo. Il Boost va un po' più in alto ed è consigliato per l'uso "
+"desktop."
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -740,8 +741,7 @@ msgid ""
 "cause a mode change to reset the fan curve."
 msgstr ""
 "Lascia che Legion GO gestisca la curva autonomamente. Impostare questa "
-"opzione causerà un cambio di modalità per resettare la curva della "
-"ventola."
+"opzione causerà un cambio di modalità per resettare la curva della ventola."
 
 #. Setting: 10C
 #. Field: title
@@ -767,8 +767,7 @@ msgstr "Applica la curva della ventola minima da Legion Space."
 #. Field: hint
 msgid "Reset to the original fan curve for custom mode."
 msgstr ""
-"Ripristina la curva della ventola originale per la modalità "
-"personalizzata."
+"Ripristina la curva della ventola originale per la modalità personalizzata."
 
 #. Setting: Show TDP changes with RGB
 #. Field: title
@@ -817,9 +816,9 @@ msgid ""
 "Recommended to use with button swap, as the View button will be muted to "
 "games."
 msgstr ""
-"Consente di scorrere le modalità TDP con la combinazione di tasti View+Y."
-" Si consiglia di utilizzarlo con lo scambio di pulsanti, poiché il "
-"pulsante View verrà disattivato per i giochi."
+"Consente di scorrere le modalità TDP con la combinazione di tasti View+Y. Si "
+"consiglia di utilizzarlo con lo scambio di pulsanti, poiché il pulsante View "
+"verrà disattivato per i giochi."
 
 #. Setting: TDP Settings
 #. Field: title
@@ -829,7 +828,8 @@ msgstr "Impostazioni TDP"
 #. Setting: TDP
 #. Field: hint
 msgid "Controls all Ryzen SMU settings through preset curves."
-msgstr "Controlla tutte le impostazioni SMU di Ryzen tramite curve preimpostate."
+msgstr ""
+"Controlla tutte le impostazioni SMU di Ryzen tramite curve preimpostate."
 
 #. Setting: Custom Fan Curve
 #. Field: hint
@@ -839,11 +839,10 @@ msgid ""
 "responds faster and prevents throttling. Edge is the temperature of the "
 "chip: responds slower and prevents overheating."
 msgstr ""
-"Consente di impostare una curva della ventola personalizzata e di "
-"scegliere la sonda di temperatura (Edge o Junction). Junction è la "
-"temperatura di picco del chip: risponde più velocemente e previene il "
-"throttling. Edge è la temperatura del chip: risponde più lentamente e "
-"previene il surriscaldamento."
+"Consente di impostare una curva della ventola personalizzata e di scegliere "
+"la sonda di temperatura (Edge o Junction). Junction è la temperatura di "
+"picco del chip: risponde più velocemente e previene il throttling. Edge è la "
+"temperatura del chip: risponde più lentamente e previene il surriscaldamento."
 
 #. Setting: Manual (Edge, Smooth)
 #. Field: title
@@ -929,27 +928,25 @@ msgid ""
 " the actual max TDP value of the device. Then,the Slow TDP limit averages"
 " the last 10-20s of TDP values and keeps the value below it."
 msgstr ""
-"Parametri TDP standard per i processori Ryzen. Devono essere tutti "
-"impostati per controllare correttamente il TDP del dispositivo.\n"
-"I processori Ryzen hanno 2 modalità: STTv2 e STAPM (legacy). AMD "
-"suggerisce ai produttori di utilizzare STTv2, il che rende il Legion Go "
-"l'unico dispositivo a offrire l'alternativa STAPM tramite un'impostazione"
-" del BIOS.\n"
-"In STTv2, il dispositivo continuerà ad aumentare la potenza (boost) "
-"finché la \"Scocca\" del dispositivo (il punto più caldo accessibile "
-"all'utente) non raggiunge una temperatura impostata dal produttore. "
-"Successivamente, il dispositivo utilizzerà il limite TDP per la "
-"temperatura della scocca (Skin Temp). In STAPM, il dispositivo calcola la"
-" media dei valori TDP degli ultimi 1-3 minuti e mantiene tale valore al "
-"di sotto del limite TDP STAPM. Entrambe le modalità ignorano il limite "
-"dell'altra (il limite STAPM non ha effetto su STT e il limite di "
-"temperatura della scocca non ha effetto su STAPM), quindi entrambi "
-"dovrebbero essere impostati.\n"
+"Parametri TDP standard per i processori Ryzen. Devono essere tutti impostati "
+"per controllare correttamente il TDP del dispositivo.\n"
+"I processori Ryzen hanno 2 modalità: STTv2 e STAPM (legacy). AMD suggerisce "
+"ai produttori di utilizzare STTv2, il che rende il Legion Go l'unico "
+"dispositivo a offrire l'alternativa STAPM tramite un'impostazione del BIOS.\n"
+"In STTv2, il dispositivo continuerà ad aumentare la potenza (boost) finché "
+"la \"Scocca\" del dispositivo (il punto più caldo accessibile all'utente) "
+"non raggiunge una temperatura impostata dal produttore. Successivamente, il "
+"dispositivo utilizzerà il limite TDP per la temperatura della scocca (Skin "
+"Temp). In STAPM, il dispositivo calcola la media dei valori TDP degli ultimi "
+"1-3 minuti e mantiene tale valore al di sotto del limite TDP STAPM. Entrambe "
+"le modalità ignorano il limite dell'altra (il limite STAPM non ha effetto su "
+"STT e il limite di temperatura della scocca non ha effetto su STAPM), quindi "
+"entrambi dovrebbero essere impostati.\n"
 "I limiti Veloce (Fast) e Lento (Slow) controllano il comportamento del "
 "boost. Il limite TDP Veloce è il valore TDP massimo effettivo del "
 "dispositivo. Successivamente, il limite TDP Lento calcola la media dei "
-"valori TDP degli ultimi 10-20 secondi e mantiene il valore al di sotto di"
-" esso."
+"valori TDP degli ultimi 10-20 secondi e mantiene il valore al di sotto di "
+"esso."
 
 #. Setting: Fast TDP Limit
 #. Field: title
@@ -991,18 +988,18 @@ msgid ""
 "TDP values the CPU will average to calculate its current Slow and STAPM  "
 "TDP values."
 msgstr ""
-"I Parametri Avanzati sottostanti controllano il comportamento del boost e"
-" devono essere regolati per ogni dispositivo a seconda del suo sistema di"
-" raffreddamento. Influenzano principalmente il comportamento del boost, "
-"che è importante per l'uso desktop.\n"
+"I Parametri Avanzati sottostanti controllano il comportamento del boost e "
+"devono essere regolati per ogni dispositivo a seconda del suo sistema di "
+"raffreddamento. Influenzano principalmente il comportamento del boost, che è "
+"importante per l'uso desktop.\n"
 "L'eccezione è l'Obiettivo di Temperatura (TCTL), che controlla la "
-"temperatura massima del die della CPU. Sulla maggior parte dei "
-"dispositivi, può essere tranquillamente aumentato fino a 100°C. Tuttavia,"
-" se un picco di temperatura fa raggiungere al chip i 105°C, entrerà in "
-"una modalità di protezione termica, che è di 5W, per un paio di minuti.\n"
-"I tempi di integrazione per il TDP Lento e STAPM influenzano quanti "
-"valori TDP precedenti la CPU medierà per calcolare i suoi attuali valori "
-"TDP Lento e STAPM."
+"temperatura massima del die della CPU. Sulla maggior parte dei dispositivi, "
+"può essere tranquillamente aumentato fino a 100°C. Tuttavia, se un picco di "
+"temperatura fa raggiungere al chip i 105°C, entrerà in una modalità di "
+"protezione termica, che è di 5W, per un paio di minuti.\n"
+"I tempi di integrazione per il TDP Lento e STAPM influenzano quanti valori "
+"TDP precedenti la CPU medierà per calcolare i suoi attuali valori TDP Lento "
+"e STAPM."
 
 #. Setting: Temp Target (TCTL)
 #. Field: title
@@ -1037,4 +1034,3 @@ msgstr "Abilita Parametri Avanzati"
 #~ "di Steam da 1-20W invece di 4-15W."
 #~ " Se non selezionato, imposta comunque "
 #~ "il TDP a 15W."
-
