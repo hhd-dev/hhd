@@ -8,14 +8,15 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-07-25 17:11+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2025-09-04 13:53+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/hhd/hhd/it/>\n"
 "Language: it_IT\n"
-"Language-Team: it_IT <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.13.1-rc\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
@@ -246,8 +247,8 @@ msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
 msgstr ""
-"Genera un token di sicurezza in `~/.config/hhd/token` che è richiesto per"
-" l'autenticazione."
+"Genera un token di sicurezza in `~/.config/hhd/token` che è richiesto per "
+"l'autenticazione."
 
 msgid "Lightbar"
 msgstr "Barra Luminosa"
@@ -423,8 +424,8 @@ msgstr "Controller Ally"
 #. Setting: OneXPlayer Controller
 msgid "Allows for configuring your handheld's controller to a unified output."
 msgstr ""
-"Permette di configurare il controller del tuo dispositivo portatile per "
-"un output unificato."
+"Permette di configurare il controller del tuo dispositivo portatile per un "
+"output unificato."
 
 #. Setting: Controller Emulation
 #. Field: title
@@ -447,8 +448,8 @@ msgstr "Supporto Movimento"
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
 msgstr ""
-"Abilita supporto giroscopio/accelerometro (IMU) (utilizzo CPU in "
-"background dello 0.3%)"
+"Abilita supporto giroscopio/accelerometro (IMU) (utilizzo CPU in background "
+"dello 0.3%)"
 
 #. Setting: Motion Hz
 #. Field: title
@@ -589,8 +590,8 @@ msgid ""
 "screenshot)."
 msgstr ""
 "Tenendo premuto Select o Start, se viene premuto un altro pulsante, "
-"diventano il pulsante Xbox, il che permette di eseguire le combo di "
-"SteamOS (Select+RT è screenshot)."
+"diventano il pulsante Xbox, il che permette di eseguire le combo di SteamOS "
+"(Select+RT è screenshot)."
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -664,11 +665,10 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-"Mappa L4/R4 su Steam Input (richiede L4/R4 come HHD nella scheda "
-"Wincontrols). Se disabilitato, sono pulsanti della tastiera. Menu/L4/R4 "
-"possono essere combo: Menu è pressione singola QAM, doppia HHD, pressione"
-" prolungata Xbox. L4/R4 sono pressione singola QAM, pressione prolungata "
-"HHD (legacy)."
+"Mappa L4/R4 su Steam Input (richiede L4/R4 come HHD nella scheda Wincontrols)"
+". Se disabilitato, sono pulsanti della tastiera. Menu/L4/R4 possono essere "
+"combo: Menu è pressione singola QAM, doppia HHD, pressione prolungata Xbox. "
+"L4/R4 sono pressione singola QAM, pressione prolungata HHD (legacy)."
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
@@ -1016,8 +1016,7 @@ msgid ""
 " commands and enabling emulation modes for various controller types."
 msgstr ""
 "Permette di configurare i controller Legion usando i comandi firmware "
-"integrati e abilitando modalità di emulazione per vari tipi di "
-"controller."
+"integrati e abilitando modalità di emulazione per vari tipi di controller."
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
@@ -1025,8 +1024,8 @@ msgid ""
 "Emulate different controller types when the Legion Controllers are in "
 "X-Input mode."
 msgstr ""
-"Emula diversi tipi di controller quando i Controller Legion sono in "
-"modalità X-Input."
+"Emula diversi tipi di controller quando i Controller Legion sono in modalità "
+"X-Input."
 
 #. Setting: Controller Motions Device
 #. Field: title
@@ -1054,9 +1053,9 @@ msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
 msgstr ""
-"Il controller principale usa il sensore di movimento del controller "
-"destro, e un controller secondario viene creato per il sensore di "
-"movimento del controller sinistro."
+"Il controller principale usa il sensore di movimento del controller destro, "
+"e un controller secondario viene creato per il sensore di movimento del "
+"controller sinistro."
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
@@ -1078,9 +1077,8 @@ msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
 msgstr ""
-"Quando in altre modalità (dinput, dual dinput e fps), abilita un "
-"controller di scorciatoie per ripristinare le funzionalità Guide, QAM e "
-"scorciatoie."
+"Quando in altre modalità (dinput, dual dinput e fps), abilita un controller "
+"di scorciatoie per ripristinare le funzionalità Guide, QAM e scorciatoie."
 
 #. Setting: Factory Reset Controllers
 #. Field: title
@@ -1150,8 +1148,8 @@ msgstr "Inverti Pulsanti Volume"
 #. Field: hint
 msgid "Reverse the volume buttons of the X1 style devices to match other tablets."
 msgstr ""
-"Inverte i pulsanti del volume dei dispositivi stile X1 per corrispondere "
-"ad altri tablet."
+"Inverte i pulsanti del volume dei dispositivi stile X1 per corrispondere ad "
+"altri tablet."
 
 #. Setting: Ally Controller
 #. Field: title
@@ -1300,8 +1298,8 @@ msgstr "Manuale"
 #. Field: hint
 msgid "Allows for manual configuration of deadzones and vibration intensity."
 msgstr ""
-"Consente la configurazione manuale delle zone morte e dell'intensità "
-"della vibrazione."
+"Consente la configurazione manuale delle zone morte e dell'intensità della "
+"vibrazione."
 
 #. Setting: Vibration Intensity
 #. Field: title
@@ -1314,8 +1312,7 @@ msgid ""
 "Intensity of the vibration. The higher the value, the stronger the "
 "vibration."
 msgstr ""
-"Intensità della vibrazione. Più alto è il valore, più forte è la "
-"vibrazione."
+"Intensità della vibrazione. Più alto è il valore, più forte è la vibrazione."
 
 #. Setting: Left Stick Minimum
 #. Field: title
@@ -1348,8 +1345,8 @@ msgid ""
 "Maximum value for joystick. The higher the value, the more the joystick "
 "needs to be moved before reaching maximum."
 msgstr ""
-"Valore massimo per il joystick. Più alto è il valore, più il joystick "
-"deve essere mosso per raggiungere il massimo."
+"Valore massimo per il joystick. Più alto è il valore, più il joystick deve "
+"essere mosso per raggiungere il massimo."
 
 #. Setting: Right Stick Minimum
 #. Field: title
@@ -1402,8 +1399,8 @@ msgid ""
 "Disables the controller. Handheld Daemon overlay will still work in "
 "gamemode."
 msgstr ""
-"Disabilita il controller. L'overlay di Handheld Daemon funzionerà ancora "
-"in modalità gioco."
+"Disabilita il controller. L'overlay di Handheld Daemon funzionerà ancora in "
+"modalità gioco."
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
@@ -1415,7 +1412,8 @@ msgstr "Pulsanti extra come Tastiera/Overlay"
 msgid ""
 "Makes the left paddle bring up a keyboard and the right paddle bring up "
 "the overlay."
-msgstr "La paletta sinistra apre una tastiera e la paletta destra apre l'overlay."
+msgstr ""
+"La paletta sinistra apre una tastiera e la paletta destra apre l'overlay."
 
 #. Setting: Xbox
 #. Field: title
@@ -1433,9 +1431,9 @@ msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be set for Steam Input."
 msgstr ""
-"Cambia il comportamento dei pulsanti extra. Il pulsante sinistro è "
-"Tastiera, il pulsante destro è Overlay. Oppure possono essere impostati "
-"per Steam Input."
+"Cambia il comportamento dei pulsanti extra. Il pulsante sinistro è Tastiera, "
+"il pulsante destro è Overlay. Oppure possono essere impostati per Steam "
+"Input."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1478,8 +1476,8 @@ msgid ""
 "Uses the new handheld Steam Input profile. May have bugs, especially when"
 " it comes to gyro."
 msgstr ""
-"Usa il nuovo profilo Steam Input per dispositivi portatili. Potrebbe "
-"avere bug, specialmente per quanto riguarda il giroscopio."
+"Usa il nuovo profilo Steam Input per dispositivi portatili. Potrebbe avere "
+"bug, specialmente per quanto riguarda il giroscopio."
 
 #. Setting: Gyro Output Sync
 #. Field: title
@@ -1497,12 +1495,12 @@ msgid ""
 "difference for the Legion Go (125hz), as all the other handhelds are "
 "using 400hz by default."
 msgstr ""
-"Steam si basa sul timestamp dell'IMU per il touchpad come Mouse e "
-"`Giroscopio a Mouse [BETA]`. Se lo stesso timestamp viene inviato in 2 "
-"report, ciò causa una divisione per 0 e instabilità. Questa opzione fa sì"
-" che i report vengano inviati solo quando c'è un nuovo timestamp IMU, "
-"limitando di fatto la reattività del controller a quella dell'IMU. Questo"
-" fa la differenza solo per il Legion Go (125hz), poiché tutti gli altri "
+"Steam si basa sul timestamp dell'IMU per il touchpad come Mouse e `"
+"Giroscopio a Mouse [BETA]`. Se lo stesso timestamp viene inviato in 2 "
+"report, ciò causa una divisione per 0 e instabilità. Questa opzione fa sì "
+"che i report vengano inviati solo quando c'è un nuovo timestamp IMU, "
+"limitando di fatto la reattività del controller a quella dell'IMU. Questo fa "
+"la differenza solo per il Legion Go (125hz), poiché tutti gli altri "
 "dispositivi portatili usano 400hz di default."
 
 #. Setting: Invert Roll Axis
@@ -1517,9 +1515,9 @@ msgid ""
 "for Steam Input, since you want it to be inverted to look left to right, "
 "but an issue in emulators."
 msgstr ""
-"Inverte l'asse di rollio (Z) rispetto a un controller Horipad reale. "
-"Utile per Steam Input, poiché si desidera che sia invertito per guardare "
-"da sinistra a destra, ma è un problema negli emulatori."
+"Inverte l'asse di rollio (Z) rispetto a un controller Horipad reale. Utile "
+"per Steam Input, poiché si desidera che sia invertito per guardare da "
+"sinistra a destra, ma è un problema negli emulatori."
 
 #. Setting: Dualsense
 #. Field: title
@@ -1533,10 +1531,10 @@ msgid ""
 " button is Overlay. Or they can be left/right touchpad clicks. For the "
 "legion go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
-"Cambia il comportamento dei pulsanti extra. Il pulsante sinistro è "
-"Tastiera, il destro è Overlay. Oppure possono essere click del touchpad "
-"sinistro/destro. Per il Legion Go, i pulsanti superiori sono scorciatoie,"
-" quelli inferiori sono click del touchpad."
+"Cambia il comportamento dei pulsanti extra. Il pulsante sinistro è Tastiera, "
+"il destro è Overlay. Oppure possono essere click del touchpad sinistro/"
+"destro. Per il Legion Go, i pulsanti superiori sono scorciatoie, quelli "
+"inferiori sono click del touchpad."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1572,9 +1570,9 @@ msgid ""
 " for Steam Input, since you want it to be inverted to look left to right,"
 " but an issue in emulators."
 msgstr ""
-"Inverte l'asse di rollio (Z) rispetto a un controller Dualsense reale. "
-"Utile per Steam Input, poiché si desidera che sia invertito per guardare "
-"da sinistra a destra, ma è un problema negli emulatori."
+"Inverte l'asse di rollio (Z) rispetto a un controller Dualsense reale. Utile "
+"per Steam Input, poiché si desidera che sia invertito per guardare da "
+"sinistra a destra, ma è un problema negli emulatori."
 
 #. Setting: Bluetooth Mode
 #. Field: title
@@ -1589,11 +1587,10 @@ msgid ""
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
 msgstr ""
-"Emula il controller in modalità bluetooth invece che in modalità USB. "
-"Questa è l'impostazione predefinita poiché causa meno problemi con il "
-"modo in cui le app interagiscono con il controller. Tuttavia, l'uso della"
-" modalità USB può migliorare il supporto LED (?) in alcuni giochi. Prova "
-"e facci sapere!"
+"Emula il controller in modalità bluetooth invece che in modalità USB. Questa "
+"è l'impostazione predefinita poiché causa meno problemi con il modo in cui "
+"le app interagiscono con il controller. Tuttavia, l'uso della modalità USB "
+"può migliorare il supporto LED (?) in alcuni giochi. Prova e facci sapere!"
 
 #. Setting: Touchpad Emulation
 #. Field: title
@@ -1606,8 +1603,8 @@ msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
 msgstr ""
-"Usa un touchpad emulato. Parte del controller se è supportato (es. "
-"Dualsense) o uno virtuale in caso contrario."
+"Usa un touchpad emulato. Parte del controller se è supportato (es. Dualsense)"
+" o uno virtuale in caso contrario."
 
 #. Setting: Disabled
 #. Field: hint
@@ -1615,8 +1612,8 @@ msgid ""
 "Does not modify the touchpad. Short + holding presses will not work "
 "within gamescope."
 msgstr ""
-"Non modifica il touchpad. Le pressioni brevi e prolungate non "
-"funzioneranno all'interno di gamescope."
+"Non modifica il touchpad. Le pressioni brevi e prolungate non funzioneranno "
+"all'interno di gamescope."
 
 #. Setting: Virtual
 #. Field: title
@@ -1632,10 +1629,10 @@ msgid ""
 "autodisable in desktop."
 msgstr ""
 "Aggiunge un touchpad emulato. Questo touchpad è pensato per l'uso in "
-"gamescope e ha il supporto per il click sinistro e destro per "
-"impostazione predefinita. Tuttavia, causa problemi in modalità desktop e "
-"non consente di trascinare i file. Pertanto, si disabiliterà "
-"automaticamente in modalità desktop."
+"gamescope e ha il supporto per il click sinistro e destro per impostazione "
+"predefinita. Tuttavia, causa problemi in modalità desktop e non consente di "
+"trascinare i file. Pertanto, si disabiliterà automaticamente in modalità "
+"desktop."
 
 #. Setting: Disable on Desktop
 #. Field: title
@@ -1649,10 +1646,10 @@ msgid ""
 "Specifically, steam will be periodically be checked to be running in "
 "gamepad mode and if not, touchpad emulation will be disabled."
 msgstr ""
-"L'emulazione del touchpad verrà disabilitata automaticamente quando non "
-"si è in modalità gioco. Nello specifico, verrà controllato periodicamente"
-" se Steam è in esecuzione in modalità gamepad e, in caso contrario, "
-"l'emulazione del touchpad verrà disabilitata."
+"L'emulazione del touchpad verrà disabilitata automaticamente quando non si è "
+"in modalità gioco. Nello specifico, verrà controllato periodicamente se "
+"Steam è in esecuzione in modalità gamepad e, in caso contrario, l'emulazione "
+"del touchpad verrà disabilitata."
 
 #. Setting: Short Action
 #. Field: title
@@ -1662,7 +1659,8 @@ msgstr "Azione Breve"
 #. Setting: Short Action
 #. Field: hint
 msgid "Maps short touches (less than 0.2s) to a virtual touchpad button."
-msgstr "Mappa i tocchi brevi (meno di 0.2s) a un pulsante virtuale del touchpad."
+msgstr ""
+"Mappa i tocchi brevi (meno di 0.2s) a un pulsante virtuale del touchpad."
 
 #. Setting: Short Action
 #. Option: left_click
@@ -1694,11 +1692,11 @@ msgid ""
 "to be used as steam input, so short press is unassigned by default and "
 "long press simulates trackpad click."
 msgstr ""
-"Usa il touchpad del controller emulato (se esiste). Altrimenti, il "
-"touchpad rimane non mappato (apparirà comunque nel sistema). Pensato per "
-"essere usato come input di Steam, quindi la pressione breve non è "
-"assegnata per impostazione predefinita e la pressione prolungata simula "
-"il click del trackpad."
+"Usa il touchpad del controller emulato (se esiste). Altrimenti, il touchpad "
+"rimane non mappato (apparirà comunque nel sistema). Pensato per essere usato "
+"come input di Steam, quindi la pressione breve non è assegnata per "
+"impostazione predefinita e la pressione prolungata simula il click del "
+"trackpad."
 
 #. Setting: Location
 #. Field: title
@@ -1717,14 +1715,14 @@ msgid ""
 "left and half of the right is right. \"Stretch\" stretches the touchpad "
 "to the whole dualsense surface."
 msgstr ""
-"Controlla il posizionamento del touchpad reale su quello virtuale, usando"
-" ciò che Steam si aspetta. In Steam, il touchpad \"Sinistro\" mappa sulla"
-" metà sinistra, il touchpad \"Destro\" sulla metà destra e \"Centro\" "
-"sull'intero touchpad. Pertanto, il touchpad virtuale viene ritagliato sul"
-" lato sinistro per il sinistro, sul lato destro per il destro ed espanso "
-"al centro per il centro. Ciò significa che quando impostato su centro, "
-"metà del touchpad sinistro è sinistro e metà del destro è destro. "
-"\"Allunga\" estende il touchpad all'intera superficie del Dualsense."
+"Controlla il posizionamento del touchpad reale su quello virtuale, usando "
+"ciò che Steam si aspetta. In Steam, il touchpad \"Sinistro\" mappa sulla "
+"metà sinistra, il touchpad \"Destro\" sulla metà destra e \"Centro\" "
+"sull'intero touchpad. Pertanto, il touchpad virtuale viene ritagliato sul "
+"lato sinistro per il sinistro, sul lato destro per il destro ed espanso al "
+"centro per il centro. Ciò significa che quando impostato su centro, metà del "
+"touchpad sinistro è sinistro e metà del destro è destro. \"Allunga\" estende "
+"il touchpad all'intera superficie del Dualsense."
 
 #. Setting: Location
 #. Option: center
@@ -1744,10 +1742,10 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"Mappa i tocchi brevi (meno di 0.2s) a un'azione del touchpad. Il "
-"Dualsense usa una pressione fisica per il sinistro e un doppio tocco per "
-"il click destro (il supporto per il doppio tocco varia; abilita \"Tocca "
-"per Cliccare\" nelle impostazioni del touchpad del tuo desktop)."
+"Mappa i tocchi brevi (meno di 0.2s) a un'azione del touchpad. Il Dualsense "
+"usa una pressione fisica per il sinistro e un doppio tocco per il click "
+"destro (il supporto per il doppio tocco varia; abilita \"Tocca per Cliccare\""
+" nelle impostazioni del touchpad del tuo desktop)."
 
 #. Setting: Hold Action
 #. Field: hint
@@ -1757,10 +1755,10 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"Mappa i tocchi lunghi (più di 2s) a un'azione del touchpad. Il Dualsense "
-"usa una pressione fisica per il sinistro e un doppio tocco per il click "
-"destro (il supporto per il doppio tocco varia; abilita \"Tocca per "
-"Cliccare\" nelle impostazioni del touchpad del tuo desktop)."
+"Mappa i tocchi lunghi (più di 2s) a un'azione del touchpad. Il Dualsense usa "
+"una pressione fisica per il sinistro e un doppio tocco per il click destro ("
+"il supporto per il doppio tocco varia; abilita \"Tocca per Cliccare\" nelle "
+"impostazioni del touchpad del tuo desktop)."
 
 msgid "Downloading:"
 msgstr "Scaricamento in corso:"
@@ -2037,8 +2035,8 @@ msgid ""
 "Basic display settings. Brightness (and framerate TBD). This pane is "
 "meant to replace "
 msgstr ""
-"Impostazioni di base dello schermo. Luminosità (e framerate da definire)."
-" Questo pannello è pensato per sostituire "
+"Impostazioni di base dello schermo. Luminosità (e framerate da definire). "
+"Questo pannello è pensato per sostituire "
 
 #. Setting: Brightness
 #. Field: hint
@@ -2385,8 +2383,8 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"Alcuni dispositivi si riattivano per forzare l'ibernazione di Windows. Se"
-" Linux non lo fa\n"
+"Alcuni dispositivi si riattivano per forzare l'ibernazione di Windows. Se "
+"Linux non lo fa\n"
 "causano problemi. Rileva e iberna in caso di eventi termici e al 5%\n"
 "di batteria.\n"
 
@@ -2550,4 +2548,3 @@ msgstr "RGB Controller"
 #. Field: title
 msgid "Enable RGB support."
 msgstr "Abilita supporto RGB."
-
