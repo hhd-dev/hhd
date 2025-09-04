@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2024-02-07 17:27+0100\n"
-"Last-Translator: Alex <aliceric27@gmail.com>\n"
-"Language: zh_Hans_CN\n"
-"Language-Team: zh_Hans_CN <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"PO-Revision-Date: 2025-09-04 13:53+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/hhd/hhd/zh_Hans/>\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.13.1-rc\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
@@ -574,8 +576,8 @@ msgid ""
 "the Xbox button, which allows doing SteamOS combos (Select+RT is "
 "screenshot)."
 msgstr ""
-"按住 Select 或 Start 时，如果按下另一个按钮，它们将变为 Xbox 按钮，可以实现执行 SteamOS 组合键（Select+RT "
-"是屏幕截图）。"
+"按住 Select 或 Start 时，如果按下另一个按钮，它们将变为 Xbox 按钮，"
+"可以实现执行 SteamOS 组合键（Select+RT 是屏幕截图）。"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -649,8 +651,9 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 HHD）。如果禁用，它们将作为键盘按钮。"
-" Menu/L4/R4 可以作为组合键：Menu单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。L4/R4 "
+"将 L4/R4 映射到 Steam 输入（需要在 Wincontrols 选项卡中将 L4/R4 设置为 "
+"HHD）。如果禁用，它们将作为键盘按钮。 Menu/L4/R4 "
+"可以作为组合键：Menu单击呼出快速菜单键(QAM)，双击呼出HHD，长按为Xbox。L4/R4 "
 "是单击呼出快速菜单键(QAM)，长按呼出 HHD 菜单（传统模式）。"
 
 #. Setting: Menu/L4/R4 Mapping
@@ -1029,7 +1032,8 @@ msgstr "双控制器"
 msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
-msgstr "主控制器会使用右手柄的动作传感器，同时为左手柄的动作传感器创建一个独立的辅助控制器。"
+msgstr "主控制器会使用右手柄的动作传感器，同时为左手柄的动作传感器创建一个独立的辅助"
+"控制器。"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
@@ -1048,7 +1052,8 @@ msgstr "将 M2 映射为 Dualsense 的静音按钮和 Xbox Elite 控制器的共
 msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
-msgstr "在其他模式 (dinput、双 dinput 和 fps)中, 启用快捷控制器以恢复 Guide、QAM 和快捷功能"
+msgstr "在其他模式 (dinput、双 dinput 和 fps)中, 启用快捷控制器以恢复 Guide、QAM "
+"和快捷功能"
 
 #. Setting: Factory Reset Controllers
 #. Field: title
@@ -1383,7 +1388,8 @@ msgstr "扩展按钮功能"
 msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be set for Steam Input."
-msgstr "配置扩展按钮功能。可以将左键设为呼出键盘，右键设为呼出叠加层，或者设置为 Steam 输入。"
+msgstr "配置扩展按钮功能。可以将左键设为呼出键盘，右键设为呼出叠加层，或者设置为 "
+"Steam 输入。"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1443,9 +1449,10 @@ msgid ""
 "difference for the Legion Go (125hz), as all the other handhelds are "
 "using 400hz by default."
 msgstr ""
-"Steam 在处理触摸板鼠标和`陀螺仪到鼠标 [BETA]`功能时依赖 IMU 时间戳。如果在 2 个报告中发送相同的时间戳, 这会导致除以 0 "
-"造成不稳定。此选项使报告仅在有新的 IMU 时间戳时发送, 有效地将控制器的响应速度限制为 IMU 的速度。这只对 Legion Go "
-"(125hz) 有影响, 因为所有其他掌机默认使用 400hz"
+"Steam 在处理触摸板鼠标和`陀螺仪到鼠标 [BETA]`功能时依赖 IMU 时间戳。如果在 2 "
+"个报告中发送相同的时间戳, 这会导致除以 0 造成不稳定。此选项使报告仅在有新的 "
+"IMU 时间戳时发送, 有效地将控制器的响应速度限制为 IMU 的速度。这只对 Legion "
+"Go (125hz) 有影响, 因为所有其他掌机默认使用 400hz"
 
 #. Setting: Invert Roll Axis
 #. Field: title
@@ -1459,8 +1466,8 @@ msgid ""
 "for Steam Input, since you want it to be inverted to look left to right, "
 "but an issue in emulators."
 msgstr ""
-"与真实 Dualsense 控制器相比, 反转滚动 (Z) 轴。对于 Steam 输入很有用, 因为您可能希望它反转以便从左到右看, "
-"但在模拟器中会有问题"
+"与真实 Dualsense 控制器相比, 反转滚动 (Z) 轴。对于 Steam 输入很有用, "
+"因为您可能希望它反转以便从左到右看, 但在模拟器中会有问题"
 
 #. Setting: Dualsense
 #. Field: title
@@ -1474,8 +1481,8 @@ msgid ""
 " button is Overlay. Or they can be left/right touchpad clicks. For the "
 "legion go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
-"配置扩展按钮功能。可以将左键设为呼出键盘，右键设为呼出叠加层；或者设置为触摸板左右点击。在 Legion Go "
-"上，顶部按钮用作快捷键，底部按钮用作触摸板点击。"
+"配置扩展按钮功能。可以将左键设为呼出键盘，右键设为呼出叠加层；或者设置为触摸"
+"板左右点击。在 Legion Go 上，顶部按钮用作快捷键，底部按钮用作触摸板点击。"
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1512,7 +1519,8 @@ msgid ""
 " but an issue in emulators."
 msgstr ""
 "相对于真实的 DualSense 控制器反转滚动轴（Z轴）。在 Steam "
-"输入中这很有用，因为反转后更符合左右视角移动的习惯，但在模拟器中可能会造成问题"
+"输入中这很有用，因为反转后更符合左右视角移动的习惯，但在模拟器中可能会造成问"
+"题"
 
 #. Setting: Bluetooth Mode
 #. Field: title
@@ -1527,8 +1535,9 @@ msgid ""
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
 msgstr ""
-"将控制器模拟为蓝牙模式而非 USB 模式。默认使用蓝牙模式是因为这样可以减少应用程序与控制器交互时的问题。不过在某些游戏中，USB "
-"模式可能会带来更好的 LED 灯光支持。欢迎测试并反馈！"
+"将控制器模拟为蓝牙模式而非 USB "
+"模式。默认使用蓝牙模式是因为这样可以减少应用程序与控制器交互时的问题。不过在"
+"某些游戏中，USB 模式可能会带来更好的 LED 灯光支持。欢迎测试并反馈！"
 
 #. Setting: Touchpad Emulation
 #. Field: title
@@ -1540,7 +1549,9 @@ msgstr "触摸板模拟"
 msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
-msgstr "启用触摸板模拟功能。对于支持触摸板的目标控制器(如 DualSense), 会直接用于其内置触摸板; 对于不支持的目标设备, 将会创建一个虚拟触摸板"
+msgstr ""
+"启用触摸板模拟功能。对于支持触摸板的目标控制器(如 DualSense), "
+"会直接用于其内置触摸板; 对于不支持的目标设备, 将会创建一个虚拟触摸板"
 
 #. Setting: Disabled
 #. Field: hint
@@ -1562,8 +1573,9 @@ msgid ""
 "in desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
-"添加一个虚拟触摸板。这个触摸板主要用于 GameScope 环境，并且默认支持左右键点击。但可能会在桌面模式中引起问题，并且不允许拖动文件。因此,"
-" 它会在桌面模式中自动禁用"
+"添加一个虚拟触摸板。这个触摸板主要用于 GameScope "
+"环境，并且默认支持左右键点击。但可能会在桌面模式中引起问题，并且不允许拖动文"
+"件。因此, 它会在桌面模式中自动禁用"
 
 #. Setting: Disable on Desktop
 #. Field: title
@@ -1576,7 +1588,8 @@ msgid ""
 "Touchpad emulation will automatically be disabled when not in gamemode. "
 "Specifically, steam will be periodically be checked to be running in "
 "gamepad mode and if not, touchpad emulation will be disabled."
-msgstr "不处于游戏模式时会自动停用触摸板模拟。系统会定期检查 Steam 是否运行在手柄模式，如果不是则会停用触摸板模拟"
+msgstr "不处于游戏模式时会自动停用触摸板模拟。系统会定期检查 Steam "
+"是否运行在手柄模式，如果不是则会停用触摸板模拟"
 
 #. Setting: Short Action
 #. Field: title
@@ -1618,7 +1631,8 @@ msgid ""
 "to be used as steam input, so short press is unassigned by default and "
 "long press simulates trackpad click."
 msgstr ""
-"使用模拟控制器的触摸板 (如果存在)。否则, 触摸板保持未映射 (仍会显示在系统中)。用作 Steam 输入, 因此默认情况下短按未分配, "
+"使用模拟控制器的触摸板 (如果存在)。否则, 触摸板保持未映射 "
+"(仍会显示在系统中)。用作 Steam 输入, 因此默认情况下短按未分配, "
 "长按模拟触摸板点击"
 
 #. Setting: Location
@@ -1638,10 +1652,12 @@ msgid ""
 "left and half of the right is right. \"Stretch\" stretches the touchpad "
 "to the whole dualsense surface."
 msgstr ""
-"配置真实触控板与虚拟触控板的位置关系，以适配 Steam 设置。在 Steam 中，\"左\" 将触控板映射到左半边，\"右\" "
-"将触控板映射到右半边，而 \"居中\" "
-"将映射到整个触控板。因此，虚拟触摸板被裁剪为左侧用于左边，右侧用于右边，并在中心扩展。这意味着当设置为\"居中\"时，左触控板的一半是左侧，右触控板的一半是右侧。\"拉伸\""
-" 将触控板拉伸到整个Dualsense虚拟触控板。"
+"配置真实触控板与虚拟触控板的位置关系，以适配 Steam 设置。在 Steam 中，\"左\" "
+"将触控板映射到左半边，\"右\" 将触控板映射到右半边，而 \"居中\" "
+"将映射到整个触控板。因此，虚拟触摸板被裁剪为左侧用于左边，右侧用于右边，并在"
+"中心扩展。这意味着当设置为\"居中"
+"\"时，左触控板的一半是左侧，右触控板的一半是右侧。\"拉伸\" "
+"将触控板拉伸到整个Dualsense虚拟触控板。"
 
 #. Setting: Location
 #. Option: center
@@ -1661,8 +1677,8 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"将短触摸 (小于 0.2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; "
-"请在桌面触摸板设置中启用\"轻触点击\")"
+"将短触摸 (小于 0.2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, "
+"双击作为右键 (双击支持因设备而异; 请在桌面触摸板设置中启用\"轻触点击\")"
 
 #. Setting: Hold Action
 #. Field: hint
@@ -1672,8 +1688,8 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"将长触摸 (大于 2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, 双击作为右键 (双击支持因设备而异; "
-"请在桌面触摸板设置中启用\"轻触点击\")"
+"将长触摸 (大于 2s)映射为触摸板动作。Dualsense 使用物理按键作为左键, "
+"双击作为右键 (双击支持因设备而异; 请在桌面触摸板设置中启用\"轻触点击\")"
 
 msgid "Downloading:"
 msgstr "下载中: "
@@ -2292,7 +2308,8 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"某些设备会唤醒并强制 Windows 进入休眠状态。如果 Linux 不执行相同操作，可能会引发问题。系统将在检测到设备发热且电池电量低于 5% "
+"某些设备会唤醒并强制 Windows 进入休眠状态。如果 Linux "
+"不执行相同操作，可能会引发问题。系统将在检测到设备发热且电池电量低于 5% "
 "时自动进入休眠状态。\n"
 
 #. Setting: Steam Powerbutton Handler
@@ -2748,4 +2765,3 @@ msgstr "启用 RGB 支持"
 
 #~ msgid "Xbox or View + B (Press)"
 #~ msgstr "Xbox 或 View + B (按下)"
-
