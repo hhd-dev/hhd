@@ -119,8 +119,8 @@ msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
 msgstr ""
-"Позволяет изменить тему интерфейса. По умолчанию используется Diavolo или"
-" тема вашего дистрибутива."
+"Позволяет изменить тему интерфейса. По умолчанию используется Diavolo или "
+"тема вашего дистрибутива."
 
 #. Setting: Theme
 #. Option: default
@@ -163,8 +163,8 @@ msgstr "Сбрасывает все настройки Handheld Daemon к зна
 #. this, update the Decky plugin manually.
 #. Field: title
 msgid ""
-"It is no longer possible to update Decky from here. If you see this, "
-"update the Decky plugin manually."
+"It is no longer possible to update Decky from here. If you see this, update "
+"the Decky plugin manually."
 msgstr ""
 "Обновление Decky отсюда больше невозможно. Если вы видите это сообщение, "
 "обновите плагин Decky вручную."
@@ -199,7 +199,8 @@ msgstr "Обновление (стабильное)"
 #. Setting: Update (Stable)
 #. Field: hint
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr "Обновляет до последней версии из PyPi (только для локальной установки)."
+msgstr ""
+"Обновляет до последней версии из PyPi (только для локальной установки)."
 
 #. Setting: Update (Unstable)
 #. Field: title
@@ -247,8 +248,8 @@ msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
 msgstr ""
-"Генерирует токен безопасности в `~/.config/hhd/token`, который требуется "
-"для аутентификации."
+"Генерирует токен безопасности в `~/.config/hhd/token`, который требуется для "
+"аутентификации."
 
 msgid "Lightbar"
 msgstr "Световая панель"
@@ -446,8 +447,8 @@ msgstr "Поддержка движений"
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
 msgstr ""
-"Включить поддержку гироскопа/акселерометра (IMU) (использование CPU в "
-"фоне 0.3%)"
+"Включить поддержку гироскопа/акселерометра (IMU) (использование CPU в фоне "
+"0.3%)"
 
 #. Setting: Motion Hz
 #. Field: title
@@ -583,13 +584,12 @@ msgstr "Start/Select как комбинации SteamOS"
 #. Setting: Start/Select do SteamOS Combos
 #. Field: hint
 msgid ""
-"When holding Select or Start, if another button is pressed, they become "
-"the Xbox button, which allows doing SteamOS combos (Select+RT is "
-"screenshot)."
+"When holding Select or Start, if another button is pressed, they become the "
+"Xbox button, which allows doing SteamOS combos (Select+RT is screenshot)."
 msgstr ""
-"При удержании Select или Start, если нажата другая кнопка, они становятся"
-" кнопкой Xbox, что позволяет использовать комбинации SteamOS (Select+RT -"
-" скриншот)."
+"При удержании Select или Start, если нажата другая кнопка, они становятся "
+"кнопкой Xbox, что позволяет использовать комбинации SteamOS (Select+RT - "
+"скриншот)."
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -660,14 +660,13 @@ msgstr "Назначение Menu/L4/R4"
 msgid ""
 "Maps L4/R4 to Steam Input (requires L4/R4 as HHD in Wincontrols tab). If "
 "disabled, they are keyboard buttons. Menu/L4/R4 can be combos: Menu is "
-"single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
-" HHD (legacy). "
+"single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold "
+"HHD (legacy). "
 msgstr ""
 "Назначает L4/R4 для Steam Input (требуется установка L4/R4 как HHD во "
 "вкладке Wincontrols). Если отключено, это клавиши клавиатуры. Menu/L4/R4 "
 "могут быть комбинациями: Menu - однократное нажатие QAM, двойное HHD, "
-"удержание Xbox. L4/R4 - однократное нажатие QAM, удержание HHD "
-"(устаревшее)."
+"удержание Xbox. L4/R4 - однократное нажатие QAM, удержание HHD (устаревшее)."
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
@@ -902,8 +901,8 @@ msgstr "Режим Turbo (повтор кнопок)"
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Field: hint
 msgid ""
-"Hold Y1/Y2 for 2s, then press the buttons that will repeat. To stop, hold"
-" Y1/Y2 for 5s."
+"Hold Y1/Y2 for 2s, then press the buttons that will repeat. To stop, hold Y1/"
+"Y2 for 5s."
 msgstr ""
 "Удерживайте Y1/Y2 2 секунды, затем нажмите кнопки, которые будут "
 "повторяться. Для остановки удерживайте Y1/Y2 5 секунд."
@@ -1011,8 +1010,8 @@ msgstr "Контроллеры Legion"
 #. Setting: Legion Controllers
 #. Field: hint
 msgid ""
-"Allows for configuring the Legion controllers using the built in firmware"
-" commands and enabling emulation modes for various controller types."
+"Allows for configuring the Legion controllers using the built in firmware "
+"commands and enabling emulation modes for various controller types."
 msgstr ""
 "Позволяет настраивать контроллеры Legion с помощью встроенных команд "
 "прошивки и включать режимы эмуляции для различных типов контроллеров."
@@ -1020,11 +1019,11 @@ msgstr ""
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
 msgid ""
-"Emulate different controller types when the Legion Controllers are in "
-"X-Input mode."
+"Emulate different controller types when the Legion Controllers are in X-"
+"Input mode."
 msgstr ""
-"Эмулирует различные типы контроллеров, когда контроллеры Legion находятся"
-" в режиме X-Input."
+"Эмулирует различные типы контроллеров, когда контроллеры Legion находятся в "
+"режиме X-Input."
 
 #. Setting: Controller Motions Device
 #. Field: title
@@ -1063,8 +1062,8 @@ msgstr "M2 как Xbox Share/Dualsense Mic Mute"
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: hint
 msgid ""
-"Maps the M2 to the mute button on Dualsense and the share button on the "
-"Xbox Elite controller."
+"Maps the M2 to the mute button on Dualsense and the share button on the Xbox "
+"Elite controller."
 msgstr ""
 "Назначает M2 на кнопку отключения микрофона Dualsense и кнопку share на "
 "контроллере Xbox Elite."
@@ -1144,7 +1143,8 @@ msgstr "Обратные кнопки громкости"
 
 #. Setting: Reverse Volume Buttons
 #. Field: hint
-msgid "Reverse the volume buttons of the X1 style devices to match other tablets."
+msgid ""
+"Reverse the volume buttons of the X1 style devices to match other tablets."
 msgstr ""
 "Инвертирует кнопки громкости устройств стиля X1 для соответствия другим "
 "планшетам."
@@ -1171,7 +1171,8 @@ msgstr "Поменять ROG и Menu/View"
 
 #. Setting: Swap ROG and Menu/View
 #. Field: hint
-msgid "Swaps the Armory Crate and Command center buttons with start and select."
+msgid ""
+"Swaps the Armory Crate and Command center buttons with start and select."
 msgstr "Меняет местами кнопки Armory Crate и Command center с start и select."
 
 #. Setting: RGB During Boot
@@ -1303,8 +1304,7 @@ msgstr "Интенсивность вибрации"
 #. Setting: Vibration Intensity
 #. Field: hint
 msgid ""
-"Intensity of the vibration. The higher the value, the stronger the "
-"vibration."
+"Intensity of the vibration. The higher the value, the stronger the vibration."
 msgstr "Интенсивность вибрации. Чем выше значение, тем сильнее вибрация."
 
 #. Setting: Left Stick Minimum
@@ -1318,11 +1318,11 @@ msgstr "Минимум левого стика"
 #. Setting: Left Trigger Minimum
 #. Setting: Right Trigger Minimum
 msgid ""
-"Deadzone for the joystick. The higher the value, the more the joystick "
-"needs to be moved before registering."
+"Deadzone for the joystick. The higher the value, the more the joystick needs "
+"to be moved before registering."
 msgstr ""
-"Мертвая зона для джойстика. Чем выше значение, тем больше нужно "
-"переместить джойстик перед регистрацией."
+"Мертвая зона для джойстика. Чем выше значение, тем больше нужно переместить "
+"джойстик перед регистрацией."
 
 #. Setting: Left Stick Maximum
 #. Field: title
@@ -1389,11 +1389,10 @@ msgstr "Скрытый"
 #. Setting: Hidden
 #. Field: hint
 msgid ""
-"Disables the controller. Handheld Daemon overlay will still work in "
-"gamemode."
+"Disables the controller. Handheld Daemon overlay will still work in gamemode."
 msgstr ""
-"Отключает контроллер. Оверлей Handheld Daemon будет продолжать работать в"
-" игровом режиме."
+"Отключает контроллер. Оверлей Handheld Daemon будет продолжать работать в "
+"игровом режиме."
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
@@ -1403,8 +1402,8 @@ msgstr "Доп. кнопки как клавиатура/оверлей"
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: hint
 msgid ""
-"Makes the left paddle bring up a keyboard and the right paddle bring up "
-"the overlay."
+"Makes the left paddle bring up a keyboard and the right paddle bring up the "
+"overlay."
 msgstr "Левая кнопка вызывает клавиатуру, правая - оверлей."
 
 #. Setting: Xbox
@@ -1420,11 +1419,11 @@ msgstr "Доп. кнопки как"
 #. Setting: Extra buttons as
 #. Field: hint
 msgid ""
-"Changes the behavior of the extra buttons. Left button is Keyboard, right"
-" button is Overlay. Or they can be set for Steam Input."
+"Changes the behavior of the extra buttons. Left button is Keyboard, right "
+"button is Overlay. Or they can be set for Steam Input."
 msgstr ""
-"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, "
-"правая - оверлей. Или их можно настроить для Steam Input."
+"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, правая "
+"- оверлей. Или их можно настроить для Steam Input."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1455,8 +1454,8 @@ msgstr "Steam Controller"
 #. Field: hint
 msgid "Allows for gyro, paddles, and has a proper QAM button."
 msgstr ""
-"Позволяет использовать гироскоп, дополнительные кнопки и имеет правильную"
-" кнопку QAM."
+"Позволяет использовать гироскоп, дополнительные кнопки и имеет правильную "
+"кнопку QAM."
 
 #. Setting: Handheld Mode [BETA]
 #. Field: title
@@ -1466,11 +1465,11 @@ msgstr "Портативный режим [BETA]"
 #. Setting: Handheld Mode [BETA]
 #. Field: hint
 msgid ""
-"Uses the new handheld Steam Input profile. May have bugs, especially when"
-" it comes to gyro."
+"Uses the new handheld Steam Input profile. May have bugs, especially when it "
+"comes to gyro."
 msgstr ""
-"Использует новый профиль Steam Input для портативных устройств. Могут "
-"быть ошибки, особенно с гироскопом."
+"Использует новый профиль Steam Input для портативных устройств. Могут быть "
+"ошибки, особенно с гироскопом."
 
 #. Setting: Gyro Output Sync
 #. Field: title
@@ -1482,19 +1481,18 @@ msgstr "Синхронизация гироскопа"
 msgid ""
 "Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to "
 "Mouse [BETA]`. If the same timestamp is sent in 2 reports, this causes a "
-"division by 0 and instability. This option makes it so reports are sent "
-"only when there is a new IMU timestamp, effectively limiting the "
-"responsiveness of the controller to that of the IMU. This only makes a "
-"difference for the Legion Go (125hz), as all the other handhelds are "
-"using 400hz by default."
+"division by 0 and instability. This option makes it so reports are sent only "
+"when there is a new IMU timestamp, effectively limiting the responsiveness "
+"of the controller to that of the IMU. This only makes a difference for the "
+"Legion Go (125hz), as all the other handhelds are using 400hz by default."
 msgstr ""
 "Steam полагается на метку времени IMU для сенсорной панели как мыши и "
-"`Гироскоп в мышь [BETA]`. Если одна и та же метка времени отправляется в "
-"2 отчетах, это вызывает деление на 0 и нестабильность. Эта опция "
-"гарантирует, что отчеты отправляются только при наличии новой метки "
-"времени IMU, эффективно ограничивая отзывчивость контроллера до уровня "
-"IMU. Это имеет значение только для Legion Go (125 Гц), так как все другие"
-" портативные устройства по умолчанию используют 400 Гц."
+"`Гироскоп в мышь [BETA]`. Если одна и та же метка времени отправляется в 2 "
+"отчетах, это вызывает деление на 0 и нестабильность. Эта опция гарантирует, "
+"что отчеты отправляются только при наличии новой метки времени IMU, "
+"эффективно ограничивая отзывчивость контроллера до уровня IMU. Это имеет "
+"значение только для Legion Go (125 Гц), так как все другие портативные "
+"устройства по умолчанию используют 400 Гц."
 
 #. Setting: Invert Roll Axis
 #. Field: title
@@ -1504,13 +1502,13 @@ msgstr "Инвертировать ось крена"
 #. Setting: Invert Roll Axis
 #. Field: hint
 msgid ""
-"Inverts the roll (Z) axis compared to a real Horipad controller. Useful "
-"for Steam Input, since you want it to be inverted to look left to right, "
-"but an issue in emulators."
+"Inverts the roll (Z) axis compared to a real Horipad controller. Useful for "
+"Steam Input, since you want it to be inverted to look left to right, but an "
+"issue in emulators."
 msgstr ""
 "Инвертирует ось крена (Z) по сравнению с реальным контроллером Horipad. "
-"Полезно для Steam Input, так как требуется инверсия для взгляда "
-"влево-вправо, но вызывает проблемы в эмуляторах."
+"Полезно для Steam Input, так как требуется инверсия для взгляда влево-"
+"вправо, но вызывает проблемы в эмуляторах."
 
 #. Setting: Dualsense
 #. Field: title
@@ -1520,13 +1518,13 @@ msgstr "Dualsense"
 #. Setting: Extra buttons as
 #. Field: hint
 msgid ""
-"Changes the behavior of the extra buttons. Left button is Keyboard, right"
-" button is Overlay. Or they can be left/right touchpad clicks. For the "
-"legion go, top buttons are shortcuts, bottom are touchpad clicks."
+"Changes the behavior of the extra buttons. Left button is Keyboard, right "
+"button is Overlay. Or they can be left/right touchpad clicks. For the legion "
+"go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
-"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, "
-"правая - оверлей. Или они могут быть кликами по сенсорной панели. Для "
-"Legion Go верхние кнопки - ярлыки, нижние - клики по сенсорной панели."
+"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, правая "
+"- оверлей. Или они могут быть кликами по сенсорной панели. Для Legion Go "
+"верхние кнопки - ярлыки, нижние - клики по сенсорной панели."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1553,18 +1551,19 @@ msgstr "Поддержка LED"
 msgid ""
 "Passes through the LEDs to the controller, which allows games to control "
 "them."
-msgstr "Передает управление LED контроллеру, что позволяет играм управлять ими."
+msgstr ""
+"Передает управление LED контроллеру, что позволяет играм управлять ими."
 
 #. Setting: Invert Roll Axis
 #. Field: hint
 msgid ""
-"Inverts the roll (Z) axis compared to a real Dualsense controller. Useful"
-" for Steam Input, since you want it to be inverted to look left to right,"
-" but an issue in emulators."
+"Inverts the roll (Z) axis compared to a real Dualsense controller. Useful "
+"for Steam Input, since you want it to be inverted to look left to right, but "
+"an issue in emulators."
 msgstr ""
-"Инвертирует ось крена (Z) по сравнению с реальным контроллером Dualsense."
-" Полезно для Steam Input, так как требуется инверсия для взгляда "
-"влево-вправо, но вызывает проблемы в эмуляторах."
+"Инвертирует ось крена (Z) по сравнению с реальным контроллером Dualsense. "
+"Полезно для Steam Input, так как требуется инверсия для взгляда влево-"
+"вправо, но вызывает проблемы в эмуляторах."
 
 #. Setting: Bluetooth Mode
 #. Field: title
@@ -1574,15 +1573,15 @@ msgstr "Режим Bluetooth"
 #. Setting: Bluetooth Mode
 #. Field: hint
 msgid ""
-"Emulates the controller in bluetooth mode instead of USB mode. This is "
-"the default as it causes less issues with how apps interact with the "
-"controller. However, using USB mode can improve LED support (?) in some "
-"games. Test and report back!"
+"Emulates the controller in bluetooth mode instead of USB mode. This is the "
+"default as it causes less issues with how apps interact with the controller. "
+"However, using USB mode can improve LED support (?) in some games. Test and "
+"report back!"
 msgstr ""
 "Эмулирует контроллер в режиме Bluetooth вместо USB. Это значение по "
-"умолчанию, так как вызывает меньше проблем с взаимодействием приложений с"
-" контроллером. Однако использование USB-режима может улучшить поддержку "
-"LED (?) в некоторых играх. Протестируйте и сообщите!"
+"умолчанию, так как вызывает меньше проблем с взаимодействием приложений с "
+"контроллером. Однако использование USB-режима может улучшить поддержку LED "
+"(?) в некоторых играх. Протестируйте и сообщите!"
 
 #. Setting: Touchpad Emulation
 #. Field: title
@@ -1592,8 +1591,8 @@ msgstr "Эмуляция сенсорной панели"
 #. Setting: Touchpad Emulation
 #. Field: hint
 msgid ""
-"Use an emulated touchpad. Part of the controller if it is supported "
-"(e.g., Dualsense) or a virtual one if not."
+"Use an emulated touchpad. Part of the controller if it is supported (e.g., "
+"Dualsense) or a virtual one if not."
 msgstr ""
 "Использовать эмулированную сенсорную панель. Часть контроллера, если он "
 "поддерживается (например, Dualsense), или виртуальную, если нет."
@@ -1601,11 +1600,11 @@ msgstr ""
 #. Setting: Disabled
 #. Field: hint
 msgid ""
-"Does not modify the touchpad. Short + holding presses will not work "
-"within gamescope."
+"Does not modify the touchpad. Short + holding presses will not work within "
+"gamescope."
 msgstr ""
-"Не изменяет сенсорную панель. Короткие и длинные нажатия не будут "
-"работать в gamescope."
+"Не изменяет сенсорную панель. Короткие и длинные нажатия не будут работать в "
+"gamescope."
 
 #. Setting: Virtual
 #. Field: title
@@ -1615,16 +1614,15 @@ msgstr "Виртуальная"
 #. Setting: Virtual
 #. Field: hint
 msgid ""
-"Adds an emulated touchpad. This touchpad is meant for use in gamescope "
-"and has left, right click support by default. However, it causes issues "
-"in desktop mode, and it doesnt allow dragging files. Therefore, it will "
+"Adds an emulated touchpad. This touchpad is meant for use in gamescope and "
+"has left, right click support by default. However, it causes issues in "
+"desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
 "Добавляет эмулированную сенсорную панель. Эта панель предназначена для "
-"использования в gamescope и поддерживает левый и правый клик по "
-"умолчанию. Однако вызывает проблемы в режиме рабочего стола и не "
-"позволяет перетаскивать файлы. Поэтому автоматически отключается на "
-"рабочем столе."
+"использования в gamescope и поддерживает левый и правый клик по умолчанию. "
+"Однако вызывает проблемы в режиме рабочего стола и не позволяет "
+"перетаскивать файлы. Поэтому автоматически отключается на рабочем столе."
 
 #. Setting: Disable on Desktop
 #. Field: title
@@ -1635,8 +1633,8 @@ msgstr "Отключать на рабочем столе"
 #. Field: hint
 msgid ""
 "Touchpad emulation will automatically be disabled when not in gamemode. "
-"Specifically, steam will be periodically be checked to be running in "
-"gamepad mode and if not, touchpad emulation will be disabled."
+"Specifically, steam will be periodically be checked to be running in gamepad "
+"mode and if not, touchpad emulation will be disabled."
 msgstr ""
 "Эмуляция сенсорной панели автоматически отключается вне игрового режима. "
 "Конкретно, будет периодически проверяться, работает ли Steam в режиме "
@@ -1651,8 +1649,8 @@ msgstr "Короткое действие"
 #. Field: hint
 msgid "Maps short touches (less than 0.2s) to a virtual touchpad button."
 msgstr ""
-"Сопоставляет короткие касания (менее 0.2с) с кнопкой виртуальной "
-"сенсорной панели."
+"Сопоставляет короткие касания (менее 0.2с) с кнопкой виртуальной сенсорной "
+"панели."
 
 #. Setting: Short Action
 #. Option: left_click
@@ -1681,16 +1679,16 @@ msgstr ""
 #. Setting: Controller
 #. Field: hint
 msgid ""
-"Uses the touchpad of the emulated controller (if it exists). Otherwise, "
-"the touchpad remains unmapped (will still show up in the system). Meant "
-"to be used as steam input, so short press is unassigned by default and "
-"long press simulates trackpad click."
+"Uses the touchpad of the emulated controller (if it exists). Otherwise, the "
+"touchpad remains unmapped (will still show up in the system). Meant to be "
+"used as steam input, so short press is unassigned by default and long press "
+"simulates trackpad click."
 msgstr ""
-"Использует сенсорную панель эмулированного контроллера (если она есть). В"
-" противном случае сенсорная панель остается несопоставленной (все равно "
-"будет отображаться в системе). Предназначена для использования как Steam "
-"Input, поэтому короткое нажатие по умолчанию не назначено, а длинное "
-"имитирует клик по тачпаду."
+"Использует сенсорную панель эмулированного контроллера (если она есть). В "
+"противном случае сенсорная панель остается несопоставленной (все равно будет "
+"отображаться в системе). Предназначена для использования как Steam Input, "
+"поэтому короткое нажатие по умолчанию не назначено, а длинное имитирует клик "
+"по тачпаду."
 
 #. Setting: Location
 #. Field: title
@@ -1700,23 +1698,22 @@ msgstr "Расположение"
 #. Setting: Location
 #. Field: hint
 msgid ""
-"Controls the placement of the real touchpad to the virtual one, using "
-"what steam expects. In Steam, the \"Left\" touchpad maps to the left "
-"half, the \"Right\" touchpad maps to the right half, and \"Center\" maps "
-"to the whole touchpad. Therefore, the virtual touchpad is cropped to the "
-"left side for left, the right side for right, and expanded in the center "
-"for center. This means when set to center, half of the left touchpad is "
-"left and half of the right is right. \"Stretch\" stretches the touchpad "
-"to the whole dualsense surface."
+"Controls the placement of the real touchpad to the virtual one, using what "
+"steam expects. In Steam, the \"Left\" touchpad maps to the left half, the "
+"\"Right\" touchpad maps to the right half, and \"Center\" maps to the whole "
+"touchpad. Therefore, the virtual touchpad is cropped to the left side for "
+"left, the right side for right, and expanded in the center for center. This "
+"means when set to center, half of the left touchpad is left and half of the "
+"right is right. \"Stretch\" stretches the touchpad to the whole dualsense "
+"surface."
 msgstr ""
-"Управляет размещением реальной сенсорной панели относительно виртуальной "
-"в соответствии с ожиданиями Steam. В Steam \"Left\" сопоставляется с "
-"левой половиной, \"Right\" - с правой половиной, а \"Center\" - со всей "
-"панелью. Поэтому виртуальная панель обрезается слева для левой, справа "
-"для правой и расширяется в центре для центрального расположения. При "
-"установке \"Center\" половина левой панели остается слева, а половина "
-"правой - справа. \"Stretch\" растягивает панель на всю поверхность "
-"Dualsense."
+"Управляет размещением реальной сенсорной панели относительно виртуальной в "
+"соответствии с ожиданиями Steam. В Steam \"Left\" сопоставляется с левой "
+"половиной, \"Right\" - с правой половиной, а \"Center\" - со всей панелью. "
+"Поэтому виртуальная панель обрезается слева для левой, справа для правой и "
+"расширяется в центре для центрального расположения. При установке \"Center\" "
+"половина левой панели остается слева, а половина правой - справа. "
+"\"Stretch\" растягивает панель на всю поверхность Dualsense."
 
 #. Setting: Location
 #. Option: center
@@ -1731,30 +1728,26 @@ msgstr "Растянуть"
 #. Setting: Short Action
 #. Field: hint
 msgid ""
-"Maps short touches (less than 0.2s) to a touchpad action. Dualsense uses "
-"a physical press for left and a double tap for right click (support for "
-"double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
-"settings)."
+"Maps short touches (less than 0.2s) to a touchpad action. Dualsense uses a "
+"physical press for left and a double tap for right click (support for double "
+"tap varies; enable \"Tap to Click\" in your desktop's touchpad settings)."
 msgstr ""
 "Сопоставляет короткие касания (менее 0.2с) с действием сенсорной панели. "
-"Dualsense использует физическое нажатие для левого клика и двойное "
-"касание для правого (поддержка двойного касания варьируется; включите "
-"\"Касание для клика\" в настройках сенсорной панели вашего рабочего "
-"стола)."
+"Dualsense использует физическое нажатие для левого клика и двойное касание "
+"для правого (поддержка двойного касания варьируется; включите \"Касание для "
+"клика\" в настройках сенсорной панели вашего рабочего стола)."
 
 #. Setting: Hold Action
 #. Field: hint
 msgid ""
 "Maps long touches (more than 2s) to a touchpad action. Dualsense uses a "
-"physical press for left and a double tap for right click (support for "
-"double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
-"settings)."
+"physical press for left and a double tap for right click (support for double "
+"tap varies; enable \"Tap to Click\" in your desktop's touchpad settings)."
 msgstr ""
 "Сопоставляет длинные касания (более 2с) с действием сенсорной панели. "
-"Dualsense использует физическое нажатие для левого клика и двойное "
-"касание для правого (поддержка двойного касания варьируется; включите "
-"\"Касание для клика\" в настройках сенсорной панели вашего рабочего "
-"стола)."
+"Dualsense использует физическое нажатие для левого клика и двойное касание "
+"для правого (поддержка двойного касания варьируется; включите \"Касание для "
+"клика\" в настройках сенсорной панели вашего рабочего стола)."
 
 msgid "Downloading:"
 msgstr "Загрузка:"
@@ -1917,11 +1910,11 @@ msgstr "Выполнить rpm-ostree reset"
 #. Setting: Run rpm-ostree reset
 #. Field: hint
 msgid ""
-"Disable the custom initramfs and remove layers. Your personal data will "
-"not be affected."
+"Disable the custom initramfs and remove layers. Your personal data will not "
+"be affected."
 msgstr ""
-"Отключить пользовательский initramfs и удалить слои. Ваши личные данные "
-"не будут затронуты."
+"Отключить пользовательский initramfs и удалить слои. Ваши личные данные не "
+"будут затронуты."
 
 #. Setting: Cancel
 #. Field: title
@@ -2028,20 +2021,20 @@ msgstr "Вернуться к стабильной версии"
 #. Setting: System
 #. Field: hint
 msgid ""
-"Basic display settings. Brightness (and framerate TBD). This pane is "
-"meant to replace "
+"Basic display settings. Brightness (and framerate TBD). This pane is meant "
+"to replace "
 msgstr ""
-"Основные настройки дисплея. Яркость (и частота кадров - будет добавлено)."
-" Эта панель предназначена для замены "
+"Основные настройки дисплея. Яркость (и частота кадров - будет добавлено). "
+"Эта панель предназначена для замены "
 
 #. Setting: Brightness
 #. Field: hint
 msgid ""
-"Sets the brightness level of a display. Only one display is supported and"
-" it is the one that was read."
+"Sets the brightness level of a display. Only one display is supported and it "
+"is the one that was read."
 msgstr ""
-"Устанавливает уровень яркости дисплея. Поддерживается только один дисплей"
-" - тот, который был считан."
+"Устанавливает уровень яркости дисплея. Поддерживается только один дисплей - "
+"тот, который был считан."
 
 #. Setting: Display
 #. Field: title
@@ -2379,8 +2372,8 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"Некоторые устройства просыпаются, чтобы принудительно перевести Windows в"
-" гибернацию. Если Linux этого не делает,\n"
+"Некоторые устройства просыпаются, чтобы принудительно перевести Windows в "
+"гибернацию. Если Linux этого не делает,\n"
 "возникают проблемы. Определять события перегрева и 5% заряда батареи\n"
 "и переводить в гибернацию.\n"
 
