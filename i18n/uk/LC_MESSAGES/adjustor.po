@@ -1,0 +1,1012 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-09-01 09:01+0000\n"
+"Last-Translator: Dmytro Savushkin <dimka4996@proton.me>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/hhd/adjustor/"
+"uk/>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.13.1-dev\n"
+"Generated-By: Babel 2.17.0\n"
+
+msgid "Disable Decky TDP plugins using the button below to continue."
+msgstr ""
+"Щоб продовжити, натисніть кнопку знизу, для вимкнення плагінів Decky TDP."
+
+#. Setting: TDP Controls
+#. Field: title
+msgid "TDP Controls"
+msgstr "Керування TDP"
+
+#. Setting: Enable TDP Controls
+#. Field: title
+msgid "Enable TDP Controls"
+msgstr "Ввімкнути керування TDP"
+
+#. Setting: Enable TDP Controls
+#. Field: hint
+msgid ""
+"Enables TDP management by Handheld Daemon. While enabled, Handheld Daemon"
+" will set and maintain the TDP limits set on start-up and during other "
+"device changes (ac/dc)."
+msgstr ""
+"Ввімкнути керування TDP за допомогою Handheld Daemon. Поки ввімкнено, "
+"Handheld Daemon буде встановлювати ліміти TDP при завантаженні та зміни "
+"інших станів (заряджання/на батареї)."
+
+#. Setting: Error
+#. Field: title
+msgid "Error"
+msgstr "Помилка"
+
+#. Setting: Error
+#. Option: nowrite
+msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
+msgstr "Неможливо записати файл викликів ACPI. ACPI виклики потрібні для TDP."
+
+#. Setting: TDP Capabilities
+#. Field: title
+msgid "TDP Capabilities"
+msgstr "Можливості TDP"
+
+#. Setting: Disable Decky TDP Plugins
+#. Field: title
+msgid "Disable Decky TDP Plugins"
+msgstr "Вимкнути плагіни Decky TDP"
+
+#. Setting: Disable Decky TDP Plugins
+#. Field: hint
+msgid ""
+"Disables Decky TDP plugins (Powercontrol, SimpleDeckyTDP) by moving them "
+"from ~/homebrew/plugins to ~/homebrew/plugins/hhd-disabled. Then, "
+"restarts Decky. This might cause Steam to restart. Move them back and "
+"reboot to re-enable."
+msgstr ""
+"Вимкнути плагіни Decky TDP (Powercontrol, SimpleDeckyTDP) переміщенням їх з "
+"~/homebrew/plugins до ~/homebrew/plugins/hhd-disabled. Потім перезапустити "
+"Decky. Це спричинить до перезапуску Steam. Перемістіть їх назад та виконайте "
+"перезавантаження для повторного ввімкнення."
+
+#. Setting: Enable TDP Controls
+#. Field: hint
+msgid ""
+"Enables TDP management by the Handheld Daemon. While enabled, Handheld "
+"Daemon will set and maintain the TDP limits set on start-up and during "
+"other device changes (ac/dc).\n"
+"If the device crashes, TDP setting will be disabled on next startup."
+msgstr ""
+"Ввімкнути керування TDP за допомогою Handheld Daemon. Поки ввімкнено, "
+"Handheld Daemon буде автоматично встановлювати TDP ліміти при завантаженні "
+"та при інших змінах стану (від батареї/заряджання). \n"
+"Якщо виникне помилка, керування TDP буде вимкнене при наступному "
+"завантаженні."
+
+#. Setting: Add TDP to /sys for Steam (Requires Restart)
+#. Field: title
+msgid "Add TDP to /sys for Steam (Requires Restart)"
+msgstr "Додати TDP до /sys для Steam (вимагає перезавантаження)"
+
+#. Setting: Add TDP to /sys for Steam (Requires Restart)
+#. Field: hint
+msgid ""
+"Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the"
+" TDP slider in Steam."
+msgstr ""
+"Використовує FUSE монтування для додавання TDP атрибутів до /sys/class/drm. "
+"Виправляє TDP слайдер в Steam."
+
+#. Setting: Enforce Device TDP Limits
+#. Field: title
+msgid "Enforce Device TDP Limits"
+msgstr "Примусове встановлення TDP лімітів для пристрою"
+
+#. Setting: Enforce Device TDP Limits
+#. Field: hint
+msgid ""
+"When this option is on, the settings will adhere to the limits set out by"
+" the device manufacturer, subject to their availability.\n"
+"With it off, the TDP settings ranges will expand to what is logically "
+"possible for the current device (regardless of manufacturer "
+"specifications).\n"
+"All settings outside specifications will be set to system specifications "
+"after rebooting."
+msgstr ""
+"Коли цей параметр увімкнено, налаштування дотримуватимуться обмежень, "
+"встановлених виробником пристрою, якщо вони доступні.\n"
+"Якщо його вимкнено, діапазони налаштувань TDP розширюються до того, що є "
+"логічно можливим для поточного пристрою (незалежно від специфікацій "
+"виробника).\n"
+"Усі налаштування поза межами специфікацій буде встановлено відповідно до "
+"системних специфікацій після перезавантаження."
+
+msgid "Steam is controlling TDP"
+msgstr "Steam контролює TDP"
+
+#. Setting: Asus TDP
+#. Field: title
+msgid "Asus TDP"
+msgstr "Asus TDP"
+
+#. Setting: Asus TDP
+#. Field: hint
+#. Setting: MSI TDP
+msgid "Uses the interface of Armory Crate to set the TDP of the device."
+msgstr "Використовує інтерфейс Armory Crate для встановлення TDP пристрою."
+
+#. Setting: TDP Mode
+#. Field: title
+msgid "TDP Mode"
+msgstr "Режим TDP"
+
+#. Setting: Silent
+#. Field: title
+msgid "Silent"
+msgstr "Тихий"
+
+#. Setting: Performance
+#. Field: title
+#. Setting: Power Profile
+#. Option: performance
+#. Setting: Platform Profile
+#. Setting: Energy Policy
+msgid "Performance"
+msgstr "Продуктивність"
+
+#. Setting: Turbo
+#. Field: title
+msgid "Turbo"
+msgstr "Турбо"
+
+#. Setting: Custom
+#. Field: title
+msgid "Custom"
+msgstr "Свій"
+
+#. Setting: TDP
+#. Field: title
+msgid "TDP"
+msgstr "TDP"
+
+#. Setting: TDP
+#. Field: hint
+msgid ""
+"Average TDP Target. TDP Boost is recommended for desktop use and does not"
+" affect gaming."
+msgstr ""
+"Середнє цільове значення TDP. TDP Boost рекомендується для використання на "
+"настільних системах і не впливає на ігри."
+
+#. Setting: TDP Boost
+#. Field: title
+msgid "TDP Boost"
+msgstr "TDP Boost"
+
+#. Setting: TDP Boost
+#. Field: hint
+msgid ""
+"Allows the device to temporarily boost by setting appropriate slow and "
+"fast TDPs."
+msgstr ""
+"Дозволяє пристрою тимчасово підвищувати продуктивність шляхом встановлення "
+"відповідних повільного та швидкого TDP."
+
+#. Setting:
+#. Field: title
+msgid " "
+msgstr " "
+
+#. Setting: Change TDP with View+Y
+#. Field: title
+msgid "Change TDP with View+Y"
+msgstr "Змінити TDP комбінацією View+Y"
+
+#. Setting: Change TDP with View+Y
+#. Field: hint
+msgid ""
+"Allows you to cycle through TDP modes with the View+Y key combination. "
+"Recommended to use with ROG Swap, as the View button will be muted to "
+"games."
+msgstr ""
+"Дозволяє перемикатися між режимами TDP за допомогою комбінації клавіш View+"
+"Y. Рекомендується використовувати разом із ROG Swap, оскільки кнопка View "
+"буде вимкнена в іграх."
+
+#. Setting: Custom Fan Curve
+#. Field: title
+msgid "Custom Fan Curve"
+msgstr "Користувацька крива вентилятора"
+
+#. Setting: Custom Fan Curve
+#. Field: hint
+msgid "Allows you to set a custom fan curve."
+msgstr "Дозволяє встановлювати користувацьку криву вентилятора."
+
+#. Setting: Disabled
+#. Field: title
+#. Setting: Extreme Standby Mode
+#. Option: disabled
+#. Setting: Custom Scheduler
+#. Setting: CPU Boost
+msgid "Disabled"
+msgstr "Вимкнено"
+
+#. Setting: Disabled
+#. Field: hint
+msgid "Lets the device manage the fan curve on its own."
+msgstr "Дозволяє пристрою самостійно керувати кривою вентилятора."
+
+#. Setting: Manual
+#. Field: title
+msgid "Manual"
+msgstr "Ручний"
+
+#. Setting: 30C
+#. Field: title
+msgid "30C"
+msgstr "30C"
+
+#. Setting: 30C
+#. Field: hint
+#. Setting: 40C
+#. Setting: 50C
+#. Setting: 60C
+#. Setting: 70C
+#. Setting: 80C
+#. Setting: 90C
+#. Setting: 100C
+#. Setting: 10C
+#. Setting: 20C
+msgid "Sets the speed at the named temperature."
+msgstr "Встановлює швидкість при вказаній температурі."
+
+#. Setting: 40C
+#. Field: title
+msgid "40C"
+msgstr "40C"
+
+#. Setting: 50C
+#. Field: title
+msgid "50C"
+msgstr "50C"
+
+#. Setting: 60C
+#. Field: title
+msgid "60C"
+msgstr "60C"
+
+#. Setting: 70C
+#. Field: title
+msgid "70C"
+msgstr "70C"
+
+#. Setting: 80C
+#. Field: title
+msgid "80C"
+msgstr "80C"
+
+#. Setting: 90C
+#. Field: title
+msgid "90C"
+msgstr "90C"
+
+#. Setting: 100C
+#. Field: title
+msgid "100C"
+msgstr "100C"
+
+#. Setting: Restore Default
+#. Field: title
+msgid "Restore Default"
+msgstr "Відновити значення за замовчуванням"
+
+#. Setting: Restore Default
+#. Field: hint
+msgid "Restore a default sane fan curve."
+msgstr "Відновити стандартну нормальну криву вентилятора."
+
+#. Setting: Fan Curve Limitation
+#. Field: title
+msgid "Fan Curve Limitation"
+msgstr "Обмеження кривої вентилятора"
+
+#. Setting: Extreme Standby Mode
+#. Field: title
+msgid "Extreme Standby Mode"
+msgstr "Режим екстремального очікування"
+
+#. Setting: Extreme Standby Mode
+#. Field: hint
+#, fuzzy, python-format
+msgid ""
+"Lowers the power consumption of the device from 4% to 1% overnight. "
+"Active only on battery. Turns off the power light and the controller  "
+"requires longer to wake up."
+msgstr ""
+"Зменшує споживання енергії пристроєм з 4% до 1% за ніч. Активно лише на "
+"батареї. Вимикає індикатор живлення, і контролеру    потрібно більше часу "
+"для пробудження."
+
+#. Setting: Extreme Standby Mode
+#. Option: enabled
+#. Setting: CPU Boost
+msgid "Enabled"
+msgstr "Ввімкнено"
+
+#. Setting: Battery Settings
+#. Field: title
+msgid "Battery Settings"
+msgstr "Налаштування батареї"
+
+#. Setting: Charge Limit (%)
+#. Field: title
+msgid "Charge Limit (%)"
+msgstr "Ліміт заряджання (%)"
+
+#. Setting: Charge Limit (%)
+#. Field: hint
+msgid "Applies a charge limit to the battery, 75% and up."
+msgstr "Застосовує обмеження заряду батареї на 75% і більше."
+
+#. Setting: Charge Limit (%)
+#. Option: p70
+msgid "70%"
+msgstr "70%"
+
+#. Setting: Charge Limit (%)
+#. Option: p80
+msgid "80%"
+msgstr "80%"
+
+#. Setting: Charge Limit (%)
+#. Option: p85
+msgid "85%"
+msgstr "85%"
+
+#. Setting: Charge Limit (%)
+#. Option: p90
+msgid "90%"
+msgstr "90%"
+
+#. Setting: Charge Limit (%)
+#. Option: p95
+msgid "95%"
+msgstr "95%"
+
+#. Setting: Charge Limit (%)
+#. Option: disabled
+#. Setting: Charge Bypass
+msgid "Unset"
+msgstr "Не встановлено"
+
+#. Setting: Charge Bypass
+#. Field: title
+msgid "Charge Bypass"
+msgstr "Пропуск заряджання"
+
+#. Setting: Charge Bypass
+#. Option: awake
+msgid "While On"
+msgstr "Поки ввімкнений"
+
+#. Setting: Charge Bypass
+#. Option: always
+msgid "Always"
+msgstr "Завжди"
+
+#. Setting: Power
+#. Field: title
+#. Setting: Energy Policy
+#. Option: power
+msgid "Power"
+msgstr "Живлення"
+
+#. Setting: Power Profile
+#. Field: title
+msgid "Power Profile"
+msgstr "Профіль живлення"
+
+#. Setting: Power Profile
+#. Field: hint
+msgid ""
+"Allows setting the power profile of the system using Power Profiles "
+"Daemon."
+msgstr ""
+"Дозволяє встановлювати енергетичний профіль системи за допомогою Power "
+"Profiles Daemon."
+
+#. Setting: Power Profile
+#. Option: power-saver
+#. Setting: Powersave
+#. Field: title
+msgid "Powersave"
+msgstr "Економія енергії"
+
+#. Setting: Power Profile
+#. Option: balanced
+#. Setting: CPU Power (EPP)
+#. Option: balance_power
+#. Setting: Balanced
+#. Field: title
+#. Setting: Platform Profile
+#. Setting: Energy Policy
+msgid "Balanced"
+msgstr "Збалансований"
+
+#. Setting: Custom Scheduler
+#. Field: title
+msgid "Custom Scheduler"
+msgstr "Користувацький планувальник"
+
+#. Setting: Custom Scheduler
+#. Field: hint
+msgid ""
+"Allows attaching a scheduler to the kernel sched_ext. Schedulers need to "
+"be installed and kernel needs to support sched_ext."
+msgstr ""
+"Дозволяє підключати планувальник до kernel sched_ext. Планувальники повинні "
+"бути встановлені, а ядро має підтримувати sched_ext."
+
+#. Setting: Custom Scheduler
+#. Option: scx_lavd
+msgid "LAVD"
+msgstr "LAVD"
+
+#. Setting: Custom Scheduler
+#. Option: scx_bpfland
+msgid "bpfland"
+msgstr "bpfland"
+
+#. Setting: Custom Scheduler
+#. Option: scx_rusty
+msgid "rusty"
+msgstr "rusty"
+
+#. Setting: Processor Settings
+#. Field: title
+msgid "Processor Settings"
+msgstr "Налаштування процесора"
+
+#. Setting: CPU Settings
+#. Field: title
+msgid "CPU Settings"
+msgstr "Налаштування CPU"
+
+#. Setting: Auto
+#. Field: title
+msgid "Auto"
+msgstr "Авто"
+
+#. Setting: Auto
+#. Field: hint
+msgid ""
+"Handheld Daemon will manage the energy management settings. This includes"
+" CPU governor, CPU boost, GPU frequency, and CPU power preferences. At "
+"low TDPs, the CPU will be tuned down and at other TDPs, it will use "
+"balanced settings."
+msgstr ""
+"Handheld Daemon керуватиме налаштуваннями енергоспоживання. Це включає CPU "
+"governor, підвищення частоти CPU, частоту GPU та налаштування "
+"енергоспоживання CPU. При низьких TDP CPU буде знижено, а при інших TDP "
+"використовуватимуться збалансовані налаштування."
+
+#. Setting: Manual
+#. Field: hint
+msgid "Allows you to set the energy management settings manually."
+msgstr "Дозволяє вручну налаштовувати параметри енергоспоживання."
+
+#. Setting: CPU Power (EPP)
+#. Field: title
+msgid "CPU Power (EPP)"
+msgstr "Живлення CPU (EPP)"
+
+#. Setting: CPU Power (EPP)
+#. Field: hint
+msgid ""
+"Sets the energy performance preference for the CPU. Keep on balanced for "
+"good performance on all TDPs. Options map to `power`, `balance_power`, "
+"`balance_performance`. Performance is not recommended and is not "
+"included."
+msgstr ""
+"Встановлює пріоритет енергоспоживання для CPU. Тримайте на balanced для "
+"стабільної продуктивності на всіх TDP. Опції відповідають power, "
+"balance_power, balance_performance. Performance не рекомендується і не "
+"включено."
+
+#. Setting: CPU Power (EPP)
+#. Option: power
+msgid "Low"
+msgstr "Низький"
+
+#. Setting: CPU Power (EPP)
+#. Option: balance_performance
+msgid "High"
+msgstr "Високий"
+
+#. Setting: CPU Minimum Frequency
+#. Field: title
+msgid "CPU Minimum Frequency"
+msgstr "Мінімальна частота CPU"
+
+#. Setting: CPU Minimum Frequency
+#. Field: hint
+msgid ""
+"Sets the minimum frequency for the CPU. Using 400MHz will save battery in"
+" light games. However, the delay of increasing the frequency may cause "
+"minor stutters, especially in VRR displays."
+msgstr ""
+"Встановлює мінімальну частоту CPU. Використання 400 МГц економить батарею у "
+"легких іграх. Однак затримка підвищення частоти може спричиняти невеликі "
+"лаги, особливо на дисплеях з VRR."
+
+#. Setting: CPU Minimum Frequency
+#. Option: min
+msgid "400MHz"
+msgstr "400МГц"
+
+#. Setting: CPU Minimum Frequency
+#. Option: nonlinear
+msgid "1GHz"
+msgstr "1ГГц"
+
+#. Setting: CPU Boost
+#. Field: title
+msgid "CPU Boost"
+msgstr "CPU Буст"
+
+#. Setting: CPU Boost
+#. Field: hint
+msgid ""
+"Enables or disables the CPU boost frequencies. Disabling lowers total "
+"consumption by 2W with  minimal performance impact."
+msgstr ""
+"Увімкнення або вимкнення підвищених частот CPU. Вимкнення знижує загальне "
+"споживання на 2 Вт з мінімальним впливом на продуктивність."
+
+#. Setting: Custom Scheduler
+#. Option: scx_p2dq
+msgid "P2DQ"
+msgstr "P2DQ"
+
+#. Setting: Custom Scheduler
+#. Option: scx_flash
+msgid "Flash"
+msgstr "Flash"
+
+#. Setting: GPU Frequency
+#. Field: title
+msgid "GPU Frequency"
+msgstr "Частота GPU"
+
+#. Setting: GPU Frequency
+#. Field: hint
+msgid ""
+"Pins the GPU to a certain frequency. Helps in certain games that are CPU "
+"or GPU heavy by shifting power to or from the GPU. Has a minor effect."
+msgstr ""
+"Фіксує частоту GPU на певному рівні. Допомагає в іграх, що сильно "
+"навантажують CPU або GPU, перенаправляючи потужність на GPU або від нього. "
+"Має незначний ефект."
+
+#. Setting: Auto
+#. Field: hint
+msgid "Lets the GPU manage its own frequency."
+msgstr "Дозволяє GPU самостійно керувати своєю частотою."
+
+#. Setting: Max Limit
+#. Field: title
+msgid "Max Limit"
+msgstr "Максимальний ліміт"
+
+#. Setting: Max Limit
+#. Field: hint
+msgid "Limits the maximum frequency of the GPU."
+msgstr "Обмежує максимальну частоту GPU."
+
+#. Setting: Maximum Frequency
+#. Field: title
+msgid "Maximum Frequency"
+msgstr "Максимальна частота"
+
+#. Setting: Range
+#. Field: title
+msgid "Range"
+msgstr "Діапазон"
+
+#. Setting: Range
+#. Field: hint
+msgid "Sets the GPU frequency to a range."
+msgstr "Встановлює частоту GPU у певному діапазоні."
+
+#. Setting: Minimum Frequency
+#. Field: title
+msgid "Minimum Frequency"
+msgstr "Мінімальна частота"
+
+#. Setting: Fixed
+#. Field: title
+msgid "Fixed"
+msgstr "Зафіксовано"
+
+#. Setting: Fixed
+#. Field: hint
+msgid "Pins the GPU to a certain frequency (not recommended)."
+msgstr "Фіксує частоту GPU на певному рівні (не рекомендується)."
+
+#. Setting: Frequency
+#. Field: title
+msgid "Frequency"
+msgstr "Частота"
+
+#. Setting: Conflict Detected
+#. Field: title
+msgid "Conflict Detected"
+msgstr "Виявлено конфлікт"
+
+#. Setting: Enable Processor Settings
+#. Field: title
+msgid "Enable Processor Settings"
+msgstr "Увімкнути налаштування процесора"
+
+#. Setting: Enable energy management
+#. Field: title
+msgid "Enable energy management"
+msgstr "Увімкнути керування енергоспоживанням"
+
+#. Setting: Enable energy management
+#. Field: hint
+msgid ""
+"Handheld daemon will manage the power preferences for the system, "
+"including Governor, Boost, GPU frequency, and EPP. In addition, Handheld "
+"daemon will launch a PPD service to replace PPD's role in the system. "
+msgstr ""
+"Handheld Daemon керуватиме енергетичними налаштуваннями системи, включно з "
+"Governor, Boost, частотою GPU та EPP. Крім того, Handheld Daemon запускатиме "
+"сервіс PPD, щоб замінити його роль у системі. "
+
+#. Setting: Enable PPD Emulation (KDE/Gnome Power)
+#. Field: title
+msgid "Enable PPD Emulation (KDE/Gnome Power)"
+msgstr "Увімкнути емуляцію PPD (KDE/Gnome Power)"
+
+#. Setting: Enable PPD Emulation (KDE/Gnome Power)
+#. Field: hint
+msgid "Enable PPD service to manage the power preferences for the system."
+msgstr ""
+"Увімкнути сервіс PPD для керування енергетичними налаштуваннями системи."
+
+msgid "Power Light"
+msgstr "Індикатор живлення"
+
+msgid "Legion Button + Y changes TDP Mode"
+msgstr "Комбінація Legion Button + Y змінює режим TDP"
+
+#. Setting: Lenovo TDP
+#. Field: title
+msgid "Lenovo TDP"
+msgstr "Lenovo TDP"
+
+#. Setting: Lenovo TDP
+#. Field: hint
+msgid "Uses the interface of Legion Space to set the TDP of the device."
+msgstr "Використовує інтерфейс Legion Space для встановлення TDP пристрою."
+
+#. Setting: Quiet
+#. Field: title
+#. Setting: Platform Profile
+#. Option: quiet
+msgid "Quiet"
+msgstr "Тихий"
+
+#. Setting: TDP
+#. Field: hint
+msgid ""
+"Maximum average TDP. Boost goes a bit higher and is recommended for "
+"desktop use."
+msgstr ""
+"Максимальне середнє значення TDP. Boost трохи підвищується і рекомендується "
+"для використання на настільних системах."
+
+#. Setting: TDP Boost
+#. Field: hint
+msgid "Allows the device to boost by setting appropriate slow and fast TDPs."
+msgstr ""
+"Дозволяє пристрою підвищувати продуктивність шляхом встановлення відповідних "
+"повільного та швидкого TDP."
+
+#. Setting: Set Fan to Full Speed
+#. Field: title
+msgid "Set Fan to Full Speed"
+msgstr "Встановити вентилятор на повну швидкість"
+
+#. Setting: Disabled
+#. Field: hint
+msgid ""
+"Lets Legion GO manage the curve on its own. Setting this option will "
+"cause a mode change to reset the fan curve."
+msgstr ""
+"Дозволяє Legion GO самостійно керувати кривою вентилятора. Установлення "
+"цього параметра спричинить зміну режиму для скидання кривої вентилятора."
+
+#. Setting: 10C
+#. Field: title
+msgid "10C"
+msgstr "10C"
+
+#. Setting: 20C
+#. Field: title
+msgid "20C"
+msgstr "20C"
+
+#. Setting: Enforce Windows Minimums
+#. Field: title
+msgid "Enforce Windows Minimums"
+msgstr "Примусово застосувати мінімальні налаштування Windows"
+
+#. Setting: Enforce Windows Minimums
+#. Field: hint
+msgid "Enforce the minimum fan curve from Legion Space."
+msgstr "Примусово застосувати мінімальну криву вентилятора з Legion Space."
+
+#. Setting: Restore Default
+#. Field: hint
+msgid "Reset to the original fan curve for custom mode."
+msgstr "Скинути криву вентилятора до оригінальної для користувацького режиму."
+
+#. Setting: Show TDP changes with RGB
+#. Field: title
+msgid "Show TDP changes with RGB"
+msgstr "Показувати зміни TDP за допомогою RGB"
+
+#. Setting: Charge Limit (80%)
+#. Field: title
+msgid "Charge Limit (80%)"
+msgstr "Обмеження заряду (80%)"
+
+#. Setting: Charge Limit (80%)
+#. Field: hint
+msgid "Limits device charging to 80%."
+msgstr "Обмежує заряджання пристрою до 80%."
+
+#. Setting: Power Light (Awake)
+#. Field: title
+msgid "Power Light (Awake)"
+msgstr "Індикатор живлення (активний)"
+
+#. Setting: Power Light (Sleep)
+#. Field: title
+msgid "Power Light (Sleep)"
+msgstr "Індикатор живлення (сплячий режим)"
+
+#. Setting: MSI TDP
+#. Field: title
+msgid "MSI TDP"
+msgstr "MSI TDP"
+
+#. Setting: Missing Driver
+#. Field: title
+msgid "Missing Driver"
+msgstr "Відсутній драйвер"
+
+#. Setting: Sport
+#. Field: title
+msgid "Sport"
+msgstr "Спорт"
+
+#. Setting: Change TDP with View+Y
+#. Field: hint
+msgid ""
+"Allows you to cycle through TDP modes with the View+Y key combination. "
+"Recommended to use with button swap, as the View button will be muted to "
+"games."
+msgstr ""
+"Дозволяє перемикатися між режимами TDP за допомогою комбінації клавіш View+"
+"Y. Рекомендується використовувати разом із заміною кнопок, оскільки кнопка "
+"View буде вимкнена в іграх."
+
+#. Setting: TDP Settings
+#. Field: title
+msgid "TDP Settings"
+msgstr "Налаштування TDP"
+
+#. Setting: TDP
+#. Field: hint
+msgid "Controls all Ryzen SMU settings through preset curves."
+msgstr "Керує всіма налаштуваннями Ryzen SMU через попередньо задані криві."
+
+#. Setting: Custom Fan Curve
+#. Field: hint
+msgid ""
+"Allows you to set a custom fan curve and to choose the temperature probe "
+"(Edge or Junction). Junction is the peak temperature of the chip: "
+"responds faster and prevents throttling. Edge is the temperature of the "
+"chip: responds slower and prevents overheating."
+msgstr ""
+"Дозволяє встановлювати користувацьку криву вентилятора та вибирати "
+"температурний сенсор (Edge або Junction). Junction - пікова температура чіпа:"
+" реагує швидше та запобігає тротлінгу. Edge - температура поверхні чіпа: "
+"реагує повільніше та запобігає перегріву."
+
+#. Setting: Manual (Edge, Smooth)
+#. Field: title
+msgid "Manual (Edge, Smooth)"
+msgstr "Ручний режим (Edge, Smooth)"
+
+#. Setting: Reset to Default
+#. Field: title
+msgid "Reset to Default"
+msgstr "Скинути до значень за замовчуванням"
+
+#. Setting: Manual (Tctl, Fast)
+#. Field: title
+msgid "Manual (Tctl, Fast)"
+msgstr "Ручний режим (Tctl, швидкий)"
+
+#. Setting: Advanced Configurator
+#. Field: title
+msgid "Advanced Configurator"
+msgstr "Розширений конфігуратор"
+
+#. Setting: Apply Settings
+#. Field: title
+msgid "Apply Settings"
+msgstr "Застосувати налаштування"
+
+#. Setting: TDP Status
+#. Field: title
+msgid "TDP Status"
+msgstr "Статус TDP"
+
+#. Setting: Platform Profile
+#. Field: title
+msgid "Platform Profile"
+msgstr "Профіль платформи"
+
+#. Setting: Platform Profile
+#. Option: disabled
+msgid "Not Set"
+msgstr "Не задано"
+
+#. Setting: Platform Profile
+#. Option: low-power
+msgid "Low Power"
+msgstr "Низька потужність"
+
+#. Setting: Platform Profile
+#. Option: cool
+msgid "Cool"
+msgstr "Холодний"
+
+#. Setting: Platform Profile
+#. Option: balanced-performance
+msgid "Balanced Performance"
+msgstr "Збалансована потужність"
+
+#. Setting: Energy Policy
+#. Field: title
+msgid "Energy Policy"
+msgstr "Політика енергоспоживання"
+
+#. Setting: Standard Parameters
+#. Field: title
+msgid "Standard Parameters"
+msgstr "Стандартні параметри"
+
+#. Setting: Standard Parameters
+#. Field: hint
+msgid ""
+"Standard TDP parameters for Ryzen processors. All need to be set to "
+"properly control the TDP of the device.\n"
+"Ryzen processors have 2 modes: STTv2 and STAPM (legacy). AMD suggests to"
+"  manufacturers to use STTv2, which makes the Legion Go the only device "
+"to  offer the STAPM alternative through a BIOS setting.\n"
+"In STTv2, the device will keep boosting until the \"skin\" of the device "
+"(hottest user accessible spot) reaches a manufacturer set temperature. "
+"Then, the device will use the Skin Temp TDP limit. In STAPM, the device "
+"averages the TDP values from the 1-3 previous minutes and keeps that "
+"value under the STAPM TDP limit. Either mode ignores the other mode's "
+"limit (STAPM limit does nothing on STT and Skin Temp Limit does nothing "
+"on STAPM), so both should be set.\n"
+"The Fast and Slow limits control boosting behavior. The Fast TDP limit is"
+" the actual max TDP value of the device. Then,the Slow TDP limit averages"
+" the last 10-20s of TDP values and keeps the value below it."
+msgstr ""
+"Стандартні параметри TDP для процесорів Ryzen. Усі параметри потрібно "
+"налаштувати, щоб належним чином контролювати TDP пристрою.\n"
+"Процесори Ryzen мають 2 режими: STTv2 і STAPM (застарілий). AMD пропонує "
+"виробникам використовувати STTv2, що робить Legion Go єдиним пристроєм, який "
+"пропонує альтернативу STAPM через налаштування BIOS.\n"
+"У режимі STTv2 пристрій буде підвищувати тактову частоту, доки «шкіра» "
+"пристрою (найгарячіша точка, доступна користувачеві) не досягне температури, "
+"встановленої виробником. Потім пристрій буде використовувати ліміт TDP "
+"температури шкіри. У режимі STAPM пристрій усереднює значення TDP за 1-3 "
+"попередні хвилини і тримає це значення нижче ліміту STAPM TDP. Будь-який із "
+"режимів ігнорує ліміт іншого режиму (ліміт STAPM не працює на STT, а ліміт "
+"температури шкіри не працює на STAPM), тому потрібно налаштувати обидва.\n"
+"Швидкий і повільний ліміти контролюють поведінку підвищення частоти. Швидкий "
+"ліміт TDP - це фактичне максимальне значення TDP пристрою. Потім повільний "
+"ліміт TDP усереднює значення TDP за останні 10-20 секунд і утримує значення "
+"нижче нього."
+
+#. Setting: Fast TDP Limit
+#. Field: title
+msgid "Fast TDP Limit"
+msgstr "Швидкий ліміт TDP"
+
+#. Setting: Slow TDP Limit
+#. Field: title
+msgid "Slow TDP Limit"
+msgstr "Повільний ліміт TDP"
+
+#. Setting: Skin Temp TDP Limit
+#. Field: title
+msgid "Skin Temp TDP Limit"
+msgstr "Ліміт TDP температури корпусу"
+
+#. Setting: STAPM TDP Limit
+#. Field: title
+msgid "STAPM TDP Limit"
+msgstr "STAPM TDP ліміт"
+
+#. Setting: Advanced Parameters
+#. Field: title
+msgid "Advanced Parameters"
+msgstr "Розширені параметри"
+
+#. Setting: Advanced Parameters
+#. Field: hint
+msgid ""
+"The Advanced Parameters below control boosting behavior and need to be "
+"adjusted per device depending on its cooling system. They mostly affect "
+"boosting behavior, which is important for desktop use.\n"
+"The exception is the Temp Target (TCTL), which controls the max "
+"temperature of the CPU die. On most devices, it can safely be raised up "
+"to 100C.  However, if a temperature spike makes the chip reach 105C, it "
+"will enter a thermal protection mode, which is 5W, for a couple of "
+"minutes.\n"
+"The integration times for Slow TDP and STAPM influence how many previous "
+"TDP values the CPU will average to calculate its current Slow and STAPM  "
+"TDP values."
+msgstr ""
+"Параметри, описані нижче, контролюють підвищення частоти процесора, тому їх "
+"потрібно налаштовувати для кожного пристрою індивідуально, залежно від його "
+"системи охолодження. Ці параметри здебільшого впливають на поведінку "
+"розгону, що особливо важливо при використанні пристрою як настільного ПК.\n"
+"Винятком є Цільова температура (TCTL), яка встановлює максимальну "
+"температуру ядра процесора. На більшості пристроїв її можна безпечно "
+"підвищити до 100°C. Однак, якщо температура чіпа стрибком досягне 105°C, він "
+"перейде в режим термічного захисту (з потужністю 5 Вт) на кілька хвилин.\n"
+"Час інтеграції для Повільного TDP та STAPM визначає, скільки попередніх "
+"значень TDP процесор усереднює для обчислення поточних значень Повільного "
+"TDP та STAPM."
+
+#. Setting: Temp Target (TCTL)
+#. Field: title
+msgid "Temp Target (TCTL)"
+msgstr "Цільова температура (TCTL)"
+
+#. Setting: Slow Limit Integration Time
+#. Field: title
+msgid "Slow Limit Integration Time"
+msgstr "Час інтеграції повільного ліміту"
+
+#. Setting: STAPM Limit Integration Time
+#. Field: title
+msgid "STAPM Limit Integration Time"
+msgstr "Час інтеграції ліміту STAPM"
+
+#. Setting: Enable Advanced Parameters
+#. Field: title
+msgid "Enable Advanced Parameters"
+msgstr "Увімкнути розширені параметри"
