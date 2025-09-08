@@ -8,52 +8,53 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-09-08 08:01+0000\n"
+"Last-Translator: \"Quang Nhật Lê (fuzeless)\" <nhatku811@gmail.com>\n"
+"Language-Team: Vietnamese <https://hosted.weblate.org/projects/hhd/hhd/vi/>\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 5.14-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Section Name for: rgb
 msgid "RGB"
-msgstr ""
+msgstr "RGB"
 
 #. Section Name for: controllers
 #. Setting: Controller
 #. Field: title
 msgid "Controller"
-msgstr ""
+msgstr "Tay cầm"
 
 #. Section Name for: magic_modules
+#, fuzzy
 msgid "Modules"
-msgstr ""
+msgstr "Modules"
 
 #. Section Name for: wincontrols
 #. Setting: WinControls
 #. Field: title
 msgid "WinControls"
-msgstr ""
+msgstr "WinControls"
 
 #. Section Name for: gamemode
 msgid "General"
-msgstr ""
+msgstr "Chung"
 
 #. Section Name for: updates
 msgid "Updates"
-msgstr ""
+msgstr "Cập nhật"
 
 #. Section Name for: debug
 msgid "Bugreport"
-msgstr ""
+msgstr "Báo cáo lỗi"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
@@ -815,7 +816,7 @@ msgstr ""
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "Lỗi"
 
 #. Setting: Apply Settings
 #. Field: title
