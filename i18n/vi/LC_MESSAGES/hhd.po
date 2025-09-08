@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-08 08:01+0000\n"
+"PO-Revision-Date: 2025-09-08 09:02+0000\n"
 "Last-Translator: \"Quang Nhật Lê (fuzeless)\" <nhatku811@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/hhd/hhd/vi/>\n"
 "Language: vi\n"
@@ -58,58 +58,58 @@ msgstr "Báo cáo lỗi"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
-msgstr ""
+msgstr "Lối tắt"
 
 #. Section Name for: hhd
 msgid "Settings"
-msgstr ""
+msgstr "Cài đặt"
 
 #. Setting: Core Settings
 #. Field: title
 msgid "Core Settings"
-msgstr ""
+msgstr "Cài đặt chính"
 
 #. Setting: Language
 #. Field: title
 msgid "Language"
-msgstr ""
+msgstr "Ngôn ngữ"
 
 #. Setting: Language
 #. Option: system
 #. Setting: System
 #. Field: title
 msgid "System"
-msgstr ""
+msgstr "Hệ thống"
 
 #. Setting: Language
 #. Option: C
 msgid "English"
-msgstr ""
+msgstr "Tiếng Anh"
 
 #. Setting: Language
 #. Option: zh_CN
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Tiếng Trung đơn giản"
 
 #. Setting: Language
 #. Option: zh_TW
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Tiếng Trung"
 
 #. Setting: Language
 #. Option: pt_BR
 msgid "Portugese (Brazil)"
-msgstr ""
+msgstr "Tiếng Brazil"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr ""
+msgstr "Tiếng Nga"
 
 #. Setting: Theme
 #. Field: title
 msgid "Theme"
-msgstr ""
+msgstr "Chủ đề"
 
 #. Setting: Theme
 #. Field: hint
@@ -117,43 +117,45 @@ msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
 msgstr ""
+"Cho phép thay đổi giao diện. Chủ đề mặc định là Diavolo hoặc chủ đề của "
+"distribution."
 
 #. Setting: Theme
 #. Option: default
 #. Setting: Default
 #. Field: title
 msgid "Default"
-msgstr ""
+msgstr "Mặc định"
 
 #. Setting: Theme
 #. Option: diavolo
 msgid "Diavolo"
-msgstr ""
+msgstr "Diavolo"
 
 #. Setting: Theme
 #. Option: ocean
 msgid "Atlantis"
-msgstr ""
+msgstr "Atlantis"
 
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
-msgstr ""
+msgstr "Vapor"
 
 #. Setting: Theme
 #. Option: blood_orange
 msgid "Blood Orange"
-msgstr ""
+msgstr "Blood Orange"
 
 #. Setting: Reset Settings
 #. Field: title
 msgid "Reset Settings"
-msgstr ""
+msgstr "Reset cài đặt"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr ""
+msgstr "Khôi phục cài đặt gốc của Handheld Daemon."
 
 #. Setting: It is no longer possible to update Decky from here. If you see
 #. this, update the Decky plugin manually.
@@ -162,101 +164,104 @@ msgid ""
 "It is no longer possible to update Decky from here. If you see this, "
 "update the Decky plugin manually."
 msgstr ""
+"Không thể cập nhận Decky Loader ở đây. Nếu bạn thấy thông báo này, vui lòng "
+"tự cập nhật Decky Loader."
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr ""
+msgstr "Phiên bản Handheld Daemon"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
 #. Setting: Handheld Daemon UI Version
 #. Setting: Adjustor (TDP) Version
 msgid "Displays the Handheld Daemon version."
-msgstr ""
+msgstr "Hiển thị phiên bản Handheld Daemon."
 
 #. Setting: Handheld Daemon UI Version
 #. Field: title
 msgid "Handheld Daemon UI Version"
-msgstr ""
+msgstr "Phiên bản Handheld Daemon UI"
 
 #. Setting: Adjustor (TDP) Version
 #. Field: title
 msgid "Adjustor (TDP) Version"
-msgstr ""
+msgstr "Phiên bản Adjustor (TDP)"
 
 #. Setting: Update (Stable)
 #. Field: title
 msgid "Update (Stable)"
-msgstr ""
+msgstr "Cập nhật (Stable)"
 
 #. Setting: Update (Stable)
 #. Field: hint
+#, fuzzy
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr ""
+msgstr "Cập nhật lên phiên bản mới nhất từ PyPi (chỉ cho local install)"
 
 #. Setting: Update (Unstable)
 #. Field: title
 msgid "Update (Unstable)"
-msgstr ""
+msgstr "Cập nhật (Unstable - không ổn định)"
 
 #. Setting: Update (Unstable)
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
-msgstr ""
+msgstr "Cập nhật lên nhánh chính từ git (chỉ cho local install)."
 
 #. Setting: Update Error
 #. Field: title
 msgid "Update Error"
-msgstr ""
+msgstr "Lỗi cập nhật"
 
 #. Setting: API Configuration
 #. Field: title
 msgid "API Configuration"
-msgstr ""
+msgstr "Cài đặt API"
 
 #. Setting: API Configuration
 #. Field: hint
 msgid "Settings for configuring the http endpoint of HHD."
-msgstr ""
+msgstr "Cài đặt http endpoint của HHD."
 
 #. Setting: Limit Access to localhost
 #. Field: title
 msgid "Limit Access to localhost"
-msgstr ""
+msgstr "Giới hạn truy cập từ localhost"
 
 #. Setting: Limit Access to localhost
 #. Field: hint
 msgid "Sets the API target to '127.0.0.1' instead '0.0.0.0'."
-msgstr ""
+msgstr "Đặt API target thành '127.0.0.1' thay vì '0.0.0.0'."
 
 #. Setting: Use Security token
 #. Field: title
 msgid "Use Security token"
-msgstr ""
+msgstr "Sử dụng Security token"
 
 #. Setting: Use Security token
 #. Field: hint
 msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
-msgstr ""
+msgstr "Tạo security token trong `~/.config/hhd/token` để xác thực."
 
 msgid "Lightbar"
-msgstr ""
+msgstr "Lightbar"
 
 msgid "Keyboard"
-msgstr ""
+msgstr "Bàn phím"
 
 #. Setting: Aura Settings
 #. Field: title
 msgid "Aura Settings"
-msgstr ""
+msgstr "Cài đặt Aura"
 
 #. Setting: Brightness
 #. Field: title
 msgid "Brightness"
-msgstr ""
+msgstr "Độ sáng"
 
 #. Setting: Brightness
 #. Option: disabled
@@ -266,14 +271,14 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Option: off
 msgid "Off"
-msgstr ""
+msgstr "Tắt"
 
 #. Setting: Brightness
 #. Option: low
 #. Setting: Vibration
 #. Setting: Speed
 msgid "Low"
-msgstr ""
+msgstr "Thấp"
 
 #. Setting: Brightness
 #. Option: medium
@@ -281,7 +286,7 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "Medium"
-msgstr ""
+msgstr "Vừa"
 
 #. Setting: Brightness
 #. Option: high
@@ -289,51 +294,54 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "High"
-msgstr ""
+msgstr "Cao"
 
 #. Setting: RGB Power Settings
 #. Field: title
+#, fuzzy
 msgid "RGB Power Settings"
-msgstr ""
+msgstr "Cài đặt RGB Power"
 
 #. Setting: On TDP Changes
 #. Field: title
 msgid "On TDP Changes"
-msgstr ""
+msgstr "Lúc thay đổi TDP"
 
 #. Setting: Boot
 #. Field: title
 msgid "Boot"
-msgstr ""
+msgstr "Khởi động"
 
 #. Setting: Awake
 #. Field: title
 msgid "Awake"
-msgstr ""
+msgstr "Thức"
 
 #. Setting: Sleep while Charging
 #. Field: title
 msgid "Sleep while Charging"
-msgstr ""
+msgstr "Sạc lúc máy đang ngủ"
 
 #. Setting: Shutdown
 #. Field: title
 msgid "Shutdown"
-msgstr ""
+msgstr "Tắt nguồn"
 
 #. Setting: Enable Aura RGB support
 #. Field: title
 msgid "Enable Aura RGB support"
-msgstr ""
+msgstr "Mở hỗ trợ cho Aura RGB"
 
+#, fuzzy
 msgid "Cross Film / Joystick"
-msgstr ""
+msgstr "Cần chéo"
 
+#, fuzzy
 msgid "Cross / Joystick"
-msgstr ""
+msgstr "Nút / Joystick"
 
 msgid "Cross / Touchpad"
-msgstr ""
+msgstr "Cross / Touchpad"
 
 msgid "Direction / Joystick"
 msgstr ""
@@ -592,7 +600,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Disabled"
-msgstr ""
+msgstr "Tắt"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
@@ -918,7 +926,7 @@ msgstr ""
 #. Setting: Touchpad Emulation [BETA]
 #. Option: always
 msgid "Always"
-msgstr ""
+msgstr "Luôn luôn"
 
 #. Setting: Controller Frequency
 #. Field: title
@@ -1239,7 +1247,7 @@ msgstr ""
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "Thủ công"
 
 #. Setting: Manual
 #. Field: hint
@@ -2219,7 +2227,7 @@ msgstr ""
 #. Setting: Power
 #. Field: title
 msgid "Power"
-msgstr ""
+msgstr "Tiết kiệm điện"
 
 #. Setting: Reboot into Windows
 #. Field: title
