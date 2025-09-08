@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-08 08:02+0000\n"
+"PO-Revision-Date: 2025-09-08 09:02+0000\n"
 "Last-Translator: \"Quang Nhật Lê (fuzeless)\" <nhatku811@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/hhd/adjustor/"
 "vi/>\n"
@@ -64,7 +64,7 @@ msgstr ""
 #. Setting: Disable Decky TDP Plugins
 #. Field: title
 msgid "Disable Decky TDP Plugins"
-msgstr ""
+msgstr "Vui lòng tắt plugin Decky TDP"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: hint
@@ -74,6 +74,10 @@ msgid ""
 "restarts Decky. This might cause Steam to restart. Move them back and "
 "reboot to re-enable."
 msgstr ""
+"Tắt các plugin Decky TDP (Powercontrol, SimpleDeckyTDP) bằng cách di chuyển "
+"chúng từ ~/homebrew/plugins sang ~/homebrew/plugins/hhd-disabled. Sau đó, "
+"khởi động lại Decky. Thao tác này có thể khiến Steam khởi động lại. Để bật "
+"lại các plugin trên, di chuyển chúng trở lại thư mục gốc và khởi động lại."
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -83,11 +87,16 @@ msgid ""
 "other device changes (ac/dc).\n"
 "If the device crashes, TDP setting will be disabled on next startup."
 msgstr ""
+"Cho phép chỉnh TDP bằng Handheld Daemon. Khi được bật, Handheld Daemon sẽ "
+"thiết lập và duy trì giới hạn TDP đã thiết lập khi khởi động và trong quá "
+"trình thay đổi trạng thái thiết bị (ac/dc).\n"
+"Nếu thiết bị gặp sự cố, tinh chỉnh TDP sẽ bị vô hiệu hóa ở lần khởi động "
+"tiếp theo."
 
 #. Setting: Add TDP to /sys for Steam (Requires Restart)
 #. Field: title
 msgid "Add TDP to /sys for Steam (Requires Restart)"
-msgstr ""
+msgstr "Thêm TDP vào /sys để điều khiển ở Steam (Cần khởi động lại)"
 
 #. Setting: Add TDP to /sys for Steam (Requires Restart)
 #. Field: hint
@@ -95,11 +104,13 @@ msgid ""
 "Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the"
 " TDP slider in Steam."
 msgstr ""
+"Sử dụng FUSE mount để thêm thuộc tính TDP vào /sys/class/drm. Dùng để sửa "
+"lỗi thanh TDP trong Steam."
 
 #. Setting: Enforce Device TDP Limits
 #. Field: title
 msgid "Enforce Device TDP Limits"
-msgstr ""
+msgstr "Sử dụng giới hạn TDP của thiết bị"
 
 #. Setting: Enforce Device TDP Limits
 #. Field: hint
@@ -112,30 +123,36 @@ msgid ""
 "All settings outside specifications will be set to system specifications "
 "after rebooting."
 msgstr ""
+"Khi tùy chọn này được bật, các cài đặt sẽ tuân theo giới hạn TDP do nhà sản "
+"xuất thiết bị đặt ra, tùy thuộc vào tính khả dụng của chúng.\n"
+"Khi tắt tùy chọn này, phạm vi cài đặt TDP sẽ mở rộng đến ngưỡng cho phép của "
+"thiết bị hiện tại (bất kể thông số kỹ thuật của nhà sản xuất).\n"
+"Tất cả các cài đặt ngoài thông số kỹ thuật sẽ được đặt thành thông số kỹ "
+"thuật của hệ thống sau khi khởi động lại."
 
 msgid "Steam is controlling TDP"
-msgstr ""
+msgstr "Steam đang điều khiển TDP"
 
 #. Setting: Asus TDP
 #. Field: title
 msgid "Asus TDP"
-msgstr ""
+msgstr "Asus TDP"
 
 #. Setting: Asus TDP
 #. Field: hint
 #. Setting: MSI TDP
 msgid "Uses the interface of Armory Crate to set the TDP of the device."
-msgstr ""
+msgstr "Sử dụng phương thức của Armory Crate để cài đặt TDP cho thiết bị."
 
 #. Setting: TDP Mode
 #. Field: title
 msgid "TDP Mode"
-msgstr ""
+msgstr "Chế độ TDP"
 
 #. Setting: Silent
 #. Field: title
 msgid "Silent"
-msgstr ""
+msgstr "Im lặng"
 
 #. Setting: Performance
 #. Field: title
@@ -144,17 +161,17 @@ msgstr ""
 #. Setting: Platform Profile
 #. Setting: Energy Policy
 msgid "Performance"
-msgstr ""
+msgstr "Hiệu năng"
 
 #. Setting: Turbo
 #. Field: title
 msgid "Turbo"
-msgstr ""
+msgstr "Turbo"
 
 #. Setting: Custom
 #. Field: title
 msgid "Custom"
-msgstr ""
+msgstr "Tuỳ chỉnh"
 
 #. Setting: TDP
 #. Field: title
@@ -167,11 +184,13 @@ msgid ""
 "Average TDP Target. TDP Boost is recommended for desktop use and does not"
 " affect gaming."
 msgstr ""
+"Mục tiêu TDP trung bình. Nên sử dụng TDP Boost khi cắm nguồn, không ảnh "
+"hưởng đến việc chơi game."
 
 #. Setting: TDP Boost
 #. Field: title
 msgid "TDP Boost"
-msgstr ""
+msgstr "TDP Boost"
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -179,6 +198,8 @@ msgid ""
 "Allows the device to temporarily boost by setting appropriate slow and "
 "fast TDPs."
 msgstr ""
+"Cho phép tăng TDP thiết bị tạm thời bằng cách thiết lập TDP slow và fast phù "
+"hợp."
 
 #. Setting:
 #. Field: title
@@ -188,7 +209,7 @@ msgstr ""
 #. Setting: Change TDP with View+Y
 #. Field: title
 msgid "Change TDP with View+Y"
-msgstr ""
+msgstr "Thay đổi TDP bằng nút View+Y"
 
 #. Setting: Change TDP with View+Y
 #. Field: hint
@@ -197,16 +218,18 @@ msgid ""
 "Recommended to use with ROG Swap, as the View button will be muted to "
 "games."
 msgstr ""
+"Cho phép chuyển đổi giữa các chế độ TDP bằng tổ hợp phím View+Y. Nên sử dụng "
+"với ROG Swap, vì nút View sẽ bị tắt khi chơi game."
 
 #. Setting: Custom Fan Curve
 #. Field: title
 msgid "Custom Fan Curve"
-msgstr ""
+msgstr "Fan Curve tuỳ chỉnh"
 
 #. Setting: Custom Fan Curve
 #. Field: hint
 msgid "Allows you to set a custom fan curve."
-msgstr ""
+msgstr "Cho phép tự tuỳ chỉnh tốc độ quạt."
 
 #. Setting: Disabled
 #. Field: title
@@ -215,22 +238,22 @@ msgstr ""
 #. Setting: Custom Scheduler
 #. Setting: CPU Boost
 msgid "Disabled"
-msgstr ""
+msgstr "Tắt"
 
 #. Setting: Disabled
 #. Field: hint
 msgid "Lets the device manage the fan curve on its own."
-msgstr ""
+msgstr "Để thiết bị tự điều chỉnh tốc độ quạt phù hợp."
 
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "Thủ công"
 
 #. Setting: 30C
 #. Field: title
 msgid "30C"
-msgstr ""
+msgstr "30C"
 
 #. Setting: 30C
 #. Field: hint
@@ -244,62 +267,62 @@ msgstr ""
 #. Setting: 10C
 #. Setting: 20C
 msgid "Sets the speed at the named temperature."
-msgstr ""
+msgstr "Cài đặt tốc độ từ nhiệt độ định sẵn."
 
 #. Setting: 40C
 #. Field: title
 msgid "40C"
-msgstr ""
+msgstr "40C"
 
 #. Setting: 50C
 #. Field: title
 msgid "50C"
-msgstr ""
+msgstr "50C"
 
 #. Setting: 60C
 #. Field: title
 msgid "60C"
-msgstr ""
+msgstr "60C"
 
 #. Setting: 70C
 #. Field: title
 msgid "70C"
-msgstr ""
+msgstr "70C"
 
 #. Setting: 80C
 #. Field: title
 msgid "80C"
-msgstr ""
+msgstr "80C"
 
 #. Setting: 90C
 #. Field: title
 msgid "90C"
-msgstr ""
+msgstr "90C"
 
 #. Setting: 100C
 #. Field: title
 msgid "100C"
-msgstr ""
+msgstr "100C"
 
 #. Setting: Restore Default
 #. Field: title
 msgid "Restore Default"
-msgstr ""
+msgstr "Khôi phục cài đặt gốc"
 
 #. Setting: Restore Default
 #. Field: hint
 msgid "Restore a default sane fan curve."
-msgstr ""
+msgstr "Khôi phục cài đặt tốc độ quạt gốc."
 
 #. Setting: Fan Curve Limitation
 #. Field: title
 msgid "Fan Curve Limitation"
-msgstr ""
+msgstr "Giới hạn tốc độ quạt"
 
 #. Setting: Extreme Standby Mode
 #. Field: title
 msgid "Extreme Standby Mode"
-msgstr ""
+msgstr "Extreme Standby Mode"
 
 #. Setting: Extreme Standby Mode
 #. Field: hint
@@ -309,80 +332,83 @@ msgid ""
 "Active only on battery. Turns off the power light and the controller  "
 "requires longer to wake up."
 msgstr ""
+"Giảm mức tiêu thụ điện năng của thiết bị từ 4% xuống 1% qua đêm. Chỉ hoạt "
+"động bằng pin. Tắt đèn nguồn, và tay cầm của thiết bị sẽ mất nhiều thời gian "
+"hơn để khởi động lại."
 
 #. Setting: Extreme Standby Mode
 #. Option: enabled
 #. Setting: CPU Boost
 msgid "Enabled"
-msgstr ""
+msgstr "Mở"
 
 #. Setting: Battery Settings
 #. Field: title
 msgid "Battery Settings"
-msgstr ""
+msgstr "Cài đặt pin"
 
 #. Setting: Charge Limit (%)
 #. Field: title
 msgid "Charge Limit (%)"
-msgstr ""
+msgstr "Giới hạn % sạc"
 
 #. Setting: Charge Limit (%)
 #. Field: hint
 msgid "Applies a charge limit to the battery, 75% and up."
-msgstr ""
+msgstr "Áp dụng giới hạn % pin, từ 75% trở lên."
 
 #. Setting: Charge Limit (%)
 #. Option: p70
 msgid "70%"
-msgstr ""
+msgstr "70%"
 
 #. Setting: Charge Limit (%)
 #. Option: p80
 msgid "80%"
-msgstr ""
+msgstr "80%"
 
 #. Setting: Charge Limit (%)
 #. Option: p85
 msgid "85%"
-msgstr ""
+msgstr "85%"
 
 #. Setting: Charge Limit (%)
 #. Option: p90
 msgid "90%"
-msgstr ""
+msgstr "90%"
 
 #. Setting: Charge Limit (%)
 #. Option: p95
 msgid "95%"
-msgstr ""
+msgstr "95%"
 
 #. Setting: Charge Limit (%)
 #. Option: disabled
 #. Setting: Charge Bypass
 msgid "Unset"
-msgstr ""
+msgstr "Không đặt"
 
 #. Setting: Charge Bypass
 #. Field: title
 msgid "Charge Bypass"
-msgstr ""
+msgstr "Bypass sạc"
 
 #. Setting: Charge Bypass
 #. Option: awake
 msgid "While On"
-msgstr ""
+msgstr "Lúc máy đang mở"
 
 #. Setting: Charge Bypass
 #. Option: always
 msgid "Always"
-msgstr ""
+msgstr "Luôn luôn"
 
 #. Setting: Power
 #. Field: title
 #. Setting: Energy Policy
 #. Option: power
 msgid "Power"
-msgstr ""
+msgstr "Tiết kiệm điện"
 
 #. Setting: Power Profile
 #. Field: title
@@ -395,13 +421,14 @@ msgid ""
 "Allows setting the power profile of the system using Power Profiles "
 "Daemon."
 msgstr ""
+"Cho phép cài đặt cấu hình power của hệ thống bằng Power Profiles Daemon."
 
 #. Setting: Power Profile
 #. Option: power-saver
 #. Setting: Powersave
 #. Field: title
 msgid "Powersave"
-msgstr ""
+msgstr "Tiết kiệm điện"
 
 #. Setting: Power Profile
 #. Option: balanced
@@ -412,12 +439,12 @@ msgstr ""
 #. Setting: Platform Profile
 #. Setting: Energy Policy
 msgid "Balanced"
-msgstr ""
+msgstr "Cân bằng"
 
 #. Setting: Custom Scheduler
 #. Field: title
 msgid "Custom Scheduler"
-msgstr ""
+msgstr "Scheduler tuỳ chỉnh"
 
 #. Setting: Custom Scheduler
 #. Field: hint
@@ -487,12 +514,12 @@ msgstr ""
 #. Setting: CPU Power (EPP)
 #. Option: power
 msgid "Low"
-msgstr ""
+msgstr "Thấp"
 
 #. Setting: CPU Power (EPP)
 #. Option: balance_performance
 msgid "High"
-msgstr ""
+msgstr "Cao"
 
 #. Setting: CPU Minimum Frequency
 #. Field: title
