@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-08 09:02+0000\n"
+"PO-Revision-Date: 2025-09-10 08:03+0000\n"
 "Last-Translator: \"Quang Nhật Lê (fuzeless)\" <nhatku811@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/hhd/adjustor/"
 "vi/>\n"
@@ -20,9 +20,8 @@ msgstr ""
 "X-Generator: Weblate 5.14-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
-#, fuzzy
 msgid "Disable Decky TDP plugins using the button below to continue."
-msgstr "Vui lòng tắt plugin Decky TDP sử dụng nút bên dưới để tiếp tục"
+msgstr "Vui lòng tắt plugin Decky TDP sử dụng nút bên dưới để tiếp tục."
 
 #. Setting: TDP Controls
 #. Field: title
@@ -59,7 +58,7 @@ msgstr ""
 #. Setting: TDP Capabilities
 #. Field: title
 msgid "TDP Capabilities"
-msgstr ""
+msgstr "TDP cho phép"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: title
@@ -452,36 +451,38 @@ msgid ""
 "Allows attaching a scheduler to the kernel sched_ext. Schedulers need to "
 "be installed and kernel needs to support sched_ext."
 msgstr ""
+"Cho phép gắn scheduler vào kernel sched_ext. Scheduler cần được cài đặt và "
+"kernel cần hỗ trợ sched_ext."
 
 #. Setting: Custom Scheduler
 #. Option: scx_lavd
 msgid "LAVD"
-msgstr ""
+msgstr "LAVD"
 
 #. Setting: Custom Scheduler
 #. Option: scx_bpfland
 msgid "bpfland"
-msgstr ""
+msgstr "bpfland"
 
 #. Setting: Custom Scheduler
 #. Option: scx_rusty
 msgid "rusty"
-msgstr ""
+msgstr "rusty"
 
 #. Setting: Processor Settings
 #. Field: title
 msgid "Processor Settings"
-msgstr ""
+msgstr "Cài đặt bộ xử lý"
 
 #. Setting: CPU Settings
 #. Field: title
 msgid "CPU Settings"
-msgstr ""
+msgstr "Cài đặt CPU"
 
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr ""
+msgstr "Tự động"
 
 #. Setting: Auto
 #. Field: hint
@@ -491,16 +492,20 @@ msgid ""
 "low TDPs, the CPU will be tuned down and at other TDPs, it will use "
 "balanced settings."
 msgstr ""
+"Handheld Daemon sẽ quản lý các thiết lập quản lý năng lượng. Bao gồm CPU "
+"governor, CPU boost, tần số GPU và tùy chọn công suất CPU. Ở mức TDP thấp, "
+"CPU sẽ được hạ thấp hiệu năng và ở các mức TDP khác, CPU sẽ sử dụng các "
+"thiết lập cân bằng."
 
 #. Setting: Manual
 #. Field: hint
 msgid "Allows you to set the energy management settings manually."
-msgstr ""
+msgstr "Cho phép bạn thiết lập cài đặt quản lý năng lượng thủ công."
 
 #. Setting: CPU Power (EPP)
 #. Field: title
 msgid "CPU Power (EPP)"
-msgstr ""
+msgstr "Công suất CPU (EPP)"
 
 #. Setting: CPU Power (EPP)
 #. Field: hint
@@ -510,6 +515,10 @@ msgid ""
 "`balance_performance`. Performance is not recommended and is not "
 "included."
 msgstr ""
+"Thiết lập hiệu suất năng lượng cho CPU. Giữ ở chế độ cân bằng (balance) để "
+"có hiệu suất tốt trên tất cả các mức TDP. Các tùy chọn gồm có `power`, "
+"`balance_power`, `balance_performance`. `Performance` không được khuyến nghị "
+"sử dụng và không được bao gồm trong cài đặt."
 
 #. Setting: CPU Power (EPP)
 #. Option: power
@@ -524,7 +533,7 @@ msgstr "Cao"
 #. Setting: CPU Minimum Frequency
 #. Field: title
 msgid "CPU Minimum Frequency"
-msgstr ""
+msgstr "Xung nhịp tối thiểu của CPU"
 
 #. Setting: CPU Minimum Frequency
 #. Field: hint
@@ -533,21 +542,24 @@ msgid ""
 " light games. However, the delay of increasing the frequency may cause "
 "minor stutters, especially in VRR displays."
 msgstr ""
+"Thiết lập xung nhịp tối thiểu cho CPU. Sử dụng 400MHz sẽ tiết kiệm pin khi "
+"chơi game nhẹ. Tuy nhiên, việc tăng tần số chậm có thể gây ra hiện tượng "
+"giật hình nhẹ, đặc biệt là ở màn hình VRR."
 
 #. Setting: CPU Minimum Frequency
 #. Option: min
 msgid "400MHz"
-msgstr ""
+msgstr "400MHz"
 
 #. Setting: CPU Minimum Frequency
 #. Option: nonlinear
 msgid "1GHz"
-msgstr ""
+msgstr "1GHz"
 
 #. Setting: CPU Boost
 #. Field: title
 msgid "CPU Boost"
-msgstr ""
+msgstr "Tăng tốc CPU (CPU Boost)"
 
 #. Setting: CPU Boost
 #. Field: hint
@@ -555,21 +567,24 @@ msgid ""
 "Enables or disables the CPU boost frequencies. Disabling lowers total "
 "consumption by 2W with  minimal performance impact."
 msgstr ""
+"Cho phép tắt hoặc mở xung nhịp tăng tốc của CPU (CPU Boost). Tắt CPU Boost "
+"sẽ giảm mức tiêu thụ điện khoảng 2W mà không ảnh hưởng nhiều tới hiệu năng "
+"của máy."
 
 #. Setting: Custom Scheduler
 #. Option: scx_p2dq
 msgid "P2DQ"
-msgstr ""
+msgstr "P2DQ"
 
 #. Setting: Custom Scheduler
 #. Option: scx_flash
 msgid "Flash"
-msgstr ""
+msgstr "Flash"
 
 #. Setting: GPU Frequency
 #. Field: title
 msgid "GPU Frequency"
-msgstr ""
+msgstr "Xung nhịp GPU"
 
 #. Setting: GPU Frequency
 #. Field: hint
@@ -577,61 +592,64 @@ msgid ""
 "Pins the GPU to a certain frequency. Helps in certain games that are CPU "
 "or GPU heavy by shifting power to or from the GPU. Has a minor effect."
 msgstr ""
+"Cố định xung nhịp GPU ở một số nhất định. Khả năng giúp một số game sử dụng "
+"nhiều CPU hoặc GPU bằng cách chuyển nguồn điện đến (hoặc từ) GPU. Có ảnh "
+"hưởng nhỏ tới hiệu suất máy."
 
 #. Setting: Auto
 #. Field: hint
 msgid "Lets the GPU manage its own frequency."
-msgstr ""
+msgstr "Để GPU tự điều khiển xung nhịp của nó."
 
 #. Setting: Max Limit
 #. Field: title
 msgid "Max Limit"
-msgstr ""
+msgstr "Giới hạn tối đa"
 
 #. Setting: Max Limit
 #. Field: hint
 msgid "Limits the maximum frequency of the GPU."
-msgstr ""
+msgstr "Giới hạn xung nhịp tối đa của GPU."
 
 #. Setting: Maximum Frequency
 #. Field: title
 msgid "Maximum Frequency"
-msgstr ""
+msgstr "Xung nhịp tối đa"
 
 #. Setting: Range
 #. Field: title
 msgid "Range"
-msgstr ""
+msgstr "Phạm vi"
 
 #. Setting: Range
 #. Field: hint
 msgid "Sets the GPU frequency to a range."
-msgstr ""
+msgstr "Cài đặt xung nhịp GPU theo phạm vi cho phép."
 
 #. Setting: Minimum Frequency
 #. Field: title
 msgid "Minimum Frequency"
-msgstr ""
+msgstr "Xung nhịp tối thiểu"
 
 #. Setting: Fixed
 #. Field: title
 msgid "Fixed"
-msgstr ""
+msgstr "Cố định"
 
 #. Setting: Fixed
 #. Field: hint
 msgid "Pins the GPU to a certain frequency (not recommended)."
-msgstr ""
+msgstr "Ghim xung nhịp GPU ở một số nhất định (không khuyến nghị)."
 
 #. Setting: Frequency
 #. Field: title
 msgid "Frequency"
-msgstr ""
+msgstr "Xung nhịp"
 
 #. Setting: Conflict Detected
 #. Field: title
 msgid "Conflict Detected"
-msgstr ""
+msgstr "Đã phát hiện xung đột"
 
 #. Setting: Enable Processor Settings
 #. Field: title
