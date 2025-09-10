@@ -6,6 +6,18 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnAYANEO:*
   KEYBOARD_KEY_68=f17
   KEYBOARD_KEY_69=f18
 
+# Mysten Labs Devices
+# from GameOS
+evdev:name:AT Translated Set 2 keyboard:dmi:*:svnMysten*:*
+  KEYBOARD_KEY_66=f15
+  KEYBOARD_KEY_67=f16
+  KEYBOARD_KEY_68=f17
+  KEYBOARD_KEY_69=f18
+  KEYBOARD_KEY_6c=f15 # LC (BIOS 2.19_S20)
+  KEYBOARD_KEY_6d=f16 # RC (BIOS 2.19_S20)
+  KEYBOARD_KEY_6e=f17 # Aya Space (BIOS 2.19_S20)
+  KEYBOARD_KEY_76=f18 # Quick Access (BIOS 2.19_S20)
+
 # OrangePi G1621-02/NEO-01 (OrangePi Neo)
 evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnG1621-02:*
   KEYBOARD_KEY_64=f15

@@ -143,6 +143,8 @@ CONFS = {
     "AIR 1S Limited": {"name": "AIR 1S Limited", **AYA_DEFAULT_CONF},
     "AYANEO 2": {"name": "AYANEO 2", **AYA_DEFAULT_CONF},
     "AYANEO 2S": {"name": "AYANEO S2", **AYA_DEFAULT_CONF},
+    "SuiPlay0X1": {"name": "SuiPlay0X1", **AYA_DEFAULT_CONF},
+    # by sys_vendor: "Mysten Labs, Inc."
     "GEEK": {"name": "AYANEO GEEK", **AYA_DEFAULT_CONF},
     "GEEK 1S": {"name": "AYANEO GEEK 1S", **AYA_DEFAULT_CONF},
     "AIR": {"name": "AYANEO AIR", **AYA_DEFAULT_CONF},
