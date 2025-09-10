@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-08 09:02+0000\n"
+"PO-Revision-Date: 2025-09-10 08:03+0000\n"
 "Last-Translator: \"Quang Nhật Lê (fuzeless)\" <nhatku811@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/hhd/hhd/vi/>\n"
 "Language: vi\n"
@@ -196,9 +196,8 @@ msgstr "Cập nhật (Stable)"
 
 #. Setting: Update (Stable)
 #. Field: hint
-#, fuzzy
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr "Cập nhật lên phiên bản mới nhất từ PyPi (chỉ cho local install)"
+msgstr "Cập nhật lên phiên bản mới nhất từ PyPi (chỉ cho local install)."
 
 #. Setting: Update (Unstable)
 #. Field: title
@@ -300,7 +299,7 @@ msgstr "Cao"
 #. Field: title
 #, fuzzy
 msgid "RGB Power Settings"
-msgstr "Cài đặt RGB Power"
+msgstr "Cài đặt RGB cho nút nguồn"
 
 #. Setting: On TDP Changes
 #. Field: title
@@ -365,7 +364,7 @@ msgid "ABXY \\ Touchpad"
 msgstr ""
 
 msgid "ABXYCZ"
-msgstr ""
+msgstr "ABXYCZ"
 
 msgid "ABXY Film \\ Joystick"
 msgstr ""
@@ -377,35 +376,36 @@ msgid "Touchpad \\ ABXY"
 msgstr ""
 
 msgid "ABXYCZ [R]"
-msgstr ""
+msgstr "ABXYCZ [R]"
 
 msgid "Joystick \\ ABXY Film"
 msgstr ""
 
 msgid "Unknown"
-msgstr ""
+msgstr "Không rõ"
 
 msgid "Ejecting..."
-msgstr ""
+msgstr "Đang đẩy ra..."
 
 msgid "Activating..."
-msgstr ""
+msgstr "Đang kích hoạt..."
 
+#, fuzzy
 msgid "Unpowered"
-msgstr ""
+msgstr "Không có điện"
 
 msgid "Disconnected"
-msgstr ""
+msgstr "Đã ngắt kết nối"
 
 #. Setting: Paused
 #. Field: title
 msgid "Paused"
-msgstr ""
+msgstr "Đã dừng"
 
 #. Setting: Ayaneo Controller
 #. Field: title
 msgid "Ayaneo Controller"
-msgstr ""
+msgstr "Tay cầm Ayaneo"
 
 #. Setting: Ayaneo Controller
 #. Field: hint
@@ -413,38 +413,42 @@ msgstr ""
 #. Setting: Handheld
 #. Setting: Orange Pi Neo
 #. Setting: OneXPlayer Controller
+#, fuzzy
 msgid "Allows for configuring your handheld's controller to a unified output."
-msgstr ""
+msgstr "Cho phép cài đặt controller của máy thành đầu ra thống nhất."
 
 #. Setting: Controller Emulation
 #. Field: title
 msgid "Controller Emulation"
-msgstr ""
+msgstr "Giả lập tay cầm"
 
 #. Setting: Controller Emulation
 #. Field: hint
+#, fuzzy
 msgid "Emulate different controller types to fuse your device's features."
 msgstr ""
+"Giả lập tay cầm của bạn thành các loại tay cầm khác nhau để kết hợp các tính "
+"năng của thiết bị."
 
 #. Setting: Motion Support
 #. Field: title
 msgid "Motion Support"
-msgstr ""
+msgstr "Hỗ trợ chuyển động"
 
 #. Setting: Motion Support
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
-msgstr ""
+msgstr "Bật hỗ trợ con quay hồi chuyển/gia tốc kế (IMU) (sử dụng 0.3% CPU)"
 
 #. Setting: Motion Hz
 #. Field: title
 msgid "Motion Hz"
-msgstr ""
+msgstr "Tần số quét"
 
 #. Setting: Motion Hz
 #. Field: hint
 msgid "Sets the sampling frequency for the IMU."
-msgstr ""
+msgstr "Đặt tần số lấy mẫu cho IMU."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: title
@@ -455,42 +459,42 @@ msgstr ""
 #. Field: hint
 #. Setting: Swap Guide and Menu/View
 msgid "Swaps the Guide and QAM buttons with start and select."
-msgstr ""
+msgstr "Đổi chỗ nút Guide và QAM với nút Start và Select."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: oem
 msgid "Default (Select/Start, Guide/QAM)"
-msgstr ""
+msgstr "Mặc định (Select/Start, Guide/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional
 msgid "Traditional (Guide/Select, Start/QAM)"
-msgstr ""
+msgstr "Truyền thống (Guide/Select, Start/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional_rev
 msgid "Traditional Rev. (Select/Guide, QAM/Start)"
-msgstr ""
+msgstr "Truyền thống đảo ngược (Select/Guide, QAM/Start)"
 
 #. Setting: Vibration
 #. Field: title
 msgid "Vibration"
-msgstr ""
+msgstr "Rung"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
 msgid "Nintendo Mode (A-B Swap)"
-msgstr ""
+msgstr "Chế độ Nintendo (đảo nút A-B)"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: hint
 msgid "Swaps A with B and X with Y."
-msgstr ""
+msgstr "Đổi vị trí các cặp nút A-B và X-Y."
 
 #. Setting: Hold View to Reboot
 #. Field: title
 msgid "Hold View to Reboot"
-msgstr ""
+msgstr "Giữ nút View để khởi động lại"
 
 #. Setting: Magic Modules
 #. Field: title
@@ -500,14 +504,14 @@ msgstr ""
 #. Setting: Pop Both Modules
 #. Field: title
 msgid "Pop Both Modules"
-msgstr ""
+msgstr "Nảy cả 2 modules"
 
 #. Setting: Pop Both Modules
 #. Field: hint
 #. Setting: Pop Left Module
 #. Setting: Pop Right Module
 msgid "Pops the left and right Ayaneo Magic Modules modules."
-msgstr ""
+msgstr "Cho nảy magic modules bên trái và bên phải của Ayaneo."
 
 #. Setting: Left
 #. Field: title
@@ -515,12 +519,12 @@ msgstr ""
 #. Option: left
 #. Setting: Direction
 msgid "Left"
-msgstr ""
+msgstr "Trái"
 
 #. Setting: Pop Left Module
 #. Field: title
 msgid "Pop Left Module"
-msgstr ""
+msgstr "Nảy module trái"
 
 #. Setting: Right
 #. Field: title
@@ -528,42 +532,43 @@ msgstr ""
 #. Option: right
 #. Setting: Direction
 msgid "Right"
-msgstr ""
+msgstr "Phải"
 
 #. Setting: Pop Right Module
 #. Field: title
 msgid "Pop Right Module"
-msgstr ""
+msgstr "Nảy module phải"
 
 #. Setting: Quick Reset
 #. Field: title
 msgid "Quick Reset"
-msgstr ""
+msgstr "Reset nhanh"
 
 #. Setting: Quick Reset
 #. Field: hint
 msgid "Re-initializes the Ayaneo Magic Modules modules."
-msgstr ""
+msgstr "Khởi tạo lại Ayaneo Magic Modules."
 
 #. Setting: Claw Controller
 #. Field: title
 msgid "Claw Controller"
-msgstr ""
+msgstr "Tay cầm Claw"
 
 #. Setting: DInput Mode (Enables Paddles, Beta)
 #. Field: title
 msgid "DInput Mode (Enables Paddles, Beta)"
-msgstr ""
+msgstr "Chế độ DInput (cho phép dùng 2 nút đằng sau, Beta)"
 
 #. Setting: Swap Guide and Menu/View
 #. Field: title
 msgid "Swap Guide and Menu/View"
-msgstr ""
+msgstr "Đổi chỗ 2 nút Guide và Menu/View"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: title
+#, fuzzy
 msgid "Start/Select do SteamOS Combos"
-msgstr ""
+msgstr "Giữ nút Start/Select để dùng combo nút của SteamOS"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: hint
@@ -572,6 +577,9 @@ msgid ""
 "the Xbox button, which allows doing SteamOS combos (Select+RT is "
 "screenshot)."
 msgstr ""
+"Khi giữ nút Select hoặc Start, nếu có nút khác được bấm, nút được giữ sẽ "
+"thành nút Xbox để cho phép sử dụng combo nút của SteamOS (Ví dụ: Select+RT "
+"để chụp ảnh màn hình)."
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -605,46 +613,52 @@ msgstr "Tắt"
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
 msgid "Select Only"
-msgstr ""
+msgstr "Chỉ nút Select"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: start_select
 msgid "Start+Select"
-msgstr ""
+msgstr "Start+Select"
 
 #. Setting: Handheld
 #. Field: title
+#, fuzzy
 msgid "Handheld"
-msgstr ""
+msgstr "Máy cầm tay"
 
 #. Setting: GPD Controller
 #. Field: title
 msgid "GPD Controller"
-msgstr ""
+msgstr "Tay cầm GPD"
 
 #. Setting: GPD Controller
 #. Field: hint
 msgid "Allows for configuring the gpd win controllers to a unified output."
-msgstr ""
+msgstr "Cho phép cấu hình tay cầm gpd win thành đầu ra thống nhất."
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse gpd features."
-msgstr ""
+msgstr "Giả lập các loại tay cầm khác nhau để tích hợp tính năng của máy GPD."
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: title
 msgid "Menu/L4/R4 Mapping"
-msgstr ""
+msgstr "Map nút Menu/L4/R4"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: hint
+#, fuzzy
 msgid ""
 "Maps L4/R4 to Steam Input (requires L4/R4 as HHD in Wincontrols tab). If "
 "disabled, they are keyboard buttons. Menu/L4/R4 can be combos: Menu is "
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
+"Map các nút L4/R4 đến Steam Input (yêu cầu L4/R4 làm HHD trong tab "
+"Wincontrols). Nếu bị tắt, chúng sẽ là các nút bàn phím. Menu/L4/R4 có thể là "
+"tổ hợp: Menu là nhấn QAM một lần, nhấn HHD hai lần, giữ Xbox. L4/R4 là nhấn "
+"QAM một lần, giữ HHD (cũ). "
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
@@ -653,13 +667,15 @@ msgstr ""
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
+#, fuzzy
 msgid "Menu is Combo"
-msgstr ""
+msgstr "Menu là nút combo"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
+#, fuzzy
 msgid "L4 is Combo"
-msgstr ""
+msgstr "L4 là nút combo"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
@@ -2168,7 +2184,7 @@ msgstr ""
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr ""
+msgstr "Tự động"
 
 #. Setting: Device
 #. Field: title
