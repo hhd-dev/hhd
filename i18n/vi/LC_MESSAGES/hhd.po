@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-09 00:02+0000\n"
-"Last-Translator: Haru <harumn97@outlook.com>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/hhd/hhd/es/>\n"
-"Language: es\n"
+"PO-Revision-Date: 2025-09-10 08:03+0000\n"
+"Last-Translator: \"Quang Nhật Lê (fuzeless)\" <nhatku811@gmail.com>\n"
+"Language-Team: Vietnamese <https://hosted.weblate.org/projects/hhd/hhd/vi/>\n"
+"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.14-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
@@ -31,11 +31,12 @@ msgstr "RGB"
 #. Setting: Controller
 #. Field: title
 msgid "Controller"
-msgstr "Mando"
+msgstr "Tay cầm"
 
 #. Section Name for: magic_modules
+#, fuzzy
 msgid "Modules"
-msgstr "Módulos"
+msgstr "Modules"
 
 #. Section Name for: wincontrols
 #. Setting: WinControls
@@ -45,70 +46,70 @@ msgstr "WinControls"
 
 #. Section Name for: gamemode
 msgid "General"
-msgstr "General"
+msgstr "Chung"
 
 #. Section Name for: updates
 msgid "Updates"
-msgstr "Actualizaciones"
+msgstr "Cập nhật"
 
 #. Section Name for: debug
 msgid "Bugreport"
-msgstr "Reportar Error"
+msgstr "Báo cáo lỗi"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
-msgstr "Atajos"
+msgstr "Lối tắt"
 
 #. Section Name for: hhd
 msgid "Settings"
-msgstr "Ajustes"
+msgstr "Cài đặt"
 
 #. Setting: Core Settings
 #. Field: title
 msgid "Core Settings"
-msgstr "Ajustes de Núcleo"
+msgstr "Cài đặt chính"
 
 #. Setting: Language
 #. Field: title
 msgid "Language"
-msgstr "Idioma"
+msgstr "Ngôn ngữ"
 
 #. Setting: Language
 #. Option: system
 #. Setting: System
 #. Field: title
 msgid "System"
-msgstr "Sistema"
+msgstr "Hệ thống"
 
 #. Setting: Language
 #. Option: C
 msgid "English"
-msgstr "Inglés"
+msgstr "Tiếng Anh"
 
 #. Setting: Language
 #. Option: zh_CN
 msgid "Simplified Chinese"
-msgstr "Chino Simplificado"
+msgstr "Tiếng Trung đơn giản"
 
 #. Setting: Language
 #. Option: zh_TW
 msgid "Traditional Chinese"
-msgstr "Chino Tradicional"
+msgstr "Tiếng Trung"
 
 #. Setting: Language
 #. Option: pt_BR
 msgid "Portugese (Brazil)"
-msgstr "Portugués (Brasil)"
+msgstr "Tiếng Brazil"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr "Ruso"
+msgstr "Tiếng Nga"
 
 #. Setting: Theme
 #. Field: title
 msgid "Theme"
-msgstr "Tema"
+msgstr "Chủ đề"
 
 #. Setting: Theme
 #. Field: hint
@@ -116,15 +117,15 @@ msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
 msgstr ""
-"Permite cambiar el tema de la interfaz. Por defecto es Diavolo o el tema de "
-"tu distribución."
+"Cho phép thay đổi giao diện. Chủ đề mặc định là Diavolo hoặc chủ đề của "
+"distribution."
 
 #. Setting: Theme
 #. Option: default
 #. Setting: Default
 #. Field: title
 msgid "Default"
-msgstr "Por defecto"
+msgstr "Mặc định"
 
 #. Setting: Theme
 #. Option: diavolo
@@ -149,122 +150,117 @@ msgstr "Blood Orange"
 #. Setting: Reset Settings
 #. Field: title
 msgid "Reset Settings"
-msgstr "Reiniciar ajustes"
+msgstr "Reset cài đặt"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr ""
-"Reinicia todos los ajustes de Handheld Daemon a sus valores por defecto."
+msgstr "Khôi phục cài đặt gốc của Handheld Daemon."
 
 #. Setting: It is no longer possible to update Decky from here. If you see
 #. this, update the Decky plugin manually.
 #. Field: title
 msgid ""
-"It is no longer possible to update Decky from here. If you see this, update "
-"the Decky plugin manually."
+"It is no longer possible to update Decky from here. If you see this, "
+"update the Decky plugin manually."
 msgstr ""
-"Ya no es posible actualizar Decky desde aquí. Si lees esto, actualiza el "
-"plugin de Decky manualmente."
+"Không thể cập nhận Decky Loader ở đây. Nếu bạn thấy thông báo này, vui lòng "
+"tự cập nhật Decky Loader."
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr "Handheld Daemon Versión"
+msgstr "Phiên bản Handheld Daemon"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
 #. Setting: Handheld Daemon UI Version
 #. Setting: Adjustor (TDP) Version
 msgid "Displays the Handheld Daemon version."
-msgstr "Muestra la versión de Handheld Daemon."
+msgstr "Hiển thị phiên bản Handheld Daemon."
 
 #. Setting: Handheld Daemon UI Version
 #. Field: title
 msgid "Handheld Daemon UI Version"
-msgstr "Interfaz de Handheld Daemon Versión"
+msgstr "Phiên bản Handheld Daemon UI"
 
 #. Setting: Adjustor (TDP) Version
 #. Field: title
 msgid "Adjustor (TDP) Version"
-msgstr "Adjustor (TDP) Versión"
+msgstr "Phiên bản Adjustor (TDP)"
 
 #. Setting: Update (Stable)
 #. Field: title
 msgid "Update (Stable)"
-msgstr "Actualizar (Estable)"
+msgstr "Cập nhật (Stable)"
 
 #. Setting: Update (Stable)
 #. Field: hint
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr "Actualiza a la última versión desde PyPi (solo instalación local)."
+msgstr "Cập nhật lên phiên bản mới nhất từ PyPi (chỉ cho local install)."
 
 #. Setting: Update (Unstable)
 #. Field: title
 msgid "Update (Unstable)"
-msgstr "Actualizar (Inestable)"
+msgstr "Cập nhật (Unstable - không ổn định)"
 
 #. Setting: Update (Unstable)
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
-msgstr "Actualiza a la rama maestra desde git (solo instalación local)."
+msgstr "Cập nhật lên nhánh chính từ git (chỉ cho local install)."
 
 #. Setting: Update Error
 #. Field: title
 msgid "Update Error"
-msgstr "Error al actualizar"
+msgstr "Lỗi cập nhật"
 
 #. Setting: API Configuration
 #. Field: title
 msgid "API Configuration"
-msgstr "Configuración de API"
+msgstr "Cài đặt API"
 
 #. Setting: API Configuration
 #. Field: hint
 msgid "Settings for configuring the http endpoint of HHD."
-msgstr "Ajustes para configurar el HTTP endpoint de HHD."
+msgstr "Cài đặt http endpoint của HHD."
 
 #. Setting: Limit Access to localhost
 #. Field: title
 msgid "Limit Access to localhost"
-msgstr "Limitar el acceso al localhost"
+msgstr "Giới hạn truy cập từ localhost"
 
 #. Setting: Limit Access to localhost
 #. Field: hint
 msgid "Sets the API target to '127.0.0.1' instead '0.0.0.0'."
-msgstr ""
-"Establece como objetivo de la API a la dirección IP '127.0.0.1' en vez de a "
-"'0.0.0.0'."
+msgstr "Đặt API target thành '127.0.0.1' thay vì '0.0.0.0'."
 
 #. Setting: Use Security token
 #. Field: title
 msgid "Use Security token"
-msgstr "Usar Token de seguridad"
+msgstr "Sử dụng Security token"
 
 #. Setting: Use Security token
 #. Field: hint
 msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
-msgstr ""
-"Genera un Token de seguridad en `~/.config/hhd/token`que será necesaria para "
-"autentificarse."
+msgstr "Tạo security token trong `~/.config/hhd/token` để xác thực."
 
 msgid "Lightbar"
-msgstr "Barra de Luz"
+msgstr "Lightbar"
 
 msgid "Keyboard"
-msgstr "Teclado"
+msgstr "Bàn phím"
 
 #. Setting: Aura Settings
 #. Field: title
 msgid "Aura Settings"
-msgstr "Ajustes de Aura"
+msgstr "Cài đặt Aura"
 
 #. Setting: Brightness
 #. Field: title
 msgid "Brightness"
-msgstr "Brillo"
+msgstr "Độ sáng"
 
 #. Setting: Brightness
 #. Option: disabled
@@ -274,14 +270,14 @@ msgstr "Brillo"
 #. Setting: Vibration Strength
 #. Option: off
 msgid "Off"
-msgstr "Off"
+msgstr "Tắt"
 
 #. Setting: Brightness
 #. Option: low
 #. Setting: Vibration
 #. Setting: Speed
 msgid "Low"
-msgstr "Bajo"
+msgstr "Thấp"
 
 #. Setting: Brightness
 #. Option: medium
@@ -289,7 +285,7 @@ msgstr "Bajo"
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "Medium"
-msgstr "Medio"
+msgstr "Vừa"
 
 #. Setting: Brightness
 #. Option: high
@@ -297,115 +293,119 @@ msgstr "Medio"
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "High"
-msgstr "Alto"
+msgstr "Cao"
 
 #. Setting: RGB Power Settings
 #. Field: title
+#, fuzzy
 msgid "RGB Power Settings"
-msgstr "Configuración de energía RGB"
+msgstr "Cài đặt RGB cho nút nguồn"
 
 #. Setting: On TDP Changes
 #. Field: title
 msgid "On TDP Changes"
-msgstr "Al cambiar el TDP"
+msgstr "Lúc thay đổi TDP"
 
 #. Setting: Boot
 #. Field: title
 msgid "Boot"
-msgstr "Arranque"
+msgstr "Khởi động"
 
 #. Setting: Awake
 #. Field: title
 msgid "Awake"
-msgstr "Encendido"
+msgstr "Thức"
 
 #. Setting: Sleep while Charging
 #. Field: title
 msgid "Sleep while Charging"
-msgstr "Suspensión mientras se carga"
+msgstr "Sạc lúc máy đang ngủ"
 
 #. Setting: Shutdown
 #. Field: title
 msgid "Shutdown"
-msgstr "Apagar"
+msgstr "Tắt nguồn"
 
 #. Setting: Enable Aura RGB support
 #. Field: title
 msgid "Enable Aura RGB support"
-msgstr "Activar soporte de Aura RGB"
+msgstr "Mở hỗ trợ cho Aura RGB"
 
+#, fuzzy
 msgid "Cross Film / Joystick"
-msgstr "Cross Film / Joystick"
+msgstr "Cần chéo"
 
+#, fuzzy
 msgid "Cross / Joystick"
-msgstr "Cross / Joystick"
+msgstr "Nút / Joystick"
 
 msgid "Cross / Touchpad"
-msgstr "Cross / Panel Táctil"
+msgstr "Cross / Touchpad"
 
 msgid "Direction / Joystick"
-msgstr "Dirección / Joystick"
+msgstr ""
 
 msgid "Joystick / Cross Film"
-msgstr "Joystick / Cross Film"
+msgstr ""
 
 msgid "Joystick / Cross"
-msgstr "Joystick / Cross"
+msgstr ""
 
 msgid "Touchpad / Cross"
-msgstr "Panel Táctil / Cross"
+msgstr ""
 
 msgid "Joystick / Direction"
-msgstr "Joystick / Dirección"
+msgstr ""
 
 msgid "ABXY \\ Joystick"
-msgstr "ABXY \\ Joystick"
+msgstr ""
 
 msgid "ABXY \\ Touchpad"
-msgstr "ABXY \\ Panel Táctil"
+msgstr ""
 
 msgid "ABXYCZ"
 msgstr "ABXYCZ"
 
 msgid "ABXY Film \\ Joystick"
-msgstr "ABXY Film \\ Joystick"
+msgstr ""
 
 msgid "Joystick \\ ABXY"
-msgstr "Joystick \\ ABXY"
+msgstr ""
 
 msgid "Touchpad \\ ABXY"
-msgstr "Panel Tácil \\ ABXY"
+msgstr ""
 
 msgid "ABXYCZ [R]"
 msgstr "ABXYCZ [R]"
 
 msgid "Joystick \\ ABXY Film"
-msgstr "Joystick \\ ABXY Film"
+msgstr ""
 
 msgid "Unknown"
-msgstr "Desconocido"
+msgstr "Không rõ"
 
 msgid "Ejecting..."
-msgstr "Expulsando..."
+msgstr "Đang đẩy ra..."
 
 msgid "Activating..."
-msgstr "Activando..."
+msgstr "Đang kích hoạt..."
 
+#, fuzzy
 msgid "Unpowered"
-msgstr "Sin energia"
+msgstr "Không có điện"
 
 msgid "Disconnected"
-msgstr "Desconectado"
+msgstr "Đã ngắt kết nối"
 
 #. Setting: Paused
 #. Field: title
 msgid "Paused"
-msgstr "Pausado"
+msgstr "Đã dừng"
 
 #. Setting: Ayaneo Controller
 #. Field: title
 msgid "Ayaneo Controller"
-msgstr "Ayaneo Controller"
+msgstr "Tay cầm Ayaneo"
 
 #. Setting: Ayaneo Controller
 #. Field: hint
@@ -413,109 +413,105 @@ msgstr "Ayaneo Controller"
 #. Setting: Handheld
 #. Setting: Orange Pi Neo
 #. Setting: OneXPlayer Controller
+#, fuzzy
 msgid "Allows for configuring your handheld's controller to a unified output."
-msgstr ""
-"Permite configurar el mando de tu dispositivo portátil a una salida "
-"unificada."
+msgstr "Cho phép cài đặt controller của máy thành đầu ra thống nhất."
 
 #. Setting: Controller Emulation
 #. Field: title
 msgid "Controller Emulation"
-msgstr "Emulación de Controles"
+msgstr "Giả lập tay cầm"
 
 #. Setting: Controller Emulation
 #. Field: hint
+#, fuzzy
 msgid "Emulate different controller types to fuse your device's features."
 msgstr ""
-"Emula diferentes tipos de mandos para unificar las funciones de tu "
-"dispositivo."
+"Giả lập tay cầm của bạn thành các loại tay cầm khác nhau để kết hợp các tính "
+"năng của thiết bị."
 
 #. Setting: Motion Support
 #. Field: title
 msgid "Motion Support"
-msgstr "Soporte de control de movimiento"
+msgstr "Hỗ trợ chuyển động"
 
 #. Setting: Motion Support
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
-msgstr ""
-"Activa el soporte del giroscopio/acelerómetro (IMU) (.3% de uso de CPU en "
-"segundo plano)"
+msgstr "Bật hỗ trợ con quay hồi chuyển/gia tốc kế (IMU) (sử dụng 0.3% CPU)"
 
 #. Setting: Motion Hz
 #. Field: title
 msgid "Motion Hz"
-msgstr "Tasa de Refresco (Hz)"
+msgstr "Tần số quét"
 
 #. Setting: Motion Hz
 #. Field: hint
 msgid "Sets the sampling frequency for the IMU."
-msgstr "Establece la frecuencia de muestreo para el IMU."
+msgstr "Đặt tần số lấy mẫu cho IMU."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: title
 msgid "Aya Button Map (Left, Right)"
-msgstr "Map botón Aya (Izquierda, Derecha)"
+msgstr ""
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: hint
 #. Setting: Swap Guide and Menu/View
 msgid "Swaps the Guide and QAM buttons with start and select."
-msgstr ""
-"Intercambia el botón Guía y el de Acceso rápido por los botones de Start y "
-"Select."
+msgstr "Đổi chỗ nút Guide và QAM với nút Start và Select."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: oem
 msgid "Default (Select/Start, Guide/QAM)"
-msgstr "Por defecto (Select/Start, Guía/Acceso Rápido)"
+msgstr "Mặc định (Select/Start, Guide/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional
 msgid "Traditional (Guide/Select, Start/QAM)"
-msgstr "Tradicional (Guía/Select, Start/Acceso Rápido)"
+msgstr "Truyền thống (Guide/Select, Start/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional_rev
 msgid "Traditional Rev. (Select/Guide, QAM/Start)"
-msgstr "Tradicional Rev. (Select/Guía, Acceso Rápido/Start)"
+msgstr "Truyền thống đảo ngược (Select/Guide, QAM/Start)"
 
 #. Setting: Vibration
 #. Field: title
 msgid "Vibration"
-msgstr "Vibración"
+msgstr "Rung"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
 msgid "Nintendo Mode (A-B Swap)"
-msgstr "Modo Nintendo (Intercambio A-B)"
+msgstr "Chế độ Nintendo (đảo nút A-B)"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: hint
 msgid "Swaps A with B and X with Y."
-msgstr "Intercambia los botones A por B y X por Y."
+msgstr "Đổi vị trí các cặp nút A-B và X-Y."
 
 #. Setting: Hold View to Reboot
 #. Field: title
 msgid "Hold View to Reboot"
-msgstr "Mantén el botón View para Reiniciar"
+msgstr "Giữ nút View để khởi động lại"
 
 #. Setting: Magic Modules
 #. Field: title
 msgid "Magic Modules"
-msgstr "Magic Modules"
+msgstr ""
 
 #. Setting: Pop Both Modules
 #. Field: title
 msgid "Pop Both Modules"
-msgstr "Pop Both Modules"
+msgstr "Nảy cả 2 modules"
 
 #. Setting: Pop Both Modules
 #. Field: hint
 #. Setting: Pop Left Module
 #. Setting: Pop Right Module
 msgid "Pops the left and right Ayaneo Magic Modules modules."
-msgstr "Pops the left and right Ayaneo Magic Modules modules."
+msgstr "Cho nảy magic modules bên trái và bên phải của Ayaneo."
 
 #. Setting: Left
 #. Field: title
@@ -523,12 +519,12 @@ msgstr "Pops the left and right Ayaneo Magic Modules modules."
 #. Option: left
 #. Setting: Direction
 msgid "Left"
-msgstr "Izquierda"
+msgstr "Trái"
 
 #. Setting: Pop Left Module
 #. Field: title
 msgid "Pop Left Module"
-msgstr "Pop Left Module"
+msgstr "Nảy module trái"
 
 #. Setting: Right
 #. Field: title
@@ -536,52 +532,54 @@ msgstr "Pop Left Module"
 #. Option: right
 #. Setting: Direction
 msgid "Right"
-msgstr "Derecha"
+msgstr "Phải"
 
 #. Setting: Pop Right Module
 #. Field: title
 msgid "Pop Right Module"
-msgstr "Pop Right Module"
+msgstr "Nảy module phải"
 
 #. Setting: Quick Reset
 #. Field: title
 msgid "Quick Reset"
-msgstr "Reinicio rápido"
+msgstr "Reset nhanh"
 
 #. Setting: Quick Reset
 #. Field: hint
 msgid "Re-initializes the Ayaneo Magic Modules modules."
-msgstr "Reinicia los Magic Modules de Ayaneo."
+msgstr "Khởi tạo lại Ayaneo Magic Modules."
 
 #. Setting: Claw Controller
 #. Field: title
 msgid "Claw Controller"
-msgstr "Mando de Claw"
+msgstr "Tay cầm Claw"
 
 #. Setting: DInput Mode (Enables Paddles, Beta)
 #. Field: title
 msgid "DInput Mode (Enables Paddles, Beta)"
-msgstr "Modo DInput (Habilita los botones traseros, Beta)"
+msgstr "Chế độ DInput (cho phép dùng 2 nút đằng sau, Beta)"
 
 #. Setting: Swap Guide and Menu/View
 #. Field: title
 msgid "Swap Guide and Menu/View"
-msgstr "Intercambia el Botón Guía y el de Menú/Ver"
+msgstr "Đổi chỗ 2 nút Guide và Menu/View"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: title
+#, fuzzy
 msgid "Start/Select do SteamOS Combos"
-msgstr "Star/Select Combos de SteamOS"
+msgstr "Giữ nút Start/Select để dùng combo nút của SteamOS"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: hint
 msgid ""
-"When holding Select or Start, if another button is pressed, they become the "
-"Xbox button, which allows doing SteamOS combos (Select+RT is screenshot)."
+"When holding Select or Start, if another button is pressed, they become "
+"the Xbox button, which allows doing SteamOS combos (Select+RT is "
+"screenshot)."
 msgstr ""
-"Cuando mantienes Select o Start, si otro botón es presionado, estos se "
-"convierten en el botón de Xbox/Guía, lo que permite realizar combinaciones "
-"de SteamOS (Select+RT es hacer una captura de pantalla)."
+"Khi giữ nút Select hoặc Start, nếu có nút khác được bấm, nút được giữ sẽ "
+"thành nút Xbox để cho phép sử dụng combo nút của SteamOS (Ví dụ: Select+RT "
+"để chụp ảnh màn hình)."
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -610,12 +608,12 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Disabled"
-msgstr "Desactivado"
+msgstr "Tắt"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
 msgid "Select Only"
-msgstr "Solo Select"
+msgstr "Chỉ nút Select"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: start_select
@@ -624,118 +622,121 @@ msgstr "Start+Select"
 
 #. Setting: Handheld
 #. Field: title
+#, fuzzy
 msgid "Handheld"
-msgstr "Dispositivo Portátil"
+msgstr "Máy cầm tay"
 
 #. Setting: GPD Controller
 #. Field: title
 msgid "GPD Controller"
-msgstr "Mando de GPD"
+msgstr "Tay cầm GPD"
 
 #. Setting: GPD Controller
 #. Field: hint
 msgid "Allows for configuring the gpd win controllers to a unified output."
-msgstr "Permite configurar los mandos de la GPD Win a una salida unificada."
+msgstr "Cho phép cấu hình tay cầm gpd win thành đầu ra thống nhất."
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse gpd features."
-msgstr "Emula diferentes tipo de mando para unificar las funciones de la GPD."
+msgstr "Giả lập các loại tay cầm khác nhau để tích hợp tính năng của máy GPD."
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: title
 msgid "Menu/L4/R4 Mapping"
-msgstr "Mapeo de Menú/L4/R4"
+msgstr "Map nút Menu/L4/R4"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: hint
+#, fuzzy
 msgid ""
 "Maps L4/R4 to Steam Input (requires L4/R4 as HHD in Wincontrols tab). If "
 "disabled, they are keyboard buttons. Menu/L4/R4 can be combos: Menu is "
-"single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold "
-"HHD (legacy). "
+"single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
+" HHD (legacy). "
 msgstr ""
-"Mapea L4/R4 a Steam Input (requiere L4/R4 activado en la pestaña de "
-"Wincontrols de HHD), si esta desactivado, funcionaran como teclas del "
-"teclado. Menú/L4/R4 pueden ser Combos: Menú con un solo toque es el acceso "
-"rápido, doble toque HHD, mantenido botón Xbox/Guía, L4/R4 con un solo toque "
-"son el acceso rápido y mantenido HHD (legado). "
+"Map các nút L4/R4 đến Steam Input (yêu cầu L4/R4 làm HHD trong tab "
+"Wincontrols). Nếu bị tắt, chúng sẽ là các nút bàn phím. Menu/L4/R4 có thể là "
+"tổ hợp: Menu là nhấn QAM một lần, nhấn HHD hai lần, giữ Xbox. L4/R4 là nhấn "
+"QAM một lần, giữ HHD (cũ). "
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
 msgid "Paddles, no Combo"
-msgstr "Botones traseros, no es un Combo"
+msgstr ""
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
+#, fuzzy
 msgid "Menu is Combo"
-msgstr "Menú es un Combo"
+msgstr "Menu là nút combo"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
+#, fuzzy
 msgid "L4 is Combo"
-msgstr "L4 es un Combo"
+msgstr "L4 là nút combo"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
 msgid "R4 is Combo"
-msgstr "R4 es un Combo"
+msgstr ""
 
 #. Setting: WinControls
 #. Field: hint
 msgid "Specialized settings for GPD devices."
-msgstr "Ajustes específicos para dispositivos GPD."
+msgstr ""
 
 #. Setting: RGB Mode
 #. Field: title
 msgid "RGB Mode"
-msgstr "Modo RGB"
+msgstr ""
 
 #. Setting: Off
 #. Field: hint
 msgid "Turns the LEDs off."
-msgstr "Apaga las luces LED."
+msgstr ""
 
 #. Setting: Solid
 #. Field: title
 msgid "Solid"
-msgstr "Sólido"
+msgstr ""
 
 #. Setting: Solid
 #. Field: hint
 msgid "Maintains the LEDs at a solid color."
-msgstr "Mantiene el LED en un color sólido."
+msgstr ""
 
 #. Setting: Hue
 #. Field: title
 msgid "Hue"
-msgstr "Hue"
+msgstr ""
 
 #. Setting: Pulse
 #. Field: title
 msgid "Pulse"
-msgstr "Pulso"
+msgstr ""
 
 #. Setting: Pulse
 #. Field: hint
 msgid "Slowly pulses the LEDs as a prespecified color."
-msgstr "Muestra pulsos de luz LED mediante el color establecido."
+msgstr ""
 
 #. Setting: Rainbow
 #. Field: title
 msgid "Rainbow"
-msgstr "Arcoiris"
+msgstr ""
 
 #. Setting: Rainbow
 #. Field: hint
 #. Setting: Cycle
 msgid "Cycles through the different colors."
-msgstr "Ciclos que van cambiando de color."
+msgstr ""
 
 #. Setting: Mouse Mode Mapping
 #. Field: title
 msgid "Mouse Mode Mapping"
-msgstr "Mapeo del Modo Ratón"
+msgstr ""
 
 #. Setting: Mouse Mode Mapping
 #. Option: unchanged
@@ -744,301 +745,293 @@ msgstr "Mapeo del Modo Ratón"
 #. Setting: Do not change
 #. Field: title
 msgid "Do not change"
-msgstr "No cambiar"
+msgstr ""
 
 #. Setting: Mouse Mode Mapping
 #. Option: mouse
 msgid "GPD Mouse Mode"
-msgstr "GPD Modo Ratón"
+msgstr ""
 
 #. Setting: Mouse Mode Mapping
 #. Option: wasd
 msgid "For Games"
-msgstr "Para Juegos"
+msgstr ""
 
 #. Setting: Mouse Mode Triggers
 #. Field: title
 msgid "Mouse Mode Triggers"
-msgstr "Gatillos Modo Ratón"
+msgstr ""
 
 #. Setting: Mouse Mode Triggers
 #. Option: gpd
 msgid "GPD (RT is Fast Mouse)"
-msgstr "GPD (RT es Ratón acelerado)"
+msgstr ""
 
 #. Setting: Mouse Mode Triggers
 #. Option: steamos
 msgid "SteamOS (LT/RT are R/L Clicks)"
-msgstr "SteamOS (LT/RT son R/L Clics)"
+msgstr ""
 
 #. Setting: L4/R4 Mapping
 #. Field: title
 msgid "L4/R4 Mapping"
-msgstr "Mapeo de L4/R4"
+msgstr ""
 
 #. Setting: L4/R4 Mapping
 #. Option: hhd
 msgid "For HHD (F20/F21)"
-msgstr "Para HHD (F20/F21)"
+msgstr ""
 
 #. Setting: L4/R4 Mapping
 #. Option: default
 msgid "Default (Pause/PrntScr)"
-msgstr "Por defecto (Pausa/Impr Pant)"
+msgstr ""
 
 #. Setting: Deadzones
 #. Field: title
 msgid "Deadzones"
-msgstr "Zona Muerta"
+msgstr ""
 
 #. Setting: Do not change
 #. Field: hint
 msgid "Do not change the deadzones."
-msgstr "No modificar las zonas muertas."
+msgstr ""
 
 #. Setting: Set Deadzones
 #. Field: title
 msgid "Set Deadzones"
-msgstr "Establece las Zonas muertas"
+msgstr ""
 
 #. Setting: Set Deadzones
 #. Field: hint
 msgid "Use custom deadzones."
-msgstr "Usa Zonas muertas personalizadas."
+msgstr ""
 
 #. Setting: Left Stick Center
 #. Field: title
 msgid "Left Stick Center"
-msgstr "Centro del Stick Izquierdo"
+msgstr ""
 
 #. Setting: Left Stick Boundary
 #. Field: title
 msgid "Left Stick Boundary"
-msgstr "Límite del Stick Izquierdo"
+msgstr ""
 
 #. Setting: Right Stick Center
 #. Field: title
 msgid "Right Stick Center"
-msgstr "Centro del Stick Derecho"
+msgstr ""
 
 #. Setting: Right Stick Boundary
 #. Field: title
 msgid "Right Stick Boundary"
-msgstr "Límite del Stick Derecho"
+msgstr ""
 
 #. Setting: Vibration Strength
 #. Field: title
 msgid "Vibration Strength"
-msgstr "Fuerza de Vibración"
+msgstr ""
 
 #. Setting: Firmware
 #. Field: title
 msgid "Firmware"
-msgstr "Firmware"
+msgstr ""
 
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr "Error"
+msgstr "Lỗi"
 
 #. Setting: Apply Settings
 #. Field: title
 msgid "Apply Settings"
-msgstr "Aplicar ajustes"
+msgstr ""
 
 #. Setting: Legion Controller
 #. Field: title
 msgid "Legion Controller"
-msgstr "Legion Controller"
+msgstr ""
 
 #. Setting: Legion Controller
 #. Field: hint
 msgid "Configure the Legion Controller emulation modes."
-msgstr "Configura los modos de emulación del Legion Controller."
+msgstr ""
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: title
 msgid "Emulation Mode (X-Input)"
-msgstr "Modo de Emulación (X-Input)"
+msgstr ""
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
 msgid "Emulate different controller types when in X-Input mode."
 msgstr ""
-"Emula diferentes tipos de mandos cuando el Legion Controller esta en modo X-"
-"Input."
 
 #. Setting: Mapping Style
 #. Field: title
 msgid "Mapping Style"
-msgstr "Estilo de Mapeo"
+msgstr ""
 
 #. Setting: Mapping Style
 #. Field: hint
 msgid "Choose OS mapping style."
-msgstr "Elige un estilo de mapeo basado en Sistema Operativo."
+msgstr ""
 
 #. Setting: Windows
 #. Field: title
 msgid "Windows"
-msgstr "Windows"
+msgstr ""
 
 #. Setting: Windows
 #. Field: hint
 msgid "Windows style mapping."
-msgstr "Mapeo al estilo de Windows."
+msgstr ""
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Field: title
 msgid "Turbo Mode (Repeat Buttons)"
-msgstr "Modo Turbo (Pulsación repetida)"
+msgstr ""
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Field: hint
 msgid ""
-"Hold Y1/Y2 for 2s, then press the buttons that will repeat. To stop, hold Y1/"
-"Y2 for 5s."
+"Hold Y1/Y2 for 2s, then press the buttons that will repeat. To stop, hold"
+" Y1/Y2 for 5s."
 msgstr ""
-"Manten pulsado Y1/Y2 durante 2s, luego pulsa los botones que replicarán. "
-"Para Parar, manten Y1/Y2 durante 5s."
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Option: 2hz
 msgid "2Hz"
-msgstr "2Hz"
+msgstr ""
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Option: 5hz
 msgid "5Hz"
-msgstr "5Hz"
+msgstr ""
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Option: 8hz
 msgid "8Hz"
-msgstr "8Hz"
+msgstr ""
 
 #. Setting: SteamOS
 #. Field: title
 msgid "SteamOS"
-msgstr "SteamOS"
+msgstr ""
 
 #. Setting: SteamOS
 #. Field: hint
 msgid "SteamOS style mapping."
-msgstr "Mapeo al estilo de SteamOS."
+msgstr ""
 
 #. Setting: Touchpad Emulation [BETA]
 #. Field: title
 msgid "Touchpad Emulation [BETA]"
-msgstr "Emulación del Panel Táctil [BETA]"
+msgstr ""
 
 #. Setting: Touchpad Emulation [BETA]
 #. Field: hint
 msgid "Passthrough the touchpad to the controller."
-msgstr "Traspasa el panel táctil al mando."
+msgstr ""
 
 #. Setting: Touchpad Emulation [BETA]
 #. Option: gamemode
 msgid "Gamemode"
-msgstr "Gamemode"
+msgstr ""
 
 #. Setting: Touchpad Emulation [BETA]
 #. Option: always
 msgid "Always"
-msgstr "Siempre"
+msgstr "Luôn luôn"
 
 #. Setting: Controller Frequency
 #. Field: title
 msgid "Controller Frequency"
-msgstr "Frecuencia del mando"
+msgstr ""
 
 #. Setting: Controller Frequency
 #. Option: 125hz
 msgid "125Hz"
-msgstr "125Hz"
+msgstr ""
 
 #. Setting: Controller Frequency
 #. Option: 250hz
 msgid "250Hz"
-msgstr "250Hz"
+msgstr ""
 
 #. Setting: Controller Frequency
 #. Option: 500hz
 msgid "500Hz"
-msgstr "500Hz"
+msgstr ""
 
 #. Setting: Controller Frequency
 #. Option: 1000hz
 msgid "1000Hz"
-msgstr "1000Hz"
+msgstr ""
 
 #. Setting: Swap Legion with Menu/View
 #. Field: title
 msgid "Swap Legion with Menu/View"
-msgstr "Intercambia el botón Legion con Menú/Ver"
+msgstr ""
 
 #. Setting: Enable Shortcuts Controller
 #. Field: title
 msgid "Enable Shortcuts Controller"
-msgstr "Activa los Atajos del mando"
+msgstr ""
 
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
 msgid "When in dinput mode, enable a controller for shortcuts."
-msgstr "Cuando estas en modo dinput, activa un mando por atajo."
+msgstr ""
 
 #. Setting: Reset Controller
 #. Field: title
 msgid "Reset Controller"
-msgstr "Reiniciar mando"
+msgstr ""
 
 #. Setting: Reset Controller
 #. Field: hint
 msgid "Resets the controller to stock settings."
-msgstr "Reinicia el mando a los ajustes de fábrica."
+msgstr ""
 
 #. Setting: Legion Controllers
 #. Field: title
 msgid "Legion Controllers"
-msgstr "Legion Controllers"
+msgstr ""
 
 #. Setting: Legion Controllers
 #. Field: hint
 msgid ""
-"Allows for configuring the Legion controllers using the built in firmware "
-"commands and enabling emulation modes for various controller types."
+"Allows for configuring the Legion controllers using the built in firmware"
+" commands and enabling emulation modes for various controller types."
 msgstr ""
-"Permite configurar los Legion Controllers usando los comandos integrados en "
-"el firmware y activa los modos de emulación para varios tipos de mandos."
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
 msgid ""
-"Emulate different controller types when the Legion Controllers are in X-"
-"Input mode."
+"Emulate different controller types when the Legion Controllers are in "
+"X-Input mode."
 msgstr ""
-"Emula diferentes tipos de mandos cuando los Legion Controllers están en modo "
-"X-Input."
 
 #. Setting: Controller Motions Device
 #. Field: title
 msgid "Controller Motions Device"
-msgstr "Dispositivo de Control de Movimiento"
+msgstr ""
 
 #. Setting: Left Controller
 #. Field: title
 msgid "Left Controller"
-msgstr "Mando Izquierdo"
+msgstr ""
 
 #. Setting: Right Controller
 #. Field: title
 msgid "Right Controller"
-msgstr "Mando Derecho"
+msgstr ""
 
 #. Setting: Both Controllers
 #. Field: title
 msgid "Both Controllers"
-msgstr "Ambos mandos"
+msgstr ""
 
 #. Setting: Both Controllers
 #. Field: hint
@@ -1046,24 +1039,18 @@ msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
 msgstr ""
-"El mando principal usa el sensor de movimiento del mando derecho y un "
-"segundo mando es creado para el sensor de movimiento del mando izquierdo."
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
 msgid "M2 As Xbox Share/Dualsense Mic Mute"
 msgstr ""
-"M2 como el botón Compartir del Xbox Controller/Silenciar Micrófono del "
-"Dualsense"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: hint
 msgid ""
-"Maps the M2 to the mute button on Dualsense and the share button on the Xbox "
-"Elite controller."
+"Maps the M2 to the mute button on Dualsense and the share button on the "
+"Xbox Elite controller."
 msgstr ""
-"Mapea el botón M2 al botón Silenciar micrófono del Dualsense y al botón "
-"Compartir del mando Élite de Xbox."
 
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
@@ -1071,134 +1058,124 @@ msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
 msgstr ""
-"Cuando estas en otros modos (dinput, dual dinput y modo FPS), activa un "
-"atajo en el mando para reactivar las funciones de los botones Guía, Acceso "
-"Rápido y de otros atajos."
 
 #. Setting: Factory Reset Controllers
 #. Field: title
 msgid "Factory Reset Controllers"
-msgstr "Restaurar de fábrica los mandos"
+msgstr ""
 
 #. Setting: Factory Reset Controllers
 #. Field: hint
 msgid "Resets the controllers to factory settings."
-msgstr "Restaura los mandos a la configuración de fábrica."
+msgstr ""
 
 #. Setting: Orange Pi Neo
 #. Field: title
 msgid "Orange Pi Neo"
-msgstr "Orange Pi Neo"
+msgstr ""
 
 msgid "AOKZOE Controller"
-msgstr "AOKZOE Controller"
+msgstr ""
 
 #. Setting: OneXPlayer Controller
 #. Field: title
 msgid "OneXPlayer Controller"
-msgstr "ONEXPLAYER Controller"
+msgstr ""
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Field: title
 msgid "Keyboard and Turbo buttons are:"
-msgstr "El teclado y los botones Turbo son:"
+msgstr ""
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: oem
 msgid "Keyboard, Combo"
-msgstr "Teclado, Combos"
+msgstr ""
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: separate
 msgid "Steam Menu, HHD"
-msgstr "Menú de Steam, HHD"
+msgstr ""
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo_hhd
 msgid "Combo, HHD"
-msgstr "Combo, HHD"
+msgstr ""
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo
 msgid "Combo, Combo"
-msgstr "Combo, Combo"
+msgstr ""
 
 #. Setting: Swap View/Menu and Xbox/Kbd
 #. Field: title
 msgid "Swap View/Menu and Xbox/Kbd"
-msgstr "Intercambiar Ver/Menú y Xbox/Teclado"
+msgstr ""
 
 #. Setting: Holding Turbo Reboots
 #. Field: title
 msgid "Holding Turbo Reboots"
-msgstr "Mantener Turbo reinicia"
+msgstr ""
 
 #. Setting: Reverse Volume Buttons
 #. Field: title
 msgid "Reverse Volume Buttons"
-msgstr "Invierte los botones de Volumen"
+msgstr ""
 
 #. Setting: Reverse Volume Buttons
 #. Field: hint
-msgid ""
-"Reverse the volume buttons of the X1 style devices to match other tablets."
+msgid "Reverse the volume buttons of the X1 style devices to match other tablets."
 msgstr ""
-"Invierte los botones de Volumen de los dispositivos de estilo X1 para "
-"corresponderse con otras tablets."
 
 #. Setting: Ally Controller
 #. Field: title
 msgid "Ally Controller"
-msgstr "Ally Controller"
+msgstr ""
 
 #. Setting: Ally Controller
 #. Field: hint
 msgid "Allows for configuring the ROG Ally controllers to a unified output."
-msgstr "Permite configurar los mandos de la ROG Ally a una salida unificada."
+msgstr ""
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse ROG features."
 msgstr ""
-"Emula diferentes tipos de mandos para unificar las funcionalidades de ROG."
 
 #. Setting: Swap ROG and Menu/View
 #. Field: title
 msgid "Swap ROG and Menu/View"
-msgstr "Intercambia ROG y Menú/Ver"
+msgstr ""
 
 #. Setting: Swap ROG and Menu/View
 #. Field: hint
-msgid ""
-"Swaps the Armory Crate and Command center buttons with start and select."
+msgid "Swaps the Armory Crate and Command center buttons with start and select."
 msgstr ""
-"Intercambia los botones de Armory Crate y Command Center con los de Start y "
-"Select."
 
 #. Setting: RGB During Boot
 #. Field: title
 msgid "RGB During Boot"
-msgstr "RGB durante el arranque"
+msgstr ""
 
 #. Setting: RGB During Charging Asleep
 #. Field: title
 msgid "RGB During Charging Asleep"
-msgstr "RGB mientras carga en modo suspensión"
+msgstr ""
 
 #. Setting: Motion Axis
 #. Field: title
 msgid "Motion Axis"
-msgstr "Control de movimiento Axis"
+msgstr ""
 
 #. Setting: Default
 #. Field: hint
 msgid "The default axis loaded for this device."
-msgstr "El Axis por defecto cargado para este dispositivo."
+msgstr ""
 
 #. Setting: Override
 #. Field: title
 msgid "Override"
-msgstr "Sobrescribir"
+msgstr ""
 
 #. Setting: Override
 #. Field: hint
@@ -1206,117 +1183,109 @@ msgid ""
 "Remap and invert the axis of your device. If the axis of your device are "
 "wrong, please submit a picture or a text version of the following."
 msgstr ""
-"Remapea e invierte los axis de tu dispositivo. Si los axis de tu "
-"dispositivos no están bien, por favor manda una imagen o una versión en "
-"texto de lo siguiente."
 
 #. Setting: Manufacturer
 #. Field: title
 msgid "Manufacturer"
-msgstr "Fabricante"
+msgstr ""
 
 #. Setting: Product
 #. Field: title
 msgid "Product"
-msgstr "Producto"
+msgstr ""
 
 #. Setting: Axis X
 #. Field: title
 msgid "Axis X"
-msgstr "Axis X"
+msgstr ""
 
 #. Setting: Axis X
 #. Option: x
 #. Setting: Axis Y
 #. Setting: Axis Z
 msgid "X"
-msgstr "X"
+msgstr ""
 
 #. Setting: Axis X
 #. Option: y
 #. Setting: Axis Y
 #. Setting: Axis Z
 msgid "Y"
-msgstr "Y"
+msgstr ""
 
 #. Setting: Axis X
 #. Option: z
 #. Setting: Axis Y
 #. Setting: Axis Z
 msgid "Z"
-msgstr "Z"
+msgstr ""
 
 #. Setting: Invert X
 #. Field: title
 msgid "Invert X"
-msgstr "Invertir X"
+msgstr ""
 
 #. Setting: Axis Y
 #. Field: title
 msgid "Axis Y"
-msgstr "Axis Y"
+msgstr ""
 
 #. Setting: Invert Y
 #. Field: title
 msgid "Invert Y"
-msgstr "Invertir Y"
+msgstr ""
 
 #. Setting: Axis Z
 #. Field: title
 msgid "Axis Z"
-msgstr "Axis Z"
+msgstr ""
 
 #. Setting: Invert Z
 #. Field: title
 msgid "Invert Z"
-msgstr "Invertir Z"
+msgstr ""
 
 #. Setting: Deadzones & Vibration
 #. Field: title
 msgid "Deadzones & Vibration"
-msgstr "Zonas Muertas y Vibración"
+msgstr ""
 
 #. Setting: Deadzones & Vibration
 #. Field: hint
 msgid "Configure joystick and trigger deadzones, vibration intensity."
 msgstr ""
-"Configura la intensidad de la vibración y la zona muerta de los joysticks y "
-"gatillos."
 
 #. Setting: Default
 #. Field: hint
 msgid "Uses reasonable values based on hardware."
-msgstr "Usa valores razonables basados en el hardware."
+msgstr ""
 
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr "Manual"
+msgstr "Thủ công"
 
 #. Setting: Manual
 #. Field: hint
 msgid "Allows for manual configuration of deadzones and vibration intensity."
 msgstr ""
-"Permite la configuración manual de las zonas muertas y de la intensidad de "
-"la vibración."
 
 #. Setting: Vibration Intensity
 #. Field: title
 msgid "Vibration Intensity"
-msgstr "Intensidad de la vibración"
+msgstr ""
 
 #. Setting: Vibration Intensity
 #. Field: hint
 msgid ""
-"Intensity of the vibration. The higher the value, the stronger the vibration."
+"Intensity of the vibration. The higher the value, the stronger the "
+"vibration."
 msgstr ""
-"Intensidad de la vibración. Cuanto mayor es el valor, más fuerte es la "
-"vibración."
 
 #. Setting: Left Stick Minimum
 #. Field: title
 msgid "Left Stick Minimum"
-msgstr "Mínimo del Stick izquierdo"
+msgstr ""
 
 #. Setting: Left Stick Minimum
 #. Field: hint
@@ -1324,16 +1293,14 @@ msgstr "Mínimo del Stick izquierdo"
 #. Setting: Left Trigger Minimum
 #. Setting: Right Trigger Minimum
 msgid ""
-"Deadzone for the joystick. The higher the value, the more the joystick needs "
-"to be moved before registering."
+"Deadzone for the joystick. The higher the value, the more the joystick "
+"needs to be moved before registering."
 msgstr ""
-"Zona Muerta del joystick. Cuanto mayor el valor, más se tendrá que mover el "
-"joystick antes de registrar movimiento."
 
 #. Setting: Left Stick Maximum
 #. Field: title
 msgid "Left Stick Maximum"
-msgstr "Máximo del Stick izquierdo"
+msgstr ""
 
 #. Setting: Left Stick Maximum
 #. Field: hint
@@ -1344,748 +1311,675 @@ msgid ""
 "Maximum value for joystick. The higher the value, the more the joystick "
 "needs to be moved before reaching maximum."
 msgstr ""
-"Máximo valor del joystick. Cuanto mayor el valor, más se tendrá que mover el "
-"joystick antes de llegar a su límite."
 
 #. Setting: Right Stick Minimum
 #. Field: title
 msgid "Right Stick Minimum"
-msgstr "Mínimo del Stick derecho"
+msgstr ""
 
 #. Setting: Right Stick Maximum
 #. Field: title
 msgid "Right Stick Maximum"
-msgstr "Máximo del Stick derecho"
+msgstr ""
 
 #. Setting: Left Trigger Minimum
 #. Field: title
 msgid "Left Trigger Minimum"
-msgstr "Mínimo del Gatillo izquierdo"
+msgstr ""
 
 #. Setting: Left Trigger Maximum
 #. Field: title
 msgid "Left Trigger Maximum"
-msgstr "Máximo del Gatillo izquierdo"
+msgstr ""
 
 #. Setting: Right Trigger Minimum
 #. Field: title
 msgid "Right Trigger Minimum"
-msgstr "Mínimo del gatillo derecho"
+msgstr ""
 
 #. Setting: Right Trigger Maximum
 #. Field: title
 msgid "Right Trigger Maximum"
-msgstr "Máximo del gatillo derecho"
+msgstr ""
 
 #. Setting: Reset to Default
 #. Field: title
 msgid "Reset to Default"
-msgstr "Restaurar valores predeterminados"
+msgstr ""
 
 #. Setting: Reset to Default
 #. Field: hint
 msgid "Reset all values to default."
-msgstr "Restaura todos los valores a los predeterminados."
+msgstr ""
 
 #. Setting: Hidden
 #. Field: title
 msgid "Hidden"
-msgstr "Oculto"
+msgstr ""
 
 #. Setting: Hidden
 #. Field: hint
 msgid ""
-"Disables the controller. Handheld Daemon overlay will still work in gamemode."
+"Disables the controller. Handheld Daemon overlay will still work in "
+"gamemode."
 msgstr ""
-"Desactiva el mando. La Overlay de Handheld Daemon seguirá funcionando en el "
-"modo juego."
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
 msgid "Extra buttons as Keyboard/Overlay"
-msgstr "Botones extra como Teclado/Overlay"
+msgstr ""
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: hint
 msgid ""
-"Makes the left paddle bring up a keyboard and the right paddle bring up the "
-"overlay."
+"Makes the left paddle bring up a keyboard and the right paddle bring up "
+"the overlay."
 msgstr ""
-"Hace que el botón trasero izquierdo haga aparecer el teclado y que el botón "
-"trasero derecho haga aparecer el overlay."
 
 #. Setting: Xbox
 #. Field: title
 msgid "Xbox"
-msgstr "Xbox"
+msgstr ""
 
 #. Setting: Extra buttons as
 #. Field: title
 msgid "Extra buttons as"
-msgstr "Botones adiciones como"
+msgstr ""
 
 #. Setting: Extra buttons as
 #. Field: hint
 msgid ""
-"Changes the behavior of the extra buttons. Left button is Keyboard, right "
-"button is Overlay. Or they can be set for Steam Input."
+"Changes the behavior of the extra buttons. Left button is Keyboard, right"
+" button is Overlay. Or they can be set for Steam Input."
 msgstr ""
-"Cambia el comportamiento de los botones adicionales. El botón izquierdo es "
-"el Teclado, el botón derecho es el Overlay. También puedes personalizarlos "
-"mediante Steam Input."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
 msgid "Steam Input (Elite)"
-msgstr "Steam Input (Élite)"
+msgstr ""
 
 #. Setting: Extra buttons as
 #. Option: noob
 msgid "Keyboard/Overlay"
-msgstr "Teclado/Overlay"
+msgstr ""
 
 #. Setting: Nintendo QAM Fix
 #. Field: title
 msgid "Nintendo QAM Fix"
-msgstr "Nintendo Acceso Rápido Fix"
+msgstr ""
 
 #. Setting: Xbox Elite
 #. Field: title
 msgid "Xbox Elite"
-msgstr "Xbox Élite"
+msgstr ""
 
 #. Setting: Steam Controller
 #. Field: title
 msgid "Steam Controller"
-msgstr "Steam Controller"
+msgstr ""
 
 #. Setting: Steam Controller
 #. Field: hint
 msgid "Allows for gyro, paddles, and has a proper QAM button."
 msgstr ""
-"Permite el uso del giroscopio, botones traseros y tiene un botón dedicado al "
-"acceso rápido."
 
 #. Setting: Handheld Mode [BETA]
 #. Field: title
 msgid "Handheld Mode [BETA]"
-msgstr "Modo Consola Portátil (Handheld) [BETA]"
+msgstr ""
 
 #. Setting: Handheld Mode [BETA]
 #. Field: hint
 msgid ""
-"Uses the new handheld Steam Input profile. May have bugs, especially when it "
-"comes to gyro."
+"Uses the new handheld Steam Input profile. May have bugs, especially when"
+" it comes to gyro."
 msgstr ""
-"Usa el nuevo perfil para portátiles de Steam Input. Puede contener bugs, "
-"especialmente cuando hablamos del giroscopio."
 
 #. Setting: Gyro Output Sync
 #. Field: title
 msgid "Gyro Output Sync"
-msgstr "Sincronizar salida del Giroscopio"
+msgstr ""
 
 #. Setting: Gyro Output Sync
 #. Field: hint
 msgid ""
 "Steam relies on the IMU timestamp for the touchpad as Mouse and `Gyro to "
 "Mouse [BETA]`. If the same timestamp is sent in 2 reports, this causes a "
-"division by 0 and instability. This option makes it so reports are sent only "
-"when there is a new IMU timestamp, effectively limiting the responsiveness "
-"of the controller to that of the IMU. This only makes a difference for the "
-"Legion Go (125hz), as all the other handhelds are using 400hz by default."
+"division by 0 and instability. This option makes it so reports are sent "
+"only when there is a new IMU timestamp, effectively limiting the "
+"responsiveness of the controller to that of the IMU. This only makes a "
+"difference for the Legion Go (125hz), as all the other handhelds are "
+"using 400hz by default."
 msgstr ""
-"Steam utiliza la marca de tiempo de la IMU para el panel tactil como ratón y "
-"`el giroscopio a ratón [BETA]`. Si la misma marca de tiempo se manda en dos "
-"informes, causa una división por 0 e inestabilidad. Esta opción hace que los "
-"informes solo se manden cuando hay una nueva marca de tiempo de la IMU, "
-"limitando la respuesta del mando a la de la IMU. Esto solo afecta a la "
-"Legion Go (125hz), ya que el resto de portátiles usan la frecuencia de 400hz "
-"por defecto."
 
 #. Setting: Invert Roll Axis
 #. Field: title
 msgid "Invert Roll Axis"
-msgstr "Inviertir eje del Axis"
+msgstr ""
 
 #. Setting: Invert Roll Axis
 #. Field: hint
 msgid ""
-"Inverts the roll (Z) axis compared to a real Horipad controller. Useful for "
-"Steam Input, since you want it to be inverted to look left to right, but an "
-"issue in emulators."
+"Inverts the roll (Z) axis compared to a real Horipad controller. Useful "
+"for Steam Input, since you want it to be inverted to look left to right, "
+"but an issue in emulators."
 msgstr ""
-"Invierte el eje del axis (Z) comparado a un Horipad controller real. Resulta "
-"últil para Steam Input, ya que quieres que este invertido para mirar de "
-"izquierda a derecha, aunque es un problema en emuladores."
 
 #. Setting: Dualsense
 #. Field: title
 msgid "Dualsense"
-msgstr "Dualsense"
+msgstr ""
 
 #. Setting: Extra buttons as
 #. Field: hint
 msgid ""
-"Changes the behavior of the extra buttons. Left button is Keyboard, right "
-"button is Overlay. Or they can be left/right touchpad clicks. For the legion "
-"go, top buttons are shortcuts, bottom are touchpad clicks."
+"Changes the behavior of the extra buttons. Left button is Keyboard, right"
+" button is Overlay. Or they can be left/right touchpad clicks. For the "
+"legion go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
-"Cambia el comportamiento de los botones adiciones. El botón izquierdo es el "
-"Teclado, el botón derecho es el Overlay. Otra opción es que sean los clics "
-"izquierdo y derecho del panel táctil. Para la Legion Go, los botones "
-"superiores son atajos, los inferiores son los clics del panel táctil."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
 msgid "Steam Input (Edge)"
-msgstr "Steam Input (Edge)"
+msgstr ""
 
 #. Setting: Extra buttons as
 #. Option: touchpad
 msgid "Touchpad Clicks"
-msgstr "Clics del Panel Táctil"
+msgstr ""
 
 #. Setting: Extra buttons as
 #. Option: both
 msgid "Shortcuts + Touchpad Clicks"
-msgstr "Atajos + Clics del Panel Táctil"
+msgstr ""
 
 #. Setting: LED Support
 #. Field: title
 msgid "LED Support"
-msgstr "Soporte LED"
+msgstr ""
 
 #. Setting: LED Support
 #. Field: hint
 msgid ""
 "Passes through the LEDs to the controller, which allows games to control "
 "them."
-msgstr "Pasa las LED al mando, lo cual permite a los juegos controlarlas."
+msgstr ""
 
 #. Setting: Invert Roll Axis
 #. Field: hint
 msgid ""
-"Inverts the roll (Z) axis compared to a real Dualsense controller. Useful "
-"for Steam Input, since you want it to be inverted to look left to right, but "
-"an issue in emulators."
+"Inverts the roll (Z) axis compared to a real Dualsense controller. Useful"
+" for Steam Input, since you want it to be inverted to look left to right,"
+" but an issue in emulators."
 msgstr ""
-"Invierte el eje del axis (Z) comparado a un mando Dualsense real. Útil para "
-"Steam Input, ya que quieres que este invertido para mirar de izquierda a "
-"derecha, aunque es un problema en emuladores."
 
 #. Setting: Bluetooth Mode
 #. Field: title
 msgid "Bluetooth Mode"
-msgstr "Modo Bluetooth"
+msgstr ""
 
 #. Setting: Bluetooth Mode
 #. Field: hint
 msgid ""
-"Emulates the controller in bluetooth mode instead of USB mode. This is the "
-"default as it causes less issues with how apps interact with the controller. "
-"However, using USB mode can improve LED support (?) in some games. Test and "
-"report back!"
+"Emulates the controller in bluetooth mode instead of USB mode. This is "
+"the default as it causes less issues with how apps interact with the "
+"controller. However, using USB mode can improve LED support (?) in some "
+"games. Test and report back!"
 msgstr ""
-"Emula el mando en modo Bluetooth en vez de en modo USB. Este es el modo Por "
-"Defecto ya que causa menos problemas con como interactuan las aplicaciones "
-"con el mando. Sin embargo, usar el modo USB puede mejorar el soporte LED (?) "
-"en algunos juegos. ¡Probadlo y reportad los resultados luego!"
 
 #. Setting: Touchpad Emulation
 #. Field: title
 msgid "Touchpad Emulation"
-msgstr "Emulación del panel táctil"
+msgstr ""
 
 #. Setting: Touchpad Emulation
 #. Field: hint
 msgid ""
-"Use an emulated touchpad. Part of the controller if it is supported (e.g., "
-"Dualsense) or a virtual one if not."
+"Use an emulated touchpad. Part of the controller if it is supported "
+"(e.g., Dualsense) or a virtual one if not."
 msgstr ""
-"Usa un panel táctil emulado. Forma parte del mando si lo soporta (Por "
-"ejemplo, el Dualsense) o usa uno virtual si no."
 
 #. Setting: Disabled
 #. Field: hint
 msgid ""
-"Does not modify the touchpad. Short + holding presses will not work within "
-"gamescope."
+"Does not modify the touchpad. Short + holding presses will not work "
+"within gamescope."
 msgstr ""
-"No modifica el panel táctil. Las pulsaciones cortas y mantenidas no "
-"funcionarán en gamescope."
 
 #. Setting: Virtual
 #. Field: title
 msgid "Virtual"
-msgstr "Virtual"
+msgstr ""
 
 #. Setting: Virtual
 #. Field: hint
 msgid ""
-"Adds an emulated touchpad. This touchpad is meant for use in gamescope and "
-"has left, right click support by default. However, it causes issues in "
-"desktop mode, and it doesnt allow dragging files. Therefore, it will "
+"Adds an emulated touchpad. This touchpad is meant for use in gamescope "
+"and has left, right click support by default. However, it causes issues "
+"in desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
-"Añade un panel táctil virtual. Este panel táctil esta pensado para usarse en "
-"gamescope y tiene soporte para clic izquierdo y derecho por defecto. Sin "
-"embargo, puede causar problemas en el modo escritorio, y no permite "
-"arrastrar archivos. Por lo tanto se desactivará de forma automática en el "
-"escritorio."
 
 #. Setting: Disable on Desktop
 #. Field: title
 msgid "Disable on Desktop"
-msgstr "Desactivar en Escritorio"
+msgstr ""
 
 #. Setting: Disable on Desktop
 #. Field: hint
 msgid ""
 "Touchpad emulation will automatically be disabled when not in gamemode. "
-"Specifically, steam will be periodically be checked to be running in gamepad "
-"mode and if not, touchpad emulation will be disabled."
+"Specifically, steam will be periodically be checked to be running in "
+"gamepad mode and if not, touchpad emulation will be disabled."
 msgstr ""
-"La emulación del panel táctil se desactivará automáticamente cuando no estés "
-"en el modo juego. De forma especifica, Steam será analizado de forma "
-"periódica para ver si esta siendo usado con el modo juego y si no es así, la "
-"emulación del panel táctil se desactivará."
 
 #. Setting: Short Action
 #. Field: title
 msgid "Short Action"
-msgstr "Pulsación rápida"
+msgstr ""
 
 #. Setting: Short Action
 #. Field: hint
 msgid "Maps short touches (less than 0.2s) to a virtual touchpad button."
 msgstr ""
-"Mapea pulsaciones rápidas (menos de 0,2s) a un botón del panel táctil "
-"virtual."
 
 #. Setting: Short Action
 #. Option: left_click
 #. Setting: Hold Action
 msgid "Left Click"
-msgstr "Clic Izquierdo"
+msgstr ""
 
 #. Setting: Short Action
 #. Option: right_click
 #. Setting: Hold Action
 msgid "Right Click"
-msgstr "Clic Derecho"
+msgstr ""
 
 #. Setting: Hold Action
 #. Field: title
 msgid "Hold Action"
-msgstr "Pulsación Larga"
+msgstr ""
 
 #. Setting: Hold Action
 #. Field: hint
 msgid "Maps long touches (more than 2s) to a virtual touchpad button."
 msgstr ""
-"Mapea pulsaciones largas (más de 2s) a un botón de un panel táctil virtual."
 
 #. Setting: Controller
 #. Field: hint
 msgid ""
-"Uses the touchpad of the emulated controller (if it exists). Otherwise, the "
-"touchpad remains unmapped (will still show up in the system). Meant to be "
-"used as steam input, so short press is unassigned by default and long press "
-"simulates trackpad click."
+"Uses the touchpad of the emulated controller (if it exists). Otherwise, "
+"the touchpad remains unmapped (will still show up in the system). Meant "
+"to be used as steam input, so short press is unassigned by default and "
+"long press simulates trackpad click."
 msgstr ""
-"Usa el panel táctil emulado del mando (si este existe). Si no, el panel "
-"táctil queda sin mapear (seguirá mostrándose en el sistema). Esta pensado "
-"para usarse con Steam Input, así que la pulsación corta no esta asignada por "
-"defecto y la pulsación larga simula el clic del trackpad."
 
 #. Setting: Location
 #. Field: title
 msgid "Location"
-msgstr "Posición"
+msgstr ""
 
 #. Setting: Location
 #. Field: hint
 msgid ""
-"Controls the placement of the real touchpad to the virtual one, using what "
-"steam expects. In Steam, the \"Left\" touchpad maps to the left half, the "
-"\"Right\" touchpad maps to the right half, and \"Center\" maps to the whole "
-"touchpad. Therefore, the virtual touchpad is cropped to the left side for "
-"left, the right side for right, and expanded in the center for center. This "
-"means when set to center, half of the left touchpad is left and half of the "
-"right is right. \"Stretch\" stretches the touchpad to the whole dualsense "
-"surface."
+"Controls the placement of the real touchpad to the virtual one, using "
+"what steam expects. In Steam, the \"Left\" touchpad maps to the left "
+"half, the \"Right\" touchpad maps to the right half, and \"Center\" maps "
+"to the whole touchpad. Therefore, the virtual touchpad is cropped to the "
+"left side for left, the right side for right, and expanded in the center "
+"for center. This means when set to center, half of the left touchpad is "
+"left and half of the right is right. \"Stretch\" stretches the touchpad "
+"to the whole dualsense surface."
 msgstr ""
-"Controla el posicionamiento del panel táctil real para el virtual, usando lo "
-"que Steam espera. En Steam. el panel táctil Izquierdo se mapea a la mitad "
-"\"Izquierda\", el panel táctil Derecho se mapea a la mitad \"Derecha\", y el "
-"\"Centro\" se mapea a todo el panel táctil. Por lo tanto, el panel táctil "
-"virtual se recorta a la izquierda para el lado izquierdo, a la derecha para "
-"el lado derecho y se expande al centro para el centro. Esto significa que, "
-"al centrarlo la mitad del panel táctil izquierdo queda a la izquierda y la "
-"otra mitad a la derecha, por otro lado \"Estirar\"extiende el panel táctil a "
-"toda la superficie del Dualsense."
 
 #. Setting: Location
 #. Option: center
 msgid "Center"
-msgstr "Centro"
+msgstr ""
 
 #. Setting: Location
 #. Option: stretch
 msgid "Stretch"
-msgstr "Estirar"
+msgstr ""
 
 #. Setting: Short Action
 #. Field: hint
 msgid ""
-"Maps short touches (less than 0.2s) to a touchpad action. Dualsense uses a "
-"physical press for left and a double tap for right click (support for double "
-"tap varies; enable \"Tap to Click\" in your desktop's touchpad settings)."
+"Maps short touches (less than 0.2s) to a touchpad action. Dualsense uses "
+"a physical press for left and a double tap for right click (support for "
+"double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
+"settings)."
 msgstr ""
-"Mapea pequeños toques (menos de 0,2s) a una acción del panel táctil. El "
-"Dualsense usa un toque para el clic izquierdo y un doble toque para el clic "
-"derecho (el soporte para el doble toque varia, activa \"Toca para hacer "
-"clic\" en los ajustes del panel táctil de tu escritorio)."
 
 #. Setting: Hold Action
 #. Field: hint
 msgid ""
 "Maps long touches (more than 2s) to a touchpad action. Dualsense uses a "
-"physical press for left and a double tap for right click (support for double "
-"tap varies; enable \"Tap to Click\" in your desktop's touchpad settings)."
+"physical press for left and a double tap for right click (support for "
+"double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
+"settings)."
 msgstr ""
-"Mapea pulsaciones largas (más de 2s) a una acción del panel táctil. El "
-"Dualsense usa un toque para el clic izquierdo y un doble toque para el clic "
-"derecho (el soporte para el doble toque varia, activa \"Toca para hacer "
-"clic\" en los ajustes del panel táctil de tu escritorio)."
 
 msgid "Downloading:"
-msgstr "Descargando:"
+msgstr ""
 
 msgid "Importing:"
-msgstr "Importando:"
+msgstr ""
 
 msgid "Deploying:"
-msgstr "Implementando:"
+msgstr ""
 
 msgid "Loading"
-msgstr "Cargando"
+msgstr ""
 
 msgid "No update available"
-msgstr "No hay actualizaciones disponibles"
+msgstr ""
 
 msgid "Updating to latest "
-msgstr "Actualizando a la última versión "
+msgstr ""
 
 msgid "Updating... "
-msgstr "Actualizando... "
+msgstr ""
 
 msgid "Checking for updates..."
-msgstr "Comprobando actualizaciones..."
+msgstr ""
 
 msgid "Undoing Update..."
-msgstr "Revirtiendo actualización..."
+msgstr ""
 
 msgid "Undoing Revert..."
-msgstr "Deshaciendo reversión..."
+msgstr ""
 
 msgid "Reverting to Previous version..."
-msgstr "Volviendo a la versión anterior..."
+msgstr ""
 
 msgid "Loading Versions..."
-msgstr "Cargando versiones..."
+msgstr ""
 
 msgid "Removing Customizations..."
-msgstr "Quitando personalizaciones..."
+msgstr ""
 
 msgid "Failed to load previous versions"
-msgstr "Fallo al cargar las versiones previas"
+msgstr ""
 
 msgid "Rebasing to "
-msgstr "Rebase a "
+msgstr ""
 
 msgid "Update error. Using alternative method... "
-msgstr "Fallo al actualizar. Usando método alternativo... "
+msgstr ""
 
 #. Setting: Show updates in SteamUI
 #. Field: title
 msgid "Show updates in SteamUI"
-msgstr "Mostrar actualizaciones en la interfaz de Steam"
+msgstr ""
 
 #. Setting: System Image
 #. Field: title
 msgid "System Image"
-msgstr "Imagen del sistema"
+msgstr ""
 
 #. Setting: System Image
 #. Field: hint
 msgid "Manage the currently installed image with bootc."
-msgstr "Gestiona la imagen del sistema actualmente instalada con bootc."
+msgstr ""
 
 #. Setting: Image
 #. Field: title
 msgid "Image"
-msgstr "Imagen"
+msgstr ""
 
 #. Setting: Next
 #. Field: title
 msgid "Next"
-msgstr "Siguiente"
+msgstr ""
 
 #. Setting: Current
 #. Field: title
 msgid "Current"
-msgstr "Actual"
+msgstr ""
 
 #. Setting: Previous
 #. Field: title
 msgid "Previous"
-msgstr "Anterior"
+msgstr ""
 
 #. Setting: Update
 #. Field: title
 msgid "Update"
-msgstr "Actualizar"
+msgstr ""
 
 #. Setting: Update Stage
 #. Field: title
 msgid "Update Stage"
-msgstr "Fase de Actualización"
+msgstr ""
 
 #. Setting: Apply Update
 #. Field: title
 msgid "Apply Update"
-msgstr "Aplicar Actualización"
+msgstr ""
 
 #. Setting: Revert to Previous
 #. Field: title
 msgid "Revert to Previous"
-msgstr "Volver a la anterior"
+msgstr ""
 
 #. Setting: Revert to Previous
 #. Field: hint
 msgid "Rollback to the previous image."
-msgstr "Regresar a la imagen anterior."
+msgstr ""
 
 #. Setting: Change Version (Rebase)
 #. Field: title
 msgid "Change Version (Rebase)"
-msgstr "Cambiar de Versión (Rebase)"
+msgstr ""
 
 #. Setting: Remove Pin and Update
 #. Field: title
 msgid "Remove Pin and Update"
-msgstr "Quitar Pin y Actualizar"
+msgstr ""
 
 #. Setting: Change Branch (Rebase)
 #. Field: title
 msgid "Change Branch (Rebase)"
-msgstr "Cambiar Rama de actualizaciones (Rebase)"
+msgstr ""
 
 #. Setting: Check for Updates
 #. Field: title
 msgid "Check for Updates"
-msgstr "Comprobar actualizaciones"
+msgstr ""
 
 #. Setting: Reboot
 #. Field: title
 msgid "Reboot"
-msgstr "Reiniciar"
+msgstr ""
 
 #. Setting: Reboot
 #. Field: hint
 msgid "Reboot to apply the update. Are you sure?"
-msgstr "Reiniciar para aplicar la actualización, guarda tus partidas. ¿Ready?"
+msgstr ""
 
 #. Setting: Undo Update
 #. Field: title
 msgid "Undo Update"
-msgstr "Deshacer Actualización"
+msgstr ""
 
 #. Setting: Undo Revert
 #. Field: title
 msgid "Undo Revert"
-msgstr "Deshacer Reversión"
+msgstr ""
 
 #. Setting: Choose Version (Rebase)
 #. Field: title
 msgid "Choose Version (Rebase)"
-msgstr "Elegir Versión (Rebase)"
+msgstr ""
 
 #. Setting: Run rpm-ostree reset
 #. Field: title
 msgid "Run rpm-ostree reset"
-msgstr "Ejecutar comando rpm-ostree reset"
+msgstr ""
 
 #. Setting: Run rpm-ostree reset
 #. Field: hint
 msgid ""
-"Disable the custom initramfs and remove layers. Your personal data will not "
-"be affected."
+"Disable the custom initramfs and remove layers. Your personal data will "
+"not be affected."
 msgstr ""
-"Deshabilita el initramfs personalizado y elimina capas (layers). Tus datos "
-"personales no se verán afectados."
 
 #. Setting: Cancel
 #. Field: title
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr ""
 
 #. Setting: Branch
 #. Field: title
 msgid "Branch"
-msgstr "Rama"
+msgstr ""
 
 #. Setting: Version Pin
 #. Field: title
 msgid "Version Pin"
-msgstr "Versión de Pin"
+msgstr ""
 
 #. Setting: Apply
 #. Field: title
 msgid "Apply"
-msgstr "Aplicar"
+msgstr ""
 
 msgid "Uploading log to fpaste..."
-msgstr "Subiendo registro a fpaste..."
+msgstr ""
 
 msgid "Shutting down..."
-msgstr "Apagando sistema..."
+msgstr ""
 
 msgid "Failed to download Handheld Daemon Beta."
-msgstr "Fallo al descargar Handheld Daemon Beta."
+msgstr ""
 
 msgid "Downloading Beta and Restarting..."
-msgstr "Descargando Beta y Reiniciando..."
+msgstr ""
 
 #. Setting: Bug Report
 #. Field: title
 msgid "Bug Report"
-msgstr "Informe de Error"
+msgstr ""
 
 #. Setting: Bug Report Link
 #. Field: title
 msgid "Bug Report Link"
-msgstr "Enlace del Informe de Error"
+msgstr ""
 
 #. Setting: Upload Error
 #. Field: title
 msgid "Upload Error"
-msgstr "Subir Error"
+msgstr ""
 
 #. Setting: Submit Report
 #. Field: title
 msgid "Submit Report"
-msgstr "Enviar Informe"
+msgstr ""
 
 #. Setting: Submit Report
 #. Field: hint
 msgid "Upload a bug report to paste.centos.org"
-msgstr "Subir informe de error a paste.centos.org"
+msgstr ""
 
 #. Setting: Logs from
 #. Field: title
 msgid "Logs from"
-msgstr "Registros de"
+msgstr ""
 
 #. Setting: Logs from
 #. Option: current
 msgid "Current Boot"
-msgstr "Arranque actual"
+msgstr ""
 
 #. Setting: Logs from
 #. Option: previous
 msgid "Previous Boot (-1)"
-msgstr "Arranque previo (-1)"
+msgstr ""
 
 #. Setting: Logs from
 #. Option: m2
 msgid "Boot -2"
-msgstr "Arranque -2"
+msgstr ""
 
 #. Setting: Logs from
 #. Option: m3
 msgid "Boot -3"
-msgstr "Arranque -3"
+msgstr ""
 
 #. Setting: Development Tools
 #. Field: title
 msgid "Development Tools"
-msgstr "Herramientas de Desarrollo"
+msgstr ""
 
 #. Setting: Use HHD Beta Until Restart
 #. Field: title
 msgid "Use HHD Beta Until Restart"
-msgstr "Usa HHD Beta hasta Reiniciar"
+msgstr ""
 
 #. Setting: Use HHD Beta Until Restart
 #. Field: hint
 msgid "Switch to the HHD beta channel until you restart."
-msgstr "Cambia al canal beta de HHD hasta que reinicies."
+msgstr ""
 
 #. Setting: Go Back to Stable
 #. Field: title
 msgid "Go Back to Stable"
-msgstr "Vuelve al canal Estable"
+msgstr ""
 
 #. Setting: System
 #. Field: hint
 msgid ""
-"Basic display settings. Brightness (and framerate TBD). This pane is meant "
-"to replace "
+"Basic display settings. Brightness (and framerate TBD). This pane is "
+"meant to replace "
 msgstr ""
-"Ajustes básicos de pantalla. Brillo (y velocidad de cuadros por segundo "
-"(FPS) por determinar). Este panel esta pensado para sustituir "
 
 #. Setting: Brightness
 #. Field: hint
 msgid ""
-"Sets the brightness level of a display. Only one display is supported and it "
-"is the one that was read."
+"Sets the brightness level of a display. Only one display is supported and"
+" it is the one that was read."
 msgstr ""
-"Define el nivel de brillo de la pantalla. Solo una pantalla es soportada y "
-"es la que esta siendo usada."
 
 #. Setting: Display
 #. Field: title
 msgid "Display"
-msgstr "Pantalla"
+msgstr ""
 
 #. Setting: Disable Touchscreen (Until Restart)
 #. Field: title
 msgid "Disable Touchscreen (Until Restart)"
-msgstr "Desactivar Pantalla Táctil (hasta Reiniciar)"
+msgstr ""
 
 #. Setting: Disable Touch Gestures (Until Restart)
 #. Field: title
 msgid "Disable Touch Gestures (Until Restart)"
-msgstr "Desactivar Gestos Táctiles (Hasta Reiniciar)"
+msgstr ""
 
 #. Setting: Gamescope
 #. Field: title
 msgid "Gamescope"
-msgstr "Gamescope"
+msgstr ""
 
 #. Setting: Run Steam at 60/72 Hz
 #. Field: title
 msgid "Run Steam at 60/72 Hz"
-msgstr "Ejecuta Steam a 60/72Hz"
+msgstr ""
 
 #. Setting: Poweroff screen before sleep
 #. Field: title
 msgid "Poweroff screen before sleep"
-msgstr "Apaga la pantalla antes de suspender"
+msgstr ""
 
 #. Setting: Device Buttons
 #. Field: title
 msgid "Device Buttons"
-msgstr "Botones del dispositivo"
+msgstr ""
 
 #. Setting: Armoury Crate
 #. Field: title
 msgid "Armoury Crate"
-msgstr "Armoury Crate"
+msgstr ""
 
 #. Setting: Armoury Crate
 #. Option: keyboard
@@ -2105,7 +1999,7 @@ msgstr "Armoury Crate"
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Keyboard"
-msgstr "Teclado en Pantalla de Steam"
+msgstr ""
 
 #. Setting: Armoury Crate
 #. Option: steam_qam
@@ -2125,7 +2019,7 @@ msgstr "Teclado en Pantalla de Steam"
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Side Menu"
-msgstr "Menú de Acceso Rápido de Steam"
+msgstr ""
 
 #. Setting: Armoury Crate
 #. Option: steam_expanded
@@ -2145,7 +2039,7 @@ msgstr "Menú de Acceso Rápido de Steam"
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Overlay"
-msgstr "Overlay de Steam"
+msgstr ""
 
 #. Setting: Armoury Crate
 #. Option: hhd_qam
@@ -2165,7 +2059,7 @@ msgstr "Overlay de Steam"
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "HHD Side Menu"
-msgstr "Menú Lateral de HHD"
+msgstr ""
 
 #. Setting: Armoury Crate
 #. Option: hhd_expanded
@@ -2185,7 +2079,7 @@ msgstr "Menú Lateral de HHD"
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "HHD Overlay"
-msgstr "Overlay de HHD"
+msgstr ""
 
 #. Setting: Armoury Crate
 #. Option: tdp_cycle
@@ -2205,176 +2099,176 @@ msgstr "Overlay de HHD"
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Cycle TDP"
-msgstr "Ciclo de TDP"
+msgstr ""
 
 #. Setting: Fan Key
 #. Field: title
 msgid "Fan Key"
-msgstr "Tecla del Ventilador"
+msgstr ""
 
 #. Setting: External Controllers
 #. Field: title
 msgid "External Controllers"
-msgstr "Mandos externos"
+msgstr ""
 
 #. Setting: Xbox + Y
 #. Field: title
 msgid "Xbox + Y"
-msgstr "Xbox + Y"
+msgstr ""
 
 #. Setting: Xbox + Y
 #. Option: disconnect
 msgid "Disconnect Controller"
-msgstr "Desconectar Mando"
+msgstr ""
 
 #. Setting: Xbox + B
 #. Field: title
 msgid "Xbox + B"
-msgstr "Xbox + B"
+msgstr ""
 
 #. Setting: Xbox + A
 #. Field: title
 msgid "Xbox + A"
-msgstr "Xbox + A"
+msgstr ""
 
 #. Setting: Xbox + X
 #. Field: title
 msgid "Xbox + X"
-msgstr "Xbox + X"
+msgstr ""
 
 #. Setting: Use Select as alternative to Xbox
 #. Field: title
 msgid "Use Select as alternative to Xbox"
-msgstr "Usa Select como alternativa a Xbox"
+msgstr ""
 
 #. Setting: Touchscreen
 #. Field: title
 msgid "Touchscreen"
-msgstr "Pantalla Táctil"
+msgstr ""
 
 #. Setting: ↑ Swipe Up
 #. Field: title
 msgid "↑ Swipe Up"
-msgstr "↑ Deslizar hacia arriba"
+msgstr ""
 
 #. Setting: ← Swipe Right Side (Top)
 #. Field: title
 msgid "← Swipe Right Side (Top)"
-msgstr "← Deslizar hacia la derecha (Arriba)"
+msgstr ""
 
 #. Setting: ← Swipe Right Side (Bottom)
 #. Field: title
 msgid "← Swipe Right Side (Bottom)"
-msgstr "← Deslizar hacia la derecha (Abajo)"
+msgstr ""
 
 #. Setting: → Swipe Left Side (Top)
 #. Field: title
 msgid "→ Swipe Left Side (Top)"
-msgstr "→ Deslizar hacia la izquierda (Arriba)"
+msgstr ""
 
 #. Setting: → Swipe Left Side (Bottom)
 #. Field: title
 msgid "→ Swipe Left Side (Bottom)"
-msgstr "→ Deslizar hacia la izquierda (Abajo)"
+msgstr ""
 
 #. Setting: ↓ Swipe Down
 #. Field: title
 msgid "↓ Swipe Down"
-msgstr "↓ Deslizar hacia abajo"
+msgstr ""
 
 #. Setting: Orientation Correction
 #. Field: title
 msgid "Orientation Correction"
-msgstr "Corregir orientación"
+msgstr ""
 
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr "Auto"
+msgstr "Tự động"
 
 #. Setting: Device
 #. Field: title
 msgid "Device"
-msgstr "Dispositivo"
+msgstr ""
 
 #. Setting: Portrait
 #. Field: title
 msgid "Portrait"
-msgstr "Vertical"
+msgstr ""
 
 #. Setting: Flip Left-Right
 #. Field: title
 msgid "Flip Left-Right"
-msgstr "Rotar izquierda - derecha"
+msgstr ""
 
 #. Setting: Flip Top-Bottom
 #. Field: title
 msgid "Flip Top-Bottom"
-msgstr "Rotar Arriba - Abajo"
+msgstr ""
 
 #. Setting: Keyboard (Gaming Only)
 #. Field: title
 msgid "Keyboard (Gaming Only)"
-msgstr "Teclado (Solo Juego)"
+msgstr ""
 
 #. Setting: Start (Meta) Press
 #. Field: title
 msgid "Start (Meta) Press"
-msgstr "Pulsa Start (Meta)"
+msgstr ""
 
 #. Setting: Start (Meta) Hold
 #. Field: title
 msgid "Start (Meta) Hold"
-msgstr "Mantener Start (Meta)"
+msgstr ""
 
 #. Setting: Ctrl + 3
 #. Field: title
 msgid "Ctrl + 3"
-msgstr "Ctrl + 3"
+msgstr ""
 
 #. Setting: Ctrl + 4
 #. Field: title
 msgid "Ctrl + 4"
-msgstr "Ctrl + 4"
+msgstr ""
 
 msgid "Failed to hibernate (missing swap file)."
-msgstr "Fallo al hibernar (archivo swap faltante)."
+msgstr ""
 
 msgid "Failed to create temporary swap."
-msgstr "Fallo al crear swap temporal."
+msgstr ""
 
 msgid "Failed to hibernate to temporary swap."
-msgstr "Fallo al hibernar para crear swap temporal."
+msgstr ""
 
 #. Setting: Power
 #. Field: title
 msgid "Power"
-msgstr "Fuente de Alimentación"
+msgstr "Tiết kiệm điện"
 
 #. Setting: Reboot into Windows
 #. Field: title
 msgid "Reboot into Windows"
-msgstr "Reiniciar a Windows"
+msgstr ""
 
 #. Setting: Reboot into Windows
 #. Field: hint
 msgid "Make sure you saved your game progress."
-msgstr "Asegúrate de que has guardado el progreso de tu juego."
+msgstr ""
 
 #. Setting: Hibernate
 #. Field: title
 msgid "Hibernate"
-msgstr "Hibernar"
+msgstr ""
 
 #. Setting: Hibernate
 #. Field: hint
 msgid "Saves your progress and powers off the device."
-msgstr "Guarda tu progreso y apaga el dispositivo."
+msgstr ""
 
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: title
 msgid "Hibernate when device asks and at 5%."
-msgstr "Hiberna cuando el dispositivo pregunte y al 5%."
+msgstr ""
 
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: hint
@@ -2383,16 +2277,11 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
-"Algunos dispositivos se despiertan para forzar Windows a hibernar. Si Linux "
-"no\n"
-" lo hace estos causan problemas. Detecta e hiberna en eventos relativos a la "
-"temperatura y cuando queda un 5%\n"
-" de batería.\n"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title
 msgid "Steam Powerbutton Handler"
-msgstr "Administra el Botón de Encendido de Steam"
+msgstr ""
 
 #. Setting: Steam Powerbutton Handler
 #. Field: hint
@@ -2400,150 +2289,148 @@ msgid ""
 "Enables the Steam Powerbutton handler (responsible for the wink and "
 "powerbutton menu)."
 msgstr ""
-"Activa el Administrador del Botón de Encendido de Steam (responsable del "
-"parpadeo y el menú de apagado en el botón)."
 
 #. Setting: Saturation
 #. Field: title
 msgid "Saturation"
-msgstr "Saturación"
+msgstr ""
 
 #. Setting: Style
 #. Field: title
 msgid "Style"
-msgstr "Estilo"
+msgstr ""
 
 #. Setting: Style
 #. Option: monster_woke
 msgid "Monster Woke"
-msgstr "Monster Woke"
+msgstr ""
 
 #. Setting: Style
 #. Option: flowing
 msgid "Flowing Light"
-msgstr "Flowing Light"
+msgstr ""
 
 #. Setting: Style
 #. Option: sunset
 msgid "Sunset Afterglow"
-msgstr "Sunset Afterglow"
+msgstr ""
 
 #. Setting: Style
 #. Option: neon
 msgid "Colorful Neon"
-msgstr "Colorful Neon"
+msgstr ""
 
 #. Setting: Style
 #. Option: dreamy
 msgid "Dreamy"
-msgstr "Dreamy"
+msgstr ""
 
 #. Setting: Style
 #. Option: cyberpunk
 msgid "Cyberpunk"
-msgstr "Cyberpunk"
+msgstr ""
 
 #. Setting: Style
 #. Option: colorful
 msgid "Colorful"
-msgstr "Colorful"
+msgstr ""
 
 #. Setting: Style
 #. Option: aurora
 msgid "Aurora"
-msgstr "Aurora"
+msgstr ""
 
 #. Setting: Style
 #. Option: sun
 msgid "Warm Sun"
-msgstr "Warm Sun"
+msgstr ""
 
 #. Setting: Style
 #. Option: classic
 msgid "OXP Classic"
-msgstr "OXP Classic"
+msgstr ""
 
 #. Setting: Style
 #. Option: aok
 msgid "AOK Classic"
-msgstr "AOK Classic"
+msgstr ""
 
 #. Setting: Secondary
 #. Field: title
 msgid "Secondary"
-msgstr "Secondary"
+msgstr ""
 
 #. Setting: Enable Secondary
 #. Field: title
 msgid "Enable Secondary"
-msgstr "Activar secundario"
+msgstr ""
 
 #. Setting: Speed
 #. Field: title
 msgid "Speed"
-msgstr "Velocidad"
+msgstr ""
 
 #. Setting: Direction
 #. Field: title
 msgid "Direction"
-msgstr "Dirección"
+msgstr ""
 
 #. Setting: Strobe
 #. Field: title
 msgid "Strobe"
-msgstr "Estroboscópico"
+msgstr ""
 
 #. Setting: Strobe
 #. Field: hint
 msgid "Strobes the LEDs as a prespecified color."
-msgstr "Hace parpadear los LED en un color predeterminado."
+msgstr ""
 
 #. Setting: Spiral
 #. Field: title
 msgid "Spiral"
-msgstr "Espiral"
+msgstr ""
 
 #. Setting: Spiral
 #. Field: hint
 msgid "Creates an RGB spiral around the stick."
-msgstr "Crea una espiral RGB alrededor del stick."
+msgstr ""
 
 #. Setting: Cycle
 #. Field: title
 msgid "Cycle"
-msgstr "Ciclo"
+msgstr ""
 
 #. Setting: Duality
 #. Field: title
 msgid "Duality"
-msgstr "Dualidad"
+msgstr ""
 
 #. Setting: Duality
 #. Field: hint
 msgid "Alternates between two colors."
-msgstr "Alterna entre dos colores."
+msgstr ""
 
 #. Setting: OneXPlayer
 #. Field: title
 msgid "OneXPlayer"
-msgstr "OneXPlayer"
+msgstr ""
 
 #. Setting: AOKZOE
 #. Field: title
 msgid "AOKZOE"
-msgstr "AOKZOE"
+msgstr ""
 
 #. Setting: RGB Settings
 #. Field: title
 msgid "RGB Settings"
-msgstr "Ajustes de RGB"
+msgstr ""
 
 #. Setting: Controller RGB
 #. Field: title
 msgid "Controller RGB"
-msgstr "RGB del mando"
+msgstr ""
 
 #. Setting: Enable RGB support.
 #. Field: title
 msgid "Enable RGB support."
-msgstr "Activa el soporte RGB."
+msgstr ""
