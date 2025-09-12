@@ -153,7 +153,9 @@ CONFS = {
     "AYANEO 2S": {"name": "AYANEO S2", **AYA_DEFAULT_CONF},
     "SuiPlay0X1": {
         "name": "SuiPlay0X1",
-        **AYA_DEFAULT_CONF,
+        "hrtimer": True,
+        "mapping": AYANEO_DEFAULT_MAPPINGS,
+        "btn_mapping": SUI_BUTTONS,
     },
     # by sys_vendor: "Mysten Labs, Inc."
     "GEEK": {"name": "AYANEO GEEK", **AYA_DEFAULT_CONF},
