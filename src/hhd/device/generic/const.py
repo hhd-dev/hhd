@@ -78,6 +78,7 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     # Air Plus mappings
     B("KEY_F17"): "mode",  # Big Button
+    B("KEY_F18"): "share",  # Small Button # Maybe?
     B("KEY_D"): "share",  # Small Button
     B("KEY_F15"): "extra_l1",  # LC Button
     B("KEY_F16"): "extra_r1",  # RC Button
@@ -96,6 +97,13 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
     B("KEY_F10"): "extra_r1",  # Rc Button [68, 97, 125] F10 + LCTRL + LMETA
     # Ayaneo 3 mappings
     B("KEY_F23"): "share",
+}
+
+SUI_BUTTONS = {
+    B("KEY_F18"): "mode",  # Big Button
+    B("KEY_F17"): "share",  # Small Button
+    B("KEY_F15"): "extra_l1",  # LC Button
+    B("KEY_F16"): "extra_r1",  # RC Button
 }
 
 AYA_DEFAULT_CONF = {
@@ -143,7 +151,10 @@ CONFS = {
     "AIR 1S Limited": {"name": "AIR 1S Limited", **AYA_DEFAULT_CONF},
     "AYANEO 2": {"name": "AYANEO 2", **AYA_DEFAULT_CONF},
     "AYANEO 2S": {"name": "AYANEO S2", **AYA_DEFAULT_CONF},
-    "SuiPlay0X1": {"name": "SuiPlay0X1", **AYA_DEFAULT_CONF},
+    "SuiPlay0X1": {
+        "name": "SuiPlay0X1",
+        **AYA_DEFAULT_CONF,
+    },
     # by sys_vendor: "Mysten Labs, Inc."
     "GEEK": {"name": "AYANEO GEEK", **AYA_DEFAULT_CONF},
     "GEEK 1S": {"name": "AYANEO GEEK 1S", **AYA_DEFAULT_CONF},
