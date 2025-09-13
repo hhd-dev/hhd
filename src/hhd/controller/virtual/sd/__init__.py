@@ -54,6 +54,7 @@ class SteamdeckController(Producer, Consumer):
         name,
         touchpad: bool = False,
         sync_gyro: bool = True,
+        gyro_detection: bool = True,
     ) -> None:
         self.available = False
         self.dev = None
@@ -65,6 +66,9 @@ class SteamdeckController(Producer, Consumer):
         self.report = bytearray(64)
         self.i = 0
         self.last_rep = None
+        self.gyro_enabled = True
+        self.gyro_detection = gyro_detection
+        self.send_powersave = False
 
     def open(self) -> Sequence[int]:
         self.available = False
@@ -87,6 +91,9 @@ class SteamdeckController(Producer, Consumer):
                 self.dev = cached.dev
                 if self.dev and self.dev.fd:
                     self.fd = self.dev.fd
+                self.gyro_enabled = cached.gyro_enabled
+                if not self.gyro_enabled:
+                    self.send_powersave = True
             else:
                 logger.warning(f"Throwing away cached Steamdeck Controller.")
                 cached.close(True, in_cache=True)
@@ -136,7 +143,6 @@ class SteamdeckController(Producer, Consumer):
 
         # Process queued events
         out: Sequence[Event] = []
-        assert self.dev
         while ev := self.dev.read_event():
             match ev["type"]:
                 case "open":
@@ -241,26 +247,39 @@ class SteamdeckController(Producer, Consumer):
                                     "weak_magnitude": right / (2**16 - 1),
                                 }
                             )
-                        case 0xea:
+                        case 0xEA:
                             # Touchpad stuff
                             pass
                         case 0x8F:
                             # logger.info(f"SD Received Haptics ({time.perf_counter()*1000:.3f}ms):\n{ev['data'].hex().rstrip(' 0')}")
                             pass
                         case 0x87:
+                            rnum = ev["data"][4]
+                            ss = []
+                            for i in range(0, rnum, 3):
+                                rtype = ev["data"][5 + i]
+                                rdata = int.from_bytes(
+                                    ev["data"][6 + i : 8 + i],
+                                    byteorder="little",
+                                    signed=False,
+                                )
+                                ss.append(
+                                    f"{SD_SETTINGS[rtype] if rtype < len(SD_SETTINGS) else "UKNOWN"} ({rtype:02d}): {rdata:02x}"
+                                )
+
+                                if rtype == 80 and self.gyro_detection:
+                                    should_enable = rdata == 0xAA00
+                                    if should_enable != self.gyro_enabled:
+                                        self.gyro_enabled = should_enable
+                                        out.append(
+                                            {
+                                                "type": "configuration",
+                                                "code": "imu_powersave",
+                                                "value": not should_enable,
+                                            }
+                                        )
+
                             if DEBUG_MODE:
-                                rnum = ev["data"][4]
-                                ss = []
-                                for i in range(0, rnum, 3):
-                                    rtype = ev["data"][5 + i]
-                                    rdata = int.from_bytes(
-                                        ev["data"][6 + i : 8 + i],
-                                        byteorder="little",
-                                        signed=False,
-                                    )
-                                    ss.append(
-                                        f"{SD_SETTINGS[rtype] if rtype < len(SD_SETTINGS) else "UKNOWN"} ({rtype:02d}): {rdata:02x}"
-                                    )
                                 mlen = max(map(len, ss))
                                 logger.info(
                                     f"SD Received Settings (n={rnum // 3}):{''.join(map(lambda x: '\n > ' + ' '*(mlen - len(x)) + x, ss))}"
@@ -277,6 +296,16 @@ class SteamdeckController(Producer, Consumer):
                     logger.info(f"SD OUTPUT")
                 case _:
                     logger.warning(f"SD UKN_EVENT: {ev}")
+
+        if self.send_powersave:
+            self.send_powersave = False
+            out.append(
+                {
+                    "type": "configuration",
+                    "code": "imu_powersave",
+                    "value": True,
+                }
+            )
 
         return out
 
