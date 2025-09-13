@@ -100,8 +100,8 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
 }
 
 SUI_BUTTONS = {
-    B("KEY_F18"): "mode",  # Big Button
-    B("KEY_F17"): "share",  # Small Button
+    B("KEY_F17"): "mode",  # Big Button
+    B("KEY_F18"): "share",  # Small Button
     B("KEY_F15"): "extra_l1",  # LC Button
     B("KEY_F16"): "extra_r1",  # RC Button
 }
