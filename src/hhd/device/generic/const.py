@@ -156,6 +156,7 @@ CONFS = {
         "hrtimer": True,
         "mapping": AYANEO_DEFAULT_MAPPINGS,
         "btn_mapping": SUI_BUTTONS,
+        "grab_at": False,
     },
     # by sys_vendor: "Mysten Labs, Inc."
     "GEEK": {"name": "AYANEO GEEK", **AYA_DEFAULT_CONF},

@@ -149,11 +149,12 @@ def controller_loop(
         hide=True,
     )
 
+    grab_at = dconf.get("grab_at", True)
     d_kbd_1 = GenericGamepadEvdev(
         vid=[KBD_VID],
         pid=[KBD_PID],
         required=False,
-        grab=True,
+        grab=grab_at,
         btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
     )
     d_kbd_2 = None
@@ -241,7 +242,9 @@ def controller_loop(
                 start_imu = d_timer.open()
             if start_imu:
                 prepare(d_imu)
-        prepare(d_volume_btn)
+
+        if grab_at:
+            prepare(d_volume_btn)
         prepare(d_kbd_1)
         if d_kbd_2:
             prepare(d_kbd_2)
