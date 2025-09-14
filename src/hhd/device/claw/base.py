@@ -101,7 +101,7 @@ class MsiAtKbd(GenericGamepadEvdev):
                     if t and curr - t < BUTTON_MIN_DELAY:
                         self.queued.append((ev["code"], t + BUTTON_MIN_DELAY))
                         skip.append(i)
-
+        
         for i in reversed(skip):
             evs.pop(i)
 
@@ -453,7 +453,6 @@ def controller_loop(
         required=False,
         grab=True,
         btn_map=dconf.get("btn_mapping", MSI_CLAW_MAPPINGS),
-        name="AT*",
     )
 
     # Mute these so after suspend we do not get stray keypresses
