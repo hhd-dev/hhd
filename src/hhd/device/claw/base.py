@@ -455,21 +455,25 @@ def controller_loop(
         btn_map=dconf.get("btn_mapping", MSI_CLAW_MAPPINGS),
     )
 
-    # Mute these so after suspend we do not get stray keypresses
+    # Desktop detectors with dynamic grabbing
     d_kbd_2 = DesktopDetectorEvdev(
         vid=[MSI_CLAW_VID],
         pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
         required=False,
-        grab=True,
+        grab=False,  # Start without grabbing, grab dynamically when needed
         capabilities={EC("EV_KEY"): [EC("KEY_ESC")]},
     )
     d_mouse = DesktopDetectorEvdev(
         vid=[MSI_CLAW_VID],
         pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
         required=False,
-        grab=True,
+        grab=False,  # Start without grabbing, grab dynamically when needed
         capabilities={EC("EV_KEY"): [EC("BTN_MOUSE")]},
     )
+    
+    # Track grabbing state for desktop detectors
+    d_kbd_2_grabbed = False
+    d_mouse_grabbed = False
 
     kargs = {}
 
@@ -558,6 +562,22 @@ def controller_loop(
             for d in devs:
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
+
+            # Dynamic grabbing for desktop detectors
+            # Only grab when we need to detect desktop events, release when not needed
+            if not d_kbd_2_grabbed and d_kbd_2.dev:
+                try:
+                    d_kbd_2.dev.grab()
+                    d_kbd_2_grabbed = True
+                except Exception:
+                    pass  # Ignore grab failures, continue without grabbing
+            
+            if not d_mouse_grabbed and d_mouse.dev:
+                try:
+                    d_mouse.dev.grab()
+                    d_mouse_grabbed = True
+                except Exception:
+                    pass  # Ignore grab failures, continue without grabbing
 
             # Detect if we are in desktop mode through events
             desktop_mode = d_mouse.desktop or d_kbd_2.desktop
