@@ -199,10 +199,18 @@ def unhide_all():
     except Exception:
         pass
 
-    if not removed:
+    # Always trigger udev reload if we removed rules OR have hidden devices
+    if removed or _hidden:
+        # We have to reload affected devices if we removed rules
+        for parent in _hidden:
+            reload_children(parent)
+        
+        # If no specific devices to reload but we removed rules, reload all input devices
+        if removed and not _hidden:
+            subprocess.run(["udevadm", "trigger", "--subsystem-match=input"], capture_output=True)
+            subprocess.run(["udevadm", "settle"], capture_output=True)
+    
+        _hidden.clear()
         return True
 
-    # We have to reload affected devices if we removed rules
-    for parent in _hidden:
-        reload_children(parent)
-    _hidden.clear()
+    return True
