@@ -66,9 +66,9 @@ class SteamdeckController(Producer, Consumer):
         self.report = bytearray(64)
         self.i = 0
         self.last_rep = None
-        self.gyro_enabled = True
+        self.gyro_enabled = False
         self.gyro_detection = gyro_detection
-        self.send_powersave = False
+        self.send_powersave = True
 
     def open(self) -> Sequence[int]:
         self.available = False
@@ -317,7 +317,7 @@ class SteamdeckController(Producer, Consumer):
 
         # To fix gyro to mouse in latest steam
         # only send updates when gyro sends a timestamp
-        send = not self.sync_gyro
+        send = not self.sync_gyro or not self.gyro_enabled
         curr = time.perf_counter()
 
         new_rep = bytearray(self.report)
@@ -384,7 +384,7 @@ class SteamdeckController(Producer, Consumer):
 
         # If the IMU breaks, smoothly re-enable the controller
         failover = self.last_imu + MAX_IMU_SYNC_DELAY < curr
-        if self.sync_gyro and failover and not self.imu_failed:
+        if self.gyro_enabled and self.sync_gyro and failover and not self.imu_failed:
             self.imu_failed = True
             logger.error(
                 f"IMU Did not send information for {MAX_IMU_SYNC_DELAY}s. Disabling Gyro Sync."

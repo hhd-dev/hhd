@@ -241,7 +241,6 @@ def prepare_dev(
 def set_powersave(dev: DeviceInfo, state: bool, update_trigger: bool):
     freqs = dev.min_freqs if state else dev.freqs
 
-    write_sysfs(dev.sysfs, "buffer/enable", 0)
     for a, f in freqs.items():
         if (
             a
@@ -270,8 +269,6 @@ def set_powersave(dev: DeviceInfo, state: bool, update_trigger: bool):
             if f.read().strip() == "hhd":
                 trig = fn
                 break
-
-    write_sysfs(dev.sysfs, "buffer/enable", 1)
 
     if not trig:
         return
