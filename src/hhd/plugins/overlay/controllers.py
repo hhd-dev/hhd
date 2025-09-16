@@ -257,7 +257,7 @@ def find_devices(
             # Allow bluetooth controllers that contain uhid and phys, while
             # blocking hhd devices that contain uhid and a special mac address
             "uhid" in dev.get("sysfs", "")
-            and "35:53:" in dev.get("uniq", "")
+            and dev.get("uniq", "").startswith("35:53:")
         ):
             continue
 
@@ -610,7 +610,11 @@ def process_events(emit, dev, evs, allow_select=True):
             and ev.code in CONTROLLER_WAKE_BUTTON
         ):
             process_ctrl(
-                emit, dev["state_ctrl"], CONTROLLER_WAKE_BUTTON[ev.code], ev.value, allow_select=allow_select
+                emit,
+                dev["state_ctrl"],
+                CONTROLLER_WAKE_BUTTON[ev.code],
+                ev.value,
+                allow_select=allow_select,
             )
 
         if (
