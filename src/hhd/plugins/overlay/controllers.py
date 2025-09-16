@@ -255,9 +255,9 @@ def find_devices(
         # Skip HHD devices
         if "hhd" in dev.get("phys", "") or (
             # Allow bluetooth controllers that contain uhid and phys, while
-            # blocking hhd devices that contain uhid but not phys
+            # blocking hhd devices that contain uhid and a special mac address
             "uhid" in dev.get("sysfs", "")
-            and not dev.get("phys", "")
+            and "35:53:" not in dev.get("uniq", "")
         ):
             continue
 
