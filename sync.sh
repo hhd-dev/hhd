@@ -45,8 +45,8 @@ $RSYNC ../adjustor/ $HOST:hhd-dev/adjustor
 $RSYNC ../hhd-bazzite/ $HOST:hhd-dev/hhd-bazzite
 
 ssh $HOST /bin/bash << EOF
-    sudo systemctl restart hhdl
-    # sudo systemctl stop hhdl
+    # sudo systemctl restart hhdl
+    sudo systemctl stop hhdl
 EOF
 
-# ssh -t $HOST "sudo HHD_HORI_STEAM=1 HHD_HIDE_ALL=1 ~/hhd-dev/hhd/venv/bin/hhd --user bazzite"
+ssh -t $HOST "sudo HHD_HORI_STEAM=1 HHD_HIDE_ALL=1 ~/hhd-dev/hhd/venv/bin/hhd --user bazzite"

@@ -121,6 +121,14 @@ CONFS = {
         "mapping": X1_MAPPING,
         "protocol": "serial",
     },
+    "ONEXPLAYER X1z": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER X1 (AMD)",
+        "x1": True,
+        "rgb_secondary": True,
+        "mapping": X1_MAPPING,
+        "protocol": "serial",
+    },
     "ONEXPLAYER X1Pro": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER X1 Pro (AMD)",
