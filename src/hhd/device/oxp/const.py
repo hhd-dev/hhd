@@ -74,6 +74,7 @@ CONFS = {
         "hrtimer": True,
         "protocol": "serial",
         "aok": True,
+        "rgb": True,
         "extra_buttons": "none",
     },
     "AOKZOE A1X": {
@@ -194,5 +195,6 @@ def get_default_config(product_name: str, manufacturer: str):
     if "aokzoe" in manufacturer.lower():
         out["protocol"] = "none"
         out["rgb"] = False
+        out["aok"] = True
 
     return out

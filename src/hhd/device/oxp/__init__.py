@@ -187,4 +187,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if "ONEXPLAYER" in dmi:
         return [GenericControllersPlugin(dmi, get_default_config(dmi, "ONEXPLAYER"))]
 
+    if "AOKZOE" in dmi:
+        return [GenericControllersPlugin(dmi, get_default_config(dmi, "AOKZOE"))]
+
     return []
