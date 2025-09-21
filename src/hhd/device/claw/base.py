@@ -1,4 +1,5 @@
 import logging
+import re
 import select
 import time
 from threading import Event as TEvent
@@ -453,6 +454,7 @@ def controller_loop(
     d_msi_wmi = MsiAtKbd(
         vid=[MSI_WMI_VID],
         pid=[MSI_WMI_PID],
+        name=[re.compile("^MSI.+")],
         required=False,
         grab=True,
         capabilities={EC("EV_KEY"): [EC("KEY_F15")]},
