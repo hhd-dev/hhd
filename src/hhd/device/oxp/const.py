@@ -69,6 +69,13 @@ CONFS = {
     # Aokzoe
     "AOKZOE A1 AR07": AOKZOE_CONF,
     "AOKZOE A1 Pro": AOKZOE_CONF,
+    "AOKZOE A2 Pro": {
+        "name": "AOKZOE A2 Pro",
+        "hrtimer": True,
+        "protocol": "serial",
+        "aok": True,
+        "extra_buttons": "none",
+    },
     "AOKZOE A1X": {
         "name": "AOKZOE A1X",
         "hrtimer": True,
