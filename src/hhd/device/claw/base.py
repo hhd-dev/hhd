@@ -54,6 +54,9 @@ MSI_VENDOR_APPLICATIONS = [
 KBD_VID = 0x0001
 KBD_PID = 0x0001
 
+MSI_WMI_VID = 0x0000
+MSI_WMI_PID = 0x0000
+
 BACK_BUTTON_DELAY = 0.1
 BUTTON_MIN_DELAY = 0.13
 
@@ -447,6 +450,16 @@ def controller_loop(
         **(extra_args if use_dinput else {}),
     )
 
+    d_msi_wmi = MsiAtKbd(
+        vid=[MSI_WMI_VID],
+        pid=[MSI_WMI_PID],
+        required=False,
+        grab=True,
+        capabilities={EC("EV_KEY"): [EC("KEY_F15")]},
+        btn_map=dconf.get("btn_mapping", MSI_CLAW_MAPPINGS),
+    )
+
+
     d_kbd_1 = MsiAtKbd(
         vid=[KBD_VID],
         pid=[KBD_PID],
@@ -537,6 +550,7 @@ def controller_loop(
         prepare(d_xinput)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
+        prepare(d_msi_wmi)
         if not test_mode:
             prepare(d_kbd_2)
             prepare(d_mouse)
@@ -578,6 +592,7 @@ def controller_loop(
 
             # Read delayed events
             evs.extend(d_kbd_1.produce([]))
+            evs.extend(d_msi_wmi.produce([]))
 
             evs = multiplexer.process(evs)
             if evs:
