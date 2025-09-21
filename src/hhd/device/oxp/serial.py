@@ -147,9 +147,9 @@ def get_serial():
             text=True,
         )
 
-        # OneXFly device is pnp
-        if "devices/pnp" not in out.stdout:
-            continue
+        # # OneXFly device is pnp
+        # if "devices/pnp" not in out.stdout:
+        #     continue
 
         # TODO: We need to get a baseline to quirk this type properly
         # Loop through all serial ports and print their information
