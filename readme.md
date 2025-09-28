@@ -24,17 +24,18 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
 - Lenovo Legion
   - Go
   - Go S
+  - Go 2 (tdp values displayed incorrectly)
 - Asus ROG
   - Ally
   - Ally X
   - Z13 (2025; needs Bazzite kernel)
 - GPD Win (all model years)
   - Win 4
-  - Win Mini
+  - Win Mini (2025 model has no WinControls integration)
   - Win Max 2
 - OneXPlayer
   - G1 (AMD, Intel w/o TDP)
-  - X1, X1Pro (AMD, Intel w/o TDP)
+  - X1, X1Pro (AMD, Intel w/o TDP), X1z, X1Pro EVA-01
   - X1 Mini, X1 Mini Pro
   - F1, F1 EVA-01, F1L, F1 OLED, F1 Pro
   - 2, 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
@@ -61,28 +62,25 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - SLIDE
   - 2021 Standard/Pro/Pro Retro Power
   - NEO 2021/Founder
-  - KUN (only front buttons)
+  - KUN (only front buttons, no RGB)
 - AOKZOE
-  - A1 Normal/Pro (No LEDs, extra buttons)
+  - A1 Normal/Pro (No LEDs)
+  - A2 Pro (No LEDs)
   - A1X
 - Anbernic
   - Win600 (no keyboard button yet)
 - TECNO
   - Pocket Go (all buttons except bottom switch and gyro; no RGB)
+- Mystin Labs
+  - SuiPlay 0x1
 
-## Installation Instructions
-For Arch and Fedora see [here](#os-install).
-For others, you can use the following script to install a local version of
-Handheld Daemon that updates independently of the system.
+## <a name="local"></a> Installation Instructions
+For Arch and Fedora see [here](#os-install). For others, you can use the following script to install a local version of Handheld Daemon that updates independently of the system.
 ```bash
 curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | bash
 ```
 
-This script does not automatically install system dependencies.
-A partial list for Ubuntu/Debian can be found [here](#debian).
-This includes `acpi_call` for TDP on devices other than the Ally.
-For all devices, use the [bazzite kernel](https://github.com/hhd-dev/kernel-bazzite)
-for best support or Bazzite. Some caveats for certain devices are listed below.
+This script does not automatically install system dependencies. A partial list for Ubuntu/Debian can be found [here](#debian). This includes `acpi_call` for TDP on devices other than the Ally. For all devices, use the [bazzite kernel](https://github.com/hhd-dev/kernel-bazzite) for best support or Bazzite. Some caveats for certain devices are listed below.
 
 ### Uninstall
 We are sorry to see you go, use the following to uninstall:
@@ -102,42 +100,25 @@ sudo systemctl start hhd_local@$(whoami)
 ### <a name="issues"></a>After Install Instructions
 
 #### Extra steps for ROG Ally
-You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn
-the right stick into a mouse.
+You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn the right stick into a mouse.
 
-Combinations with the ROG, Armory Crate buttons is not supported in the Ally,
-but you can use ROG swap for that.
+Combinations with the ROG, Armory Crate buttons is not supported in the Ally, but you can use ROG swap for that.
 
 #### Extra steps GPD Win Devices
-Swipe the left top of the screen to show handheld daemon in gamescope or open
-the desktop app and head to the WinControls tab. There, press apply to remap
-the back buttons correctly.
+Swipe the left top of the screen to show handheld daemon in gamescope or open the desktop app and head to the WinControls tab. There, press apply to remap the back buttons correctly.
 
-For the GPD Win 4, the Menu button is used as a combo (Short Pres QAM,
-long press Xbox button, double press hhd) and select can be used for
-SteamOS chords (e.g., Select + RT is screenshot). For other devices, the R4 
-button is used to bring up QAM (single tap), and HHD (double tap/hold).
-You can customize to your tastes in the Controller section.
+For the GPD Win 4, the Menu button is used as a combo (Short Pres QAM, long press Xbox button, double press hhd) and select can be used for SteamOS chords (e.g., Select + RT is screenshot). For other devices, the R4  button is used to bring up QAM (single tap), and HHD (double tap/hold). You can customize to your tastes in the Controller section.
 
 #### Extra steps for Ayaneo/Ayn
-You might experience a tiny amount of lag with the Ayaneo LEDs.
-The paddles of the Ayn Loki Max are not remappable as far as we know.
+You might experience a tiny amount of lag with the Ayaneo LEDs. The paddles of the Ayn Loki Max are not remappable as far as we know.
 
 #### Extra steps for Legion Go
-If you have set any mappings on Legion Space, they will interfere with Handheld
-Daemon.
-You can factory reset the Controllers from the Handheld Daemon settings.
+If you have set any mappings on Legion Space, they will interfere with Handheld Daemon. You can factory reset the Controllers from the Handheld Daemon settings.
 
-The controller gyros of the Legion Go tend to drift sometimes. Calibrate them
-with the built-in calibration by pressing LT + LS and RT + RS, then turning
-the Joysticks twice and pressing the triggers. Finally, the controllers will
-vibrate and flash the leds, zeroing the gyroscope.
+The controller gyros of the Legion Go tend to drift sometimes. Calibrate them with the built-in calibration by pressing LT + LS and RT + RS, then turning the Joysticks twice and pressing the triggers. Finally, the controllers will vibrate and flash the leds, zeroing the gyroscope.
 
 ## <a name="os-install"></a> Distribution Install
-You can install Handheld Daemon from [AUR](https://aur.archlinux.org/packages/hhd) 
-(Arch) or [COPR](https://copr.fedorainfracloud.org/coprs/hhd-dev/hhd/) (Fedora).
-Both update automatically every time there is a new release.
-For Debian/Ubuntu see below.
+You can install Handheld Daemon from [AUR](https://aur.archlinux.org/packages/hhd)  (Arch) or [COPR](https://copr.fedorainfracloud.org/coprs/hhd-dev/hhd/) (Fedora). Both update automatically every time there is a new release. For Debian/Ubuntu see below.
 
 ```bash
 # Arch
@@ -175,41 +156,17 @@ Add the following to your `configuration.nix` to enable:
 ```
 
 ### <a name="bazzite"></a><a name="after-install"></a>Bazzite
-Handheld Daemon comes pre-installed on [Bazzite](https://bazzite.gg) and 
-updates along-side the system.
-Most users of Handheld Daemon are on Bazzite and Bazzite releases
-often happen for Handheld Daemon to update.
-Bazzite contains all kernel patches and quirks required for all supported handhelds
-to work (to the extent they can; certain Ayaneo devices have issues).
+Handheld Daemon comes pre-installed on [Bazzite](https://bazzite.gg) deck images (use the [local version](#local) for desktop images) and updates along-side the system. Most users of Handheld Daemon are on Bazzite and Bazzite releases often happen for Handheld Daemon to update. Bazzite contains all kernel patches and quirks required for all supported handhelds to work (to the extent they can; certain Ayaneo devices have issues).
 
-If you want to test the development Handheld Daemon version you
-can use `ujust _hhd-dev` and give feedback.
-It will only last until you reboot and leave no changes to your system.
-After changes are deemed stable, they usually are incorporated to Bazzite
-after a few days.
-
-See [supported devices](#supported-devices) to check the status of your device and 
-[after install](#issues) for specific device quirks.
+See [supported devices](#supported-devices) to check the status of your device and  [after install](#issues) for specific device quirks.
 
 ## Contributing
 ### <a name="axis"></a> Finding the correct axis for your device
-To figure the correct axis from your device, go to steam calibration settings.
-Then, in the overlay (double press/hold side button) switch `Motion Axis` to 
-`Override` and tweak only the axis (without invert) of your device until they 
-match the glyphs in steam.
+To figure the correct axis from your device, go to steam calibration settings. Then, in the overlay (double press/hold side button) switch `Motion Axis` to  `Override` and tweak only the axis (without invert) of your device until they  match the glyphs in steam.
 
-Then, jump in a first person game and turn on `Gyro to Mouse` or `Camera`.
-By default (`Yaw`), rotating your device like a steering wheel should turn left 
-to right,
-and rotating it to face down or up should look up or down.
-Fix the invert settings of the axis so that it is intuitive.
-Finally, switch the setting `Gyro Turning Axis` from `Yaw` (rotate like a steering
-wheel) to `Roll` (turn left to right), and fix the remaining axis inversion.
+Then, jump in a first person game and turn on `Gyro to Mouse` or `Camera`. By default (`Yaw`), rotating your device like a steering wheel should turn left  to right, and rotating it to face down or up should look up or down. Fix the invert settings of the axis so that it is intuitive. Finally, switch the setting `Gyro Turning Axis` from `Yaw` (rotate like a steering wheel) to `Roll` (turn left to right), and fix the remaining axis inversion.
 
-You can now either take a picture of your screen or translate the settings into
-text (e.g., x is k, y is l inverted, z is j) and open an issue.
-The override setting also displays the make and model of your device, which
-are required to add the mappings to Handheld Daemon.
+You can now either take a picture of your screen or translate the settings into text (e.g., x is k, y is l inverted, z is j) and open an issue. The override setting also displays the make and model of your device, which are required to add the mappings to Handheld Daemon.
 
 ### Localizing Handheld Daemon
 
@@ -224,14 +181,9 @@ You can also use it to see the current translation status of Handheld Daemon.
 #### For maintainers
 Handheld Daemon fully supports localization through standard `PO`, `POT` files.
 
-You can find `pot` and `po` files for Handheld Daemon under the `i18n` directory.
-You can clone/download this repository and open the `./i18n` directory.
-Then, just copy the `*.pot` files into `<your_locale>/LC_MESSAGES/*.po`
-and begin translating with your favorite text editor, or by using
-tool such as [Lokalize](https://apps.kde.org/lokalize/).
+You can find `pot` and `po` files for Handheld Daemon under the `i18n` directory. You can clone/download this repository and open the `./i18n` directory. Then, just copy the `*.pot` files into `<your_locale>/LC_MESSAGES/*.po` and begin translating with your favorite text editor, or by using tool such as [Lokalize](https://apps.kde.org/lokalize/).
 
-As far as your locale goes, unless you have a good reason to, skip the territory
-code (e.g., `el` instead of `el_GR`).
+As far as your locale goes, unless you have a good reason to, skip the territory code (e.g., `el` instead of `el_GR`).
 
 The files can be updated for a new version with the following commands:
 ```bash
@@ -282,24 +234,7 @@ sudo hhd --user $(whoami)
 ```
 
 # License
-Handheld Daemon is licensed under THE GNU GPLv3+. See LICENSE for details.
-A small number of files are dual licensed with MIT, and contain
-SPDX headers denoting so. 
-Versions prior to and excluding 2.0.0 are licensed using MIT.
+Handheld Daemon is licensed under THE GNU GPLv3+. See LICENSE for details. A small number of files are dual licensed with MIT, and contain SPDX headers denoting so.  Versions prior to and excluding 2.0.0 are licensed using MIT.
 
 # Credits
-Much like a lot of open-source projects, Handheld Daemon is a community effort.
-It relies on the kernel drivers 
-[oxp-sensors](https://github.com/torvalds/linux/blob/master/drivers/hwmon/oxp-sensors.c), [ayn-platform](https://github.com/ShadowBlip/ayn-platform), 
-[ayaneo-platform](https://github.com/ShadowBlip/ayaneo-platform), 
-[bmi260](https://github.com/hhd-dev/bmi260), [gpdfan](https://github.com/Cryolitia/gpd-fan-driver/),
-and [asus-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/asus-wmi.c).
-In addition, certain parts of Handheld Daemon reference the reverse engineering
-efforts of [asus-linux](https://gitlab.com/asus-linux), 
-the [Handheld Companion](https://github.com/Valkirie/HandheldCompanion) project,
-the [ValvePython](https://github.com/ValvePython) project, [pyWinControls](https://github.com/pelrun/pyWinControls), and the [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) project.
-Finally, its functionality is made possible thanks to thousands of hours of 
-volunteer testing, who have provided feedback and helped shape the project.
-Some of those volunteers integrated support for their devices directly, especially
-in the case of Ayaneo, GPD, and for the initial support of OneXPlayer, and ROG Ally
-devices.
+Much like a lot of open-source projects, Handheld Daemon is a community effort.It relies on the kernel drivers [oxp-sensors](https://github.com/torvalds/linux/blob/master/drivers/hwmon/oxp-sensors.c), [ayn-platform](https://github.com/ShadowBlip/ayn-platform), [ayaneo-platform](https://github.com/ShadowBlip/ayaneo-platform), [bmi260](https://github.com/hhd-dev/bmi260), [gpdfan](https://github.com/Cryolitia/gpd-fan-driver/),and [asus-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/asus-wmi.c).In addition, certain parts of Handheld Daemon reference the reverse engineeringefforts of [asus-linux](https://gitlab.com/asus-linux), the [Handheld Companion](https://github.com/Valkirie/HandheldCompanion) project,the [ValvePython](https://github.com/ValvePython) project, [pyWinControls](https://github.com/pelrun/pyWinControls), and the [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) project.Finally, its functionality is made possible thanks to thousands of hours of volunteer testing, who have provided feedback and helped shape the project.Some of those volunteers integrated support for their devices directly, especiallyin the case of Ayaneo, GPD, and for the initial support of OneXPlayer, and ROG Allydevices.
