@@ -71,6 +71,16 @@ ENERGY_MAP_18W = [
     ("balanced", ["balanced"], 8, 12),
     ("performance", ["performance"], 13, 18),
 ]
+ENERGY_MAP_WIN5 = [
+    ("power", ["low-power", "quiet"], 0, 15),
+    ("balanced", ["balanced"], 30, 25),
+    ("performance", ["performance"], 50, 60),
+]
+ENERGY_MAP_AIMAX = [
+    ("power", ["low-power", "quiet"], 0, 15),
+    ("balanced", ["balanced"], 30, 50),
+    ("performance", ["performance"], 50, 90),
+]
 
 ALIB_PARAMS = {
     # TDPs
@@ -78,6 +88,19 @@ ALIB_PARAMS = {
     "fast_limit": A(0x06, 0, 54, 1000),
     "slow_limit": A(0x07, 0, 54, 1000),
     "skin_limit": A(0x2E, 0, 54, 1000),
+    # Times
+    "slow_time": A(0x08, 0, 30),
+    "stapm_time": A(0x01, 0, 300),
+    # Temp
+    "temp_target": A(0x03, 0, 105),
+}
+
+ALIB_PARAMS_AIMAX = {
+    # TDPs
+    "stapm_limit": A(0x05, 0, 120, 1000),
+    "fast_limit": A(0x06, 0, 120, 1000),
+    "slow_limit": A(0x07, 0, 120, 1000),
+    "skin_limit": A(0x2E, 0, 120, 1000),
     # Times
     "slow_time": A(0x08, 0, 30),
     "stapm_time": A(0x01, 0, 300),
@@ -136,6 +159,30 @@ DEV_PARAMS_28W: dict[str, DeviceParams] = {
     # Temp
     "temp_target": D(60, 70, 85, 90, 100),
 }
+DEV_PARAMS_AIMAX: dict[str, DeviceParams] = {
+    "stapm_limit": D(0, 4, 25, 120, 120),
+    "skin_limit": D(0, 4, 25, 120, 120),
+    "slow_limit": D(0, 4, 27, 120, 120),
+    "fast_limit": D(0, 4, 40, 120, 120),
+    # Times
+    "slow_time": D(5, 5, 10, 10, 10),
+    "stapm_time": D(100, 100, 100, 200, 200),
+    # Temp
+    "temp_target": D(60, 70, 85, 90, 100),
+}
+
+DEV_PARAMS_WIN5: dict[str, DeviceParams] = {
+    "stapm_limit": D(0, 4, 25, 85, 100),
+    "skin_limit": D(0, 4, 25, 85, 100),
+    "slow_limit": D(0, 4, 27, 85, 100),
+    "fast_limit": D(0, 4, 40, 85, 100),
+    # Times
+    "slow_time": D(5, 5, 10, 10, 10),
+    "stapm_time": D(100, 100, 100, 200, 200),
+    # Temp
+    "temp_target": D(60, 70, 85, 90, 100),
+}
+
 
 DEV_PARAMS_5000: dict[str, DeviceParams] = DEV_PARAMS_25W
 DEV_PARAMS_6000: dict[str, DeviceParams] = DEV_PARAMS_30W
@@ -163,6 +210,7 @@ DEV_DATA: dict[
     "G1617-01": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False, ENERGY_MAP),
     "G1619-04": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False, ENERGY_MAP),
     "G1619-05": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False, ENERGY_MAP),
+    "G1618-05": (DEV_PARAMS_WIN5, ALIB_PARAMS_AIMAX, False, ENERGY_MAP_AIMAX),
 }
 
 CPU_DATA: dict[
@@ -188,6 +236,8 @@ CPU_DATA: dict[
     # AMD Athlon Silver 3050e (Win600, will it support tdp?)
     "AMD Ryzen AI 9 HX 370": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, ENERGY_MAP),
     "AMD Ryzen AI HX 360": (DEV_PARAMS_HX370, ALIB_PARAMS_HX370, ENERGY_MAP),
+    # AMD RYZEN AI MAX+ 395 w/ Radeon 8060S
+    "AMD RYZEN AI MAX+ 395": (DEV_PARAMS_AIMAX, ALIB_PARAMS_AIMAX, ENERGY_MAP_AIMAX),
 }
 
 ALLY_DATA: DeviceTDP = {
