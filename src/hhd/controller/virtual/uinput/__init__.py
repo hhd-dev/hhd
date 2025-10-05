@@ -5,7 +5,7 @@ from typing import Sequence
 try:
     from evdev.uinput import UInput
 except ImportError:
-    from evdev import UInput # type: ignore[no-redef]
+    from evdev import UInput  # type: ignore[no-redef]
 
 from hhd.controller.base import Consumer, Event, Producer, can_read
 from hhd.controller.const import Axis, Button
@@ -117,6 +117,29 @@ class UInputDevice(Consumer, Producer):
                     logger.warning(f"Using cached controller node for {name}.")
                     self.dev = cached.dev
                 else:
+                    change = ""
+                    try:
+                        for vars in (
+                            "capabilities",
+                            "name",
+                            "vid",
+                            "pid",
+                            "bus",
+                            "version",
+                            "phys",
+                            "input_props",
+                            "uniq",
+                            "gyro",
+                        ):
+                            if getattr(self, vars) != getattr(cached, vars):
+                                change += f"\n{vars}: {getattr(cached, vars)} != {getattr(self, vars)}"
+                                break
+                    except Exception as e:
+                        change += f"\nError checking cache mismatch: {e}"
+
+                    logger.info(
+                        f"Controller cache mismatch due to:{change}.\nRecreating {name}."
+                    )
                     cached.close(True, in_cache=True)
 
         if not self.dev:
