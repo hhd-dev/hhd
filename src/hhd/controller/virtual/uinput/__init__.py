@@ -133,7 +133,6 @@ class UInputDevice(Consumer, Producer):
                         ):
                             if getattr(self, vars) != getattr(cached, vars):
                                 change += f"\n{vars}: {getattr(cached, vars)} != {getattr(self, vars)}"
-                                break
                     except Exception as e:
                         change += f"\nError checking cache mismatch: {e}"
 
