@@ -635,8 +635,12 @@ class Dualsense(Producer, Consumer):
                     write_tp(self.ofs + 32, tp1_x, tp1_y)
                     
                     # Set TP1 touch status if it's the left touchpad
+                    # (right touchpad's status is already set by set_button)
                     if tp1_is_left:
                         new_rep[self.ofs + 32] = new_rep[self.ofs + 32] & 0x7F
+                    
+                    # Always clear TP2 in single-touch practical mode
+                    new_rep[self.ofs + 36] = new_rep[self.ofs + 36] | 0x80
         else:
             # Both touchpads are not touching: reset and clear
             self.tp1_owner = None
