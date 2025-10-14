@@ -61,9 +61,13 @@ _cfg = {
 }
 
 CONTROLLER_POWER = (
-    "/sys/class/firmware-attributes/ayaneo-ec/attributes/controller_power/current_value"
+    "/sys/class/firmware-attributes/ayaneo-ec/attributes/controller_power/current_value",
+    "/sys/devices/platform/ayaneo-ec/controller_power",
 )
-CONTROLLER_MODULES = "/sys/class/firmware-attributes/ayaneo-ec/attributes/controller_modules/current_value"
+CONTROLLER_MODULES = [
+    "/sys/class/firmware-attributes/ayaneo-ec/attributes/controller_modules/current_value",
+    "/sys/devices/platform/ayaneo-ec/controller_modules",
+]
 
 
 def write_cmd(dev, r: bytes, timeout: int = AYA_TIMEOUT):
@@ -111,6 +115,40 @@ MODULE_ACTIVATING = _("Activating...")
 MODULE_UNPOWERED = _("Unpowered")
 MODULE_DISCONNECTED = _("Disconnected")
 MODULE_DISABLED = _("Paused")
+
+
+def write_power(enable: bool):
+    for fn in CONTROLLER_POWER:
+        if os.path.exists(fn):
+            with open(fn, "w") as f:
+                f.write(
+                    "on"
+                    if enable and "firmware-attributes" in fn
+                    else (
+                        "1" if enable else "off" if "firmware-attributes" in fn else "0"
+                    )
+                )
+            logger.info(f"Controller power turned {'on' if enable else 'off'}.")
+            return True
+    return False
+
+
+def read_power():
+    for fn in CONTROLLER_POWER:
+        if os.path.exists(fn):
+            with open(fn, "r") as f:
+                power = f.read().strip()
+            return power in ("on", "1")
+    return None
+
+
+def read_modules():
+    for fn in CONTROLLER_MODULES:
+        if os.path.exists(fn):
+            with open(fn, "r") as f:
+                modules = f.read().strip()
+            return modules
+    return None
 
 
 class Ayaneo3Hidraw(GenericGamepadHidraw):
@@ -221,11 +259,8 @@ class Ayaneo3Hidraw(GenericGamepadHidraw):
         if time_waited < AYA_MIN_EJECT:
             time.sleep(AYA_MIN_EJECT - time_waited)
 
-        if os.path.exists(CONTROLLER_POWER):
-            with open(CONTROLLER_POWER, "w") as f:
-                f.write("off")
+        if write_power(False):
             time.sleep(0.5)
-            logger.info("Controller power turned off.")
         else:
             logger.warning("Kernel driver for modules is missing. Sleeping.")
             os.system("systemctl suspend")
@@ -303,10 +338,8 @@ def plugin_run(
             first_disabled = True
 
         found_device = True
-        if os.path.exists(CONTROLLER_MODULES):
-            with open(CONTROLLER_MODULES, "r") as f:
-                modules = f.read().strip()
-
+        modules = read_modules()
+        if modules is not None:
             # Check if status should be refreshed
             refresh = False
             if modules == "both":
@@ -349,9 +382,7 @@ def plugin_run(
                         refresh = True
 
                 # Turning off controller power if not connected
-                if os.path.exists(CONTROLLER_POWER):
-                    with open(CONTROLLER_POWER, "w") as f:
-                        f.write("off")
+                write_power(False)
 
             if refresh:
                 emit([])
@@ -359,15 +390,13 @@ def plugin_run(
         pop = others.pop("pop", None)
         if pop:
             others.pop("reset", False)
-        if (found_device or pop) and os.path.exists(CONTROLLER_POWER):
-            with open(CONTROLLER_POWER, "r") as f:
-                power = f.read().strip()
-            if power != "on":
+        if found_device or pop:
+            power = read_power()
+            if power is False:
                 logger.info(
                     f"Controller power is set to '{power}', powering on controller."
                 )
-                with open(CONTROLLER_POWER, "w") as f:
-                    f.write("on")
+                write_power(True)
                 time.sleep(1)
 
         if pop:
