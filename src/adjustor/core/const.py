@@ -271,6 +271,37 @@ ALLYX_DATA: DeviceTDP = {
     "supports_cycle": True,
 }
 
+
+XBOX_ALLY_DATA: DeviceTDP = {
+    "quiet": 6,
+    "balanced_min": 8,
+    "balanced": 15,
+    "performance_min": 17,
+    "performance_dc": 20,
+    "performance": 20,
+    "min_tdp": 4,
+    "max_tdp_dc": 20,
+    "max_tdp": 20, # SPPT 20 FPPT 25
+    "max_tdp_oc": 25,
+    "max_tdp_boost": None,
+    "supports_cycle": True,
+}
+
+XBOX_ALLYX_DATA: DeviceTDP = {
+    "quiet": 13,
+    "balanced_min": 15,
+    "balanced": 17,
+    "performance_min": 20,
+    "performance_dc": 35,
+    "performance": 35,
+    "min_tdp": 4,
+    "max_tdp_dc": 35,
+    "max_tdp": 35,
+    "max_tdp_oc": 50,
+    "max_tdp_boost": None,
+    "supports_cycle": True,
+}
+
 Z1_DATA: DeviceTDP = {
     "quiet": 40,
     "balanced_min": 42,
@@ -289,6 +320,8 @@ Z1_DATA: DeviceTDP = {
 ASUS_DATA: dict[str, DeviceTDP] = {
     "ROG Ally RC71L": ALLY_DATA,
     "ROG Ally X RC72L": ALLYX_DATA,
+    "ROG Ally RC73Y": XBOX_ALLY_DATA,
+    "ROG Ally X RC73X": XBOX_ALLYX_DATA,
     "ROG Flow Z13 GZ302": Z1_DATA,
 }
 
