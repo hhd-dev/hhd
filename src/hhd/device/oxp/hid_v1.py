@@ -59,7 +59,7 @@ def gen_brightness(
         case _:  # "high":
             bc = 0x04
 
-    return gen_cmd(0xB8, [0xFD, 0x00, 0x02, enabled, 0x05, bc])
+    return gen_cmd(0xB8, [0xFD, side, 0x02, enabled, 0x05, bc])
 
 # Sides on the g1
 # 1 = left controller
@@ -119,8 +119,8 @@ class OxpHidraw(GenericGamepadHidraw):
         self.prev_brightness = None
         self.prev_stick = None
         self.prev_stick_enabled = None
-        # self.prev_center = None
-        # self.prev_center_enabled = None
+        self.prev_center = None
+        self.prev_center_enabled = None
 
     def open(self):
         a = super().open()
@@ -170,32 +170,32 @@ class OxpHidraw(GenericGamepadHidraw):
         brightness = "high"
         stick = None
         stick_enabled = True
-        # center = None
-        # center_enabled = True
-        # init = ev["initialize"]
+        center = None
+        center_enabled = True
+        init = ev["initialize"]
 
         match ev["mode"]:
             case "solid":
                 stick = ev["red"], ev["green"], ev["blue"]
-                # r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
-                # center = r2, g2, b2
-                # center_enabled = r2 > 10 or g2 > 10 or b2 > 10
-            # case "duality":
-            #     stick = ev["red"], ev["green"], ev["blue"]
-            #     center = ev["red2"], ev["green2"], ev["blue2"]
+                r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
+                center = r2, g2, b2
+                center_enabled = r2 > 10 or g2 > 10 or b2 > 10
+            case "duality":
+                stick = ev["red"], ev["green"], ev["blue"]
+                center = ev["red2"], ev["green2"], ev["blue2"]
             case "oxp" | "aok":
                 brightness = ev["brightnessd"]
                 stick = ev["oxp"]
                 if stick == "classic":
                     # Classic mode is a cherry red
                     stick = 0xB7, 0x30, 0x00
-                # r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
-                # center = r2, g2, b2
-                # center_enabled = r2 > 10 or g2 > 10 or b2 > 10
-                # init = True
+                r2, g2, b2 = ev["red2"], ev["green2"], ev["blue2"]
+                center = r2, g2, b2
+                center_enabled = r2 > 10 or g2 > 10 or b2 > 10
+                init = True
             case _:  # "disabled":
                 stick_enabled = False
-                # center_enabled = False
+                center_enabled = False
 
         # Force RGB to not initialize to workaround RGB breaking
         # rumble when being set
@@ -223,16 +223,16 @@ class OxpHidraw(GenericGamepadHidraw):
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
 
-        # if center_enabled != self.prev_center_enabled:
-        #     self.queue_cmd.append(gen_brightness(0x03, center_enabled, "high"))
-        #     self.queue_cmd.append(gen_brightness(0x04, center_enabled, "high"))
-        #     self.prev_center_enabled = center_enabled
+        if center_enabled != self.prev_center_enabled:
+            self.queue_cmd.append(gen_brightness(0x03, center_enabled, "high"))
+            self.queue_cmd.append(gen_brightness(0x04, center_enabled, "high"))
+            self.prev_center_enabled = center_enabled
 
-        # # Only apply center colors on init on init
-        # if init and center_enabled and center and center != self.prev_center:
-        #     self.queue_cmd.append(gen_rgb_solid(*center, side=0x03))
-        #     self.queue_cmd.append(gen_rgb_solid(*center, side=0x04))
-        #     self.prev_center = center
+        # Only apply center colors on init on init
+        if init and center_enabled and center and center != self.prev_center:
+            self.queue_cmd.append(gen_rgb_solid(*center, side=0x03))
+            self.queue_cmd.append(gen_rgb_solid(*center, side=0x04))
+            self.prev_center = center
 
     def produce(self, fds):
         if not self.dev:

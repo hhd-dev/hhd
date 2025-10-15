@@ -162,7 +162,7 @@ CONFS = {
         "x1": True,
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
-        "protocol": "serial",
+        "protocol": "hid_v1",
         "turbo": False,  # disable turbo takeover so that it can be used for TDP
     },
     "ONEXPLAYER G1 i": {
