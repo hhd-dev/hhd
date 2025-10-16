@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 PROFILES = ["performance", "balanced", "power-saver"]
 PTYPE = Literal["performance", "balanced", "power-saver"]
 
+
 def set_power_profile(profile):
     try:
         busctl = shutil.which("busctl")
@@ -41,9 +42,7 @@ def set_power_profile(profile):
         logger.warning(f"Could set power profile to '{profile}': {e}")
 
 
-def get_current_power_profile() -> (
-    PTYPE | None
-):
+def get_current_power_profile() -> PTYPE | None:
     try:
         busctl = shutil.which("busctl")
         if not busctl:
@@ -64,7 +63,7 @@ def get_current_power_profile() -> (
         profile = res.stdout.decode().strip()
         for p in PROFILES:
             if p in profile:
-                return p # type: ignore
+                return p  # type: ignore
     except Exception:
         pass
     logger.warning(f"Could not read power profile. Disabling profile support.")
@@ -108,16 +107,16 @@ class GeneralPowerPlugin(HHDPlugin):
                     self.avail_scheds[sched] = exe
                     self.avail_pretty[sched] = pretty
 
-    def settings(self):
-        sets = self.sets
-
         if not self.ppd_supported:
-            del sets["children"]["profile"]
+            del self.sets["children"]["profile"]
 
         if self.avail_scheds:
-            sets["children"]["sched"]["options"] = self.avail_pretty
+            self.sets["children"]["sched"]["options"] = self.avail_pretty
         else:
-            del sets["children"]["sched"]
+            del self.sets["children"]["sched"]
+
+    def settings(self):
+        sets = self.sets
 
         self.logged_boost = True
         return {
