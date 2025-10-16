@@ -100,7 +100,7 @@ ALLY_X_BUTTON_MAP: dict[int, GamepadButton] = to_map(
         "start": [EC("BTN_TR")],
         "select": [EC("BTN_TL")],
         # Misc
-        # "mode": [EC("BTN_MODE")],
+        "mode": [EC("BTN_SELECT")], # xbox
     }
 )
 
