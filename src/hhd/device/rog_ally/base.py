@@ -186,7 +186,7 @@ class AllyHidraw(GenericGamepadHidraw):
                             curr + MODE_DELAY,
                         )
                     )
-                case 0x38:
+                case 0x38 | 0x93:
                     # action = "right"
                     out.append({"type": "button", "code": "share", "value": True})
                     self.queue.append(
