@@ -100,7 +100,7 @@ ALLY_X_BUTTON_MAP: dict[int, GamepadButton] = to_map(
         "start": [EC("BTN_TR")],
         "select": [EC("BTN_TL")],
         # Misc
-        "mode": [EC("BTN_SELECT")], # xbox
+        "share": [EC("BTN_SELECT")], # xbox
     }
 )
 
@@ -188,10 +188,10 @@ class AllyHidraw(GenericGamepadHidraw):
                     )
                 case 0x38 | 0x93:
                     # action = "right"
-                    out.append({"type": "button", "code": "share", "value": True})
+                    out.append({"type": "button", "code": "keyboard", "value": True})
                     self.queue.append(
                         (
-                            {"type": "button", "code": "share", "value": False},
+                            {"type": "button", "code": "keyboard", "value": False},
                             curr + MODE_DELAY,
                         )
                     )
@@ -261,6 +261,7 @@ def plugin_run(
     should_exit: TEvent,
     updated: TEvent,
     ally_x: bool,
+    xbox: bool,
 ):
     init = time.perf_counter()
     repeated_fail = False
@@ -405,8 +406,10 @@ def controller_loop(
         select_reboots=conf["select_reboots"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
-        swap_guide="select_is_guide" if conf["swap_armory"].to(bool) else None,
-        qam_no_release=not conf["swap_armory"].to(bool),
+        swap_guide="start_is_keyboard" if conf["swap_armory"].to(bool) else None,
+        qam_hhd=True,
+        keyboard_is="qam",
+        keyboard_no_release=not conf["swap_armory"].to(bool),
         params=d_params,
     )
 

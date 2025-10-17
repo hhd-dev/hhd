@@ -19,13 +19,14 @@ class RogAllyControllersPlugin(HHDPlugin):
     priority = 18
     log = "ally"
 
-    def __init__(self, ally_x: bool = False) -> None:
+    def __init__(self, ally_x: bool = False, xbox: bool = False) -> None:
         self.t = None
         self.should_exit = None
         self.updated = Event()
         self.started = False
         self.t = None
         self.ally_x = ally_x
+        self.xbox = xbox
 
     def open(
         self,
@@ -41,7 +42,9 @@ class RogAllyControllersPlugin(HHDPlugin):
 
         base = {"controllers": {"rog_ally": load_relative_yaml("controllers.yml")}}
         base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
-            get_outputs_config(can_disable=False, extra_buttons="dual")
+            get_outputs_config(
+                can_disable=False, extra_buttons="dual", noob_default=not self.xbox
+            )
         )
         base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config(
             LIMIT_DEFAULTS(self.ally_x)
@@ -82,6 +85,7 @@ class RogAllyControllersPlugin(HHDPlugin):
                 self.should_exit,
                 self.updated,
                 self.ally_x,
+                self.xbox,
             ),
         )
         self.t.start()
@@ -119,6 +123,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     # Xbox Ally X
     # ROG Xbox Ally X RC73XA_RC73XA
     if "ROG Xbox Ally X RC73X" in dmi or "ROG Xbox Ally RC73Y" in dmi:
-        return [RogAllyControllersPlugin(ally_x=True)]
+        return [RogAllyControllersPlugin(ally_x=True, xbox=True)]
 
     return []
