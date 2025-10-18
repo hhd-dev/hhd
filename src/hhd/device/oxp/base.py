@@ -578,7 +578,7 @@ def controller_loop(
     keyboard_is = "keyboard"
     qam_hhd = False
     qam_no_release = False
-    if turbo:
+    if turbo and not dconf.get("g1", False):
         if conf.get("turbo_reboots", False):
             share_reboots = True
         match conf.get("extra_buttons", "separate"):
