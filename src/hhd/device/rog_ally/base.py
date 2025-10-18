@@ -281,7 +281,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, emit, ally_x)
+            controller_loop(conf.copy(), should_exit, updated, emit, ally_x, xbox)
             repeated_fail = False
         except Exception as e:
             first = True
@@ -312,7 +312,7 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool
+    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool, xbox: bool
 ):
     debug = DEBUG_MODE
 
@@ -329,7 +329,7 @@ def controller_loop(
             "duality": ["dual", "speedd"],
             "rainbow": ["brightnessd"],
             "spiral": ["brightnessd", "speedd", "direction"],
-        },
+        } if not xbox else None,
         rgb_zones="quad",
         extra_buttons="dual",
     )

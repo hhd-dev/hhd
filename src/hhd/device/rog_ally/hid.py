@@ -13,6 +13,7 @@ from .const import (
     RGB_INIT,
     RGB_SET,
     WAIT_READY,
+    FEATURE_KBD_DRIVER,
     FEATURE_KBD_ID,
     buf,
 )
@@ -34,7 +35,7 @@ def rgb_set_brightness(brightness: Brightness):
             c = 0x01
         case _:
             c = 0x00
-    return buf([FEATURE_KBD_ID, 0xBA, 0xC5, 0xC4, c])
+    return buf([FEATURE_KBD_DRIVER, 0xBA, 0xC5, 0xC4, c])
 
 
 def rgb_command(
