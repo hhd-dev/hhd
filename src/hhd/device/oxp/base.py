@@ -653,7 +653,12 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
-        d_vend = find_vendor(prepare, turbo, dconf.get("protocol", None))
+        d_vend = find_vendor(
+            prepare,
+            turbo,
+            dconf.get("protocol", None),
+            dconf.get("rgb_secondary", False),
+        )
         d_vend_id = [id(d) for d in d_vend]
         if dconf.get("g1", False):
             prepare(d_kbd_2)
