@@ -116,6 +116,9 @@ class GenericControllersPlugin(HHDPlugin):
             # No Keyboard button means turbo needs to do combo
             del base["controllers"]["oxp"]["children"]["extra_buttons"]
 
+        if not self.dconf.get("vibration", False):
+            del base["controllers"]["oxp"]["children"]["vibration_strength"]
+
         return base
 
     def update(self, conf: Config):

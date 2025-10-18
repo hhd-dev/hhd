@@ -129,6 +129,22 @@ def plugin_run(
                             usage=XFLY_USAGE,
                         )
                     )
+                case "hid_dual":
+                    found_vendor = bool(
+                        enumerate_unique(
+                            vid=X1_MINI_VID,
+                            pid=X1_MINI_PID,
+                            usage_page=X1_MINI_PAGE,
+                            usage=X1_MINI_USAGE,
+                        )
+                    ) and bool(
+                        enumerate_unique(
+                            vid=XFLY_VID,
+                            pid=XFLY_PID,
+                            usage_page=XFLY_PAGE,
+                            usage=XFLY_USAGE,
+                        )
+                    )
                 case "mixed":
                     found_vendor = bool(
                         enumerate_unique(
@@ -244,6 +260,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         usage=[X1_MINI_USAGE],
         turbo=turbo,
         required=True,
+        led_control=(protocol != "hid_dual"),
     )
     d_hidraw_v2 = OxpHidrawV2(
         vid=[XFLY_VID],
@@ -307,6 +324,27 @@ def find_vendor(prepare, turbo, protocol: str | None):
             return [d_hidraw_v2]
         except Exception as e:
             pass
+
+    if protocol == "hid_dual":
+        devices = []
+        try:
+            prepare(d_hidraw)
+            logger.info("Found OXP V1 hidraw vendor device.")
+            devices.append(d_hidraw)
+        except Exception as e:
+            logger.warning(f"Could not find V1 hidraw device: {e}")
+
+        try:
+            prepare(d_hidraw_v2)
+            logger.info("Found OXP V2 hidraw vendor device.")
+            devices.append(d_hidraw_v2)
+        except Exception as e:
+            logger.warning(f"Could not find V2 hidraw device: {e}")
+
+        if devices:
+            return devices
+        else:
+            logger.error("No vendor devices found for hid_dual protocol.")
 
     logger.error("No vendor device found, RGB and back buttons will not work.")
     return []
@@ -663,6 +701,17 @@ def controller_loop(
         for d in d_producers:
             prepare(d)
 
+        vibration_supported = dconf.get("vibration", False)
+        vibration_map = {
+            "off": 0,
+            "1": 1,
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+        }
+        prev_vibration = None
+
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
@@ -688,6 +737,16 @@ def controller_loop(
 
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
+
+            if vibration_supported:
+                curr_vibration = conf.get("vibration_strength", "5")
+                if curr_vibration != prev_vibration:
+                    prev_vibration = curr_vibration
+                    vibration_val = vibration_map.get(curr_vibration, 5)
+                    vib_ev = [{"type": "vibration", "strength": vibration_val}]
+                    for d in d_vend:
+                        d.consume(vib_ev)
+                    logger.info(f"Set vibration strength to: {curr_vibration} (value: {vibration_val})")
 
             for d in d_vend:
                 d.consume(evs)
