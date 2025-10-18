@@ -71,6 +71,16 @@ def gen_rgb_solid(r, g, b, side: int = 0x00):
     return gen_cmd(0xB8, [0xFE, side, 0x02] + 18 * [r, g, b] + [r, g])
 
 
+def gen_vibration(strength: Literal[0, 1, 2, 3, 4, 5]):
+    mode = 0x02 if strength == 0 else 0x01
+    set_cmd = (
+        [0x02, 0x38, 0x02, 0xE3, 0x39, 0xE3, 0x39, 0xE3, 0x39, mode, strength, strength, 0xE3, 0x39, 0xE3]
+        + [0x00] * 35
+        + [0x39, 0xE3, 0x39, 0xE3, 0xE3, 0x02, 0x04, 0x39, 0x39]
+    )
+    return gen_cmd(0xB3, set_cmd)
+
+
 KBD_NAME = "keyboard"
 HOME_NAME = "guide"
 KBD_NAME_NON_TURBO = "share"
@@ -104,7 +114,7 @@ _init_done = False
 
 
 class OxpHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, turbo: bool = True, g1: bool = False, **kwargs) -> None:
+    def __init__(self, *args, turbo: bool = True, g1: bool = False, led_control: bool = True, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.prev = {}
         self.queue_kbd = None
@@ -116,9 +126,11 @@ class OxpHidraw(GenericGamepadHidraw):
 
         self.g1 = g1
         self.send_init = not g1  # g1 has no extra buttons
+        self.led_control = led_control
         self.prev_brightness = None
         self.prev_stick = None
         self.prev_stick_enabled = None
+        self.prev_vibration = None
         self.prev_center = None
         self.prev_center_enabled = None
 
@@ -145,11 +157,16 @@ class OxpHidraw(GenericGamepadHidraw):
         if not self.dev:
             return
 
-        # Capture led events
         for ev in events:
-            if ev["type"] == "led":
-                # if self.queue_led:
-                #     logger.warning("OXP HID LED event queue overflow.")
+            # Capture vibration events
+            if ev["type"] == "vibration":
+                strength = ev["strength"]
+                if strength != self.prev_vibration:
+                    logger.info(f"Vibration: {self.prev_vibration} -> {strength}")
+                    self.queue_cmd.append(gen_vibration(strength))
+                    self.prev_vibration = strength
+            # Capture led events        
+            elif ev["type"] == "led" and self.led_control:
                 self.queue_led = ev
 
         # Send queued event if applicable
@@ -277,8 +294,8 @@ class OxpHidraw(GenericGamepadHidraw):
                 logger.warning(f"OXP HID invalid command: {cmd.hex()}")
                 continue
 
-            if cid in (0xF5, 0xB8):
-                # Initialization (0xf5) and rgb (0xb8) command responses, skip
+            if cid in (0xF5, 0xB4, 0xB8, 0xB3):
+                # Skip command responses for initialization (0xf5, 0xb4), rgb (0xb8), vibration (0xb3)
                 continue
 
             if cid != 0xB2:
@@ -288,9 +305,10 @@ class OxpHidraw(GenericGamepadHidraw):
             btn = cmd[6]
 
             if btn not in OXP_BUTTONS:
-                logger.warning(
-                    f"OXP HID unknown button: {btn:x} from cmd:\n{cmd.hex()}"
-                )
+                if btn != 0x00:
+                    logger.warning(
+                        f"OXP HID unknown button: {btn:x} from cmd:\n{cmd.hex()}"
+                    )
                 continue
 
             btn = OXP_BUTTONS[btn]
