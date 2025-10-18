@@ -235,7 +235,7 @@ class OxpAtKbd(GenericGamepadEvdev):
         return evs
 
 
-def find_vendor(prepare, turbo, protocol: str | None):
+def find_vendor(prepare, turbo, protocol: str | None, secondary: bool):
     d_ser = SerialDevice(turbo=turbo, required=True)
     d_hidraw = OxpHidraw(
         vid=[X1_MINI_VID],
@@ -244,6 +244,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         usage=[X1_MINI_USAGE],
         turbo=turbo,
         required=True,
+        secondary=secondary,
     )
     d_hidraw_v2 = OxpHidrawV2(
         vid=[XFLY_VID],
@@ -261,6 +262,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         turbo=turbo,
         required=True,
         g1=True,
+        secondary=False,
     )
 
     if protocol in ["serial", "mixed"]:
@@ -426,7 +428,12 @@ def turbo_loop(
 
     try:
         prepare(d_volume_btn)
-        d_vend = find_vendor(prepare, True, dconf.get("protocol", None))
+        d_vend = find_vendor(
+            prepare,
+            True,
+            dconf.get("protocol", None),
+            dconf.get("rgb_secondary", False),
+        )
         d_vend_id = [id(d) for d in d_vend]
 
         for d in d_producers:
