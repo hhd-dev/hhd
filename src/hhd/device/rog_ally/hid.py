@@ -13,6 +13,7 @@ from .const import (
     RGB_INIT,
     RGB_SET,
     WAIT_READY,
+    FEATURE_KBD_ID,
     buf,
 )
 
@@ -33,7 +34,7 @@ def rgb_set_brightness(brightness: Brightness):
             c = 0x01
         case _:
             c = 0x00
-    return buf([0x5A, 0xBA, 0xC5, 0xC4, c])
+    return buf([FEATURE_KBD_ID, 0xBA, 0xC5, 0xC4, c])
 
 
 def rgb_command(
@@ -111,7 +112,7 @@ def rgb_command(
 
     return buf(
         [
-            0x5A,
+            FEATURE_KBD_ID,
             0xB3,
             c_zone,  # zone
             c_mode,  # mode
@@ -343,7 +344,7 @@ def wait_for_ready(dev: Device, timeout: int = 1):
         # FIXME: Temporary disable since certain allys have issues with it
         return False
 
-        # if rep and rep[0] == 0x5A and rep[2] == 0x0A:
+        # if rep and rep[0] == FEATURE_KBD_DRIVER and rep[2] == 0x0A:
         #     return True
         # else:
         #     time.sleep(0.1)

@@ -18,7 +18,7 @@ from hhd.controller.physical.hidraw import GenericGamepadHidraw, enumerate_uniqu
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.plugins import Config, Context, Emitter, get_limits, get_outputs
 
-from .const import config_rgb
+from .const import config_rgb, FEATURE_KBD_DRIVER
 from .hid import RgbCallback, switch_mode
 
 SELECT_TIMEOUT = 1
@@ -173,7 +173,7 @@ class AllyHidraw(GenericGamepadHidraw):
         while can_read(self.fd):
             rep = self.dev.read(self.report_size)
             # logger.warning(f"Received the following report (debug):\n{rep.hex()}")
-            if rep[0] != 0x5A:
+            if rep[0] != FEATURE_KBD_DRIVER:
                 continue
 
             match rep[1]:
