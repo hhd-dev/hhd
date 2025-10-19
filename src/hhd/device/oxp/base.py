@@ -251,7 +251,14 @@ class OxpAtKbd(GenericGamepadEvdev):
         return evs
 
 
-def find_vendor(prepare, turbo, protocol: str | None, secondary: bool):
+def find_vendor(prepare, turbo, protocol: str | None, secondary: bool, vibration: str | None):
+    vibration_val = None
+    if vibration is not None:
+        if not isinstance(vibration, str) or not vibration.startswith("v"):
+            logger.error(f"Invalid vibration strength value: {vibration}")
+        else:
+            vibration_val = int(vibration[1:])
+
     d_ser = SerialDevice(turbo=turbo, required=True)
     d_hidraw = OxpHidraw(
         vid=[X1_MINI_VID],
@@ -262,6 +269,7 @@ def find_vendor(prepare, turbo, protocol: str | None, secondary: bool):
         required=True,
         led_control=(protocol != "hid_dual"),
         secondary=secondary,
+        vibration=vibration_val,
     )
     d_hidraw_v2 = OxpHidrawV2(
         vid=[XFLY_VID],
@@ -280,6 +288,7 @@ def find_vendor(prepare, turbo, protocol: str | None, secondary: bool):
         required=True,
         g1=True,
         secondary=False,
+        vibration=vibration_val,
     )
 
     if protocol in ["serial", "mixed"]:
@@ -469,8 +478,9 @@ def turbo_loop(
         d_vend = find_vendor(
             prepare,
             True,
-            dconf.get("protocol", None),
-            dconf.get("rgb_secondary", False),
+            protocol=dconf.get("protocol", None),
+            secondary=dconf.get("rgb_secondary", False),
+            vibration=conf.get("vibration_strength", None),
         )
         d_vend_id = [id(d) for d in d_vend]
 
@@ -694,8 +704,9 @@ def controller_loop(
         d_vend = find_vendor(
             prepare,
             turbo,
-            dconf.get("protocol", None),
-            dconf.get("rgb_secondary", False),
+            protocol=dconf.get("protocol", None),
+            secondary=dconf.get("rgb_secondary", False),
+            vibration=conf.get("vibration_strength", None),
         )
         d_vend_id = [id(d) for d in d_vend]
         if dconf.get("g1", False):
@@ -712,17 +723,6 @@ def controller_loop(
 
         for d in d_producers:
             prepare(d)
-
-        vibration_supported = dconf.get("vibration", False)
-        vibration_map = {
-            "off": 0,
-            "1": 1,
-            "2": 2,
-            "3": 3,
-            "4": 4,
-            "5": 5,
-        }
-        prev_vibration = None
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
@@ -749,16 +749,6 @@ def controller_loop(
 
                 d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
-
-            if vibration_supported:
-                curr_vibration = conf.get("vibration_strength", "5")
-                if curr_vibration != prev_vibration:
-                    prev_vibration = curr_vibration
-                    vibration_val = vibration_map.get(curr_vibration, 5)
-                    vib_ev = [{"type": "vibration", "strength": vibration_val}]
-                    for d in d_vend:
-                        d.consume(vib_ev)
-                    logger.info(f"Set vibration strength to: {curr_vibration} (value: {vibration_val})")
 
             for d in d_vend:
                 d.consume(evs)

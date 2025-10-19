@@ -50,13 +50,13 @@ children:
     hint: >-
       Adjusts the vibration strength of the controller
     options:
-      "off": "Off"
-      "1": "1"
-      "2": "2"
-      "3": "3"
-      "4": "4"
-      "5": "5"
-    default: "5"
+      # "v0": "Off" # Off doesnt work in A1X
+      v1: "1"
+      v2: "2"
+      v3: "3"
+      v4: "4"
+      v5: "5"
+    default: "4"
 
   #
   # Common settings

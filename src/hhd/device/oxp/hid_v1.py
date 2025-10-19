@@ -71,7 +71,7 @@ def gen_rgb_solid(r, g, b, side: int = 0x00):
     return gen_cmd(0xB8, [0xFE, side, 0x02] + 18 * [r, g, b] + [r, g])
 
 
-def gen_vibration(strength: Literal[0, 1, 2, 3, 4, 5]):
+def gen_vibration(strength: int):
     mode = 0x02 if strength == 0 else 0x01
     set_cmd = (
         [0x02, 0x38, 0x02, 0xE3, 0x39, 0xE3, 0x39, 0xE3, 0x39, mode, strength, strength, 0xE3, 0x39, 0xE3]
@@ -111,10 +111,19 @@ WRITE_DELAY = 0.05
 SCAN_DELAY = 1
 
 _init_done = False
-
+_init_vibration = None
 
 class OxpHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, turbo: bool = True, g1: bool = False, led_control: bool = True, secondary: bool = False, **kwargs) -> None:
+    def __init__(
+        self,
+        *args,
+        turbo: bool = True,
+        g1: bool = False,
+        led_control: bool = True,
+        secondary: bool = False,
+        vibration: int | None,
+        **kwargs,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.prev = {}
         self.queue_kbd = None
@@ -123,6 +132,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.next_send = 0
         self.queue_led = None
         self.turbo = turbo
+        self.vibration = vibration
 
         self.g1 = g1
         self.secondary = secondary and not g1
@@ -141,7 +151,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.queue_home = None
         self.prev = {}
 
-        global _init_done
+        global _init_done, _init_vibration
         self.next_send = time.perf_counter() + CONNECT_DELAY
         if self.send_init:
             if not _init_done:
@@ -152,6 +162,16 @@ class OxpHidraw(GenericGamepadHidraw):
                 _init_done = True
             else:
                 self.queue_cmd.append(gen_intercept(False))
+        
+        if _init_vibration is None:
+            # Do not process vibration if the same as previous value
+            # Prevents vibrating the controller on boot
+            _init_vibration = self.vibration
+        if self.vibration is not None and self.vibration != _init_vibration:
+            logger.error(f"Setting initial vibration to {self.vibration}")
+            self.queue_cmd.append(gen_vibration(self.vibration))
+            _init_vibration = self.vibration
+
         return a
 
     def consume(self, events):
@@ -159,15 +179,7 @@ class OxpHidraw(GenericGamepadHidraw):
             return
 
         for ev in events:
-            # Capture vibration events
-            if ev["type"] == "vibration":
-                strength = ev["strength"]
-                if strength != self.prev_vibration:
-                    logger.info(f"Vibration: {self.prev_vibration} -> {strength}")
-                    self.queue_cmd.append(gen_vibration(strength))
-                    self.prev_vibration = strength
-            # Capture led events        
-            elif ev["type"] == "led" and self.led_control:
+            if ev["type"] == "led" and self.led_control:
                 self.queue_led = ev
 
         # Send queued event if applicable
