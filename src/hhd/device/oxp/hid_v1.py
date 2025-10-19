@@ -114,7 +114,7 @@ _init_done = False
 
 
 class OxpHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, turbo: bool = True, g1: bool = False, led_control: bool = True, **kwargs) -> None:
+    def __init__(self, *args, turbo: bool = True, g1: bool = False, led_control: bool = True, secondary: bool = False, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.prev = {}
         self.queue_kbd = None
@@ -125,6 +125,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.turbo = turbo
 
         self.g1 = g1
+        self.secondary = secondary and not g1
         self.send_init = not g1  # g1 has no extra buttons
         self.led_control = led_control
         self.prev_brightness = None
@@ -240,16 +241,17 @@ class OxpHidraw(GenericGamepadHidraw):
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
 
-        if center_enabled != self.prev_center_enabled:
-            self.queue_cmd.append(gen_brightness(0x03, center_enabled, "high"))
-            self.queue_cmd.append(gen_brightness(0x04, center_enabled, "high"))
-            self.prev_center_enabled = center_enabled
+        if self.secondary:
+            if center_enabled != self.prev_center_enabled:
+                self.queue_cmd.append(gen_brightness(0x03, center_enabled, "high"))
+                self.queue_cmd.append(gen_brightness(0x04, center_enabled, "high"))
+                self.prev_center_enabled = center_enabled
 
-        # Only apply center colors on init on init
-        if init and center_enabled and center and center != self.prev_center:
-            self.queue_cmd.append(gen_rgb_solid(*center, side=0x03))
-            self.queue_cmd.append(gen_rgb_solid(*center, side=0x04))
-            self.prev_center = center
+            # Only apply center colors on init on init
+            if init and center_enabled and center and center != self.prev_center:
+                self.queue_cmd.append(gen_rgb_solid(*center, side=0x03))
+                self.queue_cmd.append(gen_rgb_solid(*center, side=0x04))
+                self.prev_center = center
 
     def produce(self, fds):
         if not self.dev:

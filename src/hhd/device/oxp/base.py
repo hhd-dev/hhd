@@ -251,7 +251,7 @@ class OxpAtKbd(GenericGamepadEvdev):
         return evs
 
 
-def find_vendor(prepare, turbo, protocol: str | None):
+def find_vendor(prepare, turbo, protocol: str | None, secondary: bool):
     d_ser = SerialDevice(turbo=turbo, required=True)
     d_hidraw = OxpHidraw(
         vid=[X1_MINI_VID],
@@ -261,6 +261,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         turbo=turbo,
         required=True,
         led_control=(protocol != "hid_dual"),
+        secondary=secondary,
     )
     d_hidraw_v2 = OxpHidrawV2(
         vid=[XFLY_VID],
@@ -278,6 +279,7 @@ def find_vendor(prepare, turbo, protocol: str | None):
         turbo=turbo,
         required=True,
         g1=True,
+        secondary=False,
     )
 
     if protocol in ["serial", "mixed"]:
@@ -464,7 +466,12 @@ def turbo_loop(
 
     try:
         prepare(d_volume_btn)
-        d_vend = find_vendor(prepare, True, dconf.get("protocol", None))
+        d_vend = find_vendor(
+            prepare,
+            True,
+            dconf.get("protocol", None),
+            dconf.get("rgb_secondary", False),
+        )
         d_vend_id = [id(d) for d in d_vend]
 
         for d in d_producers:
@@ -609,7 +616,7 @@ def controller_loop(
     keyboard_is = "keyboard"
     qam_hhd = False
     qam_no_release = False
-    if turbo:
+    if turbo and not dconf.get("g1", False):
         if conf.get("turbo_reboots", False):
             share_reboots = True
         match conf.get("extra_buttons", "separate"):
@@ -684,7 +691,12 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
-        d_vend = find_vendor(prepare, turbo, dconf.get("protocol", None))
+        d_vend = find_vendor(
+            prepare,
+            turbo,
+            dconf.get("protocol", None),
+            dconf.get("rgb_secondary", False),
+        )
         d_vend_id = [id(d) for d in d_vend]
         if dconf.get("g1", False):
             prepare(d_kbd_2)
