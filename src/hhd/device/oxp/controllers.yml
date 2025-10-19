@@ -43,6 +43,21 @@ children:
       Reverse the volume buttons of the X1 style devices to match other tablets.
     default: False
 
+  vibration_strength:
+    type: multiple
+    title: Vibration Strength
+    tags: [ non-essential, ordinal, vibration ]
+    hint: >-
+      Adjusts the vibration strength of the controller
+    options:
+      "off": "Off"
+      "1": "1"
+      "2": "2"
+      "3": "3"
+      "4": "4"
+      "5": "5"
+    default: "5"
+
   #
   # Common settings
   #
