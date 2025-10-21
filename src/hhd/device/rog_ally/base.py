@@ -329,7 +329,7 @@ def controller_loop(
             "duality": ["dual", "speedd"],
             "rainbow": ["brightnessd"],
             "spiral": ["brightnessd", "speedd", "direction"],
-        } if not xbox else None,
+        },
         rgb_zones="quad",
         extra_buttons="dual",
     )
