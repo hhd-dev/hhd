@@ -4,7 +4,7 @@ def buf(x):
 
 FEATURE_KBD_DRIVER = 0x5A
 FEATURE_KBD_APP = 0x5D
-FEATURE_KBD_ID = FEATURE_KBD_APP
+FEATURE_KBD_ID = FEATURE_KBD_DRIVER
 
 xpad_mode_game = 0x01
 xpad_mode_wasd = 0x02
