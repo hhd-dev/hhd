@@ -266,7 +266,33 @@ def plugin_run(
     init = time.perf_counter()
     repeated_fail = False
     first = True
+    disabled_dynled = False
+
     while not should_exit.is_set():
+        # Nice little quirk here. We have to disable dynamic lighting.
+        # Do it once since it is sticky until shutdown
+        if ally_x and xbox and not disabled_dynled:
+            d_dynled = GenericGamepadHidraw(
+                vid=[ASUS_VID],
+                pid=[ALLY_X_PID],
+                application=[0x00590001],
+            )
+            try:
+                d_dynled.open()
+                logger.info("Disabling dynamic lighting.")
+                assert d_dynled.dev is not None
+                d_dynled.dev.write(bytes([0x06, 0x01]))
+                disabled_dynled = True
+            except Exception as e:
+                logger.error(
+                    f"Error while disabling dynamic lighting with exception:\n{e}"
+                )
+            finally:
+                try:
+                    d_dynled.close(False)
+                except Exception:
+                    pass
+
         try:
             gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
             nkey_devs = enumerate_unique(vid=ASUS_VID)
