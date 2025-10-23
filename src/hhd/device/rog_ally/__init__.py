@@ -1,10 +1,11 @@
-from threading import Event, Thread
+from threading import Event as TEvent, Thread
 from typing import Any, Sequence
 
 from hhd.plugins import (
     Config,
     Context,
     Emitter,
+    Event,
     HHDPlugin,
     load_relative_yaml,
     get_outputs_config,
@@ -22,7 +23,8 @@ class RogAllyControllersPlugin(HHDPlugin):
     def __init__(self, ally_x: bool = False, xbox: bool = False) -> None:
         self.t = None
         self.should_exit = None
-        self.updated = Event()
+        self.updated = TEvent()
+        self.woke_up = None
         self.started = False
         self.t = None
         self.ally_x = ally_x
@@ -75,7 +77,8 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.started = True
 
         self.close()
-        self.should_exit = Event()
+        self.should_exit = TEvent()
+        self.woke_up = TEvent()
         self.t = Thread(
             target=plugin_run,
             args=(
@@ -86,6 +89,7 @@ class RogAllyControllersPlugin(HHDPlugin):
                 self.updated,
                 self.ally_x,
                 self.xbox,
+                self.woke_up,
             ),
         )
         self.t.start()
@@ -97,6 +101,12 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.t.join()
         self.should_exit = None
         self.t = None
+
+    def notify(self, events: Sequence[Event]):
+        for ev in events:
+            if ev["type"] == "special" and ev.get("event", None) == "wakeup":
+                if self.woke_up:
+                    self.woke_up.set()
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:

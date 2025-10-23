@@ -262,6 +262,7 @@ def plugin_run(
     updated: TEvent,
     ally_x: bool,
     xbox: bool,
+    woke_up: TEvent,
 ):
     init = time.perf_counter()
     repeated_fail = False
@@ -282,7 +283,7 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, emit, ally_x, xbox)
+            controller_loop(conf.copy(), should_exit, updated, emit, ally_x, xbox, woke_up)
             repeated_fail = False
         except Exception as e:
             first = True
@@ -313,7 +314,7 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool, xbox: bool
+    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool, xbox: bool, woke_up: TEvent
 ):
     debug = DEBUG_MODE
 
@@ -446,25 +447,7 @@ def controller_loop(
         for d in d_producers:
             prepare(d)
 
-        if ally_x and xbox:
-            d_dynled = GenericGamepadHidraw(
-                vid=[ASUS_VID],
-                pid=[ALLY_X_PID],
-                application=[0x00590001],
-            )
-            try:
-                d_dynled.open()
-                logger.info("Disabling dynamic lighting.")
-                assert d_dynled.dev is not None
-                d_dynled.dev.write(bytes([0x06, 0x01]))
-            except Exception as e:
-                logger.error(f"Error while disabling dynamic lighting with exception:\n{e}")
-            finally:
-                try:
-                    d_dynled.close(False)
-                except Exception:
-                    pass
-
+        woke_up.set()
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
             start = time.perf_counter()
@@ -484,6 +467,29 @@ def controller_loop(
             if evs:
                 if debug:
                     logger.info(evs)
+
+            # Handle dynamic lighting quirk
+            if ally_x and xbox and woke_up.is_set():
+                woke_up.clear()
+                d_dynled = GenericGamepadHidraw(
+                    vid=[ASUS_VID],
+                    pid=[ALLY_X_PID],
+                    application=[0x00590001],
+                )
+                try:
+                    d_dynled.open()
+                    logger.info("Disabling dynamic lighting.")
+                    assert d_dynled.dev is not None
+                    d_dynled.dev.write(bytes([0x06, 0x01]))
+                except Exception as e:
+                    logger.error(
+                        f"Error while disabling dynamic lighting with exception:\n{e}"
+                    )
+                finally:
+                    try:
+                        d_dynled.close(False)
+                    except Exception:
+                        pass
 
             d_vend.consume(evs)
             d_xinput.consume(evs)
