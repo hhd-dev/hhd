@@ -11,8 +11,8 @@ USER=${2:-bazzite}
 # ~/hhd-dev/hhd/venv/bin/pip install -e ~/hhd-dev/adjustor
 # ~/hhd-dev/hhd/venv/bin/pip install -e ~/hhd-dev/hhd
 # sudo chcon -R -u system_u -r object_r --type=bin_t /var/home/$USER/hhd-dev/hhd/venv/bin
-# sudo systemctl disable --now hhd@$(whoami)
-# sudo systemctl mask hhd@$(whoami)
+# sudo systemctl disable --now hhd
+# sudo systemctl mask hhd
 # sudo systemctl enable --now hhdl
 
 # sudo nano /etc/systemd/system/hhdl.service
@@ -24,17 +24,6 @@ USER=${2:-bazzite}
 # Nice=-12
 # Restart=on-failure
 # RestartSec=10
-# #Environment="HHD_QAM_KEYBOARD=1"
-# Environment="HHD_ALLY_POWERSAVE=1"
-# Environment="HHD_HORI_STEAM=1"
-# Environment="HHD_PPD_MASK=1"
-# Environment="HHD_HIDE_ALL=1"
-# Environment="HHD_GS_STEAMUI_HALFHZ=1"
-# Environment="HHD_GS_DPMS=1"
-# Environment="HHD_GS_STANDBY=1"
-# Environment="HHD_BOOTC=1"
-# Environment="HHD_BUGREPORT=1"
-# Environment="HHD_SWAP_CREATE=1"
 
 # [Install]
 # WantedBy=multi-user.target
