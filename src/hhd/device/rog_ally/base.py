@@ -266,33 +266,8 @@ def plugin_run(
     init = time.perf_counter()
     repeated_fail = False
     first = True
-    disabled_dynled = False
 
     while not should_exit.is_set():
-        # Nice little quirk here. We have to disable dynamic lighting.
-        # Do it once since it is sticky until shutdown
-        if ally_x and xbox and not disabled_dynled:
-            d_dynled = GenericGamepadHidraw(
-                vid=[ASUS_VID],
-                pid=[ALLY_X_PID],
-                application=[0x00590001],
-            )
-            try:
-                d_dynled.open()
-                logger.info("Disabling dynamic lighting.")
-                assert d_dynled.dev is not None
-                d_dynled.dev.write(bytes([0x06, 0x01]))
-                disabled_dynled = True
-            except Exception as e:
-                logger.error(
-                    f"Error while disabling dynamic lighting with exception:\n{e}"
-                )
-            finally:
-                try:
-                    d_dynled.close(False)
-                except Exception:
-                    pass
-
         try:
             gamepad_devs = enumerate_evs(vid=GAMEPAD_VID)
             nkey_devs = enumerate_unique(vid=ASUS_VID)
@@ -470,6 +445,25 @@ def controller_loop(
         prepare(d_kbd_1)
         for d in d_producers:
             prepare(d)
+
+        if ally_x and xbox:
+            d_dynled = GenericGamepadHidraw(
+                vid=[ASUS_VID],
+                pid=[ALLY_X_PID],
+                application=[0x00590001],
+            )
+            try:
+                d_dynled.open()
+                logger.info("Disabling dynamic lighting.")
+                assert d_dynled.dev is not None
+                d_dynled.dev.write(bytes([0x06, 0x01]))
+            except Exception as e:
+                logger.error(f"Error while disabling dynamic lighting with exception:\n{e}")
+            finally:
+                try:
+                    d_dynled.close(False)
+                except Exception:
+                    pass
 
         logger.info("Emulated controller launched, have fun!")
         while not should_exit.is_set() and not updated.is_set():
