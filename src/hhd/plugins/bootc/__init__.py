@@ -104,7 +104,7 @@ def get_branch(ref: str, branches: dict, fallback: bool = True):
     curr_tag = ref[ref.rindex(":") + 1 :]
 
     for branch in branches:
-        if branch in curr_tag:
+        if curr_tag.startswith(branch):
             return branch
 
     if not fallback:
