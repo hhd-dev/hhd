@@ -7,6 +7,7 @@ HOST=$1
 RSYNC="rsync -rv --exclude .git --exclude venv --exclude __pycache__'"
 USER=${2:-bazzite}
 
+# rm -rf ~/hhd-dev/hhd/venv
 # python -m venv --system-site-packages ~/hhd-dev/hhd/venv
 # ~/hhd-dev/hhd/venv/bin/pip install -e ~/hhd-dev/adjustor
 # ~/hhd-dev/hhd/venv/bin/pip install -e ~/hhd-dev/hhd
@@ -38,4 +39,4 @@ ssh $HOST /bin/bash << EOF
     sudo systemctl stop hhdl
 EOF
 
-ssh -t $HOST "sudo HHD_HORI_STEAM=1 HHD_HIDE_ALL=1 ~/hhd-dev/hhd/venv/bin/hhd --user bazzite"
+ssh -t $HOST "sudo HHD_HORI_STEAM=1 HHD_HIDE_ALL=1 HHD_BOOTC=1 ~/hhd-dev/hhd/venv/bin/hhd --user bazzite"
