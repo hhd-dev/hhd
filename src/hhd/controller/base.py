@@ -662,22 +662,28 @@ class Multiplexer:
             "rgb_modes", None
         )
         rgb_zones: RgbZones = params.get("rgb_zones", "mono")
+        rgb = None
+        if rgb_modes:
+            rgb: RgbCapabilities | None = {
+                "modes": rgb_modes,
+                "controller": uses_rgb,
+                "zones": rgb_zones,
+                "resets_on_ac": params.get("rgb_resets_on_ac", False),
+                "init_times": params.get("rgb_init_times", None),
+            }
+        self.rgb = rgb
+        self.supports_qam = params.get("supports_qam", True)
+        self.refresh()
+
+    def refresh(self):
+        self.unique = str(time.perf_counter_ns())
         if self.emit:
-            rgb = None
-            if rgb_modes:
-                rgb: RgbCapabilities | None = {
-                    "modes": rgb_modes,
-                    "controller": uses_rgb,
-                    "zones": rgb_zones,
-                    "resets_on_ac": params.get("rgb_resets_on_ac", False),
-                    "init_times": params.get("rgb_init_times", None),
-                }
             self.emit.set_capabilities(
                 self.unique,
                 {
                     "buttons": {},
-                    "rgb": rgb,
-                    "supports_qam": params.get("supports_qam", True),
+                    "rgb": self.rgb,
+                    "supports_qam": self.supports_qam,
                 },
             )
 

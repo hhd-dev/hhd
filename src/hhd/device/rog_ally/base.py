@@ -471,6 +471,7 @@ def controller_loop(
             # Handle dynamic lighting quirk
             if ally_x and xbox and woke_up.is_set():
                 woke_up.clear()
+                multiplexer.refresh() # make rgb be sent again
                 d_dynled = GenericGamepadHidraw(
                     vid=[ASUS_VID],
                     pid=[ALLY_X_PID],
