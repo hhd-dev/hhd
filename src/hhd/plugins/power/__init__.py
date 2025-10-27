@@ -15,9 +15,9 @@ from .power import (
 logger = logging.getLogger(__name__)
 
 TEMP_CHECK_INTERVAL = 10
-# Chill for the first 10 minutes to avoid bricking installs if a device
+# Chill for a bit to bricking installs if a device
 # has e.g., a battery bug that trips the condition incorrectly
-TEMP_CHECK_INITIALIZE = 300
+TEMP_CHECK_INITIALIZE = 120
 BATTERY_LOW_THRESHOLD = 5
 LAST_ATTEMPT_WAIT = 5
 LAST_ATTEMPT_BAIL = 30
@@ -36,13 +36,14 @@ def thermal_check(therm: dict[str, int], bat: str | None, last_attempt: float = 
 
     if bat and not found:
         with open(bat + "/status") as f:
-            dc = "discharging" in bat.lower()
+            dc = "discharging" in f.read().lower()
 
         with open(bat + "/capacity") as f:
             curr = int(f.read())
-            if dc and curr <= BATTERY_LOW_THRESHOLD:
-                logger.warning(f"Battery level reached {curr}%, hibernating.")
-                found = True
+
+        if dc and curr <= BATTERY_LOW_THRESHOLD:
+            logger.warning(f"Battery level reached {curr}%, hibernating.")
+            found = True
 
     if not found:
         return False
