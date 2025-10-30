@@ -2,7 +2,7 @@ import logging
 import select
 import time
 from threading import Event as TEvent
-from typing import Sequence
+from typing import Sequence, Literal
 
 from hhd.controller import DEBUG_MODE, Axis, Event, Multiplexer, can_read
 from hhd.controller.lib.hide import unhide_all
@@ -83,24 +83,40 @@ LONGER_ERROR_MARGIN = 1.3
 # LT = ABS_Z
 # L3 = BTN_TL2
 # R3 = BTN_TR2
-ALLY_X_BUTTON_MAP: dict[int, GamepadButton] = to_map(
+base: dict[GamepadButton, Sequence[int]] = {
+    # Gamepad
+    "a": [EC("BTN_SOUTH")],
+    "b": [EC("BTN_EAST")],
+    "x": [EC("BTN_C")],
+    "y": [EC("BTN_NORTH")],
+    # Sticks
+    "ls": [EC("BTN_TL2")],
+    "rs": [EC("BTN_TR2")],
+    # Bumpers
+    "lb": [EC("BTN_WEST")],
+    "rb": [EC("BTN_Z")],
+    # Select
+    "start": [EC("BTN_TR")],
+    "select": [EC("BTN_TL")],
+    # Misc
+    "share": [EC("BTN_SELECT")],  # xbox
+}
+ALLY_X_BUTTON_MAP: dict[int, GamepadButton] = to_map(base)
+
+ALLY_X_XBOX_ARMOURY_MAP: dict[int, GamepadButton] = to_map(
     {
-        # Gamepad
-        "a": [EC("BTN_SOUTH")],
-        "b": [EC("BTN_EAST")],
-        "x": [EC("BTN_C")],
-        "y": [EC("BTN_NORTH")],
-        # Sticks
-        "ls": [EC("BTN_TL2")],
-        "rs": [EC("BTN_TR2")],
-        # Bumpers
-        "lb": [EC("BTN_WEST")],
-        "rb": [EC("BTN_Z")],
-        # Select
-        "start": [EC("BTN_TR")],
-        "select": [EC("BTN_TL")],
-        # Misc
-        "share": [EC("BTN_SELECT")], # xbox
+        **base,
+        # Swap xbox and select buttons
+        "select": [EC("BTN_SELECT")],
+        "share": [EC("BTN_TL")],
+    }
+)
+
+ALLY_X_XBOX_MAP: dict[int, GamepadButton] = to_map(
+    {
+        **base,
+        # Swap armoury with xbox
+        "keyboard": [EC("BTN_SELECT")],
     }
 )
 
@@ -124,13 +140,22 @@ ALLY_X_AXIS_MAP: dict[int, AbsAxis] = to_map(
 
 
 class AllyHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, kconf={}, rgb_boot, rgb_charging, **kwargs) -> None:
+    def __init__(
+        self,
+        *args,
+        kconf={},
+        rgb_boot,
+        rgb_charging,
+        btn_2: Literal["share", "mode"],
+        **kwargs,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.kconf = kconf
         self.mouse_mode = False
         self.rgb_boot = rgb_boot
         self.rgb_charging = rgb_charging
         self.late_init = None
+        self.btn_2: Literal["share", "mode"] = btn_2
 
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
@@ -188,10 +213,10 @@ class AllyHidraw(GenericGamepadHidraw):
                     )
                 case 0x38 | 0x93:
                     # action = "right"
-                    out.append({"type": "button", "code": "keyboard", "value": True})
+                    out.append({"type": "button", "code": self.btn_2, "value": True})
                     self.queue.append(
                         (
-                            {"type": "button", "code": "keyboard", "value": False},
+                            {"type": "button", "code": self.btn_2, "value": False},
                             curr + MODE_DELAY,
                         )
                     )
@@ -283,7 +308,9 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, emit, ally_x, xbox, woke_up)
+            controller_loop(
+                conf.copy(), should_exit, updated, emit, ally_x, xbox, woke_up
+            )
             repeated_fail = False
         except Exception as e:
             first = True
@@ -314,7 +341,13 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool, xbox: bool, woke_up: TEvent
+    conf: Config,
+    should_exit: TEvent,
+    updated: TEvent,
+    emit: Emitter,
+    ally_x: bool,
+    xbox: bool,
+    woke_up: TEvent,
 ):
     debug = DEBUG_MODE
 
@@ -337,16 +370,26 @@ def controller_loop(
     )
     motion = d_params.get("uses_motion", True)
 
+    swap_armoury = conf.get("swap_armoury", False)
+    swap_xbox = conf.get("swap_xbox", False)
+
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS, gyro_scale="0.000266")
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
     # Inputs
     if ally_x:
+        if xbox and swap_armoury:
+            xmap = ALLY_X_XBOX_ARMOURY_MAP
+        elif xbox:
+            xmap = ALLY_X_XBOX_MAP
+        else:
+            xmap = ALLY_X_BUTTON_MAP
+
         d_xinput = GenericGamepadEvdev(
             vid=[ASUS_VID],
             pid=[ALLY_X_PID],
-            btn_map=ALLY_X_BUTTON_MAP,
+            btn_map=xmap,
             axis_map=ALLY_X_AXIS_MAP,
             # name=["Generic X-Box pad"],
             capabilities={EC("EV_KEY"): [EC("BTN_A")]},
@@ -388,6 +431,7 @@ def controller_loop(
         rgb_charging=conf.get("rgb_charging", False),
         callback=RgbCallback(),
         kconf=kconf,
+        btn_2="share" if swap_xbox and not swap_armoury else "mode",
     )
 
     # Grab shortcut keyboards
@@ -408,10 +452,10 @@ def controller_loop(
         select_reboots=conf["select_reboots"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
-        swap_guide="start_is_keyboard" if conf["swap_armory"].to(bool) else None,
+        swap_guide="start_is_keyboard" if swap_armoury else None,
         qam_hhd=True,
         keyboard_is="qam",
-        keyboard_no_release=not conf["swap_armory"].to(bool),
+        keyboard_no_release=not swap_armoury,
         params=d_params,
     )
 
@@ -471,7 +515,7 @@ def controller_loop(
             # Handle dynamic lighting quirk
             if ally_x and xbox and woke_up.is_set():
                 woke_up.clear()
-                multiplexer.refresh() # make rgb be sent again
+                multiplexer.refresh()  # make rgb be sent again
                 d_dynled = GenericGamepadHidraw(
                     vid=[ASUS_VID],
                     pid=[ALLY_X_PID],
