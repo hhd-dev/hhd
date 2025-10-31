@@ -141,6 +141,9 @@ class SmuQamPlugin(HHDPlugin):
                 "children"
             ]["reset"] = reset
 
+            if self.fan_info["tctl"] is None:
+                del out["tdp"]["qam"]["children"]["fan"]["modes"]["manual_junction"]
+
         return out
 
     def open(
@@ -209,7 +212,10 @@ class SmuQamPlugin(HHDPlugin):
                         for npp in npps:
                             if npp in self.pps:
                                 pp = npp
-                if self.pps and conf.get("tdp.smu.platform_profile", "disabled") != "disabled":
+                if (
+                    self.pps
+                    and conf.get("tdp.smu.platform_profile", "disabled") != "disabled"
+                ):
                     conf["tdp.smu.platform_profile"] = pp
                 conf["tdp.smu.energy_policy"] = ep
 
@@ -268,7 +274,11 @@ class SmuQamPlugin(HHDPlugin):
                         )
                         conf[f"tdp.qam.fan.{mode}.info"] = (
                             f"{fan_speed} ({', '.join(map(str, s['v_rpm']))} RPM)\n"
-                            + f"Tctl: {s['t_junction']:.2f}C, "
+                            + (
+                                f"Tctl: {s['t_junction']:.2f}C, "
+                                if s["t_junction"] is not None
+                                else ""
+                            )
                             + f"Edge: {s['t_edge']:.2f}C\n"
                         )
                     if "junction" in mode:

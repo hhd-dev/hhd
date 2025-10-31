@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class FanInfo(TypedDict):
-    tctl: str
+    tctl: str | None
     edge: str
     fans: list[str]
 
@@ -43,7 +43,7 @@ class FanState(TypedDict):
     v_target_pwm: int
     t_target: int
     v_rpm: list[int]
-    t_junction: float
+    t_junction: float | None
     t_edge: float
     fan_data: FanData
     in_setpoint: bool
@@ -52,8 +52,7 @@ class FanState(TypedDict):
 def get_fan_info() -> FanInfo | None:
     tctl = find_tctl_temp()
     if tctl is None:
-        logger.error("Could not find tctl junction temperature.")
-        return None
+        logger.warning("Could not find tctl junction temperature.")
 
     edge = find_edge_temp()
     if edge is None:
@@ -115,9 +114,14 @@ def update_fan_speed(
     observe_only: bool = False,
 ) -> tuple[bool, FanState]:
     t_edge = read_temp(fan_info["edge"])
-    t_junction = read_temp(fan_info["tctl"])
+    if fan_info["tctl"] is not None:
+        t_junction = read_temp(fan_info["tctl"])
+    else:
+        t_junction = None
 
     t_curr = t_junction if junction else t_edge
+    assert t_curr is not None, "Current temperature cannot be None"
+    
     data = state["fan_data"] if state else None
     v_curr, in_setpoint, data = calculate_fan_speed(t_curr, data, fan_curve, junction)
 
