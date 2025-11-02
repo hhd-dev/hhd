@@ -23,15 +23,6 @@ children:
     hint: >-
       Swaps the Armory Crate and Command center buttons with start and select.
     default: False
-  
-  swap_xbox:
-    type: bool
-    title: Swap Xbox And Armoury
-    tags: [non-essential]
-    hint: >-
-      Swaps the Xbox button and Armoury Crate button. If the ROG keys are swapped,
-      it swaps the Xbox button with the Menu/View button instead.
-    default: False
 
   imu:
     type: bool

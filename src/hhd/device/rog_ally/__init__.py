@@ -51,10 +51,6 @@ class RogAllyControllersPlugin(HHDPlugin):
         base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config(
             LIMIT_DEFAULTS(self.ally_x)
         )
-        
-        if not self.xbox:
-            del base["controllers"]["rog_ally"]["children"]["swap_xbox"]
-
         return base
 
     def update(self, conf: Config):

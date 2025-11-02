@@ -96,8 +96,6 @@ GamepadButton = Literal[
     "touchpad_touch",
     "touchpad_left",
     "touchpad_right",
-    # Kbd
-    "keyboard",
 ]
 
 MouseButton = Literal["btn_left", "btn_right", "btn_middle", "btn_side", "btn_extra"]
@@ -283,7 +281,7 @@ KeyboardButton = Literal[
 ]
 
 Axis = AbsAxis | RelAxis
-Button = Literal[""] | GamepadButton | KeyboardButton | MouseButton
+Button = Literal["", "keyboard"] | GamepadButton | KeyboardButton | MouseButton
 
 Configuration = Literal[
     # Misc
