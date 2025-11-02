@@ -2,7 +2,7 @@ import logging
 import select
 import time
 from threading import Event as TEvent
-from typing import Sequence
+from typing import Sequence, Literal
 
 from hhd.controller import DEBUG_MODE, Axis, Event, Multiplexer, can_read
 from hhd.controller.lib.hide import unhide_all
@@ -314,7 +314,13 @@ def plugin_run(
 
 
 def controller_loop(
-    conf: Config, should_exit: TEvent, updated: TEvent, emit: Emitter, ally_x: bool, xbox: bool, woke_up: TEvent
+    conf: Config,
+    should_exit: TEvent,
+    updated: TEvent,
+    emit: Emitter,
+    ally_x: bool,
+    xbox: bool,
+    woke_up: TEvent,
 ):
     debug = DEBUG_MODE
 
@@ -336,6 +342,9 @@ def controller_loop(
         extra_buttons="dual",
     )
     motion = d_params.get("uses_motion", True)
+
+    swap_armoury = conf.get("swap_armory", False)
+    swap_xbox = conf.get("swap_xbox", False) and xbox
 
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS, gyro_scale="0.000266")
@@ -401,6 +410,16 @@ def controller_loop(
     )
     d_kbd_grabbed = False
 
+    logger.error(f"{swap_armoury=}, {swap_xbox=}")
+    if swap_armoury and swap_xbox:
+        swap_guide = "xa_xbox_is_xbox_rev" # fix
+    elif swap_xbox:
+        swap_guide = "xa_xbox_is_xbox" # fix
+    elif swap_armoury:
+        swap_guide = "start_is_keyboard"
+    else:
+        swap_guide = None
+
     multiplexer = Multiplexer(
         trigger="analog_to_discrete",
         dpad="analog_to_discrete",
@@ -408,10 +427,10 @@ def controller_loop(
         select_reboots=conf["select_reboots"].to(bool),
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
-        swap_guide="start_is_keyboard" if conf["swap_armory"].to(bool) else None,
+        swap_guide=swap_guide, # type: ignore
         qam_hhd=True,
         keyboard_is="qam",
-        keyboard_no_release=not conf["swap_armory"].to(bool),
+        keyboard_no_release=not swap_armoury,
         params=d_params,
     )
 
@@ -463,6 +482,8 @@ def controller_loop(
                     evs.extend(d.produce(r))
             evs.extend(d_vend.produce(r))
 
+            if evs:
+                logger.info(f"Raw events: {evs}")
             evs = multiplexer.process(evs)
             if evs:
                 if debug:
@@ -471,7 +492,7 @@ def controller_loop(
             # Handle dynamic lighting quirk
             if ally_x and xbox and woke_up.is_set():
                 woke_up.clear()
-                multiplexer.refresh() # make rgb be sent again
+                multiplexer.refresh()  # make rgb be sent again
                 d_dynled = GenericGamepadHidraw(
                     vid=[ASUS_VID],
                     pid=[ALLY_X_PID],

@@ -559,6 +559,8 @@ class Multiplexer:
                 "start_is_keyboard",
                 "aya_traditional",
                 "aya_traditional_rev",
+                "xa_xbox_is_xbox",
+                "xa_xbox_is_xbox_rev",
             ]
         ) = None,
         trigger: None | Literal["analog_to_discrete", "discrete_to_analogue"] = None,
@@ -972,6 +974,10 @@ class Multiplexer:
                                         ev["code"] = "select"
                                     case "aya_traditional_rev":
                                         ev["code"] = "mode"
+                                    case "xa_xbox_is_xbox":
+                                        pass
+                                    case "xa_xbox_is_xbox_rev":
+                                        ev["code"] = "keyboard"
                                     case "start_is_keyboard":
                                         ev["code"] = "keyboard"
                                     case "select_is_guide":
@@ -984,6 +990,10 @@ class Multiplexer:
                                         ev["code"] = "mode"
                                     case "aya_traditional_rev":
                                         pass
+                                    case "xa_xbox_is_xbox":
+                                        pass
+                                    case "xa_xbox_is_xbox_rev":
+                                        ev["code"] = "share"
                                     case "start_is_keyboard":
                                         ev["code"] = "mode"
                                     case "select_is_guide":
@@ -996,6 +1006,10 @@ class Multiplexer:
                                         ev["code"] = "start"
                                     case "aya_traditional_rev":
                                         ev["code"] = "keyboard"
+                                    case "xa_xbox_is_xbox":
+                                        ev["code"] = "share"
+                                    case "xa_xbox_is_xbox_rev":
+                                        ev["code"] = "select"
                                     case "guide_is_start":
                                         ev["code"] = "start"
                                     case _:
@@ -1006,6 +1020,10 @@ class Multiplexer:
                                         pass
                                     case "aya_traditional_rev":
                                         pass
+                                    case "xa_xbox_is_xbox":
+                                        ev["code"] = "mode"
+                                    case "xa_xbox_is_xbox_rev":
+                                        ev["code"] = "mode"
                                     case "start_is_keyboard":
                                         pass
                                     case "guide_is_start":
@@ -1017,6 +1035,8 @@ class Multiplexer:
                                     case "start_is_keyboard":
                                         ev["code"] = "start"
                                     case "aya_traditional_rev":
+                                        ev["code"] = "start"
+                                    case "xa_xbox_is_xbox_rev":
                                         ev["code"] = "start"
 
                     if (
