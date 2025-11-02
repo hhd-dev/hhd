@@ -427,7 +427,7 @@ def controller_loop(
         nintendo_mode=conf["nintendo_mode"].to(bool),
         emit=emit,
         swap_guide=swap_guide, # type: ignore
-        qam_hhd=True,
+        qam_hhd="full",
         keyboard_is="qam",
         keyboard_no_release=not swap_armoury,
         params=d_params,

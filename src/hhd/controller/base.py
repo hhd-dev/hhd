@@ -590,7 +590,7 @@ class Multiplexer:
         params: Mapping[str, Any] = {},
         qam_multi_tap: bool = True,
         qam_no_release: bool = False,
-        qam_hhd: bool = False,
+        qam_hhd: bool | Literal["side", "full"] = False,
         qam_hold: Literal["hhd", "mode"] = "hhd",
         keyboard_is: Literal["steam_qam", "qam", "keyboard"] = "keyboard",
         keyboard_no_release: bool = False,
@@ -1463,9 +1463,18 @@ class Multiplexer:
             and not self.qam_pre_sent
             and self.emit
         ):
-            # Send event instantly after double press to eat delay
-            self.emit({"type": "special", "event": "qam_predouble"})
-            self.qam_pre_sent = True
+            if self.qam_hhd == "full" and qam_hhd:
+                # Send full open and cancel event
+                self.emit({"type": "special", "event": "qam_triple"})
+                self.qam_pressed = None
+                self.qam_released = None
+                self.qam_pre_sent = False
+                self.qam_times = 0
+                logger.info(f"QAM Pressed, opening fully.")
+            else:
+                # Send event instantly after double press to eat delay
+                self.emit({"type": "special", "event": "qam_predouble"})
+                self.qam_pre_sent = True
 
         send_steam_qam = send_steam_qam or (
             qam_apply and not qam_hhd and self.qam_released and self.qam_times == 1
