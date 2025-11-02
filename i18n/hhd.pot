@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-21 17:39+0200\n"
+"POT-Creation-Date: 2025-11-02 11:29+0100\n"
 "PO-Revision-Date: 2025-09-04 13:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: English <https://hosted.weblate.org/projects/hhd/hhd/en/>\n"
@@ -1172,6 +1172,18 @@ msgstr "Allows for configuring the ROG Ally controllers to a unified output."
 #. Field: hint
 msgid "Emulate different controller types to fuse ROG features."
 msgstr "Emulate different controller types to fuse ROG features."
+
+#. Setting: Swap Xbox And Armoury
+#. Field: title
+msgid "Swap Xbox And Armoury"
+msgstr ""
+
+#. Setting: Swap Xbox And Armoury
+#. Field: hint
+msgid ""
+"Swaps the Xbox button and Armoury Crate button. If the ROG keys are swapped, "
+"it swaps the Xbox button with the Menu/View button instead."
+msgstr ""
 
 #. Setting: Swap ROG and Menu/View
 #. Field: title
