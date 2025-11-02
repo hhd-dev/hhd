@@ -410,7 +410,6 @@ def controller_loop(
     )
     d_kbd_grabbed = False
 
-    logger.error(f"{swap_armoury=}, {swap_xbox=}")
     if swap_armoury and swap_xbox:
         swap_guide = "xa_xbox_is_xbox_rev" # fix
     elif swap_xbox:
@@ -482,8 +481,6 @@ def controller_loop(
                     evs.extend(d.produce(r))
             evs.extend(d_vend.produce(r))
 
-            if evs:
-                logger.info(f"Raw events: {evs}")
             evs = multiplexer.process(evs)
             if evs:
                 if debug:
