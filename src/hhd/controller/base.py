@@ -1458,20 +1458,21 @@ class Multiplexer:
 
         qam_hhd = self.qam_hhd and not self.qam_kbd
         if (
-            self.qam_pressed
+            (self.qam_pressed or self.qam_released)
             and self.qam_times == (1 if qam_hhd else 2)
             and not self.qam_pre_sent
             and self.emit
         ):
             if self.qam_hhd == "full" and qam_hhd:
                 # Send full open and cancel event
+                logger.info(f"QAM Pressed, opening fully.")
                 self.emit({"type": "special", "event": "qam_triple"})
                 self.qam_pressed = None
                 self.qam_released = None
                 self.qam_pre_sent = False
                 self.qam_times = 0
-                logger.info(f"QAM Pressed, opening fully.")
             else:
+                logger.info(f"QAM Pressed, sending pre-double event.")
                 # Send event instantly after double press to eat delay
                 self.emit({"type": "special", "event": "qam_predouble"})
                 self.qam_pre_sent = True
