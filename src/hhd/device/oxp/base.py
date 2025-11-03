@@ -39,6 +39,9 @@ X1_MINI_PID = 0xFE00
 X1_MINI_PAGE = 0xFF00
 X1_MINI_USAGE = 0x0001
 
+G1_KEYBOARD_VID = 0x6080
+G1_KEYBOARD_PID = 0x8060
+
 XFLY_VID = 0x1A2C
 XFLY_PID = 0xB001
 XFLY_PAGE = 0xFF01
@@ -613,13 +616,14 @@ def controller_loop(
     )
     # Touchpad keyboard
     d_kbd_2 = GenericGamepadEvdev(
-        vid=[0x6080],
-        pid=[0x8060],
+        vid=[G1_KEYBOARD_VID],
+        pid=[G1_KEYBOARD_PID],
         required=True,
         grab=False,
         btn_map=BTN_MAPPINGS,
         capabilities={EC("EV_KEY"): [EC("KEY_D")]},
         requires_start=True,
+        vibrate_on_press=0.008 if conf["vibrate_on_press"].to(bool) else 0,
     )
 
     share_reboots = False
