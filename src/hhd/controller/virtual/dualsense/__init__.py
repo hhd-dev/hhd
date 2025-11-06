@@ -568,20 +568,20 @@ class Dualsense(Producer, Consumer):
                     # Right owns TP1: TP1 = right, TP2 = left
                     tp1_x, tp1_y = self.right_touchpad_x, self.right_touchpad_y
                     tp2_x, tp2_y = self.left_touchpad_x, self.left_touchpad_y
-                    tp1_is_left = False
                 else:  # "left"
                     # Left owns TP1: TP1 = left, TP2 = right
                     tp1_x, tp1_y = self.left_touchpad_x, self.left_touchpad_y
                     tp2_x, tp2_y = self.right_touchpad_x, self.right_touchpad_y
-                    tp1_is_left = True
                 
                 # Write both TP1 and TP2
                 write_tp(self.ofs + 32, tp1_x, tp1_y)
                 write_tp(self.ofs + 36, tp2_x, tp2_y)
                 
-                # Set TP1 touch status if it's the left touchpad
-                if tp1_is_left:
-                    new_rep[self.ofs + 32] = new_rep[self.ofs + 32] & 0x7F
+                # Manually set both contact bits to "touching" (override default mapping)
+                # This is necessary because the default mapping (touchpad_touch->TP1, left_touchpad_touch->TP2)
+                # may not match the actual coordinate assignment when tp1_owner is "left"
+                new_rep[self.ofs + 32] = new_rep[self.ofs + 32] & 0x7F  # TP1 is touching
+                new_rep[self.ofs + 36] = new_rep[self.ofs + 36] & 0x7F  # TP2 is touching
             else:
                 # Only one touching: behavior depends on mapping mode
                 if self.touchpad_persistent_mapping:
