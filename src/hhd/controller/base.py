@@ -629,6 +629,9 @@ class Multiplexer:
         self.touchpad_x = 0
         self.touchpad_y = 0
         self.touchpad_down = None
+        self.left_touchpad_x = 0
+        self.left_touchpad_y = 0
+        self.left_touchpad_down = None
         self.queue: list[tuple[Event | Literal["reboot"], float]] = []
         self.reboot_pressed = None
         self.select_is_held = False
@@ -693,6 +696,7 @@ class Multiplexer:
         out: list[Event] = []
         status_events = set()
         touched = False
+        left_touched = False
         send_steam_qam = False
         send_steam_expand = False
 
@@ -796,6 +800,45 @@ class Multiplexer:
             or abs(self.touchpad_down[2] - self.touchpad_y) > 0.13
         ):
             self.touchpad_down[3] = False
+
+        # Left touchpad hold detection
+        if (
+            self.touchpad_hold != "disabled"
+            and self.left_touchpad_down
+            and self.left_touchpad_down[3]
+            and curr - self.left_touchpad_down[0] > 0.8
+        ):
+            action = (
+                "touchpad_left"
+                if self.touchpad_hold == "left_click"
+                else "touchpad_right"
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": action,
+                        "value": True,
+                    },
+                    curr,
+                )
+            )
+            self.queue.append(
+                (
+                    {
+                        "type": "button",
+                        "code": action,
+                        "value": False,
+                    },
+                    curr + self.QAM_DELAY,
+                )
+            )
+            self.left_touchpad_down = None
+        elif self.left_touchpad_down and (
+            abs(self.left_touchpad_down[1] - self.left_touchpad_x) > 0.13
+            or abs(self.left_touchpad_down[2] - self.left_touchpad_y) > 0.13
+        ):
+            self.left_touchpad_down[3] = False
 
         for ev in events:
             match ev["type"]:
@@ -931,6 +974,10 @@ class Multiplexer:
                         self.touchpad_x = ev["value"]
                     if ev["code"] == "touchpad_y":
                         self.touchpad_y = ev["value"]
+                    if ev["code"] == "left_touchpad_x":
+                        self.left_touchpad_x = ev["value"]
+                    if ev["code"] == "left_touchpad_y":
+                        self.left_touchpad_y = ev["value"]
                 case "button":
                     if self.trigger == "discrete_to_analog" and ev["code"] in (
                         "lt",
@@ -1310,6 +1357,47 @@ class Multiplexer:
                             self.touchpad_down = None
                         # append A after QAM_DELAY s
 
+                    # Left touchpad short press detection
+                    if ev["code"] == "left_touchpad_touch":
+                        if (
+                            self.touchpad_short != "disabled"
+                            and not ev["value"]
+                            and self.left_touchpad_down
+                            and curr - self.left_touchpad_down[0] < 0.2
+                            and abs(self.left_touchpad_down[1] - self.left_touchpad_x) < 0.04
+                            and abs(self.left_touchpad_down[2] - self.left_touchpad_y) < 0.04
+                        ):
+                            action = (
+                                "touchpad_left"
+                                if self.touchpad_short == "left_click"
+                                else "touchpad_right"
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": action,
+                                        "value": True,
+                                    },
+                                    curr,
+                                )
+                            )
+                            self.queue.append(
+                                (
+                                    {
+                                        "type": "button",
+                                        "code": action,
+                                        "value": False,
+                                    },
+                                    curr + self.QAM_DELAY,
+                                )
+                            )
+
+                        if ev["value"]:
+                            left_touched = True
+                        else:
+                            self.left_touchpad_down = None
+
                     if self.r3_to_share and ev["code"] == "extra_r3":
                         ev["code"] = "share"
 
@@ -1395,6 +1483,14 @@ class Multiplexer:
                 curr,
                 self.touchpad_x,
                 self.touchpad_y,
+                bool(True),
+            ]
+
+        if left_touched:
+            self.left_touchpad_down = [
+                curr,
+                self.left_touchpad_x,
+                self.left_touchpad_y,
                 bool(True),
             ]
 
