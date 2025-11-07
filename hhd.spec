@@ -38,8 +38,8 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 %autosetup -n %{name}-%{version}
 
 %build
-%{_bindir}/pybabel compile -D hhd -d ./i18n
-%{_bindir}/pybabel compile -D adjustor -d ./i18n || true
+%{python3} -m babel.messages.frontend compile -D hhd -d ./i18n
+%{python3} -m babel.messages.frontend compile -D adjustor -d ./i18n || true
 cp -rf ./i18n/* ./src/hhd/i18n
 %{python3} -m build --wheel --no-isolation
 
@@ -63,6 +63,5 @@ install -m644 usr/lib/systemd/system/%{name}.service %{buildroot}%{_unitdir}/%{n
 %{_unitdir}/%{name}@.service
 %{_unitdir}/%{name}.service
 
-%{_bindir}/adjustor*
 %{python3_sitelib}/adjustor*
 # %{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
