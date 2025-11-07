@@ -1,4 +1,4 @@
-Name:           hhd
+Name:           hhd-git
 Version:        {{{ git_dir_version }}}
 Release:        2%{?dist}
 Summary:        Handheld Daemon, a tool for configuring handheld devices.
@@ -30,6 +30,7 @@ Requires:       python-fuse
 Requires:       libusb1
 Requires:       hidapi
 
+Provides:       hhd
 Obsoletes:      adjustor
 
 %description
