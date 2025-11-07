@@ -30,10 +30,11 @@ hhdrel ()
   # done
   sed -i "s/version = \".*\"/version = \"$relver\"/" pyproject.toml
   sed -i "s/^Version: *.*/Version:        $relver/" hhd.spec
+  sed -i "s/^pkgver=.*/pkgver=$relver/" PKGBUILD
   pybabel compile -D hhd -d ./i18n
   pybabel compile -D adjustor -d ./i18n
   # find i18n -type f -name "*.po*" -exec sed -i 's/^"POT-Creation-Date: .*"/"POT-Creation-Date: 2020-01-01 00:00+0000\\n"/' {} +
-  git add pyproject.toml i18n/*
+  git add pyproject.toml PKGBUILD hhd.spec i18n/*
   git commit -m "bump to $relver"
   git tag -f $tag && git push origin $tag -f
 ) &&
