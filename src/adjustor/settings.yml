@@ -1,0 +1,76 @@
+tdp:
+  title: TDP Controls
+  type: container
+  children:
+    tdp_enable:
+      title: Enable TDP Controls
+      type: action
+      tags: [ non-essential ]
+      default: True
+      hint: >-
+        Enables TDP management by Handheld Daemon.
+        While enabled, Handheld Daemon will set and maintain the TDP limits set
+        on start-up and during other device changes (ac/dc).
+
+    tdp_error:
+      title: Error
+      type: display
+      tags: [ error, non-essential ]
+      options: 
+        nowrite: Can not write to ACPI Call file. ACPI Call is required for TDP.
+
+    decky_info:
+      title: TDP Capabilities
+      type: display
+      tags: [ non-essential ]
+      default: >
+        Handheld Daemon supports the TDP slider in Steam and can use its per
+        game profiles. It also supports custom fan curves and battery limits.
+
+    decky_remove:
+      title: Disable Decky TDP Plugins
+      type: action
+      tags: [ verify, non-essential ]
+      hint: >-
+        Disables Decky TDP plugins (Powercontrol, SimpleDeckyTDP) by moving
+        them from ~/homebrew/plugins to ~/homebrew/plugins/hhd-disabled.
+        Then, restarts Decky. This might cause Steam to restart.
+        Move them back and reboot to re-enable.
+
+hhd:
+  type: container
+  children:
+    tdp_enable:
+      title: Enable TDP Controls
+      type: bool
+      default: False
+      hint: >-
+        Enables TDP management by the Handheld Daemon.
+        While enabled, Handheld Daemon will set and maintain the TDP limits set
+        on start-up and during other device changes (ac/dc).
+
+        If the device crashes, TDP setting will be disabled on next startup.
+    
+    fuse_mount:
+      title: Add TDP to /sys for Steam (Requires Restart)
+      type: bool
+      default: True
+      hint: >-
+        Uses a FUSE mount to add TDP attributes to /sys/class/drm.
+        This fixes the TDP slider in Steam.
+
+    enforce_limits:
+      title: Enforce Device TDP Limits
+      type: bool
+      tags: [ expert ]
+      default: True
+      hint: >-
+        When this option is on, the settings will adhere to the limits set out
+        by the device manufacturer, subject to their availability.
+
+        With it off, the TDP settings ranges will expand to what is logically
+        possible for the current device (regardless of manufacturer specifications).
+
+        All settings outside specifications will be set to system specifications
+        after rebooting.
+        

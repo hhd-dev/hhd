@@ -53,3 +53,7 @@ install -m644 usr/lib/systemd/system/%{name}.service %{buildroot}%{_unitdir}/%{n
 %{_sysconfdir}/udev/hwdb.d/83-%{name}.hwdb
 %{_unitdir}/%{name}@.service
 %{_unitdir}/%{name}.service
+
+%{_bindir}/adjustor*
+%{python3_sitelib}/adjustor*
+# %{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf

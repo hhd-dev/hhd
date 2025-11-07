@@ -1,0 +1,164 @@
+enabled:
+  title: Processor Settings
+  type: container
+  tags: [ hide-title, non-essential ]
+  children:
+    mode:
+      type: mode
+      title: CPU Settings
+      default: auto
+      modes:
+        auto:
+          type: container
+          title: Auto
+          tags: [ non-essential ]
+          hint: >-
+            Handheld Daemon will manage the energy management settings.
+            This includes CPU governor, CPU boost, GPU frequency, and CPU power preferences.
+            At low TDPs, the CPU will be tuned down and at other TDPs, it will
+            use balanced settings.
+        manual:
+          type: container
+          title: Manual
+          tags: [ non-essential ]
+          hint: >-
+            Allows you to set the energy management settings manually.
+          children:
+            cpu_pref:
+              type: multiple
+              title: CPU Power (EPP)
+              tags: [ordinal]
+              hint: >-
+                Sets the energy performance preference for the CPU.
+                Keep on balanced for good performance on all TDPs.
+                Options map to `power`, `balance_power`, `balance_performance`.
+                Performance is not recommended and is not included.
+              default: balance_power
+              options:
+                power: Low
+                balance_power: Balanced
+                balance_performance: High
+            cpu_min_freq:
+              type: multiple
+              title: CPU Minimum Frequency
+              tags: [ordinal, expert]
+              default: min
+              options:
+                min: 400MHz
+                nonlinear: 1GHz
+              hint: >-
+                Sets the minimum frequency for the CPU.
+                Using 400MHz will save battery in light games.
+                However, the delay of increasing the frequency
+                may cause minor stutters, especially in VRR displays.
+            cpu_boost:
+              type: multiple
+              title: CPU Boost
+              tags: [ordinal]
+              default: enabled
+              hint: >-
+                Enables or disables the CPU boost frequencies.
+                Disabling lowers total consumption by 2W with 
+                minimal performance impact.
+              options:
+                disabled: Disabled
+                enabled: Enabled
+            sched:
+              type: multiple
+              title: Custom Scheduler
+              hint: >-
+                Allows attaching a scheduler to the kernel sched_ext.
+                Schedulers need to be installed and kernel needs to support sched_ext.
+              options:
+                disabled: Disabled
+                scx_lavd: LAVD
+                scx_bpfland: bpfland 
+                scx_rusty: rusty
+                scx_p2dq: P2DQ
+                scx_flash: Flash
+              default: disabled
+    gpu_freq:
+      type: mode
+      title: GPU Frequency
+      hint: >-
+        Pins the GPU to a certain frequency.
+        Helps in certain games that are CPU or GPU heavy
+        by shifting power to or from the GPU.
+        Has a minor effect.
+      default: auto
+      modes:
+        auto:
+          type: container
+          title: Auto
+          hint: >-
+            Lets the GPU manage its own frequency.
+        upper:
+          type: container
+          title: Max Limit
+          hint: >-
+            Limits the maximum frequency of the GPU.
+          children:
+            frequency: &freq
+              type: int
+              unit: MHz
+              min: 300
+              max: 2000
+              step: 100
+              default: 1000
+              title: Maximum Frequency
+        range:
+          type: container
+          title: Range
+          hint: >-
+            Sets the GPU frequency to a range.
+          children:
+            min:
+              <<: *freq
+              title: Minimum Frequency
+            max:
+              <<: *freq
+              title: Maximum Frequency
+        manual:
+          type: container
+          title: Fixed
+          hint: >-
+            Pins the GPU to a certain frequency (not recommended).
+          children:
+            frequency:
+              <<: *freq
+              title: Frequency
+
+conflict:
+  title: Processor Settings
+  type: container
+  tags: [ hide-title, non-essential ]
+  children:
+    enable_error:
+      title: Conflict Detected
+      type: display
+      default: >-
+        Energy Management can not be enabled while PPD or TuneD are enabled.
+        `systemctl mask power-profiles-daemon` or `tuned`.
+    enable:
+      title: Enable Processor Settings
+      type: action
+      tags: [ non-essential ]
+core:
+  type: container
+  children:
+    amd_energy_enable:
+      title: Enable energy management
+      type: bool
+      default: True
+      hint: >-
+        Handheld daemon will manage the power preferences for the system,
+        including Governor, Boost, GPU frequency, and EPP.
+        In addition, Handheld daemon will launch a PPD service to replace
+        PPD's role in the system. 
+
+    amd_energy_ppd:
+      title: Enable PPD Emulation (KDE/Gnome Power)
+      type: bool
+      default: True
+      hint: >-
+        Enable PPD service to manage the power preferences for the system.

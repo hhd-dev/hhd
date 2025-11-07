@@ -1,0 +1,115 @@
+title: MSI TDP
+type: container
+tags: [hide-title]
+hint: >-
+  Uses the interface of Armory Crate to set the TDP of the device.
+children:
+  tdp:
+    type: mode
+    title: TDP Mode
+    default: balanced
+    modes:
+      quiet:
+        type: container
+        title: Powersave
+        unit: 
+      balanced:
+        type: container
+        title: Balanced
+        unit: 
+      performance:
+        type: container
+        title: Sport
+        unit: 
+      custom:
+        type: container
+        title: Custom
+        unit: → 30W
+        children:
+          tdp:
+            type: int
+            title: TDP
+            hint: >-
+              Average TDP Target.
+              TDP Boost is recommended for desktop use and does not affect gaming.
+
+            min: 0
+            max: 30
+            step: 1
+            default: 30
+            unit: W
+          boost:
+            type: bool
+            title: TDP Boost
+            default: True
+            hint: >-
+              Allows the device to temporarily boost by setting appropriate slow and fast TDPs.
+  
+  sys_tdp:
+    type: display
+    title: " "
+    tags: []
+
+  cycle_tdp:
+    type: bool
+    title: Change TDP with View+Y
+    tags: [ non-essential ]
+    hint: >-
+      Allows you to cycle through TDP modes with the View+Y key combination.
+      Recommended to use with button swap, as the View button will be muted to games.
+    default: True
+
+  fan:
+    type: mode
+    title: Custom Fan Curve
+    hint: >-
+      Allows you to set a custom fan curve.
+    default: disabled
+    modes:
+      disabled:
+        type: container
+        title: Disabled
+        hint: >-
+          Lets the device manage the fan curve on its own.
+      manual:
+        type: container
+        title: Manual
+        tags: [ non-essential ]
+        children:
+
+          st0: &speed_template
+            title: 40C
+            hint: Sets the speed at the named temperature.
+            tags: [slim]
+            type: int
+            min: 0
+            default: 0
+            max: 100
+            step: 2
+            unit: "%"
+          st50:
+            <<: *speed_template
+            title: 50C
+            default: 40
+          st60:
+            <<: *speed_template
+            title: 60C
+            default: 49
+          st70:
+            <<: *speed_template
+            title: 70C
+            default: 58
+          st80:
+            <<: *speed_template
+            title: 80C
+            default: 67
+          st88:
+            <<: *speed_template
+            title: 90C
+            default: 75
+            
+          reset:
+            title: Restore Default
+            type: action
+            hint: >-
+              Restore a default sane fan curve.

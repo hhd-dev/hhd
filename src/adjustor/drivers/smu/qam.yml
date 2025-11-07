@@ -1,0 +1,80 @@
+title: TDP Settings
+type: container
+tags: [ hide-title ]
+children:
+  tdp:
+    title: TDP
+    hint: >-
+      Controls all Ryzen SMU settings through preset curves.
+    type: int
+    step: 1
+    unit: W
+
+  boost:
+    title: TDP Boost
+    type: bool
+    default: True
+  
+  sys_tdp:
+    type: display
+    title: " "
+    tags: []
+  
+  fan:
+    type: mode
+    title: Custom Fan Curve
+    hint: >-
+      Allows you to set a custom fan curve and to choose the temperature
+      probe (Edge or Junction). Junction is the peak temperature of the
+      chip: responds faster and prevents throttling. Edge is the temperature
+      of the chip: responds slower and prevents overheating.
+
+    default: disabled
+    modes:
+      disabled:
+        type: container
+        title: Disabled
+
+      manual_edge:
+        type: container
+        title: Manual (Edge, Smooth)
+        tags: [ non-essential ]
+        children:
+
+          info:
+            title: ""
+            type: display
+
+          st40: &speed_template
+            hint: Sets the speed at the named temperature.
+            tags: [slim]
+            type: int
+            min: 0
+            max: 100
+            step: 2
+            unit: "%"
+            title: 40C
+            default: 25
+          
+          reset:
+            type: action
+            title: Reset to Default
+
+      manual_junction:
+        type: container
+        title: Manual (Tctl, Fast)
+        tags: [ non-essential ]
+        children:
+
+          info:
+            title: ""
+            type: display
+
+          st40:
+            <<: *speed_template
+            title: 40C
+            default: 40
+
+          reset:
+            type: action
+            title: Reset to Default

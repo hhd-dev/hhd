@@ -1,0 +1,157 @@
+title: Lenovo TDP
+type: container
+tags: [hide-title]
+hint: >-
+  Uses the interface of Legion Space to set the TDP of the device.
+children:
+  tdp:
+    type: mode
+    title: TDP Mode
+    modes:
+      quiet:
+        type: container
+        title: Quiet
+        unit: 8W
+      balanced:
+        type: container
+        title: Balanced
+        unit: 15W
+      performance:
+        type: container
+        title: Performance
+        unit: 20W
+      custom:
+        type: container
+        title: Custom
+        unit: → 25/30W
+        children:
+          tdp:
+            type: int
+            title: TDP
+            hint: >-
+              Maximum average TDP. Boost goes a bit higher and is recommended for desktop use.
+
+            min: 0
+            max: 30
+            step: 1
+            default: 25
+            unit: W
+          boost:
+            type: bool
+            title: TDP Boost
+            default: True
+            hint: >-
+              Allows the device to boost by setting appropriate slow and fast TDPs.
+
+  cycle_info:
+    type: display
+    title: " "
+    tags: [non-essential]
+
+  ffss:
+    type: bool
+    title: Set Fan to Full Speed
+
+  fan:
+    type: mode
+    title: Custom Fan Curve
+    hint: >-
+      Allows you to set a custom fan curve.
+    default: disabled
+    modes:
+      disabled:
+        type: container
+        title: Disabled
+        hint: >-
+          Lets Legion GO manage the curve on its own. Setting this option will cause
+          a mode change to reset the fan curve.
+      manual:
+        type: container
+        title: Manual
+        tags: [ non-essential ]
+        children:
+
+          st10: &speed_template
+            title: 10C
+            hint: Sets the speed at the named temperature.
+            tags: [slim]
+            type: int
+            min: 0
+            default: 44
+            max: 115
+            step: 2
+            unit: "%"
+          
+          st20:
+            <<: *speed_template
+            title: 20C
+            default: 48
+          st30:
+            <<: *speed_template
+            title: 30C
+            default: 55
+          st40:
+            <<: *speed_template
+            title: 40C
+            default: 60
+          st50:
+            <<: *speed_template
+            title: 50C
+            default: 71
+          st60:
+            <<: *speed_template
+            title: 60C
+            default: 79
+          st70:
+            <<: *speed_template
+            title: 70C
+            default: 87
+          st80:
+            <<: *speed_template
+            title: 80C
+            default: 87
+          st90:
+            <<: *speed_template
+            title: 90C
+            default: 100
+          st100:
+            <<: *speed_template
+            title: 100C
+            default: 100
+
+          enforce_limits:
+            title: Enforce Windows Minimums
+            type: bool
+            default: True
+            hint: >-
+              Enforce the minimum fan curve from Legion Space.
+            
+          reset:
+            title: Restore Default
+            type: action
+            hint: >-
+              Reset to the original fan curve for custom mode.
+
+  tdp_rgb:
+    type: bool
+    title: Show TDP changes with RGB
+    tags: [non-essential]
+    default: True
+
+  charge_limit:
+    tags: [advanced]
+    type: bool
+    title: Charge Limit (80%)
+    default: False
+    hint: >-
+      Limits device charging to 80%.
+
+  power_light:
+    tags: [advanced]
+    type: bool
+    title: Power Light (Awake)
+
+  power_light_sleep:
+    tags: [advanced]
+    type: bool
+    title: Power Light (Sleep)
