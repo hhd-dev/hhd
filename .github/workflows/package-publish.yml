@@ -43,11 +43,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Copy PKGBUILD
+        run: |
+          mkdir -p ./pkg
+          cp ./PKGBUILD ./pkg/PKGBUILD
       - name: Publish AUR package
         uses: KSXGitHub/github-actions-deploy-aur@v2.7.0
         with:
           pkgname: hhd
-          pkgbuild: ./PKGBUILD
+          pkgbuild: ./pkg/PKGBUILD
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}

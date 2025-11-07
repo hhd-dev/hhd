@@ -39,7 +39,7 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 
 %build
 pybabel compile -D hhd -d ./i18n
-pybabel compile -D adjustor -d ./i18n
+pybabel compile -D adjustor -d ./i18n || true
 cp -rf ./i18n/* ./src/hhd/i18n
 %{python3} -m build --wheel --no-isolation
 

@@ -1,6 +1,6 @@
 # Maintainer: Antheas Kapenekakis <aur at antheas dot dev>
 pkgname=hhd
-pkgver=VERSION
+pkgver=3.19.31
 pkgrel=1
 pkgdesc='Handheld Daemon. A tool for managing the quirks of handheld devices.'
 arch=('x86_64')
@@ -10,13 +10,13 @@ depends=('python' 'python-setuptools' 'python-evdev' 'python-rich' 'python-yaml'
 optdepends=('hhd-user: allows running hhd as a user service.')
 makedepends=('python-'{'build','installer','setuptools','wheel','babel'})
 replaces=('adjustor')
-source=("https://pypi.python.org/packages/source/h/hhd/hhd-${pkgver}.tar.gz")
+source=("https://github.com/hhd-dev/hhd/archive/refs/tags/v${pkgver}.tar.gz")
 sha512sums=('SKIP')
 
 build() {
   cd "hhd-$pkgver"
   pybabel compile -D hhd -d ./i18n
-  pybabel compile -D adjustor -d ./i18n
+  pybabel compile -D adjustor -d ./i18n || true
   cp -rf ./i18n/* ./src/hhd/i18n
   python -m build --wheel --no-isolation
 }
