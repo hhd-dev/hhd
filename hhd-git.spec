@@ -48,22 +48,22 @@ cp -rf ./i18n/* ./src/hhd/i18n
 %install
 %{python3} -m installer --destdir="%{buildroot}" dist/*.whl
 mkdir -p %{buildroot}%{_udevrulesdir}
-install -m644 usr/lib/udev/rules.d/83-%{name}.rules %{buildroot}%{_udevrulesdir}/83-%{name}.rules
+install -m644 usr/lib/udev/rules.d/83-hhd.rules %{buildroot}%{_udevrulesdir}/83-hhd.rules
 mkdir -p %{buildroot}%{_sysconfdir}/udev/hwdb.d
-install -m644 usr/lib/udev/hwdb.d/83-%{name}.hwdb %{buildroot}%{_sysconfdir}/udev/hwdb.d/83-%{name}.hwdb
+install -m644 usr/lib/udev/hwdb.d/83-hhd.hwdb %{buildroot}%{_sysconfdir}/udev/hwdb.d/83-hhd.hwdb
 mkdir -p %{buildroot}%{_unitdir}
-install -m644 usr/lib/systemd/system/%{name}@.service %{buildroot}%{_unitdir}/%{name}@.service
-install -m644 usr/lib/systemd/system/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
+install -m644 usr/lib/systemd/system/hhd@.service %{buildroot}%{_unitdir}/hhd@.service
+install -m644 usr/lib/systemd/system/hhd.service %{buildroot}%{_unitdir}/hhd.service
 
 %files
 %doc readme.md
 %license LICENSE
-%{_bindir}/%{name}*
-%{python3_sitelib}/%{name}*
-%{_udevrulesdir}/83-%{name}.rules
-%{_sysconfdir}/udev/hwdb.d/83-%{name}.hwdb
-%{_unitdir}/%{name}@.service
-%{_unitdir}/%{name}.service
+%{_bindir}/hhd*
+%{python3_sitelib}/hhd*
+%{_udevrulesdir}/83-hhd.rules
+%{_sysconfdir}/udev/hwdb.d/83-hhd.hwdb
+%{_unitdir}/hhd@.service
+%{_unitdir}/hhd.service
 
 %{python3_sitelib}/adjustor*
-# %{_datarootdir}/dbus-1/system.d/%{name}-net.hadess.PowerProfiles.conf
+# %{_datarootdir}/dbus-1/system.d/hhd-net.hadess.PowerProfiles.conf
