@@ -40,7 +40,6 @@ from .plugins.settings import (
     validate_config,
 )
 from .utils import (
-    GIT_ADJ,
     GIT_HHD,
     HHD_DEV_DIR,
     expanduser,
@@ -743,7 +742,6 @@ def main():
                                 "--cache-dir",
                                 "/tmp/__hhd_update_cache",
                                 (GIT_HHD if upd_beta else "hhd"),
-                                (GIT_ADJ if upd_beta else "adjustor"),
                             ]
                         )
 

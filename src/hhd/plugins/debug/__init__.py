@@ -8,7 +8,7 @@ from typing import Sequence
 from hhd.i18n import _
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
-from hhd.utils import GIT_ADJ, GIT_HHD, HHD_DEV_DIR
+from hhd.utils import GIT_HHD, HHD_DEV_DIR
 
 from .logs import get_log
 
@@ -33,7 +33,6 @@ def prepare_hhd_dev(ev):
                 "--cache-dir",
                 "/tmp/__hhd_update_cache",
                 GIT_HHD,
-                GIT_ADJ,
             ],
             check=True,
         )

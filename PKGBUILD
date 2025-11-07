@@ -9,6 +9,7 @@ license=('LGPL-2.1-or-later')
 depends=('python' 'python-setuptools' 'python-evdev' 'python-rich' 'python-yaml' 'python-xlib' 'libusb' 'python-pyserial' 'lsof'  'python-pyroute2' 'python-fuse' 'python-gobject')
 optdepends=('hhd-user: allows running hhd as a user service.')
 makedepends=('python-'{'build','installer','setuptools','wheel','babel'})
+replaces=('adjustor')
 source=("https://pypi.python.org/packages/source/h/hhd/hhd-${pkgver}.tar.gz")
 sha512sums=('SKIP')
 
