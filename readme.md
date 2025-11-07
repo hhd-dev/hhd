@@ -236,7 +236,7 @@ sudo hhd --user $(whoami)
 ```
 
 # License
-Handheld Daemon is licensed under THE GNU GPLv3+. See LICENSE for details. A small number of files are dual licensed with MIT, and contain SPDX headers denoting so.  Versions prior to and excluding 2.0.0 are licensed using MIT.
+Handheld Daemon is licensed under THE GNU LESSER GENERAL PUBLIC LICENSE v2.1 or later. See LICENSE for details. A small number of files are dual licensed with MIT, and contain SPDX headers denoting so.
 
 # Credits
 Much like a lot of open-source projects, Handheld Daemon is a community effort.It relies on the kernel drivers [oxp-sensors](https://github.com/torvalds/linux/blob/master/drivers/hwmon/oxp-sensors.c), [ayn-platform](https://github.com/ShadowBlip/ayn-platform), [ayaneo-platform](https://github.com/ShadowBlip/ayaneo-platform), [bmi260](https://github.com/hhd-dev/bmi260), [gpdfan](https://github.com/Cryolitia/gpd-fan-driver/),and [asus-wmi](https://github.com/torvalds/linux/blob/master/drivers/platform/x86/asus-wmi.c).In addition, certain parts of Handheld Daemon reference the reverse engineeringefforts of [asus-linux](https://gitlab.com/asus-linux), the [Handheld Companion](https://github.com/Valkirie/HandheldCompanion) project,the [ValvePython](https://github.com/ValvePython) project, [pyWinControls](https://github.com/pelrun/pyWinControls), and the [HandyGCCS](https://github.com/ShadowBlip/HandyGCCS) project.Finally, its functionality is made possible thanks to thousands of hours of volunteer testing, who have provided feedback and helped shape the project.Some of those volunteers integrated support for their devices directly, especiallyin the case of Ayaneo, GPD, and for the initial support of OneXPlayer, and ROG Allydevices.
