@@ -1,6 +1,6 @@
 Name:           hhd
 Version:        4.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Handheld Daemon, a tool for configuring handheld devices.
 
 License:        LGPL-2.1-or-later
@@ -38,8 +38,8 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 %autosetup -n %{name}-%{version}
 
 %build
-pybabel compile -D hhd -d ./i18n
-pybabel compile -D adjustor -d ./i18n || true
+%{_bindir}/pybabel compile -D hhd -d ./i18n
+%{_bindir}/pybabel compile -D adjustor -d ./i18n || true
 cp -rf ./i18n/* ./src/hhd/i18n
 %{python3} -m build --wheel --no-isolation
 
