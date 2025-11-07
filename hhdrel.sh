@@ -39,3 +39,5 @@ hhdrel ()
 ) &&
   xdg-open "https://github.com/hhd-dev/hhd/releases/new?tag=$tag"
 }
+
+hhdrel $1
