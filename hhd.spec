@@ -1,11 +1,11 @@
 Name:           hhd
-Version:        REPLACE_VERSION
+Version:        3.19.31
 Release:        1%{?dist}
 Summary:        Handheld Daemon, a tool for configuring handheld devices.
 
 License:        LGPL-2.1-or-later
 URL:            https://github.com/hhd-dev/hhd
-Source:        	https://pypi.python.org/packages/source/h/%{name}/%{name}-%{version}.tar.gz   
+Source:       	https://github.com/hhd-dev/hhd/archive/refs/tags/v%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  systemd-rpm-macros
@@ -14,6 +14,7 @@ BuildRequires:  python3-build
 BuildRequires:  python3-installer
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-wheel
+BuildRequires:  python3-babel
 
 Requires:       python3
 Requires:       python3-evdev
@@ -22,6 +23,9 @@ Requires:       python3-yaml
 Requires:       python3-setuptools
 Requires:       python3-xlib
 Requires:       python3-pyserial
+Requires:       python3-pyroute2
+Requires:       python3-gobject
+Requires:       python-fuse
 Requires:       libusb1
 Requires:       hidapi
 
@@ -32,6 +36,9 @@ Handheld Daemon is a project that aims to provide utilities for managing handhel
 %autosetup -n %{name}-%{version}
 
 %build
+pybabel compile -D hhd -d ./i18n
+pybabel compile -D adjustor -d ./i18n
+cp -rf ./i18n/* ./src/hhd/i18n
 %{python3} -m build --wheel --no-isolation
 
 %install

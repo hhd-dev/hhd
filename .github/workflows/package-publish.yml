@@ -35,9 +35,6 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}
-      - name: Sleep for 15 minutes
-        run: sleep 900s
-        shell: bash
 
   deploy_aur:
     runs-on: ubuntu-latest
@@ -46,15 +43,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Create PKGBUILD dir
-        run: mkdir -p ./pkg/
-      - name: Build PKGBUILD
-        run: sed "s/pkgver=VERSION/pkgver=$(cat pyproject.toml | grep -E 'version = "[0-9\.]+"' -o | grep -E "[0-9\.]+" -o)/" PKGBUILD > ./pkg/PKGBUILD
       - name: Publish AUR package
         uses: KSXGitHub/github-actions-deploy-aur@v2.7.0
         with:
           pkgname: hhd
-          pkgbuild: ./pkg/PKGBUILD
+          pkgbuild: ./PKGBUILD
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
@@ -62,26 +55,3 @@ jobs:
           allow_empty_commits: false
           ssh_keyscan_types: rsa,ecdsa,ed25519
           updpkgsums: true
-
-  deploy_copr:
-    runs-on: ubuntu-latest
-    environment: prod
-    needs: deploy_pypi
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Create spec file dir
-        run: mkdir -p ./pkg/
-      - name: Build spec file
-        run: sed "s/REPLACE_VERSION/$(cat pyproject.toml | grep -E 'version = "[0-9\.]+"' -o | grep -E "[0-9\.]+" -o)/" hhd.spec > ./pkg/hhd.spec
-      - name: Publish to COPR repo
-        uses: s0/git-publish-subdir-action@develop
-        env:
-          REPO: git@github.com:hhd-dev/hhd-copr.git
-          BRANCH: main
-          FOLDER: pkg
-          SSH_PRIVATE_KEY: ${{ secrets.COPR_SSH_PRIVATE_KEY }}
-          MESSAGE: update to '${{ github.event.release.name }}'
-          SKIP_EMPTY_COMMITS: true
-          # Do not clear any files
-          CLEAR_GLOBS_FILE: .github/workflows/copr_glob.txt
