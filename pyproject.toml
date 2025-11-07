@@ -7,7 +7,7 @@ authors = [
 description = "Handheld Daemon, a tool for configuring handheld devices."
 readme = "readme.md"
 requires-python = ">=3.10"
-license = "LGPL-2.1-or-later"
+license = {text = "LGPL-2.1-or-later"}
 classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",

@@ -1,6 +1,6 @@
 Name:           hhd
 Version:        4.0.0
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Handheld Daemon, a tool for configuring handheld devices.
 
 License:        LGPL-2.1-or-later
