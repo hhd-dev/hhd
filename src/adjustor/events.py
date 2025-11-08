@@ -31,7 +31,11 @@ def loop_process_events(emit: Emitter, should_exit: TEvent):
 
     while not should_exit.is_set():
         # FIXME: Uses unofficial API, find the correct way.
-        r, _, _ = select.select([acpi._sock.fileno()], [], [], GUARD_DELAY)
+        try:
+            sock = acpi.asyncore.socket
+        except:
+            sock = acpi._sock
+        r, _, _ = select.select([sock.fileno()], [], [], GUARD_DELAY)
 
         if r:
             for message in acpi.get():
