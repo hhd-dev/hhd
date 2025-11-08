@@ -51,14 +51,6 @@ hhd:
 
         If the device crashes, TDP setting will be disabled on next startup.
     
-    fuse_mount:
-      title: Add TDP to /sys for Steam (Requires Restart)
-      type: bool
-      default: True
-      hint: >-
-        Uses a FUSE mount to add TDP attributes to /sys/class/drm.
-        This fixes the TDP slider in Steam.
-
     enforce_limits:
       title: Enforce Device TDP Limits
       type: bool
@@ -73,4 +65,3 @@ hhd:
 
         All settings outside specifications will be set to system specifications
         after rebooting.
-        

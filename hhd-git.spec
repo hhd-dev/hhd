@@ -26,7 +26,6 @@ Requires:       python3-xlib
 Requires:       python3-pyserial
 Requires:       python3-pyroute2
 Requires:       python3-gobject
-Requires:       python-fuse
 Requires:       libusb1
 Requires:       hidapi
 

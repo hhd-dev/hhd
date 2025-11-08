@@ -148,10 +148,8 @@ class AdjustorPlugin(HHDPlugin):
         self.log = "adjs"
         self.enabled = False
         self.enfoce_limits = True
-        self.fuse_mount = False
 
         self.t = None
-        self.t_sys = None
         self.should_exit = None
 
         self.min_tdp = min_tdp
@@ -181,20 +179,6 @@ class AdjustorPlugin(HHDPlugin):
                     f"Could not init ACPI event handling. Is pyroute2 installed?"
                 )
 
-        if self.fuse_mount and not self.t_sys:
-            logger.info("Starting FUSE mount for /sys.")
-            from .fuse import prepare_tdp_mount, start_tdp_client
-
-            stat = prepare_tdp_mount()
-            if stat:
-                self.t_sys = start_tdp_client(
-                    self.should_exit,
-                    self.emit,
-                    self.min_tdp,
-                    self.default_tdp,
-                    self.max_tdp,
-                )
-
     def _stop(self):
         if not self.should_exit:
             return
@@ -202,9 +186,6 @@ class AdjustorPlugin(HHDPlugin):
         if self.t:
             self.t.join()
             self.t = None
-        if self.t_sys:
-            self.t_sys.join()
-            self.t_sys = None
         self.should_exit = None
 
     def open(
@@ -219,7 +200,6 @@ class AdjustorPlugin(HHDPlugin):
         new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         if new_enabled != self.enabled or new_enforce_limits != self.enfoce_limits:
             self.emit({"type": "settings"})
-        self.fuse_mount = conf["hhd.settings.fuse_mount"].to(bool)
         self.enabled = new_enabled
         self.enfoce_limits = new_enforce_limits
 

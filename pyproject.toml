@@ -23,8 +23,6 @@ dependencies = [
   "python-xlib>=0.33",
   "pyserial>=3.5",
   "pyroute2>=0.7.3",
-# FUSE cannot be installed in distros without gcc
-#  "fuse-python>=1.0.7",
   "PyGObject>=3.46.0",
   "dbus-python>=1.3.2",
 ]
