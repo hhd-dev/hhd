@@ -82,13 +82,13 @@ steamos:
         conflict: ""
 
     tdp_min:
-      type: int
+      type: custom
       tags: [ hidden ]
     
     tdp_default:
-      type: int
+      type: custom
       tags: [ hidden ]
 
     tdp_max:
-      type: int
+      type: custom
       tags: [ hidden ]
