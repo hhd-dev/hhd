@@ -71,6 +71,10 @@ def _set_state(state):
     return _request("POST", f"/api/v1/state", body=json.dumps(state))
 
 
+def send_event(event):
+    return _request("POST", f"/api/v1/event", body=json.dumps(event))
+
+
 def _get(keys, poll: bool = False, state=None, values: bool = False):
     if state is not None:
         state = _set_state(state)
@@ -232,6 +236,7 @@ ALL = {
     "set_state": set_state,
     "get_state": get_state,
     "unroll_dict": unroll_dict,
+    "send_event": send_event,
     "main": main,
 }
 

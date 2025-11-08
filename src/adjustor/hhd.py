@@ -61,7 +61,7 @@ class AdjustorInitPlugin(HHDPlugin):
         v = load_relative_yaml("settings.yml")
         sets = {
             "tdp": {"tdp": v["tdp"]},
-            "hhd": {"settings": v["hhd"]},
+            "hhd": {"settings": v["hhd"], "steamos": v["steamos"]},
         }
         if os.environ.get("HHD_ADJ_ENABLE_TDP"):
             sets["hhd"]["settings"]["children"]["tdp_enable"]["default"] = True
@@ -124,12 +124,14 @@ class AdjustorInitPlugin(HHDPlugin):
         old_enabled = conf["hhd.settings.tdp_enable"].to(bool)
         if self.failed:
             conf["hhd.settings.tdp_enable"] = False
+        
+        if not old_enabled:
+            conf["hhd.steamos.tdp_status"] = "disabled"
+            conf["hhd.steamos.tdp_min"] = None
+            conf["hhd.steamos.tdp_default"] = None
+            conf["hhd.steamos.tdp_max"] = None
 
         if self.init or not old_enabled:
-            conf["hhd.steamos_tdp_status"] = "disabled"
-            conf["hhd.steamos_tdp_min"] = None
-            conf["hhd.steamos_tdp_default"] = None
-            conf["hhd.steamos_tdp_max"] = None
             return
 
         self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
@@ -144,7 +146,7 @@ class AdjustorInitPlugin(HHDPlugin):
                     self.has_decky = True
                     conf["tdp.tdp.tdp_error"] = err
                     conf["hhd.settings.tdp_enable"] = False
-                    conf["hhd.steamos_tdp_status"] = "conflict"
+                    conf["hhd.steamos.tdp_status"] = "conflict"
                     logger.error(err)
                     self.failed = True
                     self.enabled = False
@@ -172,10 +174,10 @@ class AdjustorInitPlugin(HHDPlugin):
         self.failed = False
         self.enabled = True
         self.init = True
-        conf["hhd.steamos_tdp_status"] = "enabled"
-        conf["hhd.steamos_tdp_min"] = self.min_tdp
-        conf["hhd.steamos_tdp_default"] = self.default_tdp
-        conf["hhd.steamos_tdp_max"] = self.max_tdp
+        conf["hhd.steamos.tdp_status"] = "enabled"
+        conf["hhd.steamos.tdp_min"] = self.min_tdp
+        conf["hhd.steamos.tdp_default"] = self.default_tdp
+        conf["hhd.steamos.tdp_max"] = self.max_tdp
         conf["hhd.settings.tdp_enable"] = True
         conf["tdp.tdp.tdp_error"] = ""
 

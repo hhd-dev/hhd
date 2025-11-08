@@ -1,7 +1,7 @@
 import argparse
 import sys
 import time
-from .ctl import get_state, set_state, unroll_dict
+from .ctl import get_state, set_state, unroll_dict, send_event
 
 SOCKET_UNIX = "/run/hhd/api"
 USAGE = """
@@ -24,6 +24,7 @@ Commands:
 ALL = {
     "set_state": set_state,
     "get_state": get_state,
+    "send_event": send_event,
 }
 
 BRANCH_MAP = {
@@ -156,6 +157,47 @@ def _update(fallback, opts):
         return 1
     return 0
 
+def _tdp(opts):
+    # Return statuses:
+    # -1: generic error, fallback to steamos manager
+    # -2: conflict with another application, disable all controls
+    # -3: failed to set tdp, ignore and retry
+
+    if not opts:
+        print("Either provide a tdp value (e.g. 15) or get for the current limits", file=sys.stderr)
+        return 1
+    
+    try:
+        state = unroll_dict(get_state())
+        status = state.get("hhd.steamos.tdp_status", None)
+        min = state.get("hhd.steamos.tdp_min", None)
+        max = state.get("hhd.steamos.tdp_max", None)
+        default = state.get("hhd.steamos.tdp_default", None)
+
+        if status == "conflict":
+            print("TDP management conflict with another application. Disable controls.", file=sys.stderr)
+            return -2
+        elif status != "enabled":
+            print("TDP management disabled. Fallback to steamos manager.", file=sys.stderr)
+            return -1
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return -1
+
+    if opts[0] == "get":
+        print(f"{min} {max} {default}")
+        return 0
+    
+    try:
+        send_event({
+            "type": "tdp",
+            "tdp": int(opts[0]),
+        })
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return -3
+
+    return 0
 
 def main():
     fallback = False
@@ -173,6 +215,8 @@ def main():
                 v = _select_branch(fallback, opts)
             case "steamos-update":
                 v = _update(fallback, opts)
+            case "steamos-tdp":
+                v = _tdp(opts)
             case _:
                 print(f"Invalid command: '{cmd}'")
                 v = -1

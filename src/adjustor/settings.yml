@@ -66,10 +66,14 @@ hhd:
         All settings outside specifications will be set to system specifications
         after rebooting.
 
+steamos:
+  type: container
+  tags: [ hidden ]
+  children:
     # disabled|None: let steamos manager take over
     # enabled: only enable tdp in steamos manager
     # conflict: disable tdp in steamos manager
-    steamos_tdp_status:
+    tdp_status:
       type: multiple
       tags: [ hidden ]
       options:
@@ -77,14 +81,14 @@ hhd:
         enabled: ""
         conflict: ""
 
-    steamos_tdp_min:
+    tdp_min:
       type: int
       tags: [ hidden ]
     
-    steamos_tdp_default:
+    tdp_default:
       type: int
       tags: [ hidden ]
 
-    steamos_tdp_max:
+    tdp_max:
       type: int
       tags: [ hidden ]
