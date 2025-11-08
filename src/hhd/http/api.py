@@ -339,6 +339,31 @@ class RestHandler(BaseHTTPRequestHandler):
                         user_lang=user_lang,
                     )
                     self.wfile.write(json.dumps(out).encode())
+            case "event":
+                self.set_response_ok()
+                with self.cond:
+                    if not content or not isinstance(content, Mapping):
+                        return self.send_error(
+                            f"Event requires a POST with the event data."
+                        )
+                    self.emit(content) # type: ignore
+
+                    # Return the current state after the event
+                    if "result" in params:
+                        self.cond.wait()
+                        out = {**cast(dict, self.conf.conf), "info": self.info.conf}
+                        out["version"] = translate_ver(
+                            self.conf, lang=lang, user_lang=user_lang
+                        )
+                        out = translate(
+                            out,
+                            self.conf,
+                            self.locales,
+                            lang=lang,
+                            user_lang=user_lang,
+                        )
+                        self.wfile.write(json.dumps(out).encode())
+
             case "version":
                 self.send_json({"version": 5})
             case "sections":

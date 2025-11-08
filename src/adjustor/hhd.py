@@ -22,16 +22,32 @@ CONFLICTING_PLUGINS = {
 
 
 class AdjustorInitPlugin(HHDPlugin):
-    def __init__(self, use_acpi_call: bool = True) -> None:
+    def __init__(
+        self,
+        min_tdp: int,
+        default_tdp: int,
+        max_tdp: int,
+        use_acpi_call: bool = True,
+    ) -> None:
         self.name = f"adjustor_init"
         self.priority = 5
-        self.log = "adji"
+        self.log = "adjs"
         self.init = False
         self.failed = False
         self.has_decky = False
         self.enabled = False
         self.action_enabled = False
         self.use_acpi_call = use_acpi_call
+
+        self.enabled = False
+        self.enfoce_limits = True
+
+        self.t = None
+        self.should_exit = None
+
+        self.min_tdp = min_tdp
+        self.default_tdp = default_tdp
+        self.max_tdp = max_tdp
 
     def open(self, emit: Emitter, context: Context):
         self.context = context
@@ -42,7 +58,13 @@ class AdjustorInitPlugin(HHDPlugin):
             self.action_enabled = False
             return {}
         self.action_enabled = True
-        sets = {"tdp": {"tdp": load_relative_yaml("settings.yml")["tdp"]}}
+        v = load_relative_yaml("settings.yml")
+        sets = {
+            "tdp": {"tdp": v["tdp"]},
+            "hhd": {"settings": v["hhd"]},
+        }
+        if os.environ.get("HHD_ADJ_ENABLE_TDP"):
+            sets["hhd"]["settings"]["children"]["tdp_enable"]["default"] = True
         if not self.has_decky:
             del sets["tdp"]["tdp"]["children"]["decky_info"]
             del sets["tdp"]["tdp"]["children"]["decky_remove"]
@@ -103,10 +125,14 @@ class AdjustorInitPlugin(HHDPlugin):
         if self.failed:
             conf["hhd.settings.tdp_enable"] = False
 
-        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
-
         if self.init or not old_enabled:
+            conf["hhd.steamos_tdp_status"] = "disabled"
+            conf["hhd.steamos_tdp_min"] = None
+            conf["hhd.steamos_tdp_default"] = None
+            conf["hhd.steamos_tdp_max"] = None
             return
+
+        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
 
         for usr in os.listdir("/home"):
             for name, path in CONFLICTING_PLUGINS.items():
@@ -118,9 +144,11 @@ class AdjustorInitPlugin(HHDPlugin):
                     self.has_decky = True
                     conf["tdp.tdp.tdp_error"] = err
                     conf["hhd.settings.tdp_enable"] = False
+                    conf["hhd.steamos_tdp_status"] = "conflict"
                     logger.error(err)
                     self.failed = True
                     self.enabled = False
+                    self._stop()
                     return
 
         if self.use_acpi_call:
@@ -132,35 +160,24 @@ class AdjustorInitPlugin(HHDPlugin):
                 )
                 self.failed = True
                 self.enabled = False
+                self._stop()
                 return
+        
+        new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
+        self.enfoce_limits = new_enforce_limits
+        if not self.enabled or new_enforce_limits != self.enfoce_limits:
+            self.emit({"type": "settings"})
+        self._start()
 
         self.failed = False
         self.enabled = True
         self.init = True
+        conf["hhd.steamos_tdp_status"] = "enabled"
+        conf["hhd.steamos_tdp_min"] = self.min_tdp
+        conf["hhd.steamos_tdp_default"] = self.default_tdp
+        conf["hhd.steamos_tdp_max"] = self.max_tdp
         conf["hhd.settings.tdp_enable"] = True
         conf["tdp.tdp.tdp_error"] = ""
-
-
-class AdjustorPlugin(HHDPlugin):
-    def __init__(self, min_tdp: int, default_tdp: int, max_tdp: int) -> None:
-        self.name = f"adjustor_main"
-        self.priority = 80
-        self.log = "adjs"
-        self.enabled = False
-        self.enfoce_limits = True
-
-        self.t = None
-        self.should_exit = None
-
-        self.min_tdp = min_tdp
-        self.default_tdp = default_tdp
-        self.max_tdp = max_tdp
-
-    def settings(self) -> HHDSettings:
-        out = {"hhd": {"settings": load_relative_yaml("settings.yml")["hhd"]}}
-        if os.environ.get("HHD_ADJ_ENABLE_TDP"):
-            out["hhd"]["settings"]["children"]["tdp_enable"]["default"] = True
-        return out
 
     def _start(self):
         if self.should_exit:
@@ -188,29 +205,8 @@ class AdjustorPlugin(HHDPlugin):
             self.t = None
         self.should_exit = None
 
-    def open(
-        self,
-        emit,
-        context: Context,
-    ):
-        self.emit = emit
-
-    def update(self, conf: Config):
-        new_enabled = conf["hhd.settings.tdp_enable"].to(bool)
-        new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
-        if new_enabled != self.enabled or new_enforce_limits != self.enfoce_limits:
-            self.emit({"type": "settings"})
-        self.enabled = new_enabled
-        self.enfoce_limits = new_enforce_limits
-
-        if self.enabled:
-            self._start()
-        else:
-            self._stop()
-
     def close(self):
         self._stop()
-
 
 LEGION_GO_DMIS = ["83E1", "83N0", "83N1"]
 LEGION_GO_S_DMIS = ["83L3", "83N6", "83Q2", "83Q3"]
@@ -331,8 +327,12 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     return [
         *drivers,
-        AdjustorInitPlugin(use_acpi_call=use_acpi_call),
-        AdjustorPlugin(min_tdp, default_tdp, max_tdp),
+        AdjustorInitPlugin(
+            use_acpi_call=use_acpi_call,
+            min_tdp=min_tdp,
+            default_tdp=default_tdp,
+            max_tdp=max_tdp,
+        ),
         BatteryPlugin(),
         GpuPlugin(),
     ]
