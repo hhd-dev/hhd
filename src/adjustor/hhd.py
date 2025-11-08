@@ -132,6 +132,7 @@ class AdjustorInitPlugin(HHDPlugin):
             conf["hhd.steamos.tdp_min"] = None
             conf["hhd.steamos.tdp_default"] = None
             conf["hhd.steamos.tdp_max"] = None
+            self.init = False
 
         if self.enabled != enabled:
             self.emit({"type": "settings"})
