@@ -512,12 +512,15 @@ class HHDHTTPServer:
 
         try:
             if not os.path.exists("/run/hhd"):
-                os.mkdir("/run/hhd", 0o700)
+                os.mkdir("/run/hhd", 0o755)
             else:
-                os.chmod("/run/hhd", 0o700)
+                os.chmod("/run/hhd", 0o755)
             if os.path.exists("/run/hhd/api"):
                 os.remove("/run/hhd/api")
             self.unix = UnixHTTPServer("/run/hhd/api", self.uhandler) # type: ignore
+            # Allow read access to /api to nonroot
+            # TODO: Reconsider this security-wise
+            os.chmod("/run/hhd/api", 0o666)
             self.tu = Thread(target=self.unix.serve_forever)
             self.tu.start()
         except Exception as e:

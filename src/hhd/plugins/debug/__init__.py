@@ -21,7 +21,7 @@ USES_BETA = os.environ.get("HHD_SWITCH_ROOT", "0") == "1"
 
 def prepare_hhd_dev(ev):
     try:
-        os.makedirs(HHD_DEV_DIR, exist_ok=True)
+        os.makedirs(HHD_DEV_DIR, exist_ok=True, mode=0o700)
         subprocess.run(
             ["python3", "-m", "venv", "--system-site-packages", HHD_DEV_DIR], check=True
         )
