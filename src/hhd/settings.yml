@@ -57,12 +57,6 @@ settings:
       title: Handheld Daemon UI Version
       hint: "Displays the Handheld Daemon version."
 
-    version_adj:
-      type: display
-      tags: [hhd-version-display, text]
-      title: Adjustor (TDP) Version
-      hint: "Displays the Handheld Daemon version."
-
     update_stable:
       type: action
       tags: [hhd-update-stable, verify]

@@ -385,14 +385,6 @@ def main():
                     pass
 
                 try:
-                    ver = version("adjustor")
-                    conf["hhd.settings.version_adj"] = ver
-                    logger.info(f"Adjustor Version: {ver}")
-                except Exception:
-                    conf["hhd.settings.version_adj"] = "Not Installed"
-                    logger.info(f"Adjustor not installed")
-
-                try:
                     from hhd.plugins.overlay.overlay import (
                         find_overlay_exe,
                         get_overlay_version,
