@@ -136,7 +136,18 @@ class AdjustorInitPlugin(HHDPlugin):
 
         if self.enabled != enabled:
             self.emit({"type": "settings"})
+            if not enabled:
+                self.enabled = False
+                self._stop()
         self.enabled = enabled
+
+        if not enabled:
+            return
+        
+        new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
+        if new_enforce_limits != self.enfoce_limits:
+            self.emit({"type": "settings"})
+        self.enfoce_limits = new_enforce_limits
 
         if self.init or not enabled:
             return
@@ -170,12 +181,7 @@ class AdjustorInitPlugin(HHDPlugin):
                 self._stop()
                 return
         
-        new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
-        self.enfoce_limits = new_enforce_limits
-        if new_enforce_limits != self.enfoce_limits:
-            self.emit({"type": "settings"})
         self._start()
-
         self.failed = False
         self.init = True
         conf["hhd.steamos.tdp_status"] = "enabled"
