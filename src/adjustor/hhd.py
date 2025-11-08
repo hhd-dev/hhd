@@ -54,20 +54,22 @@ class AdjustorInitPlugin(HHDPlugin):
         self.emit = emit
 
     def settings(self):
-        if self.enabled and not self.failed:
-            self.action_enabled = False
-            return {}
-        self.action_enabled = True
         v = load_relative_yaml("settings.yml")
         sets = {
-            "tdp": {"tdp": v["tdp"]},
             "hhd": {"settings": v["hhd"], "steamos": v["steamos"]},
         }
         if os.environ.get("HHD_ADJ_ENABLE_TDP"):
             sets["hhd"]["settings"]["children"]["tdp_enable"]["default"] = True
-        if not self.has_decky:
-            del sets["tdp"]["tdp"]["children"]["decky_info"]
-            del sets["tdp"]["tdp"]["children"]["decky_remove"]
+
+        if self.enabled and not self.failed:
+            self.action_enabled = False
+        else:
+            self.action_enabled = True
+            sets["tdp"] = {"tdp": v["tdp"]}
+            if not self.has_decky:
+                del sets["tdp"]["tdp"]["children"]["decky_info"]
+                del sets["tdp"]["tdp"]["children"]["decky_remove"]
+
         return sets
 
     def update(self, conf: Config):
@@ -117,24 +119,26 @@ class AdjustorInitPlugin(HHDPlugin):
             # TDP controls are already enabled.
             logger.warning(f"Enabling TDP controls.")
 
-        if self.action_enabled and conf["tdp.tdp.tdp_enable"].to(bool):
-            conf["tdp.tdp.tdp_enable"] = False
-            conf["hhd.settings.tdp_enable"] = True
-
-        old_enabled = conf["hhd.settings.tdp_enable"].to(bool)
         if self.failed:
             conf["hhd.settings.tdp_enable"] = False
         
-        if not old_enabled:
+        if self.action_enabled and conf.get_action("tdp.tdp.tdp_enable"):
+            conf["hhd.settings.tdp_enable"] = True
+
+        enabled = conf.get("hhd.settings.tdp_enable", False)
+        
+        if not enabled:
             conf["hhd.steamos.tdp_status"] = "disabled"
             conf["hhd.steamos.tdp_min"] = None
             conf["hhd.steamos.tdp_default"] = None
             conf["hhd.steamos.tdp_max"] = None
 
-        if self.init or not old_enabled:
-            return
+        if self.enabled != enabled:
+            self.emit({"type": "settings"})
+        self.enabled = enabled
 
-        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        if self.init or not enabled:
+            return
 
         for usr in os.listdir("/home"):
             for name, path in CONFLICTING_PLUGINS.items():
@@ -167,12 +171,11 @@ class AdjustorInitPlugin(HHDPlugin):
         
         new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         self.enfoce_limits = new_enforce_limits
-        if not self.enabled or new_enforce_limits != self.enfoce_limits:
+        if new_enforce_limits != self.enfoce_limits:
             self.emit({"type": "settings"})
         self._start()
 
         self.failed = False
-        self.enabled = True
         self.init = True
         conf["hhd.steamos.tdp_status"] = "enabled"
         conf["hhd.steamos.tdp_min"] = self.min_tdp
