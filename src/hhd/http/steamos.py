@@ -159,13 +159,13 @@ def _update(fallback, opts):
 
 def _tdp(opts):
     # Return statuses:
-    # -1: generic error, fallback to steamos manager
-    # -2: conflict with another application, disable all controls
-    # -3: failed to set tdp, ignore and retry
+    # 1: generic error, fallback to steamos manager
+    # 2: conflict with another application, disable all controls
+    # 3: failed to set tdp, ignore and retry
 
     if not opts:
         print("Either provide a tdp value (e.g. 15) or get for the current limits", file=sys.stderr)
-        return 1
+        return -1
     
     try:
         state = unroll_dict(get_state())
@@ -176,13 +176,13 @@ def _tdp(opts):
 
         if status == "conflict":
             print("TDP management conflict with another application. Disable controls.", file=sys.stderr)
-            return -2
+            return 2
         elif status != "enabled":
             print("TDP management disabled. Fallback to steamos manager.", file=sys.stderr)
-            return -1
+            return 1
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
-        return -1
+        return 1
 
     if opts[0] == "get":
         print(f"{min} {max} {default}")
@@ -195,7 +195,7 @@ def _tdp(opts):
         })
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
-        return -3
+        return 3
 
     return 0
 
