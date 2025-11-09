@@ -44,12 +44,13 @@ GOS_INTERFACE_BTN_MAP: dict[Button, BM] = {
 
 
 GOS_INTERFACE_AXIS_MAP: dict[Axis, AM] = {
-    "ls_x": AM(4 << 3, "m8"),
-    "ls_y": AM(5 << 3, "m8"),
-    "rs_x": AM(6 << 3, "m8"),
-    "rs_y": AM(7 << 3, "m8"),
-    "rt": AM(12 << 3, "u8"),
-    "lt": AM(13 << 3, "u8"),
+    # These seem to get confused
+    # "ls_x": AM(4 << 3, "m8"),
+    # "ls_y": AM(5 << 3, "m8"),
+    # "rs_x": AM(6 << 3, "m8"),
+    # "rs_y": AM(7 << 3, "m8"),
+    # "rt": AM(12 << 3, "u8"),
+    # "lt": AM(13 << 3, "u8"),
     # # Controller IMU
     "accel_x": AM(14 << 3, "i16", scale=-0.00212, order="little"),
     "accel_z": AM(16 << 3, "i16", scale=-0.00212, order="little"),
