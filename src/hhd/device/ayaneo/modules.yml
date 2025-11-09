@@ -17,7 +17,7 @@ children:
 
   pop_left:
     type: action
-    tags: [non-essential]
+    tags: []
     title: Pop Left Module
     hint: >-
       Pops the left and right Ayaneo Magic Modules modules.
@@ -29,7 +29,7 @@ children:
 
   pop_right:
     type: action
-    tags: [non-essential]
+    tags: []
     title: Pop Right Module
     hint: >-
       Pops the left and right Ayaneo Magic Modules modules.
