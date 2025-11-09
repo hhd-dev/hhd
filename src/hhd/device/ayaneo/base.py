@@ -552,13 +552,6 @@ def controller_loop(
         emit=emit,
     )
 
-    kargs = {}
-    if dtype == "tecno":
-        kargs = {
-            "keyboard_is": "steam_qam",
-            "qam_hhd": True,
-        }
-
     match conf.get("swap_guide", "oem"):
         case "traditional":
             swap_guide = "aya_traditional"
@@ -577,9 +570,8 @@ def controller_loop(
         params=d_params,
         startselect_chord=conf.get("main_chords", "disabled"),
         keyboard_is="qam",
-        qam_hhd=True,
+        qam_hhd="full",
         swap_guide=swap_guide,
-        **kargs,
     )
 
     REPORT_FREQ_MIN = 25
