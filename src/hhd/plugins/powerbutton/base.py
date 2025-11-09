@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 STEAM_WAIT_DELAY = 0.5
 LONG_PRESS_DELAY = 2.0
 DEBOUNCE_DELAY = 1
-
+SLEEP_MIN = 2
 
 def B(b: str):
     return cast(int, getattr(evdev.ecodes, b))
@@ -285,6 +285,7 @@ def power_button_multidev(
     devs = []
     fds = []
     last_pressed = None
+    last_wakeup = perf_counter()
     try:
         while not should_exit.is_set():
             # Initial check for steam
@@ -309,6 +310,12 @@ def power_button_multidev(
 
             # Add timeout to release the button if steam exits.
             r = select.select(list(fds), [], [], STEAM_WAIT_DELAY)[0]
+            
+            # Make sure that we debounce after sleep
+            curr_time = perf_counter()
+            if curr_time - last_wakeup > SLEEP_MIN:
+                last_pressed = curr_time
+            last_wakeup = curr_time
 
             # Handle press logic
             issue_power = False
@@ -321,7 +328,6 @@ def power_button_multidev(
                     and ev.code == B("KEY_POWER")
                     and ev.value == 1
                 ):
-                    curr_time = perf_counter()
                     if not last_pressed or curr_time - last_pressed > DEBOUNCE_DELAY:
                         last_pressed = curr_time
                         issue_power = True
