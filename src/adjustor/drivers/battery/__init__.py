@@ -171,7 +171,7 @@ class BatteryPlugin(HHDPlugin):
                 break
 
     def update(self, conf: Config):
-        self.enabled = self.always_enable or conf.get("hhd.settings.tdp_enable", False)
+        self.enabled = self.always_enable or conf.get("hhd.settings.tdp_ready", False)
 
         if not self.initialized:
             return

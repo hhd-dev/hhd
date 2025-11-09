@@ -155,7 +155,7 @@ class SmuQamPlugin(HHDPlugin):
         self.fan_info = get_fan_info()
 
     def update(self, conf: Config):
-        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        self.enabled = conf["hhd.settings.tdp_ready"].to(bool)
         self.enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
             self.startup = self.init_tdp
@@ -426,7 +426,7 @@ class SmuDriverPlugin(HHDPlugin):
         self.emit = emit
 
     def update(self, conf: Config):
-        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        self.enabled = conf["hhd.settings.tdp_ready"].to(bool)
         self.enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         if not self.enabled or not self.initialized:
             return

@@ -118,16 +118,15 @@ class AdjustorInitPlugin(HHDPlugin):
 
             # TDP controls are already enabled.
             logger.warning(f"Enabling TDP controls.")
-
-        if self.failed:
-            conf["hhd.settings.tdp_enable"] = False
         
         if self.action_enabled and conf.get_action("tdp.tdp.tdp_enable"):
             conf["hhd.settings.tdp_enable"] = True
+            self.failed = False
 
         enabled = conf.get("hhd.settings.tdp_enable", False)
         
         if not enabled:
+            conf["hhd.settings.tdp_ready"] = False
             conf["hhd.steamos.tdp_status"] = "disabled"
             conf["hhd.steamos.tdp_min"] = None
             conf["hhd.steamos.tdp_default"] = None
@@ -149,7 +148,7 @@ class AdjustorInitPlugin(HHDPlugin):
             self.emit({"type": "settings"})
         self.enfoce_limits = new_enforce_limits
 
-        if self.init or not enabled:
+        if self.init or not enabled or self.failed:
             return
 
         for usr in os.listdir("/home"):
@@ -161,7 +160,7 @@ class AdjustorInitPlugin(HHDPlugin):
                     self.emit({"type": "settings"})
                     self.has_decky = True
                     conf["tdp.tdp.tdp_error"] = err
-                    conf["hhd.settings.tdp_enable"] = False
+                    conf["hhd.settings.tdp_ready"] = False
                     conf["hhd.steamos.tdp_status"] = "conflict"
                     logger.error(err)
                     self.failed = True
@@ -172,7 +171,7 @@ class AdjustorInitPlugin(HHDPlugin):
         if self.use_acpi_call:
             initialize()
             if not check_perms():
-                conf["hhd.settings.tdp_enable"] = False
+                conf["hhd.settings.tdp_ready"] = False
                 conf["tdp.tdp.tdp_error"] = (
                     "Can not write to 'acpi_call'. It is required for TDP."
                 )
@@ -188,7 +187,7 @@ class AdjustorInitPlugin(HHDPlugin):
         conf["hhd.steamos.tdp_min"] = self.min_tdp
         conf["hhd.steamos.tdp_default"] = self.default_tdp
         conf["hhd.steamos.tdp_max"] = self.max_tdp
-        conf["hhd.settings.tdp_enable"] = True
+        conf["hhd.settings.tdp_ready"] = True
         conf["tdp.tdp.tdp_error"] = ""
 
     def _start(self):

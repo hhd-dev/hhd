@@ -286,7 +286,7 @@ class GpuPlugin(HHDPlugin):
                 self.queue = time.perf_counter() + SLEEP_DELAY
 
     def update(self, conf: Config):
-        self.core_enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        self.core_enabled = conf["hhd.settings.tdp_ready"].to(bool)
         if not self.core_enabled or not self.core_available:
             return
 

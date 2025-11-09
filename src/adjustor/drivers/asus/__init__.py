@@ -236,7 +236,7 @@ class AsusDriverPlugin(HHDPlugin):
         self.emit = emit
 
     def update(self, conf: Config):
-        self.enabled = conf["hhd.settings.tdp_enable"].to(bool)
+        self.enabled = conf["hhd.settings.tdp_ready"].to(bool)
         new_enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
         new_lims = new_enforce_limits != self.enforce_limits
         self.enforce_limits = new_enforce_limits

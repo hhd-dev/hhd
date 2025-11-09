@@ -40,6 +40,10 @@ tdp:
 hhd:
   type: container
   children:
+    tdp_ready:
+      tags: [ hidden ]
+      type: bool
+
     tdp_enable:
       title: Enable TDP Controls
       type: bool
