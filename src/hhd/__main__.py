@@ -11,7 +11,7 @@ from threading import Condition
 from threading import Event as TEvent
 from threading import RLock
 from time import sleep
-from typing import Sequence
+from typing import Callable, Sequence
 
 import pkg_resources
 
@@ -47,12 +47,13 @@ from .utils import (
     get_ac_status_fn,
     get_context,
     get_os,
-    switch_priviledge,
     refresh_is_steam_running,
+    switch_priviledge,
 )
 
 logger = logging.getLogger(__name__)
 
+DEBUG_MODE = bool(os.environ.get("HHD_DEBUG", False))
 CONFIG_DIR = os.environ.get("HHD_CONFIG_DIR", "/etc/hhd")
 TOKEN_FILE = os.environ.get("HHD_TOKEN_FILE", "/tmp/hhd/token")
 PLUGIN_WHITELIST = os.environ.get("HHD_PLUGINS", "")
@@ -218,9 +219,7 @@ def main():
                 lock_fd = os.open(lock_fn, os.O_RDWR | os.O_CREAT)
                 fcntl.flock(lock_fd, fcntl.LOCK_EX)
             except Exception as e:
-                logger.error(
-                    f"Could not acquire lock for hhd.\nError:\n{e}"
-                )
+                logger.error(f"Could not acquire lock for hhd.\nError:\n{e}")
 
         # Get OS Info
         info["os"] = get_os()
@@ -250,7 +249,22 @@ def main():
         logger.info(f"Found plugin providers: {', '.join(list(detectors))}")
 
         for name, autodetect in detectors.items():
-            plugins[name] = autodetect([])
+            try:
+                plugins[name] = autodetect([])
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                if DEBUG_MODE:
+                    raise e
+                logger.error(f"Could not load plugins from provider '{name}'.")
+                try:
+                    from rich import get_console
+
+                    get_console().print_exception()
+                except Exception:
+                    import traceback
+
+                    traceback.print_exc()
 
         plugin_str = "Loaded the following plugins:"
         for pkg_name, sub_plugins in plugins.items():
@@ -290,14 +304,49 @@ def main():
         else:
             logger.info("No locales found.")
 
+        settings_changed = TEvent()
+
+        def run_plugin_cmd(cmd: Callable[[HHDPlugin], None], reverse: bool = False):
+            failed_plugins = []
+
+            arr = enumerate(sorted_plugins)
+            if reverse:
+                arr = reversed(list(arr))
+
+            for i, p in arr:
+                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
+                try:
+                    cmd(p)
+                except KeyboardInterrupt:
+                    raise
+                except Exception as e:
+                    if DEBUG_MODE:
+                        raise e
+                    logger.error(
+                        f"Error while running plugin '{p.name}'. Removing it and continuing..."
+                    )
+                    failed_plugins.append(i)
+                    try:
+                        from rich import get_console
+
+                        get_console().print_exception()
+                    except Exception:
+                        import traceback
+
+                        traceback.print_exc()
+                update_log_plugins()
+
+            for i in reversed(failed_plugins):
+                del sorted_plugins[i]
+
+            if failed_plugins:
+                settings_changed.set()
+
         # Open plugins
         lock = RLock()
         cond = Condition(lock)
         emit = EmitHolder(cond, ctx, info)
-        for p in sorted_plugins:
-            set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-            p.open(emit, ctx) # type: ignore
-            update_log_plugins()
+        run_plugin_cmd(lambda p: p.open(emit, ctx))  # type: ignore
         set_log_plugin("main")
 
         # Compile initial configuration
@@ -348,9 +397,11 @@ def main():
                         del hhd_settings["hhd"]["settings"]["children"]["update_beta"]
                 except Exception as e:
                     logger.warning(f"Could not hide update settings. Error:\n{e}")
-                settings = merge_settings(
-                    [hhd_settings, *[p.settings() for p in sorted_plugins]]
-                )
+
+                tmp = [hhd_settings]
+                run_plugin_cmd(lambda p: tmp.append(p.settings()))  # type: ignore
+                settings = merge_settings(tmp)
+
                 # Force general settings to be last
                 if "hhd" in settings:
                     settings = dict(settings)
@@ -488,11 +539,9 @@ def main():
                     else:
                         with open(token_fn, "r") as f:
                             token = f.read().strip()
-                    
+
                     # Save the token to an ephemeral dir
-                    os.makedirs(
-                        os.path.dirname(TOKEN_FILE), exist_ok=True
-                    )
+                    os.makedirs(os.path.dirname(TOKEN_FILE), exist_ok=True)
                     with open(TOKEN_FILE, "w") as f:
                         os.chmod(TOKEN_FILE, 0o644)
                         f.write(token)
@@ -520,7 +569,6 @@ def main():
 
             # Process events
             set_log_plugin("main")
-            settings_changed = False
             events = emit.get_events()
 
             new_wakeup_count = get_wakeup_count()
@@ -560,7 +608,7 @@ def main():
             for ev in events:
                 match ev["type"]:
                     case "settings":
-                        settings_changed = True
+                        settings_changed.set()
                     case "profile":
                         new_conf = ev["config"]
                         if new_conf:
@@ -601,7 +649,8 @@ def main():
 
             # If settings changed, the configuration needs to reload
             # but it needs to be saved first
-            if settings_changed:
+            if settings_changed.is_set():
+                settings_changed.clear()
                 logger.info(f"Reloading settings.")
 
                 # Settings
@@ -616,13 +665,11 @@ def main():
                         del hhd_settings["hhd"]["settings"]["children"]["update_beta"]
                 except Exception as e:
                     logger.warning(f"Could not hide update settings. Error:\n{e}")
-                settings = merge_settings(
-                    [
-                        settings_base,
-                        hhd_settings,
-                        *[p.settings() for p in sorted_plugins],
-                    ]
-                )
+
+                tmp = [settings_base, hhd_settings]
+                run_plugin_cmd(lambda p: tmp.append(p.settings()))  # type: ignore
+                settings = merge_settings(tmp)
+
                 # Force general settings to be last
                 if "hhd" in settings:
                     settings = dict(settings)
@@ -643,22 +690,14 @@ def main():
 
             # Allow plugins to process events
             if events:
-                for p in sorted_plugins:
-                    set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                    p.notify(events)
-                    update_log_plugins()
+                run_plugin_cmd(lambda p: p.notify(events))
 
             # Run prepare loop
-            for p in reversed(sorted_plugins):
-                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                p.prepare(conf)
-                update_log_plugins()
+            run_plugin_cmd(lambda p: p.prepare(conf), reverse=True)
 
             # Run update loop
-            for p in sorted_plugins:
-                set_log_plugin(getattr(p, "log") if hasattr(p, "log") else "ukwn")
-                p.update(conf)
-                update_log_plugins()
+            run_plugin_cmd(lambda p: p.update(conf))
+
             set_log_plugin("ukwn")
 
             # Notify that events were applied
@@ -794,7 +833,7 @@ def main():
             with lock:
                 if (
                     not should_exit.is_set()
-                    and not settings_changed
+                    and not settings_changed.is_set()
                     and not should_initialize.is_set()
                     and not emit.has_events()
                 ):
@@ -829,8 +868,8 @@ def main():
         try:
             logger.info("Closing cached controllers.")
             from hhd.controller.virtual.dualsense import Dualsense
-            from hhd.controller.virtual.uinput import UInputDevice
             from hhd.controller.virtual.sd import SteamdeckController
+            from hhd.controller.virtual.uinput import UInputDevice
 
             UInputDevice.close_cached()
             Dualsense.close_cached()
