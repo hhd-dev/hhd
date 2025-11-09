@@ -294,13 +294,6 @@ def plugin_run(
             repeated_fail = failed_fast
             logger.error(f"Received the following error:\n{type(e)}:")
 
-            try:
-                import traceback
-
-                traceback.print_exc()
-            except Exception:
-                pass
-
             logger.error(
                 f"Assuming controllers disconnected, restarting after {sleep_time}s."
             )
