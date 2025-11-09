@@ -184,10 +184,17 @@ def _tdp(opts):
         print(f"Error: {e}", file=sys.stderr)
         return 1
 
+    if not max:
+        return 1
+
     if opts[0] == "get":
-        print(f"{min} {max} {default}")
+        print(f"{min} {int(max) + 1} {default}")
         return 0
     
+    # Use max + 1 as a hint that steam is doing its thing
+    if int(opts[0]) > int(max):
+        return 0
+
     try:
         send_event({
             "type": "tdp",
