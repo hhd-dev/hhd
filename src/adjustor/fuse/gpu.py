@@ -9,6 +9,16 @@ logger = logging.getLogger(__name__)
 GPU_FREQUENCY_PATH = "device/pp_od_clk_voltage"
 GPU_LEVEL_PATH = "device/power_dpm_force_performance_level"
 
+INTEL_GPU_I915_MIN_FREQ_PATH = "device/gt_RPn_freq_mhz"
+INTEL_GPU_I915_MAX_FREQ_PATH = "device/gt_RP0_freq_mhz"
+INTEL_GPU_I915_MIN_FREQ_PATH_SET = "device/gt_min_freq_mhz"
+INTEL_GPU_I915_MAX_FREQ_PATH_SET = "device/gt_max_freq_mhz"
+
+INTEL_GPU_XE_MIN_FREQ_PATH = "device/tile0/gt0/freq0/rpe_freq"
+INTEL_GPU_XE_MAX_FREQ_PATH = "device/tile0/gt0/freq0/rpa_freq"
+INTEL_GPU_XE_MIN_FREQ_PATH_SET = "device/tile0/gt0/freq0/min_freq"
+INTEL_GPU_XE_MAX_FREQ_PATH_SET = "device/tile0/gt0/freq0/max_freq"
+
 CPU_BOOST_PATH = "/sys/devices/system/cpu/amd_pstate/cpb_boost"
 INTEL_BOOST_PATH = "/sys/devices/system/cpu/intel_pstate/no_turbo"
 
@@ -61,16 +71,23 @@ def find_intel_igpu():
 
     return None
 
-
-def get_igpu_status():
+def find_igpu():
     hwmon = find_intel_igpu()
     if not hwmon:
         hwmon = find_amd_igpu()
         if not hwmon:
-            return None
+            return None, False
         intel = False
     else:
         intel = True
+    
+    return hwmon, intel
+
+
+def get_igpu_status():
+    hwmon, intel = find_igpu()
+    if not hwmon:
+        return None
 
     freq_min = None
     freq_max = None
@@ -80,7 +97,34 @@ def get_igpu_status():
     epp_avail = None
     epp = None
 
-    if not intel:
+    if intel:
+        freq = None
+        is_xe = os.path.exists(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH))
+        if is_xe:
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH), "r") as f:
+                freq_min = int(f.read().strip().lower().replace("mhz", ""))
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MAX_FREQ_PATH), "r") as f:
+                freq_max = int(f.read().strip().lower().replace("mhz", ""))
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH_SET), "r") as f:
+                freq_min_set = int(f.read().strip().lower().replace("mhz", ""))
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MAX_FREQ_PATH_SET), "r") as f:
+                freq_max_set = int(f.read().strip().lower().replace("mhz", ""))
+        is_i915 = os.path.exists(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH))
+        if is_i915:
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH), "r") as f:
+                freq_min = int(f.read().strip().lower().replace("mhz", ""))
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MAX_FREQ_PATH), "r") as f:
+                freq_max = int(f.read().strip().lower().replace("mhz", ""))
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH_SET), "r") as f:
+                freq_min_set = int(f.read().strip().lower().replace("mhz", ""))
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MAX_FREQ_PATH_SET), "r") as f:
+                freq_max_set = int(f.read().strip().lower().replace("mhz", ""))
+        
+        if freq_min_set == freq_min and freq_max_set == freq_max:
+            mode = "auto"
+        else:
+            mode = "manual"
+    else:
         with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "r") as f:
             for line in f.readlines():
                 if line.startswith("0:"):
@@ -137,28 +181,71 @@ def get_igpu_status():
 
 
 def set_gpu_auto():
-    logger.info("Setting GPU mode to 'auto'.")
-    hwmon = find_amd_igpu()
+    hwmon, intel = find_igpu()
     if not hwmon:
         return None
-    with open(os.path.join(hwmon, GPU_LEVEL_PATH), "w") as f:
-        f.write("auto")
+
+    if intel:
+        logger.info("Setting Intel GPU to auto frequencies.")
+        is_xe = os.path.exists(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH))
+        if is_xe:
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH), "r") as f:
+                freq_min = f.read().strip().lower().replace("mhz", "")
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MAX_FREQ_PATH), "r") as f:
+                freq_max = f.read().strip().lower().replace("mhz", "")
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH_SET), "w") as f:
+                f.write(freq_min)
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MAX_FREQ_PATH_SET), "w") as f:
+                f.write(freq_max)
+        is_i915 = os.path.exists(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH))
+        if is_i915:
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH), "r") as f:
+                freq_min = f.read().strip().lower().replace("mhz", "")
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MAX_FREQ_PATH), "r") as f:
+                freq_max = f.read().strip().lower().replace("mhz", "")
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH_SET), "w") as f:
+                f.write(freq_min)
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MAX_FREQ_PATH_SET), "w") as f:
+                f.write(freq_max)
+    else:
+        logger.info("Setting GPU mode to 'auto'.")
+        hwmon = find_amd_igpu()
+        if not hwmon:
+            return None
+        with open(os.path.join(hwmon, GPU_LEVEL_PATH), "w") as f:
+            f.write("auto")
 
 
 def set_gpu_manual(min_freq: int, max_freq: int | None = None):
     if max_freq is None:
         max_freq = min_freq
 
-    logger.info(f"Pinning GPU frequency to '{min_freq}Mhz' - '{max_freq}Mhz'.")
-    hwmon = find_amd_igpu()
+    hwmon, intel = find_igpu()
     if not hwmon:
         return None
-    with open(os.path.join(hwmon, GPU_LEVEL_PATH), "w") as f:
-        f.write("manual")
+    
+    logger.info(f"Pinning GPU frequency to '{min_freq}Mhz' - '{max_freq}Mhz'.")
 
-    for cmd in [f"s 0 {min_freq}\n", f"s 1 {max_freq}\n", f"c\n"]:
-        with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "w") as f:
-            f.write(cmd)
+    if intel:
+        is_xe = os.path.exists(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH))
+        if is_xe:
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MIN_FREQ_PATH_SET), "w") as f:
+                f.write(str(min_freq))
+            with open(os.path.join(hwmon, INTEL_GPU_XE_MAX_FREQ_PATH_SET), "w") as f:
+                f.write(str(max_freq))
+        is_i915 = os.path.exists(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH))
+        if is_i915:
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MIN_FREQ_PATH_SET), "w") as f:
+                f.write(str(min_freq))
+            with open(os.path.join(hwmon, INTEL_GPU_I915_MAX_FREQ_PATH_SET), "w") as f:
+                f.write(str(max_freq))
+    else:
+        with open(os.path.join(hwmon, GPU_LEVEL_PATH), "w") as f:
+            f.write("manual")
+
+        for cmd in [f"s 0 {min_freq}\n", f"s 1 {max_freq}\n", f"c\n"]:
+            with open(os.path.join(hwmon, GPU_FREQUENCY_PATH), "w") as f:
+                f.write(cmd)
 
 
 def read_from_cpu0(fn: str):
