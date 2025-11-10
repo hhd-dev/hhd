@@ -40,6 +40,12 @@ class TdpEvent(TypedDict):
     tdp: int | None
 
 
+class GpuEvent(TypedDict):
+    type: Literal["gpu"]
+    min: int | None
+    max: int | None
+
+
 class ProfileEvent(TypedDict):
     type: Literal["profile"]
     name: str
@@ -79,6 +85,7 @@ Event = (
     | SpecialEvent
     | PowerEvent
     | TdpEvent
+    | GpuEvent
     | EnergyEvent
 )
 
@@ -327,6 +334,7 @@ def get_steam_location(gamepadui: bool = True):
         except Exception:
             pass
     return None, None, None
+
 
 _run_lock = Lock()
 _running = False

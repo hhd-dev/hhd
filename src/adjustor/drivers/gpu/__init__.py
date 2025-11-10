@@ -87,6 +87,9 @@ class GpuPlugin(HHDPlugin):
         self.old_epp = None
         self.old_target = None
         self.old_min_freq = None
+        self.gpu_freq_min = None
+        self.gpu_freq_max = None
+        self.gpu_freq_next = None
         self.target: Literal["power", "balanced", "performance"] = "balanced"
 
         self.logged_boost = False
@@ -173,6 +176,8 @@ class GpuPlugin(HHDPlugin):
         self.initialized = True
 
         if status.freq_min is not None and status.freq_max is not None:
+            self.gpu_freq_min = status.freq_min
+            self.gpu_freq_max = status.freq_max
             self.supports_freq = True
             # Initialize frequency settings
             manual_freq = sets["enabled"]["children"]["gpu_freq"]["modes"]["manual"][
@@ -270,6 +275,8 @@ class GpuPlugin(HHDPlugin):
 
     def notify(self, events):
         for ev in events:
+            if ev["type"] == "gpu":
+                self.gpu_freq_next = (ev["min"], ev["max"])
             if ev["type"] == "energy":
                 self.target = ev["status"]
                 try:
@@ -425,7 +432,40 @@ class GpuPlugin(HHDPlugin):
 
         if self.supports_freq:
             # Apply GPU settings
+            conf["hhd.steamos.gpu_min"] = self.gpu_freq_min
+            conf["hhd.steamos.gpu_max"] = self.gpu_freq_max
             new_gpu = conf["tdp.amd_energy.gpu_freq.mode"].to(str)
+
+            # Set gpu frequency and if we switch mode remember it
+            if self.gpu_freq_next is not None:
+                new_min, new_max = self.gpu_freq_next
+
+                if new_min == None and new_max == None:
+                    if conf.get("hhd.steamos.gpu_set", False):
+                        new_gpu = "auto"
+                        conf["tdp.amd_energy.gpu_freq.mode"] = new_gpu
+                        conf["hhd.steamos.gpu_set"] = False
+                else:
+                    if (
+                        new_gpu == "auto"
+                        or (new_gpu != "range" and new_min is not None)
+                        or (new_gpu != "upper" and new_min is None)
+                    ):
+                        if new_min is None:
+                            new_gpu = "upper"
+                        else:
+                            new_gpu = "range"
+                        conf["tdp.amd_energy.gpu_freq.mode"] = new_gpu
+                        conf["hhd.steamos.gpu_set"] = True
+                    match new_gpu:
+                        case "manual":
+                            conf["tdp.amd_energy.gpu_freq.manual.frequency"] = new_max
+                        case "upper":
+                            conf["tdp.amd_energy.gpu_freq.upper.frequency"] = new_max
+                        case "range":
+                            conf["tdp.amd_energy.gpu_freq.range.min"] = new_min
+                            conf["tdp.amd_energy.gpu_freq.range.max"] = new_max
+
             match new_gpu:
                 case "manual":
                     f = conf["tdp.amd_energy.gpu_freq.manual.frequency"].to(int)
@@ -446,6 +486,13 @@ class GpuPlugin(HHDPlugin):
             if new_freq != self.old_freq:
                 self.old_freq = new_freq
                 self.queue_gpu = curr + APPLY_DELAY
+
+                # If the user changed frequency manually, forget
+                # steam set state so it does not reset the settings
+                if self.gpu_freq_next is None:
+                    conf["hhd.steamos.gpu_set"] = False
+
+            self.gpu_freq_next = None
 
             if (self.queue_gpu is not None and curr >= self.queue_gpu) or queue:
                 self.queue_gpu = None

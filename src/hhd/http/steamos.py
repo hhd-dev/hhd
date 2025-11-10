@@ -208,6 +208,56 @@ def _tdp(opts):
 
     return 0
 
+def _gpu(opts):
+
+    if not opts:
+        print("Either provide a tdp value (e.g. 15) or get for the current limits", file=sys.stderr)
+        return -1
+    
+    if opts[0] == "get":
+        try:
+            state = unroll_dict(get_state())
+            min = state.get("hhd.steamos.gpu_min", None)
+            max = state.get("hhd.steamos.gpu_max", None)
+
+            if min is None or max is None:
+                print("GPU slider is not available. Fallback to steamos manager.", file=sys.stderr)
+                return 1
+            
+            print(f"{min} {max}")
+            return 0
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
+
+    if opts[0] != "clear":
+        try:
+            min = int(opts[0])
+        except ValueError:
+            min = None
+        
+        try:
+            max = int(opts[1])
+        except IndexError:
+            max = min
+            min = None
+        except ValueError:
+            max = None
+    else:
+        min = max = None
+
+    try:
+        send_event({
+            "type": "gpu",
+            "min": min,
+            "max": max,
+        })
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 3
+
+    return 0
+
 def main():
     fallback = False
     try:
@@ -226,6 +276,8 @@ def main():
                 v = _update(fallback, opts)
             case "steamos-tdp":
                 v = _tdp(opts)
+            case "steamos-gpu":
+                v = _gpu(opts)
             case _:
                 print(f"Invalid command: '{cmd}'")
                 v = -1

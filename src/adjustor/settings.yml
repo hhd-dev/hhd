@@ -100,3 +100,18 @@ steamos:
     tdp_set:
       type: bool
       tags: [ hidden ]
+
+    gpu_min:
+      type: custom
+      tags: [ hidden ]
+    
+    gpu_max:
+      type: custom
+      tags: [ hidden ]
+
+    gpu_set:
+      type: bool
+      tags: [ hidden ]
+      # Here if we reboot we still
+      # want to know if gpu was set
+      default: False
