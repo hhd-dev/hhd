@@ -48,6 +48,7 @@ class AdjustorInitPlugin(HHDPlugin):
         self.min_tdp = min_tdp
         self.default_tdp = default_tdp
         self.max_tdp = max_tdp
+        self.tdp_set = None
 
     def open(self, emit: Emitter, context: Context):
         self.context = context
@@ -148,6 +149,12 @@ class AdjustorInitPlugin(HHDPlugin):
             self.emit({"type": "settings"})
         self.enfoce_limits = new_enforce_limits
 
+        # If steam sets a value other than max TDP, assume TDP slider
+        # is enabled. Then, disable it again when max TDP is set but
+        # allow max TDP to be set normally to reset it.
+        if self.tdp_set is not None:
+            conf["hhd.steamos.tdp_set"] = self.tdp_set
+
         if self.init or not enabled or self.failed:
             return
 
@@ -218,6 +225,11 @@ class AdjustorInitPlugin(HHDPlugin):
 
     def close(self):
         self._stop()
+    
+    def notify(self, events: Sequence):
+        for ev in events:
+            if ev["type"] == "tdp":
+                self.tdp_set = ev["tdp"] != self.max_tdp
 
 LEGION_GO_DMIS = ["83E1", "83N0", "83N1"]
 LEGION_GO_S_DMIS = ["83L3", "83N6", "83Q2", "83Q3"]

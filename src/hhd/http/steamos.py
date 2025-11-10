@@ -48,7 +48,7 @@ def _select_branch(fallback, opts):
         # print(f"Stage: {stage}", file=sys.stderr)
         incompatible = stage is None or stage == "incompatible"
 
-        img = state.get("updates.bootc.image", None).split(":")[-1]
+        img = state.get("updates.bootc.image", "").split(":")[-1]
         assert img is not None
         for k, v in BRANCH_MAP.items():
             if img.startswith(v):
@@ -172,6 +172,7 @@ def _tdp(opts):
         status = state.get("hhd.steamos.tdp_status", None)
         min = state.get("hhd.steamos.tdp_min", None)
         max = state.get("hhd.steamos.tdp_max", None)
+        was_set = state.get("hhd.steamos.tdp_set", None)
         default = state.get("hhd.steamos.tdp_default", None)
 
         if status == "conflict":
@@ -188,11 +189,12 @@ def _tdp(opts):
         return 1
 
     if opts[0] == "get":
-        print(f"{min} {int(max) + 1} {default}")
+        print(f"{min} {max} {default}")
         return 0
-    
-    # Use max + 1 as a hint that steam is doing its thing
-    if int(opts[0]) > int(max):
+
+    if str(max) == opts[0] and not was_set:
+        # Skip setting max_tdp if tdp was not
+        # set previously
         return 0
 
     try:

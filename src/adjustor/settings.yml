@@ -96,3 +96,7 @@ steamos:
     tdp_max:
       type: custom
       tags: [ hidden ]
+    
+    tdp_set:
+      type: bool
+      tags: [ hidden ]
