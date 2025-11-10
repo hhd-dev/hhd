@@ -101,6 +101,14 @@ steamos:
       type: bool
       tags: [ hidden ]
 
+    gpu_status:
+      type: multiple
+      tags: [ hidden ]
+      options:
+        disabled: ""
+        enabled: ""
+        conflict: ""
+
     gpu_min:
       type: custom
       tags: [ hidden ]

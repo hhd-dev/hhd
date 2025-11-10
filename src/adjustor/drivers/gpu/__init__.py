@@ -304,9 +304,11 @@ class GpuPlugin(HHDPlugin):
 
         if self.ppd_conflict and conf.get("tdp.amd_energy.enable", False):
             conf["tdp.amd_energy.enable"] = False
+            conf["hhd.steamos.gpu_status"] = "conflict"
             self.emit({"type": "settings"})
 
         if not self.initialized:
+            conf["hhd.steamos.gpu_status"] = "disabled"
             return
 
         new_ppd = conf["hhd.settings.amd_energy_ppd"].to(bool)
@@ -432,6 +434,7 @@ class GpuPlugin(HHDPlugin):
 
         if self.supports_freq:
             # Apply GPU settings
+            conf["hhd.steamos.gpu_status"] = "enabled"
             conf["hhd.steamos.gpu_min"] = self.gpu_freq_min
             conf["hhd.steamos.gpu_max"] = self.gpu_freq_max
             new_gpu = conf["tdp.amd_energy.gpu_freq.mode"].to(str)
@@ -446,6 +449,7 @@ class GpuPlugin(HHDPlugin):
                         conf["tdp.amd_energy.gpu_freq.mode"] = new_gpu
                         conf["hhd.steamos.gpu_set"] = False
                 else:
+                    conf["hhd.steamos.gpu_set"] = True
                     if (
                         new_gpu == "auto"
                         or (new_gpu != "range" and new_min is not None)
@@ -456,7 +460,6 @@ class GpuPlugin(HHDPlugin):
                         else:
                             new_gpu = "range"
                         conf["tdp.amd_energy.gpu_freq.mode"] = new_gpu
-                        conf["hhd.steamos.gpu_set"] = True
                     match new_gpu:
                         case "manual":
                             conf["tdp.amd_energy.gpu_freq.manual.frequency"] = new_max

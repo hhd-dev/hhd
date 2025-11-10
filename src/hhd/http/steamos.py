@@ -209,6 +209,10 @@ def _tdp(opts):
     return 0
 
 def _gpu(opts):
+    # Return statuses:
+    # 1: generic error, fallback to steamos manager
+    # 2: conflict with another application, disable all controls
+    # 3: failed to set tdp, ignore and retry
 
     if not opts:
         print("Either provide a tdp value (e.g. 15) or get for the current limits", file=sys.stderr)
@@ -219,7 +223,14 @@ def _gpu(opts):
             state = unroll_dict(get_state())
             min = state.get("hhd.steamos.gpu_min", None)
             max = state.get("hhd.steamos.gpu_max", None)
+            status = state.get("hhd.steamos.gpu_status", None)
 
+            if status == "conflict":
+                print("GPU management conflict with another application. Disable controls.", file=sys.stderr)
+                return 2
+            elif status != "enabled":
+                print("GPU management disabled. Fallback to steamos manager.", file=sys.stderr)
+                return 1
             if min is None or max is None:
                 print("GPU slider is not available. Fallback to steamos manager.", file=sys.stderr)
                 return 1
