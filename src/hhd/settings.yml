@@ -39,12 +39,6 @@ settings:
       hint: >-
         Resets all Handheld Daemon settings to their default values.
 
-    decky_deprecation:
-      type: display
-      tags: [hhd-version-display-decky, text]
-      title: "It is no longer possible to update Decky from here. If you see this, update the Decky plugin manually."
-      default: " "
-
     version:
       type: display
       tags: [hhd-version-display, text]
