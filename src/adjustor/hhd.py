@@ -236,6 +236,9 @@ LEGION_GO_S_DMIS = ["83L3", "83N6", "83Q2", "83Q3"]
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
+    if os.environ.get("HHD_ADJ_DISABLE"):
+        return []
+
     if len(existing):
         return existing
 
