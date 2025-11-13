@@ -11,7 +11,11 @@ permissions:
 jobs:
   deploy_pypi:
     runs-on: ubuntu-latest
-    environment: prod
+    environment:
+      name: prod
+      url: https://pypi.org/p/hhd
+    permissions:
+      id-token: write
 
     steps:
       - uses: actions/checkout@v3
@@ -32,9 +36,6 @@ jobs:
         run: python -m build -s
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
 
   deploy_aur:
     runs-on: ubuntu-latest
