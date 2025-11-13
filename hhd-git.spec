@@ -30,7 +30,6 @@ Requires:       libusb1
 Requires:       hidapi
 
 Provides:       hhd
-Obsoletes:      adjustor
 
 %description
 Handheld Daemon is a project that aims to provide utilities for managing handheld devices. With features ranging from TDP controls, to controller remappings, and gamescope session management. This will be done through a plugin system and an HTTP(/d-bus?) daemon, which will expose the settings of the plugins in a UI agnostic way.
