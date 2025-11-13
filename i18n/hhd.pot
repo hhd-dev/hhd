@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-02 11:29+0100\n"
+"POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2025-09-04 13:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: English <https://hosted.weblate.org/projects/hhd/hhd/en/>\n"
@@ -156,16 +156,6 @@ msgstr "Reset Settings"
 msgid "Resets all Handheld Daemon settings to their default values."
 msgstr "Resets all Handheld Daemon settings to their default values."
 
-#. Setting: It is no longer possible to update Decky from here. If you see
-#. this, update the Decky plugin manually.
-#. Field: title
-msgid ""
-"It is no longer possible to update Decky from here. If you see this, update "
-"the Decky plugin manually."
-msgstr ""
-"It is no longer possible to update Decky from here. If you see this, update "
-"the Decky plugin manually."
-
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
@@ -174,7 +164,6 @@ msgstr "Handheld Daemon Version"
 #. Setting: Handheld Daemon Version
 #. Field: hint
 #. Setting: Handheld Daemon UI Version
-#. Setting: Adjustor (TDP) Version
 msgid "Displays the Handheld Daemon version."
 msgstr "Displays the Handheld Daemon version."
 
@@ -182,11 +171,6 @@ msgstr "Displays the Handheld Daemon version."
 #. Field: title
 msgid "Handheld Daemon UI Version"
 msgstr "Handheld Daemon UI Version"
-
-#. Setting: Adjustor (TDP) Version
-#. Field: title
-msgid "Adjustor (TDP) Version"
-msgstr "Adjustor (TDP) Version"
 
 #. Setting: Update (Stable)
 #. Field: title
@@ -2549,3 +2533,13 @@ msgstr "Controller RGB"
 #. Field: title
 msgid "Enable RGB support."
 msgstr "Enable RGB support."
+
+#~ msgid ""
+#~ "It is no longer possible to update Decky from here. If you see this, "
+#~ "update the Decky plugin manually."
+#~ msgstr ""
+#~ "It is no longer possible to update Decky from here. If you see this, "
+#~ "update the Decky plugin manually."
+
+#~ msgid "Adjustor (TDP) Version"
+#~ msgstr "Adjustor (TDP) Version"
