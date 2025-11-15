@@ -184,6 +184,21 @@ def get_outputs(
                 # flip_z = conf["uinput.flip_z"].to(bool)
                 flip_z = False
                 button_map = GAMEPAD_BUTTON_MAP
+                # Filter out extra buttons when disabled
+                if paddles_as == "disabled":
+                    button_map = {
+                        k: v
+                        for k, v in button_map.items()
+                        if k
+                        not in (
+                            "extra_l1",
+                            "extra_l2",
+                            "extra_l3",
+                            "extra_r1",
+                            "extra_r2",
+                            "extra_r3",
+                        )
+                    }
                 bus = 0x03 if theme == "hhd" else 0x06
             vid, pid, name = CONTROLLER_THEMES[theme]
             addr = "phys-hhd-main"
