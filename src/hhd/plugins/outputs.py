@@ -8,7 +8,9 @@ from ..controller.virtual.sd import SteamdeckController
 from ..controller.virtual.uinput import (
     CONTROLLER_THEMES,
     GAMEPAD_BASE_BUTTON_MAP,
+    GAMEPAD_BASE_CAPABILITIES,
     GAMEPAD_BUTTON_MAP,
+    GAMEPAD_CAPABILITIES,
     HHD_PID_TOUCHPAD,
     HORIPAD_STEAM_BUTTON_MAP,
     MOTION_AXIS_MAP,
@@ -146,6 +148,7 @@ def get_outputs(
             SteamdeckController.close_cached()
             version = 1
             sync_gyro = False
+            capabilities = GAMEPAD_CAPABILITIES
             paddles_as = conf.get("uinput.paddles_as", "noob")
             if controller == "joycon_pair":
                 theme = "joycon_pair"
@@ -185,6 +188,7 @@ def get_outputs(
                 # flip_z = conf["uinput.flip_z"].to(bool)
                 flip_z = False
                 button_map = GAMEPAD_BASE_BUTTON_MAP if paddles_as == "disabled" else GAMEPAD_BUTTON_MAP
+                capabilities = GAMEPAD_BASE_CAPABILITIES if paddles_as == "disabled" else GAMEPAD_CAPABILITIES
                 bus = 0x03 if theme == "hhd" else 0x06
             vid, pid, name = CONTROLLER_THEMES[theme]
             addr = "phys-hhd-main"
@@ -196,6 +200,7 @@ def get_outputs(
                 pid=pid,
                 phys=addr,
                 uniq=addr,
+                capabilities=capabilities,
                 btn_map=button_map,
                 bus=bus,
                 version=version,

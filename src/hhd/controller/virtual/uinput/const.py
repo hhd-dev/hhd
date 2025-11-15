@@ -68,7 +68,7 @@ class AX(NamedTuple):
 
 logger = logging.getLogger(__name__)
 
-GAMEPAD_CAPABILITIES = {
+GAMEPAD_BASE_CAPABILITIES = {
     # B("EV_SYN", 0): [
     #     B("SYN_REPORT", 0),
     #     B("SYN_CONFIG", 1),
@@ -87,26 +87,6 @@ GAMEPAD_CAPABILITIES = {
         B("BTN_MODE", 316),
         B("BTN_THUMBL", 317),
         B("BTN_THUMBR", 318),
-        B("BTN_TRIGGER_HAPPY1"),
-        B("BTN_TRIGGER_HAPPY2"),
-        B("BTN_TRIGGER_HAPPY3"),
-        B("BTN_TRIGGER_HAPPY4"),
-        B("BTN_TRIGGER_HAPPY5"),
-        B("BTN_TRIGGER_HAPPY6"),
-        B("BTN_TRIGGER_HAPPY7"),
-        B("BTN_TRIGGER_HAPPY8"),
-        B("BTN_TRIGGER_HAPPY9"),
-        B("BTN_TRIGGER_HAPPY10"),
-        B("BTN_TRIGGER_HAPPY11"),
-        B("BTN_TRIGGER_HAPPY12"),
-        B("BTN_TRIGGER_HAPPY13"),
-        B("BTN_TRIGGER_HAPPY14"),
-        B("BTN_TRIGGER_HAPPY15"),
-        B("BTN_TRIGGER_HAPPY16"),
-        B("BTN_TRIGGER_HAPPY17"),
-        B("BTN_TRIGGER_HAPPY18"),
-        B("BTN_TRIGGER_HAPPY19"),
-        B("BTN_TRIGGER_HAPPY20"),
     ],
     B("EV_ABS", 3): [
         (
@@ -146,6 +126,33 @@ GAMEPAD_CAPABILITIES = {
         B("FF_TRIANGLE", 89),
         B("FF_SINE", 90),
         B(["FF_GAIN", "FF_MAX_EFFECTS"], 96),
+    ],
+}
+
+GAMEPAD_CAPABILITIES = {
+    **GAMEPAD_BASE_CAPABILITIES,
+    B("EV_KEY", 1): [
+        *GAMEPAD_BASE_CAPABILITIES[B("EV_KEY", 1)],
+        B("BTN_TRIGGER_HAPPY1"),
+        B("BTN_TRIGGER_HAPPY2"),
+        B("BTN_TRIGGER_HAPPY3"),
+        B("BTN_TRIGGER_HAPPY4"),
+        B("BTN_TRIGGER_HAPPY5"),
+        B("BTN_TRIGGER_HAPPY6"),
+        B("BTN_TRIGGER_HAPPY7"),
+        B("BTN_TRIGGER_HAPPY8"),
+        B("BTN_TRIGGER_HAPPY9"),
+        B("BTN_TRIGGER_HAPPY10"),
+        B("BTN_TRIGGER_HAPPY11"),
+        B("BTN_TRIGGER_HAPPY12"),
+        B("BTN_TRIGGER_HAPPY13"),
+        B("BTN_TRIGGER_HAPPY14"),
+        B("BTN_TRIGGER_HAPPY15"),
+        B("BTN_TRIGGER_HAPPY16"),
+        B("BTN_TRIGGER_HAPPY17"),
+        B("BTN_TRIGGER_HAPPY18"),
+        B("BTN_TRIGGER_HAPPY19"),
+        B("BTN_TRIGGER_HAPPY20"),
     ],
 }
 
