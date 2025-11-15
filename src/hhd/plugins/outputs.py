@@ -7,6 +7,7 @@ from ..controller.virtual.dualsense import Dualsense, TouchpadCorrectionType
 from ..controller.virtual.sd import SteamdeckController
 from ..controller.virtual.uinput import (
     CONTROLLER_THEMES,
+    GAMEPAD_BASE_BUTTON_MAP,
     GAMEPAD_BUTTON_MAP,
     HHD_PID_TOUCHPAD,
     HORIPAD_STEAM_BUTTON_MAP,
@@ -183,22 +184,7 @@ def get_outputs(
                 nintendo_qam = conf["uinput.nintendo_qam"].to(bool)
                 # flip_z = conf["uinput.flip_z"].to(bool)
                 flip_z = False
-                button_map = GAMEPAD_BUTTON_MAP
-                # Filter out extra buttons when disabled
-                if paddles_as == "disabled":
-                    button_map = {
-                        k: v
-                        for k, v in button_map.items()
-                        if k
-                        not in (
-                            "extra_l1",
-                            "extra_l2",
-                            "extra_l3",
-                            "extra_r1",
-                            "extra_r2",
-                            "extra_r3",
-                        )
-                    }
+                button_map = GAMEPAD_BASE_BUTTON_MAP if paddles_as == "disabled" else GAMEPAD_BUTTON_MAP
                 bus = 0x03 if theme == "hhd" else 0x06
             vid, pid, name = CONTROLLER_THEMES[theme]
             addr = "phys-hhd-main"
