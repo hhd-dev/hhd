@@ -92,7 +92,7 @@ def _select_branch(fallback, opts):
     if target_os is None:
         print(f"Invalid branch: {target}", file=sys.stderr)
         return 0
-    
+
     print("Ignoring request to rebase from SteamOS", file=sys.stderr)
     return 0
 
@@ -157,6 +157,7 @@ def _update(fallback, opts):
         return 1
     return 0
 
+
 def _tdp(opts):
     # Return statuses:
     # 1: generic error, fallback to steamos manager
@@ -164,9 +165,12 @@ def _tdp(opts):
     # 3: failed to set tdp, ignore and retry
 
     if not opts:
-        print("Either provide a tdp value (e.g. 15) or get for the current limits", file=sys.stderr)
+        print(
+            "Either provide a tdp value (e.g. 15) or get for the current limits",
+            file=sys.stderr,
+        )
         return -1
-    
+
     try:
         state = unroll_dict(get_state())
         status = state.get("hhd.steamos.tdp_status", None)
@@ -176,10 +180,15 @@ def _tdp(opts):
         default = state.get("hhd.steamos.tdp_default", None)
 
         if status == "conflict":
-            print("TDP management conflict with another application. Disable controls.", file=sys.stderr)
+            print(
+                "TDP management conflict with another application. Disable controls.",
+                file=sys.stderr,
+            )
             return 2
         elif status != "enabled":
-            print("TDP management disabled. Fallback to steamos manager.", file=sys.stderr)
+            print(
+                "TDP management disabled. Fallback to steamos manager.", file=sys.stderr
+            )
             return 1
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -198,55 +207,74 @@ def _tdp(opts):
         return 0
 
     try:
-        send_event({
-            "type": "tdp",
-            "tdp": int(opts[0]),
-        })
+        send_event(
+            {
+                "type": "tdp",
+                "tdp": int(opts[0]),
+            }
+        )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         return 3
 
     return 0
 
+
 def _gpu(opts):
     # Return statuses:
     # 1: generic error, fallback to steamos manager
     # 2: conflict with another application, disable all controls
     # 3: failed to set tdp, ignore and retry
+    # 5: retry a few times and return 1
 
     if not opts:
-        print("Either provide a tdp value (e.g. 15) or get for the current limits", file=sys.stderr)
+        print(
+            "Either provide a tdp value (e.g. 15) or get for the current limits",
+            file=sys.stderr,
+        )
         return -1
-    
-    if opts[0] == "get":
-        try:
-            state = unroll_dict(get_state())
-            min = state.get("hhd.steamos.gpu_min", None)
-            max = state.get("hhd.steamos.gpu_max", None)
-            status = state.get("hhd.steamos.gpu_status", None)
 
-            if status == "conflict":
-                print("GPU management conflict with another application. Disable controls.", file=sys.stderr)
-                return 2
-            elif status != "enabled":
-                print("GPU management disabled. Fallback to steamos manager.", file=sys.stderr)
-                return 1
-            if min is None or max is None:
-                print("GPU slider is not available. Fallback to steamos manager.", file=sys.stderr)
-                return 1
-            
-            print(f"{min} {max}")
-            return 0
-        except Exception as e:
-            print(f"Error: {e}", file=sys.stderr)
+    try:
+        state = unroll_dict(get_state())
+        min = state.get("hhd.steamos.gpu_min", None)
+        max = state.get("hhd.steamos.gpu_max", None)
+        status = state.get("hhd.steamos.gpu_status", None)
+        was_set = state.get("hhd.steamos.gpu_set", None)
+
+        if status == "conflict":
+            print(
+                "GPU management conflict with another application. Disable controls.",
+                file=sys.stderr,
+            )
+            return 2
+        elif status != "enabled":
+            print(
+                "GPU management disabled. Fallback to steamos manager.", file=sys.stderr
+            )
             return 1
+        if min is None or max is None:
+            print(
+                "GPU slider is not available. Fallback to steamos manager.",
+                file=sys.stderr,
+            )
+            return 1
+
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
+    if opts[0] == "get":
+        print(f"{min} {max}")
+        return 0
+
+    actual_max = max
 
     if opts[0] != "clear":
         try:
             min = int(opts[0])
         except ValueError:
             min = None
-        
+
         try:
             max = int(opts[1])
         except IndexError:
@@ -257,17 +285,29 @@ def _gpu(opts):
     else:
         min = max = None
 
+    if str(max) == str(actual_max):
+        if not was_set:
+            # Skip setting gpu if tdp was not
+            # set previously
+            return 0
+        else:
+            # Clear gpu settings
+            min = max = None
+
     try:
-        send_event({
-            "type": "gpu",
-            "min": min,
-            "max": max,
-        })
+        send_event(
+            {
+                "type": "gpu",
+                "min": min,
+                "max": max,
+            }
+        )
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         return 3
 
     return 0
+
 
 def main():
     fallback = False
