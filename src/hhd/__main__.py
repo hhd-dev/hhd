@@ -638,7 +638,7 @@ def main():
                             should_exit.set()
                             # Trigger restart
                             updated = True
-                    case "acpi" | "tdp" | "ppd" | "energy":
+                    case "acpi" | "tdp" | "gpu" | "ppd" | "energy":
                         pass
                     case other:
                         logger.error(f"Invalid event type submitted: '{other}'")
