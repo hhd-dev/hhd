@@ -38,3 +38,10 @@ GPD_WIN_MAX_2_2023_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | No
 }
 
 GPD_WIN_4_8840U_MAPPINGS = gen_gyro_state("z", True, "x", False, "y", True)
+
+GPD_WIN_5_BTN_MAPPINGS: dict[int, Button] = {
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+    B("KEY_O"): "share", # Keyboard button: LMETA + LCTRL + O
+    B("KEY_D"): "hhd", # Home button: LMETA + D
+}

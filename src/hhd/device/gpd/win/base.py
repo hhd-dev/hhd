@@ -44,6 +44,9 @@ TOUCHPAD_PID = 0x0255
 TOUCHPAD_VID_2 = 0x0911
 TOUCHPAD_PID_2 = 0x5288
 
+KBD_VID = 0x0001
+KBD_PID = 0x0001
+
 BACK_BUTTON_DELAY = 0.025
 
 # /dev/input/event17 Microsoft X-Box 360 pad usb-0000:73:00.3-4.1/input0
@@ -260,6 +263,16 @@ def controller_loop(
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
 
+    d_kbd_2 = None
+    if dconf.get("btn_mapping"):
+        d_kbd_2 = GenericGamepadEvdev(
+            vid=[KBD_VID],
+            pid=[KBD_PID],
+            required=False,
+            grab=False,
+            btn_map=dconf.get("btn_mapping"),
+        )
+
     match conf["l4r4"].to(str):
         case "l4":
             qam_button = "extra_l1"
@@ -363,6 +376,8 @@ def controller_loop(
                 traceback.print_exc()
         if has_touchpad and d_params["uses_touch"]:
             prepare(d_touch)
+        if d_kbd_2:
+            prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
 
