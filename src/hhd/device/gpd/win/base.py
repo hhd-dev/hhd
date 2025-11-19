@@ -264,6 +264,7 @@ def controller_loop(
     )
 
     d_kbd_2 = None
+    share_to_qam = False
     if dconf.get("btn_mapping"):
         d_kbd_2 = GenericGamepadEvdev(
             vid=[KBD_VID],
@@ -272,6 +273,7 @@ def controller_loop(
             grab=False,
             btn_map=dconf.get("btn_mapping"),
         )
+        share_to_qam = True
 
     match conf["l4r4"].to(str):
         case "l4":
@@ -309,6 +311,7 @@ def controller_loop(
             touchpad_hold=touch_actions.get("hold", "disabled"),
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
+            share_to_qam=share_to_qam,
             emit=emit,
             params=d_params,
             # qam_multi_tap=qam_multi_tap, # supports it now
@@ -321,6 +324,7 @@ def controller_loop(
             dpad="analog_to_discrete",
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
+            share_to_qam=share_to_qam,
             emit=emit,
             params=d_params,
             # qam_multi_tap=qam_multi_tap, # supports it now
