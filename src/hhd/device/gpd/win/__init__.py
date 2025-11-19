@@ -19,6 +19,7 @@ from .const import (
     GPD_WIN_4_8840U_MAPPINGS,
     GPD_WIN_DEFAULT_MAPPINGS,
     GPD_WIN_MAX_2_2023_MAPPINGS,
+    GPD_WIN_5_BTN_MAPPINGS,
 )
 
 GPD_CONFS = {
@@ -35,6 +36,11 @@ GPD_CONFS = {
         "rgb": True,
         "combo": "menu",
         "chord": "select",
+    },
+    "G1618-05": {
+        "name": "GPD Win 5",
+        "hrtimer": True,
+        "btn_mapping": GPD_WIN_5_BTN_MAPPINGS,
     },
     "G1617-01": {
         "name": "GPD Win Mini",

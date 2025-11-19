@@ -14,6 +14,7 @@ from hhd.controller.physical.evdev import B as EC
 from hhd.controller.physical.evdev import GenericGamepadEvdev
 from hhd.controller.physical.hidraw import GenericGamepadHidraw
 from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
+from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
 from .const import (
@@ -43,6 +44,9 @@ TOUCHPAD_PID = 0x0255
 # Win Minis
 TOUCHPAD_VID_2 = 0x0911
 TOUCHPAD_PID_2 = 0x5288
+
+KBD_VID = 0x0001
+KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.025
 
@@ -260,6 +264,19 @@ def controller_loop(
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
 
+    grab_at = dconf.get("grab_at", True)
+    d_kbd_2 = None
+    share_to_qam = False
+    if dconf.get("btn_mapping"):
+        d_kbd_2 = GenericGamepadEvdev(
+            vid=[KBD_VID],
+            pid=[KBD_PID],
+            required=False,
+            grab=grab_at,
+            btn_map=dconf.get("btn_mapping"),
+        )
+        share_to_qam = True
+
     match conf["l4r4"].to(str):
         case "l4":
             qam_button = "extra_l1"
@@ -296,6 +313,7 @@ def controller_loop(
             touchpad_hold=touch_actions.get("hold", "disabled"),
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
+            share_to_qam=share_to_qam,
             emit=emit,
             params=d_params,
             # qam_multi_tap=qam_multi_tap, # supports it now
@@ -308,12 +326,26 @@ def controller_loop(
             dpad="analog_to_discrete",
             nintendo_mode=conf["nintendo_mode"].to(bool),
             qam_button=qam_button,
+            share_to_qam=share_to_qam,
             emit=emit,
             params=d_params,
             # qam_multi_tap=qam_multi_tap, # supports it now
             qam_hold=qam_hold,
             startselect_chord=conf.get("main_chords", "disabled"),
         )
+
+    d_volume_btn = UInputDevice(
+        name="Handheld Daemon Volume Keyboard",
+        phys="phys-hhd-vbtn",
+        capabilities={EC("EV_KEY"): [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]},
+        btn_map={
+            "key_volumeup": EC("KEY_VOLUMEUP"),
+            "key_volumedown": EC("KEY_VOLUMEDOWN"),
+        },
+        pid=KBD_PID,
+        vid=KBD_VID,
+        output_timestamps=True,
+    )
 
     REPORT_FREQ_MIN = 25
     REPORT_FREQ_MAX = 400
@@ -363,6 +395,10 @@ def controller_loop(
                 traceback.print_exc()
         if has_touchpad and d_params["uses_touch"]:
             prepare(d_touch)
+        if grab_at and d_kbd_2:
+            prepare(d_volume_btn)
+        if d_kbd_2:
+            prepare(d_kbd_2)
         for d in d_producers:
             prepare(d)
 
@@ -387,6 +423,7 @@ def controller_loop(
             if evs:
                 if debug:
                     logger.info(evs)
+                d_volume_btn.consume(evs)
                 d_xinput.consume(evs)
 
             for d in d_outs:
