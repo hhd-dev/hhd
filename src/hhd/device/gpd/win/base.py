@@ -267,13 +267,14 @@ def controller_loop(
     grab_at = dconf.get("grab_at", True)
     d_kbd_2 = None
     share_to_qam = False
-    if dconf.get("btn_mapping"):
+    btn_map = dconf.get("btn_mapping", None)
+    if btn_map:
         d_kbd_2 = GenericGamepadEvdev(
             vid=[KBD_VID],
             pid=[KBD_PID],
             required=False,
             grab=grab_at,
-            btn_map=dconf.get("btn_mapping"),
+            btn_map=btn_map,
         )
         share_to_qam = True
 
