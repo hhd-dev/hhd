@@ -231,7 +231,8 @@ class AdjustorInitPlugin(HHDPlugin):
             if ev["type"] == "tdp":
                 self.tdp_set = ev["tdp"] != self.max_tdp
 
-LEGION_GO_DMIS = ["83E1", "83N0", "83N1"]
+LEGION_GO_DMIS = ["83E1"]
+LEGION_GO_2_DMIS = ["83N0", "83N1"]
 LEGION_GO_S_DMIS = ["83L3", "83N6", "83Q2", "83Q3"]
 
 
@@ -267,14 +268,22 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     default_tdp = 15
     max_tdp = 30
 
-    legion_s = prod in LEGION_GO_S_DMIS
-    legion_t = prod in LEGION_GO_DMIS
-    if (legion_t or legion_s) and not bool(os.environ.get("HHD_ADJ_ALLY")):
-        drivers.append(LenovoDriverPlugin(legion_s=legion_s))
+    go_model = None
+    if prod in LEGION_GO_S_DMIS:
+        go_model = "gos"
+        max_tdp = 33
+    elif prod in LEGION_GO_DMIS:
+        go_model = "go"
+        max_tdp = 30
+    elif prod in LEGION_GO_2_DMIS:
+        go_model = "go2"
+        min_tdp = 5
+        max_tdp = 37
+
+    if go_model and not bool(os.environ.get("HHD_ADJ_ALLY")):
+        drivers.append(LenovoDriverPlugin(go_model = go_model))
         drivers_matched = True
         use_acpi_call = True
-    if legion_s:
-        max_tdp = 33
 
     for k, v in ASUS_DATA.items():
         if k in prod:
