@@ -32,7 +32,7 @@ TDP_DELAY = 0
 
 
 class LenovoDriverPlugin(HHDPlugin):
-    def __init__(self, legion_s=False) -> None:
+    def __init__(self, go_model=None) -> None:
         self.name = f"adjustor_lenovo"
         self.priority = 6
         self.log = "adjl"
@@ -45,8 +45,8 @@ class LenovoDriverPlugin(HHDPlugin):
         self.prev_charge_limit = None
         self.sys_tdp = False
         self.fan_curve_set = False
-        self.legion_s = legion_s
-        if legion_s:
+        self.go_model = go_model
+        if go_model == "gos":
             # AC 40/43/53W
             # DC 33/33/43W
             self.max_watts = 40
@@ -54,14 +54,19 @@ class LenovoDriverPlugin(HHDPlugin):
             self.max_watts_fppt = 53
             self.fppt_ratio = 53 / 40
             self.performance_tdp = 25
-        else:
+        elif go_model == "go2":
+            self.max_watts = 37
+            self.max_watts_sppt = 37
+            self.max_watts_fppt = 45
+            self.fppt_ratio = 45/35
+        elif go_model == "go":
             self.max_watts = 30
             self.max_watts_sppt = 32
             self.max_watts_fppt = 41
             self.fppt_ratio = 41/30
             self.performance_tdp = 20
 
-        if legion_s:
+        if go_model != "go":
             self.power_light_v2 = False
         else:
             bios_version = get_bios_version()
@@ -83,7 +88,7 @@ class LenovoDriverPlugin(HHDPlugin):
 
         self.initialized = True
         out = {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
-        if self.legion_s:
+        if self.go_model=="gos":
             out["tdp"]["lenovo"]["children"]["power_light"]["title"] = _("Power Light")
         if not self.power_light_v2:
             del out["tdp"]["lenovo"]["children"]["power_light_sleep"]
@@ -95,13 +100,26 @@ class LenovoDriverPlugin(HHDPlugin):
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"]["children"][
                 "tdp"
             ]["max"] = self.max_watts
-        if self.legion_s:
+        if self.go_model=="gos":
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["performance"][
                 "unit"
             ] = f"25W"
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"][
                 "unit"
             ] = f"→ 33/40W"
+        if self.go_model == "go2":
+            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["quiet"][
+                "unit"
+            ] = f"8/15W"
+            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["balanced"][
+                "unit"
+            ] = f"16/25W"
+            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["performance"][
+                "unit"
+            ] = f"20/35W"
+            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"][
+                "unit"
+            ] = f"→ 35/37W"
         return out
 
     def open(
@@ -186,12 +204,13 @@ class LenovoDriverPlugin(HHDPlugin):
         if new_tdp:
             # For TDP values received from steam, set the appropriate
             # mode to get a better experience.
-            if new_tdp == 8:
-                mode = "quiet"
-            elif new_tdp == 15:
-                mode = "balanced"
-            elif new_tdp == self.performance_tdp:
-                mode = "performance"
+            if self.go_model=="gos" or self.go_model=="go":
+                if new_tdp == 8:
+                    mode = "quiet"
+                elif new_tdp == 15:
+                    mode = "balanced"
+                elif new_tdp == self.performance_tdp:
+                    mode = "performance"
             else:
                 mode = "custom"
             conf["tdp.lenovo.tdp.mode"] = mode
