@@ -66,7 +66,7 @@ class LenovoDriverPlugin(HHDPlugin):
             self.fppt_ratio = 41/30
             self.performance_tdp = 20
 
-        if go_model == "gos":
+        if go_model != "go":
             self.power_light_v2 = False
         else:
             bios_version = get_bios_version()
