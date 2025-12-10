@@ -211,6 +211,8 @@ class LenovoDriverPlugin(HHDPlugin):
                     mode = "balanced"
                 elif new_tdp == self.performance_tdp:
                     mode = "performance"
+                else:
+                    mode = "custom"
             else:
                 mode = "custom"
             conf["tdp.lenovo.tdp.mode"] = mode
