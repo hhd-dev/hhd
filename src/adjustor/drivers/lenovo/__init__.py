@@ -202,19 +202,7 @@ class LenovoDriverPlugin(HHDPlugin):
         notify_tdp = False
         self.new_mode = None
         if new_tdp:
-            # For TDP values received from steam, set the appropriate
-            # mode to get a better experience.
-            if self.go_model != "go2":
-                if new_tdp == 8:
-                    mode = "quiet"
-                elif new_tdp == 15:
-                    mode = "balanced"
-                elif new_tdp == self.performance_tdp:
-                    mode = "performance"
-                else:
-                    mode = "custom"
-            else:
-                mode = "custom"
+            mode = "custom"
             conf["tdp.lenovo.tdp.mode"] = mode
         elif new_mode:
             mode = new_mode
