@@ -58,12 +58,12 @@ class LenovoDriverPlugin(HHDPlugin):
             self.max_watts = 37
             self.max_watts_sppt = 37
             self.max_watts_fppt = 45
-            self.fppt_ratio = 45/35
+            self.fppt_ratio = 45 / 35
         elif go_model == "go":
             self.max_watts = 30
             self.max_watts_sppt = 32
             self.max_watts_fppt = 41
-            self.fppt_ratio = 41/30
+            self.fppt_ratio = 41 / 30
             self.performance_tdp = 20
 
         if go_model != "go":
@@ -88,7 +88,7 @@ class LenovoDriverPlugin(HHDPlugin):
 
         self.initialized = True
         out = {"tdp": {"lenovo": load_relative_yaml("settings.yml")}}
-        if self.go_model=="gos":
+        if self.go_model != "go2":
             out["tdp"]["lenovo"]["children"]["power_light"]["title"] = _("Power Light")
         if not self.power_light_v2:
             del out["tdp"]["lenovo"]["children"]["power_light_sleep"]
@@ -100,17 +100,16 @@ class LenovoDriverPlugin(HHDPlugin):
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"]["children"][
                 "tdp"
             ]["max"] = self.max_watts
-        if self.go_model=="gos":
+
+        if self.go_model == "gos":
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["performance"][
                 "unit"
             ] = f"25W"
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"][
                 "unit"
             ] = f"→ 33/40W"
-        if self.go_model == "go2":
-            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["quiet"][
-                "unit"
-            ] = f"8/15W"
+        elif self.go_model == "go2":
+            out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["quiet"]["unit"] = f"8/15W"
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["balanced"][
                 "unit"
             ] = f"16/25W"
@@ -120,6 +119,7 @@ class LenovoDriverPlugin(HHDPlugin):
             out["tdp"]["lenovo"]["children"]["tdp"]["modes"]["custom"][
                 "unit"
             ] = f"→ 35/37W"
+
         return out
 
     def open(
@@ -204,7 +204,7 @@ class LenovoDriverPlugin(HHDPlugin):
         if new_tdp:
             # For TDP values received from steam, set the appropriate
             # mode to get a better experience.
-            if self.go_model=="gos" or self.go_model=="go":
+            if self.go_model != "go2":
                 if new_tdp == 8:
                     mode = "quiet"
                 elif new_tdp == 15:
