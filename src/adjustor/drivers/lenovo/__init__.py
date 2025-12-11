@@ -55,7 +55,7 @@ class LenovoDriverPlugin(HHDPlugin):
             self.fppt_ratio = 53 / 40
             self.performance_tdp = 25
         elif go_model == "go2":
-            self.max_watts = 37
+            self.max_watts = 35
             self.max_watts_sppt = 37
             self.max_watts_fppt = 45
             self.fppt_ratio = 45 / 35
