@@ -277,7 +277,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         max_tdp = 30
     elif prod in LEGION_GO_2_DMIS:
         go_model = "go2"
-        max_tdp = 37
+        max_tdp = 35
 
     if go_model and not bool(os.environ.get("HHD_ADJ_ALLY")):
         drivers.append(LenovoDriverPlugin(go_model = go_model))
