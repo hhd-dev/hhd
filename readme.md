@@ -24,7 +24,7 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
 - Lenovo Legion
   - Go
   - Go S
-  - Go 2 (tdp values displayed incorrectly)
+  - Go 2
 - Asus ROG
   - Ally
   - Ally X
