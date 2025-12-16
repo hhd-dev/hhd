@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
+"PO-Revision-Date: 2025-12-16 22:12+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/hhd/hhd/zh_Hant/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 5.15.1-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
@@ -586,8 +586,8 @@ msgid ""
 "the Xbox button, which allows doing SteamOS combos (Select+RT is "
 "screenshot)."
 msgstr ""
-"按住 Select 或 Start 鍵，如果按下另一個按鈕，則它們將成為 Xbox 按鈕，"
-"這樣可以實現 SteamOS 組合鍵效果 (Select+RT 是截圖)。"
+"按住 Select 或 Start 鍵，如果按下另一個按鈕，則它們將成為 Xbox 按鈕，這樣可以"
+"實現 SteamOS 組合鍵效果 (Select+RT 是截圖)。"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -661,10 +661,10 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold"
 " HHD (legacy). "
 msgstr ""
-"將 L4/R4 映射到 Steam 輸入 (需要在 Wincontrols 選項卡中將 L4/R4 設置為 "
-"HHD)。如果禁用，則它們將作為鍵盤按鈕。選單/L4/R4 "
-"可以作為組合鍵：Menu單擊呼叫快速選單(QAM)、雙擊呼叫HHD選單、按住則做為Xbox鍵"
-"。L4/R4 是單擊呼叫快速選單(QAM)，長按呼叫 HHD 選單(原始)。"
+"將 L4/R4 映射到 Steam 輸入 (需要在 Wincontrols 選項卡中將 L4/R4 設置為 HHD)。"
+"如果禁用，則它們將作為鍵盤按鈕。選單/L4/R4 可以作為組合鍵：Menu單擊呼叫快速選"
+"單(QAM)、雙擊呼叫HHD選單、按住則做為Xbox鍵。L4/R4 是單擊呼叫快速選單(QAM)，長"
+"按呼叫 HHD 選單(原始)。"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
@@ -1015,8 +1015,9 @@ msgstr "Legion 控制器"
 msgid ""
 "Allows for configuring the Legion controllers using the built in firmware"
 " commands and enabling emulation modes for various controller types."
-msgstr "允許使用控制器韌體內建命令配置 Legion "
-"控制器，並啟用各種控制器類型的模擬模式。"
+msgstr ""
+"允許使用控制器韌體內建命令配置 Legion 控制器，並啟用各種控制器類型的模擬模式"
+"。"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
@@ -1050,8 +1051,9 @@ msgstr "左右控制器"
 msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
-msgstr "主控制器使用右側控制器的運動感應器， "
-"並為左側控制器的運動感應器創建了一個輔助控制器。"
+msgstr ""
+"主控制器使用右側控制器的運動感應器， 並為左側控制器的運動感應器創建了一個輔助"
+"控制器。"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
@@ -1070,8 +1072,9 @@ msgstr "将 M2 映射为 Dualsense 的静音按钮和 Xbox Elite 控制器的共
 msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
-msgstr "在其他模式（dinput、雙 dinput 和 fps）中，啟用快捷控制器以恢復 Guide、QAM "
-"和快捷功能。"
+msgstr ""
+"在其他模式（dinput、雙 dinput 和 fps）中，啟用快捷控制器以恢復 Guide、QAM 和"
+"快捷功能。"
 
 #. Setting: Factory Reset Controllers
 #. Field: title
@@ -1406,7 +1409,8 @@ msgstr "額外按鈕作為"
 msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right"
 " button is Overlay. Or they can be set for Steam Input."
-msgstr "更改額外按鈕的行為。左側按鈕為鍵盤，右側按鈕為覆蓋選單。或者可以設定為 Steam "
+msgstr ""
+"更改額外按鈕的行為。左側按鈕為鍵盤，右側按鈕為覆蓋選單。或者可以設定為 Steam "
 "輸入。"
 
 #. Setting: Extra buttons as
@@ -1468,10 +1472,10 @@ msgid ""
 "difference for the Legion Go (125hz), as all the other handhelds are "
 "using 400hz by default."
 msgstr ""
-"Steam 依賴 IMU 時間戳來作為觸控板滑鼠和 `陀螺儀到滑鼠 [BETA]`。如果在 2 "
-"個報告中發送相同的時間戳，這會導致除以 0 以及不穩定。此選項使報告僅在有新的 "
-"IMU 時間戳時發送，有效地將控制器的響應速度限制為 IMU 的速度。這只對 Legion "
-"Go (125hz) 有影響，因為所有其他掌機預設使用 400hz。"
+"Steam 依賴 IMU 時間戳來作為觸控板滑鼠和 `陀螺儀到滑鼠 [BETA]`。如果在 2 個報"
+"告中發送相同的時間戳，這會導致除以 0 以及不穩定。此選項使報告僅在有新的 IMU "
+"時間戳時發送，有效地將控制器的響應速度限制為 IMU 的速度。這只對 Legion Go "
+"(125hz) 有影響，因為所有其他掌機預設使用 400hz。"
 
 #. Setting: Invert Roll Axis
 #. Field: title
@@ -1485,8 +1489,8 @@ msgid ""
 "for Steam Input, since you want it to be inverted to look left to right, "
 "but an issue in emulators."
 msgstr ""
-"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。這對於 Steam "
-"輸入非常有用，因為您可能希望它反轉以便從左到右查看。但在模擬器中會有問題"
+"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。這對於 Steam 輸入非常有用，因"
+"為您可能希望它反轉以便從左到右查看。但在模擬器中會有問題"
 
 #. Setting: Dualsense
 #. Field: title
@@ -1537,8 +1541,8 @@ msgid ""
 " for Steam Input, since you want it to be inverted to look left to right,"
 " but an issue in emulators."
 msgstr ""
-"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。對於 Steam "
-"輸入很有用，因為您可能希望它反轉以便從左到右看，但在模擬器中會有問題。"
+"與真實的 Dualsense 控制器相比，反轉滾動 (Z) 軸。對於 Steam 輸入很有用，因為您"
+"可能希望它反轉以便從左到右看，但在模擬器中會有問題。"
 
 #. Setting: Bluetooth Mode
 #. Field: title
@@ -1553,9 +1557,8 @@ msgid ""
 "controller. However, using USB mode can improve LED support (?) in some "
 "games. Test and report back!"
 msgstr ""
-"模擬控制器藍牙模式而不是 USB "
-"模式。這是預設設定，因為它會減少應用與控制器交互的問題。但是，使用 USB "
-"模式可以改善一些遊戲中的 LED 支援(?)。歡迎測試並反饋！"
+"模擬控制器藍牙模式而不是 USB 模式。這是預設設定，因為它會減少應用與控制器交互"
+"的問題。但是，使用 USB 模式可以改善一些遊戲中的 LED 支援(?)。歡迎測試並反饋！"
 
 #. Setting: Touchpad Emulation
 #. Field: title
@@ -1568,9 +1571,8 @@ msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported "
 "(e.g., Dualsense) or a virtual one if not."
 msgstr ""
-"模擬一個觸控板。如果當前模擬控制器本身支持觸控板（例如 "
-"Dualsense），則將映射成目標設備自身的觸控板，否則會模擬成一個獨立的虛擬觸控板"
-"設備。"
+"模擬一個觸控板。如果當前模擬控制器本身支持觸控板（例如 Dualsense），則將映射"
+"成目標設備自身的觸控板，否則會模擬成一個獨立的虛擬觸控板設備。"
 
 #. Setting: Disabled
 #. Field: hint
@@ -1592,9 +1594,9 @@ msgid ""
 "in desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
-"添加一個虛擬觸控板。這個觸控板是為在 gamescope "
-"中使用而設計的，預設支援左鍵、右鍵。但是，它會在桌面模式中引起問題，並且不允"
-"許拖動文件。因此，它會在桌面模式中自動禁用。"
+"添加一個虛擬觸控板。這個觸控板是為在 gamescope 中使用而設計的，預設支援左鍵、"
+"右鍵。但是，它會在桌面模式中引起問題，並且不允許拖動文件。因此，它會在桌面模"
+"式中自動禁用。"
 
 #. Setting: Disable on Desktop
 #. Field: title
@@ -1607,8 +1609,9 @@ msgid ""
 "Touchpad emulation will automatically be disabled when not in gamemode. "
 "Specifically, steam will be periodically be checked to be running in "
 "gamepad mode and if not, touchpad emulation will be disabled."
-msgstr "當不處於遊戲模式時，觸控板模擬將自動禁用。通過定期檢查 Steam "
-"是否運行在遊戲模式中來實現，如果不是，觸控板模擬將被禁用。"
+msgstr ""
+"當不處於遊戲模式時，觸控板模擬將自動禁用。通過定期檢查 Steam 是否運行在遊戲模"
+"式中來實現，如果不是，觸控板模擬將被禁用。"
 
 #. Setting: Short Action
 #. Field: title
@@ -1671,10 +1674,9 @@ msgid ""
 "to the whole dualsense surface."
 msgstr ""
 "配置真實觸控板與虛擬觸控板的位置關係，以適配 Steam 設定。在 Steam 中，\"左\" "
-"將觸控板對應到左半邊，\"右\" 將觸控板對應到右半邊，而 \"置中\" "
-"將對應到整個觸控板。因此，虛擬觸控板被裁切為左側用於左邊，右側用於右邊，並在"
-"中心擴展。這意味著當設置為\"置中"
-"\"時，左觸控板的一半是左側，右觸控板的一半是右側。\"延伸\" "
+"將觸控板對應到左半邊，\"右\" 將觸控板對應到右半邊，而 \"置中\" 將對應到整個觸"
+"控板。因此，虛擬觸控板被裁切為左側用於左邊，右側用於右邊，並在中心擴展。這意"
+"味著當設置為\"置中\"時，左觸控板的一半是左側，右觸控板的一半是右側。\"延伸\" "
 "將觸控板伸展至整個Dualsense虛擬觸控板。"
 
 #. Setting: Location
@@ -1695,9 +1697,8 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"將短觸控（小於 0.2s）映射為觸控板動作。Dualsense "
-"使用物理按鍵作為左鍵，雙擊作為右鍵（雙擊支援因設備而異；"
-"請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
+"將短觸控（小於 0.2s）映射為觸控板動作。Dualsense 使用物理按鍵作為左鍵，雙擊作"
+"為右鍵（雙擊支援因設備而異；請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
 
 #. Setting: Hold Action
 #. Field: hint
@@ -1707,9 +1708,8 @@ msgid ""
 "double tap varies; enable \"Tap to Click\" in your desktop's touchpad "
 "settings)."
 msgstr ""
-"將長觸控（大於 2s）映射為觸控板動作。Dualsense "
-"使用物理按鍵作為左鍵，雙擊作為右鍵（雙擊支援因設備而異；"
-"請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
+"將長觸控（大於 2s）映射為觸控板動作。Dualsense 使用物理按鍵作為左鍵，雙擊作為"
+"右鍵（雙擊支援因設備而異；請在桌面觸控板設定中啟用\"輕觸點擊\"）。"
 
 msgid "Downloading:"
 msgstr "下載中:"
