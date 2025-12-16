@@ -8,29 +8,31 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-12-17 10:32+0000\n"
+"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/hhd/adjustor/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 5.15.1-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
 msgstr ""
+"Αποτυπωμένα plugins Decky TDP χρησιμοποιώντας το κουμπί παρακάτω για να "
+"συνεχίσετε."
 
 #. Setting: TDP Controls
 #. Field: title
 msgid "TDP Controls"
-msgstr ""
+msgstr "TDP TDP Έλεγχος"
 
 #. Setting: Enable TDP Controls
 #. Field: title
 msgid "Enable TDP Controls"
-msgstr ""
+msgstr "Η δυνατότητα TDP Έλεγχος"
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -39,6 +41,9 @@ msgid ""
 "will set and maintain the TDP limits set on start-up and during other device "
 "changes (ac/dc)."
 msgstr ""
+"Επιτρέπει τη διαχείριση TDP από το Handheld Daemon. Ενώ ενεργοποιήσετε, το "
+"Handheld Daemon θα καθορίσει και θα διατηρήσει τα όρια TDP που καθορίζονται "
+"στην εκκίνηση και κατά τη διάρκεια άλλων αλλαγών συσκευής (ac/dc)."
 
 #. Setting: Error
 #. Field: title
@@ -49,16 +54,18 @@ msgstr ""
 #. Option: nowrite
 msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
 msgstr ""
+"Δεν μπορεί να γράψει στο αρχείο ACPI Call. Το ACPI Call απαιτείται για το "
+"TDP."
 
 #. Setting: TDP Capabilities
 #. Field: title
 msgid "TDP Capabilities"
-msgstr ""
+msgstr "TDP Δυνατότητες"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: title
 msgid "Disable Decky TDP Plugins"
-msgstr ""
+msgstr "Αποτρόπαια Decky TDP Plugins"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: hint
@@ -68,6 +75,10 @@ msgid ""
 "Decky. This might cause Steam to restart. Move them back and reboot to re-"
 "enable."
 msgstr ""
+"Disables Decky TDP plugins (Powercontrol, SimpleDeckyTDP) μετακινώντας τα "
+"από ~/homebrew/plugins to ~/homebrew/plugins/hd-disabled. Στη συνέχεια, "
+"επανεκκινεί την Decky. Αυτό μπορεί να προκαλέσει το Steam να επανεκκινήσει. "
+"Μετακινήστε τους πίσω και επανεκκινήστε για να ενεργοποιήσετε ξανά."
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -77,11 +88,16 @@ msgid ""
 "device changes (ac/dc).\n"
 "If the device crashes, TDP setting will be disabled on next startup."
 msgstr ""
+"Επιτρέπει τη διαχείριση TDP από το Handheld Daemon. Ενώ ενεργοποιήσετε, το "
+"Handheld Daemon θα καθορίσει και θα διατηρήσει τα όρια TDP που καθορίζονται "
+"στην εκκίνηση και κατά τη διάρκεια άλλων αλλαγών συσκευής (ac/dc).\n"
+"Εάν η συσκευή καταρρεύσει, η ρύθμιση TDP θα απενεργοποιηθεί στην επόμενη "
+"εκκίνηση."
 
 #. Setting: Enforce Device TDP Limits
 #. Field: title
 msgid "Enforce Device TDP Limits"
-msgstr ""
+msgstr "Enforce Device TDP Περιορισμοί"
 
 #. Setting: Enforce Device TDP Limits
 #. Field: hint
@@ -94,30 +110,38 @@ msgid ""
 "All settings outside specifications will be set to system specifications "
 "after rebooting."
 msgstr ""
+"Όταν αυτή η επιλογή είναι σε εξέλιξη, οι ρυθμίσεις θα τηρούν τα όρια που "
+"καθορίζονται από τον κατασκευαστή της συσκευής, υπό την προϋπόθεση της "
+"διαθεσιμότητάς τους.\n"
+"Με αυτό, οι ρυθμίσεις TDP θα επεκταθούν σε αυτό που είναι λογικό δυνατό για "
+"την τρέχουσα συσκευή (ανεξάρτητα από τις προδιαγραφές του κατασκευαστή).\n"
+"Όλες οι ρυθμίσεις εκτός προδιαγραφών θα καθορίζονται σε προδιαγραφές "
+"συστήματος μετά την επανεκκίνηση."
 
 msgid "Steam is controlling TDP"
-msgstr ""
+msgstr "Το Steam ελέγχει το TDP"
 
 #. Setting: Asus TDP
 #. Field: title
 msgid "Asus TDP"
-msgstr ""
+msgstr "Asus TDP"
 
 #. Setting: Asus TDP
 #. Field: hint
 #. Setting: MSI TDP
 msgid "Uses the interface of Armory Crate to set the TDP of the device."
 msgstr ""
+"Χρησιμοποιεί τη διεπαφή του Armory Crate για να θέσει το TDP της συσκευής."
 
 #. Setting: TDP Mode
 #. Field: title
 msgid "TDP Mode"
-msgstr ""
+msgstr "TDP Mode"
 
 #. Setting: Silent
 #. Field: title
 msgid "Silent"
-msgstr ""
+msgstr "Silent"
 
 #. Setting: Performance
 #. Field: title
@@ -126,17 +150,17 @@ msgstr ""
 #. Setting: Platform Profile
 #. Setting: Energy Policy
 msgid "Performance"
-msgstr ""
+msgstr "Απόδοση απόδοσης"
 
 #. Setting: Turbo
 #. Field: title
 msgid "Turbo"
-msgstr ""
+msgstr "Turbo"
 
 #. Setting: Custom
 #. Field: title
 msgid "Custom"
-msgstr ""
+msgstr "Custom"
 
 #. Setting: TDP
 #. Field: title
@@ -149,11 +173,13 @@ msgid ""
 "Average TDP Target. TDP Boost is recommended for desktop use and does not "
 "affect gaming."
 msgstr ""
+"Ο μέσος στόχος TDP. TDP TDP Το Boost συνιστάται για χρήση εργασίας και δεν "
+"επηρεάζει το παιχνίδι."
 
 #. Setting: TDP Boost
 #. Field: title
 msgid "TDP Boost"
-msgstr ""
+msgstr "TDP Boost"
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -161,6 +187,8 @@ msgid ""
 "Allows the device to temporarily boost by setting appropriate slow and fast "
 "TDPs."
 msgstr ""
+"Επιτρέπει στη συσκευή να ενισχύσει προσωρινά τον καθορισμό κατάλληλων αργών "
+"και γρήγορων TDPs."
 
 #. Setting:
 #. Field: title
@@ -170,7 +198,7 @@ msgstr ""
 #. Setting: Change TDP with View+Y
 #. Field: title
 msgid "Change TDP with View+Y"
-msgstr ""
+msgstr "Αλλαγή TDP με View + YY YYY YYY"
 
 #. Setting: Change TDP with View+Y
 #. Field: hint
@@ -178,16 +206,19 @@ msgid ""
 "Allows you to cycle through TDP modes with the View+Y key combination. "
 "Recommended to use with ROG Swap, as the View button will be muted to games."
 msgstr ""
+"Σας επιτρέπει να περάσετε μέσα από τους τρόπους TDP με τον βασικό συνδυασμό "
+"View+Y. Συνιστάται να χρησιμοποιήσετε με το ROG Swap, καθώς το κουμπί View "
+"θα μεταφερθεί στα παιχνίδια."
 
 #. Setting: Custom Fan Curve
 #. Field: title
 msgid "Custom Fan Curve"
-msgstr ""
+msgstr "Custom Fan Curve"
 
 #. Setting: Custom Fan Curve
 #. Field: hint
 msgid "Allows you to set a custom fan curve."
-msgstr ""
+msgstr "Σας επιτρέπει να ρυθμίσετε μια καμπύλη custom ανεμιστήρα."
 
 #. Setting: Disabled
 #. Field: title
@@ -201,7 +232,7 @@ msgstr ""
 #. Setting: Disabled
 #. Field: hint
 msgid "Lets the device manage the fan curve on its own."
-msgstr ""
+msgstr "Αφήστε τη συσκευή να διαχειριστεί την καμπύλη ανεμιστήρα μόνοι της."
 
 #. Setting: Manual
 #. Field: title
@@ -211,7 +242,7 @@ msgstr ""
 #. Setting: 30C
 #. Field: title
 msgid "30C"
-msgstr ""
+msgstr "30C"
 
 #. Setting: 30C
 #. Field: hint
@@ -225,47 +256,47 @@ msgstr ""
 #. Setting: 10C
 #. Setting: 20C
 msgid "Sets the speed at the named temperature."
-msgstr ""
+msgstr "Ρυθμίζει την ταχύτητα στην ονομαστική θερμοκρασία."
 
 #. Setting: 40C
 #. Field: title
 msgid "40C"
-msgstr ""
+msgstr "40C"
 
 #. Setting: 50C
 #. Field: title
 msgid "50C"
-msgstr ""
+msgstr "50C"
 
 #. Setting: 60C
 #. Field: title
 msgid "60C"
-msgstr ""
+msgstr "60C"
 
 #. Setting: 70C
 #. Field: title
 msgid "70C"
-msgstr ""
+msgstr "70C"
 
 #. Setting: 80C
 #. Field: title
 msgid "80C"
-msgstr ""
+msgstr "80C"
 
 #. Setting: 90C
 #. Field: title
 msgid "90C"
-msgstr ""
+msgstr "90C"
 
 #. Setting: 100C
 #. Field: title
 msgid "100C"
-msgstr ""
+msgstr "100C"
 
 #. Setting: Restore Default
 #. Field: title
 msgid "Restore Default"
-msgstr ""
+msgstr "Restore Default"
 
 #. Setting: Restore Default
 #. Field: hint
