@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-01 09:01+0000\n"
+"PO-Revision-Date: 2025-12-16 22:11+0000\n"
 "Last-Translator: Dmytro Savushkin <dimka4996@proton.me>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/hhd/hhd/uk/>\n"
 "Language: uk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.13.1-dev\n"
+"X-Generator: Weblate 5.15.1-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
@@ -1274,8 +1274,7 @@ msgstr ""
 #. Setting: Default
 #. Field: hint
 msgid "Uses reasonable values based on hardware."
-msgstr ""
-"Використовує розумні значення, що базуються на апаратному забезпеченні."
+msgstr "Використовує розумні значення, що базуються на апаратному забезпеченні."
 
 #. Setting: Manual
 #. Field: title
@@ -1479,8 +1478,8 @@ msgid ""
 "of the controller to that of the IMU. This only makes a difference for the "
 "Legion Go (125hz), as all the other handhelds are using 400hz by default."
 msgstr ""
-"Steam покладається на позначку часу (timestamp) IMU для тачпада в режимі "
-"«Миша» та Гіроскоп у режим миші [БЕТА]. Якщо в двох звітах надсилається одна "
+"Steam покладається на позначку часу (timestamp) IMU для тачпада в режимі «"
+"Миша» та Гіроскоп у режим миші [БЕТА]. Якщо в двох звітах надсилається одна "
 "й та сама позначка часу, це призводить до ділення на нуль і нестабільності. "
 "Ця опція надсилає звіти лише тоді, коли є нова позначка часу IMU, що "
 "ефективно обмежує швидкість реакції контролера до швидкості реакції IMU. Це "
@@ -2328,8 +2327,7 @@ msgid "Failed to create temporary swap."
 msgstr "Не вдалося створити тимчасовий файл підкачки."
 
 msgid "Failed to hibernate to temporary swap."
-msgstr ""
-"Не вдалося перейти в режим глибокого сну до тимчасового файлу підкачки."
+msgstr "Не вдалося перейти в режим глибокого сну до тимчасового файлу підкачки."
 
 #. Setting: Power
 #. Field: title
