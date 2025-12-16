@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-09-03 02:01+0000\n"
-"Last-Translator: MrSliv69 <mrsliv6969@gmail.com>\n"
+"PO-Revision-Date: 2025-12-16 22:12+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/hhd/hhd/ru/>\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.13.1-dev\n"
+"X-Generator: Weblate 5.15.1-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
@@ -199,8 +199,7 @@ msgstr "Обновление (стабильное)"
 #. Setting: Update (Stable)
 #. Field: hint
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr ""
-"Обновляет до последней версии из PyPi (только для локальной установки)."
+msgstr "Обновляет до последней версии из PyPi (только для локальной установки)."
 
 #. Setting: Update (Unstable)
 #. Field: title
@@ -1422,8 +1421,8 @@ msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right "
 "button is Overlay. Or they can be set for Steam Input."
 msgstr ""
-"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, правая "
-"- оверлей. Или их можно настроить для Steam Input."
+"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, "
+"правая - оверлей. Или их можно настроить для Steam Input."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1522,9 +1521,9 @@ msgid ""
 "button is Overlay. Or they can be left/right touchpad clicks. For the legion "
 "go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
-"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, правая "
-"- оверлей. Или они могут быть кликами по сенсорной панели. Для Legion Go "
-"верхние кнопки - ярлыки, нижние - клики по сенсорной панели."
+"Изменяет поведение дополнительных кнопок. Левая кнопка - клавиатура, "
+"правая - оверлей. Или они могут быть кликами по сенсорной панели. Для Legion "
+"Go верхние кнопки - ярлыки, нижние - клики по сенсорной панели."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
@@ -1551,8 +1550,7 @@ msgstr "Поддержка LED"
 msgid ""
 "Passes through the LEDs to the controller, which allows games to control "
 "them."
-msgstr ""
-"Передает управление LED контроллеру, что позволяет играм управлять ими."
+msgstr "Передает управление LED контроллеру, что позволяет играм управлять ими."
 
 #. Setting: Invert Roll Axis
 #. Field: hint
