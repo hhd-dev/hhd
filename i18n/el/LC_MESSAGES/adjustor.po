@@ -9,7 +9,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2025-12-17 10:32+0000\n"
-"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
+"Last-Translator: Weblate Translation Memory <noreply-mt-weblate-translation-"
+"memory@weblate.org>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/hhd/adjustor/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
@@ -48,7 +49,7 @@ msgstr ""
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "Σφάλμα"
 
 #. Setting: Error
 #. Option: nowrite
@@ -165,7 +166,7 @@ msgstr "Custom"
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Setting: TDP
 #. Field: hint
@@ -227,7 +228,7 @@ msgstr "Σας επιτρέπει να ρυθμίσετε μια καμπύλη 
 #. Setting: Custom Scheduler
 #. Setting: CPU Boost
 msgid "Disabled"
-msgstr ""
+msgstr "Απενεργοποιημένο"
 
 #. Setting: Disabled
 #. Field: hint
@@ -237,7 +238,7 @@ msgstr "Αφήστε τη συσκευή να διαχειριστεί την κ
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "Χειροκίνητο"
 
 #. Setting: 30C
 #. Field: title
@@ -390,14 +391,14 @@ msgstr ""
 #. Setting: Charge Bypass
 #. Option: always
 msgid "Always"
-msgstr ""
+msgstr "Πάντα"
 
 #. Setting: Power
 #. Field: title
 #. Setting: Energy Policy
 #. Option: power
 msgid "Power"
-msgstr ""
+msgstr "Λειτουργία"
 
 #. Setting: Power Profile
 #. Field: title
@@ -473,7 +474,7 @@ msgstr ""
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr ""
+msgstr "Αυτόματο"
 
 #. Setting: Auto
 #. Field: hint
@@ -515,12 +516,12 @@ msgstr ""
 #. Setting: CPU Power (EPP)
 #. Option: power
 msgid "Low"
-msgstr ""
+msgstr "Χαμηλή"
 
 #. Setting: CPU Power (EPP)
 #. Option: balance_performance
 msgid "High"
-msgstr ""
+msgstr "Υψηλή"
 
 #. Setting: CPU Minimum Frequency
 #. Field: title
@@ -809,7 +810,7 @@ msgstr ""
 #. Setting: Reset to Default
 #. Field: title
 msgid "Reset to Default"
-msgstr ""
+msgstr "Επαναφορά στις προεπιλεγμένες ρυθμίσεις"
 
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
@@ -824,7 +825,7 @@ msgstr ""
 #. Setting: Apply Settings
 #. Field: title
 msgid "Apply Settings"
-msgstr ""
+msgstr "Εφαρμογή ρυθμίσεων"
 
 #. Setting: TDP Status
 #. Field: title
