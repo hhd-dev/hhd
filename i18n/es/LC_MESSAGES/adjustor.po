@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-12-16 22:11+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Haru <harumn97@outlook.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/hhd/adjustor/es/>"
 "\n"
 "Language: es\n"
@@ -146,8 +146,7 @@ msgstr "TDP de Asus"
 #. Field: hint
 #. Setting: MSI TDP
 msgid "Uses the interface of Armory Crate to set the TDP of the device."
-msgstr ""
-"Usa la interfaz de Armory Crate para establecer el TDP del dispositivo."
+msgstr "Usa la interfaz de Armory Crate para establecer el TDP del dispositivo."
 
 #. Setting: TDP Mode
 #. Field: title
