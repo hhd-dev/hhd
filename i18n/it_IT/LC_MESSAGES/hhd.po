@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
 "PO-Revision-Date: 2025-12-16 22:11+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: M4ttiA <sensoriale_echidna_0w@icloud.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/hhd/hhd/it/>\n"
 "Language: it_IT\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +35,7 @@ msgstr "Controller"
 
 #. Section Name for: magic_modules
 msgid "Modules"
-msgstr ""
+msgstr "Moduli"
 
 #. Section Name for: wincontrols
 #. Setting: WinControls
@@ -104,7 +104,7 @@ msgstr "Portoghese"
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr ""
+msgstr "Russo"
 
 #. Setting: Theme
 #. Field: title
@@ -335,23 +335,23 @@ msgid "Enable Aura RGB support"
 msgstr "Abilita supporto Aura RGB"
 
 msgid "Cross Film / Joystick"
-msgstr ""
+msgstr "Cross Film/ Joystick"
 
 msgid "Cross / Joystick"
-msgstr ""
+msgstr "Croce / Joystick"
 
 msgid "Cross / Touchpad"
-msgstr ""
+msgstr "Croce / Touchpad"
 
 #, fuzzy
 msgid "Direction / Joystick"
 msgstr "Direzione"
 
 msgid "Joystick / Cross Film"
-msgstr ""
+msgstr "Joystick / Cross Film"
 
 msgid "Joystick / Cross"
-msgstr ""
+msgstr "Joystick / Croce"
 
 #, fuzzy
 msgid "Touchpad / Cross"
@@ -362,32 +362,32 @@ msgid "Joystick / Direction"
 msgstr "Direzione"
 
 msgid "ABXY \\ Joystick"
-msgstr ""
+msgstr "ABXY \\ Joystick"
 
 msgid "ABXY \\ Touchpad"
-msgstr ""
+msgstr "ABXY \\ Touchpad"
 
 msgid "ABXYCZ"
-msgstr ""
+msgstr "ABXYCZ"
 
 msgid "ABXY Film \\ Joystick"
-msgstr ""
+msgstr "ABXY Film \\ Joystick"
 
 msgid "Joystick \\ ABXY"
-msgstr ""
+msgstr "Joystick \\ ABXY"
 
 #, fuzzy
 msgid "Touchpad \\ ABXY"
 msgstr "Emulazione Touchpad"
 
 msgid "ABXYCZ [R]"
-msgstr ""
+msgstr "ABXYCZ [R]"
 
 msgid "Joystick \\ ABXY Film"
-msgstr ""
+msgstr "Joystick \\ ABXY Film"
 
 msgid "Unknown"
-msgstr ""
+msgstr "Sconosciuto"
 
 #, fuzzy
 msgid "Ejecting..."
@@ -464,7 +464,7 @@ msgstr "Imposta la frequenza di campionamento per l'IMU."
 #. Setting: Aya Button Map (Left, Right)
 #. Field: title
 msgid "Aya Button Map (Left, Right)"
-msgstr ""
+msgstr "Aya Button Map (Sinistra, Destra)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: hint
@@ -475,17 +475,17 @@ msgstr "Scambia i pulsanti Guide e QAM con start e select."
 #. Setting: Aya Button Map (Left, Right)
 #. Option: oem
 msgid "Default (Select/Start, Guide/QAM)"
-msgstr ""
+msgstr "Predefinito (Select/Start, Guida/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional
 msgid "Traditional (Guide/Select, Start/QAM)"
-msgstr ""
+msgstr "Tradizionale (Guida/Select, Start/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional_rev
 msgid "Traditional Rev. (Select/Guide, QAM/Start)"
-msgstr ""
+msgstr "Tradizionale invertito (Select/Guida, QAM/Start)"
 
 #. Setting: Vibration
 #. Field: title
@@ -511,7 +511,7 @@ msgstr "Tieni premuto View per Riavviare"
 #. Setting: Magic Modules
 #. Field: title
 msgid "Magic Modules"
-msgstr ""
+msgstr "Moduli magici"
 
 #. Setting: Pop Both Modules
 #. Field: title
