@@ -321,58 +321,61 @@ msgid ""
 "only on battery. Turns off the power light and the controller  requires "
 "longer to wake up."
 msgstr ""
+"Κάτω από την κατανάλωση ενέργειας της συσκευής από 4% to 1 % overnight. "
+"Ενεργός μόνο στην μπαταρία. Απογειώνεται το φως ισχύος και ο ελεγκτής "
+"απαιτεί περισσότερο χρόνο για να ξυπνήσει."
 
 #. Setting: Extreme Standby Mode
 #. Option: enabled
 #. Setting: CPU Boost
 msgid "Enabled"
-msgstr ""
+msgstr "Απαράδεκτη"
 
 #. Setting: Battery Settings
 #. Field: title
 msgid "Battery Settings"
-msgstr ""
+msgstr "Ρυθμίσεις μπαταρίας"
 
 #. Setting: Charge Limit (%)
 #. Field: title
 msgid "Charge Limit (%)"
-msgstr ""
+msgstr "Περιορισμός χρέωσης (%)"
 
 #. Setting: Charge Limit (%)
 #. Field: hint
 msgid "Applies a charge limit to the battery, 75% and up."
-msgstr ""
+msgstr "Εισάγει ένα όριο χρέωσης στην μπαταρία, 75% και άνω."
 
 #. Setting: Charge Limit (%)
 #. Option: p70
 msgid "70%"
-msgstr ""
+msgstr "70%"
 
 #. Setting: Charge Limit (%)
 #. Option: p80
 msgid "80%"
-msgstr ""
+msgstr "80%"
 
 #. Setting: Charge Limit (%)
 #. Option: p85
 msgid "85%"
-msgstr ""
+msgstr "85%"
 
 #. Setting: Charge Limit (%)
 #. Option: p90
 msgid "90%"
-msgstr ""
+msgstr "90%"
 
 #. Setting: Charge Limit (%)
 #. Option: p95
 msgid "95%"
-msgstr ""
+msgstr "95%"
 
 #. Setting: Charge Limit (%)
 #. Option: disabled
 #. Setting: Charge Bypass
 msgid "Unset"
-msgstr ""
+msgstr "Unset"
 
 #. Setting: Charge Bypass
 #. Field: title
