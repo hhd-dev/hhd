@@ -409,6 +409,8 @@ msgstr ""
 msgid ""
 "Allows setting the power profile of the system using Power Profiles Daemon."
 msgstr ""
+"Επιτρέπει τη ρύθμιση του προφίλ ισχύος του συστήματος χρησιμοποιώντας προφίλ "
+"ισχύος Daemon."
 
 #. Setting: Power Profile
 #. Option: power-saver
@@ -439,21 +441,24 @@ msgid ""
 "Allows attaching a scheduler to the kernel sched_ext. Schedulers need to be "
 "installed and kernel needs to support sched_ext."
 msgstr ""
+"Επιτρέπει την προσάρτηση ενός προγραμματιστή στον πυρήνα sched_ext. Οι "
+"προγραμματιστές πρέπει να εγκατασταθούν και ο πυρήνας πρέπει να υποστηρίξει "
+"το sched_ext."
 
 #. Setting: Custom Scheduler
 #. Option: scx_lavd
 msgid "LAVD"
-msgstr ""
+msgstr "LAVD"
 
 #. Setting: Custom Scheduler
 #. Option: scx_bpfland
 msgid "bpfland"
-msgstr ""
+msgstr "bpfland"
 
 #. Setting: Custom Scheduler
 #. Option: scx_rusty
 msgid "rusty"
-msgstr ""
+msgstr "σκουριά"
 
 #. Setting: Processor Settings
 #. Field: title
@@ -478,11 +483,17 @@ msgid ""
 "TDPs, the CPU will be tuned down and at other TDPs, it will use balanced "
 "settings."
 msgstr ""
+"Το Handheld Daemon θα διαχειρίζεται τις ρυθμίσεις διαχείρισης ενέργειας. "
+"Αυτό περιλαμβάνει κυβερνήτη CPU, ώθηση CPU, συχνότητα GPU και προτιμήσεις "
+"ισχύος CPU. Σε χαμηλά TDPs, η CPU θα συντονιστεί και σε άλλα TDPs, θα "
+"χρησιμοποιήσει ισορροπημένες ρυθμίσεις."
 
 #. Setting: Manual
 #. Field: hint
 msgid "Allows you to set the energy management settings manually."
 msgstr ""
+"Σας επιτρέπει να ρυθμίσετε τις ρυθμίσεις διαχείρισης ενέργειας με μη "
+"αυτόματο τρόπο."
 
 #. Setting: CPU Power (EPP)
 #. Field: title
@@ -496,6 +507,10 @@ msgid ""
 "good performance on all TDPs. Options map to `power`, `balance_power`, "
 "`balance_performance`. Performance is not recommended and is not included."
 msgstr ""
+"Ρυθμίζει την προτίμηση απόδοσης ενέργειας για την CPU. Κρατήστε ισορροπημένη "
+"για καλή απόδοση σε όλα τα TDP. Οι επιλογές χαρτογραφούν την «δύναμη», την «"
+"ισορροπική δύναμη», την «ισορροπή». Η απόδοση δεν συνιστάται και δεν "
+"περιλαμβάνεται."
 
 #. Setting: CPU Power (EPP)
 #. Option: power
@@ -510,7 +525,7 @@ msgstr ""
 #. Setting: CPU Minimum Frequency
 #. Field: title
 msgid "CPU Minimum Frequency"
-msgstr ""
+msgstr "CPU CPU CPU Ελάχιστη συχνότητα"
 
 #. Setting: CPU Minimum Frequency
 #. Field: hint
