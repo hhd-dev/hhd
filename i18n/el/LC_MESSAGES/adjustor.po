@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2025-12-17 10:32+0000\n"
-"Last-Translator: Xarishark <Xarishark@outlook.com>\n"
+"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/hhd/adjustor/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
@@ -542,12 +542,12 @@ msgstr ""
 #. Setting: CPU Minimum Frequency
 #. Option: min
 msgid "400MHz"
-msgstr ""
+msgstr "400MHz"
 
 #. Setting: CPU Minimum Frequency
 #. Option: nonlinear
 msgid "1GHz"
-msgstr ""
+msgstr "1GHz"
 
 #. Setting: CPU Boost
 #. Field: title
@@ -560,16 +560,18 @@ msgid ""
 "Enables or disables the CPU boost frequencies. Disabling lowers total "
 "consumption by 2W with  minimal performance impact."
 msgstr ""
+"Επιτρέπει ή απενεργοποιήσει τις συχνότητες ώθησης CPU. Η απενεργοποίηση "
+"μειώνει την συνολική κατανάλωση κατά 2W με ελάχιστη επίδραση απόδοσης."
 
 #. Setting: Custom Scheduler
 #. Option: scx_p2dq
 msgid "P2DQ"
-msgstr ""
+msgstr "P2DQ"
 
 #. Setting: Custom Scheduler
 #. Option: scx_flash
 msgid "Flash"
-msgstr ""
+msgstr "Flash"
 
 #. Setting: GPU Frequency
 #. Field: title
@@ -733,12 +735,12 @@ msgstr ""
 #. Setting: 10C
 #. Field: title
 msgid "10C"
-msgstr ""
+msgstr "10C"
 
 #. Setting: 20C
 #. Field: title
 msgid "20C"
-msgstr ""
+msgstr "20C"
 
 #. Setting: Enforce Windows Minimums
 #. Field: title
