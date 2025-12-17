@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-12-18 21:00+0000\n"
+"Last-Translator: Antoine Viallon <antoine@lesviallon.fr>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/hhd/adjustor/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 5.15.1\n"
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
@@ -141,7 +142,7 @@ msgstr ""
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Setting: TDP
 #. Field: hint
