@@ -9,8 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2025-12-17 10:32+0000\n"
-"Last-Translator: Weblate Translation Memory <noreply-mt-weblate-translation-"
-"memory@weblate.org>\n"
+"Last-Translator: Xarishark <Xarishark@outlook.com>\n"
 "Language-Team: Greek <https://hosted.weblate.org/projects/hhd/adjustor/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +27,7 @@ msgstr ""
 #. Setting: TDP Controls
 #. Field: title
 msgid "TDP Controls"
-msgstr "TDP TDP Έλεγχος"
+msgstr "Έλεγχοι TDP"
 
 #. Setting: Enable TDP Controls
 #. Field: title
@@ -137,12 +136,12 @@ msgstr ""
 #. Setting: TDP Mode
 #. Field: title
 msgid "TDP Mode"
-msgstr "TDP Mode"
+msgstr "Λειτουργία TDP"
 
 #. Setting: Silent
 #. Field: title
 msgid "Silent"
-msgstr "Silent"
+msgstr "Αθόρυβο"
 
 #. Setting: Performance
 #. Field: title
@@ -161,7 +160,7 @@ msgstr "Turbo"
 #. Setting: Custom
 #. Field: title
 msgid "Custom"
-msgstr "Custom"
+msgstr "Προσαρμοσμένο"
 
 #. Setting: TDP
 #. Field: title
@@ -174,13 +173,13 @@ msgid ""
 "Average TDP Target. TDP Boost is recommended for desktop use and does not "
 "affect gaming."
 msgstr ""
-"Ο μέσος στόχος TDP. TDP TDP Το Boost συνιστάται για χρήση εργασίας και δεν "
-"επηρεάζει το παιχνίδι."
+"Μέσος στόχος TDP. Η ενίσχυση TDP συνιστάται για χρήση σε επιτραπέζιους "
+"υπολογιστές και δεν επηρεάζει τα παιχνίδια."
 
 #. Setting: TDP Boost
 #. Field: title
 msgid "TDP Boost"
-msgstr "TDP Boost"
+msgstr "Ενίσχυση TDP"
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -194,12 +193,12 @@ msgstr ""
 #. Setting:
 #. Field: title
 msgid " "
-msgstr ""
+msgstr " "
 
 #. Setting: Change TDP with View+Y
 #. Field: title
 msgid "Change TDP with View+Y"
-msgstr "Αλλαγή TDP με View + YY YYY YYY"
+msgstr "Αλλαγή TDP με View+Y"
 
 #. Setting: Change TDP with View+Y
 #. Field: hint
@@ -214,7 +213,7 @@ msgstr ""
 #. Setting: Custom Fan Curve
 #. Field: title
 msgid "Custom Fan Curve"
-msgstr "Custom Fan Curve"
+msgstr "Προσαρμοσμένη καμπύλη ανεμιστήρα"
 
 #. Setting: Custom Fan Curve
 #. Field: hint
@@ -297,22 +296,22 @@ msgstr "100C"
 #. Setting: Restore Default
 #. Field: title
 msgid "Restore Default"
-msgstr "Restore Default"
+msgstr "Επαναφορά προεπιλογών"
 
 #. Setting: Restore Default
 #. Field: hint
 msgid "Restore a default sane fan curve."
-msgstr ""
+msgstr "Επαναφορά της προεπιλεγμένης καμπύλης ανεμιστήρα."
 
 #. Setting: Fan Curve Limitation
 #. Field: title
 msgid "Fan Curve Limitation"
-msgstr ""
+msgstr "Περιορισμός καμπύλης ανεμιστήρα"
 
 #. Setting: Extreme Standby Mode
 #. Field: title
 msgid "Extreme Standby Mode"
-msgstr ""
+msgstr "Λειτουργία ακραίας αναμονής"
 
 #. Setting: Extreme Standby Mode
 #. Field: hint
@@ -376,17 +375,17 @@ msgstr "95%"
 #. Option: disabled
 #. Setting: Charge Bypass
 msgid "Unset"
-msgstr "Unset"
+msgstr "Μη ρυθμισμένο"
 
 #. Setting: Charge Bypass
 #. Field: title
 msgid "Charge Bypass"
-msgstr ""
+msgstr "Παράκαμψη φόρτισης"
 
 #. Setting: Charge Bypass
 #. Option: awake
 msgid "While On"
-msgstr ""
+msgstr "Ενώ είναι ενεργοποιημένο"
 
 #. Setting: Charge Bypass
 #. Option: always
@@ -403,7 +402,7 @@ msgstr "Λειτουργία"
 #. Setting: Power Profile
 #. Field: title
 msgid "Power Profile"
-msgstr ""
+msgstr "Προφίλ ισχύος"
 
 #. Setting: Power Profile
 #. Field: hint
@@ -418,7 +417,7 @@ msgstr ""
 #. Setting: Powersave
 #. Field: title
 msgid "Powersave"
-msgstr ""
+msgstr "Εξοικονόμηση ενέργειας"
 
 #. Setting: Power Profile
 #. Option: balanced
@@ -429,12 +428,12 @@ msgstr ""
 #. Setting: Platform Profile
 #. Setting: Energy Policy
 msgid "Balanced"
-msgstr ""
+msgstr "Ισορροπημένο"
 
 #. Setting: Custom Scheduler
 #. Field: title
 msgid "Custom Scheduler"
-msgstr ""
+msgstr "Προσαρμοσμένος προγραμματιστής"
 
 #. Setting: Custom Scheduler
 #. Field: hint
@@ -464,12 +463,12 @@ msgstr "σκουριά"
 #. Setting: Processor Settings
 #. Field: title
 msgid "Processor Settings"
-msgstr ""
+msgstr "Ρυθμίσεις επεξεργαστή"
 
 #. Setting: CPU Settings
 #. Field: title
 msgid "CPU Settings"
-msgstr ""
+msgstr "Ρυθμίσεις CPU"
 
 #. Setting: Auto
 #. Field: title
@@ -499,7 +498,7 @@ msgstr ""
 #. Setting: CPU Power (EPP)
 #. Field: title
 msgid "CPU Power (EPP)"
-msgstr ""
+msgstr "Ισχύς CPU (EPP)"
 
 #. Setting: CPU Power (EPP)
 #. Field: hint
@@ -526,7 +525,7 @@ msgstr "Υψηλή"
 #. Setting: CPU Minimum Frequency
 #. Field: title
 msgid "CPU Minimum Frequency"
-msgstr "CPU CPU CPU Ελάχιστη συχνότητα"
+msgstr "Ελάχιστη συχνότητα CPU"
 
 #. Setting: CPU Minimum Frequency
 #. Field: hint
@@ -535,6 +534,10 @@ msgid ""
 "light games. However, the delay of increasing the frequency may cause minor "
 "stutters, especially in VRR displays."
 msgstr ""
+"Ορίζει την ελάχιστη συχνότητα για την CPU. Η χρήση στα 400MHz θα "
+"εξοικονομήσει μπαταρία σε παιχνίδια χαμηλής έντασης. Ωστόσο, η καθυστέρηση "
+"στην αύξηση της συχνότητας μπορεί να προκαλέσει μικρά κολλήματα, ειδικά σε "
+"οθόνες VRR."
 
 #. Setting: CPU Minimum Frequency
 #. Option: min
@@ -549,7 +552,7 @@ msgstr ""
 #. Setting: CPU Boost
 #. Field: title
 msgid "CPU Boost"
-msgstr ""
+msgstr "Ενίσχυση CPU"
 
 #. Setting: CPU Boost
 #. Field: hint
@@ -571,7 +574,7 @@ msgstr ""
 #. Setting: GPU Frequency
 #. Field: title
 msgid "GPU Frequency"
-msgstr ""
+msgstr "Συχνότητα GPU"
 
 #. Setting: GPU Frequency
 #. Field: hint
@@ -579,71 +582,74 @@ msgid ""
 "Pins the GPU to a certain frequency. Helps in certain games that are CPU or "
 "GPU heavy by shifting power to or from the GPU. Has a minor effect."
 msgstr ""
+"Καθορίζει τη GPU σε μια συγκεκριμένη συχνότητα. Βοηθά σε ορισμένα παιχνίδια "
+"που απαιτούν μεγάλη χρήση της CPU ή της GPU, μεταφέροντας ισχύ προς ή από τη "
+"GPU. Έχει μικρή επίδραση."
 
 #. Setting: Auto
 #. Field: hint
 msgid "Lets the GPU manage its own frequency."
-msgstr ""
+msgstr "Επιτρέπει στην GPU να διαχειρίζεται τη δική της συχνότητα."
 
 #. Setting: Max Limit
 #. Field: title
 msgid "Max Limit"
-msgstr ""
+msgstr "Μέγιστο όριο"
 
 #. Setting: Max Limit
 #. Field: hint
 msgid "Limits the maximum frequency of the GPU."
-msgstr ""
+msgstr "Περιορίζει τη μέγιστη συχνότητα της GPU."
 
 #. Setting: Maximum Frequency
 #. Field: title
 msgid "Maximum Frequency"
-msgstr ""
+msgstr "Μέγιστη συχνότητα"
 
 #. Setting: Range
 #. Field: title
 msgid "Range"
-msgstr ""
+msgstr "Εύρος"
 
 #. Setting: Range
 #. Field: hint
 msgid "Sets the GPU frequency to a range."
-msgstr ""
+msgstr "Ρυθμίζει τη συχνότητα της GPU σε ένα εύρος."
 
 #. Setting: Minimum Frequency
 #. Field: title
 msgid "Minimum Frequency"
-msgstr ""
+msgstr "Ελάχιστη συχνότητα"
 
 #. Setting: Fixed
 #. Field: title
 msgid "Fixed"
-msgstr ""
+msgstr "Σταθερό"
 
 #. Setting: Fixed
 #. Field: hint
 msgid "Pins the GPU to a certain frequency (not recommended)."
-msgstr ""
+msgstr "Καθορίζει τη GPU σε μια συγκεκριμένη συχνότητα (δεν συνιστάται)."
 
 #. Setting: Frequency
 #. Field: title
 msgid "Frequency"
-msgstr ""
+msgstr "Συχνότητα"
 
 #. Setting: Conflict Detected
 #. Field: title
 msgid "Conflict Detected"
-msgstr ""
+msgstr "Εντοπίστηκε σύγκρουση"
 
 #. Setting: Enable Processor Settings
 #. Field: title
 msgid "Enable Processor Settings"
-msgstr ""
+msgstr "Ενεργοποίηση ρυθμίσεων επεξεργαστή"
 
 #. Setting: Enable energy management
 #. Field: title
 msgid "Enable energy management"
-msgstr ""
+msgstr "Ενεργοποίηση διαχείρισης ενέργειας"
 
 #. Setting: Enable energy management
 #. Field: hint
@@ -652,39 +658,46 @@ msgid ""
 "Governor, Boost, GPU frequency, and EPP. In addition, Handheld daemon will "
 "launch a PPD service to replace PPD's role in the system. "
 msgstr ""
+"Το Handheld daemon θα διαχειρίζεται τις προτιμήσεις ισχύος για το σύστημα, "
+"συμπεριλαμβανομένων των Governor, Boost, GPU συχνότητα και EPP. Επιπλέον, το "
+"Handheld daemon θα εκκινήσει μια υπηρεσία PPD για να αντικαταστήσει το ρόλο "
+"του PPD στο σύστημα. "
 
 #. Setting: Enable PPD Emulation (KDE/Gnome Power)
 #. Field: title
 msgid "Enable PPD Emulation (KDE/Gnome Power)"
-msgstr ""
+msgstr "Ενεργοποίηση εξομοίωσης PPD (KDE/Gnome Ισχύς)"
 
 #. Setting: Enable PPD Emulation (KDE/Gnome Power)
 #. Field: hint
 msgid "Enable PPD service to manage the power preferences for the system."
 msgstr ""
+"Ενεργοποιήστε την υπηρεσία PPD για να διαχειριστείτε τις προτιμήσεις "
+"τροφοδοσίας του συστήματος."
 
 msgid "Power Light"
-msgstr ""
+msgstr "Λυχνία τροφοδοσίας"
 
 msgid "Legion Button + Y changes TDP Mode"
-msgstr ""
+msgstr "Το κουμπί Legion + Y αλλάζει τη λειτουργία TDP"
 
 #. Setting: Lenovo TDP
 #. Field: title
 msgid "Lenovo TDP"
-msgstr ""
+msgstr "Lenovo TDP"
 
 #. Setting: Lenovo TDP
 #. Field: hint
 msgid "Uses the interface of Legion Space to set the TDP of the device."
 msgstr ""
+"Χρησιμοποιεί τη διεπαφή του Legion Space για να ρυθμίσει το TDP της συσκευής."
 
 #. Setting: Quiet
 #. Field: title
 #. Setting: Platform Profile
 #. Option: quiet
 msgid "Quiet"
-msgstr ""
+msgstr "Ήσυχο"
 
 #. Setting: TDP
 #. Field: hint
@@ -692,16 +705,20 @@ msgid ""
 "Maximum average TDP. Boost goes a bit higher and is recommended for desktop "
 "use."
 msgstr ""
+"Μέγιστη μέση TDP. Η ενίσχυση είναι λίγο υψηλότερη και συνιστάται για χρήση "
+"σε επιτραπέζιους υπολογιστές."
 
 #. Setting: TDP Boost
 #. Field: hint
 msgid "Allows the device to boost by setting appropriate slow and fast TDPs."
 msgstr ""
+"Επιτρέπει στη συσκευή να ενισχύσει την απόδοσή της ρυθμίζοντας τα κατάλληλα "
+"αργά και γρήγορα TDP."
 
 #. Setting: Set Fan to Full Speed
 #. Field: title
 msgid "Set Fan to Full Speed"
-msgstr ""
+msgstr "Ρυθμίστε τον ανεμιστήρα σε πλήρη ταχύτητα"
 
 #. Setting: Disabled
 #. Field: hint
@@ -709,6 +726,9 @@ msgid ""
 "Lets Legion GO manage the curve on its own. Setting this option will cause a "
 "mode change to reset the fan curve."
 msgstr ""
+"Αφήστε το Legion GO να διαχειριστεί μόνο του την καμπύλη. Η ρύθμιση αυτής "
+"της επιλογής θα προκαλέσει αλλαγή λειτουργίας για την επαναφορά της καμπύλης "
+"του ανεμιστήρα."
 
 #. Setting: 10C
 #. Field: title
@@ -723,57 +743,58 @@ msgstr ""
 #. Setting: Enforce Windows Minimums
 #. Field: title
 msgid "Enforce Windows Minimums"
-msgstr ""
+msgstr "Εφαρμογή ελάχιστων απαιτήσεων Windows"
 
 #. Setting: Enforce Windows Minimums
 #. Field: hint
 msgid "Enforce the minimum fan curve from Legion Space."
-msgstr ""
+msgstr "Εφαρμόστε την ελάχιστη καμπύλη ανεμιστήρα από το Legion Space."
 
 #. Setting: Restore Default
 #. Field: hint
 msgid "Reset to the original fan curve for custom mode."
 msgstr ""
+"Επαναφορά στην αρχική καμπύλη ανεμιστήρα για την προσαρμοσμένη λειτουργία."
 
 #. Setting: Show TDP changes with RGB
 #. Field: title
 msgid "Show TDP changes with RGB"
-msgstr ""
+msgstr "Εμφάνιση αλλαγών TDP με RGB"
 
 #. Setting: Charge Limit (80%)
 #. Field: title
 msgid "Charge Limit (80%)"
-msgstr ""
+msgstr "Όριο φόρτισης (80%)"
 
 #. Setting: Charge Limit (80%)
 #. Field: hint
 msgid "Limits device charging to 80%."
-msgstr ""
+msgstr "Περιορίζει τη φόρτιση της συσκευής στο 80%."
 
 #. Setting: Power Light (Awake)
 #. Field: title
 msgid "Power Light (Awake)"
-msgstr ""
+msgstr "Λυχνία τροφοδοσίας (ενεργοποιημένη)"
 
 #. Setting: Power Light (Sleep)
 #. Field: title
 msgid "Power Light (Sleep)"
-msgstr ""
+msgstr "Ένδειξη τροφοδοσίας (Αναστολή λειτουργίας)"
 
 #. Setting: MSI TDP
 #. Field: title
 msgid "MSI TDP"
-msgstr ""
+msgstr "MSI TDP"
 
 #. Setting: Missing Driver
 #. Field: title
 msgid "Missing Driver"
-msgstr ""
+msgstr "Λείπει ο οδηγός"
 
 #. Setting: Sport
 #. Field: title
 msgid "Sport"
-msgstr ""
+msgstr "Σπορ"
 
 #. Setting: Change TDP with View+Y
 #. Field: hint
@@ -782,16 +803,19 @@ msgid ""
 "Recommended to use with button swap, as the View button will be muted to "
 "games."
 msgstr ""
+"Σας επιτρέπει να περιηγηθείτε στις λειτουργίες TDP με το συνδυασμό πλήκτρων "
+"View+Y. Συνιστάται η χρήση με εναλλαγή κουμπιών, καθώς το κουμπί View θα "
+"είναι απενεργοποιημένο στα παιχνίδια."
 
 #. Setting: TDP Settings
 #. Field: title
 msgid "TDP Settings"
-msgstr ""
+msgstr "Ρυθμίσεις TDP"
 
 #. Setting: TDP
 #. Field: hint
 msgid "Controls all Ryzen SMU settings through preset curves."
-msgstr ""
+msgstr "Ελέγχει όλες τις ρυθμίσεις Ryzen SMU μέσω προκαθορισμένων καμπυλών."
 
 #. Setting: Custom Fan Curve
 #. Field: hint
@@ -801,11 +825,16 @@ msgid ""
 "faster and prevents throttling. Edge is the temperature of the chip: "
 "responds slower and prevents overheating."
 msgstr ""
+"Σας επιτρέπει να ορίσετε μια προσαρμοσμένη καμπύλη ανεμιστήρα και να "
+"επιλέξετε τον αισθητήρα θερμοκρασίας (Edge ή Junction). Το Junction είναι η "
+"μέγιστη θερμοκρασία του τσιπ: ανταποκρίνεται γρηγορότερα και αποτρέπει τον "
+"περιορισμό της ταχύτητας. Το Edge είναι η θερμοκρασία του τσιπ: "
+"ανταποκρίνεται πιο αργά και αποτρέπει την υπερθέρμανση."
 
 #. Setting: Manual (Edge, Smooth)
 #. Field: title
 msgid "Manual (Edge, Smooth)"
-msgstr ""
+msgstr "Χειροκίνητο (Edge, Smooth)"
 
 #. Setting: Reset to Default
 #. Field: title
@@ -815,12 +844,12 @@ msgstr "Επαναφορά στις προεπιλεγμένες ρυθμίσε�
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
 msgid "Manual (Tctl, Fast)"
-msgstr ""
+msgstr "Χειροκίνητο (Tctl, Fast)"
 
 #. Setting: Advanced Configurator
 #. Field: title
 msgid "Advanced Configurator"
-msgstr ""
+msgstr "Προηγμένος διαμορφωτής"
 
 #. Setting: Apply Settings
 #. Field: title
@@ -830,42 +859,42 @@ msgstr "Εφαρμογή ρυθμίσεων"
 #. Setting: TDP Status
 #. Field: title
 msgid "TDP Status"
-msgstr ""
+msgstr "Κατάσταση TDP"
 
 #. Setting: Platform Profile
 #. Field: title
 msgid "Platform Profile"
-msgstr ""
+msgstr "Προφίλ πλατφόρμας"
 
 #. Setting: Platform Profile
 #. Option: disabled
 msgid "Not Set"
-msgstr ""
+msgstr "Δεν έχει οριστεί"
 
 #. Setting: Platform Profile
 #. Option: low-power
 msgid "Low Power"
-msgstr ""
+msgstr "Χαμηλή ισχύς"
 
 #. Setting: Platform Profile
 #. Option: cool
 msgid "Cool"
-msgstr ""
+msgstr "Κρύο"
 
 #. Setting: Platform Profile
 #. Option: balanced-performance
 msgid "Balanced Performance"
-msgstr ""
+msgstr "Ισορροπημένη απόδοση"
 
 #. Setting: Energy Policy
 #. Field: title
 msgid "Energy Policy"
-msgstr ""
+msgstr "Ενεργειακή πολιτική"
 
 #. Setting: Standard Parameters
 #. Field: title
 msgid "Standard Parameters"
-msgstr ""
+msgstr "Τυπικές παράμετροι"
 
 #. Setting: Standard Parameters
 #. Field: hint
@@ -886,31 +915,50 @@ msgid ""
 "the actual max TDP value of the device. Then,the Slow TDP limit averages the "
 "last 10-20s of TDP values and keeps the value below it."
 msgstr ""
+"Τυπικές παράμετροι TDP για επεξεργαστές Ryzen. Όλες πρέπει να ρυθμιστούν για "
+"τον σωστό έλεγχο του TDP της συσκευής.\n"
+"Οι επεξεργαστές Ryzen έχουν 2 λειτουργίες: STTv2 και STAPM (παλαιού τύπου). "
+"Η AMD προτείνει στους κατασκευαστές να χρησιμοποιούν το STTv2, γεγονός που "
+"καθιστά το Legion Go τη μόνη συσκευή που προσφέρει την εναλλακτική λύση "
+"STAPM μέσω ρύθμισης BIOS.\n"
+"Στη λειτουργία STTv2, η συσκευή θα συνεχίσει να ενισχύεται έως ότου η "
+"\"επιδερμίδα\" της συσκευής (το θερμότερο σημείο προσβάσιμο από τον χρήστη) "
+"φτάσει σε μια θερμοκρασία που έχει ορίσει ο κατασκευαστής. Στη συνέχεια, η "
+"συσκευή θα χρησιμοποιήσει το όριο Skin Temp TDP. Στη λειτουργία STAPM, η "
+"συσκευή υπολογίζει τον μέσο όρο των τιμών TDP από τα προηγούμενα 1-3 λεπτά "
+"και διατηρεί την τιμή αυτή κάτω από το όριο STAPM TDP. Κάθε λειτουργία "
+"αγνοεί το όριο της άλλης λειτουργίας (το όριο STAPM δεν έχει καμία επίδραση "
+"στο STT και το όριο Skin Temp δεν έχει καμία επίδραση στο STAPM), επομένως "
+"και τα δύο πρέπει να ρυθμιστούν.\n"
+"Τα όρια Fast και Slow ελέγχουν τη συμπεριφορά ενίσχυσης. Το όριο Fast TDP "
+"είναι η πραγματική μέγιστη τιμή TDP της συσκευής. Στη συνέχεια, το όριο Slow "
+"TDP υπολογίζει τον μέσο όρο των τιμών TDP των τελευταίων 10-20 δευτερολέπτων "
+"και διατηρεί την τιμή κάτω από αυτό."
 
 #. Setting: Fast TDP Limit
 #. Field: title
 msgid "Fast TDP Limit"
-msgstr ""
+msgstr "Γρήγορο όριο TDP"
 
 #. Setting: Slow TDP Limit
 #. Field: title
 msgid "Slow TDP Limit"
-msgstr ""
+msgstr "Όριο αργής TDP"
 
 #. Setting: Skin Temp TDP Limit
 #. Field: title
 msgid "Skin Temp TDP Limit"
-msgstr ""
+msgstr "Όριο TDP θερμοκρασίας δέρματος"
 
 #. Setting: STAPM TDP Limit
 #. Field: title
 msgid "STAPM TDP Limit"
-msgstr ""
+msgstr "Όριο STAPM TDP"
 
 #. Setting: Advanced Parameters
 #. Field: title
 msgid "Advanced Parameters"
-msgstr ""
+msgstr "Προηγμένες παράμετροι"
 
 #. Setting: Advanced Parameters
 #. Field: hint
@@ -926,26 +974,38 @@ msgid ""
 "values the CPU will average to calculate its current Slow and STAPM  TDP "
 "values."
 msgstr ""
+"Οι παρακάτω προηγμένες παράμετροι ελέγχουν τη συμπεριφορά ενίσχυσης και "
+"πρέπει να προσαρμόζονται ανά συσκευή ανάλογα με το σύστημα ψύξης της. "
+"Επηρεάζουν κυρίως τη συμπεριφορά ενίσχυσης, η οποία είναι σημαντική για τη "
+"χρήση σε επιτραπέζιους υπολογιστές.\n"
+"Εξαίρεση αποτελεί η Temp Target (TCTL), η οποία ελέγχει τη μέγιστη "
+"θερμοκρασία του chip της CPU. Στις περισσότερες συσκευές, μπορεί να αυξηθεί "
+"με ασφάλεια έως τους 100C. Ωστόσο, εάν μια απότομη αύξηση της θερμοκρασίας "
+"κάνει το τσιπ να φτάσει τους 105C, θα εισέλθει σε λειτουργία θερμικής "
+"προστασίας, η οποία είναι 5W, για μερικά λεπτά.\n"
+"Οι χρόνοι ενσωμάτωσης για το Slow TDP και το STAPM επηρεάζουν τον αριθμό των "
+"προηγούμενων τιμών TDP που θα υπολογίσει η CPU για να υπολογίσει τις "
+"τρέχουσες τιμές Slow και STAPM TDP."
 
 #. Setting: Temp Target (TCTL)
 #. Field: title
 msgid "Temp Target (TCTL)"
-msgstr ""
+msgstr "Στόχος θερμοκρασίας (TCTL)"
 
 #. Setting: Slow Limit Integration Time
 #. Field: title
 msgid "Slow Limit Integration Time"
-msgstr ""
+msgstr "Χρόνος ενσωμάτωσης αργού ορίου"
 
 #. Setting: STAPM Limit Integration Time
 #. Field: title
 msgid "STAPM Limit Integration Time"
-msgstr ""
+msgstr "STAPM Όριο χρόνου ολοκλήρωσης"
 
 #. Setting: Enable Advanced Parameters
 #. Field: title
 msgid "Enable Advanced Parameters"
-msgstr ""
+msgstr "Ενεργοποίηση προηγμένων παραμέτρων"
 
 #~ msgid "Add TDP to /sys for Steam (Requires Restart)"
 #~ msgstr "Add TDP to /sys for Steam (Requires Restart)"
