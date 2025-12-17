@@ -8,34 +8,34 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-12-18 21:00+0000\n"
+"Last-Translator: Antoine Viallon <antoine@lesviallon.fr>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/hhd/hhd/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 5.15.1\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Section Name for: rgb
 msgid "RGB"
-msgstr ""
+msgstr "RGB"
 
 #. Section Name for: controllers
 #. Setting: Controller
 #. Field: title
 msgid "Controller"
-msgstr ""
+msgstr "Manette"
 
 #. Section Name for: magic_modules
 msgid "Modules"
-msgstr ""
+msgstr "Modules"
 
 #. Section Name for: wincontrols
 #. Setting: WinControls
@@ -45,70 +45,70 @@ msgstr ""
 
 #. Section Name for: gamemode
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #. Section Name for: updates
 msgid "Updates"
-msgstr ""
+msgstr "Mises à jour"
 
 #. Section Name for: debug
 msgid "Bugreport"
-msgstr ""
+msgstr "Rapport de bug"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
-msgstr ""
+msgstr "Raccourcis"
 
 #. Section Name for: hhd
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #. Setting: Core Settings
 #. Field: title
 msgid "Core Settings"
-msgstr ""
+msgstr "Paramètres principaux"
 
 #. Setting: Language
 #. Field: title
 msgid "Language"
-msgstr ""
+msgstr "Langue"
 
 #. Setting: Language
 #. Option: system
 #. Setting: System
 #. Field: title
 msgid "System"
-msgstr ""
+msgstr "Système"
 
 #. Setting: Language
 #. Option: C
 msgid "English"
-msgstr ""
+msgstr "Anglais"
 
 #. Setting: Language
 #. Option: zh_CN
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Chinois simplifié"
 
 #. Setting: Language
 #. Option: zh_TW
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Chinois traditionnel"
 
 #. Setting: Language
 #. Option: pt_BR
 msgid "Portugese (Brazil)"
-msgstr ""
+msgstr "Portugais (Brézil)"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr ""
+msgstr "Russe"
 
 #. Setting: Theme
 #. Field: title
 msgid "Theme"
-msgstr ""
+msgstr "Thème"
 
 #. Setting: Theme
 #. Field: hint
@@ -116,74 +116,80 @@ msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
 msgstr ""
+"Permet de changer le thème dans l'interface. Par défaut, le thème est "
+"Diavolo ou celui de votre distribution."
 
 #. Setting: Theme
 #. Option: default
 #. Setting: Default
 #. Field: title
 msgid "Default"
-msgstr ""
+msgstr "Par défaut"
 
 #. Setting: Theme
 #. Option: diavolo
 msgid "Diavolo"
-msgstr ""
+msgstr "Diavolo"
 
 #. Setting: Theme
 #. Option: ocean
 msgid "Atlantis"
-msgstr ""
+msgstr "Attlantis"
 
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
-msgstr ""
+msgstr "Vapor"
 
 #. Setting: Theme
 #. Option: blood_orange
 msgid "Blood Orange"
-msgstr ""
+msgstr "Orange sanguine"
 
 #. Setting: Reset Settings
 #. Field: title
 msgid "Reset Settings"
-msgstr ""
+msgstr "Réinitialiser les paramètres"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
 msgstr ""
+"Réinitialiser tous les paramètres de Handheld Daemon à leurs valeurs par "
+"défaut."
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr ""
+msgstr "Version d'Handheld Daemon"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
 #. Setting: Handheld Daemon UI Version
 msgid "Displays the Handheld Daemon version."
-msgstr ""
+msgstr "Affiche la version de Handheld Daemon."
 
 #. Setting: Handheld Daemon UI Version
 #. Field: title
 msgid "Handheld Daemon UI Version"
-msgstr ""
+msgstr "Version de l'interface de Handheld Daemon"
 
 #. Setting: Update (Stable)
 #. Field: title
 msgid "Update (Stable)"
-msgstr ""
+msgstr "Mise à jour (Stable)"
 
 #. Setting: Update (Stable)
 #. Field: hint
 msgid "Updates to the latest version from PyPi (local install only)."
 msgstr ""
+"Met à jour vers la dernière version depuis PyPi (installation locale "
+"seulement)."
 
 #. Setting: Update (Unstable)
 #. Field: title
 msgid "Update (Unstable)"
-msgstr ""
+msgstr "Mise à jour (Instable)"
 
 #. Setting: Update (Unstable)
 #. Field: hint
@@ -1090,9 +1096,8 @@ msgstr ""
 
 #. Setting: Vibration Strength
 #. Field: hint
-#, fuzzy
 msgid "Adjusts the vibration strength of the controller"
-msgstr "Passthrough the touchpad to the controller."
+msgstr "Ajuste la force de vibration de la manette"
 
 #. Setting: Vibration Strength
 #. Option: v1
