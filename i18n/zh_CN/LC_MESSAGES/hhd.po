@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2020-01-01 00:00+0000\n"
-"PO-Revision-Date: 2025-12-16 22:11+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2026-01-06 16:01+0000\n"
+"Last-Translator: songy171 <songy171m9@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/hhd/hhd/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.15.1-dev\n"
+"X-Generator: Weblate 5.15.1\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
@@ -98,14 +98,13 @@ msgstr "繁體中文"
 
 #. Setting: Language
 #. Option: pt_BR
-#, fuzzy
 msgid "Portugese (Brazil)"
-msgstr "Português"
+msgstr "葡萄牙语(巴西)"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr ""
+msgstr "俄语"
 
 #. Setting: Theme
 #. Field: title
@@ -300,7 +299,7 @@ msgstr "RGB 电源设置"
 #. Setting: On TDP Changes
 #. Field: title
 msgid "On TDP Changes"
-msgstr ""
+msgstr "当 TDP 变更时"
 
 #. Setting: Boot
 #. Field: title
@@ -310,12 +309,12 @@ msgstr "启动"
 #. Setting: Awake
 #. Field: title
 msgid "Awake"
-msgstr ""
+msgstr "唤醒"
 
 #. Setting: Sleep while Charging
 #. Field: title
 msgid "Sleep while Charging"
-msgstr ""
+msgstr "充电时进入待机"
 
 #. Setting: Shutdown
 #. Field: title
