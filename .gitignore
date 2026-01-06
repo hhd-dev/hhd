@@ -5,3 +5,4 @@ dist
 .vscode
 notebooks
 *.mo
+build/
