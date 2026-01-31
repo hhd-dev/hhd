@@ -478,7 +478,7 @@ def hide_hhd(display, hhd, steam, old: CachedValues | None):
     if steam and old:
         if old.focus:
             steam.change_property(stat_focus, Xatom.CARDINAL, 32, [1])
-        if old.overlay:
+        if old.overlay or old.focus:
             steam.change_property(stat_overlay, Xatom.CARDINAL, 32, [1])
         if old.notify:
             steam.change_property(stat_notify, Xatom.CARDINAL, 32, [1])
