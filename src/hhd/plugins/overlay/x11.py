@@ -261,10 +261,8 @@ def find_hhd(display: display.Display):
 
 
 def find_steam(display: display.Display):
-    return find_win(
-        display, ["steamwebhelper", "steam"], atoms=["STEAM_NOTIFICATION"]
-    ) or find_win(
-        display, ["steamwebhelper", "SDL Application"], atoms=["STEAM_NOTIFICATION"]
+    return find_win(display, ["steamwebhelper", "steam"]) or find_win(
+        display, ["steamwebhelper", "SDL Application"]
     )
 
 
