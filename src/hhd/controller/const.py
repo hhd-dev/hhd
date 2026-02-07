@@ -303,4 +303,6 @@ Configuration = Literal[
     "is_attached_right",
     # Commands
     "steam",
+    # IMU
+    "imu_powersave",
 ]

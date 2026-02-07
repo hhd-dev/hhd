@@ -28,6 +28,8 @@ class DeviceInfo(NamedTuple):
     dev: str
     axis: Sequence[ScanElement]
     sysfs: str
+    freqs: dict[str, float]
+    min_freqs: dict[str, float | None]
 
 
 ACCEL_NAMES = ["accel_3d"]
@@ -113,34 +115,36 @@ def prepare_dev(
     write_sysfs(sensor_dir, "buffer/enable", 0)
 
     # Set sampling frequency
+    target_freqs = {}
+    min_freqs = {}
     if freq is not None:
         for a, f in zip(attr, freq):
             sfn = os.path.join(sensor_dir, f"in_{a}_sampling_frequency")
             if os.path.isfile(sfn):
                 try:
-                    write_sysfs(sensor_dir, f"in_{a}_sampling_frequency", f)
-                except Exception as e:
-                    logger.error(f"Could not set sampling frequency for {a}:\n{e}")
-                    try:
-                        # Select closest higher frequency instead
-                        sfn = os.path.join(
-                            sensor_dir, f"in_{a}_sampling_frequency_available"
-                        )
-                        if os.path.isfile(sfn):
-                            freqs = map(
+                    # Select closest higher frequency instead
+                    sfn = os.path.join(
+                        sensor_dir, f"in_{a}_sampling_frequency_available"
+                    )
+                    if os.path.isfile(sfn):
+                        freqs = list(
+                            map(
                                 float,
                                 read_sysfs(
                                     sensor_dir, f"in_{a}_sampling_frequency_available"
                                 ).split(),
                             )
-                            f = next((x for x in freqs if x >= f), None)
-                            if f:
-                                write_sysfs(sensor_dir, f"in_{a}_sampling_frequency", f)
-                                logger.info(
-                                    f"Selected higher sampling frequency {f} for {a}"
-                                )
-                    except Exception as e:
-                        logger.error(f"Could not set higher sampling frequency for {a}:\n{e}")
+                        )
+                        f = next((x for x in freqs if x >= f), f)
+                        min_freqs[a] = min(freqs) if freqs else None
+                    else:
+                        min_freqs[a] = None
+
+                    write_sysfs(sensor_dir, f"in_{a}_sampling_frequency", f)
+                    target_freqs[a] = f
+                    logger.info(f"Selected higher frequency {f} for {a}")
+                except Exception as e:
+                    logger.error(f"Could not set sampling frequency for {a}:\n{e}")
 
     # Set scale
     if scales is not None:
@@ -231,7 +235,57 @@ def prepare_dev(
     write_sysfs(sensor_dir, "buffer/enable", 1)
 
     axis_arr = tuple(axis[i] for i in sorted(axis))
-    return DeviceInfo(dev, axis_arr, sensor_dir)
+    return DeviceInfo(dev, axis_arr, sensor_dir, target_freqs, min_freqs)
+
+
+def set_powersave(dev: DeviceInfo, state: bool, update_trigger: bool):
+    freqs = dev.min_freqs if state else dev.freqs
+
+    for a, f in freqs.items():
+        if (
+            a
+            and f
+            and os.path.isfile(os.path.join(dev.sysfs, f"in_{a}_sampling_frequency"))
+        ):
+            try:
+                write_sysfs(dev.sysfs, f"in_{a}_sampling_frequency", f)
+                logger.info(
+                    f"Set {'powersave' if state else 'normal'} frequency {f} for {a}"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Could not set {'powersave' if state else 'normal'} frequency for {a}:\n{e}"
+                )
+
+    if not update_trigger:
+        return
+
+    # Find trigger
+    trig = None
+    for fn in os.listdir("/sys/bus/iio/devices"):
+        if not fn.startswith("trigger"):
+            continue
+        with open(os.path.join("/sys/bus/iio/devices", fn, "name"), "r") as f:
+            if f.read().strip() == "hhd":
+                trig = fn
+                break
+
+    if not trig:
+        return
+
+    freq = next(iter([f for f in freqs if f]), None)
+    if not freq:
+        return
+
+    try:
+        write_sysfs(os.path.dirname(trig), "sampling_frequency", freq)
+        logger.info(
+            f"Set {'powersave' if state else 'normal'} trigger frequency {freq}"
+        )
+    except Exception as e:
+        logger.error(
+            f"Could not set {'powersave' if state else 'normal'} trigger frequency:\n{e}"
+        )
 
 
 def close_dev(dev: DeviceInfo):
@@ -309,6 +363,18 @@ class IioReader(Producer):
                 os.close(self.fd)
                 self.fd = -1
         return True
+
+    def consume(self, events: Sequence[Event]) -> None:
+        if not self.dev:
+            return
+
+        powersave = None
+        for e in events:
+            if e["type"] == "configuration" and e["code"] == "imu_powersave":
+                powersave = bool(e["value"])
+
+        if powersave is not None:
+            set_powersave(self.dev, powersave, self.update_trigger)
 
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         if self.fd not in fds or not self.dev:
