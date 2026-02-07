@@ -335,9 +335,9 @@ def prepare_hhd(display, hhd, steam=None):
         hhd.change_property(
             display.get_atom("_NET_WM_WINDOW_OPACITY"), Xatom.CARDINAL, 32, [0]
         )
+        hhd.change_property(display.get_atom("STEAM_BIGPICTURE"), Xatom.CARDINAL, 32, [1])
 
     hhd.change_property(display.get_atom("STEAM_NOTIFICATION"), Xatom.CARDINAL, 32, [0])
-    hhd.change_property(display.get_atom("STEAM_BIGPICTURE"), Xatom.CARDINAL, 32, [1])
     hhd.change_property(display.get_atom("GAMESCOPE_NO_FOCUS"), Xatom.CARDINAL, 32, [1])
     display.flush()
     display.sync()
