@@ -86,3 +86,10 @@ children:
     hint: >-
       Swaps A with B and X with Y.
     default: False
+
+  vibrate_on_press:
+    type: bool
+    tags: [ non-essential ]
+    title: Vibrate on Press (Touch keyboard)
+    hint: "Vibrate when typing on touch keyboard."
+    default: True
