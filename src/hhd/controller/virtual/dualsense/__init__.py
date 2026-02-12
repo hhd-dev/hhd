@@ -52,6 +52,10 @@ REPORT_MIN_DELAY = 1 / DS5_EDGE_MAX_REPORT_FREQ
 DS5_EDGE_MIN_TIMESTAMP_INTERVAL = 1500
 MAX_IMU_SYNC_DELAY = 2
 
+LEFT_TOUCH_CORRECTION = correct_touchpad(
+    DS5_EDGE_TOUCH_WIDTH, DS5_EDGE_TOUCH_HEIGHT, 1, "left"
+)
+
 logger = logging.getLogger(__name__)
 
 _cache = ControllerCache()
@@ -158,6 +162,18 @@ class Dualsense(Producer, Consumer):
         self.state: dict = defaultdict(lambda: 0)
         self.rumble = False
         self.touchpad_touch = False
+        self.left_touchpad_touch = False
+        self.right_touchpad_x = 0
+        self.right_touchpad_y = 0
+        self.left_touchpad_x = 0
+        self.left_touchpad_y = 0
+        self.tp1_owner = None  # Track which touchpad owns TP1: 'right' or 'left'
+        
+        # Touchpad mapping mode:
+        # - True: Real DS5 behavior (persistent mapping, TP2-only becomes invisible)
+        # - False: Practical behavior (auto-transfer to TP1, always visible)
+        self.touchpad_persistent_mapping = True
+        
         curr = time.perf_counter()
         self.touchpad_down = curr
         self.last_imu = curr
@@ -297,7 +313,7 @@ class Dualsense(Producer, Consumer):
                                 "red": red,
                                 "blue": blue,
                                 "green": green,
-                                "red2": 0, # disable for OXP
+                                "red2": 0,  # disable for OXP
                                 "blue2": 0,
                                 "green2": 0,
                                 "oxp": None,
@@ -372,7 +388,8 @@ class Dualsense(Producer, Consumer):
             code = ev["code"]
             match ev["type"]:
                 case "axis":
-                    if not self.enable_touchpad and code.startswith("touchpad"):
+                    # Filter all touchpad events when touchpad is disabled
+                    if not self.enable_touchpad and code.startswith(("touchpad", "left_touchpad")):
                         continue
                     if self.left_motion:
                         # Only left keep imu events for left motion
@@ -413,26 +430,36 @@ class Dualsense(Producer, Consumer):
                             )
                         case "touchpad_x":
                             tc = self.touch_correction
-                            x = int(
+                            self.right_touchpad_x = int(
                                 min(max(ev["value"], tc.x_clamp[0]), tc.x_clamp[1])
                                 * tc.x_mult
                                 + tc.x_ofs
                             )
-                            new_rep[self.ofs + 33] = x & 0xFF
-                            new_rep[self.ofs + 34] = (new_rep[self.ofs + 34] & 0xF0) | (
-                                x >> 8
-                            )
+                            # Coordinate will be written by smart mapping logic at the end
                         case "touchpad_y":
                             tc = self.touch_correction
-                            y = int(
+                            self.right_touchpad_y = int(
                                 min(max(ev["value"], tc.y_clamp[0]), tc.y_clamp[1])
                                 * tc.y_mult
                                 + tc.y_ofs
                             )
-                            new_rep[self.ofs + 34] = (new_rep[self.ofs + 34] & 0x0F) | (
-                                (y & 0x0F) << 4
+                            # Coordinate will be written by smart mapping logic at the end
+                        case "left_touchpad_x":
+                            tc = LEFT_TOUCH_CORRECTION
+                            self.left_touchpad_x = int(
+                                min(max(ev["value"], tc.x_clamp[0]), tc.x_clamp[1])
+                                * tc.x_mult
+                                + tc.x_ofs
                             )
-                            new_rep[self.ofs + 35] = y >> 4
+                            # Coordinate will be written by smart mapping logic at the end
+                        case "left_touchpad_y":
+                            tc = LEFT_TOUCH_CORRECTION
+                            self.left_touchpad_y = int(
+                                min(max(ev["value"], tc.y_clamp[0]), tc.y_clamp[1])
+                                * tc.y_mult
+                                + tc.y_ofs
+                            )
+                            # Coordinate will be written by smart mapping logic at the end
                         case "gyro_ts" | "accel_ts" | "imu_ts":
                             send = True
                             self.last_imu = time.perf_counter()
@@ -444,7 +471,8 @@ class Dualsense(Producer, Consumer):
                     if self.left_motion:
                         # skip buttons for left motion
                         continue
-                    if not self.enable_touchpad and code.startswith("touchpad"):
+                    # Filter all touchpad button events when touchpad is disabled
+                    if not self.enable_touchpad and code.startswith(("touchpad", "left_touchpad")):
                         continue
                     if (self.paddles_to_clicks == "top" and code == "extra_l1") or (
                         self.paddles_to_clicks == "bottom" and code == "extra_l2"
@@ -472,7 +500,15 @@ class Dualsense(Producer, Consumer):
 
                     # Fix touchpad click requiring touch
                     if code == "touchpad_touch":
+                        # Track TP1 owner for first-come-first-served mapping
+                        if ev["value"] and not self.touchpad_touch and self.tp1_owner is None:
+                            self.tp1_owner = "right"
                         self.touchpad_touch = ev["value"]
+                    if code == "left_touchpad_touch":
+                        # Track TP1 owner for first-come-first-served mapping
+                        if ev["value"] and not self.left_touchpad_touch and self.tp1_owner is None:
+                            self.tp1_owner = "left"
+                        self.left_touchpad_touch = ev["value"]
                     if code == "touchpad_left":
                         set_button(
                             new_rep,
@@ -488,7 +524,7 @@ class Dualsense(Producer, Consumer):
                         )
                         set_button(
                             new_rep,
-                            self.btn_map["touchpad_touch2"],
+                            self.btn_map["left_touchpad_touch"],
                             ev["value"],
                         )
 
@@ -513,6 +549,104 @@ class Dualsense(Producer, Consumer):
                                 max(ev["value"] // 10, 0)
                             )
 
+        # Smart touchpad mapping: ensure TP2 only activates when TP1 is also active
+        # Uses first-come-first-served principle: first touched pad owns TP1
+        def write_tp(offset, x, y):
+            """Helper function to write touchpoint coordinates to report"""
+            new_rep[offset + 1] = x & 0xFF
+            new_rep[offset + 2] = (new_rep[offset + 2] & 0xF0) | (x >> 8)
+            new_rep[offset + 2] = (new_rep[offset + 2] & 0x0F) | ((y & 0x0F) << 4)
+            new_rep[offset + 3] = y >> 4
+        
+        if self.touchpad_touch or self.left_touchpad_touch:
+            # Check if both or only one touchpad is touching
+            both_touching = self.touchpad_touch and self.left_touchpad_touch
+            
+            if both_touching:
+                # Both touching: use tp1_owner to decide mapping
+                if self.tp1_owner == "right":
+                    # Right owns TP1: TP1 = right, TP2 = left
+                    tp1_x, tp1_y = self.right_touchpad_x, self.right_touchpad_y
+                    tp2_x, tp2_y = self.left_touchpad_x, self.left_touchpad_y
+                else:  # "left"
+                    # Left owns TP1: TP1 = left, TP2 = right
+                    tp1_x, tp1_y = self.left_touchpad_x, self.left_touchpad_y
+                    tp2_x, tp2_y = self.right_touchpad_x, self.right_touchpad_y
+                
+                # Write both TP1 and TP2
+                write_tp(self.ofs + 32, tp1_x, tp1_y)
+                write_tp(self.ofs + 36, tp2_x, tp2_y)
+                
+                # Manually set both contact bits to "touching" (override default mapping)
+                # This is necessary because the default mapping (touchpad_touch->TP1, left_touchpad_touch->TP2)
+                # may not match the actual coordinate assignment when tp1_owner is "left"
+                new_rep[self.ofs + 32] = new_rep[self.ofs + 32] & 0x7F  # TP1 is touching
+                new_rep[self.ofs + 36] = new_rep[self.ofs + 36] & 0x7F  # TP2 is touching
+            else:
+                # Only one touching: behavior depends on mapping mode
+                if self.touchpad_persistent_mapping:
+                    # Real DS5 mode: Keep persistent mapping
+                    # Whichever touchpad is still touching keeps its assigned slot
+                    if self.touchpad_touch:
+                        # Right touchpad is touching
+                        if self.tp1_owner == "right":
+                            # Right owns TP1: write to TP1
+                            write_tp(self.ofs + 32, self.right_touchpad_x, self.right_touchpad_y)
+                            # Touch status already set by set_button (touchpad_touch -> TP1)
+                            # Clear TP2 (left was released)
+                            new_rep[self.ofs + 36] = new_rep[self.ofs + 36] | 0x80
+                        else:
+                            # Right owns TP2: write to TP2 (will be invisible in Steam)
+                            write_tp(self.ofs + 36, self.right_touchpad_x, self.right_touchpad_y)
+                            # Need to manually set TP2 touch status (touchpad_touch -> TP1, not TP2)
+                            new_rep[self.ofs + 36] = new_rep[self.ofs + 36] & 0x7F
+                            # Clear TP1 (left was released)
+                            new_rep[self.ofs + 32] = new_rep[self.ofs + 32] | 0x80
+                    else:
+                        # Left touchpad is touching
+                        if self.tp1_owner == "left":
+                            # Left owns TP1: write to TP1
+                            write_tp(self.ofs + 32, self.left_touchpad_x, self.left_touchpad_y)
+                            new_rep[self.ofs + 32] = new_rep[self.ofs + 32] & 0x7F
+                            # Clear TP2 (right was released)
+                            new_rep[self.ofs + 36] = new_rep[self.ofs + 36] | 0x80
+                        else:
+                            # Left owns TP2: write to TP2 (will be invisible in Steam)
+                            write_tp(self.ofs + 36, self.left_touchpad_x, self.left_touchpad_y)
+                            # Touch status already set by set_button (left_touchpad_touch -> TP2)
+                            # Clear TP1 (right was released)
+                            new_rep[self.ofs + 32] = new_rep[self.ofs + 32] | 0x80
+                else:
+                    # Practical mode: Auto-transfer to TP1 for visibility
+                    if self.touchpad_touch:
+                        tp1_x, tp1_y = self.right_touchpad_x, self.right_touchpad_y
+                        tp1_is_left = False
+                        # Transfer ownership only if it changed
+                        if self.tp1_owner != "right":
+                            self.tp1_owner = "right"
+                    else:
+                        tp1_x, tp1_y = self.left_touchpad_x, self.left_touchpad_y
+                        tp1_is_left = True
+                        # Transfer ownership only if it changed
+                        if self.tp1_owner != "left":
+                            self.tp1_owner = "left"
+                    
+                    # Write to TP1
+                    write_tp(self.ofs + 32, tp1_x, tp1_y)
+                    
+                    # Set TP1 touch status if it's the left touchpad
+                    # (right touchpad's status is already set by set_button)
+                    if tp1_is_left:
+                        new_rep[self.ofs + 32] = new_rep[self.ofs + 32] & 0x7F
+                    
+                    # Always clear TP2 in single-touch practical mode
+                    new_rep[self.ofs + 36] = new_rep[self.ofs + 36] | 0x80
+        else:
+            # Both touchpads are not touching: reset and clear
+            self.tp1_owner = None
+            new_rep[self.ofs + 32] = new_rep[self.ofs + 32] | 0x80  # Clear TP1: bit7=1 means not touching
+            new_rep[self.ofs + 36] = new_rep[self.ofs + 36] | 0x80  # Clear TP2: bit7=1 means not touching
+        
         # Cache
         # Caching can cause issues since receivers expect reports
         # at least a couple of times per second
