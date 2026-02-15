@@ -30,11 +30,20 @@ LONGER_ERROR_MARGIN = 1.3
 
 logger = logging.getLogger(__name__)
 
+# CLAW_SET_M1M2 = lambda a, btn: bytes(
+#     [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a[btn], 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
+# )
 CLAW_SET_M1M2 = lambda a, btn: bytes(
-    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a[btn], 0x05, 0x01, 0x00, 0x00, 0x12, 0x00]
+    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a[btn], 0x02, 0x01, 0x00]
 )
 CLAW_SET_XINPUT_M1M2 = lambda a, btn, b: bytes(
-    [0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, *a[btn], 0x01, b]
+    [
+        0x0F, 0x00, 0x00, 0x3C, 0x21, 0x01, 
+        *a[btn], # offset
+        0x07, # data length
+        0x04, 0x00, # reset mode
+        b, 0xFF, 0xFF, 0xFF, 0xFF, # key code, max 5 keys
+    ]
 )
 CLAW_SYNC_ROM = bytes([0x0F, 0x00, 0x00, 0x3C, 0x22])
 
@@ -65,12 +74,115 @@ BACK_BUTTON_DELAY = 0.1
 BUTTON_MIN_DELAY = 0.13
 
 XINPUT_MAP = {
-    "btn_a": 0x09,
-    "btn_b": 0x0A,
-    "key_inst": 0x7A,
-    "key_del": 0x7D,
-    "key_1": 0x40,
+    # gamepad codes
+    "abs_hat0y-1": 0x01,
+    "abs_hat0y+1": 0x02,
+    "abs_hat0x-1": 0x03,
+    "abs_hat0x+1": 0x04,
+    "btn_tl": 0x05,
+    "btn_tr": 0x06,
+    "btn_thumbl": 0x07,
+    "btn_thumbr": 0x08,
+
+    "btn_south": 0x09, # A
+    "btn_east": 0x0A, # B
+    "btn_north": 0x0B, # X
+    "btn_west": 0x0C, # Y
+
+    "btn_mode": 0x0D,
+    "btn_select": 0x0E,
+    "btn_start": 0x0F,
+
+    # keyboard codes
     "key_esc": 0x32,
+    "key_f1": 0x33,
+    "key_f2": 0x34,
+    "key_f3": 0x35,
+    "key_f4": 0x36,
+    "key_f5": 0x37,
+    "key_f6": 0x38,
+    "key_f7": 0x39,
+    "key_f8": 0x3A,
+    "key_f9": 0x3B,
+    "key_f10": 0x3C,
+    "key_f11": 0x3D,
+    "key_f12": 0x3E,
+    "key_grave": 0x3F,
+    "key_1": 0x40,
+    "key_2": 0x41,
+    "key_3": 0x42,
+    "key_4": 0x43,
+    "key_5": 0x44,
+    "key_6": 0x45,
+    "key_7": 0x46,
+    "key_8": 0x47,
+    "key_9": 0x48,
+    "key_0": 0x49,
+    "key_minus": 0x4A,
+    "key_equal": 0x4B,
+    "key_backspace": 0x4C,
+    "key_tab": 0x4D,
+    "key_q": 0x4E,
+    "key_w": 0x4F,
+    "key_e": 0x50,
+    "key_r": 0x51,
+    "key_t": 0x52,
+    "key_y": 0x53,
+    "key_u": 0x54,
+    "key_i": 0x55,
+    "key_o": 0x56,
+    "key_p": 0x57,
+    "key_leftbrace": 0x58,
+    "key_rightbrace": 0x59,
+    "key_backslash": 0x5A,
+    "key_capslock": 0x5B,
+    "key_a": 0x5C,
+    "key_s": 0x5D,
+    "key_d": 0x5E,
+    "key_f": 0x5F,
+    "key_g": 0x60,
+    "key_h": 0x61,
+    "key_j": 0x62,
+    "key_k": 0x63,
+    "key_l": 0x64,
+    "key_semicolon": 0x65,
+    "key_leftshift": 0x66,
+    "key_apostrophe": 0x67,
+    "key_enter": 0x68,
+    "key_z": 0x69,
+    "key_x": 0x6A,
+    "key_c": 0x6B,
+    "key_v": 0x6C,
+    "key_b": 0x6D,
+    "key_n": 0x6E,
+    "key_m": 0x6F,
+    "key_leftctrl": 0x70,
+    "key_rightshift": 0x71,
+    "key_comma": 0x72,
+    "key_dot": 0x73,
+    "key_slash": 0x74,
+    "key_leftalt": 0x75,
+    "key_leftmata": 0x76,
+    "key_rightctrl": 0x77,
+    "key_rightalt": 0x78,
+    "key_space": 0x79,
+    "key_insert": 0x7A,
+    "key_home": 0x7B,
+    "key_pageup": 0x7C,
+    "key_delete": 0x7D,
+    "key_end": 0x7E,
+    "key_pagedown": 0x7f,
+    "key_kp_enter": 0x8A,
+    "key_kp_0": 0x8B,
+    "key_kp_1": 0x8C,
+    "key_kp_2": 0x8D,
+    "key_kp_3": 0x8E,
+    "key_kp_4": 0x8F,
+    "key_kp_5": 0x90,
+    "key_kp_6": 0x91,
+    "key_kp_7": 0x92,
+    "key_kp_8": 0x93,
+    "key_kp_9": 0x94,
 }
 
 # 0211
@@ -86,8 +198,8 @@ ADDR_0166 = {
     "rgb": [0x02, 0x4A],
     "m1": [0x00, 0xBA],
     "m2": [0x01, 0x63],
-    "m1_xinput": [0x00, 0xBD],
-    "m2_xinput": [0x01, 0x66],
+    "m1_xinput": [0x00, 0xBB],
+    "m2_xinput": [0x01, 0x64],
 }
 ADDR_DEFAULT = ADDR_0166
 
@@ -264,9 +376,9 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         elif init:
             logger.info(">>>>>>>> Setting controller to xinput mode.")
             time.sleep(0.3)
-            self.write(CLAW_SET_XINPUT_M1M2(self.addr or ADDR_DEFAULT, "m1_xinput", XINPUT_MAP["key_inst"]))
+            self.write(CLAW_SET_XINPUT_M1M2(self.addr or ADDR_DEFAULT, "m1_xinput", XINPUT_MAP["key_insert"]))
             time.sleep(0.5)
-            self.write(CLAW_SET_XINPUT_M1M2(self.addr or ADDR_DEFAULT, "m2_xinput", XINPUT_MAP["key_del"]))
+            self.write(CLAW_SET_XINPUT_M1M2(self.addr or ADDR_DEFAULT, "m2_xinput", XINPUT_MAP["key_delete"]))
             time.sleep(0.5)
             self.write(CLAW_SYNC_ROM)
             time.sleep(0.5)
