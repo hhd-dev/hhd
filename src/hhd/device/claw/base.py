@@ -607,8 +607,7 @@ def controller_loop(
         btn_map=dconf.get("btn_mapping", MSI_CLAW_MAPPINGS),
     )
 
-    # Mute these so after suspend we do not get stray keypresses
-    d_kbd_2 = DesktopDetectorEvdev(
+    d_kbd_2 = GenericGamepadEvdev(
         vid=[MSI_CLAW_VID],
         pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
         required=False,
@@ -717,9 +716,8 @@ def controller_loop(
                     evs.extend(d.produce(r))
 
             # Detect if we are in desktop mode through events
-            desktop_mode = d_mouse.desktop or d_kbd_2.desktop
+            desktop_mode = d_mouse.desktop
             d_mouse.desktop = False
-            d_kbd_2.desktop = False
 
             if desktop_mode or (switch_to_dinput and start > switch_to_dinput):
                 logger.info(
