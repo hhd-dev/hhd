@@ -43,5 +43,7 @@ GPD_WIN_5_BTN_MAPPINGS: dict[int, Button] = {
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     B("KEY_O"): "share", # Keyboard button: LMETA + LCTRL + O
+    B("KEY_DELETE"): "share", # Keyboard button hold: DEL
     B("KEY_D"): "mode", # Home button: LMETA + D
+    B("KEY_TAB"): "mode", # Home button hold: TAB
 }
