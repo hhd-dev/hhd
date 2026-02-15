@@ -17,6 +17,7 @@ from hhd.utils import get_distro_color, hsb_to_rgb
 
 from .const import (
     GPD_WIN_4_8840U_MAPPINGS,
+    GPD_WIN_5_MAPPINGS,
     GPD_WIN_DEFAULT_MAPPINGS,
     GPD_WIN_MAX_2_2023_MAPPINGS,
     GPD_WIN_5_BTN_MAPPINGS,
@@ -40,6 +41,7 @@ GPD_CONFS = {
     "G1618-05": {
         "name": "GPD Win 5",
         "hrtimer": True,
+        "mapping": GPD_WIN_5_MAPPINGS,
         "btn_mapping": GPD_WIN_5_BTN_MAPPINGS,
     },
     "G1617-01": {
