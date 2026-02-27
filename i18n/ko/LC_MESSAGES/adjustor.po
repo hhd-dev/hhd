@@ -8,29 +8,30 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-02-28 10:09+0000\n"
+"Last-Translator: 날으는구퓌 <sana2dang@gmail.com>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/hhd/adjustor/ko/>"
+"\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
-msgstr ""
+msgstr "아래 버튼을 사용하여 Decky TDP 플러그인을 비활성화하고 계속 진행하세요."
 
 #. Setting: TDP Controls
 #. Field: title
 msgid "TDP Controls"
-msgstr ""
+msgstr "TDP 제어"
 
 #. Setting: Enable TDP Controls
 #. Field: title
 msgid "Enable TDP Controls"
-msgstr ""
+msgstr "TDP 제어 활성화"
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -39,35 +40,44 @@ msgid ""
 "will set and maintain the TDP limits set on start-up and during other device "
 "changes (ac/dc)."
 msgstr ""
+"Handheld Daemon을 통한 TDP 관리를 활성화합니다. 이 기능이 활성화되면 "
+"Handheld Daemon은 시작 및 기타 장치 변경(AC/DC) 시 설정된 TDP 제한을 "
+"유지하고 관리합니다."
 
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "에러"
 
 #. Setting: Error
 #. Option: nowrite
 msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
-msgstr ""
+msgstr "ACPI 호출 파일에 쓸 수 없습니다. TDP를 사용하려면 ACPI 호출이 필요합니다."
 
 #. Setting: TDP Capabilities
 #. Field: title
 msgid "TDP Capabilities"
-msgstr ""
+msgstr "TDP 성능"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: title
 msgid "Disable Decky TDP Plugins"
-msgstr ""
+msgstr "Decky TDP 플러그인 비활성화"
 
 #. Setting: Disable Decky TDP Plugins
 #. Field: hint
+#, fuzzy
 msgid ""
 "Disables Decky TDP plugins (Powercontrol, SimpleDeckyTDP) by moving them "
 "from ~/homebrew/plugins to ~/homebrew/plugins/hhd-disabled. Then, restarts "
 "Decky. This might cause Steam to restart. Move them back and reboot to re-"
 "enable."
 msgstr ""
+"Decky TDP 플러그인(Powercontrol, SimpleDeckyTDP)을 비활성화 하려면 ~/"
+"homebrew/plugins 에서 ~/homebrew/plugins/hhd-disabled 로 이동하세요. 그런 "
+"다음 Decky를 다시 시작합니다. 이로 인해 Steam이 재시작 될 수 있습니다. "
+"플러그인을 원래 위치로 되돌리고 Steam을 다시 시작하면 플러그인이 다시 "
+"활성화됩니다."
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -77,11 +87,15 @@ msgid ""
 "device changes (ac/dc).\n"
 "If the device crashes, TDP setting will be disabled on next startup."
 msgstr ""
+"Handheld Daemon을 통한 TDP 관리를 활성화 합니다. 이 기능이 활성화되면 "
+"Handheld Daemon은 시작 및 기타 장치 변경(AC/DC) 시 설정된 TDP 제한을 "
+"유지하고 관리합니다.\n"
+"장치가 충돌하면 다음 시작 시 TDP 설정이 비활성화 됩니다."
 
 #. Setting: Enforce Device TDP Limits
 #. Field: title
 msgid "Enforce Device TDP Limits"
-msgstr ""
+msgstr "장치 TDP 제한 적용"
 
 #. Setting: Enforce Device TDP Limits
 #. Field: hint
@@ -94,30 +108,35 @@ msgid ""
 "All settings outside specifications will be set to system specifications "
 "after rebooting."
 msgstr ""
+"이 옵션을 켜면 설정은 기기 제조업체에서 설정한 제한 범위 내에서 적용됩니다 "
+"(단, 해당 제한 범위가 제공되는 경우에 한함).\n"
+"이 옵션을 끄면 TDP 설정 범위는 현재 기기에서 논리적으로 가능한 범위까지 "
+"확장됩니다 (제조업체 사양과 무관).\n"
+"사양 범위를 벗어난 모든 설정은 재부팅 후 시스템 사양으로 설정됩니다."
 
 msgid "Steam is controlling TDP"
-msgstr ""
+msgstr "Steam이 TDP를 제어하고 있습니다"
 
 #. Setting: Asus TDP
 #. Field: title
 msgid "Asus TDP"
-msgstr ""
+msgstr "아수스 TDP"
 
 #. Setting: Asus TDP
 #. Field: hint
 #. Setting: MSI TDP
 msgid "Uses the interface of Armory Crate to set the TDP of the device."
-msgstr ""
+msgstr "Armory Crate의 인터페이스를 사용하여 장치의 TDP를 설정합니다."
 
 #. Setting: TDP Mode
 #. Field: title
 msgid "TDP Mode"
-msgstr ""
+msgstr "TDP 모드"
 
 #. Setting: Silent
 #. Field: title
 msgid "Silent"
-msgstr ""
+msgstr "소리없는"
 
 #. Setting: Performance
 #. Field: title
@@ -126,22 +145,22 @@ msgstr ""
 #. Setting: Platform Profile
 #. Setting: Energy Policy
 msgid "Performance"
-msgstr ""
+msgstr "성능"
 
 #. Setting: Turbo
 #. Field: title
 msgid "Turbo"
-msgstr ""
+msgstr "터보"
 
 #. Setting: Custom
 #. Field: title
 msgid "Custom"
-msgstr ""
+msgstr "사용자정의"
 
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Setting: TDP
 #. Field: hint
@@ -149,11 +168,13 @@ msgid ""
 "Average TDP Target. TDP Boost is recommended for desktop use and does not "
 "affect gaming."
 msgstr ""
+"평균 TDP 목표치. TDP Boost는 데스크톱 사용에 권장되며 게임에는 영향을 미치지 "
+"않습니다."
 
 #. Setting: TDP Boost
 #. Field: title
 msgid "TDP Boost"
-msgstr ""
+msgstr "TDP 부스트"
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -161,16 +182,18 @@ msgid ""
 "Allows the device to temporarily boost by setting appropriate slow and fast "
 "TDPs."
 msgstr ""
+"적절한 저속 및 고속 TDP를 설정하여 장치의 성능을 일시적으로 향상시킬 수 "
+"있습니다."
 
 #. Setting:
 #. Field: title
 msgid " "
-msgstr ""
+msgstr " "
 
 #. Setting: Change TDP with View+Y
 #. Field: title
 msgid "Change TDP with View+Y"
-msgstr ""
+msgstr "View+Y를 사용하여 TDP를 변경"
 
 #. Setting: Change TDP with View+Y
 #. Field: hint
@@ -178,16 +201,18 @@ msgid ""
 "Allows you to cycle through TDP modes with the View+Y key combination. "
 "Recommended to use with ROG Swap, as the View button will be muted to games."
 msgstr ""
+"View+Y 키 조합으로 TDP 모드를 전환할 수 있습니다. ROG Swap과 함께 사용하면 "
+"게임에서 View 버튼이 음소거 됩니다. ROG Swap과 함께 사용하는 것을 권장합니다."
 
 #. Setting: Custom Fan Curve
 #. Field: title
 msgid "Custom Fan Curve"
-msgstr ""
+msgstr "사용자 지정 Fan 커브"
 
 #. Setting: Custom Fan Curve
 #. Field: hint
 msgid "Allows you to set a custom fan curve."
-msgstr ""
+msgstr "사용자 지정 Fan 곡선을 설정할 수 있습니다."
 
 #. Setting: Disabled
 #. Field: title
