@@ -252,6 +252,13 @@ class Device(object):
         size = self.__hidcall(hidapi.hid_get_input_report, self._dev, self.buf, size)
         return self.buf.raw[:size]
 
+    def send_output_report(self, data):
+        """SET_REPORT Output via HIDIOCSOUTPUT ioctl (control transfer)."""
+        import fcntl
+        HIDIOCSOUTPUT = 0xC0184806
+        buf = ctypes.create_string_buffer(data, 4096)
+        return fcntl.ioctl(self.fd, HIDIOCSOUTPUT, buf)
+
     def send_feature_report(self, data):
         return self.__hidcall(
             hidapi.hid_send_feature_report, self._dev, data, len(data)

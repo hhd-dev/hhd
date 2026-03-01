@@ -200,6 +200,15 @@ def hidraw(dev: str | None, *cmds: str):
             elif cmd.startswith('get:'):
                 cmd_type = "get"
                 cmd = cmd[4:]
+            elif cmd.startswith('out:'):
+                cmd_type = "out"
+                cmd = cmd[4:]
+            elif cmd.startswith('in:'):
+                cmd_type = "in"
+                cmd = cmd[3:]
+            elif cmd == 'read':
+                cmd_type = "read"
+                cmd = ""
             else:
                 cmd_type = "write"
             cmd = cmd.replace(' ', '').replace(':', '')
@@ -225,6 +234,27 @@ def hidraw(dev: str | None, *cmds: str):
                         print(d.get_feature_report(int(cmd, 16)).hex())
                     except Exception as e:
                         print(f"Error getting feature '{cmd}':\n{e}")
+                        return
+                case "out":
+                    print(f" - OUT {cmd}")
+                    try:
+                        d.send_output_report(bytes.fromhex(cmd))
+                    except Exception as e:
+                        print(f"Error sending output report '{cmd}':\n{e}")
+                        return
+                case "in":
+                    print(f" - IN {cmd}")
+                    try:
+                        print(d.get_input_report(int(cmd, 16)).hex())
+                    except Exception as e:
+                        print(f"Error getting input report '{cmd}':\n{e}")
+                        return
+                case "read":
+                    print(f" - READ")
+                    try:
+                        print(d.read().hex())
+                    except Exception as e:
+                        print(f"Error reading from device:\n{e}")
                         return
         return
 
