@@ -70,12 +70,14 @@ BACK_BUTTON_DELAY = 0.025
 LEFT_BUTTONS = {
     EC("KEY_SYSRQ"),
     EC("KEY_F20"),
+    EC("KEY_F14"),
     EC("KEY_L"),
 }
 
 RIGHT_BUTTONS = {
     EC("KEY_PAUSE"),
     EC("KEY_F21"),
+    EC("KEY_F15"),
     EC("KEY_R")
 }
 
