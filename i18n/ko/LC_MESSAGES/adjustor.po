@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2026-02-28 10:09+0000\n"
+"PO-Revision-Date: 2026-03-04 09:58+0000\n"
 "Last-Translator: 날으는구퓌 <sana2dang@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/hhd/adjustor/ko/>"
 "\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16.1-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
@@ -221,7 +221,7 @@ msgstr "사용자 지정 Fan 곡선을 설정할 수 있습니다."
 #. Setting: Custom Scheduler
 #. Setting: CPU Boost
 msgid "Disabled"
-msgstr ""
+msgstr "비활성화"
 
 #. Setting: Disabled
 #. Field: hint
@@ -231,7 +231,7 @@ msgstr ""
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "수동"
 
 #. Setting: 30C
 #. Field: title
@@ -381,14 +381,14 @@ msgstr ""
 #. Setting: Charge Bypass
 #. Option: always
 msgid "Always"
-msgstr ""
+msgstr "항상"
 
 #. Setting: Power
 #. Field: title
 #. Setting: Energy Policy
 #. Option: power
 msgid "Power"
-msgstr ""
+msgstr "Power"
 
 #. Setting: Power Profile
 #. Field: title
@@ -459,7 +459,7 @@ msgstr ""
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. Setting: Auto
 #. Field: hint
@@ -491,12 +491,12 @@ msgstr ""
 #. Setting: CPU Power (EPP)
 #. Option: power
 msgid "Low"
-msgstr ""
+msgstr "약하게"
 
 #. Setting: CPU Power (EPP)
 #. Option: balance_performance
 msgid "High"
-msgstr ""
+msgstr "강하게"
 
 #. Setting: CPU Minimum Frequency
 #. Field: title
@@ -785,7 +785,7 @@ msgstr ""
 #. Setting: Reset to Default
 #. Field: title
 msgid "Reset to Default"
-msgstr ""
+msgstr "기본값으로 재설정"
 
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
@@ -800,7 +800,7 @@ msgstr ""
 #. Setting: Apply Settings
 #. Field: title
 msgid "Apply Settings"
-msgstr ""
+msgstr "설정 적용"
 
 #. Setting: TDP Status
 #. Field: title
