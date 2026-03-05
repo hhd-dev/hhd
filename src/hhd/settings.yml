@@ -16,6 +16,7 @@ settings:
         zh_TW: Traditional Chinese
         pt_BR: Portugese (Brazil)
         ru_RU: Russian
+        ko: Korean
 
     theme:
       type: multiple
