@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2026-02-28 10:09+0000\n"
+"PO-Revision-Date: 2026-03-05 01:36+0000\n"
 "Last-Translator: 날으는구퓌 <sana2dang@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/hhd/hhd/ko/>\n"
 "Language: ko\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16.1-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
@@ -25,223 +25,223 @@ msgstr "TDP"
 
 #. Section Name for: rgb
 msgid "RGB"
-msgstr ""
+msgstr "RGB"
 
 #. Section Name for: controllers
 #. Setting: Controller
 #. Field: title
 msgid "Controller"
-msgstr ""
+msgstr "제품정보"
 
 #. Section Name for: magic_modules
 msgid "Modules"
-msgstr ""
+msgstr "모듈"
 
 #. Section Name for: wincontrols
 #. Setting: WinControls
 #. Field: title
 msgid "WinControls"
-msgstr ""
+msgstr "WinControls"
 
 #. Section Name for: gamemode
 msgid "General"
-msgstr ""
+msgstr "일반적인"
 
 #. Section Name for: updates
 msgid "Updates"
-msgstr ""
+msgstr "업데이트"
 
 #. Section Name for: debug
 msgid "Bugreport"
-msgstr ""
+msgstr "버그 리포트"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
-msgstr ""
+msgstr "바로가기"
 
 #. Section Name for: hhd
 msgid "Settings"
-msgstr ""
+msgstr "셋팅"
 
 #. Setting: Core Settings
 #. Field: title
 msgid "Core Settings"
-msgstr ""
+msgstr "코어 셋팅"
 
 #. Setting: Language
 #. Field: title
 msgid "Language"
-msgstr ""
+msgstr "언어"
 
 #. Setting: Language
 #. Option: system
 #. Setting: System
 #. Field: title
 msgid "System"
-msgstr ""
+msgstr "시스템"
 
 #. Setting: Language
 #. Option: C
 msgid "English"
-msgstr ""
+msgstr "English"
 
 #. Setting: Language
 #. Option: zh_CN
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "Simplified Chinese"
 
 #. Setting: Language
 #. Option: zh_TW
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "Traditional Chinese"
 
 #. Setting: Language
 #. Option: pt_BR
 msgid "Portugese (Brazil)"
-msgstr ""
+msgstr "Portugese (Brazil)"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr ""
+msgstr "Russian"
 
 #. Setting: Theme
 #. Field: title
 msgid "Theme"
-msgstr ""
+msgstr "테마"
 
 #. Setting: Theme
 #. Field: hint
 msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
-msgstr ""
+msgstr "UI 테마를 변경할 수 있습니다. 기본값은 Diavolo 테마 또는 배포판의 테마입니다."
 
 #. Setting: Theme
 #. Option: default
 #. Setting: Default
 #. Field: title
 msgid "Default"
-msgstr ""
+msgstr "Default"
 
 #. Setting: Theme
 #. Option: diavolo
 msgid "Diavolo"
-msgstr ""
+msgstr "Diavolo"
 
 #. Setting: Theme
 #. Option: ocean
 msgid "Atlantis"
-msgstr ""
+msgstr "Atlantis"
 
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
-msgstr ""
+msgstr "Vapor"
 
 #. Setting: Theme
 #. Option: blood_orange
 msgid "Blood Orange"
-msgstr ""
+msgstr "Blood Orange"
 
 #. Setting: Reset Settings
 #. Field: title
 msgid "Reset Settings"
-msgstr ""
+msgstr "설정 초기화"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr ""
+msgstr "Handheld Daemon의 모든 설정을 기본값으로 초기화합니다."
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr ""
+msgstr "Handheld Daemon 버전"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
 #. Setting: Handheld Daemon UI Version
 msgid "Displays the Handheld Daemon version."
-msgstr ""
+msgstr "Handheld Daemon 버전을 표시합니다."
 
 #. Setting: Handheld Daemon UI Version
 #. Field: title
 msgid "Handheld Daemon UI Version"
-msgstr ""
+msgstr "Handheld Daemon UI 버전"
 
 #. Setting: Update (Stable)
 #. Field: title
 msgid "Update (Stable)"
-msgstr ""
+msgstr "업데이트 ( 안정화 버전 )"
 
 #. Setting: Update (Stable)
 #. Field: hint
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr ""
+msgstr "PyPi에서 최신 버전으로 업데이트 (로컬 설치만 해당)."
 
 #. Setting: Update (Unstable)
 #. Field: title
 msgid "Update (Unstable)"
-msgstr ""
+msgstr "업데이트 (불안정 버전)"
 
 #. Setting: Update (Unstable)
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
-msgstr ""
+msgstr "Git의 마스터 브랜치 업데이트(로컬 설치 전용)."
 
 #. Setting: Update Error
 #. Field: title
 msgid "Update Error"
-msgstr ""
+msgstr "업데이트 에러"
 
 #. Setting: API Configuration
 #. Field: title
 msgid "API Configuration"
-msgstr ""
+msgstr "API 구성"
 
 #. Setting: API Configuration
 #. Field: hint
 msgid "Settings for configuring the http endpoint of HHD."
-msgstr ""
+msgstr "HHD의 HTTP 엔드포인트를 구성하기 위한 설정입니다."
 
 #. Setting: Limit Access to localhost
 #. Field: title
 msgid "Limit Access to localhost"
-msgstr ""
+msgstr "localhost에 대한 액세스 제한"
 
 #. Setting: Limit Access to localhost
 #. Field: hint
 msgid "Sets the API target to '127.0.0.1' instead '0.0.0.0'."
-msgstr ""
+msgstr "API 대상 주소를 '0.0.0.0' 대신 '127.0.0.1'로 설정합니다."
 
 #. Setting: Use Security token
 #. Field: title
 msgid "Use Security token"
-msgstr ""
+msgstr "보안 토큰을 사용"
 
 #. Setting: Use Security token
 #. Field: hint
 msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
-msgstr ""
+msgstr "인증에 필요한 보안 토큰을 `~/.config/hhd/token` 파일에 생성합니다."
 
 msgid "Lightbar"
-msgstr ""
+msgstr "Lightbar"
 
 msgid "Keyboard"
-msgstr ""
+msgstr "키보드"
 
 #. Setting: Aura Settings
 #. Field: title
 msgid "Aura Settings"
-msgstr ""
+msgstr "Aura 설정"
 
 #. Setting: Brightness
 #. Field: title
 msgid "Brightness"
-msgstr ""
+msgstr "밝기"
 
 #. Setting: Brightness
 #. Option: disabled
@@ -251,14 +251,14 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Option: off
 msgid "Off"
-msgstr ""
+msgstr "끔"
 
 #. Setting: Brightness
 #. Option: low
 #. Setting: Vibration
 #. Setting: Speed
 msgid "Low"
-msgstr ""
+msgstr "낮은"
 
 #. Setting: Brightness
 #. Option: medium
@@ -266,7 +266,7 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "Medium"
-msgstr ""
+msgstr "중간"
 
 #. Setting: Brightness
 #. Option: high
@@ -274,115 +274,115 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "High"
-msgstr ""
+msgstr "높은"
 
 #. Setting: RGB Power Settings
 #. Field: title
 msgid "RGB Power Settings"
-msgstr ""
+msgstr "RGB 전원 설정"
 
 #. Setting: On TDP Changes
 #. Field: title
 msgid "On TDP Changes"
-msgstr ""
+msgstr "TDP 변경 시"
 
 #. Setting: Boot
 #. Field: title
 msgid "Boot"
-msgstr ""
+msgstr "Boot"
 
 #. Setting: Awake
 #. Field: title
 msgid "Awake"
-msgstr ""
+msgstr "깨어있는"
 
 #. Setting: Sleep while Charging
 #. Field: title
 msgid "Sleep while Charging"
-msgstr ""
+msgstr "충전 중 슬립"
 
 #. Setting: Shutdown
 #. Field: title
 msgid "Shutdown"
-msgstr ""
+msgstr "전원 종료"
 
 #. Setting: Enable Aura RGB support
 #. Field: title
 msgid "Enable Aura RGB support"
-msgstr ""
+msgstr "Aura RGB 지원을 활성화"
 
 msgid "Cross Film / Joystick"
-msgstr ""
+msgstr "Cross Film / Joystick"
 
 msgid "Cross / Joystick"
-msgstr ""
+msgstr "Cross / Joystick"
 
 msgid "Cross / Touchpad"
-msgstr ""
+msgstr "Cross / Touchpad"
 
 msgid "Direction / Joystick"
-msgstr ""
+msgstr "Direction / Joystick"
 
 msgid "Joystick / Cross Film"
-msgstr ""
+msgstr "Joystick / Cross Film"
 
 msgid "Joystick / Cross"
-msgstr ""
+msgstr "Joystick / Cross"
 
 msgid "Touchpad / Cross"
-msgstr ""
+msgstr "Touchpad / Cross"
 
 msgid "Joystick / Direction"
-msgstr ""
+msgstr "Joystick / Direction"
 
 msgid "ABXY \\ Joystick"
-msgstr ""
+msgstr "ABXY \\ Joystick"
 
 msgid "ABXY \\ Touchpad"
-msgstr ""
+msgstr "ABXY \\ Touchpad"
 
 msgid "ABXYCZ"
-msgstr ""
+msgstr "ABXYCZ"
 
 msgid "ABXY Film \\ Joystick"
-msgstr ""
+msgstr "ABXY Film \\ Joystick"
 
 msgid "Joystick \\ ABXY"
-msgstr ""
+msgstr "Joystick \\ ABXY"
 
 msgid "Touchpad \\ ABXY"
-msgstr ""
+msgstr "Touchpad \\ ABXY"
 
 msgid "ABXYCZ [R]"
-msgstr ""
+msgstr "ABXYCZ [R]"
 
 msgid "Joystick \\ ABXY Film"
-msgstr ""
+msgstr "Joystick \\ ABXY Film"
 
 msgid "Unknown"
-msgstr ""
+msgstr "Unknown"
 
 msgid "Ejecting..."
-msgstr ""
+msgstr "꺼내는중..."
 
 msgid "Activating..."
-msgstr ""
+msgstr "활성화 중..."
 
 msgid "Unpowered"
-msgstr ""
+msgstr "전원 없음"
 
 msgid "Disconnected"
-msgstr ""
+msgstr "연결 끊김"
 
 #. Setting: Paused
 #. Field: title
 msgid "Paused"
-msgstr ""
+msgstr "일시 중지됨"
 
 #. Setting: Ayaneo Controller
 #. Field: title
 msgid "Ayaneo Controller"
-msgstr ""
+msgstr "Ayaneo Controller"
 
 #. Setting: Ayaneo Controller
 #. Field: hint
@@ -391,100 +391,100 @@ msgstr ""
 #. Setting: Orange Pi Neo
 #. Setting: OneXPlayer Controller
 msgid "Allows for configuring your handheld's controller to a unified output."
-msgstr ""
+msgstr "휴대용 기기의 컨트롤러를 통합 출력으로 구성할 수 있도록 합니다."
 
 #. Setting: Controller Emulation
 #. Field: title
 msgid "Controller Emulation"
-msgstr ""
+msgstr "Controller Emulation"
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse your device's features."
-msgstr ""
+msgstr "다양한 컨트롤러 유형을 에뮬레이션하여 기기의 기능을 통합하세요."
 
 #. Setting: Motion Support
 #. Field: title
 msgid "Motion Support"
-msgstr ""
+msgstr "Motion 지원"
 
 #. Setting: Motion Support
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
-msgstr ""
+msgstr "자이로스코프/가속도계(IMU) 지원 활성화(백그라운드 CPU 사용량 0.3%)"
 
 #. Setting: Motion Hz
 #. Field: title
 msgid "Motion Hz"
-msgstr ""
+msgstr "Motion Hz"
 
 #. Setting: Motion Hz
 #. Field: hint
 msgid "Sets the sampling frequency for the IMU."
-msgstr ""
+msgstr "IMU의 샘플링 주파수를 설정합니다."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: title
 msgid "Aya Button Map (Left, Right)"
-msgstr ""
+msgstr "Aya Button Map (왼쪽, 오른쪽)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: hint
 #. Setting: Swap Guide and Menu/View
 msgid "Swaps the Guide and QAM buttons with start and select."
-msgstr ""
+msgstr "가이드 버튼과 QAM 버튼을 시작 버튼과 선택 버튼의 위치를 바꿉니다."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: oem
 msgid "Default (Select/Start, Guide/QAM)"
-msgstr ""
+msgstr "기본값(선택/시작, 가이드/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional
 msgid "Traditional (Guide/Select, Start/QAM)"
-msgstr ""
+msgstr "기존 방식 (가이드/선택, 시작/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional_rev
 msgid "Traditional Rev. (Select/Guide, QAM/Start)"
-msgstr ""
+msgstr "기존 방식 Rev. (선택/안내, QAM/시작)"
 
 #. Setting: Vibration
 #. Field: title
 msgid "Vibration"
-msgstr ""
+msgstr "진동"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
 msgid "Nintendo Mode (A-B Swap)"
-msgstr ""
+msgstr "닌텐도 모드 (A-B Swap)"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: hint
 msgid "Swaps A with B and X with Y."
-msgstr ""
+msgstr "A와 B를, X와 Y를 서로 바꿉니다."
 
 #. Setting: Hold View to Reboot
 #. Field: title
 msgid "Hold View to Reboot"
-msgstr ""
+msgstr "화면을 길게 눌러 재부팅"
 
 #. Setting: Magic Modules
 #. Field: title
 msgid "Magic Modules"
-msgstr ""
+msgstr "Magic 모듈"
 
 #. Setting: Pop Both Modules
 #. Field: title
 msgid "Pop Both Modules"
-msgstr ""
+msgstr "Pop Both Modules"
 
 #. Setting: Pop Both Modules
 #. Field: hint
 #. Setting: Pop Left Module
 #. Setting: Pop Right Module
 msgid "Pops the left and right Ayaneo Magic Modules modules."
-msgstr ""
+msgstr "Ayaneo 우측 좌측 Magic 매직 팝스 모듈."
 
 #. Setting: Left
 #. Field: title
@@ -492,12 +492,12 @@ msgstr ""
 #. Option: left
 #. Setting: Direction
 msgid "Left"
-msgstr ""
+msgstr "왼쪽"
 
 #. Setting: Pop Left Module
 #. Field: title
 msgid "Pop Left Module"
-msgstr ""
+msgstr "좌측 모듈 팝"
 
 #. Setting: Right
 #. Field: title
@@ -505,42 +505,42 @@ msgstr ""
 #. Option: right
 #. Setting: Direction
 msgid "Right"
-msgstr ""
+msgstr "오른쪽"
 
 #. Setting: Pop Right Module
 #. Field: title
 msgid "Pop Right Module"
-msgstr ""
+msgstr "우측 모듈 팝"
 
 #. Setting: Quick Reset
 #. Field: title
 msgid "Quick Reset"
-msgstr ""
+msgstr "빠른 재설정"
 
 #. Setting: Quick Reset
 #. Field: hint
 msgid "Re-initializes the Ayaneo Magic Modules modules."
-msgstr ""
+msgstr "Ayaneo Magic Modules 모듈을 다시 초기화합니다."
 
 #. Setting: Claw Controller
 #. Field: title
 msgid "Claw Controller"
-msgstr ""
+msgstr "Claw Controller"
 
 #. Setting: DInput Mode (Enables Paddles, Beta)
 #. Field: title
 msgid "DInput Mode (Enables Paddles, Beta)"
-msgstr ""
+msgstr "DInput Mode (패들 활성화, 베타 버전)"
 
 #. Setting: Swap Guide and Menu/View
 #. Field: title
 msgid "Swap Guide and Menu/View"
-msgstr ""
+msgstr "가이드 및 메뉴/보기 Swap"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: title
 msgid "Start/Select do SteamOS Combos"
-msgstr ""
+msgstr "SteamOS 콤보 시작/선택"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Field: hint
@@ -548,6 +548,9 @@ msgid ""
 "When holding Select or Start, if another button is pressed, they become the "
 "Xbox button, which allows doing SteamOS combos (Select+RT is screenshot)."
 msgstr ""
+"Select 또는 Start 버튼을 누른 상태에서 다른 버튼을 누르면 해당 버튼이 Xbox "
+"버튼으로 작동하여 SteamOS 콤보 명령을 사용할 수 있습니다(스크린샷은 "
+"Select+RT)."
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: disabled
@@ -576,42 +579,42 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Disabled"
-msgstr ""
+msgstr "비활성화"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
 msgid "Select Only"
-msgstr ""
+msgstr "Select Only"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: start_select
 msgid "Start+Select"
-msgstr ""
+msgstr "Start+Select"
 
 #. Setting: Handheld
 #. Field: title
 msgid "Handheld"
-msgstr ""
+msgstr "Handheld"
 
 #. Setting: GPD Controller
 #. Field: title
 msgid "GPD Controller"
-msgstr ""
+msgstr "GPD Controller"
 
 #. Setting: GPD Controller
 #. Field: hint
 msgid "Allows for configuring the gpd win controllers to a unified output."
-msgstr ""
+msgstr "gpd win 컨트롤러를 통합 출력으로 구성할 수 있도록 합니다."
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse gpd features."
-msgstr ""
+msgstr "gpd 기능을 통합하기 위해 다양한 컨트롤러 유형을 에뮬레이션합니다."
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: title
 msgid "Menu/L4/R4 Mapping"
-msgstr ""
+msgstr "Menu/L4/R4 Mapping"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Field: hint
@@ -621,82 +624,87 @@ msgid ""
 "single-press QAM, double HHD, hold Xbox. L4/R4 are single-press QAM, hold "
 "HHD (legacy). "
 msgstr ""
+"L4/R4 버튼을 Steam 입력에 매핑합니다(Wincontrols 탭에서 L4/R4를 HHD로 "
+"설정해야 함). 이 기능을 비활성화하면 키보드 버튼으로 사용됩니다. 메뉴/L4/"
+"R4는 조합 키로 사용할 수 있습니다. 메뉴는 QAM 버튼을 한 번 누르고 HHD 버튼을 "
+"두 번 누른 후 Xbox 버튼을 길게 누릅니다. L4/R4는 QAM 버튼을 한 번 누르고 HHD "
+"버튼을 길게 누릅니다(기존 방식). "
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: generic
 msgid "Paddles, no Combo"
-msgstr ""
+msgstr "Paddles, no Combo"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: menu
 msgid "Menu is Combo"
-msgstr ""
+msgstr "Menu is Combo"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: l4
 msgid "L4 is Combo"
-msgstr ""
+msgstr "L4 is Combo"
 
 #. Setting: Menu/L4/R4 Mapping
 #. Option: r4
 msgid "R4 is Combo"
-msgstr ""
+msgstr "R4 is Combo"
 
 #. Setting: WinControls
 #. Field: hint
 msgid "Specialized settings for GPD devices."
-msgstr ""
+msgstr "GPD 기기용 특수 설정입니다."
 
 #. Setting: RGB Mode
 #. Field: title
 msgid "RGB Mode"
-msgstr ""
+msgstr "RGB 모드"
 
 #. Setting: Off
 #. Field: hint
 msgid "Turns the LEDs off."
-msgstr ""
+msgstr "LED를 끕니다."
 
 #. Setting: Solid
 #. Field: title
 msgid "Solid"
-msgstr ""
+msgstr "굵기"
 
 #. Setting: Solid
 #. Field: hint
 msgid "Maintains the LEDs at a solid color."
-msgstr ""
+msgstr "LED를 단색으로 유지합니다."
 
 #. Setting: Hue
 #. Field: title
 msgid "Hue"
-msgstr ""
+msgstr "색조"
 
 #. Setting: Pulse
 #. Field: title
 msgid "Pulse"
-msgstr ""
+msgstr "펄스"
 
 #. Setting: Pulse
 #. Field: hint
 msgid "Slowly pulses the LEDs as a prespecified color."
-msgstr ""
+msgstr "미리 지정된 색상으로 LED가 천천히 깜빡입니다."
 
 #. Setting: Rainbow
 #. Field: title
 msgid "Rainbow"
-msgstr ""
+msgstr "무지개"
 
 #. Setting: Rainbow
 #. Field: hint
 #. Setting: Cycle
 msgid "Cycles through the different colors."
-msgstr ""
+msgstr "다양한 색상이 순환하며 나타납니다."
 
 #. Setting: Mouse Mode Mapping
 #. Field: title
 msgid "Mouse Mode Mapping"
-msgstr ""
+msgstr "마우스 모드 매핑"
 
 #. Setting: Mouse Mode Mapping
 #. Option: unchanged
@@ -705,97 +713,97 @@ msgstr ""
 #. Setting: Do not change
 #. Field: title
 msgid "Do not change"
-msgstr ""
+msgstr "변경하지 마세요"
 
 #. Setting: Mouse Mode Mapping
 #. Option: mouse
 msgid "GPD Mouse Mode"
-msgstr ""
+msgstr "GPD 마우스 모드"
 
 #. Setting: Mouse Mode Mapping
 #. Option: wasd
 msgid "For Games"
-msgstr ""
+msgstr "게임용"
 
 #. Setting: Mouse Mode Triggers
 #. Field: title
 msgid "Mouse Mode Triggers"
-msgstr ""
+msgstr "마우스 모드 트리거"
 
 #. Setting: Mouse Mode Triggers
 #. Option: gpd
 msgid "GPD (RT is Fast Mouse)"
-msgstr ""
+msgstr "GPD (RT버튼 빠른 마우스 )"
 
 #. Setting: Mouse Mode Triggers
 #. Option: steamos
 msgid "SteamOS (LT/RT are R/L Clicks)"
-msgstr ""
+msgstr "SteamOS (LT/RT는 오른쪽/왼쪽 클릭)"
 
 #. Setting: L4/R4 Mapping
 #. Field: title
 msgid "L4/R4 Mapping"
-msgstr ""
+msgstr "L4/R4 매핑"
 
 #. Setting: L4/R4 Mapping
 #. Option: hhd
 msgid "For HHD (F20/F21)"
-msgstr ""
+msgstr "For HHD (F20/F21)"
 
 #. Setting: L4/R4 Mapping
 #. Option: default
 msgid "Default (Pause/PrntScr)"
-msgstr ""
+msgstr "기본값 (Pause/PrntScr)"
 
 #. Setting: Deadzones
 #. Field: title
 msgid "Deadzones"
-msgstr ""
+msgstr "데드존"
 
 #. Setting: Do not change
 #. Field: hint
 msgid "Do not change the deadzones."
-msgstr ""
+msgstr "데드존을 변경하지 마십시오."
 
 #. Setting: Set Deadzones
 #. Field: title
 msgid "Set Deadzones"
-msgstr ""
+msgstr "데드존 설정"
 
 #. Setting: Set Deadzones
 #. Field: hint
 msgid "Use custom deadzones."
-msgstr ""
+msgstr "사용자 지정 데드존을 사용하세요."
 
 #. Setting: Left Stick Center
 #. Field: title
 msgid "Left Stick Center"
-msgstr ""
+msgstr "좌측 조이스틱 중앙"
 
 #. Setting: Left Stick Boundary
 #. Field: title
 msgid "Left Stick Boundary"
-msgstr ""
+msgstr "좌측 조이스틱 경계"
 
 #. Setting: Right Stick Center
 #. Field: title
 msgid "Right Stick Center"
-msgstr ""
+msgstr "우측 조이스틱 중앙"
 
 #. Setting: Right Stick Boundary
 #. Field: title
 msgid "Right Stick Boundary"
-msgstr ""
+msgstr "우측 조이스틱 경계"
 
 #. Setting: Vibration Strength
 #. Field: title
 msgid "Vibration Strength"
-msgstr ""
+msgstr "진동 강도"
 
 #. Setting: Firmware
 #. Field: title
 msgid "Firmware"
-msgstr ""
+msgstr "펌웨어"
 
 #. Setting: Error
 #. Field: title
@@ -805,52 +813,52 @@ msgstr "에러"
 #. Setting: Apply Settings
 #. Field: title
 msgid "Apply Settings"
-msgstr ""
+msgstr "설정 적용"
 
 #. Setting: Legion Controller
 #. Field: title
 msgid "Legion Controller"
-msgstr ""
+msgstr "Legion 컨트롤러"
 
 #. Setting: Legion Controller
 #. Field: hint
 msgid "Configure the Legion Controller emulation modes."
-msgstr ""
+msgstr "Legion 컨트롤러 에뮬레이션 모드를 구성합니다."
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: title
 msgid "Emulation Mode (X-Input)"
-msgstr ""
+msgstr "Emulation Mode (X-Input)"
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
 msgid "Emulate different controller types when in X-Input mode."
-msgstr ""
+msgstr "X-Input 모드에서는 다양한 컨트롤러 유형을 에뮬레이션합니다."
 
 #. Setting: Mapping Style
 #. Field: title
 msgid "Mapping Style"
-msgstr ""
+msgstr "매핑 스타일"
 
 #. Setting: Mapping Style
 #. Field: hint
 msgid "Choose OS mapping style."
-msgstr ""
+msgstr "OS 매핑 스타일을 선택하세요."
 
 #. Setting: Windows
 #. Field: title
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #. Setting: Windows
 #. Field: hint
 msgid "Windows style mapping."
-msgstr ""
+msgstr "Windows 스타일 매핑."
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Field: title
 msgid "Turbo Mode (Repeat Buttons)"
-msgstr ""
+msgstr "터보 모드 (반복 버튼)"
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Field: hint
@@ -858,106 +866,108 @@ msgid ""
 "Hold Y1/Y2 for 2s, then press the buttons that will repeat. To stop, hold Y1/"
 "Y2 for 5s."
 msgstr ""
+"Y1/Y2 버튼을 2초 동안 누른 후, 반복될 버튼을 누르세요. 멈추려면 Y1/Y2 버튼을 "
+"5초 동안 누르세요."
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Option: 2hz
 msgid "2Hz"
-msgstr ""
+msgstr "2Hz"
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Option: 5hz
 msgid "5Hz"
-msgstr ""
+msgstr "5Hz"
 
 #. Setting: Turbo Mode (Repeat Buttons)
 #. Option: 8hz
 msgid "8Hz"
-msgstr ""
+msgstr "8Hz"
 
 #. Setting: SteamOS
 #. Field: title
 msgid "SteamOS"
-msgstr ""
+msgstr "SteamOS"
 
 #. Setting: SteamOS
 #. Field: hint
 msgid "SteamOS style mapping."
-msgstr ""
+msgstr "SteamOS 스타일 매핑."
 
 #. Setting: Touchpad Emulation [BETA]
 #. Field: title
 msgid "Touchpad Emulation [BETA]"
-msgstr ""
+msgstr "터치패드 에뮬레이션 [베타]"
 
 #. Setting: Touchpad Emulation [BETA]
 #. Field: hint
 msgid "Passthrough the touchpad to the controller."
-msgstr ""
+msgstr "터치패드를 컨트롤러로 Passthrough합니다."
 
 #. Setting: Touchpad Emulation [BETA]
 #. Option: gamemode
 msgid "Gamemode"
-msgstr ""
+msgstr "게임모드"
 
 #. Setting: Touchpad Emulation [BETA]
 #. Option: always
 msgid "Always"
-msgstr ""
+msgstr "항상"
 
 #. Setting: Controller Frequency
 #. Field: title
 msgid "Controller Frequency"
-msgstr ""
+msgstr "컨트롤러 주파수"
 
 #. Setting: Controller Frequency
 #. Option: 125hz
 msgid "125Hz"
-msgstr ""
+msgstr "125Hz"
 
 #. Setting: Controller Frequency
 #. Option: 250hz
 msgid "250Hz"
-msgstr ""
+msgstr "250Hz"
 
 #. Setting: Controller Frequency
 #. Option: 500hz
 msgid "500Hz"
-msgstr ""
+msgstr "500Hz"
 
 #. Setting: Controller Frequency
 #. Option: 1000hz
 msgid "1000Hz"
-msgstr ""
+msgstr "1000Hz"
 
 #. Setting: Swap Legion with Menu/View
 #. Field: title
 msgid "Swap Legion with Menu/View"
-msgstr ""
+msgstr "Legion을 메뉴/보기로 Swap"
 
 #. Setting: Enable Shortcuts Controller
 #. Field: title
 msgid "Enable Shortcuts Controller"
-msgstr ""
+msgstr "바로가기 컨트롤러 활성화"
 
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
 msgid "When in dinput mode, enable a controller for shortcuts."
-msgstr ""
+msgstr "입력 모드일 때는 단축키를 위해 컨트롤러를 활성화하세요."
 
 #. Setting: Reset Controller
 #. Field: title
 msgid "Reset Controller"
-msgstr ""
+msgstr "컨트롤러 재설정"
 
 #. Setting: Reset Controller
 #. Field: hint
 msgid "Resets the controller to stock settings."
-msgstr ""
+msgstr "컨트롤러를 기본 설정으로 초기화합니다."
 
 #. Setting: Legion Controllers
 #. Field: title
 msgid "Legion Controllers"
-msgstr ""
+msgstr "Legion 컨트롤러"
 
 #. Setting: Legion Controllers
 #. Field: hint
@@ -965,33 +975,35 @@ msgid ""
 "Allows for configuring the Legion controllers using the built in firmware "
 "commands and enabling emulation modes for various controller types."
 msgstr ""
+"내장 펌웨어 명령어를 사용하여 Legion 컨트롤러를 구성하고 다양한 컨트롤러 "
+"유형에 대한 에뮬레이션 모드를 활성화할 수 있습니다."
 
 #. Setting: Emulation Mode (X-Input)
 #. Field: hint
 msgid ""
 "Emulate different controller types when the Legion Controllers are in X-"
 "Input mode."
-msgstr ""
+msgstr "Legion 컨트롤러가 X-Input 모드일 때 다양한 컨트롤러 유형을 에뮬레이션합니다."
 
 #. Setting: Controller Motions Device
 #. Field: title
 msgid "Controller Motions Device"
-msgstr ""
+msgstr "컨트롤러 모션 장치"
 
 #. Setting: Left Controller
 #. Field: title
 msgid "Left Controller"
-msgstr ""
+msgstr "좌측 컨트롤러"
 
 #. Setting: Right Controller
 #. Field: title
 msgid "Right Controller"
-msgstr ""
+msgstr "우측 컨트롤러"
 
 #. Setting: Both Controllers
 #. Field: title
 msgid "Both Controllers"
-msgstr ""
+msgstr "양쪽 컨트롤러"
 
 #. Setting: Both Controllers
 #. Field: hint
@@ -999,11 +1011,13 @@ msgid ""
 "The main controller uses the right controller's motion sensor, and a  "
 "secondary controller is created for the left controller's motion sensor."
 msgstr ""
+"메인 컨트롤러는 우측 컨트롤러의 모션 센서를 사용하고, 좌측 컨트롤러의 모션 "
+"센서를 위한 보조 컨트롤러가 생성됩니다."
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: title
 msgid "M2 As Xbox Share/Dualsense Mic Mute"
-msgstr ""
+msgstr "M2 버튼은 Xbox Share/Dualsense 마이크 음소거 기능으로 사용 가능"
 
 #. Setting: M2 As Xbox Share/Dualsense Mic Mute
 #. Field: hint
@@ -1011,6 +1025,8 @@ msgid ""
 "Maps the M2 to the mute button on Dualsense and the share button on the Xbox "
 "Elite controller."
 msgstr ""
+"M2 버튼을 듀얼센스 컨트롤러의 음소거 버튼과 Xbox 엘리트 컨트롤러의 공유 "
+"버튼에 매핑합니다."
 
 #. Setting: Enable Shortcuts Controller
 #. Field: hint
@@ -1018,126 +1034,127 @@ msgid ""
 "When in other modes (dinput, dual dinput, and fps), enable a shortcuts  "
 "controller to restore Guide, QAM, and shortcut functionality."
 msgstr ""
+"다른 모드(dinput, dual dinput 및 FPS)에서는 단축키 컨트롤러를 활성화하여 "
+"가이드, QAM 및 단축키 기능을 복원하십시오."
 
 #. Setting: Factory Reset Controllers
 #. Field: title
 msgid "Factory Reset Controllers"
-msgstr ""
+msgstr "컨트롤러 공장 초기화"
 
 #. Setting: Factory Reset Controllers
 #. Field: hint
 msgid "Resets the controllers to factory settings."
-msgstr ""
+msgstr "컨트롤러를 공장 초기 설정으로 되돌립니다."
 
 #. Setting: Orange Pi Neo
 #. Field: title
 msgid "Orange Pi Neo"
-msgstr ""
+msgstr "Orange Pi Neo"
 
 msgid "AOKZOE Controller"
-msgstr ""
+msgstr "AOKZOE 컨트롤러"
 
 #. Setting: OneXPlayer Controller
 #. Field: title
 msgid "OneXPlayer Controller"
-msgstr ""
+msgstr "OneXPlayer 컨트롤러"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Field: title
 msgid "Keyboard and Turbo buttons are:"
-msgstr ""
+msgstr "키보드 및 터보 버튼은:"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: oem
 msgid "Keyboard, Combo"
-msgstr ""
+msgstr "Keyboard, Combo"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: separate
 msgid "Steam Menu, HHD"
-msgstr ""
+msgstr "Steam Menu, HHD"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo_hhd
 msgid "Combo, HHD"
-msgstr ""
+msgstr "Combo, HHD"
 
 #. Setting: Keyboard and Turbo buttons are:
 #. Option: combo
 msgid "Combo, Combo"
-msgstr ""
+msgstr "Combo, Combo"
 
 #. Setting: Swap View/Menu and Xbox/Kbd
 #. Field: title
 msgid "Swap View/Menu and Xbox/Kbd"
-msgstr ""
+msgstr "Swap View/Menu and Xbox/Kbd"
 
 #. Setting: Holding Turbo Reboots
 #. Field: title
 msgid "Holding Turbo Reboots"
-msgstr ""
+msgstr "홀딩 터보 Reboots"
 
 #. Setting: Reverse Volume Buttons
 #. Field: title
 msgid "Reverse Volume Buttons"
-msgstr ""
+msgstr "볼륨 버튼 반전"
 
 #. Setting: Reverse Volume Buttons
 #. Field: hint
 msgid ""
 "Reverse the volume buttons of the X1 style devices to match other tablets."
-msgstr ""
+msgstr "X1 스타일 기기의 볼륨 버튼 위치를 다른 태블릿과 동일하게 반대로 바꾸세요."
 
 #. Setting: Vibration Strength
 #. Field: hint
-#, fuzzy
 msgid "Adjusts the vibration strength of the controller"
-msgstr "Passthrough the touchpad to the controller."
+msgstr "컨트롤러의 진동 강도를 조절합니다"
 
 #. Setting: Vibration Strength
 #. Option: v1
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #. Setting: Vibration Strength
 #. Option: v2
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #. Setting: Vibration Strength
 #. Option: v3
 msgid "3"
-msgstr ""
+msgstr "3"
 
 #. Setting: Vibration Strength
 #. Option: v4
 msgid "4"
-msgstr ""
+msgstr "4"
 
 #. Setting: Vibration Strength
 #. Option: v5
 msgid "5"
-msgstr ""
+msgstr "5"
 
 #. Setting: Ally Controller
 #. Field: title
 msgid "Ally Controller"
-msgstr ""
+msgstr "Ally 컨트롤러"
 
 #. Setting: Ally Controller
 #. Field: hint
 msgid "Allows for configuring the ROG Ally controllers to a unified output."
-msgstr ""
+msgstr "ROG Ally 컨트롤러를 통합 출력으로 구성할 수 있도록 합니다."
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse ROG features."
-msgstr ""
+msgstr "다양한 컨트롤러 유형을 에뮬레이션하여 ROG 기능을 통합합니다."
 
 #. Setting: Swap Xbox And Armoury
 #. Field: title
 msgid "Swap Xbox And Armoury"
-msgstr ""
+msgstr "Xbox와 Armoury를 Swap"
 
 #. Setting: Swap Xbox And Armoury
 #. Field: hint
@@ -1145,42 +1162,44 @@ msgid ""
 "Swaps the Xbox button and Armoury Crate button. If the ROG keys are swapped, "
 "it swaps the Xbox button with the Menu/View button instead."
 msgstr ""
+"Xbox 버튼과 Armoury Crate 버튼의 위치를 바꿉니다. ROG 키가 서로 바뀌어 있는 "
+"경우, Xbox 버튼과 Menu/View 버튼의 위치가 바뀝니다."
 
 #. Setting: Swap ROG and Menu/View
 #. Field: title
 msgid "Swap ROG and Menu/View"
-msgstr ""
+msgstr "Swap ROG and Menu/View"
 
 #. Setting: Swap ROG and Menu/View
 #. Field: hint
 msgid ""
 "Swaps the Armory Crate and Command center buttons with start and select."
-msgstr ""
+msgstr "Armory Crate 및 Command center 버튼과 Start 및 Select 버튼을 서로 바꿉니다."
 
 #. Setting: RGB During Boot
 #. Field: title
 msgid "RGB During Boot"
-msgstr ""
+msgstr "부팅 중 RGB"
 
 #. Setting: RGB During Charging Asleep
 #. Field: title
 msgid "RGB During Charging Asleep"
-msgstr ""
+msgstr "충전 중 RGB 조명 (절전 모드)"
 
 #. Setting: Motion Axis
 #. Field: title
 msgid "Motion Axis"
-msgstr ""
+msgstr "Motion Axis"
 
 #. Setting: Default
 #. Field: hint
 msgid "The default axis loaded for this device."
-msgstr ""
+msgstr "이 장치에 대해 기본적으로 로드되는 axis 입니다."
 
 #. Setting: Override
 #. Field: title
 msgid "Override"
-msgstr ""
+msgstr "재정의"
 
 #. Setting: Override
 #. Field: hint
@@ -1188,108 +1207,110 @@ msgid ""
 "Remap and invert the axis of your device. If the axis of your device are "
 "wrong, please submit a picture or a text version of the following."
 msgstr ""
+"기기의 축을 재설정하고 반전시키십시오. 기기의 축이 잘못된 경우, 다음 내용을 "
+"사진 또는 텍스트로 제출해 주십시오."
 
 #. Setting: Manufacturer
 #. Field: title
 msgid "Manufacturer"
-msgstr ""
+msgstr "제조사"
 
 #. Setting: Product
 #. Field: title
 msgid "Product"
-msgstr ""
+msgstr "제품"
 
 #. Setting: Axis X
 #. Field: title
 msgid "Axis X"
-msgstr ""
+msgstr "Axis X"
 
 #. Setting: Axis X
 #. Option: x
 #. Setting: Axis Y
 #. Setting: Axis Z
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #. Setting: Axis X
 #. Option: y
 #. Setting: Axis Y
 #. Setting: Axis Z
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #. Setting: Axis X
 #. Option: z
 #. Setting: Axis Y
 #. Setting: Axis Z
 msgid "Z"
-msgstr ""
+msgstr "Z"
 
 #. Setting: Invert X
 #. Field: title
 msgid "Invert X"
-msgstr ""
+msgstr "Invert X"
 
 #. Setting: Axis Y
 #. Field: title
 msgid "Axis Y"
-msgstr ""
+msgstr "Axis Y"
 
 #. Setting: Invert Y
 #. Field: title
 msgid "Invert Y"
-msgstr ""
+msgstr "Invert Y"
 
 #. Setting: Axis Z
 #. Field: title
 msgid "Axis Z"
-msgstr ""
+msgstr "Axis Z"
 
 #. Setting: Invert Z
 #. Field: title
 msgid "Invert Z"
-msgstr ""
+msgstr "Invert Z"
 
 #. Setting: Deadzones & Vibration
 #. Field: title
 msgid "Deadzones & Vibration"
-msgstr ""
+msgstr "데드존 & 진동"
 
 #. Setting: Deadzones & Vibration
 #. Field: hint
 msgid "Configure joystick and trigger deadzones, vibration intensity."
-msgstr ""
+msgstr "조이스틱 및 트리거 데드존, 진동 강도를 설정합니다."
 
 #. Setting: Default
 #. Field: hint
 msgid "Uses reasonable values based on hardware."
-msgstr ""
+msgstr "하드웨어에 기반한 적절한 값을 사용합니다."
 
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "수동"
 
 #. Setting: Manual
 #. Field: hint
 msgid "Allows for manual configuration of deadzones and vibration intensity."
-msgstr ""
+msgstr "데드존 및 진동 강도를 수동으로 설정할 수 있습니다."
 
 #. Setting: Vibration Intensity
 #. Field: title
 msgid "Vibration Intensity"
-msgstr ""
+msgstr "진동 강도"
 
 #. Setting: Vibration Intensity
 #. Field: hint
 msgid ""
 "Intensity of the vibration. The higher the value, the stronger the vibration."
-msgstr ""
+msgstr "진동의 강도. 값이 높을수록 진동이 강해집니다."
 
 #. Setting: Left Stick Minimum
 #. Field: title
 msgid "Left Stick Minimum"
-msgstr ""
+msgstr "좌측 조이스틱 최소값"
 
 #. Setting: Left Stick Minimum
 #. Field: hint
@@ -1300,11 +1321,13 @@ msgid ""
 "Deadzone for the joystick. The higher the value, the more the joystick needs "
 "to be moved before registering."
 msgstr ""
+"조이스틱 데드존입니다. 값이 높을수록 조이스틱을 더 많이 움직여야 반응이 "
+"나타납니다."
 
 #. Setting: Left Stick Maximum
 #. Field: title
 msgid "Left Stick Maximum"
-msgstr ""
+msgstr "좌측 조이스틱 최대값"
 
 #. Setting: Left Stick Maximum
 #. Field: hint
@@ -1315,62 +1338,66 @@ msgid ""
 "Maximum value for joystick. The higher the value, the more the joystick "
 "needs to be moved before reaching maximum."
 msgstr ""
+"조이스틱의 최대값입니다. 값이 높을수록 최대값에 도달하기 위해 조이스틱을 더 "
+"많이 움직여야 합니다."
 
 #. Setting: Right Stick Minimum
 #. Field: title
 msgid "Right Stick Minimum"
-msgstr ""
+msgstr "우측 조이스틱 최소값"
 
 #. Setting: Right Stick Maximum
 #. Field: title
 msgid "Right Stick Maximum"
-msgstr ""
+msgstr "우측 조이스틱 최대값"
 
 #. Setting: Left Trigger Minimum
 #. Field: title
 msgid "Left Trigger Minimum"
-msgstr ""
+msgstr "좌측 트리거 최소값"
 
 #. Setting: Left Trigger Maximum
 #. Field: title
 msgid "Left Trigger Maximum"
-msgstr ""
+msgstr "좌측 트리거 최대값"
 
 #. Setting: Right Trigger Minimum
 #. Field: title
 msgid "Right Trigger Minimum"
-msgstr ""
+msgstr "우측 트리거 최소값"
 
 #. Setting: Right Trigger Maximum
 #. Field: title
 msgid "Right Trigger Maximum"
-msgstr ""
+msgstr "우측 트리거 최대값"
 
 #. Setting: Reset to Default
 #. Field: title
 msgid "Reset to Default"
-msgstr ""
+msgstr "기본값으로 재설정"
 
 #. Setting: Reset to Default
 #. Field: hint
 msgid "Reset all values to default."
-msgstr ""
+msgstr "모든 값을 기본값으로 재설정합니다."
 
 #. Setting: Hidden
 #. Field: title
 msgid "Hidden"
-msgstr ""
+msgstr "히든"
 
 #. Setting: Hidden
 #. Field: hint
 msgid ""
 "Disables the controller. Handheld Daemon overlay will still work in gamemode."
 msgstr ""
+"컨트롤러를 비활성화합니다. 게임 모드에서도 Handheld Daemon 오버레이는 계속 "
+"작동합니다."
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
 msgid "Extra buttons as Keyboard/Overlay"
-msgstr ""
+msgstr "키보드/오버레이용 추가 버튼"
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: hint
@@ -1378,16 +1405,18 @@ msgid ""
 "Makes the left paddle bring up a keyboard and the right paddle bring up the "
 "overlay."
 msgstr ""
+"좌측 패들을 누르면 키보드가 나타나고, 우측 패들을 누르면 오버레이가 "
+"나타납니다."
 
 #. Setting: Xbox
 #. Field: title
 msgid "Xbox"
-msgstr ""
+msgstr "Xbox"
 
 #. Setting: Extra buttons as
 #. Field: title
 msgid "Extra buttons as"
-msgstr ""
+msgstr "추가 버튼"
 
 #. Setting: Extra buttons as
 #. Field: hint
@@ -1395,41 +1424,43 @@ msgid ""
 "Changes the behavior of the extra buttons. Left button is Keyboard, right "
 "button is Overlay. Or they can be set for Steam Input."
 msgstr ""
+"추가 버튼의 동작을 변경합니다. 왼쪽 버튼은 키보드, 오른쪽 버튼은 오버레이로 "
+"설정할 수 있습니다. 또는 Steam 입력으로 설정할 수도 있습니다."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
 msgid "Steam Input (Elite)"
-msgstr ""
+msgstr "Steam Input (Elite)"
 
 #. Setting: Extra buttons as
 #. Option: noob
 msgid "Keyboard/Overlay"
-msgstr ""
+msgstr "키보드/오버레이"
 
 #. Setting: Nintendo QAM Fix
 #. Field: title
 msgid "Nintendo QAM Fix"
-msgstr ""
+msgstr "Nintendo QAM 수정"
 
 #. Setting: Xbox Elite
 #. Field: title
 msgid "Xbox Elite"
-msgstr ""
+msgstr "Xbox Elite"
 
 #. Setting: Steam Controller
 #. Field: title
 msgid "Steam Controller"
-msgstr ""
+msgstr "Steam 컨트롤러"
 
 #. Setting: Steam Controller
 #. Field: hint
 msgid "Allows for gyro, paddles, and has a proper QAM button."
-msgstr ""
+msgstr "자이로스코프, 패들 시프트가 있으며, 제대로 된 QAM 버튼이 있습니다."
 
 #. Setting: Handheld Mode [BETA]
 #. Field: title
 msgid "Handheld Mode [BETA]"
-msgstr ""
+msgstr "휴대 모드 [베타]"
 
 #. Setting: Handheld Mode [BETA]
 #. Field: hint
@@ -1437,11 +1468,13 @@ msgid ""
 "Uses the new handheld Steam Input profile. May have bugs, especially when it "
 "comes to gyro."
 msgstr ""
+"새로운 휴대용 Steam 입력 프로필을 사용합니다. 특히 자이로 센서 관련해서 "
+"버그가 있을 수 있습니다."
 
 #. Setting: Gyro Output Sync
 #. Field: title
 msgid "Gyro Output Sync"
-msgstr ""
+msgstr "자이로 출력 동기화"
 
 #. Setting: Gyro Output Sync
 #. Field: hint
@@ -1453,11 +1486,17 @@ msgid ""
 "of the controller to that of the IMU. This only makes a difference for the "
 "Legion Go (125hz), as all the other handhelds are using 400hz by default."
 msgstr ""
+"Steam은 터치패드를 마우스로 인식하고 '자이로-마우스 변환[베타]' 기능을 통해 "
+"IMU 타임스탬프를 사용합니다. 동일한 타임스탬프가 두 번 보고되면 0으로 나누기 "
+"오류가 발생하여 불안정해집니다. 이 옵션을 사용하면 새로운 IMU 타임스탬프가 "
+"있을 때만 보고가 전송되므로 컨트롤러의 응답 속도가 IMU에 맞춰 제한됩니다. 이 "
+"설정은 Legion Go(125Hz)에만 적용되며, 다른 모든 휴대용 기기는 기본적으로 "
+"400Hz를 사용합니다."
 
 #. Setting: Invert Roll Axis
 #. Field: title
 msgid "Invert Roll Axis"
-msgstr ""
+msgstr "Invert Roll Axis"
 
 #. Setting: Invert Roll Axis
 #. Field: hint
@@ -1466,11 +1505,14 @@ msgid ""
 "Steam Input, since you want it to be inverted to look left to right, but an "
 "issue in emulators."
 msgstr ""
+"실제 Horipad 컨트롤러와 비교하여 롤(Z) 축을 반전시킵니다. 좌우 시점 전환을 "
+"위해 반전이 필요한 스팀 인풋에서 유용하지만, 에뮬레이터에서는 문제가 될 수 "
+"있습니다."
 
 #. Setting: Dualsense
 #. Field: title
 msgid "Dualsense"
-msgstr ""
+msgstr "Dualsense"
 
 #. Setting: Extra buttons as
 #. Field: hint
@@ -1479,33 +1521,36 @@ msgid ""
 "button is Overlay. Or they can be left/right touchpad clicks. For the legion "
 "go, top buttons are shortcuts, bottom are touchpad clicks."
 msgstr ""
+"추가 버튼의 동작을 변경합니다. 왼쪽 버튼은 키보드, 오른쪽 버튼은 "
+"오버레이입니다. 또는 왼쪽/오른쪽 터치패드 클릭으로 설정할 수도 있습니다. "
+"Legion Go의 경우, 위쪽 버튼은 단축키, 아래쪽 버튼은 터치패드 클릭입니다."
 
 #. Setting: Extra buttons as
 #. Option: steam_input
 msgid "Steam Input (Edge)"
-msgstr ""
+msgstr "Steam Input (Edge)"
 
 #. Setting: Extra buttons as
 #. Option: touchpad
 msgid "Touchpad Clicks"
-msgstr ""
+msgstr "터치패드 클릭"
 
 #. Setting: Extra buttons as
 #. Option: both
 msgid "Shortcuts + Touchpad Clicks"
-msgstr ""
+msgstr "단축키 + 터치패드 클릭"
 
 #. Setting: LED Support
 #. Field: title
 msgid "LED Support"
-msgstr ""
+msgstr "LED 지원"
 
 #. Setting: LED Support
 #. Field: hint
 msgid ""
 "Passes through the LEDs to the controller, which allows games to control "
 "them."
-msgstr ""
+msgstr "신호가 LED를 거쳐 컨트롤러로 전달되어 게임에서 LED를 제어할 수 있게 됩니다."
 
 #. Setting: Invert Roll Axis
 #. Field: hint
@@ -1514,11 +1559,14 @@ msgid ""
 "for Steam Input, since you want it to be inverted to look left to right, but "
 "an issue in emulators."
 msgstr ""
+"실제 듀얼센스 컨트롤러와 비교하여 롤(Z) 축을 반전시킵니다. 스팀 인풋에서는 "
+"좌우 시점 전환을 위해 반전이 필요하므로 유용하지만, 에뮬레이터에서는 문제가 "
+"될 수 있습니다."
 
 #. Setting: Bluetooth Mode
 #. Field: title
 msgid "Bluetooth Mode"
-msgstr ""
+msgstr "블루투스 모드"
 
 #. Setting: Bluetooth Mode
 #. Field: hint
@@ -1528,11 +1576,15 @@ msgid ""
 "However, using USB mode can improve LED support (?) in some games. Test and "
 "report back!"
 msgstr ""
+"컨트롤러를 USB 모드 대신 블루투스 모드로 에뮬레이션합니다. 이는 앱이 "
+"컨트롤러와 상호 작용하는 방식에 문제가 적기 때문에 기본 설정입니다. 하지만 "
+"일부 게임에서는 USB 모드를 사용하면 LED 지원이 향상될 수 있습니다(?). 테스트 "
+"후 결과를 알려주세요!"
 
 #. Setting: Touchpad Emulation
 #. Field: title
 msgid "Touchpad Emulation"
-msgstr ""
+msgstr "터치패드 에뮬레이션"
 
 #. Setting: Touchpad Emulation
 #. Field: hint
@@ -1540,6 +1592,8 @@ msgid ""
 "Use an emulated touchpad. Part of the controller if it is supported (e.g., "
 "Dualsense) or a virtual one if not."
 msgstr ""
+"에뮬레이션된 터치패드를 사용하세요. 지원되는 경우 컨트롤러의 일부 터치패드"
+"(예: Dualsense)를 사용하고, 지원되지 않는 경우 가상 터치패드를 사용하세요."
 
 #. Setting: Disabled
 #. Field: hint
@@ -1547,11 +1601,13 @@ msgid ""
 "Does not modify the touchpad. Short + holding presses will not work within "
 "gamescope."
 msgstr ""
+"터치패드 설정을 변경하지 않습니다. 게임스코프 내에서는 짧게 누른 후 길게 "
+"누르는 기능이 작동하지 않습니다."
 
 #. Setting: Virtual
 #. Field: title
 msgid "Virtual"
-msgstr ""
+msgstr "가상"
 
 #. Setting: Virtual
 #. Field: hint
@@ -1561,11 +1617,15 @@ msgid ""
 "desktop mode, and it doesnt allow dragging files. Therefore, it will "
 "autodisable in desktop."
 msgstr ""
+"에뮬레이션된 터치패드를 추가합니다. 이 터치패드는 게임스코프에서 사용하도록 "
+"설계되었으며 기본적으로 왼쪽 및 오른쪽 클릭을 지원합니다. 하지만 데스크톱 "
+"모드에서는 문제가 발생하고 파일 드래그를 지원하지 않습니다. 따라서 데스크톱 "
+"모드에서는 자동으로 비활성화됩니다."
 
 #. Setting: Disable on Desktop
 #. Field: title
 msgid "Disable on Desktop"
-msgstr ""
+msgstr "바탕 화면에서 비활성화"
 
 #. Setting: Disable on Desktop
 #. Field: hint
@@ -1574,38 +1634,41 @@ msgid ""
 "Specifically, steam will be periodically be checked to be running in gamepad "
 "mode and if not, touchpad emulation will be disabled."
 msgstr ""
+"게임 모드가 아닐 때는 터치패드 에뮬레이션이 자동으로 비활성화됩니다. "
+"구체적으로, Steam이 게임패드 모드로 실행 중인지 주기적으로 확인하고, 그렇지 "
+"않은 경우 터치패드 에뮬레이션이 비활성화됩니다."
 
 #. Setting: Short Action
 #. Field: title
 msgid "Short Action"
-msgstr ""
+msgstr "Short Action"
 
 #. Setting: Short Action
 #. Field: hint
 msgid "Maps short touches (less than 0.2s) to a virtual touchpad button."
-msgstr ""
+msgstr "짧은 터치(0.2초 미만)를 가상 터치패드 버튼에 매핑합니다."
 
 #. Setting: Short Action
 #. Option: left_click
 #. Setting: Hold Action
 msgid "Left Click"
-msgstr ""
+msgstr "좌 클릭"
 
 #. Setting: Short Action
 #. Option: right_click
 #. Setting: Hold Action
 msgid "Right Click"
-msgstr ""
+msgstr "우 클릭"
 
 #. Setting: Hold Action
 #. Field: title
 msgid "Hold Action"
-msgstr ""
+msgstr "Hold Action"
 
 #. Setting: Hold Action
 #. Field: hint
 msgid "Maps long touches (more than 2s) to a virtual touchpad button."
-msgstr ""
+msgstr "2초 이상 길게 터치하는 동작을 가상 터치패드 버튼에 매핑합니다."
 
 #. Setting: Controller
 #. Field: hint
@@ -1615,11 +1678,15 @@ msgid ""
 "used as steam input, so short press is unassigned by default and long press "
 "simulates trackpad click."
 msgstr ""
+"에뮬레이션된 컨트롤러의 터치패드(존재하는 경우)를 사용합니다. 그렇지 않으면 "
+"터치패드는 매핑되지 않은 상태로 유지됩니다(시스템에는 계속 표시됩니다). 스팀 "
+"입력으로 사용하도록 설계되었으므로 짧게 누르면 기본적으로 할당되지 않고 길게 "
+"누르면 트랙패드 클릭을 시뮬레이션합니다."
 
 #. Setting: Location
 #. Field: title
 msgid "Location"
-msgstr ""
+msgstr "Location"
 
 #. Setting: Location
 #. Field: hint
@@ -1633,16 +1700,24 @@ msgid ""
 "right is right. \"Stretch\" stretches the touchpad to the whole dualsense "
 "surface."
 msgstr ""
+"Steam에서 요구하는 방식에 따라 실제 터치패드의 위치를 가상 터치패드에 맞게 "
+"조정합니다. Steam에서는 \"왼쪽\" 터치패드는 왼쪽 절반, \"오른쪽\" 터치패드는 "
+"오른쪽 절반, \"중앙\"은 전체 터치패드에 매핑됩니다. 따라서 \"왼쪽\"으로 "
+"설정하면 가상 터치패드의 왼쪽 부분이 잘리고, \"오른쪽\"으로 설정하면 오른쪽 "
+"부분이 잘리고, \"중앙\"으로 설정하면 가운데 부분이 확장됩니다. 즉, "
+"\"중앙\"으로 설정하면 왼쪽 터치패드의 절반이 왼쪽에, 오른쪽 터치패드의 "
+"절반이 오른쪽에 표시됩니다. \"늘리기\"는 터치패드를 DualSense 컨트롤러 전체 "
+"표면에 걸쳐 확장합니다."
 
 #. Setting: Location
 #. Option: center
 msgid "Center"
-msgstr ""
+msgstr "중앙"
 
 #. Setting: Location
 #. Option: stretch
 msgid "Stretch"
-msgstr ""
+msgstr "두손가락 벌리기"
 
 #. Setting: Short Action
 #. Field: hint
@@ -1651,6 +1726,10 @@ msgid ""
 "physical press for left and a double tap for right click (support for double "
 "tap varies; enable \"Tap to Click\" in your desktop's touchpad settings)."
 msgstr ""
+"짧은 터치(0.2초 미만)를 터치패드 동작에 매핑합니다. Dualsense는 물리적인 "
+"누름을 왼쪽 클릭으로, 두 번 탭하는 것을 오른쪽 클릭으로 사용합니다(두 번 탭 "
+"지원 여부는 기기에 따라 다를 수 있으므로 데스크톱 터치패드 설정에서 \"탭하여 "
+"클릭\"을 활성화하세요)."
 
 #. Setting: Hold Action
 #. Field: hint
@@ -1659,164 +1738,168 @@ msgid ""
 "physical press for left and a double tap for right click (support for double "
 "tap varies; enable \"Tap to Click\" in your desktop's touchpad settings)."
 msgstr ""
+"2초 이상 길게 터치하는 동작을 터치패드 동작에 매핑합니다. 듀얼센스는 "
+"물리적으로 한 번 누르면 왼쪽 클릭, 두 번 탭하면 오른쪽 클릭이 됩니다(두 번 "
+"탭 지원 여부는 기기에 따라 다를 수 있으므로 데스크톱 터치패드 설정에서 "
+"\"탭하여 클릭\"을 활성화하세요)."
 
 msgid "Downloading:"
-msgstr ""
+msgstr "다운로드 중:"
 
 msgid "Importing:"
-msgstr ""
+msgstr "가져오는중:"
 
 msgid "Deploying:"
-msgstr ""
+msgstr "배포중:"
 
 msgid "Loading"
-msgstr ""
+msgstr "로딩중"
 
 msgid "No update available"
-msgstr ""
+msgstr "업데이트할 내용 없음"
 
 msgid "Updating to latest "
-msgstr ""
+msgstr "최신 버전으로 업데이트 중 "
 
 msgid "Updating... "
-msgstr ""
+msgstr "업데이트중... "
 
 msgid "Checking for updates..."
-msgstr ""
+msgstr "업데이트를 확인하는 중..."
 
 msgid "Undoing Update..."
-msgstr ""
+msgstr "업데이트 취소 중..."
 
 msgid "Undoing Revert..."
-msgstr ""
+msgstr "되돌리기 취소 중..."
 
 msgid "Reverting to Previous version..."
-msgstr ""
+msgstr "이전 버전으로 되돌리는 중..."
 
 msgid "Loading Versions..."
-msgstr ""
+msgstr "버전 불러오는 중..."
 
 msgid "Removing Customizations..."
-msgstr ""
+msgstr "사용자 지정 설정 제거 중..."
 
 msgid "Failed to load previous versions"
-msgstr ""
+msgstr "이전 버전을 불러오는 데 실패했습니다"
 
 msgid "Rebasing to "
-msgstr ""
+msgstr "재기준화 "
 
 msgid "Update error. Using alternative method... "
-msgstr ""
+msgstr "업데이트 오류입니다. 다른 방법을 사용합니다... "
 
 #. Setting: Show updates in SteamUI
 #. Field: title
 msgid "Show updates in SteamUI"
-msgstr ""
+msgstr "SteamUI에서 업데이트 표시"
 
 #. Setting: System Image
 #. Field: title
 msgid "System Image"
-msgstr ""
+msgstr "시스템 이미지"
 
 #. Setting: System Image
 #. Field: hint
 msgid "Manage the currently installed image with bootc."
-msgstr ""
+msgstr "bootc를 사용하여 현재 설치된 이미지를 관리하세요."
 
 #. Setting: Image
 #. Field: title
 msgid "Image"
-msgstr ""
+msgstr "이미지"
 
 #. Setting: Next
 #. Field: title
 msgid "Next"
-msgstr ""
+msgstr "다음"
 
 #. Setting: Current
 #. Field: title
 msgid "Current"
-msgstr ""
+msgstr "현재"
 
 #. Setting: Previous
 #. Field: title
 msgid "Previous"
-msgstr ""
+msgstr "이전"
 
 #. Setting: Update
 #. Field: title
 msgid "Update"
-msgstr ""
+msgstr "업데이트"
 
 #. Setting: Update Stage
 #. Field: title
 msgid "Update Stage"
-msgstr ""
+msgstr "업데이트 단계"
 
 #. Setting: Apply Update
 #. Field: title
 msgid "Apply Update"
-msgstr ""
+msgstr "업데이트 적용"
 
 #. Setting: Revert to Previous
 #. Field: title
 msgid "Revert to Previous"
-msgstr ""
+msgstr "이전 버전으로 되돌리기"
 
 #. Setting: Revert to Previous
 #. Field: hint
 msgid "Rollback to the previous image."
-msgstr ""
+msgstr "이전 이미지로 되돌리기."
 
 #. Setting: Change Version (Rebase)
 #. Field: title
 msgid "Change Version (Rebase)"
-msgstr ""
+msgstr "버전 변경(리베이스)"
 
 #. Setting: Remove Pin and Update
 #. Field: title
 msgid "Remove Pin and Update"
-msgstr ""
+msgstr "Pin을 제거하고 업데이트하세요"
 
 #. Setting: Change Branch (Rebase)
 #. Field: title
 msgid "Change Branch (Rebase)"
-msgstr ""
+msgstr "브랜치 변경(리베이스)"
 
 #. Setting: Check for Updates
 #. Field: title
 msgid "Check for Updates"
-msgstr ""
+msgstr "업데이트 확인"
 
 #. Setting: Reboot
 #. Field: title
 msgid "Reboot"
-msgstr ""
+msgstr "재부팅"
 
 #. Setting: Reboot
 #. Field: hint
 msgid "Reboot to apply the update. Are you sure?"
-msgstr ""
+msgstr "업데이트를 적용하려면 재부팅하세요. 재부팅합니까?"
 
 #. Setting: Undo Update
 #. Field: title
 msgid "Undo Update"
-msgstr ""
+msgstr "업데이트 취소"
 
 #. Setting: Undo Revert
 #. Field: title
 msgid "Undo Revert"
-msgstr ""
+msgstr "실행 취소 되돌리기"
 
 #. Setting: Choose Version (Rebase)
 #. Field: title
 msgid "Choose Version (Rebase)"
-msgstr ""
+msgstr "버전 선택(리베이스)"
 
 #. Setting: Run rpm-ostree reset
 #. Field: title
 msgid "Run rpm-ostree reset"
-msgstr ""
+msgstr "rpm-ostree 리셋 실행"
 
 #. Setting: Run rpm-ostree reset
 #. Field: hint
@@ -1824,108 +1907,110 @@ msgid ""
 "Disable the custom initramfs and remove layers. Your personal data will not "
 "be affected."
 msgstr ""
+"사용자 지정 initramfs를 비활성화하고 레이어를 제거하세요. 개인 데이터는 "
+"영향을 받지 않습니다."
 
 #. Setting: Cancel
 #. Field: title
 msgid "Cancel"
-msgstr ""
+msgstr "취소"
 
 #. Setting: Branch
 #. Field: title
 msgid "Branch"
-msgstr ""
+msgstr "브런치"
 
 #. Setting: Version Pin
 #. Field: title
 msgid "Version Pin"
-msgstr ""
+msgstr "버전 Pin"
 
 #. Setting: Apply
 #. Field: title
 msgid "Apply"
-msgstr ""
+msgstr "적용"
 
 msgid "Uploading log to fpaste..."
-msgstr ""
+msgstr "fpaste에 로그를 업로드하는 중..."
 
 msgid "Shutting down..."
-msgstr ""
+msgstr "시스템 종료 중..."
 
 msgid "Failed to download Handheld Daemon Beta."
-msgstr ""
+msgstr "Handheld Daemon 베타 버전을 다운로드하는 데 실패했습니다."
 
 msgid "Downloading Beta and Restarting..."
-msgstr ""
+msgstr "베타 버전을 다운로드하고 재시작하는 중..."
 
 #. Setting: Bug Report
 #. Field: title
 msgid "Bug Report"
-msgstr ""
+msgstr "버그 리포트"
 
 #. Setting: Bug Report Link
 #. Field: title
 msgid "Bug Report Link"
-msgstr ""
+msgstr "버그 리포트 링크"
 
 #. Setting: Upload Error
 #. Field: title
 msgid "Upload Error"
-msgstr ""
+msgstr "업로드 오류"
 
 #. Setting: Submit Report
 #. Field: title
 msgid "Submit Report"
-msgstr ""
+msgstr "리포트 제출"
 
 #. Setting: Submit Report
 #. Field: hint
 msgid "Upload a bug report to paste.centos.org"
-msgstr ""
+msgstr "버그 리포트를 paste.centos.org에 업로드"
 
 #. Setting: Logs from
 #. Field: title
 msgid "Logs from"
-msgstr ""
+msgstr "로그 출처"
 
 #. Setting: Logs from
 #. Option: current
 msgid "Current Boot"
-msgstr ""
+msgstr "현재 부팅"
 
 #. Setting: Logs from
 #. Option: previous
 msgid "Previous Boot (-1)"
-msgstr ""
+msgstr "이전 부팅(-1)"
 
 #. Setting: Logs from
 #. Option: m2
 msgid "Boot -2"
-msgstr ""
+msgstr "Boot -2"
 
 #. Setting: Logs from
 #. Option: m3
 msgid "Boot -3"
-msgstr ""
+msgstr "Boot -3"
 
 #. Setting: Development Tools
 #. Field: title
 msgid "Development Tools"
-msgstr ""
+msgstr "개발 도구"
 
 #. Setting: Use HHD Beta Until Restart
 #. Field: title
 msgid "Use HHD Beta Until Restart"
-msgstr ""
+msgstr "재시작할 때까지 HHD 베타 버전을 사용"
 
 #. Setting: Use HHD Beta Until Restart
 #. Field: hint
 msgid "Switch to the HHD beta channel until you restart."
-msgstr ""
+msgstr "재부팅할 때까지 HHD 베타 채널로 전환하세요."
 
 #. Setting: Go Back to Stable
 #. Field: title
 msgid "Go Back to Stable"
-msgstr ""
+msgstr "Stable으로 돌아가기"
 
 #. Setting: System
 #. Field: hint
@@ -1933,6 +2018,8 @@ msgid ""
 "Basic display settings. Brightness (and framerate TBD). This pane is meant "
 "to replace "
 msgstr ""
+"기본 디스플레이 설정입니다. 밝기(및 프레임률 TBD). 이 창은 이전 창을 "
+"대체하기 위한 것입니다. "
 
 #. Setting: Brightness
 #. Field: hint
@@ -1940,46 +2027,48 @@ msgid ""
 "Sets the brightness level of a display. Only one display is supported and it "
 "is the one that was read."
 msgstr ""
+"디스플레이의 밝기 수준을 설정합니다. 하나의 디스플레이만 지원되며, 현재 "
+"연결된 디스플레이만 지원됩니다."
 
 #. Setting: Display
 #. Field: title
 msgid "Display"
-msgstr ""
+msgstr "디스플레이"
 
 #. Setting: Disable Touchscreen (Until Restart)
 #. Field: title
 msgid "Disable Touchscreen (Until Restart)"
-msgstr ""
+msgstr "터치스크린 비활성화 (재부팅 전까지)"
 
 #. Setting: Disable Touch Gestures (Until Restart)
 #. Field: title
 msgid "Disable Touch Gestures (Until Restart)"
-msgstr ""
+msgstr "터치 제스처를 비활성화합니다(재시작할 때까지)"
 
 #. Setting: Gamescope
 #. Field: title
 msgid "Gamescope"
-msgstr ""
+msgstr "Gamescope"
 
 #. Setting: Run Steam at 60/72 Hz
 #. Field: title
 msgid "Run Steam at 60/72 Hz"
-msgstr ""
+msgstr "Steam을 60/72Hz로 실행"
 
 #. Setting: Poweroff screen before sleep
 #. Field: title
 msgid "Poweroff screen before sleep"
-msgstr ""
+msgstr "Sleep 전에 화면을 끄세요"
 
 #. Setting: Device Buttons
 #. Field: title
 msgid "Device Buttons"
-msgstr ""
+msgstr "기기 버튼"
 
 #. Setting: Armoury Crate
 #. Field: title
 msgid "Armoury Crate"
-msgstr ""
+msgstr "Armoury Crate"
 
 #. Setting: Armoury Crate
 #. Option: keyboard
@@ -1999,7 +2088,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Keyboard"
-msgstr ""
+msgstr "Steam 키보드"
 
 #. Setting: Armoury Crate
 #. Option: steam_qam
@@ -2019,7 +2108,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Side Menu"
-msgstr ""
+msgstr "Steam 사이드 메뉴"
 
 #. Setting: Armoury Crate
 #. Option: steam_expanded
@@ -2039,7 +2128,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Steam Overlay"
-msgstr ""
+msgstr "Steam 오버레이"
 
 #. Setting: Armoury Crate
 #. Option: hhd_qam
@@ -2059,7 +2148,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "HHD Side Menu"
-msgstr ""
+msgstr "HHD 사이드 메뉴"
 
 #. Setting: Armoury Crate
 #. Option: hhd_expanded
@@ -2079,7 +2168,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "HHD Overlay"
-msgstr ""
+msgstr "HHD 오버레이"
 
 #. Setting: Armoury Crate
 #. Option: tdp_cycle
@@ -2099,176 +2188,176 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Cycle TDP"
-msgstr ""
+msgstr "TDP 사이클"
 
 #. Setting: Fan Key
 #. Field: title
 msgid "Fan Key"
-msgstr ""
+msgstr "팬 Key"
 
 #. Setting: External Controllers
 #. Field: title
 msgid "External Controllers"
-msgstr ""
+msgstr "위부 컨트롤러"
 
 #. Setting: Xbox + Y
 #. Field: title
 msgid "Xbox + Y"
-msgstr ""
+msgstr "Xbox + Y"
 
 #. Setting: Xbox + Y
 #. Option: disconnect
 msgid "Disconnect Controller"
-msgstr ""
+msgstr "컨트롤러 연결 해제"
 
 #. Setting: Xbox + B
 #. Field: title
 msgid "Xbox + B"
-msgstr ""
+msgstr "Xbox + B"
 
 #. Setting: Xbox + A
 #. Field: title
 msgid "Xbox + A"
-msgstr ""
+msgstr "Xbox + A"
 
 #. Setting: Xbox + X
 #. Field: title
 msgid "Xbox + X"
-msgstr ""
+msgstr "Xbox + X"
 
 #. Setting: Use Select as alternative to Xbox
 #. Field: title
 msgid "Use Select as alternative to Xbox"
-msgstr ""
+msgstr "Xbox 대신 Select를 사용하세요"
 
 #. Setting: Touchscreen
 #. Field: title
 msgid "Touchscreen"
-msgstr ""
+msgstr "터치스크린"
 
 #. Setting: ↑ Swipe Up
 #. Field: title
 msgid "↑ Swipe Up"
-msgstr ""
+msgstr "↑ 위로 스와이프"
 
 #. Setting: ← Swipe Right Side (Top)
 #. Field: title
 msgid "← Swipe Right Side (Top)"
-msgstr ""
+msgstr "← 오른쪽 스와이프(상단)"
 
 #. Setting: ← Swipe Right Side (Bottom)
 #. Field: title
 msgid "← Swipe Right Side (Bottom)"
-msgstr ""
+msgstr "← 오른쪽 스와이프(하단)"
 
 #. Setting: → Swipe Left Side (Top)
 #. Field: title
 msgid "→ Swipe Left Side (Top)"
-msgstr ""
+msgstr "→ 왼쪽 스와이프 (상단)"
 
 #. Setting: → Swipe Left Side (Bottom)
 #. Field: title
 msgid "→ Swipe Left Side (Bottom)"
-msgstr ""
+msgstr "→ 왼쪽 스와이프 (하단)"
 
 #. Setting: ↓ Swipe Down
 #. Field: title
 msgid "↓ Swipe Down"
-msgstr ""
+msgstr "↓ 아래로 스와이프"
 
 #. Setting: Orientation Correction
 #. Field: title
 msgid "Orientation Correction"
-msgstr ""
+msgstr "방향 수정"
 
 #. Setting: Auto
 #. Field: title
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #. Setting: Device
 #. Field: title
 msgid "Device"
-msgstr ""
+msgstr "장치"
 
 #. Setting: Portrait
 #. Field: title
 msgid "Portrait"
-msgstr ""
+msgstr "세로"
 
 #. Setting: Flip Left-Right
 #. Field: title
 msgid "Flip Left-Right"
-msgstr ""
+msgstr "좌우 반전"
 
 #. Setting: Flip Top-Bottom
 #. Field: title
 msgid "Flip Top-Bottom"
-msgstr ""
+msgstr "위아래 반전"
 
 #. Setting: Keyboard (Gaming Only)
 #. Field: title
 msgid "Keyboard (Gaming Only)"
-msgstr ""
+msgstr "키보드(게임 전용)"
 
 #. Setting: Start (Meta) Press
 #. Field: title
 msgid "Start (Meta) Press"
-msgstr ""
+msgstr "Start (Meta) 누르기"
 
 #. Setting: Start (Meta) Hold
 #. Field: title
 msgid "Start (Meta) Hold"
-msgstr ""
+msgstr "Start (Meta) 홀드"
 
 #. Setting: Ctrl + 3
 #. Field: title
 msgid "Ctrl + 3"
-msgstr ""
+msgstr "Ctrl + 3"
 
 #. Setting: Ctrl + 4
 #. Field: title
 msgid "Ctrl + 4"
-msgstr ""
+msgstr "Ctrl + 4"
 
 msgid "Failed to hibernate (missing swap file)."
-msgstr ""
+msgstr "최대 절전 모드에 실패했습니다(스왑 파일이 없습니다)."
 
 msgid "Failed to create temporary swap."
-msgstr ""
+msgstr "임시 스왑 생성에 실패했습니다."
 
 msgid "Failed to hibernate to temporary swap."
-msgstr ""
+msgstr "최대 절전 모드로 전환하여 임시 스왑 영역으로 이동하는 데 실패했습니다."
 
 #. Setting: Power
 #. Field: title
 msgid "Power"
-msgstr ""
+msgstr "파워"
 
 #. Setting: Reboot into Windows
 #. Field: title
 msgid "Reboot into Windows"
-msgstr ""
+msgstr "Windows로 재부팅"
 
 #. Setting: Reboot into Windows
 #. Field: hint
 msgid "Make sure you saved your game progress."
-msgstr ""
+msgstr "게임 진행 상황을 저장했는지 확인하세요."
 
 #. Setting: Hibernate
 #. Field: title
 msgid "Hibernate"
-msgstr ""
+msgstr "절전 모드"
 
 #. Setting: Hibernate
 #. Field: hint
 msgid "Saves your progress and powers off the device."
-msgstr ""
+msgstr "진행 상황을 저장하고 기기의 전원을 끕니다."
 
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: title
 msgid "Hibernate when device asks and at 5%."
-msgstr ""
+msgstr "기기에서 요청할 때와 배터리 잔량이 5%에 도달하면 최대 절전 모드로 전환합니다."
 
 #. Setting: Hibernate when device asks and at 5%.
 #. Field: hint
@@ -2277,163 +2366,167 @@ msgid ""
 "they cause issues. Detect and hibernate on thermal events and on 5%\n"
 "battery.\n"
 msgstr ""
+"일부 장치는 Windows를 최대 절전 모드로 강제로 전환하기 위해 깨어납니다. \n"
+"Linux에서 이러한 기능을 지원하지 않으면 문제가 발생합니다.\n"
+"온도 감지 및 배터리 잔량 5% 미만일 때 최대 절전 모드로 전환하도록 "
+"설정하십시오.\n"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: title
 msgid "Steam Powerbutton Handler"
-msgstr ""
+msgstr "Steam 전원 버튼 핸들러"
 
 #. Setting: Steam Powerbutton Handler
 #. Field: hint
 msgid ""
 "Enables the Steam Powerbutton handler (responsible for the wink and "
 "powerbutton menu)."
-msgstr ""
+msgstr "Steam 전원 버튼 핸들러(윙크 및 전원 버튼 메뉴 담당)를 활성화합니다."
 
 #. Setting: Saturation
 #. Field: title
 msgid "Saturation"
-msgstr ""
+msgstr "채도"
 
 #. Setting: Style
 #. Field: title
 msgid "Style"
-msgstr ""
+msgstr "스타일"
 
 #. Setting: Style
 #. Option: monster_woke
 msgid "Monster Woke"
-msgstr ""
+msgstr "몬스터가 깨어났다"
 
 #. Setting: Style
 #. Option: flowing
 msgid "Flowing Light"
-msgstr ""
+msgstr "흐르는 빛"
 
 #. Setting: Style
 #. Option: sunset
 msgid "Sunset Afterglow"
-msgstr ""
+msgstr "석양의 여운"
 
 #. Setting: Style
 #. Option: neon
 msgid "Colorful Neon"
-msgstr ""
+msgstr "다채로운 네온"
 
 #. Setting: Style
 #. Option: dreamy
 msgid "Dreamy"
-msgstr ""
+msgstr "꿈꾸는 듯한"
 
 #. Setting: Style
 #. Option: cyberpunk
 msgid "Cyberpunk"
-msgstr ""
+msgstr "사이버펑크"
 
 #. Setting: Style
 #. Option: colorful
 msgid "Colorful"
-msgstr ""
+msgstr "화려한"
 
 #. Setting: Style
 #. Option: aurora
 msgid "Aurora"
-msgstr ""
+msgstr "오로라"
 
 #. Setting: Style
 #. Option: sun
 msgid "Warm Sun"
-msgstr ""
+msgstr "따뜻한 햇살"
 
 #. Setting: Style
 #. Option: classic
 msgid "OXP Classic"
-msgstr ""
+msgstr "OXP 클래식"
 
 #. Setting: Style
 #. Option: aok
 msgid "AOK Classic"
-msgstr ""
+msgstr "AOK 클래식"
 
 #. Setting: Secondary
 #. Field: title
 msgid "Secondary"
-msgstr ""
+msgstr "Secondary"
 
 #. Setting: Enable Secondary
 #. Field: title
 msgid "Enable Secondary"
-msgstr ""
+msgstr "Secondary 활성화"
 
 #. Setting: Speed
 #. Field: title
 msgid "Speed"
-msgstr ""
+msgstr "스피드"
 
 #. Setting: Direction
 #. Field: title
 msgid "Direction"
-msgstr ""
+msgstr "방향"
 
 #. Setting: Strobe
 #. Field: title
 msgid "Strobe"
-msgstr ""
+msgstr "스트로브"
 
 #. Setting: Strobe
 #. Field: hint
 msgid "Strobes the LEDs as a prespecified color."
-msgstr ""
+msgstr "미리 지정된 색상으로 LED를 깜빡입니다."
 
 #. Setting: Spiral
 #. Field: title
 msgid "Spiral"
-msgstr ""
+msgstr "나선"
 
 #. Setting: Spiral
 #. Field: hint
 msgid "Creates an RGB spiral around the stick."
-msgstr ""
+msgstr "막대 주위에 RGB 나선형 무늬를 만듭니다."
 
 #. Setting: Cycle
 #. Field: title
 msgid "Cycle"
-msgstr ""
+msgstr "주기"
 
 #. Setting: Duality
 #. Field: title
 msgid "Duality"
-msgstr ""
+msgstr "이중성"
 
 #. Setting: Duality
 #. Field: hint
 msgid "Alternates between two colors."
-msgstr ""
+msgstr "두 가지 색상이 번갈아 나타납니다."
 
 #. Setting: OneXPlayer
 #. Field: title
 msgid "OneXPlayer"
-msgstr ""
+msgstr "OneXPlayer"
 
 #. Setting: AOKZOE
 #. Field: title
 msgid "AOKZOE"
-msgstr ""
+msgstr "AOKZOE"
 
 #. Setting: RGB Settings
 #. Field: title
 msgid "RGB Settings"
-msgstr ""
+msgstr "RGB 셋팅"
 
 #. Setting: Controller RGB
 #. Field: title
 msgid "Controller RGB"
-msgstr ""
+msgstr "컨트롤러 RGB"
 
 #. Setting: Enable RGB support.
 #. Field: title
 msgid "Enable RGB support."
-msgstr ""
+msgstr "RGB 지원 활성화."
 
 #~ msgid ""
 #~ "It is no longer possible to update Decky from here. If you see this, "
