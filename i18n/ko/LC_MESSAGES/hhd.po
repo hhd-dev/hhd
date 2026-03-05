@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2026-03-04 09:59+0000\n"
-"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
+"PO-Revision-Date: 2026-03-05 01:36+0000\n"
+"Last-Translator: 날으는구퓌 <sana2dang@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/hhd/hhd/ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
@@ -57,7 +57,7 @@ msgstr "버그 리포트"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
-msgstr "Shortcuts"
+msgstr "바로가기"
 
 #. Section Name for: hhd
 msgid "Settings"
@@ -258,7 +258,7 @@ msgstr "끔"
 #. Setting: Vibration
 #. Setting: Speed
 msgid "Low"
-msgstr "약하게"
+msgstr "낮은"
 
 #. Setting: Brightness
 #. Option: medium
@@ -274,7 +274,7 @@ msgstr "중간"
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "High"
-msgstr "강하게"
+msgstr "높은"
 
 #. Setting: RGB Power Settings
 #. Field: title
@@ -299,7 +299,7 @@ msgstr "깨어있는"
 #. Setting: Sleep while Charging
 #. Field: title
 msgid "Sleep while Charging"
-msgstr "충전 중 Sleep"
+msgstr "충전 중 슬립"
 
 #. Setting: Shutdown
 #. Field: title
@@ -2332,7 +2332,7 @@ msgstr "최대 절전 모드로 전환하여 임시 스왑 영역으로 이동�
 #. Setting: Power
 #. Field: title
 msgid "Power"
-msgstr "Power"
+msgstr "파워"
 
 #. Setting: Reboot into Windows
 #. Field: title
