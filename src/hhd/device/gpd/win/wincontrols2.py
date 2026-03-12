@@ -134,11 +134,12 @@ BUTTONS_TRIGGERS_DEFAULT = {
     "rt": "mouse_fast",
 }
 
+# LT/RT are not connected to the mouse board
 BUTTONS_TRIGGERS_STEAMOS = {
-    "lb": "mouse_middle",
-    "rb": "mouse_fast",
-    "lt": "mouse_right",
-    "rt": "mouse_left",
+    "lb": "mouse_right",
+    "rb": "mouse_left",
+    "lt": "mouse_middle",
+    "rt": "mouse_fast",
 }
 
 # Device default: BB1=leftctrl+leftshift macro, BB2=f3, hold=50ms

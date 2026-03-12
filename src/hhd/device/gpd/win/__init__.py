@@ -214,6 +214,12 @@ class GpdWinControlsPlugin(HHDPlugin):
 
         ver = self.dconf.get("wincontrols", None)
         if ver == "v2":
+            base["wincontrols"]["wincontrols"]["children"]["mouse_mode_triggers"]["options"]["gpd"] = (
+                _("GPD (LB/RB are L/R Clicks)")
+            )
+            base["wincontrols"]["wincontrols"]["children"]["mouse_mode_triggers"]["options"][
+                "steamos"
+            ] = _("SteamOS (LB/RB are R/L Clicks)")
             base["wincontrols"]["wincontrols"]["children"]["l4r4"]["options"]["hhd"] = (
                 _("For HHD (F15/F14)")
             )
