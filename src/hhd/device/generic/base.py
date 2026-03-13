@@ -276,6 +276,8 @@ def controller_loop(
             d_rgb.consume(evs)
             for d in d_outs:
                 d.consume(evs)
+            if d_imu:
+                d_imu.consume(evs)
 
             t = time.perf_counter()
             elapsed = t - start
