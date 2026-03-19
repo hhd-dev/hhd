@@ -1,7 +1,10 @@
 from .conf import Config
 from .inputs import gen_gyro_state, get_gyro_config, get_gyro_state, get_touchpad_config
 from .outputs import (
+    fix_hall_interference,
     fix_limits,
+    get_hall_interference,
+    get_hall_interference_config,
     get_limits,
     get_limits_config,
     get_outputs,
@@ -39,7 +42,10 @@ __all__ = [
     "HHDLocale",
     "HHDLocaleRegister",
     "get_limits_config",
+    "get_hall_interference_config",
     "get_limits",
+    "get_hall_interference",
     "get_gid",
     "fix_limits",
+    "fix_hall_interference",
 ]
