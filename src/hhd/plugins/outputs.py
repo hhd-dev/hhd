@@ -358,6 +358,18 @@ def get_limits_config(defaults: dict[str, int] = {}):
     return s
 
 
+def get_hall_interference_config(defaults: dict[str, float | bool] = {}):
+    s = load_relative_yaml("hall_interference.yml")
+    hall = s["modes"]["manual"]["children"]
+    hall["ls_idle_x"]["default"] = defaults["ls_idle_x"]
+    hall["lt_corr_x"]["default"] = defaults["lt_corr_x"]
+    hall["rs_idle_x"]["default"] = defaults["rs_idle_x"]
+    hall["ls_deadzone"]["default"] = defaults["ls_deadzone"]
+    hall["rs_deadzone"]["default"] = defaults["rs_deadzone"]
+    hall["remap_deadzone"]["default"] = bool(defaults["remap_deadzone"])
+    return s
+
+
 def get_limits(conf, defaults={}):
     if conf["mode"].to(str) != "manual":
         return defaults
@@ -367,6 +379,12 @@ def get_limits(conf, defaults={}):
         if kconf[f"{set}_min"].to(int) > kconf[f"{set}_max"].to(int):
             kconf[f"{set}_min"] = kconf[f"{set}_max"].to(int)
     return kconf.to(dict)
+
+
+def get_hall_interference(conf, defaults={}):
+    if conf["mode"].to(str) != "manual":
+        return defaults
+    return conf["manual"].to(dict)
 
 
 def fix_limits(conf, prefix: str, defaults: dict[str, int] = {}):
@@ -392,4 +410,18 @@ def fix_limits(conf, prefix: str, defaults: dict[str, int] = {}):
                 conf[f"{prefix}.manual.{set}{comp}_max"] = defaults.get(
                     f"{comp}_max", 95
                 )
+        conf[f"{prefix}.manual.reset"] = False
+
+
+def fix_hall_interference(conf, prefix: str, defaults: dict[str, float | bool] = {}):
+    if conf[f"{prefix}.mode"].to(str) != "manual":
+        return {}
+
+    if conf[f"{prefix}.manual.reset"].to(bool):
+        conf[f"{prefix}.manual.ls_idle_x"] = defaults["ls_idle_x"]
+        conf[f"{prefix}.manual.lt_corr_x"] = defaults["lt_corr_x"]
+        conf[f"{prefix}.manual.rs_idle_x"] = defaults["rs_idle_x"]
+        conf[f"{prefix}.manual.ls_deadzone"] = defaults["ls_deadzone"]
+        conf[f"{prefix}.manual.rs_deadzone"] = defaults["rs_deadzone"]
+        conf[f"{prefix}.manual.remap_deadzone"] = bool(defaults["remap_deadzone"])
         conf[f"{prefix}.manual.reset"] = False

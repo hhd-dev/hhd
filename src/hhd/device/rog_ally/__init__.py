@@ -7,7 +7,9 @@ from hhd.plugins import (
     Emitter,
     Event,
     HHDPlugin,
+    fix_hall_interference,
     load_relative_yaml,
+    get_hall_interference_config,
     get_outputs_config,
     get_limits_config,
     fix_limits,
@@ -40,7 +42,7 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.prev = None
 
     def settings(self) -> HHDSettings:
-        from .base import LIMIT_DEFAULTS
+        from .base import HALL_DEFAULTS, LIMIT_DEFAULTS
 
         base = {"controllers": {"rog_ally": load_relative_yaml("controllers.yml")}}
         base["controllers"]["rog_ally"]["children"]["controller_mode"].update(
@@ -51,6 +53,9 @@ class RogAllyControllersPlugin(HHDPlugin):
         base["controllers"]["rog_ally"]["children"]["limits"] = get_limits_config(
             LIMIT_DEFAULTS(self.ally_x)
         )
+        base["controllers"]["rog_ally"]["children"][
+            "hall_interference"
+        ] = get_hall_interference_config(HALL_DEFAULTS)
         
         if not self.xbox:
             del base["controllers"]["rog_ally"]["children"]["swap_xbox"]
@@ -58,9 +63,14 @@ class RogAllyControllersPlugin(HHDPlugin):
         return base
 
     def update(self, conf: Config):
-        from .base import LIMIT_DEFAULTS
+        from .base import HALL_DEFAULTS, LIMIT_DEFAULTS
 
         fix_limits(conf, "controllers.rog_ally.limits", LIMIT_DEFAULTS(self.ally_x))
+        fix_hall_interference(
+            conf,
+            "controllers.rog_ally.hall_interference",
+            HALL_DEFAULTS,
+        )
 
         new_conf = conf["controllers.rog_ally"]
         if new_conf == self.prev:
