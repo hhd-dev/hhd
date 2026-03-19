@@ -45,6 +45,7 @@ GPD_CONFS = {
         "wincontrols": "v2",
         "mapping": GPD_WIN_5_MAPPINGS,
         "btn_mapping": GPD_WIN_5_BTN_MAPPINGS,
+        "hid_buttons": True,
     },
     "G1617-01": {
         "name": "GPD Win Mini",
