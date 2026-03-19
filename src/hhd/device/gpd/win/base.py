@@ -21,6 +21,7 @@ from .const import (
     GPD_TOUCHPAD_AXIS_MAP,
     GPD_TOUCHPAD_BUTTON_MAP,
     GPD_WIN_DEFAULT_MAPPINGS,
+    GPD_WIN5_HID_BTN_MAP,
 )
 
 ERROR_DELAY = 0.3
@@ -32,9 +33,10 @@ LONGER_ERROR_MARGIN = 1.3
 logger = logging.getLogger(__name__)
 
 # Old devices were 2f24:0135
+# Win 5 new firmware uses 2f24:0137
 # New 2025 Win mini uses 045e:002d
 GPD_WIN_VIDS = [0x2F24, 0x045E]
-GPD_WIN_PIDS = [0x0135, 0x002D]
+GPD_WIN_PIDS = [0x0135, 0x0137, 0x002D]
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
 
@@ -80,7 +82,6 @@ RIGHT_BUTTONS = {
     EC("KEY_F15"),
     EC("KEY_R")
 }
-
 
 class BackbuttonsEvdev(GenericGamepadEvdev):
     def __init__(self, *args, **kwargs) -> None:
@@ -258,15 +259,28 @@ def controller_loop(
         required=False,
     )
 
-    # Vendor
+    # Vendor back buttons
+    has_hid_buttons = dconf.get("hid_buttons", False)
     d_kbd_1 = BackbuttonsEvdev(
         vid=GPD_WIN_VIDS,
         pid=GPD_WIN_PIDS,
         capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
-        required=True,
+        required=not has_hid_buttons,
         grab=True,
         # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
+
+    # GPD Win 5 new firmware: back buttons via vendor HID report (0x2f24:0x0137)
+    d_hid_btns = None
+    if has_hid_buttons:
+        d_hid_btns = GenericGamepadHidraw(
+            vid=GPD_WIN_VIDS,
+            pid=GPD_WIN_PIDS,
+            usage_page=[0xFF00],
+            interface=0,
+            btn_map=GPD_WIN5_HID_BTN_MAP,
+            required=False,
+        )
 
     grab_at = dconf.get("grab_at", True)
     d_kbd_2 = None
@@ -373,9 +387,13 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
+        hid_btn_fds = []
         if l4r4_enabled:
             kbd_fds = d_kbd_1.open()
             fds.extend(kbd_fds)
+            if d_hid_btns:
+                hid_btn_fds = d_hid_btns.open()
+                fds.extend(hid_btn_fds)
         else:
             kbd_fds = []
         prepare(d_xinput)
@@ -415,14 +433,16 @@ def controller_loop(
             evs = []
             to_run = set()
             for f in r:
-                # skip kbd_1 to always run it
-                if f not in kbd_fds:
+                # skip kbd_1 and hid_btns to always run them
+                if f not in kbd_fds and f not in hid_btn_fds:
                     to_run.add(id(fd_to_dev[f]))
 
             for d in devs:
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
             evs.extend(d_kbd_1.produce(r))
+            if d_hid_btns:
+                evs.extend(d_hid_btns.produce(r))
 
             evs = multiplexer.process(evs)
             if evs:
@@ -458,6 +478,13 @@ def controller_loop(
             logger.error(f"Error while closing device '{d}' with exception:\n{e}")
             if debug:
                 raise e
+        if d_hid_btns:
+            try:
+                d_hid_btns.close(not updated.is_set())
+            except Exception as e:
+                logger.error(f"Error while closing HID buttons with exception:\n{e}")
+                if debug:
+                    raise e
         try:
             d_timer.close()
         except Exception as e:
