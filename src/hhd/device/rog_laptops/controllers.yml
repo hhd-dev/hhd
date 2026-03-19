@@ -1,0 +1,62 @@
+type: container
+tags: [lgc]
+title: Asus Laptop Control
+hint: >-
+  Configuration for Asus ROG Laptops (Fans, Lighting).
+
+children:
+  slash_lighting:
+    type: bool
+    title: Slash Lighting
+    tags: [rog_slash]
+    hint: >-
+      Enable or disable the Slash Lighting on the lid of the laptop.
+    default: true
+
+  slash_pattern:
+    type: mode
+    title: Slash Pattern
+    tags: [rog_slash]
+    default: Flow
+    hint: Set the Slash Lighting animation pattern.
+    modes:
+      Flow: { type: container, title: Flow, children: {} }
+      Bounce: { type: container, title: Bounce, children: {} }
+      Slash: { type: container, title: Slash, children: {} }
+      Loading: { type: container, title: Loading, children: {} }
+      BitStream: { type: container, title: BitStream, children: {} }
+      Transmission: { type: container, title: Transmission, children: {} }
+      Flux: { type: container, title: Flux, children: {} }
+      Phantom: { type: container, title: Phantom, children: {} }
+      Spectrum: { type: container, title: Spectrum, children: {} }
+      Hazard: { type: container, title: Hazard, children: {} }
+      Interfacing: { type: container, title: Interfacing, children: {} }
+      Ramp: { type: container, title: Ramp, children: {} }
+      GameOver: { type: container, title: Game Over, children: {} }
+      Start: { type: container, title: Start, children: {} }
+      Buzzer: { type: container, title: Buzzer, children: {} }
+
+  slash_speed:
+    type: discrete
+    title: Slash Speed
+    tags: [rog_slash]
+    options: [Slow, Normal, Fast, Turbo]
+    default: Normal
+    hint: Set the animation speed.
+
+  slash_brightness:
+    type: discrete
+    title: Slash Brightness
+    tags: [rog_slash]
+    options: [Low, Medium, High, Max]
+    default: Medium
+    hint: Create a custom brightness level.
+
+  fan_mode:
+    type: discrete
+    title: Fan Control Mode
+    tags: [rog_fan]
+    options: [Auto, Quiet, Performance, Max]
+    default: Auto
+    hint: >-
+      Set fan control mode. Auto uses BIOS defaults. Quiet reduces fan noise. Performance increases cooling. Max sets fans to full speed.
