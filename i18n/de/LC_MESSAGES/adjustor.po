@@ -8,19 +8,21 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-03-26 00:09+0000\n"
+"Last-Translator: \"Sebastian L[bke\" <weblate@luebke.dev>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/hhd/adjustor/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 5.17-dev\n"
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
 msgstr ""
+"Deaktiviere Decky-TDP-Plugins mit der Schaltfläche unten, um fortzufahren."
 
 #. Setting: TDP Controls
 #. Field: title
@@ -77,11 +79,15 @@ msgid ""
 "device changes (ac/dc).\n"
 "If the device crashes, TDP setting will be disabled on next startup."
 msgstr ""
+"Aktiviert die TDP-Verwaltung durch den Handheld-Daemon. Wenn aktiviert, "
+"setzt und hält der Handheld-Daemon die beim Start und bei anderen "
+"Geräteänderungen (AC/DC) festgelegten TDP-Grenzwerte aufrecht. Wenn das "
+"Gerät abstürzt, wird die TDP-Einstellung beim nächsten Start deaktiviert."
 
 #. Setting: Enforce Device TDP Limits
 #. Field: title
 msgid "Enforce Device TDP Limits"
-msgstr ""
+msgstr "Geräte-TDP-Limits erzwingen"
 
 #. Setting: Enforce Device TDP Limits
 #. Field: hint
@@ -94,30 +100,38 @@ msgid ""
 "All settings outside specifications will be set to system specifications "
 "after rebooting."
 msgstr ""
+"Wenn diese Option aktiviert ist, werden die Einstellungen an die vom "
+"Gerätehersteller festgelegten Grenzen gehalten, sofern diese verfügbar sind. "
+"Wenn sie deaktiviert ist, erweitern sich die TDP-Einstellungsbereiche auf "
+"das, was für das aktuelle Gerät logisch möglich ist (unabhängig von den "
+"Herstellerspezifikationen). Alle Einstellungen außerhalb der Spezifikationen "
+"werden nach einem Neustart auf die Systemspezifikationen zurückgesetzt."
 
 msgid "Steam is controlling TDP"
-msgstr ""
+msgstr "Steam steuert die TDP"
 
 #. Setting: Asus TDP
 #. Field: title
 msgid "Asus TDP"
-msgstr ""
+msgstr "Asus TPD"
 
 #. Setting: Asus TDP
 #. Field: hint
 #. Setting: MSI TDP
 msgid "Uses the interface of Armory Crate to set the TDP of the device."
 msgstr ""
+"Verwendet die Benutzeroberfläche von Armory Crate, um den TDP des Geräts "
+"festzulegen."
 
 #. Setting: TDP Mode
 #. Field: title
 msgid "TDP Mode"
-msgstr ""
+msgstr "TDP Modus"
 
 #. Setting: Silent
 #. Field: title
 msgid "Silent"
-msgstr ""
+msgstr "still"
 
 #. Setting: Performance
 #. Field: title
@@ -126,22 +140,22 @@ msgstr ""
 #. Setting: Platform Profile
 #. Setting: Energy Policy
 msgid "Performance"
-msgstr ""
+msgstr "Leistung"
 
 #. Setting: Turbo
 #. Field: title
 msgid "Turbo"
-msgstr ""
+msgstr "Turbo"
 
 #. Setting: Custom
 #. Field: title
 msgid "Custom"
-msgstr ""
+msgstr "Benutzerdefiniert"
 
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr ""
+msgstr "TPD"
 
 #. Setting: TDP
 #. Field: hint
@@ -149,11 +163,13 @@ msgid ""
 "Average TDP Target. TDP Boost is recommended for desktop use and does not "
 "affect gaming."
 msgstr ""
+"Durchschnittliches TDP-Ziel. TDP-Boost wird für die Desktop-Nutzung "
+"empfohlen und hat keinen Einfluss auf das Spielen."
 
 #. Setting: TDP Boost
 #. Field: title
 msgid "TDP Boost"
-msgstr ""
+msgstr "TDP Boost"
 
 #. Setting: TDP Boost
 #. Field: hint
@@ -161,11 +177,13 @@ msgid ""
 "Allows the device to temporarily boost by setting appropriate slow and fast "
 "TDPs."
 msgstr ""
+"Ermöglicht es dem Gerät, vorübergehend einen Boost zu nutzen, indem "
+"geeignete langsame und schnelle TDP-Werte festgelegt werden."
 
 #. Setting:
 #. Field: title
 msgid " "
-msgstr ""
+msgstr " "
 
 #. Setting: Change TDP with View+Y
 #. Field: title
