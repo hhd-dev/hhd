@@ -17,6 +17,20 @@ children:
       disabled: Unset
     default: disabled
 
+  charge_once:
+    type: action
+    title: Charge to 100% Once
+    tags: [ non-essential ]
+    hint: >-
+      Temporarily disables the charge limit until the charger is unplugged.
+
+  charge_once_restore:
+    type: action
+    title: Restore Charge Limit
+    tags: [ non-essential ]
+    hint: >-
+      Re-enables the charge limit now, before unplugging.
+
   charge_bypass:
     type: multiple
     title: Charge Bypass
