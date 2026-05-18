@@ -16,7 +16,7 @@ from hhd.plugins.plugin import (
 
 logger = logging.getLogger(__name__)
 
-DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch")
+DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch", "yaguarete")
 GIT_HHD = "git+https://github.com/hhd-dev/hhd"
 HHD_DEV_DIR = "/run/hhd/dev"
 
@@ -35,6 +35,8 @@ def get_distro_color():
             return 28
         case "blood_orange" | "blood_orange_ba":
             return 18
+        case "yaguarete" | "yaguarete_ba":
+            return 16
         case _:
             return 30
 
