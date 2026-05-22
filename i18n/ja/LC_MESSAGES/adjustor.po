@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2026-05-23 11:11+0000\n"
-"Last-Translator: yurisatori0312 <yurisatori0312@gmail.com>\n"
+"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/hhd/adjustor/"
 "ja/>\n"
 "Language: ja\n"
@@ -142,7 +142,7 @@ msgstr "カスタム"
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr "TDP"
+msgstr "TDPについて"
 
 #. Setting: TDP
 #. Field: hint
@@ -467,12 +467,12 @@ msgstr ""
 #. Setting: CPU Power (EPP)
 #. Option: power
 msgid "Low"
-msgstr ""
+msgstr "低い"
 
 #. Setting: CPU Power (EPP)
 #. Option: balance_performance
 msgid "High"
-msgstr ""
+msgstr "高い"
 
 #. Setting: CPU Minimum Frequency
 #. Field: title
@@ -761,7 +761,7 @@ msgstr ""
 #. Setting: Reset to Default
 #. Field: title
 msgid "Reset to Default"
-msgstr ""
+msgstr "デフォルトへのリセット"
 
 #. Setting: Manual (Tctl, Fast)
 #. Field: title
