@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2026-05-23 11:11+0000\n"
-"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
+"Last-Translator: yurisatori0312 <yurisatori0312@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/hhd/adjustor/"
 "ja/>\n"
 "Language: ja\n"
@@ -142,7 +142,7 @@ msgstr "カスタム"
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr "TDPについて"
+msgstr "TDP"
 
 #. Setting: TDP
 #. Field: hint
