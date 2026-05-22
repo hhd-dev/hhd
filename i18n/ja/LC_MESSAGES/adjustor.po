@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2026-05-23 11:11+0000\n"
-"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
+"Last-Translator: yurisatori0312 <yurisatori0312@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/hhd/adjustor/"
 "ja/>\n"
 "Language: ja\n"
@@ -21,17 +21,17 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 
 msgid "Disable Decky TDP plugins using the button below to continue."
-msgstr "下のボタンを使用してDecky TDPプラグインを無効にして続行します."
+msgstr "下のボタンを使用してDecky TDPプラグインを無効にして続行します。"
 
 #. Setting: TDP Controls
 #. Field: title
 msgid "TDP Controls"
-msgstr ""
+msgstr "TDP コントロール"
 
 #. Setting: Enable TDP Controls
 #. Field: title
 msgid "Enable TDP Controls"
-msgstr ""
+msgstr "TDP コントロールを有効化"
 
 #. Setting: Enable TDP Controls
 #. Field: hint
@@ -44,7 +44,7 @@ msgstr ""
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #. Setting: Error
 #. Option: nowrite
@@ -118,7 +118,7 @@ msgstr ""
 #. Setting: Silent
 #. Field: title
 msgid "Silent"
-msgstr ""
+msgstr "消音"
 
 #. Setting: Performance
 #. Field: title
@@ -127,22 +127,22 @@ msgstr ""
 #. Setting: Platform Profile
 #. Setting: Energy Policy
 msgid "Performance"
-msgstr ""
+msgstr "パフォーマンス"
 
 #. Setting: Turbo
 #. Field: title
 msgid "Turbo"
-msgstr ""
+msgstr "ターボ"
 
 #. Setting: Custom
 #. Field: title
 msgid "Custom"
-msgstr ""
+msgstr "カスタム"
 
 #. Setting: TDP
 #. Field: title
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Setting: TDP
 #. Field: hint
@@ -197,7 +197,7 @@ msgstr ""
 #. Setting: Custom Scheduler
 #. Setting: CPU Boost
 msgid "Disabled"
-msgstr ""
+msgstr "無効化"
 
 #. Setting: Disabled
 #. Field: hint
@@ -207,12 +207,12 @@ msgstr ""
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "マニュアル"
 
 #. Setting: 30C
 #. Field: title
 msgid "30C"
-msgstr ""
+msgstr "30度"
 
 #. Setting: 30C
 #. Field: hint
@@ -231,37 +231,37 @@ msgstr ""
 #. Setting: 40C
 #. Field: title
 msgid "40C"
-msgstr ""
+msgstr "40度"
 
 #. Setting: 50C
 #. Field: title
 msgid "50C"
-msgstr ""
+msgstr "50度"
 
 #. Setting: 60C
 #. Field: title
 msgid "60C"
-msgstr ""
+msgstr "60度"
 
 #. Setting: 70C
 #. Field: title
 msgid "70C"
-msgstr ""
+msgstr "70度"
 
 #. Setting: 80C
 #. Field: title
 msgid "80C"
-msgstr ""
+msgstr "80度"
 
 #. Setting: 90C
 #. Field: title
 msgid "90C"
-msgstr ""
+msgstr "90度"
 
 #. Setting: 100C
 #. Field: title
 msgid "100C"
-msgstr ""
+msgstr "100度"
 
 #. Setting: Restore Default
 #. Field: title
@@ -296,7 +296,7 @@ msgstr ""
 #. Option: enabled
 #. Setting: CPU Boost
 msgid "Enabled"
-msgstr ""
+msgstr "有効化"
 
 #. Setting: Battery Settings
 #. Field: title
