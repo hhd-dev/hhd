@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2026-05-23 11:11+0000\n"
-"Last-Translator: yurisatori0312 <yurisatori0312@gmail.com>\n"
+"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/hhd/hhd/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -21,11 +21,11 @@ msgstr ""
 
 #. Section Name for: tdp
 msgid "TDP"
-msgstr "TDP"
+msgstr "TDPについて"
 
 #. Section Name for: rgb
 msgid "RGB"
-msgstr "RGB"
+msgstr "フリガナ"
 
 #. Section Name for: controllers
 #. Setting: Controller
@@ -41,11 +41,11 @@ msgstr "モジュール"
 #. Setting: WinControls
 #. Field: title
 msgid "WinControls"
-msgstr "勝利コントロール"
+msgstr "ウィンコントロール"
 
 #. Section Name for: gamemode
 msgid "General"
-msgstr "通常"
+msgstr "インフォメーション"
 
 #. Section Name for: updates
 msgid "Updates"
@@ -61,17 +61,17 @@ msgstr "ショートカット"
 
 #. Section Name for: hhd
 msgid "Settings"
-msgstr "設定"
+msgstr "コンテンツ"
 
 #. Setting: Core Settings
 #. Field: title
 msgid "Core Settings"
-msgstr "重要な設定"
+msgstr "コア設定"
 
 #. Setting: Language
 #. Field: title
 msgid "Language"
-msgstr "言語"
+msgstr "用語集"
 
 #. Setting: Language
 #. Option: system
@@ -83,32 +83,32 @@ msgstr "システム"
 #. Setting: Language
 #. Option: C
 msgid "English"
-msgstr "英語"
+msgstr "日本語 English"
 
 #. Setting: Language
 #. Option: zh_CN
 msgid "Simplified Chinese"
-msgstr "中国語簡体字"
+msgstr "簡体字中国語"
 
 #. Setting: Language
 #. Option: zh_TW
 msgid "Traditional Chinese"
-msgstr "中国語繁体字"
+msgstr "伝統中国"
 
 #. Setting: Language
 #. Option: pt_BR
 msgid "Portugese (Brazil)"
-msgstr "ポルトガル語（ブラジル）"
+msgstr "Portugese(ブラジル)"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr "ロシア語"
+msgstr "ロシア人"
 
 #. Setting: Theme
 #. Field: title
 msgid "Theme"
-msgstr "テーマ"
+msgstr "テーマ:"
 
 #. Setting: Theme
 #. Field: hint
@@ -116,6 +116,8 @@ msgid ""
 "Allows changing the theme in the UI. Default is either Diavolo or your "
 "distribution's theme."
 msgstr ""
+"UIでテーマを変更することができます。 デフォルトは、Diavolo または"
+"ディストリビューションのテーマのいずれかです."
 
 #. Setting: Theme
 #. Option: default
@@ -132,116 +134,116 @@ msgstr "Diavolo"
 #. Setting: Theme
 #. Option: ocean
 msgid "Atlantis"
-msgstr "Atlantis"
+msgstr "アトランティス"
 
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
-msgstr "Vapor"
+msgstr "ベイパー"
 
 #. Setting: Theme
 #. Option: blood_orange
 msgid "Blood Orange"
-msgstr "ブラッドオレンジ"
+msgstr "血のオレンジ"
 
 #. Setting: Reset Settings
 #. Field: title
 msgid "Reset Settings"
-msgstr "設定をリセット"
+msgstr "リセット設定"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr "リセットすると全てのHandheld Daemonの設定がデフォルトになります。"
+msgstr "すべてのハンドヘルドデーモン設定をデフォルト値にリセットします."
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr "Handheld Daemonバージョン"
+msgstr "手持ち型のデーモン版"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
 #. Setting: Handheld Daemon UI Version
 msgid "Displays the Handheld Daemon version."
-msgstr ""
+msgstr "ハンドヘルドデーモンバージョンを表示します."
 
 #. Setting: Handheld Daemon UI Version
 #. Field: title
 msgid "Handheld Daemon UI Version"
-msgstr ""
+msgstr "手持ち型のデーモンUI版"
 
 #. Setting: Update (Stable)
 #. Field: title
 msgid "Update (Stable)"
-msgstr ""
+msgstr "アップデート(テーブル)"
 
 #. Setting: Update (Stable)
 #. Field: hint
 msgid "Updates to the latest version from PyPi (local install only)."
-msgstr ""
+msgstr "PyPi(ローカルインストールのみ)から最新バージョンにアップデートします."
 
 #. Setting: Update (Unstable)
 #. Field: title
 msgid "Update (Unstable)"
-msgstr ""
+msgstr "更新(不安定)"
 
 #. Setting: Update (Unstable)
 #. Field: hint
 msgid "Updates to the master branch from git (local install only)."
-msgstr ""
+msgstr "Git (ローカルインストールのみ) から master ブランチに更新します."
 
 #. Setting: Update Error
 #. Field: title
 msgid "Update Error"
-msgstr ""
+msgstr "エラーの更新"
 
 #. Setting: API Configuration
 #. Field: title
 msgid "API Configuration"
-msgstr ""
+msgstr "APIの構成"
 
 #. Setting: API Configuration
 #. Field: hint
 msgid "Settings for configuring the http endpoint of HHD."
-msgstr ""
+msgstr "HHDのhttpエンドポイントの設定."
 
 #. Setting: Limit Access to localhost
 #. Field: title
 msgid "Limit Access to localhost"
-msgstr ""
+msgstr "ローカルホストへのアクセス制限"
 
 #. Setting: Limit Access to localhost
 #. Field: hint
 msgid "Sets the API target to '127.0.0.1' instead '0.0.0.0'."
-msgstr ""
+msgstr "'0.0.0.0' ではなく '127.0.0.1' に設定します."
 
 #. Setting: Use Security token
 #. Field: title
 msgid "Use Security token"
-msgstr ""
+msgstr "セキュリティトークンを使用する"
 
 #. Setting: Use Security token
 #. Field: hint
 msgid ""
 "Generates a security token in `~/.config/hhd/token` that is required for "
 "authentication."
-msgstr ""
+msgstr "認証に必要な `~/.config/hhd/token` でセキュリティトークンを生成します."
 
 msgid "Lightbar"
-msgstr ""
+msgstr "ライトバー"
 
 msgid "Keyboard"
-msgstr ""
+msgstr "キーボード"
 
 #. Setting: Aura Settings
 #. Field: title
 msgid "Aura Settings"
-msgstr ""
+msgstr "Aura 設定"
 
 #. Setting: Brightness
 #. Field: title
 msgid "Brightness"
-msgstr ""
+msgstr "明るさ"
 
 #. Setting: Brightness
 #. Option: disabled
@@ -251,14 +253,14 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Option: off
 msgid "Off"
-msgstr ""
+msgstr "オフ"
 
 #. Setting: Brightness
 #. Option: low
 #. Setting: Vibration
 #. Setting: Speed
 msgid "Low"
-msgstr ""
+msgstr "低い"
 
 #. Setting: Brightness
 #. Option: medium
@@ -266,7 +268,7 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "Medium"
-msgstr ""
+msgstr "メディア"
 
 #. Setting: Brightness
 #. Option: high
@@ -274,115 +276,115 @@ msgstr ""
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "High"
-msgstr ""
+msgstr "高い"
 
 #. Setting: RGB Power Settings
 #. Field: title
 msgid "RGB Power Settings"
-msgstr ""
+msgstr "RGB電源設定"
 
 #. Setting: On TDP Changes
 #. Field: title
 msgid "On TDP Changes"
-msgstr ""
+msgstr "TDP変更時"
 
 #. Setting: Boot
 #. Field: title
 msgid "Boot"
-msgstr ""
+msgstr "ブーツ"
 
 #. Setting: Awake
 #. Field: title
 msgid "Awake"
-msgstr ""
+msgstr "アワケ"
 
 #. Setting: Sleep while Charging
 #. Field: title
 msgid "Sleep while Charging"
-msgstr ""
+msgstr "充電中に眠る"
 
 #. Setting: Shutdown
 #. Field: title
 msgid "Shutdown"
-msgstr ""
+msgstr "シュートダウン"
 
 #. Setting: Enable Aura RGB support
 #. Field: title
 msgid "Enable Aura RGB support"
-msgstr ""
+msgstr "Aura RGB サポートを有効にする"
 
 msgid "Cross Film / Joystick"
-msgstr ""
+msgstr "クロスフィルム/ジョイスティック"
 
 msgid "Cross / Joystick"
-msgstr ""
+msgstr "クロス/ジョイスティック"
 
 msgid "Cross / Touchpad"
-msgstr ""
+msgstr "クロス/タッチパッド"
 
 msgid "Direction / Joystick"
-msgstr ""
+msgstr "方向/ジョイスティック"
 
 msgid "Joystick / Cross Film"
-msgstr ""
+msgstr "ジョイスティック/クロスフィルム"
 
 msgid "Joystick / Cross"
-msgstr ""
+msgstr "ジョイスティック・クロス"
 
 msgid "Touchpad / Cross"
-msgstr ""
+msgstr "タッチパッド/十字"
 
 msgid "Joystick / Direction"
-msgstr ""
+msgstr "ジョイスティック/方向"
 
 msgid "ABXY \\ Joystick"
-msgstr ""
+msgstr "ABXY \\ ジョイスティック"
 
 msgid "ABXY \\ Touchpad"
-msgstr ""
+msgstr "ABXY \\ タッチパッド"
 
 msgid "ABXYCZ"
-msgstr "ABXYCZ"
+msgstr "ABXYCZの特長"
 
 msgid "ABXY Film \\ Joystick"
-msgstr ""
+msgstr "ABXYフィルム \\ ジョイスティック"
 
 msgid "Joystick \\ ABXY"
-msgstr ""
+msgstr "ジョイスティック \\ ABXY"
 
 msgid "Touchpad \\ ABXY"
-msgstr ""
+msgstr "タッチパッド \\ ABXY"
 
 msgid "ABXYCZ [R]"
-msgstr ""
+msgstr "ABXYCZ [R] _ 株式会社ドリテック"
 
 msgid "Joystick \\ ABXY Film"
-msgstr ""
+msgstr "ジョイスティック \\ ABXYフィルム"
 
 msgid "Unknown"
-msgstr "不明"
+msgstr "未知の"
 
 msgid "Ejecting..."
-msgstr ""
+msgstr "注射..."
 
 msgid "Activating..."
-msgstr ""
+msgstr "アクティベーション..."
 
 msgid "Unpowered"
-msgstr ""
+msgstr "無力化"
 
 msgid "Disconnected"
-msgstr ""
+msgstr "接続解除"
 
 #. Setting: Paused
 #. Field: title
 msgid "Paused"
-msgstr ""
+msgstr "パユース"
 
 #. Setting: Ayaneo Controller
 #. Field: title
 msgid "Ayaneo Controller"
-msgstr ""
+msgstr "Ayaneoのコントローラー"
 
 #. Setting: Ayaneo Controller
 #. Field: hint
@@ -391,100 +393,100 @@ msgstr ""
 #. Setting: Orange Pi Neo
 #. Setting: OneXPlayer Controller
 msgid "Allows for configuring your handheld's controller to a unified output."
-msgstr ""
+msgstr "ハンドヘルドのコントローラーを統一した出力に構成できます."
 
 #. Setting: Controller Emulation
 #. Field: title
 msgid "Controller Emulation"
-msgstr ""
+msgstr "コントローラーのエミュレーション"
 
 #. Setting: Controller Emulation
 #. Field: hint
 msgid "Emulate different controller types to fuse your device's features."
-msgstr ""
+msgstr "異なるコントローラタイプをエミュレートして、デバイスの機能をヒューズします."
 
 #. Setting: Motion Support
 #. Field: title
 msgid "Motion Support"
-msgstr ""
+msgstr "モーションサポート"
 
 #. Setting: Motion Support
 #. Field: hint
 msgid "Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)"
-msgstr ""
+msgstr "ジャイロスコープ/加速度計(IMU)対応可能(.3%バックグラウンドCPU使用)"
 
 #. Setting: Motion Hz
 #. Field: title
 msgid "Motion Hz"
-msgstr ""
+msgstr "モーションHz"
 
 #. Setting: Motion Hz
 #. Field: hint
 msgid "Sets the sampling frequency for the IMU."
-msgstr ""
+msgstr "IMUのサンプリング周波数を設定します."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: title
 msgid "Aya Button Map (Left, Right)"
-msgstr ""
+msgstr "綾ボタンマップ(左、右)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Field: hint
 #. Setting: Swap Guide and Menu/View
 msgid "Swaps the Guide and QAM buttons with start and select."
-msgstr ""
+msgstr "ガイドボタンとQAMボタンをスワイプし、選択します."
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: oem
 msgid "Default (Select/Start, Guide/QAM)"
-msgstr ""
+msgstr "デフォルト(選択/開始、ガイド/QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional
 msgid "Traditional (Guide/Select, Start/QAM)"
-msgstr ""
+msgstr "伝統(ガイド・セレクト・スタート・QAM)"
 
 #. Setting: Aya Button Map (Left, Right)
 #. Option: traditional_rev
 msgid "Traditional Rev. (Select/Guide, QAM/Start)"
-msgstr ""
+msgstr "伝統改訂(選択/ガイド、QAM/スタート)"
 
 #. Setting: Vibration
 #. Field: title
 msgid "Vibration"
-msgstr ""
+msgstr "振動振動"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: title
 msgid "Nintendo Mode (A-B Swap)"
-msgstr ""
+msgstr "ニンテンドーモード(A-Bスワップ)"
 
 #. Setting: Nintendo Mode (A-B Swap)
 #. Field: hint
 msgid "Swaps A with B and X with Y."
-msgstr ""
+msgstr "BとXをYでスワッピング."
 
 #. Setting: Hold View to Reboot
 #. Field: title
 msgid "Hold View to Reboot"
-msgstr ""
+msgstr "Reboot に View を押し続ける"
 
 #. Setting: Magic Modules
 #. Field: title
 msgid "Magic Modules"
-msgstr ""
+msgstr "マジックモジュール"
 
 #. Setting: Pop Both Modules
 #. Field: title
 msgid "Pop Both Modules"
-msgstr ""
+msgstr "モジュールの両方をポップ"
 
 #. Setting: Pop Both Modules
 #. Field: hint
 #. Setting: Pop Left Module
 #. Setting: Pop Right Module
 msgid "Pops the left and right Ayaneo Magic Modules modules."
-msgstr ""
+msgstr "左右のAyaneo Magic Modulesモジュールを出力します."
 
 #. Setting: Left
 #. Field: title
@@ -492,12 +494,12 @@ msgstr ""
 #. Option: left
 #. Setting: Direction
 msgid "Left"
-msgstr ""
+msgstr "ふりがな"
 
 #. Setting: Pop Left Module
 #. Field: title
 msgid "Pop Left Module"
-msgstr ""
+msgstr "ポップアップ左モジュール"
 
 #. Setting: Right
 #. Field: title
@@ -1263,7 +1265,7 @@ msgstr ""
 #. Setting: Default
 #. Field: hint
 msgid "Uses reasonable values based on hardware."
-msgstr ""
+msgstr "ハードウェアに基づく合理的な値を使用します."
 
 #. Setting: Manual
 #. Field: title
@@ -1273,23 +1275,23 @@ msgstr "マニュアル"
 #. Setting: Manual
 #. Field: hint
 msgid "Allows for manual configuration of deadzones and vibration intensity."
-msgstr ""
+msgstr "デッドゾーンと振動強度の手動設定を可能にします."
 
 #. Setting: Vibration Intensity
 #. Field: title
 msgid "Vibration Intensity"
-msgstr ""
+msgstr "振動強度"
 
 #. Setting: Vibration Intensity
 #. Field: hint
 msgid ""
 "Intensity of the vibration. The higher the value, the stronger the vibration."
-msgstr ""
+msgstr "振動の強度。 値が高いほど、振動が強くなります."
 
 #. Setting: Left Stick Minimum
 #. Field: title
 msgid "Left Stick Minimum"
-msgstr ""
+msgstr "左スティック 最小"
 
 #. Setting: Left Stick Minimum
 #. Field: hint
@@ -1300,11 +1302,13 @@ msgid ""
 "Deadzone for the joystick. The higher the value, the more the joystick needs "
 "to be moved before registering."
 msgstr ""
+"ジョイスティックのデッドゾーン。 値が高いほど、登録前にジョイスティックを移動"
+"する必要があります."
 
 #. Setting: Left Stick Maximum
 #. Field: title
 msgid "Left Stick Maximum"
-msgstr ""
+msgstr "左スティック最大"
 
 #. Setting: Left Stick Maximum
 #. Field: hint
@@ -1315,62 +1319,66 @@ msgid ""
 "Maximum value for joystick. The higher the value, the more the joystick "
 "needs to be moved before reaching maximum."
 msgstr ""
+"ジョイスティックの最大値。 値が高いほど、最大に達する前に、より多くの"
+"ジョイスティックが移動する必要があります."
 
 #. Setting: Right Stick Minimum
 #. Field: title
 msgid "Right Stick Minimum"
-msgstr ""
+msgstr "右スティック最小限"
 
 #. Setting: Right Stick Maximum
 #. Field: title
 msgid "Right Stick Maximum"
-msgstr ""
+msgstr "右スティック最大"
 
 #. Setting: Left Trigger Minimum
 #. Field: title
 msgid "Left Trigger Minimum"
-msgstr ""
+msgstr "左トリガー 最小"
 
 #. Setting: Left Trigger Maximum
 #. Field: title
 msgid "Left Trigger Maximum"
-msgstr ""
+msgstr "左トリガー 最大"
 
 #. Setting: Right Trigger Minimum
 #. Field: title
 msgid "Right Trigger Minimum"
-msgstr ""
+msgstr "右トリガー 最小"
 
 #. Setting: Right Trigger Maximum
 #. Field: title
 msgid "Right Trigger Maximum"
-msgstr ""
+msgstr "右トリガー最大"
 
 #. Setting: Reset to Default
 #. Field: title
 msgid "Reset to Default"
-msgstr ""
+msgstr "デフォルトへのリセット"
 
 #. Setting: Reset to Default
 #. Field: hint
 msgid "Reset all values to default."
-msgstr ""
+msgstr "すべての値をデフォルトにリセットします."
 
 #. Setting: Hidden
 #. Field: title
 msgid "Hidden"
-msgstr ""
+msgstr "隠し"
 
 #. Setting: Hidden
 #. Field: hint
 msgid ""
 "Disables the controller. Handheld Daemon overlay will still work in gamemode."
 msgstr ""
+"コントローラーを無効にします。 ハンドヘルドデーモンオーバーレイはゲームモード"
+"でも動作します."
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: title
 msgid "Extra buttons as Keyboard/Overlay"
-msgstr ""
+msgstr "キーボード/オーバーレイとして余分ボタン"
 
 #. Setting: Extra buttons as Keyboard/Overlay
 #. Field: hint
