@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
 "PO-Revision-Date: 2026-05-23 11:11+0000\n"
-"Last-Translator: LibreTranslate <noreply-mt-libretranslate@weblate.org>\n"
+"Last-Translator: yurisatori0312 <yurisatori0312@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/hhd/hhd/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -21,11 +21,11 @@ msgstr ""
 
 #. Section Name for: tdp
 msgid "TDP"
-msgstr "TDPについて"
+msgstr "TDP"
 
 #. Section Name for: rgb
 msgid "RGB"
-msgstr "フリガナ"
+msgstr "RGB"
 
 #. Section Name for: controllers
 #. Setting: Controller
@@ -41,11 +41,11 @@ msgstr "モジュール"
 #. Setting: WinControls
 #. Field: title
 msgid "WinControls"
-msgstr "ウィンコントロール"
+msgstr "勝利コントロール"
 
 #. Section Name for: gamemode
 msgid "General"
-msgstr "インフォメーション"
+msgstr "通常"
 
 #. Section Name for: updates
 msgid "Updates"
@@ -61,7 +61,7 @@ msgstr "ショートカット"
 
 #. Section Name for: hhd
 msgid "Settings"
-msgstr "コンテンツ"
+msgstr "設定"
 
 #. Setting: Core Settings
 #. Field: title
@@ -71,7 +71,7 @@ msgstr "コア設定"
 #. Setting: Language
 #. Field: title
 msgid "Language"
-msgstr "用語集"
+msgstr "言語"
 
 #. Setting: Language
 #. Option: system
@@ -83,7 +83,7 @@ msgstr "システム"
 #. Setting: Language
 #. Option: C
 msgid "English"
-msgstr "日本語 English"
+msgstr "英語"
 
 #. Setting: Language
 #. Option: zh_CN
@@ -93,22 +93,22 @@ msgstr "簡体字中国語"
 #. Setting: Language
 #. Option: zh_TW
 msgid "Traditional Chinese"
-msgstr "伝統中国"
+msgstr "繁体字中国語"
 
 #. Setting: Language
 #. Option: pt_BR
 msgid "Portugese (Brazil)"
-msgstr "Portugese(ブラジル)"
+msgstr "ポルトガル語（ブラジル）"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr "ロシア人"
+msgstr "ロシア語"
 
 #. Setting: Theme
 #. Field: title
 msgid "Theme"
-msgstr "テーマ:"
+msgstr "テーマ"
 
 #. Setting: Theme
 #. Field: hint
@@ -134,43 +134,43 @@ msgstr "Diavolo"
 #. Setting: Theme
 #. Option: ocean
 msgid "Atlantis"
-msgstr "アトランティス"
+msgstr "Atlantis"
 
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
-msgstr "ベイパー"
+msgstr "Vapor"
 
 #. Setting: Theme
 #. Option: blood_orange
 msgid "Blood Orange"
-msgstr "血のオレンジ"
+msgstr "ブラッドオレンジ"
 
 #. Setting: Reset Settings
 #. Field: title
 msgid "Reset Settings"
-msgstr "リセット設定"
+msgstr "設定をリセット"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr "すべてのハンドヘルドデーモン設定をデフォルト値にリセットします."
+msgstr "リセットすると全てのHandheld Daemonの設定がデフォルトになります。"
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr "手持ち型のデーモン版"
+msgstr "Handheld Daemonバージョン"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
 #. Setting: Handheld Daemon UI Version
 msgid "Displays the Handheld Daemon version."
-msgstr "ハンドヘルドデーモンバージョンを表示します."
+msgstr "Handheld Daemonバージョンを表示します."
 
 #. Setting: Handheld Daemon UI Version
 #. Field: title
 msgid "Handheld Daemon UI Version"
-msgstr "手持ち型のデーモンUI版"
+msgstr "Handheld Daemon UIバージョン"
 
 #. Setting: Update (Stable)
 #. Field: title
@@ -195,7 +195,7 @@ msgstr "Git (ローカルインストールのみ) から master ブランチに
 #. Setting: Update Error
 #. Field: title
 msgid "Update Error"
-msgstr "エラーの更新"
+msgstr "アップデートエラー"
 
 #. Setting: API Configuration
 #. Field: title
@@ -268,7 +268,7 @@ msgstr "低い"
 #. Setting: Vibration Strength
 #. Setting: Speed
 msgid "Medium"
-msgstr "メディア"
+msgstr "ミディアム"
 
 #. Setting: Brightness
 #. Option: high
