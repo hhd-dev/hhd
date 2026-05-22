@@ -8,107 +8,107 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2025-09-04 13:53+0000\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-05-23 11:11+0000\n"
+"Last-Translator: yurisatori0312 <yurisatori0312@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/hhd/hhd/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.1-rc\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 "Generated-By: Babel 2.17.0\n"
 
 #. Section Name for: tdp
 msgid "TDP"
-msgstr ""
+msgstr "TDP"
 
 #. Section Name for: rgb
 msgid "RGB"
-msgstr ""
+msgstr "RGB"
 
 #. Section Name for: controllers
 #. Setting: Controller
 #. Field: title
 msgid "Controller"
-msgstr ""
+msgstr "コントローラー"
 
 #. Section Name for: magic_modules
 msgid "Modules"
-msgstr ""
+msgstr "モジュール"
 
 #. Section Name for: wincontrols
 #. Setting: WinControls
 #. Field: title
 msgid "WinControls"
-msgstr ""
+msgstr "勝利コントロール"
 
 #. Section Name for: gamemode
 msgid "General"
-msgstr ""
+msgstr "通常"
 
 #. Section Name for: updates
 msgid "Updates"
-msgstr ""
+msgstr "アップデート"
 
 #. Section Name for: debug
 msgid "Bugreport"
-msgstr ""
+msgstr "バグレポート"
 
 #. Section Name for: shortcuts
 msgid "Shortcuts"
-msgstr ""
+msgstr "ショートカット"
 
 #. Section Name for: hhd
 msgid "Settings"
-msgstr ""
+msgstr "設定"
 
 #. Setting: Core Settings
 #. Field: title
 msgid "Core Settings"
-msgstr ""
+msgstr "重要な設定"
 
 #. Setting: Language
 #. Field: title
 msgid "Language"
-msgstr ""
+msgstr "言語"
 
 #. Setting: Language
 #. Option: system
 #. Setting: System
 #. Field: title
 msgid "System"
-msgstr ""
+msgstr "システム"
 
 #. Setting: Language
 #. Option: C
 msgid "English"
-msgstr ""
+msgstr "英語"
 
 #. Setting: Language
 #. Option: zh_CN
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "中国語簡体字"
 
 #. Setting: Language
 #. Option: zh_TW
 msgid "Traditional Chinese"
-msgstr ""
+msgstr "中国語繁体字"
 
 #. Setting: Language
 #. Option: pt_BR
 msgid "Portugese (Brazil)"
-msgstr ""
+msgstr "ポルトガル語（ブラジル）"
 
 #. Setting: Language
 #. Option: ru_RU
 msgid "Russian"
-msgstr ""
+msgstr "ロシア語"
 
 #. Setting: Theme
 #. Field: title
 msgid "Theme"
-msgstr ""
+msgstr "テーマ"
 
 #. Setting: Theme
 #. Field: hint
@@ -122,42 +122,42 @@ msgstr ""
 #. Setting: Default
 #. Field: title
 msgid "Default"
-msgstr ""
+msgstr "デフォルト"
 
 #. Setting: Theme
 #. Option: diavolo
 msgid "Diavolo"
-msgstr ""
+msgstr "Diavolo"
 
 #. Setting: Theme
 #. Option: ocean
 msgid "Atlantis"
-msgstr ""
+msgstr "Atlantis"
 
 #. Setting: Theme
 #. Option: vapor
 msgid "Vapor"
-msgstr ""
+msgstr "Vapor"
 
 #. Setting: Theme
 #. Option: blood_orange
 msgid "Blood Orange"
-msgstr ""
+msgstr "ブラッドオレンジ"
 
 #. Setting: Reset Settings
 #. Field: title
 msgid "Reset Settings"
-msgstr ""
+msgstr "設定をリセット"
 
 #. Setting: Reset Settings
 #. Field: hint
 msgid "Resets all Handheld Daemon settings to their default values."
-msgstr ""
+msgstr "リセットすると全てのHandheld Daemonの設定がデフォルトになります。"
 
 #. Setting: Handheld Daemon Version
 #. Field: title
 msgid "Handheld Daemon Version"
-msgstr ""
+msgstr "Handheld Daemonバージョン"
 
 #. Setting: Handheld Daemon Version
 #. Field: hint
@@ -342,7 +342,7 @@ msgid "ABXY \\ Touchpad"
 msgstr ""
 
 msgid "ABXYCZ"
-msgstr ""
+msgstr "ABXYCZ"
 
 msgid "ABXY Film \\ Joystick"
 msgstr ""
@@ -360,7 +360,7 @@ msgid "Joystick \\ ABXY Film"
 msgstr ""
 
 msgid "Unknown"
-msgstr ""
+msgstr "不明"
 
 msgid "Ejecting..."
 msgstr ""
@@ -515,7 +515,7 @@ msgstr ""
 #. Setting: Quick Reset
 #. Field: title
 msgid "Quick Reset"
-msgstr ""
+msgstr "クイックリセット"
 
 #. Setting: Quick Reset
 #. Field: hint
@@ -576,7 +576,7 @@ msgstr ""
 #. Setting: Ctrl + 3
 #. Setting: Ctrl + 4
 msgid "Disabled"
-msgstr ""
+msgstr "無効化"
 
 #. Setting: Start/Select do SteamOS Combos
 #. Option: select
@@ -800,7 +800,7 @@ msgstr ""
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "エラー"
 
 #. Setting: Apply Settings
 #. Field: title
@@ -1268,7 +1268,7 @@ msgstr ""
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "マニュアル"
 
 #. Setting: Manual
 #. Field: hint
