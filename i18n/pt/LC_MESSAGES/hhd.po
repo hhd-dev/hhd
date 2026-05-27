@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-11-13 10:27+0100\n"
-"PO-Revision-Date: 2026-05-27 13:48+0000\n"
+"PO-Revision-Date: 2026-05-28 14:11+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/hhd/hhd/pt/>\n"
 "Language: pt\n"
@@ -809,12 +809,12 @@ msgstr ""
 #. Setting: Error
 #. Field: title
 msgid "Error"
-msgstr ""
+msgstr "Erro"
 
 #. Setting: Apply Settings
 #. Field: title
 msgid "Apply Settings"
-msgstr ""
+msgstr "Aplicar Configurações"
 
 #. Setting: Legion Controller
 #. Field: title
@@ -1288,7 +1288,7 @@ msgstr ""
 #. Setting: Manual
 #. Field: title
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #. Setting: Manual
 #. Field: hint
