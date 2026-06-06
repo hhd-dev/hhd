@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-13 10:27+0100\n"
+"POT-Creation-Date: 2026-06-06 11:52+0200\n"
 "PO-Revision-Date: 2025-09-04 13:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: English <https://hosted.weblate.org/projects/hhd/hhd/en/>\n"
@@ -104,6 +104,11 @@ msgstr "Portugese (Brazil)"
 #. Option: ru_RU
 msgid "Russian"
 msgstr "Russian"
+
+#. Setting: Language
+#. Option: ko
+msgid "Korean"
+msgstr ""
 
 #. Setting: Theme
 #. Field: title
@@ -598,6 +603,21 @@ msgstr "Start+Select"
 #. Field: title
 msgid "Handheld"
 msgstr "Handheld"
+
+#, fuzzy
+msgid "GPD (LB/RB are L/R Clicks)"
+msgstr "SteamOS (LT/RT are R/L Clicks)"
+
+#, fuzzy
+msgid "SteamOS (LB/RB are R/L Clicks)"
+msgstr "SteamOS (LT/RT are R/L Clicks)"
+
+#, fuzzy
+msgid "For HHD (F15/F14)"
+msgstr "For HHD (F20/F21)"
+
+msgid "Default (CTRL,SHIFT/F3)"
+msgstr ""
 
 #. Setting: GPD Controller
 #. Field: title
