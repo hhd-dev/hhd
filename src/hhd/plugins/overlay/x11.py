@@ -257,7 +257,7 @@ def register_changes(display, win):
 
 
 def find_hhd(display: display.Display):
-    return find_win(display, ["dev.hhd.hhd-ui"])
+    return find_win(display, ["dev.hhd.hhd-ui"]) or find_win(display, ["dev-hhd-hhd-ui"])
 
 
 def find_steam(display: display.Display):
