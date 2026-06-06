@@ -188,7 +188,10 @@ def pretty_print(dev: dict[str, str | int | bytes]):
 
 
 def get_button(rep: bytes, map: BM):
-    v = bool(rep[map.loc // 8] & (1 << (7 - (map.loc % 8))))
+    idx = map.loc // 8
+    if idx >= len(rep):
+        return False
+    v = bool(rep[idx] & (1 << (7 - (map.loc % 8))))
     if map.flipped:
         return not v
     return v
