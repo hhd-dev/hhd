@@ -510,6 +510,8 @@ def controller_loop(
 
             for d in d_outs:
                 d.consume(evs)
+            if d_imu:
+                d_imu.consume(evs)
 
             if d_vend.mouse_mode and d_kbd_grabbed and d_kbd_1.dev:
                 try:
