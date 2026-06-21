@@ -70,6 +70,11 @@ class AyaneoControllersPlugin(HHDPlugin):
             )
         )
 
+        if self.dconf.get("face_remap", False):
+            base["controllers"]["ayaneo"]["children"]["face_buttons"] = (
+                load_relative_yaml("konkr_buttons.yml")
+            )
+
         if self.dconf.get("display_gyro", True):
             base["controllers"]["ayaneo"]["children"]["imu_axis"] = get_gyro_config(
                 self.dconf.get("mapping", DEFAULT_MAPPINGS)
