@@ -11,7 +11,8 @@ children:
     title: Left Top
     options: &konkr_btn_options
       mode: Steam / Guide
-      share: Quick Access Menu
+      hhd_overlay: HHD Overlay
+      hhd_qam: HHD Side Menu
       select: Select (View)
       start: Start (Menu)
       disabled: Disabled
@@ -45,4 +46,4 @@ children:
     type: multiple
     title: Right Bottom-Right
     options: *konkr_btn_options
-    default: share
+    default: hhd_qam
