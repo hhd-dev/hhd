@@ -9,13 +9,18 @@ children:
   btn_left_top:
     type: multiple
     title: Left Top
+    # Action values/labels mirror src/hhd/plugins/overlay/shortcuts.yml so the
+    # Konkr map uses HHD's official vocabulary. `mode`/`select`/`start` are the
+    # plain gamepad buttons; the rest are overlay/Steam shortcut actions.
     options: &konkr_btn_options
+      disabled: Disabled
       mode: Steam / Guide
-      hhd_overlay: HHD Overlay
-      hhd_qam: HHD Side Menu
       select: Select (View)
       start: Start (Menu)
-      disabled: Disabled
+      steam_qam: Steam Side Menu
+      steam_expanded: Steam Overlay
+      hhd_qam: HHD Side Menu
+      hhd_expanded: HHD Overlay
     default: mode
 
   btn_left_select:
