@@ -64,23 +64,37 @@ DualSense Edge / Xbox Elite back paddles — remappable in **Steam Input**:
 ### The six system/face buttons — "Konkr Button Map"
 Enabled by the `face_remap` flag in `const.py`. Each button gets a dropdown
 (`konkr_buttons.yml`, injected in `__init__.py:settings()`), applied in
-`base.py`. Option set:
+`base.py`. Values/labels mirror `plugins/overlay/shortcuts.yml` (HHD's
+official vocabulary):
 
-| Dropdown value | Label          | Result |
-|----------------|----------------|--------|
-| `mode`         | Steam / Guide  | Opens Steam (guide button) |
-| `hhd_overlay`  | HHD Overlay    | Opens the expanded HHD overlay (`open_expanded`) |
-| `hhd_qam`      | HHD Side Menu  | Opens the HHD QAM side menu (`open_qam`) |
-| `select`       | Select (View)  | |
-| `start`        | Start (Menu)   | |
-| `disabled`     | Disabled       | Button does nothing |
+| Dropdown value   | Label           | Result |
+|------------------|-----------------|--------|
+| `disabled`       | Disabled        | Button does nothing |
+| `mode`           | Steam / Guide   | Opens Steam (guide button) |
+| `select`         | Select (View)   | gamepad Select/View |
+| `start`          | Start (Menu)    | gamepad Start/Menu |
+| `steam_qam`      | Steam Side Menu | Opens Steam's own QAM |
+| `steam_expanded` | Steam Overlay   | Opens Steam's expanded menu |
+| `hhd_qam`        | HHD Side Menu   | Opens the HHD QAM side menu (`open_qam`) |
+| `hhd_expanded`   | HHD Overlay     | Opens the expanded HHD overlay (`open_expanded`) |
 
-`hhd_overlay`/`hhd_qam` are not real gamepad buttons -- they are sentinel
-codes handled in `controller/base.py` (the multiplexer), which emits the
-matching `special` event directly (`hhd_qam` -> `overlay` -> `open_qam`;
-`hhd_overlay` -> `qam_triple` -> `open_expanded`) and clears the code so it
-never reaches the virtual controller. This bypasses the multi-tap QAM state
-machine, so the binds are deterministic.
+`mode`/`select`/`start` are plain gamepad buttons. The four menu actions are
+not real gamepad buttons -- they are sentinel codes handled in
+`controller/base.py` (the multiplexer), which clears the code so it never
+reaches the virtual controller:
+
+- `hhd_qam` -> emits `special` event `overlay` -> `open_qam` (HHD side menu).
+- `hhd_expanded` -> emits `special` event `qam_triple` -> `open_expanded`.
+  Both bypass the multi-tap QAM state machine, so they are deterministic.
+- `steam_qam` / `steam_expanded` -> set `send_steam_qam` / `send_steam_expand`,
+  so the multiplexer opens Steam's menu through the normal Steam path at the
+  end of `process()` (intercept-aware, with the guide+A chord fallback if
+  gamescope isn't handling it).
+
+> The standard **Aya Button Map** (`swap_guide`) dropdown is hidden on the
+> Konkr (removed in `__init__.py:settings()`), since this per-button map
+> supersedes it. With it gone, `base.py` falls back to `swap_guide="oem"`
+> (no swap), which is correct for the custom map.
 
 | Dropdown key       | Physical button   | Source code    | Default    |
 |--------------------|-------------------|----------------|------------|

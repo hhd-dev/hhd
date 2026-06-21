@@ -71,9 +71,11 @@ class AyaneoControllersPlugin(HHDPlugin):
         )
 
         if self.dconf.get("face_remap", False):
-            base["controllers"]["ayaneo"]["children"]["face_buttons"] = (
-                load_relative_yaml("konkr_buttons.yml")
-            )
+            children = base["controllers"]["ayaneo"]["children"]
+            children["face_buttons"] = load_relative_yaml("konkr_buttons.yml")
+            # The per-button map supersedes the Aya Button Map (swap_guide),
+            # so hide it to avoid two conflicting remap UIs.
+            children.pop("swap_guide", None)
 
         if self.dconf.get("display_gyro", True):
             base["controllers"]["ayaneo"]["children"]["imu_axis"] = get_gyro_config(
