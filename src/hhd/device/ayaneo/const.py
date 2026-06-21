@@ -36,6 +36,10 @@ CONFS = {
         "name": "KONKR FIT",
         "extra_buttons": "quad",
         "mode_is_guide": True,
+        # Expose per-button remap dropdowns for the six system/face buttons
+        # (handled in base.py + konkr_buttons.yml). Gated so it never touches
+        # the gamepad BTN_MODE/SELECT/START on other AYANEO devices.
+        "face_remap": True,
         "rgb": True,
         **AYA_DEFAULT_CONF,
     },
