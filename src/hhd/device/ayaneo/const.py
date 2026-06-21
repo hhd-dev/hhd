@@ -27,6 +27,15 @@ CONFS = {
         "rgb": True,
         **AYA_DEFAULT_CONF,
     },
+    # Konkr (Ayaneo sub-brand). Same controller hw as AYANEO 3
+    # (1c4f:0002 composite + 045e:028e gamepad) but no detachable
+    # modules (no ayaneo-ec EC interface), dual back paddles.
+    "KONKR FIT": {
+        "name": "KONKR FIT",
+        "extra_buttons": "dual",
+        "rgb": True,
+        **AYA_DEFAULT_CONF,
+    },
 }
 
 AYA3_INIT = [
