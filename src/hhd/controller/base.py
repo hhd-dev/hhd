@@ -1259,6 +1259,25 @@ class Multiplexer:
                         if self.emit:
                             self.emit({"type": "special", "event": "overlay"})
 
+                    if ev["code"] in ("hhd_qam", "hhd_overlay"):
+                        # Direct binds for the HHD side menu (QAM) and the
+                        # expanded HHD overlay, used by per-button remaps.
+                        # Emitted straight away so they bypass the multi-tap
+                        # QAM state machine. "overlay" -> open_qam (side menu),
+                        # "qam_triple" -> open_expanded (full overlay).
+                        if ev["value"] and self.emit:
+                            self.emit(
+                                {
+                                    "type": "special",
+                                    "event": (
+                                        "overlay"
+                                        if ev["code"] == "hhd_qam"
+                                        else "qam_triple"
+                                    ),
+                                }
+                            )
+                        ev["code"] = ""  # type: ignore
+
                     if ev["code"] == "touchpad_right":
                         match self.touchpad_right:
                             case "disabled":

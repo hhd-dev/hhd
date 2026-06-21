@@ -64,8 +64,23 @@ DualSense Edge / Xbox Elite back paddles — remappable in **Steam Input**:
 ### The six system/face buttons — "Konkr Button Map"
 Enabled by the `face_remap` flag in `const.py`. Each button gets a dropdown
 (`konkr_buttons.yml`, injected in `__init__.py:settings()`), applied in
-`base.py`. Trimmed option set: `mode` (Steam/Guide), `share` (Quick Access
-Menu / overlay), `select`, `start`, `disabled`.
+`base.py`. Option set:
+
+| Dropdown value | Label          | Result |
+|----------------|----------------|--------|
+| `mode`         | Steam / Guide  | Opens Steam (guide button) |
+| `hhd_overlay`  | HHD Overlay    | Opens the expanded HHD overlay (`open_expanded`) |
+| `hhd_qam`      | HHD Side Menu  | Opens the HHD QAM side menu (`open_qam`) |
+| `select`       | Select (View)  | |
+| `start`        | Start (Menu)   | |
+| `disabled`     | Disabled       | Button does nothing |
+
+`hhd_overlay`/`hhd_qam` are not real gamepad buttons -- they are sentinel
+codes handled in `controller/base.py` (the multiplexer), which emits the
+matching `special` event directly (`hhd_qam` -> `overlay` -> `open_qam`;
+`hhd_overlay` -> `qam_triple` -> `open_expanded`) and clears the code so it
+never reaches the virtual controller. This bypasses the multi-tap QAM state
+machine, so the binds are deterministic.
 
 | Dropdown key       | Physical button   | Source code    | Default    |
 |--------------------|-------------------|----------------|------------|

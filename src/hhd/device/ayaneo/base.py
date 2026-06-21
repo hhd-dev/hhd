@@ -570,7 +570,7 @@ def controller_loop(
             EC("KEY_L"): "extra_l1",
             EC("KEY_R"): "extra_r1",
         }
-        right_bottom = remap_action("btn_right_bottom", "share")
+        right_bottom = remap_action("btn_right_bottom", "hhd_qam")
         if right_bottom is not None:
             kbd2_map[EC("KEY_D")] = right_bottom
         d_kbd_2 = ChordGamepadEvdev(
