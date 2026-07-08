@@ -13,7 +13,7 @@ from threading import RLock
 from time import sleep
 from typing import Callable, Sequence
 
-import pkg_resources
+from importlib.metadata import entry_points
 
 from .logging import set_log_plugin, setup_logger, update_log_plugins
 from .plugins import (
@@ -232,7 +232,7 @@ def main():
 
         detector_names = []
         whitelist = PLUGIN_WHITELIST.split(",") if PLUGIN_WHITELIST else []
-        for autodetect in pkg_resources.iter_entry_points("hhd.plugins"):
+        for autodetect in entry_points(group="hhd.plugins"):
             name = autodetect.name
             detector_names.append(name)
             if name in blacklist:
@@ -241,7 +241,7 @@ def main():
                 logger.info(f"Skipping provider '{name}' due to whitelist.")
                 continue
 
-            detectors[autodetect.name] = autodetect.resolve()
+            detectors[autodetect.name] = autodetect.load()
 
         # Save new blacklist file
         save_blacklist_yaml(blacklist_fn, detector_names, blacklist)
@@ -290,8 +290,8 @@ def main():
 
         # Load locales
         locales = []
-        for register in pkg_resources.iter_entry_points("hhd.i18n"):
-            locales.extend(register.resolve()())
+        for register in entry_points(group="hhd.i18n"):
+            locales.extend(register.load()())
         locales.sort(key=lambda x: x["priority"], reverse=True)
 
         if locales:
