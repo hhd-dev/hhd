@@ -19,7 +19,6 @@ dependencies = [
   "evdev>=1.6.1",
   "PyYAML>=6.0.1",
   "rich>=13.5.2",
-  "setuptools>=65.5.0",
   "python-xlib>=0.33",
   "pyserial>=3.5",
   "pyroute2>=0.7.3",
