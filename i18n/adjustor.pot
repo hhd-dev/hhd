@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-09 00:03+0200\n"
+"POT-Creation-Date: 2026-07-09 18:47+0200\n"
 "PO-Revision-Date: 2025-09-04 13:53+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: English <https://hosted.weblate.org/projects/hhd/adjustor/en/"
@@ -89,6 +89,20 @@ msgstr ""
 "Daemon will set and maintain the TDP limits set on start-up and during other "
 "device changes (ac/dc).\n"
 "If the device crashes, TDP setting will be disabled on next startup."
+
+#. Setting: Add TDP to /sys for Steam (Requires Restart)
+#. Field: title
+msgid "Add TDP to /sys for Steam (Requires Restart)"
+msgstr "Add TDP to /sys for Steam (Requires Restart)"
+
+#. Setting: Add TDP to /sys for Steam (Requires Restart)
+#. Field: hint
+msgid ""
+"Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the "
+"TDP slider in Steam."
+msgstr ""
+"Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the "
+"TDP slider in Steam."
 
 #. Setting: Enforce Device TDP Limits
 #. Field: title
@@ -980,13 +994,3 @@ msgstr "STAPM Limit Integration Time"
 #. Field: title
 msgid "Enable Advanced Parameters"
 msgstr "Enable Advanced Parameters"
-
-#~ msgid "Add TDP to /sys for Steam (Requires Restart)"
-#~ msgstr "Add TDP to /sys for Steam (Requires Restart)"
-
-#~ msgid ""
-#~ "Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the "
-#~ "TDP slider in Steam."
-#~ msgstr ""
-#~ "Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the "
-#~ "TDP slider in Steam."
