@@ -1,5 +1,6 @@
 import logging
 import os
+import platform
 
 from hhd.plugins.plugin import (
     Context,
@@ -16,24 +17,21 @@ from hhd.plugins.plugin import (
 
 logger = logging.getLogger(__name__)
 
-DISTRO_NAMES = ("manjaro", "bazzite", "ubuntu", "arch")
 GIT_HHD = "git+https://github.com/hhd-dev/hhd"
 HHD_DEV_DIR = "/run/hhd/dev"
 
 
 def get_distro_color():
     match get_os():
-        case "manjaro":
-            return 115
-        case "bazzite":
-            return 265
+        case "anatase":
+            return 53
         case "arch":
             return 195
         case "ubuntu":
             return 340
-        case "red_gold" | "red_gold_ba":
+        case "red_gold" | "red_gold_an":
             return 28
-        case "blood_orange" | "blood_orange_ba":
+        case "blood_orange" | "blood_orange_an":
             return 18
         case _:
             return 30
@@ -91,20 +89,16 @@ def rgb_to_hsb(r, g, b):
 def get_os() -> str:
     if name := os.environ.get("HHD_DISTRO", None):
         logger.warning(f"Distro override using an environment variable to '{name}'.")
-        return name
+        return name.lower()
 
     try:
-        with open("/etc/os-release") as f:
-            os_release = f.read().strip().lower()
+        name = platform.freedesktop_os_release()["NAME"]
     except Exception as e:
         logger.error(f"Could not read os information, error:\n{e}")
         return "ukn"
 
-    distro = None
-    for name in DISTRO_NAMES:
-        if name in os_release:
-            logger.info(f"Running under Linux distro '{name}'.")
-            distro = name
+    distro = name.lower()
+    logger.info(f"Running under Linux distro '{distro}'.")
 
     try:
         # Match just product name
@@ -112,25 +106,15 @@ def get_os() -> str:
         with open("/sys/devices/virtual/dmi/id/product_name") as f:
             dmi = f.read().strip()
 
-        # if "jupiter" in dmi.lower() or "onexplayer" in dmi.lower():
-        #     if distro == "bazzite":
-        #         distro = "blood_orange_ba"
-        #     else:
-        #         distro = "blood_orange"
-
         if "ONEXPLAYER F1 EVA-02" in dmi:
-            if distro == "bazzite":
-                distro = "red_gold_ba"
+            if distro == "anatase":
+                distro = "red_gold_an"
             else:
                 distro = "red_gold"
     except Exception as e:
         logger.error(f"Could not read product name, error:\n{e}")
 
-    if distro is not None:
-        return distro
-
-    logger.info(f"Running under an unknown Linux distro.")
-    return "ukn"
+    return distro
 
 
 def get_ac_status_fn() -> str | None:
