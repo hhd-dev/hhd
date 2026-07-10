@@ -1,4 +1,4 @@
-Name:           hhd-git
+Name:           hhd
 Version:        {{{ git_dir_version }}}
 Release:        2%{?dist}
 Summary:        Handheld Daemon, a tool for configuring handheld devices.
