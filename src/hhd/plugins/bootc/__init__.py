@@ -89,7 +89,7 @@ STAGES = Literal[
 
 def get_bootc_status():
     try:
-        output = subprocess.check_output(BOOTC_STATUS_CMD).decode("utf-8")
+        output = subprocess.check_output(BOOTC_STATUS_CMD, stderr=subprocess.DEVNULL).decode("utf-8")
         return json.loads(output)
     except Exception as e:
         logger.error(f"Failed to get bootc status: {e}")
