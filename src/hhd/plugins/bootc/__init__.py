@@ -26,7 +26,10 @@ PROGRESS_STAGES = {
 BOOTC_ENABLED = os.environ.get("HHD_BOOTC", "0") == "1"
 BOOTC_PATH = os.environ.get("HHD_BOOTC_PATH", "bootc")
 BRANCHES = os.environ.get(
-    "HHD_BOOTC_BRANCHES", "stable:Stable,testing:Testing,unstable:Unstable"
+    "HHD_BOOTC_BRANCHES", "stable:Stable,rolling:Rolling,testing:Testing"
+)
+DEFAULT_URI=os.environ.get(
+    "HHD_BOOTC_FALLBACK_IMG", ""
 )
 
 REF_PREFIX = "§ "
@@ -76,6 +79,7 @@ STAGES = Literal[
     "ready_reverted",
     "ready_rebased",
     "incompatible",
+    "unknown",
     "rebase_dialog",
     "loading",
     "loading_rebase",
@@ -292,7 +296,6 @@ class BootcPlugin(HHDPlugin):
             conf["updates.bootc.stage.mode"] = "incompatible"
             self.state = "incompatible"
             conf[f"updates.bootc.update"] = None
-            conf[f"updates.bootc.steamos-update"] = "incompatible"
             return
 
         ref = ((self.status.get("spec", None) or {}).get("image", None) or {}).get(
@@ -301,6 +304,12 @@ class BootcPlugin(HHDPlugin):
         img = ref
         if "/" in img:
             img = img[img.rfind("/") + 1 :]
+
+        if not img and DEFAULT_URI:
+            conf["updates.bootc.stage.mode"] = "unknown"
+            self.state = "unknown"
+            conf[f"updates.bootc.update"] = None
+            return
 
         # Find branch and replace tag
         branch = get_branch(img, self.branches)
@@ -376,23 +385,18 @@ class BootcPlugin(HHDPlugin):
             conf["updates.bootc.stage.mode"] = "ready"
             self.state = "ready"
             conf[f"updates.bootc.update"] = cached_version
-            conf[f"updates.bootc.steamos-update"] = "has-update"
         elif self.get_version("staged"):
             conf["updates.bootc.stage.mode"] = "ready_updated"
             self.state = "ready_updated"
-            conf[f"updates.bootc.steamos-update"] = "updated"
         elif has_rebased:
             conf["updates.bootc.stage.mode"] = "ready_rebased"
             self.state = "ready_rebased"
-            conf[f"updates.bootc.steamos-update"] = "updated"
         elif rollback:
             conf["updates.bootc.stage.mode"] = "ready_reverted"
             self.state = "ready_reverted"
-            conf[f"updates.bootc.steamos-update"] = "updated"
         else:
             conf["updates.bootc.stage.mode"] = "ready_check"
             self.state = "ready_check"
-            conf[f"updates.bootc.steamos-update"] = "ready"
 
     def update(self, conf: Config):
 
@@ -417,23 +421,6 @@ class BootcPlugin(HHDPlugin):
                 revert = conf.get_action(f"updates.bootc.stage.{e}.revert")
                 rebase = conf.get_action(f"updates.bootc.stage.{e}.rebase")
                 reboot = conf.get_action(f"updates.bootc.stage.{e}.reboot")
-
-                steamos = conf.get("updates.bootc.steamos-update", None)
-
-                # Handle steamos polkit
-                if steamos == "check":
-                    if not conf.get("hhd.settings.bootc_steamui", True):
-                        # Updates are disabled, return that there are none
-                        conf["updates.bootc.steamos-update"] = "ready"
-                    elif e == "ready":
-                        conf["updates.bootc.steamos-update"] = "has-update"
-                    elif e == "ready_rebased":
-                        # Make sure nothing funny happens on the rebase dialog
-                        conf["updates.bootc.steamos-update"] = "ready"
-                    else:
-                        update = True
-                if steamos == "apply":
-                    update = True
 
                 if update:
                     if e == "ready_rebased" and self.branch_ref:
@@ -549,6 +536,24 @@ class BootcPlugin(HHDPlugin):
                         "value": None,
                         "unit": None,
                     }
+            # Unknown
+            case "unknown":
+                if conf.get_action("updates.bootc.stage.unknown.update"):
+                    assert DEFAULT_URI # We were promised it
+                    self.state = "loading_cancellable"
+                    cmd = [BOOTC_PATH, "switch", DEFAULT_URI]
+                    if self.bootc_progress:
+                        self.proc, self.progress = run_command_threaded_progress(
+                            cmd, self.emit, DEFAULT_URI, self.progress_lock
+                        )
+                    else:
+                        self.proc = run_command_threaded(cmd)
+                    conf["updates.bootc.stage.mode"] = "loading_cancellable"
+                    conf["updates.bootc.stage.loading_cancellable.progress"] = {
+                        "text": _("Updating to "),
+                        "unit": DEFAULT_URI,
+                        "value": None,
+                    }
 
             # Rebase dialog
             case "rebase_dialog" | "loading_rebase" as e:
@@ -622,7 +627,7 @@ class BootcPlugin(HHDPlugin):
                             self.proc = run_command_threaded(cmd)
                         conf["updates.bootc.stage.mode"] = "loading_cancellable"
                         conf["updates.bootc.stage.loading_cancellable.progress"] = {
-                            "text": _("Rebasing to "),
+                            "text": _("Updating to "),
                             "unit": self.branches.get(version, version),
                             "value": None,
                         }
@@ -663,13 +668,6 @@ class BootcPlugin(HHDPlugin):
                         conf["updates.bootc.stage.loading_cancellable.progress"] = (
                             self.progress
                         )
-                        val = self.progress.get("value", None)
-                        if val is not None:
-                            try:
-                                val = int(val)
-                                conf["updates.bootc.steamos-update"] = f"{val}%"
-                            except ValueError:
-                                pass
             case "loading":
                 if self.proc is None:
                     self._init(conf)

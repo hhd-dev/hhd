@@ -5,19 +5,11 @@ hint: >-
   Manage the currently installed image with bootc.
 
 children:
-  steamos-target:
-    type: display
-    tags: [hidden]
-  
-  steamos-update:
-    type: display
-    tags: [hidden]
-
   image:
     tags: [slim, bold]
     type: display
     title: Image
-    default: bazzite-deck:stable
+    default: unknown
 
   staged:
     tags: [slim, bold]
@@ -146,7 +138,7 @@ children:
           error:
             type: display
             tags: [error]
-            title: Error
+            title: Updater Error
             default: >
               Due to layering or custom initramfs, you cannot update from here.
               You can undo those with the button below.
@@ -158,6 +150,22 @@ children:
             hint: >-
               Disable the custom initramfs and remove layers. Your personal
               data will not be affected.
+
+      unknown:
+        type: container
+        children:
+          error:
+            type: display
+            tags: [error]
+            title: Updater Error
+            default: >
+              Uknown image reference, switch to latest stable to receive
+              updates.
+
+          update:
+            type: action
+            title: Update to Stable
+            tag: [verify]
               
       loading_cancellable:
         type: container
