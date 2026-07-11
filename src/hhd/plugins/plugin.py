@@ -336,6 +336,32 @@ def get_steam_location(gamepadui: bool = True):
     return None, None, None
 
 
+def get_flatpak_id(pid: int) -> str | None:
+    try:
+        with open(f"/proc/{pid}/environ", "rb") as f:
+            for entry in f.read().split(b"\0"):
+                if entry.startswith(b"FLATPAK_ID="):
+                    return entry.split(b"=", 1)[1].decode()
+    except Exception:
+        pass
+    return None
+
+
+def get_user_systemd_environment(uid: int, gid: int) -> dict[str, str]:
+    result = subprocess.run(
+        ["systemctl", "--user", "show-environment"],
+        check=True,
+        capture_output=True,
+        text=True,
+        user=uid,
+        group=gid,
+        env={"XDG_RUNTIME_DIR": f"/run/user/{uid}"},
+    )
+    return dict(
+        line.split("=", 1) for line in result.stdout.splitlines() if "=" in line
+    )
+
+
 _run_lock = Lock()
 _running = False
 
@@ -353,26 +379,38 @@ def is_steam_gamepad_running(gamepadui: bool = True) -> bool:
 
 
 def run_steam_command(command: str):
-    steam, _, uid = get_steam_location(False)
+    steam, pid, uid = get_steam_location(False)
 
-    if steam is None or uid is None:
+    if steam is None or pid is None or uid is None:
         logger.error("Steam is not running or could not be found.")
         return False
 
     try:
         gid = get_gid(uid)
+        if flatpak_id := get_flatpak_id(pid):
+            cmd = [
+                "/usr/bin/flatpak",
+                "run",
+                "--command=steam",
+                flatpak_id,
+                "-ifrunning",
+                command,
+            ]
+            env = get_user_systemd_environment(uid, gid)
+        else:
+            cmd = [steam, "-ifrunning", command]
+            env = {"HOME": expanduser("~", uid)}
+
         result = subprocess.run(
-            [steam, "-ifrunning", command],
+            cmd,
             check=False,
             user=uid,
             group=gid,
-            env={
-                "HOME": expanduser("~", uid),
-            },
+            env=env,
         )
 
         logger.info(
-            f"Running steam command `{[steam, "-ifrunning", command]}` with uid={uid} gid={gid} result: {result}"
+            f"Running steam command `{cmd}` with uid={uid} gid={gid} result: {result}"
         )
 
         return result.returncode == 0
