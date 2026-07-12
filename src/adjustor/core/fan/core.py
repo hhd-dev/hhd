@@ -50,6 +50,11 @@ class FanState(TypedDict):
 
 
 def get_fan_info() -> FanInfo | None:
+    fans = find_fans()
+    if not fans:
+        logger.warning("Could not find PWM controllable fans.")
+        return None
+
     tctl = find_tctl_temp()
     if tctl is None:
         logger.warning("Could not find tctl junction temperature.")
@@ -57,11 +62,6 @@ def get_fan_info() -> FanInfo | None:
     edge = find_edge_temp()
     if edge is None:
         logger.error("Could not find edge temperature.")
-        return None
-
-    fans = find_fans()
-    if not fans:
-        logger.error("Could not find PWM controllable fans.")
         return None
 
     return {"tctl": tctl, "edge": edge, "fans": fans}

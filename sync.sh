@@ -18,4 +18,4 @@ ssh $HOST /bin/bash << EOF
     sudo systemctl stop hhd
 EOF
 
-ssh -t $HOST "sudo HHD_HORI_STEAM=1 HHD_HIDE_ALL=1 HHD_BOOTC=1 ~/hhd-dev/hhd/venv/bin/hhd"
+ssh -t $HOST "sudo HHD_HORI_STEAM=1 HHD_HIDE_ALL=1 HHD_BOOTC=1 HHD_ADJUSTOR_NEXT=1 ~/hhd-dev/hhd/venv/bin/hhd"

@@ -20,6 +20,8 @@ CONFLICTING_PLUGINS = {
     "PowerControl": "homebrew/plugins/PowerControl",
 }
 
+USE_UNIFIED = os.environ.get("HHD_ADJUSTOR_NEXT", "0") == "1"
+
 
 class AdjustorInitPlugin(HHDPlugin):
     def __init__(
@@ -249,6 +251,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
     from .drivers.gpu import GpuPlugin
     from .drivers.battery import BatteryPlugin
+    from .drivers.unified import UnifiedDriverPlugin
 
     drivers = []
     with open("/sys/devices/virtual/dmi/id/product_name") as f:
@@ -299,6 +302,17 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             min_tdp = v["min_tdp"]
             max_tdp = v["max_tdp"]
             break
+
+    if not drivers_matched and USE_UNIFIED:
+        driver = UnifiedDriverPlugin()
+        if driver.is_supported():
+            drivers.append(driver)
+            drivers_matched = True
+            if driver.tdp:
+                # These need to be dynamic... TODO
+                min_tdp = driver.tdp.pl1[0]
+                default_tdp = driver.tdp.pl1[1] or 15
+                max_tdp = driver.tdp.pl1[2]
 
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
         drivers_matched = False
