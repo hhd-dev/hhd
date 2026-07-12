@@ -410,7 +410,7 @@ def run_steam_command(command: str):
         )
 
         logger.info(
-            f"Running steam command `{cmd}` with uid={uid} gid={gid} result: {result}"
+            f"Running steam command `{cmd}` with uid={uid} gid={gid}"
         )
 
         return result.returncode == 0
