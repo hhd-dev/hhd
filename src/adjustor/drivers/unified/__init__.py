@@ -210,9 +210,9 @@ def set_tdp(tdp_fn: str, data: FwattrData, val: int):
 HWMON = "/sys/class/hwmon"
 
 DEFAULT_EDGE = {
-    40: 30,
-    45: 30,
-    50: 40,
+    40: 45,
+    45: 45,
+    50: 45,
     55: 45,
     60: 55,
     65: 60,
@@ -287,6 +287,7 @@ class UnifiedDriverPlugin(HHDPlugin):
         self.initialized = False
 
         self.profiles = get_profiles()
+        print(self.profiles)
         if self.profiles and self.profiles.has_custom:
             self.tdp = get_tdp_values(self.profiles.fn)
         else:
@@ -298,6 +299,7 @@ class UnifiedDriverPlugin(HHDPlugin):
         self.new_tdp = None
         self.queue_tdp = None
         self.old_target = None
+        self.sys_tdp = False
 
         # Managed Fan
         self.fan_t = None
@@ -378,6 +380,12 @@ class UnifiedDriverPlugin(HHDPlugin):
 
         if mode is not None and self.startup:
             tdp_reset = True
+
+        # Show steam message
+        if self.sys_tdp:
+            conf["tdp.unified.sys_tdp"] = _("Steam is controlling TDP")
+        else:
+            conf["tdp.unified.sys_tdp"] = ""
 
         #
         # TDP Management
@@ -471,7 +479,6 @@ class UnifiedDriverPlugin(HHDPlugin):
         if new_target and new_target != self.old_target:
             self.old_target = new_target
             self.emit({"type": "energy", "status": new_target})
-            self.pp = new_target
 
         #
         # Fan Settings for Managed fans
@@ -546,9 +553,13 @@ class UnifiedDriverPlugin(HHDPlugin):
                 self.new_tdp = ev["tdp"]
                 self.sys_tdp = ev["tdp"] is not None
             elif ev["type"] == "ppd":
+                assert self.profiles
                 match ev["status"]:
                     case "power":
-                        self.new_mode = "quiet"
+                        for p, _ in self.profiles.profiles:
+                            if p in ("low-power", "quiet"):
+                                self.new_mode = p
+                                break
                     case "balanced":
                         self.new_mode = "balanced"
                     case "performance":
