@@ -158,7 +158,7 @@ def get_cfg_commands(
         r,
         g,
         b,
-        # Uknown
+        # Unknown
         0x00,
         0x00,
         0x00,

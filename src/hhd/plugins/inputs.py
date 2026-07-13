@@ -11,7 +11,7 @@ def get_product():
         with open("/sys/devices/virtual/dmi/id/product_name", "r") as f:
             return f.read().strip()
     except Exception:
-        return "Uknown"
+        return "Unknown"
 
 
 def get_vendor():
@@ -19,7 +19,7 @@ def get_vendor():
         with open("/sys/devices/virtual/dmi/id/board_vendor", "r") as f:
             return f.read().strip()
     except Exception:
-        return "Uknown"
+        return "Unknown"
 
 
 def get_touchpad_config():

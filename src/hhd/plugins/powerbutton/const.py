@@ -120,7 +120,7 @@ def get_config() -> PowerButtonConfig:
         # TODO: Fix isa handling to only work when only shift is active
         return PBC(prod, prod, type="only_press")
 
-    return PBC("uknown", "NA", "only_press", unsupported=True)
+    return PBC("unknown", "NA", "only_press", unsupported=True)
 
 
 # Legion go

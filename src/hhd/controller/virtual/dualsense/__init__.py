@@ -213,11 +213,11 @@ class Dualsense(Producer, Consumer):
                         self.dev.send_get_report_reply(ev["id"], 0, rep)
                     else:
                         logger.warning(
-                            f"DS5: Received get_report with the id (uknown): {ev['rnum']}"
+                            f"DS5: Received get_report with the id (unknown): {ev['rnum']}"
                         )
                 case "set_report":
                     logger.warning(
-                        f"DS5: Received set_report with the id (uknown): {ev['rnum']}"
+                        f"DS5: Received set_report with the id (unknown): {ev['rnum']}"
                     )
                 case "output":
                     invalid = False
@@ -232,7 +232,7 @@ class Dualsense(Producer, Consumer):
 
                     if invalid:
                         logger.warning(
-                            f"DS5: Received uknown output report with the following data:\n{ev['report']}: {ev['data'].hex()}"
+                            f"DS5: Received unknown output report with the following data:\n{ev['report']}: {ev['data'].hex()}"
                         )
                         continue
 

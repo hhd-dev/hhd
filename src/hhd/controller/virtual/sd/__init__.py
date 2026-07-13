@@ -259,7 +259,7 @@ class SteamdeckController(Producer, Consumer):
                                         signed=False,
                                     )
                                     ss.append(
-                                        f"{SD_SETTINGS[rtype] if rtype < len(SD_SETTINGS) else "UKNOWN"} ({rtype:02d}): {rdata:02x}"
+                                        f"{SD_SETTINGS[rtype] if rtype < len(SD_SETTINGS) else "UNKNOWN"} ({rtype:02d}): {rdata:02x}"
                                     )
                                 mlen = max(map(len, ss))
                                 logger.info(

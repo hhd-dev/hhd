@@ -278,7 +278,7 @@ class UhidDevice:
                 "rnum": d[8],
                 "rtype": d[9],
             }
-        assert False, f"Report type {v} uknown"
+        assert False, f"Report type {v} unknown"
 
     def send_create(self) -> None:
         ev = (

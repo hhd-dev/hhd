@@ -159,7 +159,7 @@ children:
             tags: [error]
             title: Updater Error
             default: >
-              Uknown image reference, switch to latest stable to receive
+              Unknown image reference, switch to latest stable to receive
               updates.
 
           update:
