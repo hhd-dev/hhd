@@ -68,6 +68,16 @@ BOOTC_UPDATE_CMD = [
     "update",
 ]
 
+BOOTC_SWITCH_CMD = [
+    BOOTC_PATH,
+    "switch",
+]
+
+if os.environ.get("HHD_BOOTC_SOFT_REBOOT", "0") == 1:
+    SOFT_REBOOT = "--soft-reboot=auto"
+    BOOTC_UPDATE_CMD.append(SOFT_REBOOT)
+    BOOTC_SWITCH_CMD.append(SOFT_REBOOT)
+
 SKOPEO_REBASE_CMD = lambda ref: ["skopeo", "inspect", "docker://" + ref]
 
 
@@ -426,7 +436,7 @@ class BootcPlugin(HHDPlugin):
                     if e == "ready_rebased" and self.branch_ref:
                         self.checked_update = False
                         self.state = "loading_cancellable"
-                        cmd = [BOOTC_PATH, "switch", self.branch_ref]
+                        cmd = BOOTC_SWITCH_CMD + [self.branch_ref]
                         if self.bootc_progress:
                             self.proc, self.progress = run_command_threaded_progress(
                                 cmd,
@@ -541,7 +551,7 @@ class BootcPlugin(HHDPlugin):
                 if conf.get_action("updates.bootc.stage.unknown.update"):
                     assert DEFAULT_URI # We were promised it
                     self.state = "loading_cancellable"
-                    cmd = [BOOTC_PATH, "switch", DEFAULT_URI]
+                    cmd = BOOTC_SWITCH_CMD + [DEFAULT_URI]
                     if self.bootc_progress:
                         self.proc, self.progress = run_command_threaded_progress(
                             cmd, self.emit, DEFAULT_URI, self.progress_lock
