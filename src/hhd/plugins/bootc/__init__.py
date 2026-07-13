@@ -77,6 +77,7 @@ if os.environ.get("HHD_BOOTC_SOFT_REBOOT", "0") == 1:
     SOFT_REBOOT = "--soft-reboot=auto"
     BOOTC_UPDATE_CMD.append(SOFT_REBOOT)
     BOOTC_SWITCH_CMD.append(SOFT_REBOOT)
+    BOOTC_ROLLBACKCMD.append(SOFT_REBOOT)
 
 SKOPEO_REBASE_CMD = lambda ref: ["skopeo", "inspect", "docker://" + ref]
 
