@@ -271,22 +271,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     default_tdp = 15
     max_tdp = 30
 
-    go_model = None
-    if prod in LEGION_GO_S_DMIS:
-        go_model = "gos"
-        max_tdp = 33
-    elif prod in LEGION_GO_DMIS:
-        go_model = "go"
-        max_tdp = 30
-    elif prod in LEGION_GO_2_DMIS:
-        go_model = "go2"
-        max_tdp = 35
-
-    if go_model and not bool(os.environ.get("HHD_ADJ_ALLY")):
-        drivers.append(LenovoDriverPlugin(go_model = go_model))
-        drivers_matched = True
-        use_acpi_call = True
-
     for k, v in ASUS_DATA.items():
         if k in prod:
             drivers.append(AsusDriverPlugin(v))
@@ -313,6 +297,23 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                 min_tdp = driver.tdp.pl1[0]
                 default_tdp = driver.tdp.pl1[1] or 15
                 max_tdp = driver.tdp.pl1[2]
+
+    # Unified should take over Go TDP handling, even if partial
+    go_model = None
+    if prod in LEGION_GO_S_DMIS:
+        go_model = "gos"
+        max_tdp = 33
+    elif prod in LEGION_GO_DMIS:
+        go_model = "go"
+        max_tdp = 30
+    elif prod in LEGION_GO_2_DMIS:
+        go_model = "go2"
+        max_tdp = 35
+
+    if not drivers_matched and go_model and not bool(os.environ.get("HHD_ADJ_ALLY")):
+        drivers.append(LenovoDriverPlugin(go_model=go_model))
+        drivers_matched = True
+        use_acpi_call = True
 
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
         drivers_matched = False
