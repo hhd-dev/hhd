@@ -608,4 +608,8 @@ class UnifiedDriverPlugin(HHDPlugin):
                     self.emit({"type": "special", "event": event})
 
     def close(self):
-        pass
+        if self.fan_t:
+            self.fan_should_exit.set()
+            self.fan_t.join()
+            self.fan_t = None
+            self.fan_state = {}
