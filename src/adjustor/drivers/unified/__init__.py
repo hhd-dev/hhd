@@ -30,7 +30,13 @@ PP_KNOWN = {
         "balanced": _("Balanced"),
         "performance": _("Performance"),
         "custom": _("Custom"),
-    }
+    },
+    "lenovo-wmi-gamezone": {
+        "low-power": _("Quiet"),
+        "balanced": _("Balanced"),
+        "performance": _("Performance"),
+        "custom": _("Custom"),
+    },
 }
 
 
@@ -109,7 +115,7 @@ def set_mode(data: PPData, profile: str):
 # Firmware Attributes interface
 #
 
-SYS_ATTR_KNOWN = ["amd-dptc"]
+SYS_ATTR_KNOWN = ["amd-dptc", "lenovo-wmi-other"]
 SYS_ATTR_PATH = "/sys/class/firmware-attributes/"
 SYS_ATTR_MID = "attributes"
 TDP_PL3_FN = "ppt_pl3_fppt"
