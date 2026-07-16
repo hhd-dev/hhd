@@ -328,7 +328,7 @@ class UnifiedDriverPlugin(HHDPlugin):
             self.initialized = False
             return {}
         
-        logger.info(f"Profile data: {self.profiles}")
+        logger.info(f"Profile data: {self.profiles}\nTDP data: {self.tdp}")
 
         self.initialized = True
         out = {"tdp": {"unified": load_relative_yaml("settings.yml")}}
@@ -339,6 +339,8 @@ class UnifiedDriverPlugin(HHDPlugin):
             setup_tdp_values(
                 self.tdp, out["tdp"]["unified"]["children"]["tdp"]["modes"]["custom"]
             )
+        else:
+            del out["tdp"]["unified"]["children"]["tdp"]["modes"]["custom"]
         if self.fan:
             setup_fan(self.fan, out["tdp"]["unified"]["children"]["fan"])
         else:
