@@ -75,14 +75,20 @@ def get_profiles() -> PPData | None:
 
         has_custom = "custom" in choices and "custom" in PP_KNOWN[provider]
 
+        profiles = tuple(
+                (k, v) for k, v in PP_KNOWN[provider].items() if k in choices
+            )
+
+        if not profiles:
+            logger.info(f"Found no profiles for: '{pp}', '{fn}'")
+            continue
+
         return PPData(
             fn=fn,
             pp=pp,
             provider=provider,
             has_custom=has_custom,
-            profiles=tuple(
-                (k, v) for k, v in PP_KNOWN[provider].items() if k in choices
-            ),
+            profiles=profiles,
         )
 
 
@@ -293,7 +299,6 @@ class UnifiedDriverPlugin(HHDPlugin):
         self.initialized = False
 
         self.profiles = get_profiles()
-        print(self.profiles)
         if self.profiles and self.profiles.has_custom:
             self.tdp = get_tdp_values(self.profiles.fn)
         else:
@@ -322,6 +327,8 @@ class UnifiedDriverPlugin(HHDPlugin):
         if not self.enabled:
             self.initialized = False
             return {}
+        
+        logger.info(f"Profile data: {self.profiles}")
 
         self.initialized = True
         out = {"tdp": {"unified": load_relative_yaml("settings.yml")}}
@@ -334,6 +341,8 @@ class UnifiedDriverPlugin(HHDPlugin):
             )
         if self.fan:
             setup_fan(self.fan, out["tdp"]["unified"]["children"]["fan"])
+        else:
+            del out["tdp"]["unified"]["children"]["fan"]
 
         return out
 
