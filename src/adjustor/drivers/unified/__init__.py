@@ -154,7 +154,7 @@ def get_tdp_values(mode_provider: str | None = None):
         # WMI convention means we have cruft -N suffix
         provider = None
         for s in SYS_ATTR_KNOWN:
-            if fn.startswith(s) and (not mode_provider or mode_provider == fn):
+            if fn.startswith(s):
                 provider = s
                 break
         if not provider:
