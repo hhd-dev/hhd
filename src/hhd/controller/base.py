@@ -1259,6 +1259,37 @@ class Multiplexer:
                         if self.emit:
                             self.emit({"type": "special", "event": "overlay"})
 
+                    if ev["code"] in ("hhd_qam", "hhd_expanded"):
+                        # Direct binds for the HHD side menu (QAM) and the
+                        # expanded HHD overlay, used by per-button remaps.
+                        # Action names match shortcuts.yml. Emitted straight
+                        # away so they bypass the multi-tap QAM state machine.
+                        # "overlay" -> open_qam (side menu), "qam_triple" ->
+                        # open_expanded (full overlay).
+                        if ev["value"] and self.emit:
+                            self.emit(
+                                {
+                                    "type": "special",
+                                    "event": (
+                                        "overlay"
+                                        if ev["code"] == "hhd_qam"
+                                        else "qam_triple"
+                                    ),
+                                }
+                            )
+                        ev["code"] = ""  # type: ignore
+
+                    if ev["code"] in ("steam_qam", "steam_expanded"):
+                        # Open Steam's own QAM / expanded menu via the same
+                        # path Steam Deck uses. Handled at the end of process()
+                        # so it respects intercept and the chord fallbacks.
+                        if ev["value"]:
+                            if ev["code"] == "steam_qam":
+                                send_steam_qam = True
+                            else:
+                                send_steam_expand = True
+                        ev["code"] = ""  # type: ignore
+
                     if ev["code"] == "touchpad_right":
                         match self.touchpad_right:
                             case "disabled":
