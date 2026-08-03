@@ -20,6 +20,7 @@ SHORTCUT_RELOAD_DELAY = 2
 HHD_OVERLAY_DISABLE = os.environ.get("HHD_OVERLAY_DISABLE", "0") == "1"
 FORCE_GAME = os.environ.get("HHD_FORCE_GAME_ID", None)
 SUPPORTS_HALVING = os.environ.get("HHD_GS_STEAMUI_HALFHZ", "0") == "1"
+SUPPORTS_FRAMEGEN = os.environ.get("HHD_GS_FRAMEGEN", "0") == "1"
 SUPPORTS_DPMS = os.environ.get("HHD_GS_DPMS", "0") == "1"
 
 
@@ -127,6 +128,8 @@ class OverlayPlugin(HHDPlugin):
 
         if not SUPPORTS_HALVING:
             del set["gamemode"]["gamescope"]["children"]["steamui_halfhz"]
+        if not SUPPORTS_FRAMEGEN:
+            del set["gamemode"]["gamescope"]["children"]["framegen"]
         if not SUPPORTS_DPMS:
             del set["gamemode"]["gamescope"]["children"]["dpms"]
 
@@ -192,6 +195,13 @@ class OverlayPlugin(HHDPlugin):
         if SUPPORTS_HALVING and self.ovf:
             self.ovf.gsconf["steamui_halfhz"] = conf.get(
                 "gamemode.gamescope.steamui_halfhz", False
+            )
+        if SUPPORTS_FRAMEGEN and self.ovf:
+            self.ovf.gsconf["framegen"] = conf.get(
+                "gamemode.gamescope.framegen.mode", "disabled"
+            )
+            self.ovf.gsconf["framegen_quality"] = conf.get(
+                "gamemode.gamescope.framegen.enabled.quality", 10
             )
         if SUPPORTS_DPMS and self.ovf:
             self.ovf.gsconf["dpms"] = conf.get("gamemode.gamescope.dpms", False)
