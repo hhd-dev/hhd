@@ -279,7 +279,7 @@ def controller_loop(
             usage_page=[0xFF00],
             interface=0,
             btn_map=GPD_WIN5_HID_BTN_MAP,
-            required=False,
+            required=True,
         )
 
     grab_at = dconf.get("grab_at", True)
