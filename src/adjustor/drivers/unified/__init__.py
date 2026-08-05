@@ -485,17 +485,20 @@ def set_hwmon_fan(data: HwmonFan, curve: Sequence[int]):
 
 
 def disable_hwmon_fan(data: HwmonFan):
-    logger.info(f"Disabling '{data.name}' fan curve")
+    found = False
     for fan in data.fans:
         enable_fn = os.path.join(data.path, HWMON_ATTRS["enable"].format(fan=fan))
         if not os.path.isfile(enable_fn):
             continue
+        found = True
         with open(enable_fn, "w") as f:
             f.write("2")
         if fan != data.fans[-1]:
             time.sleep(TDP_DELAY)
 
-    return True
+    if found:
+        logger.info(f"Disabled '{data.name}' fan curve")
+    return found
 
 
 class UnifiedDriverPlugin(HHDPlugin):
@@ -823,7 +826,32 @@ class UnifiedDriverPlugin(HHDPlugin):
                     self.queue_fan = None
             elif fan_mode != self.old_conf["fan.mode"].to(str):
                 try:
-                    disable_hwmon_fan(self.fan)
+                    if not disable_hwmon_fan(self.fan):
+                        # Quickly switch modes to reset the curve
+                        reset_mode = next(
+                            (
+                                profile
+                                for profile, _ in self.profiles.profiles
+                                if profile != mode
+                            ),
+                            None,
+                        )
+                        if reset_mode:
+                            logger.info(
+                                f"Disabling fan curve by switching to '{reset_mode}' and back."
+                            )
+                            set_mode(self.profiles, reset_mode)
+                            time.sleep(TDP_DELAY)
+                            set_mode(self.profiles, mode)
+
+                            # Switching profiles resets custom TDP values. Since TDP
+                            # handling already ran this sync, apply them on the next one.
+                            if mode == "custom" and self.tdp:
+                                self.queue_tdp = curr
+                        else:
+                            logger.warning(
+                                "Could not disable fan curve: no alternate profile available."
+                            )
                 except Exception as e:
                     logger.error(f"Could not disable fan curve. Error:\n{e}")
                 self.queue_fan = None
