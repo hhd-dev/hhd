@@ -127,6 +127,7 @@ SYS_ATTR_MID = "attributes"
 TDP_PL3_FN = "ppt_pl3_fppt"
 TDP_PL2_FN = "ppt_pl2_sppt"
 TDP_PL1_FN = "ppt_pl1_spl"
+FAN_FULL_SPEED_FN = "fan_full_speed"
 
 MIN_VAL = "min_value"
 MAX_VAL = "max_value"
@@ -147,6 +148,45 @@ class FwattrData(NamedTuple):
     pl1: tuple[int, int | None, int]
     pl2: tuple[int, int | None, int] | None = None
     pl3: tuple[int, int | None, int] | None = None
+
+
+class Fwattr(NamedTuple):
+    provider: str
+    attr: str
+    fn: str
+
+
+def get_fwattr(attr: str) -> Fwattr | None:
+    """Find a writable firmware attribute without assuming its provider."""
+    if not os.path.isdir(SYS_ATTR_PATH):
+        return
+    for provider in sorted(os.listdir(SYS_ATTR_PATH)):
+        fn = os.path.join(SYS_ATTR_PATH, provider, SYS_ATTR_MID, attr, CUR_VAL)
+        if os.path.isfile(fn):
+            return Fwattr(provider=provider, attr=attr, fn=fn)
+
+
+def get_fwattr_value(data: Fwattr) -> int | None:
+    try:
+        with open(data.fn) as f:
+            return int(f.read().strip())
+    except Exception as e:
+        logger.error(
+            f"Failed reading firmware attribute '{data.attr}' with error:\n{e}"
+        )
+
+
+def set_fwattr(data: Fwattr, val: int):
+    logger.info(
+        f"Setting firmware attribute '{data.attr}' to {val} by writing to:\n{data.fn}"
+    )
+    try:
+        with open(data.fn, "w") as f:
+            f.write(f"{val}\n")
+        return True
+    except Exception as e:
+        logger.error(f"Failed writing firmware attribute with error:\n{e}")
+        return False
 
 
 def get_tdp_values(mode_provider: str | None = None):
@@ -250,7 +290,8 @@ class ManagedFan(NamedTuple):
     edge: FanCurve
     tctl: FanCurve | None
 
-def get_fan():
+
+def get_managed_fan() -> ManagedFan | None:
     info = get_fan_info()
     if not info:
         return
@@ -261,33 +302,200 @@ def get_fan():
     )
 
 
-def setup_fan(data: ManagedFan, obj):
-    if isinstance(data, ManagedFan):
-        obj.update(load_relative_yaml("./fan/managed.yml"))
-        for target, curve in [
-            ("manual_edge", data.edge),
-            ("manual_junction", data.tctl),
-        ]:
-            if curve is None:
-                del obj["modes"][target]
-                continue
-            temps = {}
-            for temp, cc in curve:
-                temps[f"st{temp}"] = {
-                    "tags": ["slim"],
-                    "type": "int",
-                    "min": 0,
-                    "max": 100,
-                    "step": 2,
-                    "unit": "%",
-                    "title": f"{temp}C",
-                    "default": cc,
-                }
-            obj["modes"][target]["children"] = {
-                "info": obj["modes"][target]["children"]["info"],
-                **temps,
-                "reset": obj["modes"][target]["children"]["reset"],
+def setup_managed_fan(data: ManagedFan, obj):
+    obj.update(load_relative_yaml("./fan/managed.yml"))
+    for target, curve in [
+        ("manual_edge", data.edge),
+        ("manual_junction", data.tctl),
+    ]:
+        if curve is None:
+            del obj["modes"][target]
+            continue
+        temps = {}
+        for temp, cc in curve:
+            temps[f"st{temp}"] = {
+                "tags": ["slim"],
+                "type": "int",
+                "min": 0,
+                "max": 100,
+                "step": 2,
+                "unit": "%",
+                "title": f"{temp}C",
+                "default": cc,
             }
+        obj["modes"][target]["children"] = {
+            "info": obj["modes"][target]["children"]["info"],
+            **temps,
+            "reset": obj["modes"][target]["children"]["reset"],
+        }
+
+
+#
+# Unmanaged fan curve
+#
+
+HWMON_ATTRS = {
+    "name": "name",
+    "enable": "pwm{fan}_enable",
+    "pwm": "pwm{fan}_auto_point{point}_pwm",
+    "temp": "pwm{fan}_auto_point{point}_temp",
+}
+
+HWMON_DEFAULT_CURVES = {
+    "lenovo_wmi_gamezone_fan": tuple(
+        zip(
+            (10, 20, 30, 40, 50, 60, 70, 80, 90, 100),
+            (44, 48, 55, 60, 71, 79, 87, 87, 100, 100),
+        )
+    ),
+    "asus_custom_fan_curve": tuple(
+        zip(
+            (30, 40, 50, 60, 70, 80, 90, 100),
+            (5, 10, 20, 35, 55, 75, 75, 75),
+        )
+    ),
+}
+
+
+class HwmonFan(NamedTuple):
+    name: str
+    path: str
+    fans: tuple[int, ...]
+    curve: FanCurve
+    write_temps: bool
+
+
+def get_hwmon_fan() -> HwmonFan | None:
+    if not os.path.isdir(HWMON):
+        return
+    for hwmon in sorted(os.listdir(HWMON)):
+        path = os.path.join(HWMON, hwmon)
+        try:
+            with open(os.path.join(path, HWMON_ATTRS["name"])) as f:
+                name = f.read().strip()
+        except Exception:
+            continue
+
+        curve = HWMON_DEFAULT_CURVES.get(name)
+        if curve is None:
+            continue
+
+        fans = []
+        fan = 1
+        while os.path.isfile(
+            os.path.join(path, HWMON_ATTRS["pwm"].format(fan=fan, point=1))
+        ):
+            if not all(
+                os.path.isfile(
+                    os.path.join(
+                        path,
+                        HWMON_ATTRS[attr].format(fan=fan, point=point),
+                    )
+                )
+                for point in range(1, len(curve) + 1)
+                for attr in ("pwm", "temp")
+            ):
+                logger.warning(
+                    f"Ignoring partial fan curve from hwmon provider '{name}'"
+                )
+                fans.clear()
+                break
+            fans.append(fan)
+            fan += 1
+
+        if fans:
+            return HwmonFan(
+                name=name,
+                path=path,
+                fans=tuple(fans),
+                curve=curve,
+                write_temps=name == "asus_custom_fan_curve",
+            )
+
+
+def get_fan() -> ManagedFan | HwmonFan | None:
+    hwmon = get_hwmon_fan()
+    if hwmon:
+        return hwmon
+    return get_managed_fan()
+
+
+def setup_fan(data: ManagedFan | HwmonFan, obj):
+    if isinstance(data, ManagedFan):
+        setup_managed_fan(data, obj)
+        return
+
+    obj.update(load_relative_yaml("./fan/hwmon.yml"))
+    points = {}
+    for temp, speed in data.curve:
+        points[f"st{temp}"] = {
+            "tags": ["slim"],
+            "type": "int",
+            "min": 0,
+            "max": 100,
+            "step": 2,
+            "unit": "%",
+            "title": f"{temp}C",
+            "default": speed,
+        }
+    enabled = obj["modes"]["enabled"]["children"]
+    obj["modes"]["enabled"]["children"] = {
+        **points,
+        "reset": enabled["reset"],
+    }
+
+
+def set_hwmon_fan(data: HwmonFan, curve: Sequence[int]):
+    if len(curve) != len(data.curve) or any(
+        speed < 0 or speed > 100 for speed in curve
+    ):
+        raise ValueError("Fan curve must contain one 0-100 speed per temperature")
+
+    point_str = ",".join(f"{temp:>4d} C" for temp, _ in data.curve)
+    curve_str = ",".join(f"{speed:>4d} %" for speed in curve)
+    logger.info(f"Setting '{data.name}' fan curve:\n{point_str}\n{curve_str}")
+
+    for fan in data.fans:
+        for point, ((temp, _), speed) in enumerate(zip(data.curve, curve), 1):
+            if data.write_temps:
+                temp_fn = os.path.join(
+                    data.path,
+                    HWMON_ATTRS["temp"].format(fan=fan, point=point),
+                )
+                with open(temp_fn, "w") as f:
+                    f.write(str(temp))
+
+            pwm_fn = os.path.join(
+                data.path,
+                HWMON_ATTRS["pwm"].format(fan=fan, point=point),
+            )
+            with open(pwm_fn, "w") as f:
+                f.write(str(round(speed * 255 / 100)))
+
+    for fan in data.fans:
+        enable_fn = os.path.join(data.path, HWMON_ATTRS["enable"].format(fan=fan))
+        if not os.path.isfile(enable_fn):
+            continue
+        with open(enable_fn, "w") as f:
+            f.write("1")
+        if fan != data.fans[-1]:
+            time.sleep(TDP_DELAY)
+
+    return True
+
+
+def disable_hwmon_fan(data: HwmonFan):
+    logger.info(f"Disabling '{data.name}' fan curve")
+    for fan in data.fans:
+        enable_fn = os.path.join(data.path, HWMON_ATTRS["enable"].format(fan=fan))
+        if not os.path.isfile(enable_fn):
+            continue
+        with open(enable_fn, "w") as f:
+            f.write("2")
+        if fan != data.fans[-1]:
+            time.sleep(TDP_DELAY)
+
+    return True
 
 
 class UnifiedDriverPlugin(HHDPlugin):
@@ -297,18 +505,22 @@ class UnifiedDriverPlugin(HHDPlugin):
         self.log = "adju"
         self.enabled = False
         self.initialized = False
+        self.old_conf = None
+        self.startup = True
 
         self.profiles = get_profiles()
         if self.profiles and self.profiles.has_custom:
             self.tdp = get_tdp_values(self.profiles.fn)
         else:
             self.tdp = None
+        self.full_fan = get_fwattr(FAN_FULL_SPEED_FN)
         self.fan = get_fan()
 
         self.mode = None
         self.new_mode = None
         self.new_tdp = None
         self.queue_tdp = None
+        self.queue_fan = None
         self.old_target = None
         self.sys_tdp = False
 
@@ -327,7 +539,7 @@ class UnifiedDriverPlugin(HHDPlugin):
         if not self.enabled:
             self.initialized = False
             return {}
-        
+
         logger.info(f"Profile data: {self.profiles}\nTDP data: {self.tdp}")
 
         self.initialized = True
@@ -340,7 +552,9 @@ class UnifiedDriverPlugin(HHDPlugin):
                 self.tdp, out["tdp"]["unified"]["children"]["tdp"]["modes"]["custom"]
             )
         else:
-            del out["tdp"]["unified"]["children"]["tdp"]["modes"]["custom"]
+            out["tdp"]["unified"]["children"]["tdp"]["modes"].pop("custom", None)
+        if not self.full_fan:
+            del out["tdp"]["unified"]["children"]["fan_full_speed"]
         if self.fan:
             setup_fan(self.fan, out["tdp"]["unified"]["children"]["fan"])
         else:
@@ -363,12 +577,22 @@ class UnifiedDriverPlugin(HHDPlugin):
             self.startup = True
             return
 
+        if self.startup and self.full_fan:
+            full_fan = get_fwattr_value(self.full_fan)
+            if full_fan is not None:
+                conf["tdp.unified.fan_full_speed"] = bool(full_fan)
+
         # If not old config, exit, as values can not be set
         if not self.old_conf:
             self.old_conf = conf["tdp.unified"]
             return
 
         curr = time.perf_counter()
+
+        if self.full_fan:
+            full_fan = conf["tdp.unified.fan_full_speed"].to(bool)
+            if full_fan != self.old_conf["fan_full_speed"].to(bool):
+                set_fwattr(self.full_fan, int(full_fan))
 
         #
         # TDP
@@ -558,6 +782,51 @@ class UnifiedDriverPlugin(HHDPlugin):
                     self.fan_t.join()
                     self.fan_t = None
                     self.fan_state = {}
+
+        #
+        # Firmware-managed hwmon fan curves
+        #
+
+        elif self.fan and isinstance(self.fan, HwmonFan):
+            fan_mode = conf["tdp.unified.fan.mode"].to(str)
+            fan_enabled = fan_mode == "enabled"
+
+            if fan_enabled:
+                if conf["tdp.unified.fan.enabled.reset"].to(bool):
+                    conf["tdp.unified.fan.enabled.reset"] = False
+                    for temp, speed in self.fan.curve:
+                        conf[f"tdp.unified.fan.enabled.st{temp}"] = speed
+
+                if self.startup or tdp_reset or tdp_set:
+                    self.queue_fan = curr + APPLY_DELAY
+
+                if fan_mode != self.old_conf["fan.mode"].to(str):
+                    self.queue_fan = curr + APPLY_DELAY
+
+                for temp, _ in self.fan.curve:
+                    if conf[f"tdp.unified.fan.enabled.st{temp}"].to(
+                        int
+                    ) != self.old_conf[f"fan.enabled.st{temp}"].to(int):
+                        self.queue_fan = curr + APPLY_DELAY
+
+                if self.queue_fan and self.queue_fan < curr:
+                    try:
+                        set_hwmon_fan(
+                            self.fan,
+                            [
+                                conf[f"tdp.unified.fan.enabled.st{temp}"].to(int)
+                                for temp, _ in self.fan.curve
+                            ],
+                        )
+                    except Exception as e:
+                        logger.error(f"Could not set fan curve. Error:\n{e}")
+                    self.queue_fan = None
+            elif fan_mode != self.old_conf["fan.mode"].to(str):
+                try:
+                    disable_hwmon_fan(self.fan)
+                except Exception as e:
+                    logger.error(f"Could not disable fan curve. Error:\n{e}")
+                self.queue_fan = None
 
         # Finish
         self.old_conf = conf["tdp.unified"]

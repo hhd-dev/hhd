@@ -14,4 +14,8 @@ children:
     title: " "
     tags: []
 
+  fan_full_speed:
+    type: bool
+    title: Set Fan to Full Speed
+
   fan: {}

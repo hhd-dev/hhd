@@ -1,0 +1,22 @@
+type: mode
+title: Custom Fan Curve
+hint: >-
+  Allows you to set a custom fan curve.
+
+default: disabled
+modes:
+  disabled:
+    type: container
+    title: Disabled
+    hint: >-
+      Lets the device manage the fan curve on its own.
+
+  enabled:
+    type: container
+    title: Enabled
+    tags: [ non-essential ]
+    children:
+
+      reset:
+        type: action
+        title: Reset to Default
