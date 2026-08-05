@@ -23,6 +23,7 @@ children:
     tags: [ non-essential, ordinal ]
     options:
       disabled: Unset
+      p80: 80%
       awake: While On
       always: Always
     default: disabled

@@ -32,6 +32,8 @@ def set_charge_bypass_type(bat: str, type: str):
     match type:
         case "disabled":
             val = "Standard"
+        case "p80":
+            val = "Long_Life"
         case "awake":
             val = "BypassS0"
         case "always":
@@ -95,6 +97,8 @@ class BatteryPlugin(HHDPlugin):
         self.queue_charge_limit = None
         self.charge_bypass_fn = None
         self.bypass_awake = True
+        self.bypass_always = True
+        self.bypass_longlife = False
         self.charge_limit_fn = None
         self.charge_bypass_prev = None
         self.charge_limit_prev = None
@@ -113,8 +117,16 @@ class BatteryPlugin(HHDPlugin):
             del out["tdp"]["battery"]["children"]["charge_limit"]
         if not self.charge_bypass_fn:
             del out["tdp"]["battery"]["children"]["charge_bypass"]
-        elif not self.bypass_awake:
-            del out["tdp"]["battery"]["children"]["charge_bypass"]["options"]["awake"]
+        else:
+            bypass_options = out["tdp"]["battery"]["children"]["charge_bypass"][
+                "options"
+            ]
+            if not self.bypass_longlife:
+                del bypass_options["p80"]
+            if not self.bypass_awake:
+                del bypass_options["awake"]
+            if not self.bypass_always:
+                del bypass_options["always"]
 
         return out
 
@@ -137,6 +149,26 @@ class BatteryPlugin(HHDPlugin):
             base = f"/sys/class/power_supply/{bat}"
             if os.path.exists(f"{base}/charge_control_end_threshold"):
                 self.charge_limit_fn = f"{base}/charge_control_end_threshold"
+            if os.path.exists(f"{base}/charge_types"):
+                try:
+                    with open(f"{base}/charge_types") as f:
+                        charge_types = set(
+                            f.read().replace("[", "").replace("]", "").split()
+                        )
+
+                    self.bypass_awake = "BypassS0" in charge_types
+                    self.bypass_always = "Bypass" in charge_types
+                    self.bypass_longlife = "Long_Life" in charge_types
+                    if (
+                        self.bypass_awake
+                        or self.bypass_always
+                        or self.bypass_longlife
+                    ):
+                        self.charge_bypass_fn = f"{base}/charge_types"
+                except Exception:
+                    logger.error(
+                        "Failed to read charge types file, assuming it is not supported."
+                    )
             if os.path.exists(f"{base}/charge_type"):
                 try:
                     with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
