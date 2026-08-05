@@ -1,0 +1,77 @@
+type: container
+title: Frostbay Cooling
+tags: [non-essential]
+children:
+  turn_on:
+    type: action
+    title: Turn On
+    hint: Send an active cooling state to Frostbay. The device stays connected.
+
+  turn_off:
+    type: action
+    title: Turn Off
+    hint: Send the OFF command to Frostbay (state[4]=0x00). Does not disconnect.
+
+  ble_status:
+    type: display
+    title: Bluetooth
+    default: "Connecting..."
+
+  running_state:
+    type: display
+    title: Current State
+    default: "Unknown"
+
+  flow:
+    type: display
+    title: Flow
+    default: "--"
+
+  water_temp_in:
+    type: display
+    title: Water Temp In
+    default: "--"
+
+  water_temp_out:
+    type: display
+    title: Water Temp Out
+    default: "--"
+
+  fan:
+    type: mode
+    title: Fan Control
+    default: auto
+    modes:
+      auto:
+        type: container
+        title: Smart Fan
+        children:
+          preset:
+            type: multiple
+            title: Smart Preset
+            options:
+              silent: Silent
+              soft: Soft
+              strong: Strong
+            default: soft
+      manual:
+        type: container
+        title: Fixed Fan
+        children:
+          percent:
+            type: int
+            title: Fan Speed
+            unit: "%"
+            min: 0
+            max: 100
+            step: 1
+            default: 50
+
+  pump:
+    type: int
+    title: Pump Speed
+    unit: "%"
+    min: 50
+    max: 100
+    step: 1
+    default: 80
