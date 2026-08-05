@@ -7,6 +7,7 @@ import os
 from hhd.plugins import Context, Event, HHDPlugin, load_relative_yaml
 from hhd.plugins.conf import Config
 
+from adjustor.core.charge_once import ChargeFullOncePolicy
 from adjustor.core.alib import AlibParams, DeviceParams, alib
 from adjustor.core.fan import fan_worker, get_fan_info
 from adjustor.core.platform import get_platform_choices, set_platform_profile
@@ -15,6 +16,15 @@ from adjustor.i18n import _
 logger = logging.getLogger(__name__)
 
 APPLY_DELAY = 0.7
+
+CHARGE_LIMITS = {
+    "p65": 65,
+    "p70": 70,
+    "p80": 80,
+    "p85": 85,
+    "p90": 90,
+    "p95": 95,
+}
 
 
 def set_charge_limit(bat: str, lim: int):
@@ -99,7 +109,19 @@ class BatteryPlugin(HHDPlugin):
         self.charge_bypass_prev = None
         self.charge_limit_prev = None
 
+        self.charge_policy = ChargeFullOncePolicy()
+        self.charge_once_action = None
+        self.emit = None
+
         self.always_enable = always_enable
+
+    def _set_charge_once_action(self, action: str | None) -> None:
+        if self.charge_once_action == action:
+            return
+
+        self.charge_once_action = action
+        if self.emit is not None:
+            self.emit({"type": "settings"})
 
     def settings(self):
         if not self.enabled:
@@ -111,6 +133,16 @@ class BatteryPlugin(HHDPlugin):
 
         if not self.charge_limit_fn:
             del out["tdp"]["battery"]["children"]["charge_limit"]
+            del out["tdp"]["battery"]["children"]["charge_once"]
+            del out["tdp"]["battery"]["children"]["charge_once_restore"]
+        elif self.charge_once_action == "start":
+            del out["tdp"]["battery"]["children"]["charge_once_restore"]
+        elif self.charge_once_action == "restore":
+            del out["tdp"]["battery"]["children"]["charge_once"]
+        else:
+            del out["tdp"]["battery"]["children"]["charge_once"]
+            del out["tdp"]["battery"]["children"]["charge_once_restore"]
+
         if not self.charge_bypass_fn:
             del out["tdp"]["battery"]["children"]["charge_bypass"]
         elif not self.bypass_awake:
@@ -125,6 +157,7 @@ class BatteryPlugin(HHDPlugin):
     ):
         self.emit = emit
         self.startup = True
+        self.charge_policy.open()
 
         for bat in os.listdir("/sys/class/power_supply"):
             if not bat.startswith("BAT"):
@@ -189,9 +222,24 @@ class BatteryPlugin(HHDPlugin):
         # Charge limit
         if self.charge_limit_fn:
             lim = conf["tdp.battery.charge_limit"].to(str)
+            limit = CHARGE_LIMITS.get(lim)
+            charge_limit_enabled = limit is not None
+            start_pressed = conf.get_action("tdp.battery.charge_once")
+            restore_pressed = conf.get_action("tdp.battery.charge_once_restore")
+            action_pressed = start_pressed or restore_pressed
+
             if lim != self.charge_limit_prev:
                 self.queue_charge_limit = curr + APPLY_DELAY
                 self.charge_limit_prev = lim
+
+            def apply_charge_limit(enabled: bool):
+                set_charge_limit(
+                    self.charge_limit_fn,
+                    limit if enabled and limit is not None else 100,
+                )
+
+            if self.startup and not charge_limit_enabled:
+                self.charge_policy.sync(False)
 
             if self.startup or (
                 self.queue_charge_limit and self.queue_charge_limit < curr
@@ -199,24 +247,40 @@ class BatteryPlugin(HHDPlugin):
                 self.queue_charge_limit = None
                 self.charge_limit_prev = lim
 
-                match lim:
-                    case "p65":
-                        set_charge_limit(self.charge_limit_fn, 65)
-                    case "p70":
-                        set_charge_limit(self.charge_limit_fn, 70)
-                    case "p80":
-                        set_charge_limit(self.charge_limit_fn, 80)
-                    case "p85":
-                        set_charge_limit(self.charge_limit_fn, 85)
-                    case "p90":
-                        set_charge_limit(self.charge_limit_fn, 90)
-                    case "p95":
-                        set_charge_limit(self.charge_limit_fn, 95)
-                    case "disabled":
-                        # Avoid writing charge limit on startup if
-                        # disabled, so that if user does not use us
-                        # we do not overwrite their setting.
-                        if not self.startup:
-                            set_charge_limit(self.charge_limit_fn, 100)
+                if charge_limit_enabled:
+                    if not self.charge_policy.override_active:
+                        apply_charge_limit(True)
+                    self.charge_policy.sync(not self.charge_policy.override_active)
+                elif lim == "disabled":
+                    # Avoid writing charge limit on startup if disabled, so
+                    # that if user does not use us we do not overwrite their
+                    # setting.
+                    if not self.startup:
+                        apply_charge_limit(False)
+                    self.charge_policy.sync(False)
+                else:
+                    logger.error(f"Invalid charge limit: {lim}")
+
+            charge_limit_pending = self.queue_charge_limit is not None
+            if (
+                not charge_limit_pending
+                or action_pressed
+                or self.charge_policy.override_active
+            ):
+                self.charge_policy.update(
+                    charge_limit_enabled,
+                    action_pressed,
+                    apply_charge_limit,
+                )
+
+            if self.charge_policy.override_active:
+                action = "restore"
+            elif charge_limit_enabled and self.charge_policy.ac_online is True:
+                action = "start"
+            else:
+                action = None
+            self._set_charge_once_action(action)
+        else:
+            self._set_charge_once_action(None)
 
         self.startup = False
