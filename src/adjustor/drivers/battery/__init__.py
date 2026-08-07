@@ -88,7 +88,7 @@ class BatteryPlugin(HHDPlugin):
 
     def __init__(self, always_enable: bool = False) -> None:
         self.name = f"adjustor_battery"
-        self.priority = 9
+        self.priority = 77
         self.log = "batt"
         self.enabled = False
         self.initialized = False
@@ -111,16 +111,16 @@ class BatteryPlugin(HHDPlugin):
             return {}
 
         self.initialized = True
-        out = {"tdp": {"battery": load_relative_yaml("battery.yml")}}
+        out = {"gamemode": {"battery": load_relative_yaml("battery.yml")}}
 
         if not self.charge_limit_fn:
-            del out["tdp"]["battery"]["children"]["charge_limit"]
+            del out["gamemode"]["battery"]["children"]["charge_limit"]
         if not self.charge_bypass_fn:
-            del out["tdp"]["battery"]["children"]["charge_bypass"]
+            del out["gamemode"]["battery"]["children"]["charge_bypass"]
         else:
-            bypass_options = out["tdp"]["battery"]["children"]["charge_bypass"][
-                "options"
-            ]
+            bypass_options = out["gamemode"]["battery"]["children"][
+                "charge_bypass"
+            ]["options"]
             if not self.bypass_longlife:
                 del bypass_options["p80"]
             if not self.bypass_awake:
@@ -211,7 +211,7 @@ class BatteryPlugin(HHDPlugin):
         curr = time.time()
 
         if self.charge_bypass_fn:
-            bypass = conf["tdp.battery.charge_bypass"].to(str)
+            bypass = conf["gamemode.battery.charge_bypass"].to(str)
             if self.charge_bypass_prev != bypass:
                 self.charge_bypass_prev = bypass
 
@@ -220,7 +220,7 @@ class BatteryPlugin(HHDPlugin):
 
         # Charge limit
         if self.charge_limit_fn:
-            lim = conf["tdp.battery.charge_limit"].to(str)
+            lim = conf["gamemode.battery.charge_limit"].to(str)
             if lim != self.charge_limit_prev:
                 self.queue_charge_limit = curr + APPLY_DELAY
                 self.charge_limit_prev = lim
