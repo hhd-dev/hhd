@@ -7,6 +7,7 @@ from threading import Lock, Thread
 from typing import NamedTuple, Sequence
 
 from adjustor.core.fan import FanInfo, fan_worker, get_fan_info
+from adjustor.decky import disable_decky_plugins, find_decky_plugins
 from adjustor.i18n import _
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
@@ -100,6 +101,7 @@ def setup_modes(data: PPData, obj: dict):
         obj["modes"][sys] = {
             "type": "container",
             "title": pretty,
+            "children": {},
         }
         if sys == DEFAULT_MODE:
             has_default = True
@@ -540,6 +542,11 @@ class UnifiedDriverPlugin(HHDPlugin):
         self.log = "adju"
         self.enabled = False
         self.initialized = False
+        self.init = False
+        self.failed = False
+        self.has_decky = False
+        self.action_enabled = False
+        self.tdp_set = None
         self.old_conf = None
         self.startup = True
 
@@ -576,23 +583,40 @@ class UnifiedDriverPlugin(HHDPlugin):
         return self.profiles is not None
 
     def settings(self):
-        if not self.enabled:
-            self.initialized = False
-            return {}
+        base = load_relative_yaml("../../settings.yml")
+        del base["hhd"]["children"]["enforce_limits"]
+        out = {
+            "hhd": {"settings": base["hhd"], "steamos": base["steamos"]},
+        }
+        if os.environ.get("HHD_ADJ_ENABLE_TDP"):
+            out["hhd"]["settings"]["children"]["tdp_enable"]["default"] = True
 
+        if not self.enabled or self.failed:
+            self.initialized = False
+            self.action_enabled = True
+            out["tdp"] = {"tdp": base["tdp"]}
+            if not self.has_decky:
+                del out["tdp"]["tdp"]["children"]["decky_info"]
+                del out["tdp"]["tdp"]["children"]["decky_remove"]
+            return out
+
+        self.action_enabled = False
         logger.info(f"Profile data: {self.profiles}\nTDP data: {self.tdp}")
 
         self.initialized = True
-        out = {"tdp": {"unified": load_relative_yaml("settings.yml")}}
+        out["tdp"] = {"unified": load_relative_yaml("settings.yml")}
 
         assert self.profiles
         setup_modes(self.profiles, out["tdp"]["unified"]["children"]["tdp"])
         if self.tdp:
             setup_tdp_values(
-                self.tdp, out["tdp"]["unified"]["children"]["tdp"]["modes"]["custom"]
+                self.tdp,
+                out["tdp"]["unified"]["children"]["tdp"]["modes"]["custom"],
             )
         else:
-            out["tdp"]["unified"]["children"]["tdp"]["modes"].pop("custom", None)
+            out["tdp"]["unified"]["children"]["tdp"]["modes"].pop(
+                "custom", None
+            )
         if not self.full_fan:
             del out["tdp"]["unified"]["children"]["fan_full_speed"]
         if self.fan:
@@ -617,10 +641,91 @@ class UnifiedDriverPlugin(HHDPlugin):
         )
         self.profile_t.start()
 
-    def update(self, conf: Config):
-        self.enabled = conf["hhd.settings.tdp_ready"].to(bool)
+    def _publish_steamos(self, conf: Config):
+        if self.tdp:
+            conf["hhd.steamos.tdp_status"] = "enabled"
+            conf["hhd.steamos.tdp_min"] = self.tdp.pl1[0]
+            conf["hhd.steamos.tdp_default"] = self.tdp.pl1[1] or 15
+            conf["hhd.steamos.tdp_max"] = self.tdp.pl1[2]
+        else:
+            # Exit status 2 prevents steamos-manager from selecting a fallback
+            # TDP driver while unified continues to manage platform profiles.
+            conf["hhd.steamos.tdp_status"] = "conflict"
+            conf["hhd.steamos.tdp_min"] = None
+            conf["hhd.steamos.tdp_default"] = None
+            conf["hhd.steamos.tdp_max"] = None
 
-        if not self.enabled or not self.initialized:
+        if self.tdp_set is not None:
+            conf["hhd.steamos.tdp_set"] = self.tdp_set
+
+    def _update_init(self, conf: Config):
+        if (
+            self.action_enabled
+            and self.has_decky
+            and conf.get_action("tdp.tdp.decky_remove")
+        ):
+            logger.warning("Removing Decky plugins")
+            conf["hhd.settings.tdp_enable"] = True
+            self.has_decky = False
+            self.failed = False
+            disable_decky_plugins()
+            logger.warning("Enabling TDP controls.")
+            self.emit({"type": "settings"})
+
+        if self.action_enabled and conf.get_action("tdp.tdp.tdp_enable"):
+            conf["hhd.settings.tdp_enable"] = True
+            self.failed = False
+
+        enabled = conf.get("hhd.settings.tdp_enable", False)
+        if not enabled:
+            conf["hhd.settings.tdp_ready"] = False
+            conf["hhd.steamos.tdp_status"] = "disabled"
+            conf["hhd.steamos.tdp_min"] = None
+            conf["hhd.steamos.tdp_default"] = None
+            conf["hhd.steamos.tdp_max"] = None
+            self.init = False
+
+        if self.enabled != enabled:
+            self.emit({"type": "settings"})
+        self.enabled = enabled
+
+        if not enabled:
+            return False
+
+        if self.init or self.failed:
+            return self.init and not self.failed
+
+        decky_plugins = find_decky_plugins()
+        if decky_plugins:
+            plugin = decky_plugins[0]
+            err = f'Found "{plugin.name}" at:\n{plugin.path}\n' + _(
+                "Disable Decky TDP plugins using the button below to continue."
+            )
+            self.emit({"type": "settings"})
+            self.has_decky = True
+            conf["tdp.tdp.tdp_error"] = err
+            conf["hhd.settings.tdp_ready"] = False
+            conf["hhd.steamos.tdp_status"] = "conflict"
+            logger.error(err)
+            self.failed = True
+            self.enabled = False
+            return False
+
+        self.failed = False
+        self.init = True
+        conf["hhd.settings.tdp_ready"] = True
+        conf["tdp.tdp.tdp_error"] = ""
+        return True
+
+    def update(self, conf: Config):
+        if not self._update_init(conf):
+            self.old_conf = None
+            self.startup = True
+            return
+
+        self._publish_steamos(conf)
+
+        if not self.initialized:
             self.old_conf = None
             self.startup = True
             return
@@ -860,7 +965,7 @@ class UnifiedDriverPlugin(HHDPlugin):
                 if fan_mode != self.old_conf["fan.mode"].to(str):
                     self.queue_fan = curr + APPLY_DELAY
 
-                for temp, _ in self.fan.curve:
+                for temp, _default_speed in self.fan.curve:
                     if conf[f"tdp.unified.fan.enabled.st{temp}"].to(
                         int
                     ) != self.old_conf[f"fan.enabled.st{temp}"].to(int):
@@ -872,7 +977,7 @@ class UnifiedDriverPlugin(HHDPlugin):
                             self.fan,
                             [
                                 conf[f"tdp.unified.fan.enabled.st{temp}"].to(int)
-                                for temp, _ in self.fan.curve
+                                for temp, _default_speed in self.fan.curve
                             ],
                         )
                     except Exception as e:
@@ -920,6 +1025,12 @@ class UnifiedDriverPlugin(HHDPlugin):
             if ev["type"] == "tdp":
                 self.new_tdp = ev["tdp"]
                 self.sys_tdp = ev["tdp"] is not None
+                if ev["tdp"] is None:
+                    self.tdp_set = False
+                elif self.tdp:
+                    self.tdp_set = ev["tdp"] != self.tdp.pl1[2]
+                else:
+                    self.tdp_set = True
             elif ev["type"] == "ppd":
                 assert self.profiles
                 match ev["status"]:
@@ -958,7 +1069,6 @@ class UnifiedDriverPlugin(HHDPlugin):
             elif (
                 ev["type"] == "acpi"
                 and ev["event"] in ("ac", "dc")
-                and not self.queue_tdp
             ):
                 logger.info(
                     f"Power adapter status switched to '{ev['event']}', resetting TDP."
@@ -970,7 +1080,8 @@ class UnifiedDriverPlugin(HHDPlugin):
                     self.emit({"type": "settings"})
                     self.initialized = False
 
-                self.queue_tdp = time.perf_counter() + APPLY_DELAY
+                if not self.queue_tdp:
+                    self.queue_tdp = time.perf_counter() + APPLY_DELAY
             elif ev["type"] == "special" and ev["event"] == "tdp_cycle":
                 match self.mode:
                     case "quiet":

@@ -10,15 +10,11 @@ from hhd.plugins.plugin import Emitter
 
 from adjustor.core.acpi import check_perms, initialize
 from adjustor.core.const import CPU_DATA, DEV_DATA, ASUS_DATA, MSI_DATA
+from adjustor.decky import disable_decky_plugins, find_decky_plugins
 
 from .i18n import _
 
 logger = logging.getLogger(__name__)
-
-CONFLICTING_PLUGINS = {
-    "SimpleDeckyTDP": "homebrew/plugins/SimpleDeckyTDP",
-    "PowerControl": "homebrew/plugins/PowerControl",
-}
 
 USE_UNIFIED = os.environ.get("HHD_ADJUSTOR_NEXT", "0") == "1"
 
@@ -79,48 +75,18 @@ class AdjustorInitPlugin(HHDPlugin):
         if (
             self.action_enabled
             and self.has_decky
-            and conf["tdp.tdp.decky_remove"].to(bool)
+            and conf.get_action("tdp.tdp.decky_remove")
         ):
             # Preparation
             logger.warning("Removing Decky plugins")
-            conf["tdp.tdp.decky_remove"] = False
             conf["hhd.settings.tdp_enable"] = True
             self.has_decky = False
             self.failed = False
-
-            for usr in os.listdir("/home"):
-                move_path = os.path.join("/home", usr, "homebrew/plugins/hhd-disabled")
-                if os.path.exists(move_path):
-                    logger.warning(f"Removing old backup path: '{move_path}'")
-                    os.system(f"rm -rf {move_path}")
-                os.makedirs(
-                    move_path,
-                    exist_ok=True,
-                )
-
-                logger.warning("Stopping Decky.")
-                try:
-                    os.system("systemctl stop plugin_loader")
-                except Exception as e:
-                    logger.error(f"Failed to restart Decky:\n{e}")
-
-                for name, ppath in CONFLICTING_PLUGINS.items():
-                    path = os.path.join("/home", usr, ppath)
-                    if os.path.exists(path):
-                        new_path = os.path.join(move_path, name)
-                        logger.warning(
-                            f"Moving plugin '{name}' from:\n{path}\nto:\n{new_path}"
-                        )
-                        os.rename(path, new_path)
-
-                logger.warning("Restarting Decky.")
-                try:
-                    os.system("systemctl start plugin_loader")
-                except Exception as e:
-                    logger.error(f"Failed to restart Decky:\n{e}")
+            disable_decky_plugins()
 
             # TDP controls are already enabled.
             logger.warning(f"Enabling TDP controls.")
+            self.emit({"type": "settings"})
         
         if self.action_enabled and conf.get_action("tdp.tdp.tdp_enable"):
             conf["hhd.settings.tdp_enable"] = True
@@ -160,22 +126,22 @@ class AdjustorInitPlugin(HHDPlugin):
         if self.init or not enabled or self.failed:
             return
 
-        for usr in os.listdir("/home"):
-            for name, path in CONFLICTING_PLUGINS.items():
-                if os.path.exists(os.path.join(usr, path)):
-                    err = f'Found "{name}" at:\n{path}\n' + _(
-                        "Disable Decky TDP plugins using the button below to continue."
-                    )
-                    self.emit({"type": "settings"})
-                    self.has_decky = True
-                    conf["tdp.tdp.tdp_error"] = err
-                    conf["hhd.settings.tdp_ready"] = False
-                    conf["hhd.steamos.tdp_status"] = "conflict"
-                    logger.error(err)
-                    self.failed = True
-                    self.enabled = False
-                    self._stop()
-                    return
+        decky_plugins = find_decky_plugins()
+        if decky_plugins:
+            plugin = decky_plugins[0]
+            err = f'Found "{plugin.name}" at:\n{plugin.path}\n' + _(
+                "Disable Decky TDP plugins using the button below to continue."
+            )
+            self.emit({"type": "settings"})
+            self.has_decky = True
+            conf["tdp.tdp.tdp_error"] = err
+            conf["hhd.settings.tdp_ready"] = False
+            conf["hhd.steamos.tdp_status"] = "conflict"
+            logger.error(err)
+            self.failed = True
+            self.enabled = False
+            self._stop()
+            return
 
         if self.use_acpi_call:
             initialize()
@@ -290,13 +256,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if not drivers_matched and USE_UNIFIED:
         driver = UnifiedDriverPlugin()
         if driver.is_supported():
-            drivers.append(driver)
-            drivers_matched = True
-            if driver.tdp:
-                # These need to be dynamic... TODO
-                min_tdp = driver.tdp.pl1[0]
-                default_tdp = driver.tdp.pl1[1] or 15
-                max_tdp = driver.tdp.pl1[2]
+            return [driver, GpuPlugin(), BatteryPlugin()]
 
     # Unified should take over Go TDP handling, even if partial
     go_model = None

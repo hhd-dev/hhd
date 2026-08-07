@@ -91,7 +91,10 @@ class UnifiedProfileNotificationTest(unittest.TestCase):
     def test_pending_system_mode_updates_config_without_writing_profile(self):
         conf = Config(
             {
-                "hhd": {"settings": {"tdp_ready": True}},
+                "hhd": {
+                    "settings": {"tdp_enable": True, "tdp_ready": True},
+                    "steamos": {},
+                },
                 "tdp": {
                     "unified": {
                         "tdp": {
@@ -105,6 +108,11 @@ class UnifiedProfileNotificationTest(unittest.TestCase):
         )
         self.plugin.enabled = True
         self.plugin.initialized = True
+        self.plugin.init = True
+        self.plugin.failed = False
+        self.plugin.has_decky = False
+        self.plugin.action_enabled = False
+        self.plugin.tdp_set = None
         self.plugin.startup = False
         self.plugin.old_conf = conf["tdp.unified"]
         self.plugin.new_tdp = None
