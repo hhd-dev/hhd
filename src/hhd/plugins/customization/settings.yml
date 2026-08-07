@@ -1,0 +1,12 @@
+type: container
+title: Customization
+children:
+  power_light:
+    tags: [advanced]
+    type: bool
+    title: Power Light (Awake)
+
+  power_light_sleep:
+    tags: [advanced]
+    type: bool
+    title: Power Light (Sleep)
