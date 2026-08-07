@@ -7,6 +7,7 @@ from adjustor.drivers.unified import (
     PPData,
     UnifiedDriverPlugin,
     profile_worker,
+    setup_mode_units,
 )
 from hhd.plugins import Config
 
@@ -54,6 +55,28 @@ class PlatformProfileWorkerTest(unittest.TestCase):
             {"type": "platform_profile", "profile": "performance"}
         )
         profile_file.seek.assert_called_once_with(0)
+
+
+class PlatformProfileUnitsTest(unittest.TestCase):
+    def test_quiet_uses_low_power_unit_and_ignores_unknown_modes(self):
+        settings = {
+            "modes": {
+                "quiet": {"type": "container"},
+                "balanced": {"type": "container"},
+                "custom": {"type": "container", "unit": "kernel"},
+                "cool": {"type": "container"},
+            }
+        }
+
+        setup_mode_units(
+            {"low-power": 5, "balanced": 12, "performance": 18},
+            settings,
+        )
+
+        self.assertEqual(settings["modes"]["quiet"]["unit"], "5W")
+        self.assertEqual(settings["modes"]["balanced"]["unit"], "12W")
+        self.assertEqual(settings["modes"]["custom"]["unit"], "kernel")
+        self.assertNotIn("unit", settings["modes"]["cool"])
 
 
 class UnifiedProfileNotificationTest(unittest.TestCase):

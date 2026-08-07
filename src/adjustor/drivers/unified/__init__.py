@@ -11,6 +11,8 @@ from adjustor.decky import disable_decky_plugins, find_decky_plugins
 from adjustor.i18n import _
 from hhd.plugins import Config, Context, Event, HHDPlugin, load_relative_yaml
 
+from .const import get_profile_units
+
 logger = logging.getLogger(__name__)
 
 APPLY_DELAY = 0.7
@@ -106,6 +108,18 @@ def setup_modes(data: PPData, obj: dict):
         if sys == DEFAULT_MODE:
             has_default = True
     obj["default"] = DEFAULT_MODE if has_default else data.profiles[-1][0]
+
+
+def setup_mode_units(units: dict[str, int], obj: dict):
+    for mode, mode_obj in obj["modes"].items():
+        if mode == "custom":
+            continue
+
+        unit_mode = mode
+        if mode == "quiet" and mode not in units:
+            unit_mode = "low-power"
+        if unit_mode in units:
+            mode_obj["unit"] = f"{units[unit_mode]}W"
 
 
 def set_mode(data: PPData, profile: str):
@@ -608,6 +622,11 @@ class UnifiedDriverPlugin(HHDPlugin):
 
         assert self.profiles
         setup_modes(self.profiles, out["tdp"]["unified"]["children"]["tdp"])
+        if profile_units := get_profile_units():
+            setup_mode_units(
+                profile_units,
+                out["tdp"]["unified"]["children"]["tdp"],
+            )
         if self.tdp:
             setup_tdp_values(
                 self.tdp,
@@ -1073,12 +1092,10 @@ class UnifiedDriverPlugin(HHDPlugin):
                 logger.info(
                     f"Power adapter status switched to '{ev['event']}', resetting TDP."
                 )
-                old_tdp = self.tdp
                 assert self.profiles
                 self.tdp = get_tdp_values(self.profiles.fn)
-                if old_tdp != self.tdp:
-                    self.emit({"type": "settings"})
-                    self.initialized = False
+                self.emit({"type": "settings"})
+                self.initialized = False
 
                 if not self.queue_tdp:
                     self.queue_tdp = time.perf_counter() + APPLY_DELAY

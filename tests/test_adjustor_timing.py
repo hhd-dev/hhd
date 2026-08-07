@@ -27,6 +27,8 @@ class UnifiedTimingTest(unittest.TestCase):
             self.plugin.notify([{"type": "acpi", "event": "dc"}])
 
         self.assertEqual(self.plugin.queue_tdp, 100.0 + APPLY_DELAY)
+        self.plugin.emit.assert_called_once_with({"type": "settings"})
+        self.assertFalse(self.plugin.initialized)
 
     def test_wakeup_uses_perf_counter(self):
         with patch(

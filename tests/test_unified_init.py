@@ -81,6 +81,26 @@ class UnifiedInitTest(unittest.TestCase):
         self.assertEqual(conf["hhd.steamos.tdp_max"].to(int), 30)
         self.assertIn("unified", settings["tdp"])
 
+    def test_profile_units_are_added_without_overriding_custom(self):
+        plugin = make_plugin()
+        plugin.enabled = True
+
+        with patch(
+            "adjustor.drivers.unified.get_profile_units",
+            return_value={
+                "low-power": 8,
+                "balanced": 15,
+                "performance": 25,
+            },
+        ):
+            settings = plugin.settings()
+
+        modes = settings["tdp"]["unified"]["children"]["tdp"]["modes"]
+        self.assertEqual(modes["low-power"]["unit"], "8W")
+        self.assertEqual(modes["balanced"]["unit"], "15W")
+        self.assertEqual(modes["performance"]["unit"], "25W")
+        self.assertEqual(modes["custom"]["unit"], "→ 30")
+
     def test_profiles_only_prevents_steamos_fallback(self):
         plugin = make_plugin(tdp=None)
         conf = initial_config(plugin, enabled=True)
