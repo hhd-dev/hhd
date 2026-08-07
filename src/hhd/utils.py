@@ -153,8 +153,15 @@ def get_ac_status(fn: str | None) -> bool | None:
         return None
     try:
         with open(fn) as f:
-            return f.read().strip() != "Discharging"
+            status = f.read().strip()
+        if status == "1":
+            return True
+        if status == "0":
+            return False
+        logger.error(f"Invalid AC status '{status}' read from '{fn}'.")
+        return None
     except Exception as e:
+        logger.error(f"Could not read AC status file '{fn}', error:\n{e}")
         return None
 
 

@@ -161,7 +161,7 @@ class SmuQamPlugin(HHDPlugin):
             self.startup = self.init_tdp
             return
 
-        curr = time.time()
+        curr = time.perf_counter()
         sys_tdp = False
         if self.new_tdp:
             new_tdp = self.new_tdp
@@ -326,7 +326,7 @@ class SmuQamPlugin(HHDPlugin):
                 logger.info(
                     f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds."
                 )
-                self.queued = time.time() + SLEEP_DELAY
+                self.queued = time.perf_counter() + SLEEP_DELAY
 
     def close(self):
         if self.fan_t:

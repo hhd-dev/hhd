@@ -53,7 +53,7 @@ def loop_process_events(emit: Emitter, should_exit: TEvent):
                             break
 
                     if matches:
-                        if etype not in ("battery", "powerbutton"):
+                        if etype not in ("ac", "dc", "battery", "powerbutton"):
                             emit({"type": "acpi", "event": etype})  # type: ignore
                         found = True
                         break

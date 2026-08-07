@@ -954,7 +954,7 @@ class UnifiedDriverPlugin(HHDPlugin):
                 logger.info(
                     f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds."
                 )
-                self.queue_tdp = time.time() + SLEEP_DELAY
+                self.queue_tdp = time.perf_counter() + SLEEP_DELAY
             elif (
                 ev["type"] == "acpi"
                 and ev["event"] in ("ac", "dc")
@@ -970,7 +970,7 @@ class UnifiedDriverPlugin(HHDPlugin):
                     self.emit({"type": "settings"})
                     self.initialized = False
 
-                self.queue_tdp = time.time() + APPLY_DELAY
+                self.queue_tdp = time.perf_counter() + APPLY_DELAY
             elif ev["type"] == "special" and ev["event"] == "tdp_cycle":
                 match self.mode:
                     case "quiet":

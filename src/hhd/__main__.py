@@ -601,8 +601,16 @@ def main():
             # AC status
             if ac_fn:
                 new_status = get_ac_status(ac_fn)
-                if new_status != ac_status:
+                if new_status is not None and new_status != ac_status:
                     logger.info(f"AC status is: {new_status}")
+                    if ac_status is not None:
+                        events = [
+                            *events,
+                            {
+                                "type": "acpi",
+                                "event": "ac" if new_status else "dc",
+                            },
+                        ]
                     ac_status = new_status
                     info["ac"] = ac_status
 
