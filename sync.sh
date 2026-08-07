@@ -19,11 +19,19 @@ ssh -t "$HOST" '
     sudo systemctl stop hhd
 
     exec sudo \
+        HHD_PPD_MASK=1 \
+        HHD_ALLY_POWERSAVE=1 \
         HHD_HORI_STEAM=1 \
+        HHD_GS_STEAMUI_HALFHZ=1 \
+        HHD_GS_DPMS=1 \
+        HHD_GS_STANDBY=1 \
         HHD_HIDE_ALL=1 \
         HHD_BOOTC=1 \
+        HHD_BUGREPORT=1 \
+        HHD_BOOTC_FALLBACK_IMG=i.anatase.org/anatase:stable \
         HHD_ADJUSTOR_NEXT=1 \
         HHD_BOOTC_SOFT_REBOOT=1 \
         HHD_GS_FRAMEGEN=1 \
+        HHD_SWAP_CREATE=1 \
         "$HOME/hhd/venv/bin/hhd"
 '
