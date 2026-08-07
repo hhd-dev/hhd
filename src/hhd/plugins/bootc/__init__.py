@@ -271,7 +271,6 @@ class BootcPlugin(HHDPlugin):
     def settings(self) -> HHDSettings:
         sets = {
             "updates": {"bootc": load_relative_yaml("settings.yml")},
-            "hhd": {"settings": load_relative_yaml("general.yml")},
         }
 
         sets["updates"]["bootc"]["children"]["stage"]["modes"]["rebase"][
