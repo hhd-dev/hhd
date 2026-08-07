@@ -43,13 +43,13 @@ settings:
     version:
       type: display
       tags: [hhd-version-display, text]
-      title: Handheld Daemon Version
+      title: Version
       hint: "Displays the Handheld Daemon version."
 
     version_ui:
       type: display
       tags: [hhd-version-display, text]
-      title: Handheld Daemon UI Version
+      title: UI Version
       hint: "Displays the Handheld Daemon version."
 
     update_stable:

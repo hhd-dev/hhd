@@ -46,6 +46,7 @@ from .utils import (
     get_ac_status,
     get_ac_status_fn,
     get_context,
+    get_display_version,
     get_os,
     refresh_is_steam_running,
     switch_priviledge,
@@ -429,7 +430,7 @@ def main():
                 from importlib.metadata import version
 
                 try:
-                    ver = version("hhd")
+                    ver = get_display_version(version("hhd"))
                     conf["hhd.settings.version"] = ver
                     logger.info(f"Handheld Daemon Version: {ver}")
                 except Exception:
@@ -443,7 +444,7 @@ def main():
 
                     exe = find_overlay_exe(ctx)
                     if exe:
-                        ver = get_overlay_version(exe)
+                        ver = get_display_version(get_overlay_version(exe))
                         conf["hhd.settings.version_ui"] = ver
                         logger.info(f"Overlay Version: {ver}")
                     else:

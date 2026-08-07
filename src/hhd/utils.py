@@ -1,6 +1,7 @@
 import logging
 import os
 import platform
+import re
 
 from hhd.plugins.plugin import (
     Context,
@@ -19,6 +20,14 @@ logger = logging.getLogger(__name__)
 
 GIT_HHD = "git+https://github.com/hhd-dev/hhd"
 HHD_DEV_DIR = "/run/hhd/dev"
+
+GIT_VERSION_RE = re.compile(r"^(.+\+git\.\d+)\.g?[0-9a-fA-F]+$")
+
+
+def get_display_version(version: str) -> str:
+    """Remove the commit hash from a version produced from a Git checkout."""
+    match = GIT_VERSION_RE.fullmatch(version)
+    return match.group(1) if match else version
 
 
 def get_distro_color():
@@ -150,6 +159,7 @@ def get_ac_status(fn: str | None) -> bool | None:
 
 
 __all__ = [
+    "get_display_version",
     "get_os",
     "refresh_is_steam_running",
     "is_steam_gamepad_running",
