@@ -1,5 +1,6 @@
 import logging
 import os
+import select
 import time
 from threading import Event as TEvent
 from threading import Lock, Thread
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
 SLEEP_DELAY = 4
+PP_POLL_DELAY = 500
 
 #
 # Platform profiles interface
@@ -115,6 +117,36 @@ def set_mode(data: PPData, profile: str):
     except Exception as e:
         logger.error(f"Could not set platform profile with error:\n{e}")
         return False
+
+
+def profile_worker(data: PPData, emit, should_exit: TEvent):
+    profile_fn = os.path.join(PP_PATH, data.pp, "profile")
+    try:
+        with open(profile_fn, "r") as f:
+            # Reading before polling clears the initial sysfs notification.
+            profile = f.read().strip()
+            poll = select.poll()
+            poll.register(f.fileno(), select.POLLPRI | select.POLLERR)
+
+            logger.info(f"Starting platform profile listener for '{data.fn}'.")
+            while not should_exit.is_set():
+                if not poll.poll(PP_POLL_DELAY):
+                    continue
+
+                f.seek(0)
+                new_profile = f.read().strip()
+                if not new_profile or new_profile == profile:
+                    continue
+
+                logger.info(
+                    f"Platform profile for '{data.fn}' changed from "
+                    f"'{profile}' to '{new_profile}'."
+                )
+                profile = new_profile
+                emit({"type": "platform_profile", "profile": new_profile})
+    except Exception as e:
+        if not should_exit.is_set():
+            logger.error(f"Platform profile listener failed with error:\n{e}")
 
 
 #
@@ -521,11 +553,16 @@ class UnifiedDriverPlugin(HHDPlugin):
 
         self.mode = None
         self.new_mode = None
+        self.system_mode = None
         self.new_tdp = None
         self.queue_tdp = None
         self.queue_fan = None
         self.old_target = None
         self.sys_tdp = False
+
+        # Platform profile listener
+        self.profile_t = None
+        self.profile_should_exit = TEvent()
 
         # Managed Fan
         self.fan_t = None
@@ -571,6 +608,14 @@ class UnifiedDriverPlugin(HHDPlugin):
         context: Context,
     ):
         self.emit = emit
+        assert self.profiles
+        self.profile_should_exit.clear()
+        self.profile_t = Thread(
+            target=profile_worker,
+            args=(self.profiles, self.emit, self.profile_should_exit),
+            name="platform-profile",
+        )
+        self.profile_t.start()
 
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_ready"].to(bool)
@@ -605,9 +650,17 @@ class UnifiedDriverPlugin(HHDPlugin):
         self.new_tdp = None
         new_mode = self.new_mode
         self.new_mode = None
+        system_mode = self.system_mode
+        self.system_mode = None
+        mode_from_system = False
         assert self.profiles
         if new_tdp:
             mode = "custom"
+            conf["tdp.unified.tdp.mode"] = mode
+        elif system_mode:
+            mode = system_mode
+            mode_from_system = True
+            self.sys_tdp = False
             conf["tdp.unified.tdp.mode"] = mode
         elif new_mode:
             mode = new_mode
@@ -637,7 +690,8 @@ class UnifiedDriverPlugin(HHDPlugin):
 
         # Set TDP and handle EPP
         if tdp_reset and mode != "custom":
-            set_mode(self.profiles, mode)
+            if not mode_from_system:
+                set_mode(self.profiles, mode)
             match mode:
                 case "quiet" | "low-power":
                     new_target = "power"
@@ -878,6 +932,24 @@ class UnifiedDriverPlugin(HHDPlugin):
                         self.new_mode = "balanced"
                     case "performance":
                         self.new_mode = "performance"
+            elif ev["type"] == "platform_profile":
+                assert self.profiles
+                mode = ev["profile"]
+                if mode not in (p for p, _ in self.profiles.profiles):
+                    logger.warning(
+                        f"Unknown platform profile '{mode}' for "
+                        f"'{self.profiles.fn}'. Ignoring it."
+                    )
+                    continue
+                if mode in (self.mode, self.system_mode):
+                    continue
+
+                self.system_mode = mode
+                if self.mode is not None:
+                    notify_mode = "quiet" if mode == "low-power" else mode
+                    self.emit(
+                        {"type": "special", "event": f"tdp_cycle_{notify_mode}"}
+                    )
             elif ev["type"] == "special" and ev.get("event", None) == "wakeup":
                 logger.info(
                     f"Waking up from sleep, resetting TDP after {SLEEP_DELAY} seconds."
@@ -922,6 +994,10 @@ class UnifiedDriverPlugin(HHDPlugin):
                     self.emit({"type": "special", "event": event})
 
     def close(self):
+        if self.profile_t:
+            self.profile_should_exit.set()
+            self.profile_t.join()
+            self.profile_t = None
         if self.fan_t:
             self.fan_should_exit.set()
             self.fan_t.join()

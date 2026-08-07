@@ -35,6 +35,11 @@ class PowerEvent(TypedDict):
     event: Literal["ac", "dc", "tdp", "battery"]
 
 
+class PlatformProfileEvent(TypedDict):
+    type: Literal["platform_profile"]
+    profile: str
+
+
 class TdpEvent(TypedDict):
     type: Literal["tdp"]
     tdp: int | None
@@ -82,6 +87,7 @@ Event = (
     | ProfileEvent
     | ApplyEvent
     | SettingsEvent
+    | PlatformProfileEvent
     | SpecialEvent
     | PowerEvent
     | TdpEvent
