@@ -16,6 +16,14 @@ from hhd.plugins.conf import Config
 logger = logging.getLogger(__name__)
 
 REFRESH_HZ = 3
+AUTOMATIC_UPDATE_UPTIME = 5 * 60
+AUTOMATIC_UPDATE_RETRY = 5 * 60
+AUTOMATIC_UPDATE_INTERVALS = {
+    "daily": 24 * 60 * 60,
+    "weekly": 7 * 24 * 60 * 60,
+    "monthly": 30 * 24 * 60 * 60,
+}
+CPU_LOAD_LIMIT = 0.2
 PROGRESS_STAGES = {
     "pulling": (_("Downloading:"), 0, 80),
     "importing": (_("Importing:"), 80, 10),
@@ -240,6 +248,20 @@ def _flatpak_output_reader(fd, output: list[str]):
         fd.close()
 
 
+def get_system_uptime() -> float:
+    try:
+        with open("/proc/uptime", "r") as f:
+            return float(f.read().split()[0])
+    except Exception as e:
+        logger.error(f"Failed to read system uptime: {e}")
+        return 0
+
+
+def get_normalized_cpu_load() -> float:
+    cpus = os.cpu_count() or 1
+    return os.getloadavg()[0] / cpus
+
+
 def is_incompatible(status: dict):
     if status.get("apiVersion", None) != "org.containers.bootc/v1":
         return True
@@ -280,6 +302,8 @@ class BootcPlugin(HHDPlugin):
         self.flatpak_proc = None
         self.flatpak_reader = None
         self.flatpak_output: list[str] = []
+        self.update_all_pending = False
+        self.next_automatic_update_check = 0.0
 
         self.branches = {}
         for branch in BRANCHES.split(","):
@@ -292,7 +316,10 @@ class BootcPlugin(HHDPlugin):
 
     def settings(self) -> HHDSettings:
         sets = {
-            "updates": {"bootc": load_relative_yaml("settings.yml")},
+            "updates": {
+                "updates": load_relative_yaml("updates.yml"),
+                "bootc": load_relative_yaml("settings.yml"),
+            },
         }
 
         if shutil.which(FLATPAK_PATH):
@@ -436,6 +463,68 @@ class BootcPlugin(HHDPlugin):
             self.state = "ready_check"
 
     def update(self, conf: Config):
+        reboot = conf.get_action("updates.updates.reboot.ready.reboot")
+        update_all = conf.get_action("updates.updates.update_all")
+        frequency = conf.get("updates.updates.frequency", "weekly")
+        now = time.time()
+
+        if (
+            not update_all
+            and frequency in AUTOMATIC_UPDATE_INTERVALS
+            and now >= self.next_automatic_update_check
+        ):
+            self.next_automatic_update_check = now + AUTOMATIC_UPDATE_RETRY
+            last_attempt = conf.get("updates.updates.last_attempt", 0)
+            update_due = (
+                last_attempt <= 0
+                or now - last_attempt >= AUTOMATIC_UPDATE_INTERVALS[frequency]
+            )
+
+            if update_due:
+                conditions_met = False
+                unmet_condition = ""
+                if get_system_uptime() > AUTOMATIC_UPDATE_UPTIME:
+                    try:
+                        from gi.repository import Gio
+
+                        network = Gio.NetworkMonitor.get_default()
+                        has_internet = (
+                            network.get_network_available()
+                            and network.get_connectivity()
+                            == Gio.NetworkConnectivity.FULL
+                        )
+                        if not has_internet:
+                            unmet_condition = "internet connectivity is unavailable"
+                        elif conf.get(
+                            "updates.updates.conditions.unmetered", True
+                        ) and network.get_network_metered():
+                            unmet_condition = "the active network is metered"
+                        elif conf.get(
+                            "updates.updates.conditions.cpu_load", True
+                        ) and get_normalized_cpu_load() >= CPU_LOAD_LIMIT:
+                            unmet_condition = "CPU load is at or above 20%"
+                        else:
+                            conditions_met = True
+                    except Exception as e:
+                        unmet_condition = f"condition check failed: {e}"
+
+                if conditions_met:
+                    logger.info("Automatic update conditions met. Updating all.")
+                    update_all = True
+                elif unmet_condition:
+                    logger.error(
+                        "Automatic update deferred because %s. Retrying in five minutes.",
+                        unmet_condition,
+                    )
+
+        if update_all:
+            conf["updates.updates.last_attempt"] = int(now)
+            if "updates.applications.update" in conf:
+                conf["updates.applications.update"] = True
+            if not self.update_all_pending:
+                self.checked_update = False
+                self.update_all_pending = True
+
         flatpak_update = conf.get_action("updates.applications.update")
 
         if self.flatpak_proc:
@@ -497,10 +586,67 @@ class BootcPlugin(HHDPlugin):
                     "Failed to start Flatpak update."
                 )
 
+        reboot_ready = (
+            self.state == "ready_updated"
+            and self.proc is None
+            and self.flatpak_proc is None
+            and not self.update_all_pending
+        )
+        conf["updates.updates.reboot.mode"] = (
+            "ready" if reboot_ready else "hidden"
+        )
+        if reboot and reboot_ready:
+            logger.info("User pressed reboot after updating all. Rebooting...")
+            subprocess.run(["reboot"])
+
         # Detect reset and avoid breaking the UI
         if conf.get("updates.bootc.stage.mode", None) is None:
             self._init(conf)
             return
+
+        if self.update_all_pending:
+            match self.state:
+                case "ready":
+                    conf["updates.bootc.stage.ready.update"] = True
+                    self.update_all_pending = False
+                case "ready_check":
+                    if self.checked_update:
+                        self.update_all_pending = False
+                    else:
+                        conf["updates.bootc.stage.ready_check.update"] = True
+                case "ready_updated":
+                    self.checked_update = False
+                    self.updating = True
+                    self.state = "loading_cancellable"
+                    if self.bootc_progress:
+                        self.proc, self.progress = run_command_threaded_progress(
+                            BOOTC_UPDATE_CMD,
+                            self.emit,
+                            self.cached_version or self.branch_name or "",
+                            self.progress_lock,
+                        )
+                    else:
+                        self.proc = run_command_threaded(BOOTC_UPDATE_CMD)
+                    conf["updates.bootc.stage.mode"] = "loading_cancellable"
+                    conf[
+                        "updates.bootc.stage.loading_cancellable.progress"
+                    ] = {
+                        "text": _("Updating... "),
+                        "value": None,
+                        "unit": None,
+                    }
+                    self.update_all_pending = False
+                case (
+                    "ready_rebased"
+                    | "ready_reverted"
+                    | "incompatible"
+                    | "unknown"
+                ):
+                    logger.info(
+                        "Skipping automatic bootc update in state '%s'.",
+                        self.state,
+                    )
+                    self.update_all_pending = False
 
         # Try to fill in basic info
         match self.state:

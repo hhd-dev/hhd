@@ -1,0 +1,62 @@
+type: container
+tags: [system, non-essential]
+title: Updates
+hint: >-
+  Update the system image and installed applications together.
+
+children:
+  update_all:
+    type: action
+    title: Update All
+
+  reboot:
+    type: mode
+    tags: [no_dropdown]
+    default: hidden
+    modes:
+      hidden:
+        type: container
+        children: {}
+
+      ready:
+        type: container
+        children:
+          reboot:
+            type: action
+            title: Reboot
+            tags: [verify]
+            hint: >-
+              Reboot to apply the update. Are you sure?
+
+  frequency:
+    type: multiple
+    title: Update Frequency
+    default: weekly
+    options:
+      daily: Daily
+      weekly: Weekly
+      monthly: Monthly
+      never: Never
+
+  conditions:
+    type: container
+    tags: [expert, non-essential]
+    title: Automatic Update Conditions
+    children:
+      unmetered:
+        type: bool
+        title: Check Unmetered Networks
+        default: True
+
+      cpu_load:
+        type: bool
+        title: CPU Load under 20%
+        default: True
+
+  last_attempt:
+    type: int
+    tags: [hidden]
+    default: 0
+    min: 0
+    max: 4102444800
+    step: 1
