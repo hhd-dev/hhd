@@ -35,6 +35,23 @@ gamescope:
       title: "Poweroff screen before sleep"
       default: true
 
+    autologin:
+      type: mode
+      title: "Boot into Gamemode"
+      default: disabled
+      modes:
+        disabled:
+          type: container
+          title: "Disabled"
+        enabled:
+          type: container
+          title: "Enabled"
+          children:
+            user:
+              type: multiple
+              title: "As User"
+              options: {}
+
 display:
   type: container
   title: Display
