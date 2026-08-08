@@ -103,25 +103,25 @@ def create_interface(legacy: bool):
 
         @dbus.service.method(dbus.PROPERTIES_IFACE, in_signature="ssv")
         def Set(self, interface_name, property_name, new_value):
-            # validate the property name and value, update internal state…
-            self.PropertiesChanged(interface_name, {property_name: new_value}, [])
+            if interface_name != iface(legacy) or property_name != "ActiveProfile":
+                return
+
+            new_profile = str(new_value)
+            if new_profile not in SUPPORTED_PROFILES or new_profile == self.profile:
+                return
+
+            # Only changes requested over D-Bus are sent back to HHD. Updates
+            # received from HHD use set_profile() and must not loop back as a
+            # new power-profile request.
+            self.profile = new_profile
+            print(SUPPORTED_PROFILES[new_profile], flush=True)
+            self.PropertiesChanged(interface_name, {"ActiveProfile": new_profile}, [])
 
         @dbus.service.signal(dbus.PROPERTIES_IFACE, signature="sa{sv}as")
         def PropertiesChanged(
             self, interface_name, changed_properties, invalidated_properties
         ):
-            if interface_name != iface(legacy):
-                return
-
-            for k, v in changed_properties.items():
-                if not k == "ActiveProfile":
-                    continue
-                if v not in SUPPORTED_PROFILES:
-                    continue
-                np = SUPPORTED_PROFILES[v]
-                if np == self.profile:
-                    continue
-                print(np, flush=True)
+            pass
 
         @dbus.service.method(iface(legacy), in_signature="sss", out_signature="u")
         def HoldProfile(self, profile: str, reason: str, application_id: str):
@@ -142,7 +142,11 @@ def create_interface(legacy: bool):
             if profile not in SUPPORTED_PROFILES_REVERSE:
                 return
 
-            self.profile = SUPPORTED_PROFILES_REVERSE[profile]
+            new_profile = SUPPORTED_PROFILES_REVERSE[profile]
+            if new_profile == self.profile:
+                return
+
+            self.profile = new_profile
             self.PropertiesChanged(iface(legacy), {"ActiveProfile": self.profile}, [])
 
     return HhdPpd
