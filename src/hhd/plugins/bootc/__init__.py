@@ -25,6 +25,7 @@ PROGRESS_STAGES = {
 
 BOOTC_ENABLED = os.environ.get("HHD_BOOTC", "0") == "1"
 BOOTC_PATH = os.environ.get("HHD_BOOTC_PATH", "bootc")
+FLATPAK_PATH = os.environ.get("HHD_FLATPAK_PATH", "flatpak")
 BRANCHES = os.environ.get(
     "HHD_BOOTC_BRANCHES", "stable:Stable,rolling:Rolling,testing:Testing"
 )
@@ -71,6 +72,14 @@ BOOTC_UPDATE_CMD = [
 BOOTC_SWITCH_CMD = [
     BOOTC_PATH,
     "switch",
+]
+
+FLATPAK_UPDATE_CMD = [
+    FLATPAK_PATH,
+    "update",
+    "--system",
+    "--assumeyes",
+    "--noninteractive",
 ]
 
 if os.environ.get("HHD_BOOTC_SOFT_REBOOT", "0") == "1":
@@ -221,6 +230,16 @@ def run_command_threaded_progress(cmd: list, emit, friendly, lock):
         return None, None
 
 
+def _flatpak_output_reader(fd, output: list[str]):
+    try:
+        for line in fd:
+            output.append(line)
+    except Exception as e:
+        logger.error(f"Failed to read Flatpak update output: {e}")
+    finally:
+        fd.close()
+
+
 def is_incompatible(status: dict):
     if status.get("apiVersion", None) != "org.containers.bootc/v1":
         return True
@@ -258,6 +277,9 @@ class BootcPlugin(HHDPlugin):
         self.cached_version = ""
         self.emit = None
         self.updating = False
+        self.flatpak_proc = None
+        self.flatpak_reader = None
+        self.flatpak_output: list[str] = []
 
         self.branches = {}
         for branch in BRANCHES.split(","):
@@ -272,6 +294,11 @@ class BootcPlugin(HHDPlugin):
         sets = {
             "updates": {"bootc": load_relative_yaml("settings.yml")},
         }
+
+        if shutil.which(FLATPAK_PATH):
+            sets["updates"]["applications"] = load_relative_yaml(
+                "applications.yml"
+            )
 
         sets["updates"]["bootc"]["children"]["stage"]["modes"]["rebase"][
             "children"
@@ -409,6 +436,66 @@ class BootcPlugin(HHDPlugin):
             self.state = "ready_check"
 
     def update(self, conf: Config):
+        flatpak_update = conf.get_action("updates.applications.update")
+
+        if self.flatpak_proc:
+            exit_code = self.flatpak_proc.poll()
+            if exit_code is not None:
+                if self.flatpak_reader:
+                    self.flatpak_reader.join()
+
+                output = "".join(self.flatpak_output).strip()
+                if output:
+                    log = logger.info if exit_code == 0 else logger.error
+                    log("Flatpak update output:\n%s", output)
+
+                self.flatpak_proc = None
+                self.flatpak_reader = None
+                self.flatpak_output = []
+                conf["updates.applications.progress"] = None
+
+                if exit_code == 0:
+                    conf["updates.applications.status"] = _(
+                        "Applications are up to date."
+                    )
+                    conf["updates.applications.error"] = None
+                else:
+                    conf["updates.applications.status"] = None
+                    conf["updates.applications.error"] = _(
+                        "Flatpak update failed with exit code"
+                    ) + f" {exit_code}."
+        elif flatpak_update:
+            conf["updates.applications.status"] = None
+            conf["updates.applications.error"] = None
+
+            try:
+                self.flatpak_output = []
+                self.flatpak_proc = subprocess.Popen(
+                    FLATPAK_UPDATE_CMD,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                )
+                assert self.flatpak_proc.stdout
+                self.flatpak_reader = Thread(
+                    target=_flatpak_output_reader,
+                    args=(self.flatpak_proc.stdout, self.flatpak_output),
+                )
+                self.flatpak_reader.start()
+                conf["updates.applications.progress"] = {
+                    "text": _("Updating applications..."),
+                    "value": None,
+                    "unit": None,
+                }
+            except Exception as e:
+                logger.error(f"Failed to start Flatpak update: {e}")
+                self.flatpak_proc = None
+                self.flatpak_reader = None
+                self.flatpak_output = []
+                conf["updates.applications.progress"] = None
+                conf["updates.applications.error"] = _(
+                    "Failed to start Flatpak update."
+                )
 
         # Detect reset and avoid breaking the UI
         if conf.get("updates.bootc.stage.mode", None) is None:
@@ -694,6 +781,15 @@ class BootcPlugin(HHDPlugin):
             if self.t.is_alive():
                 self.t.join()
             self.t = None
+        if self.flatpak_proc:
+            if self.flatpak_proc.poll() is None:
+                self.flatpak_proc.send_signal(signal.SIGINT)
+                self.flatpak_proc.wait()
+            if self.flatpak_reader:
+                self.flatpak_reader.join()
+            self.flatpak_proc = None
+            self.flatpak_reader = None
+            self.flatpak_output = []
 
 
 def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:

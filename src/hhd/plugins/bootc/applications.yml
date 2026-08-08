@@ -1,0 +1,24 @@
+type: container
+tags: [system, non-essential]
+title: Applications
+hint: >-
+  Update system-wide Flatpak applications and runtimes.
+
+children:
+  update:
+    type: action
+    title: Update
+
+  progress:
+    type: custom
+    tags: [progress]
+
+  status:
+    type: display
+    title: Status
+    tags: [slim]
+
+  error:
+    type: display
+    title: Error
+    tags: [error]
