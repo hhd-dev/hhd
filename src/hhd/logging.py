@@ -2,12 +2,10 @@ import datetime
 import logging
 import os
 import pathlib
-from logging.handlers import RotatingFileHandler
 from typing import Any
 
 from rich.logging import RichHandler
 from threading import Lock, get_ident, enumerate
-from .utils import Context
 
 logger = logging.getLogger(__name__)
 
@@ -17,17 +15,6 @@ RASTER = """\
  /        //        //        //
 /         /         /         / 
 ╲___/____/╲___/____/╲________/  \n"""
-
-
-class NewLineFormatter(logging.Formatter):
-    """Aligns newlines during multiline prints."""
-
-    def format(self, record):
-        msg = super().format(record)
-        if (idx := msg.index("|||")) != -1:
-            preamble = msg[:idx]
-            msg = msg.replace("|||", "").replace("\n", "\n" + (" " * len(preamble)))
-        return msg
 
 
 _lock = Lock()
@@ -173,25 +160,7 @@ class PluginRichHandler(RichHandler):
         return log_renderable
 
 
-class UserRotatingFileHandler(RotatingFileHandler):
-    def __init__(
-        self,
-        filename: str,
-        mode: str = "a",
-        maxBytes: int = 0,
-        backupCount: int = 0,
-        encoding: str | None = None,
-        delay: bool = False,
-        errors: str | None = None,
-        ctx: Context | None = None,
-    ) -> None:
-        self.ctx = ctx
-        super().__init__(filename, mode, maxBytes, backupCount, encoding, delay, errors)
-
-
-def setup_logger(
-    log_dir: str | None = None, init: bool = True, ctx: Context | None = None
-):
+def setup_logger(init: bool = True):
     from rich import get_console
     from rich.traceback import install
 
@@ -199,25 +168,11 @@ def setup_logger(
     is_systemd = bool(os.environ.get("JOURNAL_STREAM", None))
 
     install()
-    handlers = []
-    handlers.append(
+    handlers = [
         PluginRichHandler(
             PluginLogRender(print_time=not is_systemd, print_path=not is_systemd)
         )
-    )
-    if log_dir:
-        os.makedirs(log_dir, exist_ok=True)
-        handler = UserRotatingFileHandler(
-            os.path.join(log_dir, "hhd.log"),
-            maxBytes=10_000_000,
-            backupCount=10,
-            ctx=ctx,
-        )
-        handler.setFormatter(
-            NewLineFormatter("%(asctime)s %(module)-15s %(levelname)-8s|||%(message)s")
-        )
-        handler.doRollover()
-        handlers.append(handler)
+    ]
 
     FORMAT = "%(message)s"
     logging.basicConfig(

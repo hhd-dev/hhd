@@ -176,7 +176,7 @@ def main():
             pass
 
         set_log_plugin("main")
-        setup_logger(join(CONFIG_DIR, "log"), ctx=ctx)
+        setup_logger()
 
         if args.command:
             if args.command[0] == "token":
