@@ -30,6 +30,7 @@ gamescope:
       default: false
 
     autologin:
+      tags: [non-essential]
       type: mode
       title: "Boot into Gamemode"
       default: disabled

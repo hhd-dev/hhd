@@ -151,6 +151,14 @@ class AutologinPluginTest(unittest.TestCase):
         ]["children"]["user"]
         self.assertEqual(user["default"], "alice")
 
+    def test_settings_hide_user_field_for_single_user(self):
+        settings = self.settings(True, users=["alice"], configured=(False, None))
+        enabled = settings["gamemode"]["gamescope"]["children"]["autologin"][
+            "modes"
+        ]["enabled"]
+
+        self.assertNotIn("user", enabled["children"])
+
     def test_first_update_synchronizes_without_writing(self):
         self.plugin.autologin_users = ["alice", "deck"]
         conf = Config(
@@ -187,6 +195,18 @@ class AutologinPluginTest(unittest.TestCase):
         self.assertEqual(
             conf.get("gamemode.gamescope.autologin.enabled.user", ""), "deck"
         )
+
+    def test_first_update_does_not_initialize_hidden_single_user_field(self):
+        self.plugin.autologin_users = ["alice"]
+        conf = Config({})
+
+        with patch(
+            "hhd.plugins.overlay.read_autologin", return_value=(False, "alice")
+        ):
+            self.plugin._update_autologin(conf)
+
+        self.assertNotIn("gamemode.gamescope.autologin.enabled.user", conf)
+        self.assertEqual(self.plugin.old_autologin_user, "alice")
 
     def test_runtime_enable_and_user_change_write(self):
         self.plugin.autologin_users = ["alice", "deck"]
@@ -226,6 +246,26 @@ class AutologinPluginTest(unittest.TestCase):
             self.plugin._update_autologin(conf)
 
         update.assert_called_once_with(False, "alice")
+
+    def test_single_user_does_not_read_hidden_user_config(self):
+        self.plugin.autologin_users = ["alice"]
+        self.plugin.autologin_initialized = True
+        self.plugin.old_autologin_mode = "disabled"
+        self.plugin.old_autologin_user = "alice"
+        conf = Config(
+            {
+                "gamemode.gamescope.autologin.mode": "enabled",
+                "gamemode.gamescope.autologin.enabled.user": "stale",
+            }
+        )
+
+        with patch("hhd.plugins.overlay.update_autologin") as update:
+            self.plugin._update_autologin(conf)
+
+        update.assert_called_once_with(True, "alice")
+        self.assertEqual(
+            conf.get("gamemode.gamescope.autologin.enabled.user", ""), "stale"
+        )
 
     def test_write_failure_restores_previous_ui_values(self):
         self.plugin.autologin_users = ["alice"]
