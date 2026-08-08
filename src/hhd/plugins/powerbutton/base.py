@@ -1,352 +1,376 @@
+import ctypes
 import logging
 import os
 import select
-import subprocess
+import struct
+from dataclasses import dataclass
+from fcntl import ioctl
 from threading import Event
-from time import perf_counter, sleep
-from typing import cast
+from time import perf_counter
+from typing import Iterable, Literal, cast
 
 import evdev
 
-from hhd.utils import Context, is_steam_gamepad_running, run_steam_command
+from hhd.controller.lib.ioctl import EVIOCSMASK
+from hhd.utils import is_steam_gamepad_running, run_steam_command
 
-from .const import PowerButtonConfig
-from ..power.power import supports_sleep, emergency_hibernate
+from ..power.power import emergency_hibernate, supports_sleep
 
 logger = logging.getLogger(__name__)
 
 STEAM_WAIT_DELAY = 0.5
+RESCAN_DELAY = 0.5
 LONG_PRESS_DELAY = 2.0
-DEBOUNCE_DELAY = 1
-SLEEP_MIN = 2
+DEBOUNCE_DELAY = 1.0
+SLEEP_MIN = 2.0
 
-def B(b: str):
+LOGIN1_BUS = "org.freedesktop.login1"
+LOGIN1_PATH = "/org/freedesktop/login1"
+LOGIN1_INTERFACE = "org.freedesktop.login1.Manager"
+INHIBIT_WHAT = "handle-power-key:handle-lid-switch"
+
+PowerAction = Literal["short", "long"]
+
+
+def B(b: str) -> int:
     return cast(int, getattr(evdev.ecodes, b))
 
 
-def register_power_buttons(b: PowerButtonConfig) -> list[evdev.InputDevice]:
-    out = []
-    for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
-        capture = False
-        for phys in b.phys:
-            if str(device.phys).startswith(phys):
-                capture = True
-        if capture:
-            device.grab()
-            logger.info(f"Captured power button '{device.name}': '{device.phys}'")
-            out.append(device)
-    return out
+class LogindInhibitor:
+    """Hold a logind inhibitor for as long as its returned fd remains open."""
+
+    def __init__(self) -> None:
+        self.fd: int | None = None
+        self.bus = None
+
+    @property
+    def active(self) -> bool:
+        return self.fd is not None
+
+    def acquire(self) -> bool:
+        if self.active:
+            return True
+
+        try:
+            import dbus
+
+            self.bus = dbus.SystemBus()
+            manager = self.bus.get_object(LOGIN1_BUS, LOGIN1_PATH)
+            inhibit = manager.get_dbus_method("Inhibit", LOGIN1_INTERFACE)
+            inhibitor_fd = inhibit(
+                INHIBIT_WHAT,
+                "HandheldDaemon",
+                "Handheld Daemon handles power and lid events",
+                "block",
+            )
+            self.fd = inhibitor_fd.take()
+            logger.info("Inhibited logind power button and lid switch handling.")
+            return True
+        except Exception as e:
+            logger.error(f"Could not inhibit logind power handling:\n{e}")
+            self.release()
+            return False
+
+    def release(self) -> None:
+        if self.fd is not None:
+            try:
+                os.close(self.fd)
+            except OSError:
+                pass
+        self.fd = None
+        self.bus = None
 
 
-def pick_closest_button(btns: list[evdev.InputDevice], cfg: PowerButtonConfig):
-    for phys in cfg.phys:
-        for b in btns:
-            if str(b.phys).startswith(phys):
-                return b
-
-    if btns:
-        return btns[0]
-    return None
+def _event_codes(device: evdev.InputDevice, event_type: int) -> set[int]:
+    try:
+        return set(device.capabilities().get(event_type, []))
+    except Exception:
+        return set()
 
 
-def register_hold_button(b: PowerButtonConfig) -> evdev.InputDevice | None:
-    if not b.hold_phys or not b.hold_code:
-        logger.error(
-            f"Device configuration tuple does not contain required parameters:\n{b}"
-        )
+def is_power_device(device: evdev.InputDevice) -> bool:
+    name = (device.name or "").casefold()
+    return (
+        "power button" in name
+        or "lid switch" in name
+        or B("KEY_POWER") in _event_codes(device, B("EV_KEY"))
+        or B("SW_LID") in _event_codes(device, B("EV_SW"))
+    )
+
+
+def set_evdev_mask(fd: int, event_type: int, codes: Iterable[int]) -> None:
+    codes = tuple(codes)
+    if codes:
+        size = max((max(codes) >> 3) + 1, 8)
+        size += -size % 8
+    else:
+        size = 0
+    mask = bytearray(size)
+    for code in codes:
+        mask[code >> 3] |= 1 << (code & 0x07)
+
+    c_mask = ctypes.create_string_buffer(bytes(mask))
+    data = struct.pack("=IIQ", event_type, size, ctypes.addressof(c_mask))
+    ioctl(fd, EVIOCSMASK, data)
+
+
+def mask_power_events(device: evdev.InputDevice) -> None:
+    """Filter this fd so unrelated events never enter its evdev queue."""
+    # EV_SYN is special: its mask selects allowed event types rather than SYN
+    # codes. Set every mask unconditionally; unused bits are harmless.
+    set_evdev_mask(device.fd, B("EV_SYN"), (B("EV_KEY"), B("EV_SW")))
+    set_evdev_mask(device.fd, B("EV_KEY"), (B("KEY_POWER"),))
+    set_evdev_mask(device.fd, B("EV_SW"), (B("SW_LID"),))
+
+
+def reconcile_power_devices(
+    devices: dict[str, evdev.InputDevice],
+    ignored_paths: set[str] | None = None,
+) -> dict[str, evdev.InputDevice]:
+    """Reconcile eligible evdev nodes without ever taking an exclusive grab."""
+    if ignored_paths is None:
+        ignored_paths = set()
+
+    try:
+        paths = set(evdev.list_devices())
+    except Exception as e:
+        logger.warning(f"Could not list input devices:\n{e}")
+        return devices
+
+    for path in set(devices) - paths:
+        logger.info(f"Power input device disappeared: '{path}'.")
+        try:
+            devices[path].close()
+        except Exception:
+            pass
+        del devices[path]
+
+    ignored_paths.intersection_update(paths)
+    for path in paths - set(devices) - ignored_paths:
+        try:
+            device = evdev.InputDevice(path)
+            if not is_power_device(device):
+                device.close()
+                ignored_paths.add(path)
+                continue
+            try:
+                mask_power_events(device)
+            except OSError as e:
+                logger.warning(f"Could not mask input device '{path}', skipping: {e}")
+                device.close()
+                ignored_paths.add(path)
+                continue
+            devices[path] = device
+            logger.info(
+                f"Monitoring power input '{device.name}': '{device.phys}' ({path})."
+            )
+        except Exception as e:
+            logger.debug(f"Could not inspect input device '{path}': {e}")
+
+    return devices
+
+
+def close_power_devices(devices: dict[str, evdev.InputDevice]) -> None:
+    for device in devices.values():
+        try:
+            device.close()
+        except Exception:
+            pass
+    devices.clear()
+
+
+def quarantine_power_device(
+    devices: dict[str, evdev.InputDevice], ignored_paths: set[str], path: str
+) -> None:
+    device = devices.pop(path, None)
+    if device is not None:
+        try:
+            device.close()
+        except Exception:
+            pass
+    # evdev may keep returning a dead node briefly. Reconciliation removes this
+    # quarantine as soon as the path disappears, allowing a later reconnect.
+    ignored_paths.add(path)
+
+
+@dataclass
+class PowerEventState:
+    pressed_at: float | None = None
+    last_action_at: float | None = None
+    last_cycle_at: float | None = None
+    blocked_until: float = 0.0
+
+    def reset(self) -> None:
+        self.pressed_at = None
+        self.last_action_at = None
+        self.last_cycle_at = None
+        self.blocked_until = 0.0
+
+    def begin_cycle(self, now: float) -> None:
+        if self.last_cycle_at is not None and now - self.last_cycle_at > SLEEP_MIN:
+            # Input events generated during suspend can be delivered after resume.
+            self.pressed_at = None
+            self.blocked_until = now + DEBOUNCE_DELAY
+        self.last_cycle_at = now
+
+    def _action(self, action: PowerAction, now: float) -> PowerAction | None:
+        if now < self.blocked_until:
+            self.pressed_at = None
+            return None
+        if (
+            self.last_action_at is not None
+            and now - self.last_action_at <= DEBOUNCE_DELAY
+        ):
+            self.pressed_at = None
+            return None
+
+        self.pressed_at = None
+        self.last_action_at = now
+        return action
+
+    def handle(self, event: evdev.InputEvent, now: float) -> PowerAction | None:
+        if event.type == B("EV_KEY") and event.code == B("KEY_POWER"):
+            if event.value == 1:
+                if now >= self.blocked_until and (
+                    self.last_action_at is None
+                    or now - self.last_action_at > DEBOUNCE_DELAY
+                ):
+                    if self.pressed_at is None:
+                        self.pressed_at = now
+            elif event.value == 0 and self.pressed_at is not None:
+                action: PowerAction = (
+                    "long" if now - self.pressed_at >= LONG_PRESS_DELAY else "short"
+                )
+                return self._action(action, now)
+            return None
+
+        if event.type == B("EV_SW") and event.code == B("SW_LID") and event.value == 1:
+            return self._action("short", now)
+
         return None
 
-    for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
-        for phys in b.hold_phys:
-            if str(device.phys).startswith(phys):
-                if b.hold_grab:
-                    device.grab()
-                logger.info(f"Captured hold keyboard '{device.name}': '{device.phys}'")
-                return device
-    return None
+    def timeout(self, now: float) -> PowerAction | None:
+        if self.pressed_at is None or now - self.pressed_at < LONG_PRESS_DELAY:
+            return None
+        return self._action("long", now)
+
+    def poll_timeout(self, now: float) -> float:
+        if self.pressed_at is None:
+            return STEAM_WAIT_DELAY
+        return max(
+            0.0,
+            min(
+                STEAM_WAIT_DELAY,
+                LONG_PRESS_DELAY - (now - self.pressed_at),
+            ),
+        )
 
 
 _supports_sleep = None
 
 
-def run_steam_shortpress():
+def run_steam_shortpress() -> bool:
     global _supports_sleep
-    # FIXME: This should be patched in systemd instead
     if _supports_sleep is None:
         _supports_sleep = supports_sleep()
 
     if _supports_sleep:
         return run_steam_command("steam://shortpowerpress")
-    else:
-        emergency_hibernate(shutdown=False)
-        return True
+
+    emergency_hibernate(shutdown=False)
+    return True
 
 
-def run_steam_longpress():
+def run_steam_longpress() -> bool:
     return run_steam_command("steam://longpowerpress")
 
 
-def power_button_run(cfg: PowerButtonConfig, should_exit: Event, emit):
-    match cfg.type:
-        case "only_press":
-            logger.info(
-                f"Starting multi-device powerbutton handler for device '{cfg.device}'."
-            )
-            power_button_multidev(cfg, should_exit, emit)
-        case "hold_emitted":
-            logger.info(
-                f"Starting timer based powerbutton handler for device '{cfg.device}'."
-            )
-            power_button_timer(cfg, should_exit, emit)
-        case "hold_isa":
-            logger.info(
-                f"Starting isa keyboard powerbutton handler for device '{cfg.device}'."
-            )
-            power_button_isa(cfg, should_exit, emit)
-        case "disabled":
-            logger.info(
-                f"Power button plugin disabled for device '{cfg.device}', not starting."
-            )
-        case _:
-            logger.error(f"Invalid type in config '{cfg.type}'. Exiting.")
+def execute_power_action(action: PowerAction, emit) -> None:
+    logger.info(f"Executing {action} power button press.")
+    if action == "short":
+        worked = run_steam_shortpress()
+        emit({"type": "special", "event": "pbtn_short"})
+    else:
+        worked = run_steam_longpress()
+        emit({"type": "special", "event": "pbtn_long"})
+
+    if not worked:
+        logger.error("Power button action did not work. Calling `systemctl suspend`")
+        os.system("systemctl suspend")
 
 
-def power_button_isa(cfg: PowerButtonConfig, should_exit: Event, emit):
-    press_dev = None
-    press_devs = []
-    hold_dev = None
+def power_button_run(should_exit: Event, emit) -> None:
+    devices: dict[str, evdev.InputDevice] = {}
+    ignored_paths: set[str] = set()
+    inhibitor = LogindInhibitor()
+    state = PowerEventState()
+    last_scan = 0.0
+
+    logger.info("Starting generic power button and lid switch handler.")
     try:
         while not should_exit.is_set():
-            # Initial check for steam
             if not is_steam_gamepad_running():
-                # Close devices
-                if press_devs:
-                    for d in press_devs:
-                        d.close()
-                    press_devs = []
-                if press_dev:
-                    press_dev.close()
-                    press_dev = None
-                if hold_dev:
-                    hold_dev.close()
-                    hold_dev = None
-                logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamepad_running():
-                    if should_exit.is_set():
-                        return
-                    sleep(STEAM_WAIT_DELAY)
-
-            if not press_dev or not hold_dev:
-                logger.info(f"Steam is running, hooking power button.")
-                press_devs = register_power_buttons(cfg)
-                press_dev = press_devs[0] if press_devs else None
-                hold_dev = register_hold_button(cfg)
-            if not press_dev:
-                logger.error(f"Power button interfaces not found, disabling plugin.")
-                return
-
-            # Add timeout to release the button if steam exits.
-            r = select.select(
-                [press_dev.fd, hold_dev.fd] if hold_dev else [press_dev.fd],
-                [],
-                [],
-                STEAM_WAIT_DELAY,
-            )[0]
-
-            if not r:
+                if devices or inhibitor.active:
+                    logger.info("Steam exited, releasing power input handling.")
+                inhibitor.release()
+                close_power_devices(devices)
+                state.reset()
+                should_exit.wait(STEAM_WAIT_DELAY)
                 continue
-            fd = r[0]  # handle one button at a time
 
-            # Handle button event
-            issue_systemctl = False
-            if fd == press_dev.fd:
-                ev = press_dev.read_one()
-                if ev.type == B("EV_KEY") and ev.code == B("KEY_POWER") and ev.value:
-                    logger.info("Executing short press.")
-                    issue_systemctl = not run_steam_shortpress()
-                    emit({"type": "special", "event": "pbtn_short"})
-            elif hold_dev and fd == hold_dev.fd:
-                ev = hold_dev.read_one()
-                if ev.type == B("EV_KEY") and ev.code == cfg.hold_code and ev.value:
-                    logger.info("Executing long press.")
-                    issue_systemctl = not run_steam_longpress()
-                    emit({"type": "special", "event": "pbtn_long"})
+            now = perf_counter()
+            if now - last_scan >= RESCAN_DELAY:
+                reconcile_power_devices(devices, ignored_paths)
+                last_scan = now
 
-            if issue_systemctl:
-                logger.error(
-                    "Power button action did not work. Calling `systemctl suspend`"
-                )
-                os.system("systemctl suspend")
+            if not devices:
+                inhibitor.release()
+                state.reset()
+                should_exit.wait(STEAM_WAIT_DELAY)
+                continue
+
+            if not inhibitor.active and not inhibitor.acquire():
+                # Without the inhibitor logind would act on the same events.
+                close_power_devices(devices)
+                state.reset()
+                should_exit.wait(STEAM_WAIT_DELAY)
+                continue
+
+            fds = {device.fd: (path, device) for path, device in devices.items()}
+            try:
+                readable = select.select(list(fds), [], [], state.poll_timeout(now))[0]
+            except (OSError, ValueError) as e:
+                logger.warning(f"Power input polling failed, rescanning:\n{e}")
+                inhibitor.release()
+                close_power_devices(devices)
+                state.reset()
+                continue
+
+            now = perf_counter()
+            state.begin_cycle(now)
+            actions: list[PowerAction] = []
+            for fd in readable:
+                path, device = fds[fd]
+                try:
+                    for event in device.read():
+                        if action := state.handle(event, now):
+                            actions.append(action)
+                except (OSError, BlockingIOError) as e:
+                    logger.info(f"Power input '{path}' was removed: {e}")
+                    quarantine_power_device(devices, ignored_paths, path)
+
+            if action := state.timeout(now):
+                actions.append(action)
+            for action in actions:
+                execute_power_action(action, emit)
+
+            if not devices:
+                inhibitor.release()
+                state.reset()
     except KeyboardInterrupt:
         pass
     except Exception as e:
-        logger.error(f"Received exception, exitting:\n{e}")
-
-
-def power_button_timer(
-    cfg: PowerButtonConfig, should_exit: Event, emit
-):
-    dev = None
-    devs = []
-    try:
-        pressed_time = None
-        while not should_exit.is_set():
-            # Initial check for steam
-            if not is_steam_gamepad_running():
-                # Close devices
-                if devs:
-                    for d in devs:
-                        d.close()
-                        devs = []
-                    if dev:
-                        dev.close()
-                        dev = None
-                logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamepad_running():
-                    if should_exit.is_set():
-                        return
-                    sleep(STEAM_WAIT_DELAY)
-
-            if not dev:
-                logger.info(f"Steam is running, hooking power button.")
-                devs = register_power_buttons(cfg)
-                dev = pick_closest_button(devs, cfg)
-            if not dev:
-                logger.error(f"Power button not found, disabling plugin.")
-                return
-
-            # Add timeout to release the button if steam exits.
-            delay = LONG_PRESS_DELAY if pressed_time else STEAM_WAIT_DELAY
-            r = select.select([dev.fd], [], [], delay)[0]
-
-            # Handle press logic
-            if r:
-                # Handle button event
-                ev = dev.read_one()
-                if ev.type == B("EV_KEY") and ev.code == B("KEY_POWER"):
-                    curr_time = perf_counter()
-                    if ev.value:
-                        pressed_time = curr_time
-                        press_type = "initial_press"
-                    elif pressed_time:
-                        if curr_time - pressed_time > LONG_PRESS_DELAY:
-                            press_type = "long_press"
-                        else:
-                            press_type = "short_press"
-                        pressed_time = None
-                    else:
-                        press_type = "release_without_press"
-                else:
-                    press_type = "no_press"
-            elif pressed_time:
-                # Button was pressed but we hit a timeout, that means
-                # it is a long press
-                press_type = "long_press"
-                pressed_time = None
-            else:
-                # Otherwise, no press
-                press_type = "no_press"
-
-            issue_systemctl = False
-            match press_type:
-                case "long_press":
-                    logger.info("Executing long press.")
-                    issue_systemctl = not run_steam_longpress()
-                    emit({"type": "special", "event": "pbtn_long"})
-                case "short_press":
-                    logger.info("Executing short press.")
-                    issue_systemctl = not run_steam_shortpress()
-                    emit({"type": "special", "event": "pbtn_short"})
-                case "initial_press":
-                    logger.info("Power button pressed down.")
-                case "release_without_press":
-                    logger.error("Button released without being pressed.")
-
-            if issue_systemctl:
-                logger.error(
-                    "Power button action did not work. Calling `systemctl suspend`"
-                )
-                os.system("systemctl suspend")
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        logger.error(f"Received exception, exitting:\n{e}")
+        logger.error(f"Received exception, exiting power handler:\n{e}")
     finally:
-        if dev:
-            dev.close()
-        if devs:
-            for d in devs:
-                d.close()
-
-
-def power_button_multidev(
-    cfg: PowerButtonConfig, should_exit: Event, emit
-):
-    devs = []
-    fds = []
-    last_pressed = None
-    last_wakeup = perf_counter()
-    try:
-        while not should_exit.is_set():
-            # Initial check for steam
-            if not is_steam_gamepad_running():
-                for d in devs:
-                    d.close()
-                devs = []
-                fds = []
-                logger.info(f"Waiting for steam to launch.")
-                while not is_steam_gamepad_running():
-                    if should_exit.is_set():
-                        return
-                    sleep(STEAM_WAIT_DELAY)
-
-            if not devs:
-                logger.info(f"Steam is running, hooking power button.")
-                devs = register_power_buttons(cfg)
-                fds = {d.fd: d for d in devs}
-            if not devs:
-                logger.error(f"Power button(s) not found, disabling plugin.")
-                return
-
-            # Add timeout to release the button if steam exits.
-            r = select.select(list(fds), [], [], STEAM_WAIT_DELAY)[0]
-            
-            # Make sure that we debounce after sleep
-            curr_time = perf_counter()
-            if curr_time - last_wakeup > SLEEP_MIN:
-                last_pressed = curr_time
-            last_wakeup = curr_time
-
-            # Handle press logic
-            issue_power = False
-            issue_systemctl = False
-            for fd in r:
-                # Handle button event
-                ev = fds[fd].read_one()
-                if (
-                    ev.type == B("EV_KEY")
-                    and ev.code == B("KEY_POWER")
-                    and ev.value == 1
-                ):
-                    if not last_pressed or curr_time - last_pressed > DEBOUNCE_DELAY:
-                        last_pressed = curr_time
-                        issue_power = True
-
-            if issue_power:
-                logger.info("Executing short press.")
-                issue_systemctl = not run_steam_shortpress()
-                emit({"type": "special", "event": "pbtn_short"})
-
-            if issue_systemctl:
-                logger.error(
-                    "Power button action did not work. Calling `systemctl suspend`"
-                )
-                os.system("systemctl suspend")
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        logger.error(f"Received exception, exitting:\n{e}")
-    finally:
-        if devs:
-            for d in devs:
-                d.close()
+        inhibitor.release()
+        close_power_devices(devices)
