@@ -136,8 +136,6 @@ class OverlayPlugin(HHDPlugin):
             del set["gamemode"]["gamescope"]["children"]["steamui_halfhz"]
         if not SUPPORTS_FRAMEGEN:
             del set["gamemode"]["gamescope"]["children"]["framegen"]
-        if not SUPPORTS_DPMS:
-            del set["gamemode"]["gamescope"]["children"]["dpms"]
         if not SUPPORTS_AUTOLOGIN:
             del set["gamemode"]["gamescope"]["children"]["autologin"]
         else:
@@ -226,7 +224,7 @@ class OverlayPlugin(HHDPlugin):
                 "gamemode.gamescope.framegen.enabled.quality", 10
             )
         if SUPPORTS_DPMS and self.ovf:
-            self.ovf.gsconf["dpms"] = conf.get("gamemode.gamescope.dpms", False)
+            self.ovf.gsconf["dpms"] = True
         if SUPPORTS_AUTOLOGIN and self.autologin_users:
             self._update_autologin(conf)
 

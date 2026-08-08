@@ -29,12 +29,6 @@ gamescope:
       title: "Run Steam at 60/72 Hz"
       default: false
 
-    dpms:
-      tags: [non-essential]
-      type: bool
-      title: "Poweroff screen before sleep"
-      default: true
-
     autologin:
       type: mode
       title: "Boot into Gamemode"
