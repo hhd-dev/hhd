@@ -1,11 +1,7 @@
-import argparse
 import json
-import logging
 import socket
 import sys
 from http.client import HTTPConnection
-
-logger = logging.getLogger(__name__)
 
 SOCKET_UNIX = "/run/hhd/api"
 USAGE = """
@@ -51,6 +47,12 @@ def unroll_dict(d):
     return dict(_unroll_dict(d))
 
 
+def _log_error(message: str):
+    import logging
+
+    logging.getLogger(__name__).error(message)
+
+
 class UnixConnection(HTTPConnection):
     def connect(self):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -86,7 +88,7 @@ def _get(keys, poll: bool = False, state=None, values: bool = False):
         keys = [k.split("=", 1)[0] for k in keys]
 
     if state.status != 200:
-        logger.error(f"Failed to get state with status: {state.status}")
+        _log_error(f"Failed to get state with status: {state.status}")
         return 2
 
     out = ""
@@ -95,7 +97,7 @@ def _get(keys, poll: bool = False, state=None, values: bool = False):
     for k in keys or data:
         if k not in data or data[k] is None:
             # Eat none values as the purge happens after restart
-            logger.error(f"Key {k} not found in state")
+            _log_error(f"Key {k} not found in state")
             err = 3
             continue
         else:
@@ -130,7 +132,7 @@ def _track(keys, sep, values):
 
 def _set(keys, values):
     if not keys:
-        logger.error("No keys provided to set")
+        _log_error("No keys provided to set")
         return 1
 
     state = {}
@@ -138,7 +140,7 @@ def _set(keys, values):
         try:
             k, vr = key.split("=", 1)
         except ValueError:
-            logger.error(f"Invalid KEY=VALUE: {key}")
+            _log_error(f"Invalid KEY=VALUE: {key}")
             return 1
 
         if vr.lower() in ["true", "false"]:
@@ -158,6 +160,9 @@ def _set(keys, values):
 
 
 def _main():
+    import argparse
+    import logging
+
     logging.basicConfig(
         level=logging.DEBUG, stream=sys.stderr, format="%(levelname)s - %(message)s"
     )
@@ -199,7 +204,7 @@ def _main():
         case "poll":
             v = _get(args.keys, poll=True, values=args.values)
         case _:
-            logger.error(f"Invalid command: '{args.command}'")
+            _log_error(f"Invalid command: '{args.command}'")
             v = -1
 
     if v is not None:
@@ -226,7 +231,7 @@ def main():
     except KeyboardInterrupt:
         sys.exit(0)
     except PermissionError:
-        logger.error(
+        _log_error(
             "Permission denied when trying to connect to the UNIX socket. Are you running as root?"
         )
         sys.exit(1)

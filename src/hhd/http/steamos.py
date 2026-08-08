@@ -1,6 +1,4 @@
-import argparse
 import sys
-import time
 from .ctl import get_state, set_state, unroll_dict, send_event
 
 SOCKET_UNIX = "/run/hhd/api"
