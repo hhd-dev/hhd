@@ -26,9 +26,13 @@ class OxpX2HidTest(unittest.TestCase):
         )
 
     def test_x2_maps_m1_and_m2_to_f15_and_f16(self):
+        self.assertEqual(INITIALIZE_X2[0][3:8], bytes.fromhex("0238200101"))
+        self.assertEqual(INITIALIZE_X2[1][3:8], bytes.fromhex("0238200201"))
         self.assertEqual(INITIALIZE_X2[1][50:56], bytes.fromhex("220201680000"))
         self.assertEqual(INITIALIZE_X2[1][56:62], bytes.fromhex("230201690000"))
 
+        self.assertEqual(INITIALIZE[0][3:8], bytes.fromhex("0238020101"))
+        self.assertEqual(INITIALIZE[1][3:8], bytes.fromhex("0238020201"))
         self.assertEqual(INITIALIZE[1][50:56], bytes.fromhex("220200000000"))
         self.assertEqual(INITIALIZE[1][56:62], bytes.fromhex("230200000000"))
 
