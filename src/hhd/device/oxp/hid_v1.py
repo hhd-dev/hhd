@@ -19,7 +19,7 @@ def gen_cmd(cid: int, cmd: bytes | list[int] | str, idx: int = 0x01, size: int =
     return base + bytes([0] * (size - len(base) - 2)) + bytes([0x3F, cid])
 
 
-def gen_rgb_mode(mode: str):
+def gen_rgb_mode(mode: str, side: int = 0x00):
     mc = 0
     match mode:
         case "monster_woke":
@@ -40,14 +40,14 @@ def gen_rgb_mode(mode: str):
             mc = 0x01
         case "sun":
             mc = 0x08
-    return gen_cmd(0xB8, [mc, 0x00, 0x02])
+    return gen_cmd(0xB8, [mc, side, 0x02])
 
 
 gen_intercept = lambda enable: gen_cmd(0xB2, [0x03 if enable else 0x00, 0x01, 0x02])
 
 
 def gen_brightness(
-    side: Literal[0, 3, 4],
+    side: Literal[0, 1, 2, 3, 4],
     enabled: bool,
     brightness: Literal["low", "medium", "high"],
 ):
@@ -119,6 +119,7 @@ class OxpHidraw(GenericGamepadHidraw):
         *args,
         turbo: bool = True,
         g1: bool = False,
+        x2: bool = False,
         led_control: bool = True,
         secondary: bool = False,
         vibration: int | None,
@@ -135,7 +136,9 @@ class OxpHidraw(GenericGamepadHidraw):
         self.vibration = vibration
 
         self.g1 = g1
-        self.secondary = secondary and not g1
+        self.x2 = x2
+        self.rgb_sides = (0x01, 0x02) if x2 else (0x00,)
+        self.secondary = secondary and not g1 and not x2
         self.send_init = not g1  # g1 has no extra buttons
         self.led_control = led_control
         self.prev_brightness = None
@@ -240,15 +243,17 @@ class OxpHidraw(GenericGamepadHidraw):
             stick_enabled != self.prev_stick_enabled
             or brightness != self.prev_brightness
         ):
-            self.queue_cmd.append(gen_brightness(0, stick_enabled, brightness))
+            for side in self.rgb_sides:
+                self.queue_cmd.append(gen_brightness(side, stick_enabled, brightness))
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled
 
         if stick_enabled and stick and stick != self.prev_stick:
-            if isinstance(stick, str):
-                self.queue_cmd.append(gen_rgb_mode(stick))
-            else:
-                self.queue_cmd.append(gen_rgb_solid(*stick, side=0x00))
+            for side in self.rgb_sides:
+                if isinstance(stick, str):
+                    self.queue_cmd.append(gen_rgb_mode(stick, side=side))
+                else:
+                    self.queue_cmd.append(gen_rgb_solid(*stick, side=side))
             self.prev_stick = stick
             self.prev_brightness = brightness
             self.prev_stick_enabled = stick_enabled

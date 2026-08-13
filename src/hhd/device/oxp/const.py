@@ -172,7 +172,7 @@ CONFS = {
         "name": "ONEXPLAYER X2 Mini Pro",
         "x1": True,
         "mapping": X1_MINI_MAPPING,
-        "protocol": "hid_v1",
+        "protocol": "hid_v2_x2",
     },
     "ONEXPLAYER G1 i": {
         **ONEX_DEFAULT_CONF,

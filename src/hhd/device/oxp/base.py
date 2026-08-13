@@ -102,7 +102,7 @@ def plugin_run(
             # Serial device is always present
             # Hid devices might not be, wait a bit for them
             match protocol:
-                case "hid_v1":
+                case "hid_v1" | "hid_v2_x2":
                     found_vendor = bool(
                         enumerate_unique(
                             vid=X1_MINI_VID,
@@ -269,6 +269,7 @@ def find_vendor(prepare, turbo, protocol: str | None, secondary: bool, vibration
         required=True,
         led_control=(protocol != "hid_dual"),
         secondary=secondary,
+        x2=(protocol == "hid_v2_x2"),
         vibration=vibration_val,
     )
     d_hidraw_v2 = OxpHidrawV2(
@@ -312,10 +313,14 @@ def find_vendor(prepare, turbo, protocol: str | None, secondary: bool, vibration
         except Exception as e:
             pass
 
-    if protocol == "hid_v1":
+    if protocol in ("hid_v1", "hid_v2_x2"):
         try:
             prepare(d_hidraw)
-            logger.info("Found OXP V1 hidraw vendor device.")
+            logger.info(
+                "Found OXP X2 hidraw vendor device."
+                if protocol == "hid_v2_x2"
+                else "Found OXP V1 hidraw vendor device."
+            )
             return [d_hidraw]
         except Exception as e:
             pass
