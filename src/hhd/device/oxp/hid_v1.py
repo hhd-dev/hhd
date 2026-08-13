@@ -307,9 +307,11 @@ class OxpHidraw(GenericGamepadHidraw):
                 self.prev_center_enabled = center_enabled
                 self.prev_center_brightness = center_brightness
 
-            # Only apply secondary colors on init.
+            # Apply secondary changes to x2 immediately because the lights
+            # are on an A surface and it looks wrong otherwise. We will eat
+            # the lag unfortunately.
             if (
-                init
+                (init or self.x2)
                 and center_enabled
                 and center
                 and (

@@ -108,6 +108,48 @@ class OxpX2HidTest(unittest.TestCase):
             [(0xFE, 0x05), (0xFE, 0x06)],
         )
 
+    def test_x2_secondary_slider_updates_without_initialize(self):
+        device = hid_v1.OxpHidraw(x2=True, secondary=True, vibration=None)
+        device.dev = object()
+        device.consume([self.led_event()])
+        device.queue_cmd.clear()
+
+        device.consume(
+            [
+                self.led_event(
+                    secondary=(70, 80, 90),
+                    initialize=False,
+                    mode="duality",
+                )
+            ]
+        )
+
+        self.assertEqual(
+            [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
+            [(0xFE, 0x05), (0xFE, 0x06)],
+        )
+
+    def test_existing_secondary_passthrough_remains_init_only(self):
+        device = hid_v1.OxpHidraw(secondary=True, vibration=None)
+        device.dev = object()
+        device.consume([self.led_event()])
+        device.queue_cmd.clear()
+
+        changed = self.led_event(
+            secondary=(70, 80, 90),
+            initialize=False,
+            mode="duality",
+        )
+        device.consume([changed])
+        self.assertEqual(list(device.queue_cmd), [])
+
+        changed["initialize"] = True
+        device.consume([changed])
+        self.assertEqual(
+            [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
+            [(0xFE, 0x03), (0xFE, 0x04)],
+        )
+
     def test_x2_secondary_zones_follow_brightness(self):
         device = hid_v1.OxpHidraw(x2=True, secondary=True, vibration=None)
         device.dev = object()
