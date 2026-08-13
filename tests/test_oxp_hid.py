@@ -5,11 +5,14 @@ from hhd.controller.physical.evdev import B
 from hhd.device.oxp.base import (
     RGB_MODES_FULL,
     RGB_MODES_FULL_BREATHING,
-    X1_MINI_PID,
-    X1_MINI_VID,
-    get_keyboard,
 )
-from hhd.device.oxp.const import CONFS
+from hhd.device.oxp.const import (
+    BTN_MAPPINGS,
+    BTN_MAPPINGS_NONTURBO,
+    BTN_MAPPINGS_NONTURBO_X2,
+    BTN_MAPPINGS_X2,
+    CONFS,
+)
 from hhd.device.oxp import hid_v1
 from hhd.device.oxp.hid_v1 import INITIALIZE, INITIALIZE_X2
 
@@ -204,22 +207,19 @@ class OxpX2HidTest(unittest.TestCase):
         self.assertEqual(INITIALIZE[1][50:56], bytes.fromhex("220200000000"))
         self.assertEqual(INITIALIZE[1][56:62], bytes.fromhex("230200000000"))
 
-    def test_x2_keyboard_is_grabbed_and_maps_f_keys(self):
-        keyboard = get_keyboard("hid_v2_x2", True)
+    def test_x2_keyboard_maps_f_keys(self):
+        self.assertEqual(BTN_MAPPINGS_X2[B("KEY_F15")], "extra_l1")
+        self.assertEqual(BTN_MAPPINGS_X2[B("KEY_F16")], "extra_r1")
 
-        self.assertEqual(keyboard.vid, [X1_MINI_VID])
-        self.assertEqual(keyboard.pid, [X1_MINI_PID])
-        self.assertTrue(keyboard.grab)
-        self.assertEqual(keyboard.capabilities, {B("EV_KEY"): [B("KEY_O")]})
-        self.assertEqual(keyboard.btn_map[B("KEY_F15")], "extra_l1")
-        self.assertEqual(keyboard.btn_map[B("KEY_F16")], "extra_r1")
+    def test_at_keyboard_keeps_volume_buttons(self):
+        for mappings in (BTN_MAPPINGS, BTN_MAPPINGS_NONTURBO):
+            self.assertEqual(mappings[B("KEY_VOLUMEUP")], "key_volumeup")
+            self.assertEqual(mappings[B("KEY_VOLUMEDOWN")], "key_volumedown")
 
     def test_x2_nonturbo_mapping_keeps_back_buttons(self):
-        keyboard = get_keyboard("hid_v2_x2", False)
-
-        self.assertNotIn(B("KEY_LEFTALT"), keyboard.btn_map)
-        self.assertEqual(keyboard.btn_map[B("KEY_F15")], "extra_l1")
-        self.assertEqual(keyboard.btn_map[B("KEY_F16")], "extra_r1")
+        self.assertNotIn(B("KEY_LEFTALT"), BTN_MAPPINGS_NONTURBO_X2)
+        self.assertEqual(BTN_MAPPINGS_NONTURBO_X2[B("KEY_F15")], "extra_l1")
+        self.assertEqual(BTN_MAPPINGS_NONTURBO_X2[B("KEY_F16")], "extra_r1")
 
     def test_interrupted_x2_initialization_is_retried(self):
         def open_device():

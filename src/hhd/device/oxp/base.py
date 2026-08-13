@@ -261,26 +261,6 @@ class OxpAtKbd(GenericGamepadEvdev):
         return evs
 
 
-def get_keyboard(protocol: str | None, turbo: bool):
-    if protocol == "hid_v2_x2":
-        return OxpAtKbd(
-            vid=[X1_MINI_VID],
-            pid=[X1_MINI_PID],
-            capabilities={EC("EV_KEY"): [EC("KEY_O")]},
-            required=True,
-            grab=True,
-            btn_map=BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2,
-        )
-
-    return OxpAtKbd(
-        vid=[KBD_VID],
-        pid=[KBD_PID],
-        required=False,
-        grab=True,
-        btn_map=BTN_MAPPINGS if turbo else BTN_MAPPINGS_NONTURBO,
-    )
-
-
 def find_vendor(
     prepare,
     turbo,
@@ -437,7 +417,28 @@ def turbo_loop(
         controller_disabled=True,
     )
 
-    d_kbd_1 = get_keyboard(dconf.get("protocol", None), True)
+    # X2 keeps volume keys on the AT keyboard and exposes its controller
+    # shortcuts on a second keyboard interface, so both must be grabbed.
+    d_kbds = [
+        OxpAtKbd(
+            vid=[KBD_VID],
+            pid=[KBD_PID],
+            required=False,
+            grab=True,
+            btn_map=BTN_MAPPINGS,
+        )
+    ]
+    if dconf.get("protocol", None) == "hid_v2_x2":
+        d_kbds.append(
+            OxpAtKbd(
+                vid=[X1_MINI_VID],
+                pid=[X1_MINI_PID],
+                capabilities={EC("EV_KEY"): [EC("KEY_O")]},
+                required=True,
+                grab=True,
+                btn_map=BTN_MAPPINGS_X2,
+            )
+        )
 
     share_reboots = False
     last_controller_check = 0
@@ -528,7 +529,8 @@ def turbo_loop(
 
         for d in d_producers:
             prepare(d)
-        prepare(d_kbd_1)
+        for d in d_kbds:
+            prepare(d)
 
         logger.info(
             "Turbo only mode started, the turbo button of the device will still work."
@@ -559,7 +561,8 @@ def turbo_loop(
                     evs.extend(d.produce(r))
 
             # Read delayed events
-            evs.extend(d_kbd_1.produce([]))
+            for d in d_kbds:
+                evs.extend(d.produce([]))
 
             evs = multiplexer.process(evs)
             if evs:
@@ -644,7 +647,29 @@ def controller_loop(
 
     # Switch buttons if turbo is enabled. This only affects AOKZOE and
     # OneXPlayer devices whose default mapping leaves the turbo button alone.
-    d_kbd_1 = get_keyboard(dconf.get("protocol", None), turbo)
+    mappings = BTN_MAPPINGS if turbo else BTN_MAPPINGS_NONTURBO
+    # X2 keeps volume keys on the AT keyboard and exposes its controller
+    # shortcuts on a second keyboard interface, so both must be grabbed.
+    d_kbds = [
+        OxpAtKbd(
+            vid=[KBD_VID],
+            pid=[KBD_PID],
+            required=False,
+            grab=True,
+            btn_map=mappings,
+        )
+    ]
+    if dconf.get("protocol", None) == "hid_v2_x2":
+        d_kbds.append(
+            OxpAtKbd(
+                vid=[X1_MINI_VID],
+                pid=[X1_MINI_PID],
+                capabilities={EC("EV_KEY"): [EC("KEY_O")]},
+                required=True,
+                grab=True,
+                btn_map=BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2,
+            )
+        )
     # Touchpad keyboard
     d_kbd_2 = GenericGamepadEvdev(
         vid=[0x6080],
@@ -754,7 +779,8 @@ def controller_loop(
             if start_imu:
                 prepare(d_imu)
         prepare(d_volume_btn)
-        prepare(d_kbd_1)
+        for d in d_kbds:
+            prepare(d)
 
         for d in d_producers:
             prepare(d)
@@ -775,7 +801,8 @@ def controller_loop(
                     evs.extend(d.produce(r))
 
             # Read delayed events
-            evs.extend(d_kbd_1.produce([]))
+            for d in d_kbds:
+                evs.extend(d.produce([]))
 
             evs = multiplexer.process(evs)
             if evs:
