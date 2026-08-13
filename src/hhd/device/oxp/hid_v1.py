@@ -142,6 +142,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.queue_kbd = None
         self.queue_home = None
         self.queue_cmd = deque(maxlen=10)
+        self.init_pending = 0
         self.next_send = 0
         self.queue_led = None
         self.turbo = turbo
@@ -171,10 +172,11 @@ class OxpHidraw(GenericGamepadHidraw):
         if self.send_init:
             if not _init_done:
                 self.next_send = time.perf_counter() + INIT_DELAY
-                self.queue_cmd.extend(INITIALIZE_X2 if self.x2 else INITIALIZE)
+                initialize = INITIALIZE_X2 if self.x2 else INITIALIZE
+                self.queue_cmd.extend(initialize)
+                self.init_pending = len(initialize)
                 # Setting the mappings is a bit aggressive and causes the device
                 # to flash its leds. Only do it during boot.
-                _init_done = True
             else:
                 self.queue_cmd.append(gen_intercept(False))
         
@@ -190,6 +192,8 @@ class OxpHidraw(GenericGamepadHidraw):
         return a
 
     def consume(self, events):
+        global _init_done
+
         if not self.dev:
             return
 
@@ -203,6 +207,11 @@ class OxpHidraw(GenericGamepadHidraw):
             cmd = self.queue_cmd.popleft()
             logger.info(f"OXP C: {cmd.hex()}")
             self.dev.write(cmd)
+            if self.init_pending:
+                self.init_pending -= 1
+                if not self.init_pending:
+                    # A failed startup must retry the mappings on the next open.
+                    _init_done = True
             self.next_send = curr + WRITE_DELAY
 
         # Queue needs to flush before switching to next event

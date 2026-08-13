@@ -1,12 +1,24 @@
 import unittest
+from unittest.mock import patch
 
 from hhd.controller.physical.evdev import B
 from hhd.device.oxp.base import X1_MINI_PID, X1_MINI_VID, get_keyboard
 from hhd.device.oxp.const import CONFS
+from hhd.device.oxp import hid_v1
 from hhd.device.oxp.hid_v1 import INITIALIZE, INITIALIZE_X2
 
 
 class OxpX2HidTest(unittest.TestCase):
+    def setUp(self):
+        self.init_done = hid_v1._init_done
+        self.init_vibration = hid_v1._init_vibration
+        hid_v1._init_done = False
+        hid_v1._init_vibration = None
+
+    def tearDown(self):
+        hid_v1._init_done = self.init_done
+        hid_v1._init_vibration = self.init_vibration
+
     def test_x2_uses_x2_protocol(self):
         self.assertEqual(
             CONFS["ONEXPLAYER X2Mini PRO"]["protocol"],
@@ -36,6 +48,38 @@ class OxpX2HidTest(unittest.TestCase):
         self.assertNotIn(B("KEY_LEFTALT"), keyboard.btn_map)
         self.assertEqual(keyboard.btn_map[B("KEY_F15")], "extra_l1")
         self.assertEqual(keyboard.btn_map[B("KEY_F16")], "extra_r1")
+
+    def test_interrupted_x2_initialization_is_retried(self):
+        def open_device():
+            device = hid_v1.OxpHidraw(x2=True, vibration=None)
+            with (
+                patch.object(hid_v1.GenericGamepadHidraw, "open", return_value=[]),
+                patch.object(hid_v1.time, "perf_counter", return_value=0),
+            ):
+                device.open()
+            return device
+
+        first = open_device()
+        self.assertEqual(list(first.queue_cmd), INITIALIZE_X2)
+        self.assertFalse(hid_v1._init_done)
+
+        # Simulate startup aborting before the queued mappings reach the device.
+        retry = open_device()
+        self.assertEqual(list(retry.queue_cmd), INITIALIZE_X2)
+
+        class FakeDevice:
+            def write(self, cmd):
+                pass
+
+        retry.dev = FakeDevice()
+        for i in range(len(INITIALIZE_X2)):
+            retry.next_send = 0
+            with patch.object(hid_v1.time, "perf_counter", return_value=1):
+                retry.consume([])
+            self.assertEqual(hid_v1._init_done, i == len(INITIALIZE_X2) - 1)
+
+        reopened = open_device()
+        self.assertEqual(list(reopened.queue_cmd), [hid_v1.gen_intercept(False)])
 
 
 if __name__ == "__main__":
