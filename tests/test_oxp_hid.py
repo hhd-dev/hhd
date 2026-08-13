@@ -2,7 +2,13 @@ import unittest
 from unittest.mock import patch
 
 from hhd.controller.physical.evdev import B
-from hhd.device.oxp.base import X1_MINI_PID, X1_MINI_VID, get_keyboard
+from hhd.device.oxp.base import (
+    RGB_MODES_FULL,
+    RGB_MODES_FULL_BREATHING,
+    X1_MINI_PID,
+    X1_MINI_VID,
+    get_keyboard,
+)
 from hhd.device.oxp.const import CONFS
 from hhd.device.oxp import hid_v1
 from hhd.device.oxp.hid_v1 import INITIALIZE, INITIALIZE_X2
@@ -20,9 +26,95 @@ class OxpX2HidTest(unittest.TestCase):
         hid_v1._init_vibration = self.init_vibration
 
     def test_x2_uses_x2_protocol(self):
+        conf = CONFS["ONEXPLAYER X2Mini PRO"]
+
+        self.assertEqual(conf["protocol"], "hid_v2_x2")
+        self.assertTrue(conf["rgb_secondary_breathing"])
+        self.assertNotIn("oxp-secondary-breathing", RGB_MODES_FULL["oxp"])
+        self.assertIn("oxp-secondary-breathing", RGB_MODES_FULL_BREATHING["oxp"])
+
+    @staticmethod
+    def led_event(
+        primary=(1, 2, 3),
+        secondary=(40, 50, 60),
+        breathing=False,
+        initialize=True,
+        mode="solid",
+    ):
+        return {
+            "type": "led",
+            "initialize": initialize,
+            "code": "main",
+            "mode": mode,
+            "direction": "left",
+            "brightness": 1,
+            "brightnessd": "medium",
+            "speed": 1,
+            "speedd": "high",
+            "red": primary[0],
+            "green": primary[1],
+            "blue": primary[2],
+            "red2": secondary[0],
+            "green2": secondary[1],
+            "blue2": secondary[2],
+            "oxp": "classic" if mode == "oxp" else None,
+            "secondary_breathing": breathing,
+        }
+
+    def test_x2_rgb_zone_mapping_matches_windows_capture(self):
+        device = hid_v1.OxpHidraw(
+            x2=True,
+            secondary=True,
+            secondary_breathing=True,
+            vibration=None,
+        )
+        device.dev = object()
+
+        device.consume([self.led_event()])
         self.assertEqual(
-            CONFS["ONEXPLAYER X2Mini PRO"]["protocol"],
-            "hid_v2_x2",
+            [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
+            [(0xFD, 0x05), (0xFD, 0x06), (0xFE, 0x05), (0xFE, 0x06)],
+        )
+
+        device.queue_cmd.clear()
+        device.consume(
+            [self.led_event(primary=(7, 8, 9), initialize=False)]
+        )
+        self.assertEqual(
+            [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
+            [(0xFE, 0x01), (0xFE, 0x02), (0xFE, 0x07)],
+        )
+
+    def test_x2_secondary_breathing_uses_f0_and_can_be_toggled(self):
+        device = hid_v1.OxpHidraw(
+            x2=True,
+            secondary=True,
+            secondary_breathing=True,
+            vibration=None,
+        )
+        device.dev = object()
+
+        device.consume([self.led_event(breathing=True)])
+        self.assertEqual(
+            [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
+            [(0xFD, 0x05), (0xFD, 0x06), (0xF0, 0x05), (0xF0, 0x06)],
+        )
+
+        device.queue_cmd.clear()
+        device.consume([self.led_event(breathing=False)])
+        self.assertEqual(
+            [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
+            [(0xFE, 0x05), (0xFE, 0x06)],
+        )
+
+    def test_secondary_breathing_defaults_to_disabled(self):
+        device = hid_v1.OxpHidraw(x2=True, secondary=True, vibration=None)
+        device.dev = object()
+
+        device.consume([self.led_event(breathing=True)])
+        self.assertEqual(
+            [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
+            [(0xFD, 0x05), (0xFD, 0x06), (0xFE, 0x05), (0xFE, 0x06)],
         )
 
     def test_x2_maps_m1_and_m2_to_f15_and_f16(self):

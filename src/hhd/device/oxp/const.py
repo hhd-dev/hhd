@@ -184,6 +184,7 @@ CONFS = {
         "name": "ONEXPLAYER X2 Mini Pro",
         "x1": True,
         "rgb_secondary": True,
+        "rgb_secondary_breathing": True,
         "mapping": X1_MINI_MAPPING,
         "protocol": "hid_v2_x2",
     },

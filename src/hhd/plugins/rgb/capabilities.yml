@@ -90,6 +90,13 @@ oxp-secondary:
     tags: [non-essential]
     default: true
 
+oxp-secondary-breathing:
+  secondary_breathing:
+    type: bool
+    title: Breathing Effect
+    tags: [non-essential]
+    default: false
+
 dual:
   hue:
     <<: *hue

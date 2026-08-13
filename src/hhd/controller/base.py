@@ -79,7 +79,16 @@ class RumbleEvent(TypedDict):
 
 RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral", "duality", "oxp"]
 RgbSettings = Literal[
-    "color", "brightness", "speed", "brightnessd", "speedd", "direction", "dual", "oxp"
+    "color",
+    "brightness",
+    "speed",
+    "brightnessd",
+    "speedd",
+    "direction",
+    "dual",
+    "oxp",
+    "oxp-secondary",
+    "oxp-secondary-breathing",
 ]
 
 # Mono is a single zone (main only)
@@ -152,6 +161,7 @@ class RgbLedEvent(TypedDict):
     blue2: int
 
     oxp: None | OxpModes
+    secondary_breathing: NotRequired[bool]
 
 
 class ButtonEvent(TypedDict):

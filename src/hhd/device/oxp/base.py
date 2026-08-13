@@ -58,6 +58,10 @@ RGB_MODES_FULL = {
     "solid": ["color"],
     "duality": ["dual"],
 }
+RGB_MODES_FULL_BREATHING = {
+    **RGB_MODES_FULL,
+    "oxp": ["oxp", "oxp-secondary", "oxp-secondary-breathing"],
+}
 RGB_MODES_STICKS = {
     "disabled": [],
     "oxp": ["oxp"],
@@ -277,7 +281,14 @@ def get_keyboard(protocol: str | None, turbo: bool):
     )
 
 
-def find_vendor(prepare, turbo, protocol: str | None, secondary: bool, vibration: str | None):
+def find_vendor(
+    prepare,
+    turbo,
+    protocol: str | None,
+    secondary: bool,
+    secondary_breathing: bool,
+    vibration: str | None,
+):
     vibration_val = None
     if vibration is not None:
         if not isinstance(vibration, str) or not vibration.startswith("v"):
@@ -295,6 +306,7 @@ def find_vendor(prepare, turbo, protocol: str | None, secondary: bool, vibration
         required=True,
         led_control=(protocol != "hid_dual"),
         secondary=secondary,
+        secondary_breathing=secondary_breathing,
         x2=(protocol == "hid_v2_x2"),
         vibration=vibration_val,
     )
@@ -403,7 +415,11 @@ def turbo_loop(
 
     # Output
     if dconf.get("rgb_secondary", False):
-        rgb_modes = RGB_MODES_FULL
+        rgb_modes = (
+            RGB_MODES_FULL_BREATHING
+            if dconf.get("rgb_secondary_breathing", False)
+            else RGB_MODES_FULL
+        )
     elif dconf.get("rgb", True):
         if dconf.get("aok", False):
             rgb_modes = RGB_MODES_STICKS_AOK
@@ -505,6 +521,7 @@ def turbo_loop(
             True,
             protocol=dconf.get("protocol", None),
             secondary=dconf.get("rgb_secondary", False),
+            secondary_breathing=dconf.get("rgb_secondary_breathing", False),
             vibration=conf.get("vibration_strength", None),
         )
         d_vend_id = [id(d) for d in d_vend]
@@ -584,7 +601,11 @@ def controller_loop(
     debug = DEBUG_MODE
 
     if dconf.get("rgb_secondary", False):
-        rgb_modes = RGB_MODES_FULL
+        rgb_modes = (
+            RGB_MODES_FULL_BREATHING
+            if dconf.get("rgb_secondary_breathing", False)
+            else RGB_MODES_FULL
+        )
     elif dconf.get("rgb", True):
         if dconf.get("aok", False):
             rgb_modes = RGB_MODES_STICKS_AOK
@@ -719,6 +740,7 @@ def controller_loop(
             turbo,
             protocol=dconf.get("protocol", None),
             secondary=dconf.get("rgb_secondary", False),
+            secondary_breathing=dconf.get("rgb_secondary_breathing", False),
             vibration=conf.get("vibration_strength", None),
         )
         d_vend_id = [id(d) for d in d_vend]

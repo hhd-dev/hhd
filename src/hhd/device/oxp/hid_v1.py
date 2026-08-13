@@ -67,8 +67,9 @@ def gen_brightness(
 # 3 = center V
 # 4 = touch keyboard
 # 5 = device color on the front (triangle)
-def gen_rgb_solid(r, g, b, side: int = 0x00):
-    return gen_cmd(0xB8, [0xFE, side, 0x02] + 18 * [r, g, b] + [r, g])
+def gen_rgb_solid(r, g, b, side: int = 0x00, breathing: bool = False):
+    mode = 0xF0 if breathing else 0xFE
+    return gen_cmd(0xB8, [mode, side, 0x02] + 18 * [r, g, b] + [r, g])
 
 
 def gen_vibration(strength: int):
@@ -134,6 +135,7 @@ class OxpHidraw(GenericGamepadHidraw):
         x2: bool = False,
         led_control: bool = True,
         secondary: bool = False,
+        secondary_breathing: bool = False,
         vibration: int | None,
         **kwargs,
     ) -> None:
@@ -150,8 +152,10 @@ class OxpHidraw(GenericGamepadHidraw):
 
         self.g1 = g1
         self.x2 = x2
-        self.rgb_sides = (0x01, 0x02) if x2 else (0x00,)
+        self.rgb_sides = (0x01, 0x02, 0x07) if x2 else (0x00,)
+        self.secondary_sides = (0x05, 0x06) if x2 else (0x03, 0x04)
         self.secondary = secondary and not g1
+        self.secondary_breathing = secondary_breathing and x2
         self.send_init = not g1  # g1 has no extra buttons
         self.led_control = led_control
         self.prev_brightness = None
@@ -160,6 +164,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.prev_vibration = None
         self.prev_center = None
         self.prev_center_enabled = None
+        self.prev_center_breathing = None
 
     def open(self):
         a = super().open()
@@ -226,6 +231,9 @@ class OxpHidraw(GenericGamepadHidraw):
         stick_enabled = True
         center = None
         center_enabled = True
+        center_breathing = self.secondary_breathing and ev.get(
+            "secondary_breathing", False
+        )
         init = ev["initialize"]
 
         match ev["mode"]:
@@ -281,15 +289,32 @@ class OxpHidraw(GenericGamepadHidraw):
 
         if self.secondary:
             if center_enabled != self.prev_center_enabled:
-                self.queue_cmd.append(gen_brightness(0x03, center_enabled, "high"))
-                self.queue_cmd.append(gen_brightness(0x04, center_enabled, "high"))
+                for side in self.secondary_sides:
+                    self.queue_cmd.append(
+                        gen_brightness(side, center_enabled, "high")
+                    )
                 self.prev_center_enabled = center_enabled
 
-            # Only apply center colors on init on init
-            if init and center_enabled and center and center != self.prev_center:
-                self.queue_cmd.append(gen_rgb_solid(*center, side=0x03))
-                self.queue_cmd.append(gen_rgb_solid(*center, side=0x04))
+            # Only apply secondary colors on init.
+            if (
+                init
+                and center_enabled
+                and center
+                and (
+                    center != self.prev_center
+                    or center_breathing != self.prev_center_breathing
+                )
+            ):
+                for side in self.secondary_sides:
+                    self.queue_cmd.append(
+                        gen_rgb_solid(
+                            *center,
+                            side=side,
+                            breathing=center_breathing,
+                        )
+                    )
                 self.prev_center = center
+                self.prev_center_breathing = center_breathing
 
     def produce(self, fds):
         if not self.dev:
