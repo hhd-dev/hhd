@@ -169,6 +169,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.prev_vibration = None
         self.prev_center = None
         self.prev_center_enabled = None
+        self.prev_center_brightness = None
         self.prev_center_breathing = None
 
     def open(self):
@@ -236,6 +237,7 @@ class OxpHidraw(GenericGamepadHidraw):
         stick_enabled = True
         center = None
         center_enabled = True
+        center_brightness = brightness
         center_breathing = self.secondary_breathing and ev.get(
             "secondary_breathing", False
         )
@@ -252,6 +254,7 @@ class OxpHidraw(GenericGamepadHidraw):
                 center = ev["red2"], ev["green2"], ev["blue2"]
             case "oxp" | "aok":
                 brightness = ev["brightnessd"]
+                center_brightness = brightness if self.x2 else "high"
                 stick = ev["oxp"]
                 if stick == "classic":
                     # Classic mode is a cherry red
@@ -293,12 +296,16 @@ class OxpHidraw(GenericGamepadHidraw):
             self.prev_stick_enabled = stick_enabled
 
         if self.secondary:
-            if center_enabled != self.prev_center_enabled:
+            if (
+                center_enabled != self.prev_center_enabled
+                or center_brightness != self.prev_center_brightness
+            ):
                 for side in self.secondary_sides:
                     self.queue_cmd.append(
-                        gen_brightness(side, center_enabled, "high")
+                        gen_brightness(side, center_enabled, center_brightness)
                     )
                 self.prev_center_enabled = center_enabled
+                self.prev_center_brightness = center_brightness
 
             # Only apply secondary colors on init.
             if (

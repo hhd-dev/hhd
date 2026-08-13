@@ -38,6 +38,7 @@ class OxpX2HidTest(unittest.TestCase):
         primary=(1, 2, 3),
         secondary=(40, 50, 60),
         breathing=False,
+        brightness="medium",
         initialize=True,
         mode="solid",
     ):
@@ -48,7 +49,7 @@ class OxpX2HidTest(unittest.TestCase):
             "mode": mode,
             "direction": "left",
             "brightness": 1,
-            "brightnessd": "medium",
+            "brightnessd": brightness,
             "speed": 1,
             "speedd": "high",
             "red": primary[0],
@@ -106,6 +107,35 @@ class OxpX2HidTest(unittest.TestCase):
             [(cmd[3], cmd[4]) for cmd in device.queue_cmd],
             [(0xFE, 0x05), (0xFE, 0x06)],
         )
+
+    def test_x2_secondary_zones_follow_brightness(self):
+        device = hid_v1.OxpHidraw(x2=True, secondary=True, vibration=None)
+        device.dev = object()
+
+        device.consume([self.led_event(mode="oxp")])
+        brightness = [cmd for cmd in device.queue_cmd if cmd[3] == 0xFD]
+        self.assertEqual([(cmd[4], cmd[8]) for cmd in brightness], [(5, 3), (6, 3)])
+
+        device.queue_cmd.clear()
+        device.consume([self.led_event(mode="oxp", brightness="low")])
+        brightness = [cmd for cmd in device.queue_cmd if cmd[3] == 0xFD]
+        self.assertEqual(
+            [(cmd[4], cmd[8]) for cmd in brightness],
+            [(1, 1), (2, 1), (7, 1), (5, 1), (6, 1)],
+        )
+
+    def test_existing_secondary_zones_remain_at_high_brightness(self):
+        device = hid_v1.OxpHidraw(secondary=True, vibration=None)
+        device.dev = object()
+
+        device.consume([self.led_event(mode="oxp")])
+        brightness = [cmd for cmd in device.queue_cmd if cmd[3] == 0xFD]
+        self.assertEqual([(cmd[4], cmd[8]) for cmd in brightness], [(3, 4), (4, 4)])
+
+        device.queue_cmd.clear()
+        device.consume([self.led_event(mode="oxp", brightness="low")])
+        brightness = [cmd for cmd in device.queue_cmd if cmd[3] == 0xFD]
+        self.assertEqual([(cmd[4], cmd[8]) for cmd in brightness], [(0, 1)])
 
     def test_secondary_breathing_defaults_to_disabled(self):
         device = hid_v1.OxpHidraw(x2=True, secondary=True, vibration=None)
