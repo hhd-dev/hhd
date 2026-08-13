@@ -190,15 +190,14 @@ class OxpX2HidTest(unittest.TestCase):
         )
 
     def test_x2_maps_m1_and_m2_to_f15_and_f16(self):
-        self.assertEqual(INITIALIZE_X2[0], hid_v1.gen_intercept(True))
-        self.assertEqual(INITIALIZE_X2[1][3:8], bytes.fromhex("0238020101"))
-        self.assertEqual(INITIALIZE_X2[2][3:8], bytes.fromhex("0238020201"))
-        self.assertEqual(INITIALIZE_X2[2][50:56], bytes.fromhex("220201680000"))
-        self.assertEqual(INITIALIZE_X2[2][56:62], bytes.fromhex("230201690000"))
-        self.assertEqual(INITIALIZE_X2[3][3:8], bytes.fromhex("0238020301"))
-        self.assertEqual(INITIALIZE_X2[3][8:14], bytes.fromhex("240202050000"))
-        self.assertEqual(INITIALIZE_X2[3][14:20], bytes.fromhex("250121000000"))
-        self.assertEqual(INITIALIZE_X2[4], hid_v1.gen_intercept(False))
+        self.assertEqual(INITIALIZE_X2[0][3:8], bytes.fromhex("0238020101"))
+        self.assertEqual(INITIALIZE_X2[1][3:8], bytes.fromhex("0238020201"))
+        self.assertEqual(INITIALIZE_X2[1][50:56], bytes.fromhex("220201680000"))
+        self.assertEqual(INITIALIZE_X2[1][56:62], bytes.fromhex("230201690000"))
+        self.assertEqual(INITIALIZE_X2[2][3:8], bytes.fromhex("0238020301"))
+        self.assertEqual(INITIALIZE_X2[2][8:14], bytes.fromhex("240202050000"))
+        self.assertEqual(INITIALIZE_X2[2][14:20], bytes.fromhex("250121000000"))
+        self.assertEqual(INITIALIZE_X2[3], hid_v1.gen_intercept(False))
 
         self.assertEqual(INITIALIZE[0][3:8], bytes.fromhex("0238020101"))
         self.assertEqual(INITIALIZE[1][3:8], bytes.fromhex("0238020201"))

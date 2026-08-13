@@ -107,7 +107,7 @@ INITIALIZE = [
 ]
 INITIALIZE_X2 = [
     # The Windows utility enters intercept before applying mappings.
-    gen_intercept(True),
+    # gen_intercept(True), # this appears to be problematic
     gen_cmd(
         0xB4,
         "0238020101010101000000020102000000030103000000040104000000050105000000060106000000070107000000080108000000090109000000",
