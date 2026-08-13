@@ -263,7 +263,7 @@ def get_keyboard(protocol: str | None, turbo: bool):
             vid=[X1_MINI_VID],
             pid=[X1_MINI_PID],
             capabilities={EC("EV_KEY"): [EC("KEY_O")]},
-            required=False,
+            required=True,
             grab=True,
             btn_map=BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2,
         )
