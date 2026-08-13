@@ -39,6 +39,18 @@ BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
     B("KEY_O"): "share",
 }
 
+BTN_MAPPINGS_X2: dict[int, Button] = {
+    **BTN_MAPPINGS,
+    B("KEY_F15"): "extra_l1",
+    B("KEY_F16"): "extra_r1",
+}
+
+BTN_MAPPINGS_NONTURBO_X2: dict[int, Button] = {
+    **BTN_MAPPINGS_NONTURBO,
+    B("KEY_F15"): "extra_l1",
+    B("KEY_F16"): "extra_r1",
+}
+
 ONEX_DEFAULT_CONF = {
     "hrtimer": True,
 }

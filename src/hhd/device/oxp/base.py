@@ -13,7 +13,13 @@ from hhd.controller.physical.imu import CombinedImu, HrtimerTrigger
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
-from .const import BTN_MAPPINGS, BTN_MAPPINGS_NONTURBO, DEFAULT_MAPPINGS
+from .const import (
+    BTN_MAPPINGS,
+    BTN_MAPPINGS_NONTURBO,
+    BTN_MAPPINGS_NONTURBO_X2,
+    BTN_MAPPINGS_X2,
+    DEFAULT_MAPPINGS,
+)
 from .hid_v1 import OxpHidraw
 from .hid_v2 import OxpHidrawV2
 from .serial import SerialDevice, get_serial
@@ -251,6 +257,26 @@ class OxpAtKbd(GenericGamepadEvdev):
         return evs
 
 
+def get_keyboard(protocol: str | None, turbo: bool):
+    if protocol == "hid_v2_x2":
+        return OxpAtKbd(
+            vid=[X1_MINI_VID],
+            pid=[X1_MINI_PID],
+            capabilities={EC("EV_KEY"): [EC("KEY_O")]},
+            required=False,
+            grab=True,
+            btn_map=BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2,
+        )
+
+    return OxpAtKbd(
+        vid=[KBD_VID],
+        pid=[KBD_PID],
+        required=False,
+        grab=True,
+        btn_map=BTN_MAPPINGS if turbo else BTN_MAPPINGS_NONTURBO,
+    )
+
+
 def find_vendor(prepare, turbo, protocol: str | None, secondary: bool, vibration: str | None):
     vibration_val = None
     if vibration is not None:
@@ -395,13 +421,7 @@ def turbo_loop(
         controller_disabled=True,
     )
 
-    d_kbd_1 = OxpAtKbd(
-        vid=[KBD_VID],
-        pid=[KBD_PID],
-        required=False,
-        grab=True,
-        btn_map=BTN_MAPPINGS,
-    )
+    d_kbd_1 = get_keyboard(dconf.get("protocol", None), True)
 
     share_reboots = False
     last_controller_check = 0
@@ -601,21 +621,9 @@ def controller_loop(
         hide=True,
     )
 
-    if turbo:
-        # Switch buttons if turbo is enabled.
-        # This only affects AOKZOE and OneXPlayer devices with
-        # that button that have the nonturbo mapping as default
-        mappings = BTN_MAPPINGS
-    else:
-        mappings = BTN_MAPPINGS_NONTURBO
-
-    d_kbd_1 = OxpAtKbd(
-        vid=[KBD_VID],
-        pid=[KBD_PID],
-        required=False,
-        grab=True,
-        btn_map=mappings,
-    )
+    # Switch buttons if turbo is enabled. This only affects AOKZOE and
+    # OneXPlayer devices whose default mapping leaves the turbo button alone.
+    d_kbd_1 = get_keyboard(dconf.get("protocol", None), turbo)
     # Touchpad keyboard
     d_kbd_2 = GenericGamepadEvdev(
         vid=[0x6080],

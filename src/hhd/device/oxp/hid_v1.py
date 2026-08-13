@@ -93,15 +93,27 @@ OXP_BUTTONS = {
 }
 
 
+BUTTON_MAPPING_PAGE_1 = gen_cmd(
+    0xB4,
+    "0238020101010101000000020102000000030103000000040104000000050105000000060106000000070107000000080108000000090109000000",
+)
+BUTTON_MAPPING_PAGE_2 = gen_cmd(
+    0xB4,
+    "02380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220200000000230200000000",
+)
+BUTTON_MAPPING_PAGE_2_X2 = gen_cmd(
+    0xB4,
+    "02380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220201680000230201690000",
+)
+
 INITIALIZE = [
-    gen_cmd(
-        0xB4,
-        "0238020101010101000000020102000000030103000000040104000000050105000000060106000000070107000000080108000000090109000000",
-    ),
-    gen_cmd(
-        0xB4,
-        "02380202010a010a0000000b010b0000000c010c0000000d010d0000000e010e0000000f010f000000100110000000220200000000230200000000",
-    ),
+    BUTTON_MAPPING_PAGE_1,
+    BUTTON_MAPPING_PAGE_2,
+    gen_intercept(False),
+]
+INITIALIZE_X2 = [
+    BUTTON_MAPPING_PAGE_1,
+    BUTTON_MAPPING_PAGE_2_X2,
     gen_intercept(False),
 ]
 
@@ -159,7 +171,7 @@ class OxpHidraw(GenericGamepadHidraw):
         if self.send_init:
             if not _init_done:
                 self.next_send = time.perf_counter() + INIT_DELAY
-                self.queue_cmd.extend(INITIALIZE)
+                self.queue_cmd.extend(INITIALIZE_X2 if self.x2 else INITIALIZE)
                 # Setting the mappings is a bit aggressive and causes the device
                 # to flash its leds. Only do it during boot.
                 _init_done = True
