@@ -30,7 +30,7 @@ def _same_power_source(profile: ProfileUnits) -> PowerProfileUnits:
 DPTC_15W = _same_power_source(_profiles(5, 10, 15))
 DPTC_18W = _same_power_source(_profiles(5, 12, 18))
 DPTC_HANDHELD = _same_power_source(_profiles(8, 15, 25))
-DPTC_AI_MAX = _same_power_source(_profiles(15, 25, 60))
+DPTC_AI_MAX = _same_power_source(_profiles(15, 25, 45))
 
 # Lenovo platform profiles.
 LEGION_GO = _same_power_source(_profiles(8, 15, 20))
@@ -80,6 +80,7 @@ BOARD_PROFILE_DATA: dict[str, PowerProfileUnits] = {
     "ONEXPLAYER X1 A": DPTC_HANDHELD,
     "ONEXPLAYER X1z": DPTC_HANDHELD,
     "ONEXPLAYER X1Pro": DPTC_HANDHELD,
+    "ONEXPLAYER X2Mini PRO": DPTC_AI_MAX,
     "ONEXPLAYER G1 A": DPTC_HANDHELD,
     # AYANEO
     "AIR Plus": DPTC_18W,

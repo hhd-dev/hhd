@@ -79,7 +79,7 @@ class UnifiedProfileUnitsTest(unittest.TestCase):
                 "low-power": 15,
                 "quiet": 15,
                 "balanced": 25,
-                "performance": 60,
+                "performance": 45,
             },
         )
 
