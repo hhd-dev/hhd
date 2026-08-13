@@ -270,7 +270,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         go_model = "go2"
         max_tdp = 35
 
-    if not drivers_matched and go_model and not bool(os.environ.get("HHD_ADJ_ALLY")):
+    if not drivers_matched and go_model and not bool(os.environ.get("HHD_ADJ_ALLY")) and not USE_UNIFIED:
         drivers.append(LenovoDriverPlugin(go_model=go_model))
         drivers_matched = True
         use_acpi_call = True
@@ -278,7 +278,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if os.environ.get("HHD_ADJ_DEBUG") or os.environ.get("HHD_ENABLE_SMU"):
         drivers_matched = False
 
-    if not drivers_matched and prod in DEV_DATA:
+    if not drivers_matched and prod in DEV_DATA and not USE_UNIFIED:
         dev, cpu, pp_enable, energy_map = DEV_DATA[prod]
 
         try:
@@ -311,7 +311,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         drivers_matched = True
         use_acpi_call = True
 
-    if not drivers_matched:
+    if not drivers_matched and not USE_UNIFIED:
         for name, (dev, cpu, energy_map) in CPU_DATA.items():
             if name in cpuinfo:
                 drivers.append(
@@ -327,12 +327,15 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                 use_acpi_call = True
                 break
 
-    if not drivers:
+    if not drivers and not USE_UNIFIED:
         from .drivers.general import GeneralPowerPlugin
 
         logger.info(f"No tdp drivers found for this device, using generic plugin.")
 
         return [GeneralPowerPlugin(), BatteryPlugin(always_enable=True)]
+
+    if not drivers:
+        return []
 
     return [
         *drivers,
