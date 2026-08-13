@@ -166,6 +166,14 @@ CONFS = {
         "protocol": "hid_v1",
         "turbo": False,  # disable turbo takeover so that it can be used for TDP
     },
+    # X2 Line
+    "ONEXPLAYER X2Mini PRO": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER X2 Mini Pro",
+        "x1": True,
+        "mapping": X1_MINI_MAPPING,
+        "protocol": "hid_v1",
+    },
     "ONEXPLAYER G1 i": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER G1 (Intel)",
