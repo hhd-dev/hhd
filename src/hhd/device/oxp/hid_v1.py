@@ -150,7 +150,7 @@ class OxpHidraw(GenericGamepadHidraw):
         self.g1 = g1
         self.x2 = x2
         self.rgb_sides = (0x01, 0x02) if x2 else (0x00,)
-        self.secondary = secondary and not g1 and not x2
+        self.secondary = secondary and not g1
         self.send_init = not g1  # g1 has no extra buttons
         self.led_control = led_control
         self.prev_brightness = None
