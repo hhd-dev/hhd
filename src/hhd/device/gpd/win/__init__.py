@@ -45,7 +45,8 @@ GPD_CONFS = {
         "wincontrols": "v2",
         "mapping": GPD_WIN_5_MAPPINGS,
         "btn_mapping": GPD_WIN_5_BTN_MAPPINGS,
-        "hid_buttons": True,
+        "dedicated_hhd_button": True,
+        "manage_l4r4": False,
     },
     "G1617-01": {
         "name": "GPD Win Mini",
@@ -119,9 +120,12 @@ class GpdWinControllersPlugin(HHDPlugin):
         )
 
         # Tweak defaults for l4r4menu and main_chords
-        base["controllers"]["gpd_win"]["children"]["l4r4"]["default"] = self.dconf.get(
-            "combo", "r4"
-        )
+        if self.dconf.get("manage_l4r4", True):
+            base["controllers"]["gpd_win"]["children"]["l4r4"]["default"] = (
+                self.dconf.get("combo", "r4")
+            )
+        else:
+            del base["controllers"]["gpd_win"]["children"]["l4r4"]
         base["controllers"]["gpd_win"]["children"]["main_chords"]["default"] = (
             self.dconf.get("chord", "disabled")
         )

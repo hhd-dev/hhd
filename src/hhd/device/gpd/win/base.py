@@ -21,7 +21,6 @@ from .const import (
     GPD_TOUCHPAD_AXIS_MAP,
     GPD_TOUCHPAD_BUTTON_MAP,
     GPD_WIN_DEFAULT_MAPPINGS,
-    GPD_WIN5_HID_BTN_MAP,
 )
 
 ERROR_DELAY = 0.3
@@ -51,6 +50,9 @@ KBD_VID = 0x0001
 KBD_PID = 0x0001
 
 BACK_BUTTON_DELAY = 0.025
+DIRECT_BUTTONS = {
+    EC("KEY_F13"): "share",
+}
 
 # /dev/input/event17 Microsoft X-Box 360 pad usb-0000:73:00.3-4.1/input0
 # bus: 0003, vendor 045e, product 028e, version 0101
@@ -107,6 +109,16 @@ class BackbuttonsEvdev(GenericGamepadEvdev):
                     continue
 
                 pressed = e.value != 0
+
+                if e.code in DIRECT_BUTTONS:
+                    out.append(
+                        {
+                            "type": "button",
+                            "code": DIRECT_BUTTONS[e.code],
+                            "value": pressed,
+                        }
+                    )
+                    continue
 
                 if e.code in LEFT_BUTTONS:
                     if pressed:
@@ -260,31 +272,18 @@ def controller_loop(
     )
 
     # Vendor back buttons
-    has_hid_buttons = dconf.get("hid_buttons", False)
     d_kbd_1 = BackbuttonsEvdev(
         vid=GPD_WIN_VIDS,
         pid=GPD_WIN_PIDS,
         capabilities={EC("EV_KEY"): [EC("KEY_SYSRQ"), EC("KEY_PAUSE")]},
-        required=not has_hid_buttons,
+        required=True,
         grab=True,
-        # btn_map={EC("KEY_SYSRQ"): "extra_l1", EC("KEY_PAUSE"): "extra_r1"},
     )
-
-    # GPD Win 5 new firmware: back buttons via vendor HID report (0x2f24:0x0137)
-    d_hid_btns = None
-    if has_hid_buttons:
-        d_hid_btns = GenericGamepadHidraw(
-            vid=GPD_WIN_VIDS,
-            pid=GPD_WIN_PIDS,
-            usage_page=[0xFF00],
-            interface=0,
-            btn_map=GPD_WIN5_HID_BTN_MAP,
-            required=True,
-        )
 
     grab_at = dconf.get("grab_at", True)
     d_kbd_2 = None
-    share_to_qam = False
+    dedicated_hhd_button = dconf.get("dedicated_hhd_button", False)
+    share_to_qam = dedicated_hhd_button
     btn_map = dconf.get("btn_mapping", None)
     if btn_map:
         d_kbd_2 = GenericGamepadEvdev(
@@ -296,27 +295,34 @@ def controller_loop(
         )
         share_to_qam = True
 
-    match conf["l4r4"].to(str):
-        case "l4":
-            qam_button = "extra_l1"
-            l4r4_enabled = True
-            qam_hold = "hhd"
-        case "r4":
-            qam_button = "extra_r1"
-            l4r4_enabled = True
-            qam_hold = "hhd"
-        case "menu":
-            qam_button = "mode"
-            l4r4_enabled = True
-            qam_hold = "mode"
-        case "disabled":
-            qam_button = None
-            l4r4_enabled = False
-            qam_hold = "hhd"
-        case _:
-            qam_button = None
-            l4r4_enabled = True
-            qam_hold = "hhd"
+    if dconf.get("manage_l4r4", True):
+        match conf["l4r4"].to(str):
+            case "l4":
+                qam_button = "extra_l1"
+                l4r4_enabled = True
+                qam_hold = "hhd"
+            case "r4":
+                qam_button = "extra_r1"
+                l4r4_enabled = True
+                qam_hold = "hhd"
+            case "menu":
+                qam_button = "mode"
+                l4r4_enabled = True
+                qam_hold = "mode"
+            case "disabled":
+                qam_button = None
+                l4r4_enabled = False
+                qam_hold = "hhd"
+            case _:
+                qam_button = None
+                l4r4_enabled = True
+                qam_hold = "hhd"
+    else:
+        qam_button = None
+        l4r4_enabled = True
+        qam_hold = "hhd"
+
+    keyboard_is = "steam_qam" if dedicated_hhd_button else "keyboard"
 
     if has_touchpad:
         touch_actions = (
@@ -337,6 +343,8 @@ def controller_loop(
             params=d_params,
             # qam_multi_tap=qam_multi_tap, # supports it now
             qam_hold=qam_hold,
+            keyboard_is=keyboard_is,
+            qam_hhd=dedicated_hhd_button,
             startselect_chord=conf.get("main_chords", "disabled"),
         )
     else:
@@ -350,6 +358,8 @@ def controller_loop(
             params=d_params,
             # qam_multi_tap=qam_multi_tap, # supports it now
             qam_hold=qam_hold,
+            keyboard_is=keyboard_is,
+            qam_hhd=dedicated_hhd_button,
             startselect_chord=conf.get("main_chords", "disabled"),
         )
 
@@ -391,9 +401,6 @@ def controller_loop(
         if l4r4_enabled:
             kbd_fds = d_kbd_1.open()
             fds.extend(kbd_fds)
-            if d_hid_btns:
-                hid_btn_fds = d_hid_btns.open()
-                fds.extend(hid_btn_fds)
         else:
             kbd_fds = []
         prepare(d_xinput)
@@ -441,8 +448,6 @@ def controller_loop(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
             evs.extend(d_kbd_1.produce(r))
-            if d_hid_btns:
-                evs.extend(d_hid_btns.produce(r))
 
             evs = multiplexer.process(evs)
             if evs:
@@ -478,13 +483,6 @@ def controller_loop(
             logger.error(f"Error while closing device '{d}' with exception:\n{e}")
             if debug:
                 raise e
-        if d_hid_btns:
-            try:
-                d_hid_btns.close(not updated.is_set())
-            except Exception as e:
-                logger.error(f"Error while closing HID buttons with exception:\n{e}")
-                if debug:
-                    raise e
         try:
             d_timer.close()
         except Exception as e:
