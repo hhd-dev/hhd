@@ -2,7 +2,7 @@ import logging
 import select
 import time
 from threading import Event as TEvent
-from typing import Sequence, Literal
+from typing import Sequence
 
 from hhd.controller import DEBUG_MODE, Axis, Event, Multiplexer, can_read
 from hhd.controller.lib.hide import unhide_all
@@ -121,6 +121,36 @@ ALLY_X_AXIS_MAP: dict[int, AbsAxis] = to_map(
         "hat_y": [EC("ABS_HAT0Y")],
     }
 )
+
+
+def _clamp_axis(v: float) -> float:
+    return max(-1.0, min(1.0, v))
+
+
+def _edge_gain_center(x: float) -> float:
+    # Full effect near center, smoothly fades near extremes.
+    g = max(0.0, 1.0 - abs(x))
+    return g * g
+
+
+def _remap_deadzone(v: float, d: float) -> float:
+    av = abs(v)
+    if av <= d:
+        return 0.0
+    if d >= 1.0:
+        return 0.0
+    out = (av - d) / (1.0 - d)
+    return -out if v < 0 else out
+
+
+HALL_DEFAULTS = {
+    "ls_idle_x": -0.15,
+    "lt_corr_x": 0.28,
+    "rs_idle_x": 0.10,
+    "ls_deadzone": 0.15,
+    "rs_deadzone": 0.05,
+    "remap_deadzone": True,
+}
 
 
 class AllyHidraw(GenericGamepadHidraw):
@@ -339,6 +369,40 @@ def controller_loop(
     swap_armoury = conf.get("swap_armory", False)
     swap_xbox = conf.get("swap_xbox", False) and xbox
 
+    hall_mode = conf.get("hall_interference.mode", "default")
+    hall_enabled = hall_mode != "disabled"
+    if hall_mode == "manual":
+        hall_ls_idle_x = conf.get(
+            "hall_interference.manual.ls_idle_x", HALL_DEFAULTS["ls_idle_x"]
+        )
+        hall_lt_corr_x = conf.get(
+            "hall_interference.manual.lt_corr_x", HALL_DEFAULTS["lt_corr_x"]
+        )
+        hall_rs_idle_x = conf.get(
+            "hall_interference.manual.rs_idle_x", HALL_DEFAULTS["rs_idle_x"]
+        )
+        hall_ls_deadzone = conf.get(
+            "hall_interference.manual.ls_deadzone", HALL_DEFAULTS["ls_deadzone"]
+        )
+        hall_rs_deadzone = conf.get(
+            "hall_interference.manual.rs_deadzone", HALL_DEFAULTS["rs_deadzone"]
+        )
+        hall_remap_deadzone = conf.get(
+            "hall_interference.manual.remap_deadzone",
+            bool(HALL_DEFAULTS["remap_deadzone"]),
+        )
+    else:
+        hall_ls_idle_x = HALL_DEFAULTS["ls_idle_x"]
+        hall_lt_corr_x = HALL_DEFAULTS["lt_corr_x"]
+        hall_rs_idle_x = HALL_DEFAULTS["rs_idle_x"]
+        hall_ls_deadzone = HALL_DEFAULTS["ls_deadzone"]
+        hall_rs_deadzone = HALL_DEFAULTS["rs_deadzone"]
+        hall_remap_deadzone = bool(HALL_DEFAULTS["remap_deadzone"])
+    
+    rt_now = 0.0
+    ls_y_now = 0.0
+    rs_y_now = 0.0
+
     # Imu
     d_imu = CombinedImu(conf["imu_hz"].to(int), ALLY_MAPPINGS, gyro_scale="0.000266")
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
@@ -473,6 +537,109 @@ def controller_loop(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
             evs.extend(d_vend.produce(r))
+
+            if hall_enabled:
+                ls_x_seen = False
+                ls_y_seen = False
+                rs_x_seen = False
+                rs_y_seen = False
+                rt_seen = False
+                for ev in evs:
+                    if ev["type"] != "axis":
+                        continue
+                    elif ev["code"] == "rt":
+                        rt_now = max(0.0, float(ev["value"]))
+                        rt_seen = True
+                    elif ev["code"] == "ls_x":
+                        ls_x_now = float(ev["value"])
+                        ls_x_seen = True
+                    elif ev["code"] == "ls_y":
+                        ls_y_now = float(ev["value"])
+                        ls_y_seen = True
+                    elif ev["code"] == "rs_x":
+                        rs_x_now = float(ev["value"])
+                        rs_x_seen = True
+                    elif ev["code"] == "rs_y":
+                        rs_y_now = float(ev["value"])
+                        rs_y_seen = True
+
+                trigger_corr_x = hall_lt_corr_x * rt_now
+                ls_idle_gain = _edge_gain_center(ls_x_now)
+                rs_idle_gain = _edge_gain_center(rs_x_now)
+
+                ls_x_corr = _clamp_axis(
+                    ls_x_now - hall_ls_idle_x * ls_idle_gain + trigger_corr_x
+                )
+                ls_y_corr = _clamp_axis(ls_y_now)
+                ls_in_deadzone = (
+                    abs(ls_x_corr) < hall_ls_deadzone
+                    and abs(ls_y_corr) < hall_ls_deadzone
+                )
+
+                rs_x_corr = _clamp_axis(rs_x_now - hall_rs_idle_x * rs_idle_gain)
+                rs_y_corr = _clamp_axis(rs_y_now)
+                rs_in_deadzone = (
+                    abs(rs_x_corr) < hall_rs_deadzone
+                    and abs(rs_y_corr) < hall_rs_deadzone
+                )
+
+                if hall_remap_deadzone and not ls_in_deadzone:
+                    ls_x_corr = _clamp_axis(_remap_deadzone(ls_x_corr, hall_ls_deadzone))
+                    ls_y_corr = _clamp_axis(_remap_deadzone(ls_y_corr, hall_ls_deadzone))
+
+                if hall_remap_deadzone and not rs_in_deadzone:
+                    rs_x_corr = _clamp_axis(_remap_deadzone(rs_x_corr, hall_rs_deadzone))
+                    rs_y_corr = _clamp_axis(_remap_deadzone(rs_y_corr, hall_rs_deadzone))
+
+                for ev in evs:
+                    if ev["type"] != "axis":
+                        continue
+                    if ev["code"] == "ls_x":
+                        ev["value"] = 0.0 if ls_in_deadzone else ls_x_corr
+                    elif ev["code"] == "ls_y":
+                        ev["value"] = 0.0 if ls_in_deadzone else ls_y_corr
+                    elif ev["code"] == "rs_x":
+                        ev["value"] = 0.0 if rs_in_deadzone else rs_x_corr
+                    elif ev["code"] == "rs_y":
+                        ev["value"] = 0.0 if rs_in_deadzone else rs_y_corr
+
+                # Keep stick axes consistent when only one axis was reported this frame,
+                # and propagate trigger-driven LS correction even if sticks were unchanged.
+                if rt_seen or ls_x_seen or ls_y_seen:
+                    if not ls_x_seen:
+                        evs.append(
+                            {
+                                "type": "axis",
+                                "code": "ls_x",
+                                "value": 0.0 if ls_in_deadzone else ls_x_corr,
+                            }
+                        )
+                    if not ls_y_seen:
+                        evs.append(
+                            {
+                                "type": "axis",
+                                "code": "ls_y",
+                                "value": 0.0 if ls_in_deadzone else ls_y_corr,
+                            }
+                        )
+
+                if rs_x_seen or rs_y_seen:
+                    if not rs_x_seen:
+                        evs.append(
+                            {
+                                "type": "axis",
+                                "code": "rs_x",
+                                "value": 0.0 if rs_in_deadzone else rs_x_corr,
+                            }
+                        )
+                    if not rs_y_seen:
+                        evs.append(
+                            {
+                                "type": "axis",
+                                "code": "rs_y",
+                                "value": 0.0 if rs_in_deadzone else rs_y_corr,
+                            }
+                        )
 
             evs = multiplexer.process(evs)
             if evs:
