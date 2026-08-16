@@ -33,6 +33,7 @@ ssh -t "$HOST" '
         HHD_BOOTC_SOFT_REBOOT=1 \
         HHD_GS_FRAMEGEN=1 \
         HHD_GS_AUTOLOGIN=1 \
+        HHD_GS_CEC=1 \
         HHD_SWAP_CREATE=1 \
         "$HOME/hhd/venv/bin/hhd"
 '

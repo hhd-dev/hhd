@@ -14,7 +14,7 @@ from hhd.plugins import Config, Context, Emitter
 
 from .controllers import OverlayWriter
 from .overlay import find_overlay_exe, inject_overlay, launch_overlay_de
-from .systemd import WakeHandler
+from ..systemd import WakeHandler
 from .x11 import (
     HHD_ID,
     STEAM_ID,

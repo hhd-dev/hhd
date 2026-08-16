@@ -1,0 +1,97 @@
+import glob
+import logging
+import time
+from threading import Event
+
+from hhd.plugins.systemd import WakeHandler
+
+from .cec import CecState, initialize_cec, uninitialize
+
+logger = logging.getLogger(__name__)
+
+SCAN_INTERVAL = 2.0
+RETRY_INTERVAL = 10.0
+LOOP_INTERVAL = 0.25
+
+
+class CecService:
+    def __init__(self, should_exit: Event):
+        self.should_exit = should_exit
+        self.adapters: dict[str, CecState] = {}
+        self.retry_after: dict[str, float] = {}
+        self.suspended = False
+        self.next_scan = 0.0
+        self.sleep = WakeHandler(
+            why="Handheld Daemon: Restore HDMI-CEC state before sleep"
+        )
+
+    def _close_adapter(self, path: str):
+        state = self.adapters.pop(path, None)
+        try:
+            if state:
+                uninitialize(state)
+        except Exception as e:
+            logger.warning(f"Could not cleanly close CEC adapter '{path}': {e}")
+
+    def _close_adapters(self):
+        for path in list(self.adapters):
+            self._close_adapter(path)
+
+    def scan(self):
+        paths = set(glob.glob("/dev/cec*"))
+        now = time.monotonic()
+        for path in set(self.retry_after) - paths:
+            del self.retry_after[path]
+        for path in set(self.adapters) - paths:
+            logger.info(f"CEC adapter '{path}' disappeared.")
+            self._close_adapter(path)
+
+        for path in sorted(paths - set(self.adapters)):
+            if now < self.retry_after.get(path, 0.0):
+                continue
+            try:
+                state = initialize_cec(path)
+                self.adapters[path] = state
+                self.retry_after.pop(path, None)
+                logger.info(
+                    f"Activated CEC adapter '{path}' at physical address "
+                    f"{state.phys_addr >> 12:x}."
+                    f"{state.phys_addr >> 8 & 0xf:x}."
+                    f"{state.phys_addr >> 4 & 0xf:x}."
+                    f"{state.phys_addr & 0xf:x}."
+                )
+            except Exception as e:
+                logger.warning(f"Could not activate CEC adapter '{path}': {e}")
+                self.retry_after[path] = now + RETRY_INTERVAL
+
+    def _sleep_transition(self):
+        transition = self.sleep()
+        if transition == "entry" and not self.suspended:
+            logger.info("Restoring HDMI-CEC state before sleep.")
+            self._close_adapters()
+            self.suspended = True
+            self.sleep.inhibit(False)
+        elif transition == "exit" and self.suspended:
+            logger.info("Reinitializing HDMI-CEC state after resume.")
+            self.suspended = False
+            self.sleep.inhibit(True)
+            self.retry_after.clear()
+            self.next_scan = 0.0
+
+    def run(self):
+        if not self.sleep.start():
+            logger.error("Could not start HDMI-CEC sleep handler.")
+        try:
+            while not self.should_exit.wait(LOOP_INTERVAL):
+                self._sleep_transition()
+                now = time.monotonic()
+                if not self.suspended and now >= self.next_scan:
+                    self.next_scan = now + SCAN_INTERVAL
+                    self.scan()
+        finally:
+            self._close_adapters()
+            self.sleep.close()
+
+
+def cec_run(should_exit: Event):
+    CecService(should_exit).run()
