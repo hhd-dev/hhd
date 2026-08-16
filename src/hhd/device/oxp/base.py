@@ -500,15 +500,6 @@ def turbo_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
-    # Fallback: grab dock HID if udev rule is missing (e.g. pip install).
-    d_dock_hid = GenericGamepadEvdev(
-        vid=[0x07D7],
-        pid=[0x0000],
-        required=False,
-        grab=True,
-        btn_map={},
-    )
-
     if conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
         btn_map = {
@@ -750,15 +741,6 @@ def controller_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
-    # Fallback: grab dock HID if udev rule is missing (e.g. pip install).
-    d_dock_hid = GenericGamepadEvdev(
-        vid=[0x07D7],
-        pid=[0x0000],
-        required=False,
-        grab=True,
-        btn_map={},
-    )
-
     if conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
         btn_map = {
@@ -814,7 +796,6 @@ def controller_loop(
         d_vend_id = [id(d) for d in d_vend]
         if dconf.get("g1", False):
             prepare(d_kbd_2)
-        prepare(d_dock_hid)
 
         prepare(d_xinput)
         if motion:
