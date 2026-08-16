@@ -7,7 +7,7 @@ from typing import Literal, Sequence, TypedDict, cast
 
 from hhd.controller.base import RgbMode
 from hhd.controller.lib.hid import Device as HIDDevice
-from hhd.controller.lib.hid import enumerate_unique
+from hhd.controller.lib.hid import enumerate
 from hhd.i18n import _
 from hhd.plugins import (
     Config,
@@ -48,9 +48,11 @@ AURA_APPLICATIONS = [0xFF310076, 0xFF310079, 0xFF310080]
 
 AURA_CONFIGS = {
     # Z13 Lightbar
-    0x18C6: (_("Lightbar"), AURA_CONFIGS_LIGHTBAR),
+    0x18C6: (_("Lightbar"), AURA_CONFIGS_LIGHTBAR, "feature"),
     # ROG Keyboards (Z13 incl.)
-    0x1A30: (_("Keyboard"), AURA_CONFIGS_USB),
+    0x1A30: (_("Keyboard"), AURA_CONFIGS_USB, "feature"),
+    # GA403 Keyboard (note: 193B is Slash/Anime, not keyboard Aura)
+    0x19B6: (_("Keyboard"), AURA_CONFIGS_USB, "output"),
 }
 
 AURA_CONFGIS_WMI = {
@@ -62,6 +64,7 @@ WMI_NOTIFICATION = "/sys/class/leds/asus::kbd_backlight/brightness_hw_changed"
 
 RGB_INPUT_ID = 0x5A
 RGB_AURA_ID = 0x5D
+# Note: 0x5E is for Slash/Anime, keyboard Aura uses 0x5D for all devices including 193B
 
 RGB_HANDSHAKE = lambda key: bytes(
     [
@@ -112,6 +115,7 @@ def init_rgb_dev(key: int, dev: HIDDevice):
 class AuraDevice(TypedDict):
     vid: int
     pid: int
+    report_id: int
     application: int
     fn: str
     name: str
@@ -121,6 +125,8 @@ class AuraDevice(TypedDict):
     modes: dict[str, list[str]]
     dev: HIDDevice
     last_mode: RgbMode | None
+    method: Literal["feature", "output"]
+    last_cmd: bytes | None
 
 
 def buf(x):
@@ -156,7 +162,7 @@ def get_aura_devices(
     out = {}
 
     found = set()
-    for d in enumerate_unique(vid=ASUS_VID):
+    for d in enumerate(vid=ASUS_VID):
         application = d.get("usage_page", 0x0000) << 16 | d.get("usage", 0x0000)
         if d["path"] in existing:
             ref = existing[d["path"]]
@@ -175,7 +181,7 @@ def get_aura_devices(
         if d["product_id"] not in AURA_CONFIGS:
             continue
 
-        name, modes = AURA_CONFIGS[d["product_id"]]
+        name, modes, method = AURA_CONFIGS[d["product_id"]]
         cfg_name = f"{d['vendor_id']:04x}_{d['product_id']:04x}"
 
         try:
@@ -195,6 +201,7 @@ def get_aura_devices(
             cfg_name=cfg_name,
             vid=d["vendor_id"],
             pid=d["product_id"],
+            report_id=RGB_AURA_ID,  # 0x5D for all keyboard Aura devices
             application=application,
             fn=d["path"],
             init=True,
@@ -202,8 +209,10 @@ def get_aura_devices(
             modes=modes,
             dev=dev,
             last_mode=None,
+            method=method,
+            last_cmd=None,
         )
-        logger.info(
+        logger.debug(
             "Found Aura device %s (%s, %04x:%04x) with modes:\n%s",
             name,
             d["path"].decode("utf-8"),
@@ -215,7 +224,7 @@ def get_aura_devices(
     updated = False
     for k in list(existing.keys()):
         if k not in found:
-            logger.info(
+            logger.debug(
                 "Removing Aura device %s (%s, %04x:%04x) from known devices",
                 existing[k]["fn"],
                 existing[k]["name"],
@@ -242,6 +251,7 @@ def rgb_command(
     o_red: int,
     o_green: int,
     o_blue: int,
+    report_id: int = RGB_AURA_ID,
 ):
     c_direction = 0x00
     set_speed = True
@@ -298,7 +308,7 @@ def rgb_command(
     c_zone = 0x00
     return buf(
         [
-            RGB_AURA_ID,
+            report_id,
             0xB3,
             c_zone,  # zone
             c_mode,  # mode
@@ -378,6 +388,7 @@ def get_aura_mode_cmd(cfg, dev: AuraDevice):
             red2 if color2_set else 0,
             green2 if color2_set else 0,
             blue2 if color2_set else 0,
+            dev["report_id"],
         ),
         mode,
         always_init,
@@ -404,7 +415,7 @@ def set_aura_brightness(
         try:
             with open(WMI_LOCATION, "w") as f:
                 f.write(str(c))
-            logger.info("Set Aura brightness to %s", brightness)
+            logger.debug("Set Aura brightness to %s", brightness)
             return False
         except Exception as e:
             logger.error("Failed to set WMI brightness: %s", e)
@@ -652,22 +663,37 @@ class AuraPlugin(HHDPlugin):
 
                 try:
                     if init:
-                        init_rgb_dev(RGB_AURA_ID, d["dev"])
+                        if d["method"] == "feature":
+                            init_rgb_dev(d["report_id"], d["dev"])
+
                         if power_settings is not None:
                             # Set power settings on init
-                            d["dev"].send_feature_report(
-                                get_aura_power_cmd(power_settings),
-                            )
+                            cmd_power = get_aura_power_cmd(power_settings)
+                            if d["method"] == "output":
+                                d["dev"].write(cmd_power)
+                            else:
+                                d["dev"].send_feature_report(cmd_power)
 
                         # Needs time to initialize, get it next cycle
                         self.queue_apply[k] = curr_t + RGB_APPLY_DELAY
                     else:
-                        d["dev"].send_feature_report(cmd)
+                        changed_cmd = cmd != d["last_cmd"]
+                        if changed_cmd or chanded_mode or always_init or init:
+                            if d["method"] == "output":
+                                d["dev"].write(cmd)
+                            else:
+                                d["dev"].send_feature_report(cmd)
+                            d["last_cmd"] = cmd
+                        
                         d["last_mode"] = new_mode
 
-                        if chanded_mode or queued or always_init or init:
-                            d["dev"].send_feature_report(RGB_SET(RGB_AURA_ID))
-                            d["dev"].send_feature_report(RGB_APPLY(RGB_AURA_ID))
+                        if changed_cmd or chanded_mode or queued or always_init or init:
+                            if d["method"] == "output":
+                                d["dev"].write(RGB_SET(d["report_id"]))
+                                d["dev"].write(RGB_APPLY(d["report_id"]))
+                            else:
+                                d["dev"].send_feature_report(RGB_SET(d["report_id"]))
+                                d["dev"].send_feature_report(RGB_APPLY(d["report_id"]))
                         else:
                             self.queue_apply[k] = curr_t + RGB_APPLY_DELAY
 
@@ -701,7 +727,7 @@ class AuraPlugin(HHDPlugin):
 
         self.devices, updated = get_aura_devices(self.devices)
         if updated:
-            logger.info("Found %d Aura devices", len(self.devices))
+            logger.debug("Found %d Aura devices", len(self.devices))
             self.emit({"type": "settings"})
         if error:
             self.emit({"type": "settings"})
@@ -784,9 +810,10 @@ class AuraPlugin(HHDPlugin):
                     0,  # o_red
                     0,  # o_green
                     0,  # o_blue
+                    d["report_id"],
                 )
                 d["dev"].send_feature_report(cmd)
-                d["dev"].send_feature_report(RGB_SET(RGB_AURA_ID))
+                d["dev"].send_feature_report(RGB_SET(d["report_id"]))
                 self.queue_apply[d["cfg_name"]] = (
                     time.perf_counter() + RGB_TDP_DELAY
                 )
