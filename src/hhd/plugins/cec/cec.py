@@ -150,6 +150,22 @@ class CecState:
     closed: bool = False
 
 
+class CecTransientError(OSError):
+    def __init__(self, error: OSError, powered_by_hhd: bool):
+        super().__init__(error.errno, error.strerror or str(error))
+        self.powered_by_hhd = powered_by_hhd
+
+
+def _abort_initialization(state: CecState, error: OSError):
+    state.closed = True
+    try:
+        _ioctl(state.fd, CEC_ADAP_S_LOG_ADDRS, CecLogAddrs())
+    except OSError:
+        pass
+    os.close(state.fd)
+    raise CecTransientError(error, state.powered_by_hhd) from error
+
+
 def receive_cec(state: CecState, timeout: int = 0) -> CecMsg | None:
     try:
         readable, _, _ = select.select([state.fd], [], [], timeout / 1000)
@@ -226,7 +242,7 @@ def initialize_cec(dev: str) -> CecState:
         phys_addr = ctypes.c_uint16()
         _ioctl(fd, CEC_ADAP_G_PHYS_ADDR, phys_addr)
         if phys_addr.value == CEC_PHYS_ADDR_INVALID:
-            raise OSError(f"CEC adapter is not connected: {dev}")
+            raise OSError(errno.ENONET, f"CEC adapter is not connected: {dev}")
 
         claimed_name = _get_osd_name()
         laddrs = CecLogAddrs()
@@ -261,6 +277,8 @@ def initialize_cec(dev: str) -> CecState:
         )
         power = int(msg.msg[2]) if msg and msg.len >= 3 else None
     except OSError as e:
+        if e.errno in (errno.ENODEV, errno.ENONET):
+            _abort_initialization(state, e)
         logger.warning(f"Could not query TV power through {dev}: {e}")
         power = None
 
@@ -270,6 +288,8 @@ def initialize_cec(dev: str) -> CecState:
                 _transmit(state, CEC_LOG_ADDR_TV, CEC_MSG_IMAGE_VIEW_ON) is not None
             )
         except OSError as e:
+            if e.errno in (errno.ENODEV, errno.ENONET):
+                _abort_initialization(state, e)
             logger.warning(f"Could not turn on TV through {dev}: {e}")
 
     try:
@@ -285,6 +305,8 @@ def initialize_cec(dev: str) -> CecState:
         )
         _transmit(state, CEC_LOG_ADDR_TV, CEC_MSG_SET_OSD_NAME, tuple(state.osd_name))
     except OSError as e:
+        if e.errno in (errno.ENODEV, errno.ENONET):
+            _abort_initialization(state, e)
         logger.warning(f"Could not identify CEC source through {dev}: {e}")
 
     try:
@@ -298,6 +320,8 @@ def initialize_cec(dev: str) -> CecState:
             (int(msg.msg[2]) << 8) | int(msg.msg[3]) if msg and msg.len >= 4 else None
         )
     except OSError as e:
+        if e.errno in (errno.ENODEV, errno.ENONET):
+            _abort_initialization(state, e)
         logger.warning(f"Could not query active CEC source through {dev}: {e}")
         active = None
 
@@ -314,6 +338,8 @@ def initialize_cec(dev: str) -> CecState:
             )
             state.active = state.announced_active
         except OSError as e:
+            if e.errno in (errno.ENODEV, errno.ENONET):
+                _abort_initialization(state, e)
             logger.warning(f"Could not announce active CEC source through {dev}: {e}")
     else:
         state.active = True

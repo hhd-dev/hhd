@@ -48,6 +48,7 @@ from hhd.plugins.cec.cec import (
     CecLogAddrs,
     CecMsg,
     CecState,
+    CecTransientError,
     _get_osd_name,
     initialize_cec,
     uninitialize,
@@ -136,6 +137,7 @@ class CecBehaviorTest(unittest.TestCase):
         power=None,
         active=None,
         fail=(),
+        error=(),
         cleanup_active=_DEFAULT_ACTIVE,
     ):
         messages = []
@@ -180,6 +182,8 @@ class CecBehaviorTest(unittest.TestCase):
                     tuple(int(v) for v in value.msg[2 : value.len]),
                 )
             )
+            if opcode in error:
+                raise OSError(errno.ENONET, "Machine is not on the network")
             if opcode in fail:
                 value.tx_status = 0
                 return value
@@ -346,6 +350,33 @@ class CecBehaviorTest(unittest.TestCase):
                 CEC_MSG_STANDBY,
             ],
         )
+
+    def test_adapter_reset_after_wakeup_aborts_and_preserves_power_ownership(self):
+        messages, bus = self.fake_bus(
+            power=CEC_OP_POWER_STATUS_STANDBY,
+            active=0x1000,
+            error=(CEC_MSG_REPORT_PHYSICAL_ADDR,),
+        )
+
+        with (
+            patch("hhd.plugins.cec.cec.os.open", return_value=10),
+            patch("hhd.plugins.cec.cec.os.close") as close,
+            patch("hhd.plugins.cec.cec._ioctl", side_effect=bus),
+            patch("hhd.plugins.cec.cec._get_osd_name", return_value=b"Anatase"),
+        ):
+            with self.assertRaises(CecTransientError) as raised:
+                initialize_cec("/dev/cec0")
+
+        self.assertTrue(raised.exception.powered_by_hhd)
+        self.assertEqual(
+            messages,
+            [
+                CEC_MSG_GIVE_DEVICE_POWER_STATUS,
+                CEC_MSG_IMAGE_VIEW_ON,
+                CEC_MSG_REPORT_PHYSICAL_ADDR,
+            ],
+        )
+        close.assert_called_once_with(10)
 
 
 def remote_msg(opcode, command=None, destination=4):
@@ -566,6 +597,32 @@ class CecServiceTest(unittest.TestCase):
 
         self.assertEqual(initialize.call_count, 2)
         self.assertEqual(service.failed, {"/dev/cec0"})
+
+    def test_enonet_reopens_adapter_and_preserves_power_ownership(self):
+        service = CecService(MagicMock())
+        service.remote = MagicMock()
+        transient = CecTransientError(
+            OSError(errno.ENONET, "Machine is not on the network"), True
+        )
+        state = CecState("/dev/cec1", 11, 0x2000, 4, b"HHD")
+
+        with (
+            patch("hhd.plugins.cec.service.glob.glob", return_value=["/dev/cec1"]),
+            patch(
+                "hhd.plugins.cec.service.initialize_cec",
+                side_effect=[transient, state],
+            ) as initialize,
+        ):
+            service.scan()
+            self.assertEqual(service.adapters, {})
+            self.assertEqual(service.failed, set())
+            self.assertEqual(service.powered_by_hhd, {"/dev/cec1"})
+            service.scan()
+
+        self.assertEqual(initialize.call_count, 2)
+        self.assertEqual(service.adapters, {"/dev/cec1": state})
+        self.assertTrue(state.powered_by_hhd)
+        self.assertEqual(service.powered_by_hhd, set())
 
     def test_receives_remote_keys_and_tracks_active_source(self):
         service = CecService(MagicMock())

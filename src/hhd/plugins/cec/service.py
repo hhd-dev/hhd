@@ -27,6 +27,7 @@ class CecService:
         self.should_exit = should_exit
         self.adapters: dict[str, CecState] = {}
         self.failed: set[str] = set()
+        self.powered_by_hhd: set[str] = set()
         self.suspended = False
         self.next_scan = 0.0
         self.remote = TvRemote(emit)
@@ -57,6 +58,9 @@ class CecService:
         for path in sorted(paths - set(self.adapters) - self.failed):
             try:
                 state = initialize_cec(path)
+                if path in self.powered_by_hhd:
+                    state.powered_by_hhd = True
+                    self.powered_by_hhd.remove(path)
                 self.adapters[path] = state
                 try:
                     self.remote.open()
@@ -71,11 +75,15 @@ class CecService:
                 )
             except Exception as e:
                 logger.warning(f"Could not activate CEC adapter '{path}': {e}")
-                permission_error = isinstance(e, OSError) and e.errno in (
+                if getattr(e, "powered_by_hhd", False):
+                    self.powered_by_hhd.add(path)
+                transient_error = isinstance(e, OSError) and e.errno in (
                     errno.EACCES,
+                    errno.ENODEV,
+                    errno.ENONET,
                     errno.EPERM,
                 )
-                if not permission_error:
+                if not transient_error and path not in self.powered_by_hhd:
                     self.failed.add(path)
 
     def receive(self):
