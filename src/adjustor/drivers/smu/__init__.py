@@ -1,15 +1,15 @@
 import logging
 import time
-from threading import Event as TEvent, Lock, Thread
-from typing import Sequence
-
-from hhd.plugins import Context, Event, HHDPlugin, load_relative_yaml
-from hhd.plugins.conf import Config
+from collections.abc import Sequence
+from threading import Event as TEvent
+from threading import Lock, Thread
 
 from adjustor.core.alib import AlibParams, DeviceParams, alib
 from adjustor.core.fan import fan_worker, get_fan_info
 from adjustor.core.platform import get_platform_choices, set_platform_profile
 from adjustor.i18n import _
+from hhd.plugins import Context, Event, HHDPlugin, load_relative_yaml
+from hhd.plugins.conf import Config
 
 logger = logging.getLogger(__name__)
 
@@ -47,14 +47,21 @@ class SmuQamPlugin(HHDPlugin):
         pp_map: list[tuple[str, list[str], int, int]] | None,
         pp_enable: bool = True,
         init_tdp: bool = True,
+        dock_aware: bool = False,
+        dc_cap: dict[str, int] | None = None,
     ) -> None:
-        self.name = f"adjustor_smu_qam"
+        self.name = "adjustor_smu_qam"
         self.priority = 7
         self.log = "smuq"
         self.enabled = False
         self.initialized = False
         self.dev = dev
         self.enforce_limits = True
+        self.old_enforce = None
+        self.dock_aware = dock_aware
+        self.dc_cap = dc_cap
+        self.on_ac = True  # assume AC until determined otherwise
+        self.old_on_ac = None
         self.emit = None
         self.old_conf = None
         self.startup = True
@@ -85,10 +92,21 @@ class SmuQamPlugin(HHDPlugin):
             self.pps = get_platform_choices() or []
             if not self.pps:
                 logger.warning(
-                    f"Platform profile map was provided but device does not have platform profiles."
+                    "Platform profile map was provided but device does not have platform profiles."
                 )
         else:
             self.pps = []
+
+    def _effective_smax(self, key: str = "skin_limit") -> int | None:
+        """Get the effective safe maximum for a parameter, considering power state.
+
+        On battery (on_ac=False) with a dc_cap configured, the battery-mode
+        cap is used instead of the device's default smax. This prevents
+        exceeding the device's safe TDP on battery power."""
+        base_smax = self.dev[key].smax if key in self.dev else None
+        if not self.on_ac and self.dc_cap and key in self.dc_cap:
+            return self.dc_cap[key]
+        return base_smax
 
     def settings(self):
         if not self.enabled:
@@ -102,16 +120,17 @@ class SmuQamPlugin(HHDPlugin):
         lims = self.lims
         assert (
             lims
-        ), f"Device params do not include skin limit or stapm limit to set tdp."
+        ), "Device params do not include skin limit or stapm limit to set tdp."
 
         dmin, smin, default, smax, dmax = lims
-        if self.enforce_limits:
-            out["tdp"]["qam"]["children"]["tdp"].update(
-                {"min": smin, "max": smax, "default": default}
-            )
-        else:
+        if not self.enforce_limits:
             out["tdp"]["qam"]["children"]["tdp"].update(
                 {"min": dmin, "max": dmax, "default": default}
+            )
+        else:
+            eff_smax = self._effective_smax("skin_limit") or smax
+            out["tdp"]["qam"]["children"]["tdp"].update(
+                {"min": smin, "max": eff_smax, "default": default}
             )
 
         if not self.fan_info:
@@ -153,10 +172,34 @@ class SmuQamPlugin(HHDPlugin):
     ):
         self.emit = emit
         self.fan_info = get_fan_info()
+        try:
+            from hhd.utils import get_ac_status, get_ac_status_fn
+            ac = get_ac_status(get_ac_status_fn())
+            if ac is not None:
+                self.on_ac = ac
+        except Exception:
+            pass
 
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_ready"].to(bool)
-        self.enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
+        user_enforce = conf["hhd.settings.enforce_limits"].to(bool)
+        dock_running = conf.get("cooling_dock.dock_running", False)
+        # Dock-aware devices relax the enforced cap while the cooling dock is
+        # actively running on AC power (e.g. SUPER X: 75W -> 120W).
+        # On battery power, limits are always enforced to protect the battery.
+        self.enforce_limits = user_enforce and not (
+            dock_running and self.dock_aware and self.on_ac
+        )
+        dock_changed = self.enforce_limits != self.old_enforce
+        self.old_enforce = self.enforce_limits
+
+        # Track power state changes to re-clamp TDP on AC/DC transitions.
+        power_changed = self.on_ac != self.old_on_ac
+        self.old_on_ac = self.on_ac
+
+        if (dock_changed or power_changed) and self.emit:
+            self.emit({"type": "settings"})
+
         if not self.enabled or not self.initialized:
             self.startup = self.init_tdp
             return
@@ -171,9 +214,9 @@ class SmuQamPlugin(HHDPlugin):
         else:
             new_tdp = conf["tdp.qam.tdp"].to(int)
 
-        if self.startup and self.lims:
+        if (self.startup or dock_changed or power_changed) and self.lims and self.enforce_limits:
             smin = self.lims.smin
-            smax = self.lims.smax
+            smax = self._effective_smax("skin_limit")
 
             if smin and new_tdp < smin:
                 logger.warning(
@@ -183,7 +226,7 @@ class SmuQamPlugin(HHDPlugin):
                 conf["tdp.qam.tdp"] = smin
             if smax and new_tdp > smax:
                 logger.warning(
-                    f"Device TDP ({new_tdp}) too low for startup, adjusting."
+                    f"Device TDP ({new_tdp}W) exceeds safe limit ({smax}W), clamping."
                 )
                 new_tdp = smax
                 conf["tdp.qam.tdp"] = smax
@@ -197,7 +240,7 @@ class SmuQamPlugin(HHDPlugin):
         if changed and not sys_tdp:
             self.sys_tdp = False
 
-        if self.startup or changed:
+        if self.startup or changed or dock_changed or power_changed:
             self.queued = curr + APPLY_DELAY
             self.is_set = False
 
@@ -221,11 +264,20 @@ class SmuQamPlugin(HHDPlugin):
 
             if new_boost:
                 try:
-                    fmax = self.dev["fast_limit"].smax
-                    smax = self.dev["stapm_limit"].smax
+                    # Use the unlocked (dmax) limits when the dock is running
+                    # so boost scales correctly up to the ALIB cap.
+                    # On battery, use DC cap for boost if available.
+                    if not self.enforce_limits:
+                        fmax = self.dev["fast_limit"].max
+                        smax = self.dev["stapm_limit"].max
+                    else:
+                        fmax = self._effective_smax("fast_limit")
+                        smax = self._effective_smax("stapm_limit")
                     assert fmax and smax
 
-                    conf["tdp.smu.std.fast_limit"] = int(new_tdp * (fmax / smax))
+                    conf["tdp.smu.std.fast_limit"] = int(
+                        round(new_tdp * (fmax / smax))
+                    )
                     conf["tdp.smu.std.slow_limit"] = min(
                         new_tdp + 2, conf["tdp.smu.std.fast_limit"].to(int)
                     )
@@ -236,9 +288,14 @@ class SmuQamPlugin(HHDPlugin):
                 conf["tdp.smu.std.slow_limit"] = new_tdp
                 conf["tdp.smu.std.fast_limit"] = new_tdp
 
-        # Show steam message
+        # Show status message about TDP limits
         if self.sys_tdp:
             conf["tdp.qam.sys_tdp"] = _("Steam is controlling TDP")
+        elif self.enforce_limits and not self.on_ac and self.dc_cap:
+            eff = self._effective_smax("skin_limit")
+            conf["tdp.qam.sys_tdp"] = f"TDP limited to {eff}W (on battery)"
+        elif self.dock_aware and self.enforce_limits and not dock_running:
+            conf["tdp.qam.sys_tdp"] = f"TDP limited to {self.lims.smax}W (dock not connected)"
         else:
             conf["tdp.qam.sys_tdp"] = ""
 
@@ -328,6 +385,17 @@ class SmuQamPlugin(HHDPlugin):
                 )
                 self.queued = time.perf_counter() + SLEEP_DELAY
 
+            # AC/DC power state changes: re-clamp TDP to the appropriate
+            # safe limit on the next update() cycle.
+            if ev["type"] == "acpi" and ev.get("event") in ("ac", "dc"):
+                new_ac = ev["event"] == "ac"
+                if new_ac != self.on_ac:
+                    logger.info(
+                        f"Power state changed to {'AC' if new_ac else 'battery'}, "
+                        f"re-evaluating TDP limits."
+                    )
+                    self.on_ac = new_ac
+
     def close(self):
         if self.fan_t:
             self.fan_should_exit.set()
@@ -343,13 +411,20 @@ class SmuDriverPlugin(HHDPlugin):
         dev: dict[str, DeviceParams],
         cpu: dict[str, AlibParams],
         platform_profile: bool = True,
+        dock_aware: bool = False,
+        dc_cap: dict[str, int] | None = None,
     ) -> None:
-        self.name = f"adjustor_smu"
+        self.name = "adjustor_smu"
         self.priority = 9
         self.log = "asmu"
         self.enabled = False
         self.initialized = False
         self.enforce_limits = True
+        self.old_enforce = True
+        self.dock_aware = dock_aware
+        self.dc_cap = dc_cap
+        self.on_ac = True  # assume AC until determined otherwise
+        self.old_on_ac = True
 
         self.dev = dev
         self.cpu = cpu
@@ -424,24 +499,48 @@ class SmuDriverPlugin(HHDPlugin):
         context: Context,
     ):
         self.emit = emit
+        try:
+            from hhd.utils import get_ac_status, get_ac_status_fn
+            ac = get_ac_status(get_ac_status_fn())
+            if ac is not None:
+                self.on_ac = ac
+        except Exception:
+            pass
 
     def update(self, conf: Config):
         self.enabled = conf["hhd.settings.tdp_ready"].to(bool)
-        self.enforce_limits = conf["hhd.settings.enforce_limits"].to(bool)
+        user_enforce = conf["hhd.settings.enforce_limits"].to(bool)
+        dock_running = conf.get("cooling_dock.dock_running", False)
+        self.enforce_limits = user_enforce and not (
+            dock_running and self.dock_aware and self.on_ac
+        )
+        dock_changed = self.enforce_limits != self.old_enforce
+        self.old_enforce = self.enforce_limits
+
+        power_changed = self.on_ac != self.old_on_ac
+        self.old_on_ac = self.on_ac
+
         if not self.enabled or not self.initialized:
             return
 
         if self.enforce_limits:
             for k, v in conf["tdp.smu.std"].to(dict).items():
                 if k in self.dev:
-                    mmin, mmax = self.dev[k].smin, self.dev[k].smax
+                    mmin = self.dev[k].smin
+                    mmax = self.dev[k].smax
+                    # On battery, use the DC cap if available
+                    if not self.on_ac and self.dc_cap and k in self.dc_cap:
+                        mmax = self.dc_cap[k]
                     if v < mmin:
                         conf["tdp.smu.std", k] = mmin
                     if v > mmax:
                         conf["tdp.smu.std", k] = mmax
             for k, v in conf["tdp.smu.adv"].to(dict).items():
                 if k in self.dev and k != "enable":
-                    mmin, mmax = self.dev[k].smin, self.dev[k].smax
+                    mmin = self.dev[k].smin
+                    mmax = self.dev[k].smax
+                    if not self.on_ac and self.dc_cap and k in self.dc_cap:
+                        mmax = self.dc_cap[k]
                     if v < mmin:
                         conf["tdp.smu.adv", k] = mmin
                     if v > mmax:
@@ -455,7 +554,11 @@ class SmuDriverPlugin(HHDPlugin):
                 if k != "enable":
                     new_vals[k] = v
 
-        if set(new_vals.items()) != set(self.old_vals.items()):
+        if (
+            set(new_vals.items()) != set(self.old_vals.items())
+            or dock_changed
+            or power_changed
+        ):
             self.is_set = False
 
         if self.has_pp:
@@ -470,7 +573,10 @@ class SmuDriverPlugin(HHDPlugin):
             self.old_target = new_target
             self.emit({"type": "energy", "status": new_target})  # type: ignore
 
-        if conf["tdp.smu.apply"].to(bool):
+        # Force re-apply when the dock connects/disconnects or power state changes
+        # so the clamped limits reach the CPU immediately instead of waiting for a
+        # manual Apply (or the SmuQamPlugin's delayed queue).
+        if conf["tdp.smu.apply"].to(bool) or dock_changed or power_changed:
             conf["tdp.smu.apply"] = False
 
             if self.has_pp:
@@ -492,6 +598,13 @@ class SmuDriverPlugin(HHDPlugin):
             conf["tdp.smu.status"] = "Set"
         else:
             conf["tdp.smu.status"] = "Not Set"
+
+    def notify(self, events: Sequence[Event]):
+        for ev in events:
+            # AC/DC power state: update on_ac so the next update() cycle
+            # clamps TDP values using the correct limits.
+            if ev["type"] == "acpi" and ev.get("event") in ("ac", "dc"):
+                self.on_ac = ev["event"] == "ac"
 
     def close(self):
         pass

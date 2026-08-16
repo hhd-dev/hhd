@@ -81,6 +81,11 @@ ENERGY_MAP_AIMAX = [
     ("balanced", ["balanced"], 30, 50),
     ("performance", ["performance"], 50, 90),
 ]
+ENERGY_MAP_OXP_SUPERX = [
+    ("power", ["low-power", "quiet"], 0, 15),
+    ("balanced", ["balanced"], 30, 50),
+    ("performance", ["performance"], 50, 75),
+]
 
 ALIB_PARAMS = {
     # TDPs
@@ -171,6 +176,30 @@ DEV_PARAMS_AIMAX: dict[str, DeviceParams] = {
     "temp_target": D(60, 70, 85, 90, 100),
 }
 
+DEV_PARAMS_OXP_SUPERX: dict[str, DeviceParams] = {
+    # smax = enforced cap (no dock): 75W stapm/skin, 95W fast
+    # dmax = unlocked cap (dock running): 120W (ALIB max)
+    "stapm_limit": D(0, 4, 25, 75, 120),
+    "skin_limit": D(0, 4, 25, 75, 120),
+    "slow_limit": D(0, 4, 27, 80, 120),
+    "fast_limit": D(0, 4, 40, 95, 120),
+    # Times
+    "slow_time": D(5, 5, 10, 10, 10),
+    "stapm_time": D(100, 100, 100, 200, 200),
+    # Temp
+    "temp_target": D(60, 70, 85, 90, 100),
+}
+
+# Battery-mode TDP caps for SUPER X / APEX.
+# OneXConsole: battery maxTdp=55, maxBoostTdp=70. These override smax when on
+# battery power. On AC (wall power), the standard smax (75/95) applies instead.
+DC_CAP_OXP_SUPERX: dict[str, int] = {
+    "stapm_limit": 55,
+    "skin_limit": 55,
+    "slow_limit": 57,
+    "fast_limit": 70,
+}
+
 DEV_PARAMS_WIN5: dict[str, DeviceParams] = {
     "stapm_limit": D(0, 4, 25, 85, 100),
     "skin_limit": D(0, 4, 25, 85, 100),
@@ -211,6 +240,19 @@ DEV_DATA: dict[
     "G1619-04": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False, ENERGY_MAP),
     "G1619-05": (DEV_PARAMS_28W, ALIB_PARAMS_7040, False, ENERGY_MAP),
     "G1618-05": (DEV_PARAMS_WIN5, ALIB_PARAMS_AIMAX, False, ENERGY_MAP_AIMAX),
+    # ONEXPLAYER SUPER X / APEX: dock-aware TDP (75W enforced, 120W with dock)
+    "ONEXPLAYER SUPER X": (
+        DEV_PARAMS_OXP_SUPERX,
+        ALIB_PARAMS_AIMAX,
+        False,
+        ENERGY_MAP_OXP_SUPERX,
+    ),
+    "ONEXPLAYER APEX": (
+        DEV_PARAMS_OXP_SUPERX,
+        ALIB_PARAMS_AIMAX,
+        False,
+        ENERGY_MAP_OXP_SUPERX,
+    ),
 }
 
 CPU_DATA: dict[

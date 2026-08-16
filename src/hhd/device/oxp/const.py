@@ -20,7 +20,9 @@ BTN_MAPPINGS: dict[int, Button] = {
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
     # Turbo Button [29, 56, 125] KEY_LEFTCTRL + KEY_LEFTALT + KEY_LEFTMETA
-    B("KEY_LEFTALT"): "share",
+    B("KEY_LEFTALT"): "key_leftalt",
+    B("KEY_LEFTCTRL"): "key_leftctrl",
+    B("KEY_LEFTMETA"): "key_leftmeta",
     # Short press orange [32, 125] KEY_D + KEY_LEFTMETA
     B("KEY_D"): "mode",
     # KB Button [24, 97, 125]  KEY_O + KEY_RIGHTCTRL + KEY_LEFTMETA
@@ -37,6 +39,9 @@ BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
     # If we do not have turbo takeover, let turbo do its turbo thing, and
     # failover to having the keyboard button open the overlay
     B("KEY_O"): "share",
+    B("KEY_LEFTALT"): "key_leftalt",
+    B("KEY_LEFTCTRL"): "key_leftctrl",
+    B("KEY_LEFTMETA"): "key_leftmeta",
 }
 
 BTN_MAPPINGS_X2: dict[int, Button] = {
@@ -201,6 +206,16 @@ CONFS = {
         "g1": True,
         "protocol": "hid_v1_g1",
         "turbo": True,  # disable turbo takeover so that it can be used for TDP
+    },
+    "ONEXPLAYER SUPER X": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER SUPER X",
+        "protocol": "mixed",
+    },
+    "ONEXPLAYER APEX": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER APEX",
+        "protocol": "mixed",
     },
 }
 

@@ -236,6 +236,9 @@ class OxpAtKbd(GenericGamepadEvdev):
             if ev["type"] == "button" and ev["code"] in (
                 "mode",
                 "keyboard",
+                "key_leftctrl",
+                "key_leftmeta",
+                "key_leftalt",
             ):
                 if ev["value"]:
                     self.state[ev["code"]] = curr
@@ -245,6 +248,28 @@ class OxpAtKbd(GenericGamepadEvdev):
                     if t and curr - t < BUTTON_MIN_DELAY:
                         self.queued.append((ev["code"], t + BUTTON_MIN_DELAY))
                         skip.append(i)
+
+        # Check for Turbo macro (Ctrl + Meta + Alt)
+        if (
+            "key_leftctrl" in self.state
+            and "key_leftmeta" in self.state
+            and "key_leftalt" in self.state
+        ):
+            # Consume the keys
+            self.state.pop("key_leftctrl", None)
+            self.state.pop("key_leftmeta", None)
+            self.state.pop("key_leftalt", None)
+
+            # Emit share/mode button depending on mappings
+            share_code = "mode" if "mode" in self.btn_map.values() else "share"
+            evs.append(
+                {
+                    "type": "button",
+                    "code": share_code,
+                    "value": True,
+                }
+            )
+            self.queued.append((share_code, curr + BUTTON_MIN_DELAY))
 
         for i in reversed(skip):
             evs.pop(i)
@@ -771,6 +796,7 @@ def controller_loop(
         d_vend_id = [id(d) for d in d_vend]
         if dconf.get("g1", False):
             prepare(d_kbd_2)
+
         prepare(d_xinput)
         if motion:
             start_imu = True
