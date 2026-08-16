@@ -3,7 +3,7 @@ import os
 from threading import Event, Thread
 from typing import Sequence
 
-from hhd.plugins import Config, Context, HHDPlugin, load_relative_yaml
+from hhd.plugins import Config, Context, Emitter, HHDPlugin, load_relative_yaml
 from hhd.utils import is_steam_gamepad_running
 
 logger = logging.getLogger(__name__)
@@ -18,12 +18,16 @@ class CecPlugin(HHDPlugin):
         self.log = "CEC"
         self.thread: Thread | None = None
         self.should_exit: Event | None = None
+        self.emit: Emitter | None = None
 
-    def open(self, emit, context: Context):
-        pass
+    def open(self, emit: Emitter, context: Context):
+        self.emit = emit
 
     def settings(self):
-        return {"hhd": load_relative_yaml("settings.yml")}
+        return {
+            "hhd": load_relative_yaml("settings.yml"),
+            "shortcuts": load_relative_yaml("shortcuts.yml"),
+        }
 
     def start(self):
         if self.thread and self.thread.is_alive():
@@ -34,7 +38,7 @@ class CecPlugin(HHDPlugin):
         self.should_exit = Event()
         self.thread = Thread(
             target=cec_run,
-            args=(self.should_exit,),
+            args=(self.should_exit, self.emit),
             name="hhd-cec",
         )
         self.thread.start()

@@ -1,9 +1,12 @@
 import ctypes
+import errno
 import fcntl
 import logging
 import os
 import platform
+import select
 import socket
+import time
 from dataclasses import dataclass
 
 from hhd.controller.lib.ioctl import _IOR, _IOW, _IOWR
@@ -63,6 +66,7 @@ CEC_ADAP_G_CAPS = _IOWR("a", 0, ctypes.sizeof(CecCaps))
 CEC_ADAP_G_PHYS_ADDR = _IOR("a", 1, ctypes.sizeof(ctypes.c_uint16))
 CEC_ADAP_S_LOG_ADDRS = _IOWR("a", 4, ctypes.sizeof(CecLogAddrs))
 CEC_TRANSMIT = _IOWR("a", 5, ctypes.sizeof(CecMsg))
+CEC_RECEIVE = _IOWR("a", 6, ctypes.sizeof(CecMsg))
 CEC_S_MODE = _IOW("a", 9, ctypes.sizeof(ctypes.c_uint32))
 
 CEC_CAP_LOG_ADDRS = 1 << 1
@@ -70,6 +74,7 @@ CEC_CAP_TRANSMIT = 1 << 2
 CEC_PHYS_ADDR_INVALID = 0xFFFF
 CEC_LOG_ADDR_INVALID = 0xFF
 CEC_MODE_INITIATOR = 1
+CEC_MODE_FOLLOWER = 1 << 4
 CEC_OP_CEC_VERSION_2_0 = 6
 CEC_VENDOR_ID_NONE = 0xFFFFFFFF
 CEC_OP_PRIM_DEVTYPE_PLAYBACK = 4
@@ -91,8 +96,17 @@ CEC_MSG_SET_OSD_NAME = 0x47
 CEC_MSG_STANDBY = 0x36
 CEC_MSG_GIVE_DEVICE_POWER_STATUS = 0x8F
 CEC_MSG_REPORT_POWER_STATUS = 0x90
+CEC_MSG_USER_CONTROL_PRESSED = 0x44
+CEC_MSG_USER_CONTROL_RELEASED = 0x45
 
 CEC_OP_POWER_STATUS_STANDBY = 1
+CEC_OP_UI_CMD_SELECT = 0x00
+CEC_OP_UI_CMD_UP = 0x01
+CEC_OP_UI_CMD_DOWN = 0x02
+CEC_OP_UI_CMD_LEFT = 0x03
+CEC_OP_UI_CMD_RIGHT = 0x04
+CEC_OP_UI_CMD_BACK = 0x0D
+CEC_OP_UI_CMD_ENTER = 0x2B
 
 
 def _ioctl(fd: int, request: int, value: ctypes.Structure | ctypes._SimpleCData):
@@ -136,6 +150,26 @@ class CecState:
     closed: bool = False
 
 
+def receive_cec(state: CecState, timeout: int = 0) -> CecMsg | None:
+    try:
+        readable, _, _ = select.select([state.fd], [], [], timeout / 1000)
+    except InterruptedError:
+        return None
+    if not readable:
+        return None
+
+    msg = CecMsg()
+    try:
+        _ioctl(state.fd, CEC_RECEIVE, msg)
+    except OSError as e:
+        if e.errno in (errno.EAGAIN, errno.ETIMEDOUT):
+            return None
+        raise
+    if not msg.rx_status & CEC_RX_STATUS_OK or msg.len < 2:
+        return None
+    return msg
+
+
 def _transmit(
     state: CecState,
     destination: int,
@@ -144,6 +178,7 @@ def _transmit(
     reply: int = 0,
     timeout: int = 1000,
 ) -> CecMsg | None:
+    broadcast_reply = bool(reply and destination == CEC_LOG_ADDR_BROADCAST)
     msg = CecMsg()
     msg.len = 2 + len(operands)
     msg.timeout = timeout
@@ -151,10 +186,19 @@ def _transmit(
     msg.msg[1] = opcode
     for idx, operand in enumerate(operands, start=2):
         msg.msg[idx] = operand
-    msg.reply = reply
+    msg.reply = 0 if broadcast_reply else reply
 
     _ioctl(state.fd, CEC_TRANSMIT, msg)
     if not msg.tx_status & CEC_TX_STATUS_OK:
+        return None
+    if broadcast_reply:
+        deadline = time.monotonic() + timeout / 1000
+        while (remaining := deadline - time.monotonic()) > 0:
+            received = receive_cec(state, max(1, int(remaining * 1000)))
+            if received is None:
+                return None
+            if received.msg[1] == reply:
+                return received
         return None
     if reply and (
         not msg.rx_status & CEC_RX_STATUS_OK or msg.len < 2 or msg.msg[1] != reply
@@ -173,7 +217,11 @@ def initialize_cec(dev: str) -> CecState:
         if caps.available_log_addrs < 1:
             raise OSError(f"CEC adapter has no available logical addresses: {dev}")
 
-        _ioctl(fd, CEC_S_MODE, ctypes.c_uint32(CEC_MODE_INITIATOR))
+        _ioctl(
+            fd,
+            CEC_S_MODE,
+            ctypes.c_uint32(CEC_MODE_INITIATOR | CEC_MODE_FOLLOWER),
+        )
 
         phys_addr = ctypes.c_uint16()
         _ioctl(fd, CEC_ADAP_G_PHYS_ADDR, phys_addr)

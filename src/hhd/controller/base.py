@@ -56,6 +56,9 @@ class SpecialEvent(TypedDict):
         "brightness_changed",
         "custom_armoury",
         "custom_fan",
+        "cec_back_double",
+        "cec_back_hold",
+        "cec_back_triple",
         # Powerbutton presses
         "pbtn_short",
         "pbtn_long",
