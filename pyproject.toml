@@ -54,6 +54,7 @@ bootc = "hhd.plugins.bootc:autodetect"
 debug = "hhd.plugins.debug:autodetect"
 power = "hhd.plugins.power:autodetect"
 customization = "hhd.plugins.customization:autodetect"
+cooling_dock = "hhd.plugins.cooling_dock:autodetect"
 # display = "hhd.plugins.display:autodetect"
 
 [project.entry-points."hhd.i18n"]

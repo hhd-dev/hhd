@@ -226,6 +226,9 @@ class OxpAtKbd(GenericGamepadEvdev):
             if ev["type"] == "button" and ev["code"] in (
                 "mode",
                 "keyboard",
+                "key_leftctrl",
+                "key_leftmeta",
+                "key_leftalt",
             ):
                 if ev["value"]:
                     self.state[ev["code"]] = curr
@@ -235,6 +238,28 @@ class OxpAtKbd(GenericGamepadEvdev):
                     if t and curr - t < BUTTON_MIN_DELAY:
                         self.queued.append((ev["code"], t + BUTTON_MIN_DELAY))
                         skip.append(i)
+
+        # Check for Turbo macro (Ctrl + Meta + Alt)
+        if (
+            "key_leftctrl" in self.state
+            and "key_leftmeta" in self.state
+            and "key_leftalt" in self.state
+        ):
+            # Consume the keys
+            self.state.pop("key_leftctrl", None)
+            self.state.pop("key_leftmeta", None)
+            self.state.pop("key_leftalt", None)
+
+            # Emit share/mode button depending on mappings
+            share_code = "mode" if "mode" in self.btn_map.values() else "share"
+            evs.append(
+                {
+                    "type": "button",
+                    "code": share_code,
+                    "value": True,
+                }
+            )
+            self.queued.append((share_code, curr + BUTTON_MIN_DELAY))
 
         for i in reversed(skip):
             evs.pop(i)
@@ -251,7 +276,9 @@ class OxpAtKbd(GenericGamepadEvdev):
         return evs
 
 
-def find_vendor(prepare, turbo, protocol: str | None, secondary: bool, vibration: str | None):
+def find_vendor(
+    prepare, turbo, protocol: str | None, secondary: bool, vibration: str | None
+):
     vibration_val = None
     if vibration is not None:
         if not isinstance(vibration, str) or not vibration.startswith("v"):
@@ -433,6 +460,15 @@ def turbo_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
+    # Fallback: grab dock HID if udev rule is missing (e.g. pip install).
+    d_dock_hid = GenericGamepadEvdev(
+        vid=[0x07D7],
+        pid=[0x0000],
+        required=False,
+        grab=True,
+        btn_map={},
+    )
+
     if conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
         btn_map = {
@@ -486,6 +522,7 @@ def turbo_loop(
 
         for d in d_producers:
             prepare(d)
+        prepare(d_dock_hid)
         prepare(d_kbd_1)
 
         logger.info(
@@ -657,6 +694,15 @@ def controller_loop(
         keyboard_no_release=not conf.get("swap_face", False),
     )
 
+    # Fallback: grab dock HID if udev rule is missing (e.g. pip install).
+    d_dock_hid = GenericGamepadEvdev(
+        vid=[0x07D7],
+        pid=[0x0000],
+        required=False,
+        grab=True,
+        btn_map={},
+    )
+
     if conf.get("volume_reverse", False):
         logger.info("Reversing volume buttons.")
         btn_map = {
@@ -711,6 +757,8 @@ def controller_loop(
         d_vend_id = [id(d) for d in d_vend]
         if dconf.get("g1", False):
             prepare(d_kbd_2)
+        prepare(d_dock_hid)
+
         prepare(d_xinput)
         if motion:
             start_imu = True

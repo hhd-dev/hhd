@@ -9,7 +9,7 @@ from hhd.plugins.conf import Config
 from hhd.plugins.plugin import Emitter
 
 from adjustor.core.acpi import check_perms, initialize
-from adjustor.core.const import CPU_DATA, DEV_DATA, ASUS_DATA, MSI_DATA
+from adjustor.core.const import CPU_DATA, DC_CAP_OXP_SUPERX, DEV_DATA, ASUS_DATA, MSI_DATA
 from adjustor.decky import disable_decky_plugins, find_decky_plugins
 
 from .i18n import _
@@ -280,15 +280,29 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     if not drivers_matched and prod in DEV_DATA:
         dev, cpu, pp_enable, energy_map = DEV_DATA[prod]
+        # Enable higher TDP limits when docked (e.g. 120W on SUPER X).
+        dock_aware = prod in ("ONEXPLAYER SUPER X", "ONEXPLAYER APEX")
+
+        # Provide DC battery limits (e.g. 55W) for dynamic TDP clamping.
+        dc_cap = DC_CAP_OXP_SUPERX if dock_aware else None
 
         try:
-            # Set values for the steam slider
+            # Configure Steam UI slider limits.
+            # Use DC cap on battery so the slider matches hardware limits.
             if dev["skin_limit"].smin:
                 min_tdp = dev["skin_limit"].smin
             if dev["skin_limit"].default:
                 default_tdp = dev["skin_limit"].default
             if dev["skin_limit"].smax:
                 max_tdp = dev["skin_limit"].smax
+            if dc_cap:
+                # Detect initial AC state for the UI slider max.
+                # The adjustor handles dynamic updates later.
+                from hhd.utils import get_ac_status, get_ac_status_fn
+                ac_fn = get_ac_status_fn()
+                initial_ac = get_ac_status(ac_fn)
+                if initial_ac is False and "skin_limit" in dc_cap:
+                    max_tdp = dc_cap["skin_limit"]
         except Exception as e:
             logger.error(f"Failed to get TDP limits for {prod}:\n{e}")
 
@@ -298,6 +312,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                 dev,
                 cpu,
                 platform_profile=pp_enable,
+                dock_aware=dock_aware,
+                dc_cap=dc_cap,
             )
         )
         drivers.append(
@@ -306,6 +322,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
                 energy_map,
                 pp_enable=pp_enable,
                 init_tdp=not prod == "83E1",
+                dock_aware=dock_aware,
+                dc_cap=dc_cap,
             ),
         )
         drivers_matched = True
