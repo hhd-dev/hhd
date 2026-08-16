@@ -506,6 +506,67 @@ class CecServiceTest(unittest.TestCase):
         self.assertEqual(initialize.call_count, 2)
         service.remote.open.assert_called()
 
+    def test_failed_adapter_is_only_tried_once_while_present(self):
+        service = CecService(MagicMock())
+
+        with (
+            patch("hhd.plugins.cec.service.glob.glob", return_value=["/dev/cec0"]),
+            patch(
+                "hhd.plugins.cec.service.initialize_cec",
+                side_effect=OSError("Could not claim a playback address"),
+            ) as initialize,
+        ):
+            service.scan()
+            service.scan()
+            service.scan()
+
+        initialize.assert_called_once_with("/dev/cec0")
+        self.assertEqual(service.failed, {"/dev/cec0"})
+
+    def test_failed_adapter_is_retried_after_reappearing(self):
+        service = CecService(MagicMock())
+        state = CecState("/dev/cec0", 10, 0x2000, 4, b"HHD")
+        service.remote = MagicMock()
+
+        with (
+            patch(
+                "hhd.plugins.cec.service.glob.glob",
+                side_effect=[["/dev/cec0"], [], ["/dev/cec0"]],
+            ),
+            patch(
+                "hhd.plugins.cec.service.initialize_cec",
+                side_effect=[OSError("failed"), state],
+            ) as initialize,
+        ):
+            service.scan()
+            service.scan()
+            service.scan()
+
+        self.assertEqual(initialize.call_count, 2)
+        self.assertEqual(service.adapters, {"/dev/cec0": state})
+        self.assertEqual(service.failed, set())
+
+    def test_permission_error_retries_until_adapter_can_be_inspected(self):
+        service = CecService(MagicMock())
+
+        with (
+            patch("hhd.plugins.cec.service.glob.glob", return_value=["/dev/cec0"]),
+            patch(
+                "hhd.plugins.cec.service.initialize_cec",
+                side_effect=[
+                    PermissionError(errno.EACCES, "Permission denied", "/dev/cec0"),
+                    OSError("Could not claim a playback address"),
+                ],
+            ) as initialize,
+        ):
+            service.scan()
+            self.assertEqual(service.failed, set())
+            service.scan()
+            service.scan()
+
+        self.assertEqual(initialize.call_count, 2)
+        self.assertEqual(service.failed, {"/dev/cec0"})
+
     def test_receives_remote_keys_and_tracks_active_source(self):
         service = CecService(MagicMock())
         service.remote = MagicMock()

@@ -1,3 +1,4 @@
+import errno
 import glob
 import logging
 import time
@@ -18,7 +19,6 @@ from .remote import TvRemote
 logger = logging.getLogger(__name__)
 
 SCAN_INTERVAL = 2.0
-RETRY_INTERVAL = 10.0
 LOOP_INTERVAL = 0.05
 
 
@@ -26,7 +26,7 @@ class CecService:
     def __init__(self, should_exit: Event, emit: Emitter | None = None):
         self.should_exit = should_exit
         self.adapters: dict[str, CecState] = {}
-        self.retry_after: dict[str, float] = {}
+        self.failed: set[str] = set()
         self.suspended = False
         self.next_scan = 0.0
         self.remote = TvRemote(emit)
@@ -49,16 +49,12 @@ class CecService:
 
     def scan(self):
         paths = set(glob.glob("/dev/cec*"))
-        now = time.monotonic()
-        for path in set(self.retry_after) - paths:
-            del self.retry_after[path]
+        self.failed.intersection_update(paths)
         for path in set(self.adapters) - paths:
             logger.info(f"CEC adapter '{path}' disappeared.")
             self._close_adapter(path)
 
-        for path in sorted(paths - set(self.adapters)):
-            if now < self.retry_after.get(path, 0.0):
-                continue
+        for path in sorted(paths - set(self.adapters) - self.failed):
             try:
                 state = initialize_cec(path)
                 self.adapters[path] = state
@@ -66,7 +62,6 @@ class CecService:
                     self.remote.open()
                 except Exception as e:
                     logger.warning(f"Could not create TV Remote input device: {e}")
-                self.retry_after.pop(path, None)
                 logger.info(
                     f"Activated CEC adapter '{path}' at physical address "
                     f"{state.phys_addr >> 12:x}."
@@ -76,7 +71,12 @@ class CecService:
                 )
             except Exception as e:
                 logger.warning(f"Could not activate CEC adapter '{path}': {e}")
-                self.retry_after[path] = now + RETRY_INTERVAL
+                permission_error = isinstance(e, OSError) and e.errno in (
+                    errno.EACCES,
+                    errno.EPERM,
+                )
+                if not permission_error:
+                    self.failed.add(path)
 
     def receive(self):
         for path, state in list(self.adapters.items()):
@@ -93,7 +93,7 @@ class CecService:
             except OSError as e:
                 logger.warning(f"Could not receive from CEC adapter '{path}': {e}")
                 self._close_adapter(path)
-                self.retry_after[path] = time.monotonic() + RETRY_INTERVAL
+                self.failed.add(path)
 
     def _sleep_transition(self):
         transition = self.sleep()
@@ -106,7 +106,6 @@ class CecService:
             logger.info("Reinitializing HDMI-CEC state after resume.")
             self.suspended = False
             self.sleep.inhibit(True)
-            self.retry_after.clear()
             self.next_scan = 0.0
 
     def run(self):
