@@ -640,32 +640,21 @@ class CecPluginTest(unittest.TestCase):
             shortcuts["children"]["back_triple"]["default"], "hhd_expanded"
         )
 
-    def test_worker_only_runs_in_gamemode_when_enabled(self):
+    def test_worker_runs_in_desktop_and_gamemode_when_enabled(self):
         plugin = CecPlugin()
         plugin.start = MagicMock()
         plugin.stop = MagicMock()
         conf = Config({"hhd": {"settings": {"cec": True}}})
 
-        with patch("hhd.plugins.cec.is_steam_gamepad_running", return_value=False):
-            plugin.update(conf)
-        plugin.start.assert_not_called()
-
-        with patch("hhd.plugins.cec.is_steam_gamepad_running", return_value=True):
-            plugin.update(conf)
+        plugin.update(conf)
         plugin.start.assert_called_once()
 
-    def test_worker_stops_on_gamemode_exit_or_setting_disable(self):
+    def test_worker_stops_on_setting_disable(self):
         plugin = CecPlugin()
         plugin.thread = MagicMock()
         plugin.stop = MagicMock()
 
-        with patch("hhd.plugins.cec.is_steam_gamepad_running", return_value=False):
-            plugin.update(Config({"hhd": {"settings": {"cec": True}}}))
-        plugin.stop.assert_called_once()
-
-        plugin.stop.reset_mock()
-        with patch("hhd.plugins.cec.is_steam_gamepad_running", return_value=True):
-            plugin.update(Config({"hhd": {"settings": {"cec": False}}}))
+        plugin.update(Config({"hhd": {"settings": {"cec": False}}}))
         plugin.stop.assert_called_once()
 
     def test_legacy_overlay_sleep_import_uses_shared_handler(self):

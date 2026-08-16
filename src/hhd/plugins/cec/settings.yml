@@ -6,6 +6,6 @@ settings:
       type: bool
       title: Enable HDMI-CEC support
       hint: >-
-        Allows gamemode to turn on a connected TV, select this device, and
-        restore the TV state when gamemode exits or the device sleeps.
+        Turns on a connected TV, selects this device, and restores the TV state
+        when the device shutsdown or sleeps.
       default: True

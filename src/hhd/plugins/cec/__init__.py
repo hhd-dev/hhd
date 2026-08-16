@@ -4,7 +4,6 @@ from threading import Event, Thread
 from typing import Sequence
 
 from hhd.plugins import Config, Context, Emitter, HHDPlugin, load_relative_yaml
-from hhd.utils import is_steam_gamepad_running
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class CecPlugin(HHDPlugin):
             return
         from .service import cec_run
 
-        logger.info("Starting gamemode HDMI-CEC service.")
+        logger.info("Starting HDMI-CEC service.")
         self.should_exit = Event()
         self.thread = Thread(
             target=cec_run,
@@ -49,12 +48,12 @@ class CecPlugin(HHDPlugin):
         if self.thread:
             self.thread.join()
         if self.should_exit or self.thread:
-            logger.info("Stopped gamemode HDMI-CEC service.")
+            logger.info("Stopped HDMI-CEC service.")
         self.should_exit = None
         self.thread = None
 
     def update(self, conf: Config):
-        requested = conf.get("hhd.settings.cec", True) and is_steam_gamepad_running()
+        requested = conf.get("hhd.settings.cec", True)
         if requested and (not self.thread or not self.thread.is_alive()):
             self.stop()
             self.start()
