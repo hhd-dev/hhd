@@ -3,6 +3,7 @@ Description=Handheld Daemon Service
 
 [Service]
 ExecStart=/usr/bin/hhd
+KillMode=mixed
 Nice=-12
 Restart=on-failure
 RestartSec=5

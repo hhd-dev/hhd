@@ -1,3 +1,4 @@
+import configparser
 import getpass
 import logging
 import os
@@ -353,6 +354,23 @@ def get_flatpak_id(pid: int) -> str | None:
     return None
 
 
+def get_flatpak_instance(pid: int, flatpak_id: str) -> str | None:
+    try:
+        info = configparser.ConfigParser(interpolation=None)
+        with open(f"/proc/{pid}/root/.flatpak-info") as f:
+            info.read_file(f)
+
+        if info.get("Application", "name") != flatpak_id:
+            return None
+
+        instance = info.get("Instance", "instance-id")
+        if instance.isdecimal():
+            return instance
+    except Exception:
+        pass
+    return None
+
+
 def get_user_systemd_environment(uid: int, gid: int) -> dict[str, str]:
     result = subprocess.run(
         ["systemctl", "--user", "show-environment"],
@@ -394,11 +412,17 @@ def run_steam_command(command: str):
     try:
         gid = get_gid(uid)
         if flatpak_id := get_flatpak_id(pid):
+            instance = get_flatpak_instance(pid, flatpak_id)
+            if instance is None:
+                logger.error(
+                    f"Could not find Flatpak instance for Steam process {pid}."
+                )
+                return False
             cmd = [
                 "/usr/bin/flatpak",
-                "run",
-                "--command=steam",
-                flatpak_id,
+                "enter",
+                instance,
+                "/app/bin/steam",
                 "-ifrunning",
                 command,
             ]

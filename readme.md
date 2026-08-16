@@ -31,15 +31,17 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - Ally X
   - Xbox Ally
   - Xbox Ally X
-  - Z13 (2025; needs Bazzite kernel)
+  - Z13
 - GPD Win (all model years)
   - Win 4
   - Win Mini (2025 model has no WinControls integration)
   - Win Max 2
+  - Win Max 5
 - OneXPlayer
   - G1 (AMD, Intel w/o TDP)
   - X1, X1Pro (AMD, Intel w/o TDP), X1z, X1Pro EVA-01, X1 Air (Intel-no TDP)
   - X1 Mini, X1 Mini Pro
+  - X2Mini Pro
   - F1, F1 EVA-01, F1L, F1 OLED, F1 Pro
   - 2, 2 APR23, 2 PRO APR23, 2 PRO APR23 EVA-01
   - Mini A07
@@ -77,91 +79,21 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
 - Mystin Labs
   - SuiPlay 0x1
 
-## <a name="local"></a> Installation Instructions
-For Arch and Fedora see [here](#os-install). For others, you can use the following script to install a local version of Handheld Daemon that updates independently of the system.
+## <a name="installation"></a> Installation Instructions
+If you want to access Handheld Daemon's expanded functionality, you should use the [Anatase](https://github.com/anatase-org/anatase) distribution. It carries the latest tested commit in its latest version (i.e., not on a github release). 
+
+Unfortunately, as Handheld Daemon integrates closer with the kernel due to secure boot requirements and gamescope to provide features such as framegen, using a freefloating mainline kernel version will increasingly break devices. This is is compounded by highly complicated controller drivers that are introduced in the kernel using a Valve copyright and do not properly work.
+
+For basic desktop use, you may use the following script to install a local version of Handheld Daemon that updates independently of the system.
 ```bash
 curl -L https://github.com/hhd-dev/hhd/raw/master/install.sh | bash
 ```
 
-This script does not automatically install system dependencies. A partial list for Ubuntu/Debian can be found [here](#debian). This includes `acpi_call` for TDP on devices other than the Ally. For all devices, use the [bazzite kernel](https://github.com/hhd-dev/kernel-bazzite) for best support or Bazzite. Some caveats for certain devices are listed below.
+This should work in Ubuntu, Arch, and Fedora. It will break when your system python updates to a new version, so you will need to run the install script again when that happens. This script does not automatically install system dependencies. You should fish what those are based on error messages and by inspecting close issues in this tracker.
 
-### Uninstall
-We are sorry to see you go, use the following to uninstall:
-```bash
-curl -L https://github.com/hhd-dev/hhd/raw/master/uninstall.sh | bash
-```
+Using COPR or AUR, even though the packages are available straight from this repository there, is not recommended. COPR is not because you're more likely to break your system by using it (just rerun the install script after updating Fedora versions), and AUR, because it is going through a hard time.
 
-### Using an older version
-If you find any issues with the latest version of Handheld Daemon
-you can use any version by specifying it with the command below.
-```bash
-sudo systemctl stop hhd_local@$(whoami)
-~/.local/share/hhd/venv/bin/pip install hhd==2.6.0
-sudo systemctl start hhd_local@$(whoami)
-```
-
-### <a name="issues"></a>After Install Instructions
-
-#### Extra steps for ROG Ally
-You can hold the ROG Crate button to switch to the ROG Ally's Mouse mode to turn the right stick into a mouse.
-
-Combinations with the ROG, Armory Crate buttons is not supported in the Ally, but you can use ROG swap for that.
-
-#### Extra steps GPD Win Devices
-Swipe the left top of the screen to show handheld daemon in gamescope or open the desktop app and head to the WinControls tab. There, press apply to remap the back buttons correctly.
-
-For the GPD Win 4, the Menu button is used as a combo (Short Pres QAM, long press Xbox button, double press hhd) and select can be used for SteamOS chords (e.g., Select + RT is screenshot). For other devices, the R4  button is used to bring up QAM (single tap), and HHD (double tap/hold). You can customize to your tastes in the Controller section.
-
-#### Extra steps for Ayaneo/Ayn
-You might experience a tiny amount of lag with the Ayaneo LEDs. The paddles of the Ayn Loki Max are not remappable as far as we know.
-
-#### Extra steps for Legion Go
-If you have set any mappings on Legion Space, they will interfere with Handheld Daemon. You can factory reset the Controllers from the Handheld Daemon settings.
-
-The controller gyros of the Legion Go tend to drift sometimes. Calibrate them with the built-in calibration by pressing LT + LS and RT + RS, then turning the Joysticks twice and pressing the triggers. Finally, the controllers will vibrate and flash the leds, zeroing the gyroscope.
-
-## <a name="os-install"></a> Distribution Install
-You can install Handheld Daemon from [AUR](https://aur.archlinux.org/packages/hhd)  (Arch) or [COPR](https://copr.fedorainfracloud.org/coprs/hhd-dev/hhd/) (Fedora). Both update automatically every time there is a new release. For Debian/Ubuntu see below.
-
-```bash
-# Arch
-yay -S hhd adjustor hhd-ui
-
-# Fedora
-sudo dnf copr enable hhd-dev/hhd
-sudo dnf install hhd adjustor hhd-ui
-
-sudo systemctl enable hhd@$(whoami)
-```
-
-### <a name="debian"></a> Debian/Ubuntu
-The following packages are required for local install to work on Ubuntu/Debian.
-Handheld daemon is not packaged for apt yet.
-```bash
-sudo apt install \
-    libgirepository1.0-dev \
-    libcairo2-dev \
-    libpython3-dev \
-    python3-venv \
-    libhidapi-hidraw0
-```
-
-### ❄️ NixOS
-Handheld Daemon (core and overlay, no TDP) is on `nixpkgs` in the `unstable` channel.
-
-Add the following to your `configuration.nix` to enable:
-```nix
-  services.handheld-daemon = {
-    enable = true;
-    user = "<your-user>";
-    ui.enable = true;
-  };
-```
-
-### <a name="bazzite"></a><a name="after-install"></a>Bazzite
-Handheld Daemon comes pre-installed on [Bazzite](https://bazzite.gg) deck images (use the [local version](#local) for desktop images) and updates along-side the system. Most users of Handheld Daemon are on Bazzite and Bazzite releases often happen for Handheld Daemon to update. Bazzite contains all kernel patches and quirks required for all supported handhelds to work (to the extent they can; certain Ayaneo devices have issues).
-
-See [supported devices](#supported-devices) to check the status of your device and  [after install](#issues) for specific device quirks.
+It is not recommended to run Handheld Daemon on nix. Lots of people have tried, but around 20% of its functionality silently breaks.
 
 ## Contributing
 ### <a name="axis"></a> Finding the correct axis for your device

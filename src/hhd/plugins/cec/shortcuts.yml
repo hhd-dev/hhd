@@ -1,0 +1,27 @@
+cec:
+  type: container
+  tags: [non-essential]
+  title: TV Remote
+  children:
+    back_double:
+      type: multiple
+      title: Back Double Press
+      options: &shortcuts
+        disabled: Disabled
+        keyboard: Steam Keyboard
+        steam_qam: Steam Side Menu
+        steam_expanded: Steam Overlay
+        hhd_qam: HHD Side Menu
+        hhd_expanded: HHD Overlay
+        tdp_cycle: Cycle TDP
+      default: steam_qam
+    back_hold:
+      type: multiple
+      title: Back Hold
+      options: *shortcuts
+      default: hhd_expanded
+    back_triple:
+      type: multiple
+      title: Back Triple Press
+      options: *shortcuts
+      default: hhd_expanded

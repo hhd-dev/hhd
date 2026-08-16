@@ -44,6 +44,18 @@ BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
     B("KEY_LEFTMETA"): "key_leftmeta",
 }
 
+BTN_MAPPINGS_X2: dict[int, Button] = {
+    **BTN_MAPPINGS,
+    B("KEY_F15"): "extra_l1",
+    B("KEY_F16"): "extra_r1",
+}
+
+BTN_MAPPINGS_NONTURBO_X2: dict[int, Button] = {
+    **BTN_MAPPINGS_NONTURBO,
+    B("KEY_F15"): "extra_l1",
+    B("KEY_F16"): "extra_r1",
+}
+
 ONEX_DEFAULT_CONF = {
     "hrtimer": True,
 }
@@ -170,6 +182,16 @@ CONFS = {
         "mapping": X1_MAPPING,
         "protocol": "hid_v1",
         "turbo": False,  # disable turbo takeover so that it can be used for TDP
+    },
+    # X2 Line
+    "ONEXPLAYER X2Mini PRO": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER X2 Mini Pro",
+        "x1": True,
+        "rgb_secondary": True,
+        "rgb_secondary_breathing": True,
+        "mapping": X1_MINI_MAPPING,
+        "protocol": "hid_v2_x2",
     },
     "ONEXPLAYER G1 i": {
         **ONEX_DEFAULT_CONF,

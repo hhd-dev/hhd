@@ -56,6 +56,9 @@ class SpecialEvent(TypedDict):
         "brightness_changed",
         "custom_armoury",
         "custom_fan",
+        "cec_back_double",
+        "cec_back_hold",
+        "cec_back_triple",
         # Powerbutton presses
         "pbtn_short",
         "pbtn_long",
@@ -79,7 +82,16 @@ class RumbleEvent(TypedDict):
 
 RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral", "duality", "oxp"]
 RgbSettings = Literal[
-    "color", "brightness", "speed", "brightnessd", "speedd", "direction", "dual", "oxp"
+    "color",
+    "brightness",
+    "speed",
+    "brightnessd",
+    "speedd",
+    "direction",
+    "dual",
+    "oxp",
+    "oxp-secondary",
+    "oxp-secondary-breathing",
 ]
 
 # Mono is a single zone (main only)
@@ -152,6 +164,7 @@ class RgbLedEvent(TypedDict):
     blue2: int
 
     oxp: None | OxpModes
+    secondary_breathing: NotRequired[bool]
 
 
 class ButtonEvent(TypedDict):

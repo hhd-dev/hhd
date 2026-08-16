@@ -38,7 +38,10 @@ def inject_overlay(fn: str, display: str, uid: int):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        preexec_fn=lambda: os.setpgrp(), # allow closing the overlay smoothly
+        # hhd-ui is commonly an AppImage. Keep Electron and all of its helper
+        # processes in a separate process group so they can be stopped before
+        # the AppImage mount is torn down.
+        start_new_session=True,
         user=uid,
         group=get_gid(uid),
     )
@@ -58,6 +61,7 @@ def launch_overlay_de(fn: str, display: str, auth: str | None, uid: int, gid: in
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        start_new_session=True,
         user=uid,
         group=gid,
     )

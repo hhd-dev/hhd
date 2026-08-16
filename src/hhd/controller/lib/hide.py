@@ -1,6 +1,7 @@
 import subprocess
 import os
 import logging
+import re
 import threading
 
 from .ioctl import EVIOCREVOKEALL, JSIOCREVOKEALL
@@ -37,6 +38,60 @@ def get_gamepad_name(syspath: str):
 def get_parent_sysfs(syspath: str):
     return syspath[: syspath.rindex("/")]
     # return syspath.split("/input/")[0]
+
+
+def get_usb_device(syspath: str) -> tuple[str | None, str | None]:
+    parts = syspath.split("/")
+    for i in range(len(parts) - 1, -1, -1):
+        part = parts[i]
+        if re.fullmatch(r"\d+-\d+(?:\.\d+)*", part):
+            return part, "/".join(parts[: i + 1])
+    return None, None
+
+
+def get_hide_rule(
+    input_dev: str,
+    usb_root: str | None,
+    vid: int,
+    pid: int,
+    hide_all: bool,
+) -> str:
+    if hide_all:
+        input_match = 'ENV{ID_BUS}=="usb", '
+        usb_match = (
+            'SUBSYSTEMS=="usb", '
+            f'ATTRS{{idVendor}}=="{vid:04x}", '
+            f'ATTRS{{idProduct}}=="{pid:04x}", '
+        )
+    else:
+        input_match = f'KERNELS=="{input_dev}", '
+        usb_match = (
+            f'KERNELS=="{usb_root}", '
+            f'ATTRS{{idVendor}}=="{vid:04x}", '
+            f'ATTRS{{idProduct}}=="{pid:04x}", '
+            if usb_root
+            else None
+        )
+
+    rule = f"""\
+# Hides device gamepad devices stemming from {input_dev}
+# Managed by HHD, this file will be autoremoved during configuration changes.
+SUBSYSTEMS=="input", {input_match}ATTRS{{id/vendor}}=="{vid:04x}", ATTRS{{id/product}}=="{pid:04x}", GOTO="hhd_valid"
+GOTO="hhd_end"
+LABEL="hhd_valid"
+# Keep SDL from falling back to probing the hidden device's sysfs capabilities.
+KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", ENV{{ID_INPUT}}="0", ENV{{ID_INPUT_JOYSTICK}}="0", ENV{{ID_INPUT_ACCELEROMETER}}="0", ENV{{ID_INPUT_KEY}}="0", ENV{{ID_INPUT_KEYBOARD}}="0", ENV{{ID_INPUT_MOUSE}}="0", ENV{{ID_INPUT_TOUCHPAD}}="0", ENV{{ID_INPUT_TOUCHSCREEN}}="0", ENV{{ID_INPUT_TABLET}}="0", ENV{{ID_INPUT_SWITCH}}="0", ENV{{ID_CLASS}}="hhd-hidden", MODE:="000", GROUP:="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/input/%k"
+LABEL="hhd_end"
+"""
+
+    if usb_match:
+        rule += f"""\
+# Hide raw interfaces belonging to the same physical USB controller.
+SUBSYSTEM=="hidraw", {usb_match}MODE:="000", GROUP:="root", TAG-="uaccess"
+SUBSYSTEM=="usb", KERNEL=="hiddev[0-9]*", {usb_match}MODE:="000", GROUP:="root", TAG-="uaccess"
+"""
+
+    return rule
 
 
 _reload_thread = None
@@ -76,43 +131,25 @@ def hide_gamepad(devpath: str, vid: int, pid: int) -> str | None:
         return None
     input_dev = get_gamepad_name(syspath)
     parent = get_parent_sysfs(syspath)
+    usb_root, usb_parent = get_usb_device(syspath)
+    reload_parent = usb_parent or parent
     if not input_dev or not parent:
         return None
 
     if HIDE_ALL:
         # Hide all devices with the same vid pid
         root = f"{vid:04x}-{pid:04x}"
-        # Certain devices emulate a USB Xbox controller. So match the USB bus
-        # to hopefully not affect bluetooth devices.
-        extra = 'ENV{ID_BUS}=="usb"'
     else:
         root = input_dev
-        extra = f'KERNELS=="{input_dev}", '
 
     out_fn = f"/run/udev/rules.d/95-hhd-devhide-{root}.rules"
     if os.path.exists(out_fn):
         # Skip hiding controller on reloads
+        if reload_parent not in _hidden:
+            _hidden.append(reload_parent)
         return input_dev
 
-    rule = f"""\
-# Hides device gamepad devices stemming from {input_dev}
-# Managed by HHD, this file will be autoremoved during configuration changes.
-SUBSYSTEMS=="input", {extra}ATTRS{{id/vendor}}=="{vid:04x}", ATTRS{{id/product}}=="{pid:04x}", GOTO="hhd_valid"
-GOTO="hhd_end"
-LABEL="hhd_valid"
-KERNEL=="js[0-9]*|event[0-9]*", SUBSYSTEM=="input", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/input/%k"
-LABEL="hhd_end"
-"""
-
-    #     # Hide usb xinput, be very careful to only match that usb
-    #     if "/" in parent:
-    #         usb_root = parent[parent.rindex("/") + 1 :]
-    #         if re.match(r"\d-+\d+", usb_root) or re.match(r"\d+-\d+:\d+\.\d+", usb_root):
-    #             rule += f"""
-    # # Hides the Xinput/Hidraw input node so that certain games that access it directly.
-    # SUBSYSTEMS=="usb", ATTRS{{idVendor}}=="{vid:04x}", ATTRS{{idProduct}}=="{pid:04x}",\
-    #  KERNEL=="{usb_root}", TAG-="uaccess", GROUP="root", MODE="000"
-    # """
+    rule = get_hide_rule(input_dev, usb_root, vid, pid, HIDE_ALL)
 
     try:
         # Add udev rules to strip the device perms from the system
@@ -120,8 +157,8 @@ LABEL="hhd_end"
         with open(out_fn, "w") as f:
             f.write(rule)
         # Reload the rules for that device to make it owned by root
-        reload_children(parent)
-        _hidden.append(parent)
+        reload_children(reload_parent)
+        _hidden.append(reload_parent)
 
         # Use flag until further testing
         if not ENHANCED_HIDING:
@@ -173,7 +210,8 @@ def unhide_gamepad(devpath: str, root: str | None = None):
     if not syspath:
         return False
     input_dev = get_gamepad_name(syspath)
-    parent = get_parent_sysfs(devpath)
+    _, usb_parent = get_usb_device(syspath)
+    parent = usb_parent or get_parent_sysfs(syspath)
     if not input_dev or not parent:
         return False
 

@@ -1,0 +1,11 @@
+settings:
+  type: container
+
+  children:
+    cec:
+      type: bool
+      title: Enable HDMI-CEC support
+      hint: >-
+        Turns on a connected TV, selects this device, and restores the TV state
+        when the device shutsdown or sleeps.
+      default: True

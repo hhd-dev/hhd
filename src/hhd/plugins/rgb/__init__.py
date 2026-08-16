@@ -309,6 +309,7 @@ class RgbPlugin(HHDPlugin):
         green2 = 0
         blue2 = 0
         color2_set = False
+        secondary_breathing = False
         always_init = True
         oxp = None
 
@@ -373,6 +374,9 @@ class RgbPlugin(HHDPlugin):
                     else:
                         red2 = green2 = blue2 = 0
                     color2_set = True
+                case "oxp-secondary-breathing":
+                    secondary_breathing = info["secondary_breathing"]
+                    log += f", breathing: {secondary_breathing}"
 
         log += "."
 
@@ -399,6 +403,7 @@ class RgbPlugin(HHDPlugin):
             "green2": green2,
             "blue2": blue2,
             "oxp": oxp,
+            "secondary_breathing": secondary_breathing,
         }
         if not always_init and not init:
             self.queue_leds = curr + RGB_QUEUE_RGB

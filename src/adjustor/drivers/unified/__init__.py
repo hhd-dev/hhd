@@ -54,6 +54,9 @@ class PPData(NamedTuple):
 
 
 def get_profiles() -> PPData | None:
+    if not os.path.isdir(PP_PATH):
+        return None
+
     for pp in os.listdir(PP_PATH):
         if not pp.startswith("platform-profile"):
             continue

@@ -407,6 +407,10 @@ class OverlayPlugin(HHDPlugin):
                     side = gesture[len("custom_") :]
                     section = "custom"
                     cmd = None
+                case gesture if gesture.startswith("cec_"):
+                    side = gesture[len("cec_") :]
+                    section = "cec"
+                    cmd = None
                 case "xbox_b":
                     side = "xbox_b"
                     section = "controller"
