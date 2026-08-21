@@ -41,16 +41,19 @@ AURA_CONFIGS_USB = {
     "rainbow": ["speedd"],
     "strobe": ["color", "speedd"],
 }
+AURA_CONFIGS_XGM = {k: v for k, v in AURA_CONFIGS_USB.items() if k != "strobe"}
 
 ASUS_VID = 0x0B05
 BRIGHTNESS_MAP = ["disabled", "low", "medium", "high"]
-AURA_APPLICATIONS = [0xFF310076, 0xFF310079, 0xFF310080]
+AURA_APPLICATIONS = [0xFF310076, 0xFF310079, 0xFF310080, 0xFF000020]
 
 AURA_CONFIGS = {
     # Z13 Lightbar
     0x18C6: (_("Lightbar"), AURA_CONFIGS_LIGHTBAR),
     # ROG Keyboards (Z13 incl.)
     0x1A30: (_("Keyboard"), AURA_CONFIGS_USB),
+    # 2025 XG Mobile (GC34), uses the 300-byte 0x5e report
+    0x1BC1: (_("XG Mobile"), AURA_CONFIGS_XGM),
 }
 
 AURA_CONFGIS_WMI = {
@@ -62,6 +65,9 @@ WMI_NOTIFICATION = "/sys/class/leds/asus::kbd_backlight/brightness_hw_changed"
 
 RGB_INPUT_ID = 0x5A
 RGB_AURA_ID = 0x5D
+XGM_PID = 0x1BC1
+XGM_RGB_ID = 0x5E
+XGM_REPORT_SIZE = 300
 
 RGB_HANDSHAKE = lambda key: bytes(
     [
@@ -93,15 +99,23 @@ RGB_APPLY_DELAY = 1
 RGB_TDP_DELAY = 1.5
 
 
-def init_rgb_dev(key: int, dev: HIDDevice):
+def init_rgb_dev(dev: "AuraDevice"):
+    key, size = get_aura_protocol(dev)
+    hid = dev["dev"]
+
     # Send handshake command
     init_cmd = RGB_HANDSHAKE(key)
-    dev.send_feature_report(init_cmd)
+    hid.send_feature_report(buf(init_cmd, size) if size != 64 else init_cmd)
 
     # Device replies with the same start
-    rec = dev.get_feature_report(key, 64)
+    rec = hid.get_feature_report(key, size)
     for a1, a2 in zip(init_cmd, rec):
         assert a1 == a2, f"Init command mismatch:\n" f"{init_cmd.hex()} != {rec.hex()}"
+
+    # Thanks to G-helper
+    if key == XGM_RGB_ID:
+        for cmd in ([key, 0xE4, 0x02], [key, 0xC5, 0x50], [key, 0xBD, 0, 1]):
+            hid.send_feature_report(buf(cmd, size))
 
     # Maybe not required
     # # More initialization commands
@@ -123,8 +137,14 @@ class AuraDevice(TypedDict):
     last_mode: RgbMode | None
 
 
-def buf(x):
-    return bytes(x) + bytes(64 - len(x))
+def buf(x, size: int = 64):
+    return bytes(x) + bytes(size - len(x))
+
+
+def get_aura_protocol(dev: AuraDevice) -> tuple[int, int]:
+    if dev["pid"] == XGM_PID:
+        return XGM_RGB_ID, XGM_REPORT_SIZE
+    return RGB_AURA_ID, 64
 
 
 def monitor_brightness(emit, should_exit: Event):
@@ -233,6 +253,7 @@ def get_aura_devices(
 
 
 def rgb_command(
+    dev: AuraDevice,
     mode: RgbMode,
     direction,
     speed: str,
@@ -243,6 +264,7 @@ def rgb_command(
     o_green: int,
     o_blue: int,
 ):
+    key, size = get_aura_protocol(dev)
     c_direction = 0x00
     set_speed = True
 
@@ -298,7 +320,7 @@ def rgb_command(
     c_zone = 0x00
     return buf(
         [
-            RGB_AURA_ID,
+            key,
             0xB3,
             c_zone,  # zone
             c_mode,  # mode
@@ -315,7 +337,8 @@ def rgb_command(
             0,
             0,
             0,
-        ]
+        ],
+        size,
     )
 
 
@@ -369,6 +392,7 @@ def get_aura_mode_cmd(cfg, dev: AuraDevice):
     # logger.info(log)
     return (
         rgb_command(
+            dev,
             mode,
             direction,
             speedd,
@@ -382,6 +406,17 @@ def get_aura_mode_cmd(cfg, dev: AuraDevice):
         mode,
         always_init,
     )
+
+
+def apply_aura_mode(dev: AuraDevice, apply: bool = True):
+    key, size = get_aura_protocol(dev)
+    if dev["pid"] == XGM_PID:
+        dev["dev"].send_feature_report(buf([key, 0xB4], size))
+        dev["dev"].send_feature_report(buf([key, 0xB5], size))
+    else:
+        dev["dev"].send_feature_report(RGB_SET(key))
+        if apply:
+            dev["dev"].send_feature_report(RGB_APPLY(key))
 
 
 def set_aura_brightness(
@@ -416,7 +451,11 @@ def set_aura_brightness(
             continue
         try:
             # Set brightness on the device
-            dev["dev"].send_feature_report(buf([RGB_INPUT_ID, 0xBA, 0xC5, 0xC4, c]))
+            key, size = get_aura_protocol(dev)
+            brightness_key = key if dev["pid"] == XGM_PID else RGB_INPUT_ID
+            dev["dev"].send_feature_report(
+                buf([brightness_key, 0xBA, 0xC5, 0xC4, c], size)
+            )
         except Exception as e:
             logger.error(
                 "Failed to set brightness for Aura device %s (%04x:%04x): %s",
@@ -483,7 +522,7 @@ def set_aura_power(power, devs) -> bool:
     cmd = get_aura_power_cmd(power)
 
     for dev in devs.values():
-        if dev["disabled"]:
+        if dev["disabled"] or dev["pid"] == XGM_PID:
             continue
         try:
             # Set brightness on the device
@@ -596,6 +635,10 @@ class AuraPlugin(HHDPlugin):
             **cfgs,
             "power": base_settings["power"],
         }
+        if not any(
+            d["pid"] != XGM_PID and not d["disabled"] for d in self.devices.values()
+        ):
+            del base["rgb"]["aura"]["children"]["power"]
 
         if self.has_wmi:
             # If the driver is loaded, we will get the brightness from the os
@@ -652,8 +695,8 @@ class AuraPlugin(HHDPlugin):
 
                 try:
                     if init:
-                        init_rgb_dev(RGB_AURA_ID, d["dev"])
-                        if power_settings is not None:
+                        init_rgb_dev(d)
+                        if power_settings is not None and d["pid"] != XGM_PID:
                             # Set power settings on init
                             d["dev"].send_feature_report(
                                 get_aura_power_cmd(power_settings),
@@ -666,8 +709,7 @@ class AuraPlugin(HHDPlugin):
                         d["last_mode"] = new_mode
 
                         if chanded_mode or queued or always_init or init:
-                            d["dev"].send_feature_report(RGB_SET(RGB_AURA_ID))
-                            d["dev"].send_feature_report(RGB_APPLY(RGB_AURA_ID))
+                            apply_aura_mode(d)
                         else:
                             self.queue_apply[k] = curr_t + RGB_APPLY_DELAY
 
@@ -773,10 +815,11 @@ class AuraPlugin(HHDPlugin):
 
         error = False
         for d in self.devices.values():
-            if d["disabled"]:
+            if d["disabled"] or d["pid"] == XGM_PID:
                 continue
             try:
                 cmd = rgb_command(
+                    d,
                     "solid",
                     "left",
                     "medium",
@@ -786,7 +829,7 @@ class AuraPlugin(HHDPlugin):
                     0,  # o_blue
                 )
                 d["dev"].send_feature_report(cmd)
-                d["dev"].send_feature_report(RGB_SET(RGB_AURA_ID))
+                apply_aura_mode(d, False)
                 self.queue_apply[d["cfg_name"]] = (
                     time.perf_counter() + RGB_TDP_DELAY
                 )
@@ -819,6 +862,9 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         dmi = f.read().strip()
 
     if vendor == "ASUSTeK COMPUTER INC." and "ROG Ally" not in dmi:
+        return [AuraPlugin()]
+
+    if any(d["product_id"] == XGM_PID for d in enumerate_unique(vid=ASUS_VID)):
         return [AuraPlugin()]
 
     return []
