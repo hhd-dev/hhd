@@ -109,6 +109,9 @@ class GenericControllersPlugin(HHDPlugin):
         if self.dconf.get("aok", False):
             base["controllers"]["oxp"]["title"] = _("AOKZOE Controller")
 
+        if not self.dconf.get("g1", False):
+            del base["controllers"]["oxp"]["children"]["vibrate_on_press"]
+
         if not self.turbo:
             del base["controllers"]["oxp"]["children"]["extra_buttons"]
             del base["controllers"]["oxp"]["children"]["turbo_reboots"]
