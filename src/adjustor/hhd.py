@@ -214,6 +214,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     from .drivers.asus import AsusDriverPlugin
     from .drivers.lenovo import LenovoDriverPlugin
     from .drivers.msi import MsiDriverPlugin
+    from .drivers.intel_rapl import IntelRaplDriverPlugin
     from .drivers.smu import SmuDriverPlugin, SmuQamPlugin
     from .drivers.gpu import GpuPlugin
     from .drivers.battery import BatteryPlugin
@@ -252,6 +253,23 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             min_tdp = v["min_tdp"]
             max_tdp = v["max_tdp"]
             break
+
+    # ONEXPLAYER3_INTEL_RAPL
+    if (
+        not drivers_matched
+        and prod == "ONEXPLAYER 3"
+        and "GenuineIntel" in cpuinfo
+    ):
+        from .drivers.general import GeneralPowerPlugin
+
+        driver = IntelRaplDriverPlugin()
+        if driver.is_supported():
+            logger.info("Using ONEXPLAYER 3 Intel RAPL PL1 TDP backend.")
+            drivers.extend([driver, GeneralPowerPlugin()])
+            drivers_matched = True
+            min_tdp = 8
+            default_tdp = 25
+            max_tdp = 35
 
     if not drivers_matched and USE_UNIFIED:
         driver = UnifiedDriverPlugin()

@@ -1,0 +1,15 @@
+title: ONEXPLAYER 3 TDP
+type: container
+tags: [hide-title]
+children:
+  tdp:
+    type: int
+    title: TDP
+    hint: >-
+      Intel package long-term power limit (PL1). Only the PL1 power field
+      in MSR 0x610 is modified; PL2 and all other fields are preserved.
+    min: 8
+    max: 35
+    step: 1
+    default: 25
+    unit: W
