@@ -66,6 +66,8 @@ BOARD_PROFILE_DATA: dict[str, PowerProfileUnits] = {
     "RC73Y": ROG_XBOX_ALLY,
     "RC73X": ROG_XBOX_ALLY_X,
     "GZ302": ROG_FLOW_Z13,
+    # Minisforum
+    "HPPAC": DPTC_HANDHELD,
     # OrangePi
     "NEO-01": DPTC_HANDHELD,
     # AOKZOE

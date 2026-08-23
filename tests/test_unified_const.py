@@ -70,6 +70,19 @@ class UnifiedProfileUnitsTest(unittest.TestCase):
             },
         )
 
+    def test_minisforum_v3_dptc_profile(self):
+        units = self.get_units("HPPAC", "V3", True)
+
+        self.assertEqual(
+            units,
+            {
+                "low-power": 8,
+                "quiet": 8,
+                "balanced": 15,
+                "performance": 25,
+            },
+        )
+
     def test_dptc_product_quirk(self):
         units = self.get_units("Default string", "G1618-05", False)
 
