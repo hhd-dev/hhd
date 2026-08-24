@@ -188,6 +188,16 @@ CONFS = {
         "mapping": X1_MINI_MAPPING,
         "protocol": "hid_v2_x2",
     },
+    "ONEXPLAYER SUPER X": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER SUPER X",
+        "protocol": "mixed",
+    },
+    "ONEXPLAYER APEX": {
+        **ONEX_DEFAULT_CONF,
+        "name": "ONEXPLAYER APEX",
+        "protocol": "mixed",
+    },
     "ONEXPLAYER G1 i": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER G1 (Intel)",
