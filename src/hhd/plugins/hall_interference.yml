@@ -1,0 +1,92 @@
+type: mode
+tags: [non-essential]
+title: Hall Effect Interference Correction
+hint: >-
+  Compensates left stick Hall trigger interference and stick idle drift.
+
+default: disabled
+modes:
+  disabled:
+    type: container
+    title: Disabled
+    hint: >-
+      Disables Hall interference correction.
+  default:
+    type: container
+    title: Default
+    hint: >-
+      Uses built-in correction coefficients and deadzone.
+  manual:
+    type: container
+    title: Manual
+    hint: >-
+      Set LS/RS idle offsets and LT-to-LS correction manually.
+    children:
+      ls_idle_x:
+        type: float
+        title: Left Stick Idle X
+        hint: >-
+          Constant offset removed from left stick X around center.
+        min: -0.5
+        max: 0.5
+        smin: -500
+        smax: 500
+        step: 0.01
+
+      lt_corr_x:
+        type: float
+        title: LT Correction For LS X
+        hint: >-
+          Additional correction applied to left stick X as LT is pressed.
+          Uses RT axis input internally on devices where LT/RT are reversed.
+        min: -0.5
+        max: 0.5
+        smin: -500
+        smax: 500
+        step: 0.01
+
+      rs_idle_x:
+        type: float
+        title: Right Stick Idle X
+        hint: >-
+          Constant offset removed from right stick X around center.
+        min: -0.5
+        max: 0.5
+        smin: -500
+        smax: 500
+        step: 0.01
+
+      ls_deadzone:
+        type: float
+        title: Left Stick Deadzone
+        hint: >-
+          Values below this absolute magnitude are clamped to zero on left stick X/Y.
+        min: 0
+        max: 0.3
+        smin: 0
+        smax: 300
+        step: 0.01
+
+      rs_deadzone:
+        type: float
+        title: Right Stick Deadzone
+        hint: >-
+          Values below this absolute magnitude are clamped to zero on right stick X.
+        min: 0
+        max: 0.3
+        smin: 0
+        smax: 300
+        step: 0.01
+
+      remap_deadzone:
+        type: bool
+        title: Remove Deadzone From Scale
+        hint: >-
+          Rescales outputs outside deadzone to keep full range.
+          Uses (value - deadzone) / (1 - deadzone) with sign.
+
+      reset:
+        type: action
+        title: Reset to Default
+        hint: >-
+          Reset manual Hall interference values to default.

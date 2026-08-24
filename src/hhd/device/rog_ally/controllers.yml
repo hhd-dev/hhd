@@ -75,3 +75,5 @@ children:
     tags: [advanced]
     title: RGB During Charging Asleep
     default: False
+
+  hall_interference:
