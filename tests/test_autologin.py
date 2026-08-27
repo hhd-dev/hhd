@@ -126,12 +126,16 @@ class AutologinPluginTest(unittest.TestCase):
         ):
             return self.plugin.settings()
 
-    def test_settings_are_hidden_without_capability_or_users(self):
+    def test_settings_are_hidden_without_capability(self):
         settings = self.settings(False)
         self.assertNotIn("autologin", settings["gamemode"]["gamescope"]["children"])
 
+    def test_settings_remain_available_without_users(self):
         settings = self.settings(True, users=[])
-        self.assertNotIn("autologin", settings["gamemode"]["gamescope"]["children"])
+        setting = settings["gamemode"]["gamescope"]["children"]["autologin"]
+
+        self.assertEqual(setting["default"], "disabled")
+        self.assertNotIn("user", setting["modes"]["enabled"]["children"])
 
     def test_settings_expose_detected_mode_and_users(self):
         settings = self.settings(True, configured=(True, "deck"))
@@ -220,7 +224,13 @@ class AutologinPluginTest(unittest.TestCase):
             }
         )
 
-        with patch("hhd.plugins.overlay.update_autologin") as update:
+        with (
+            patch(
+                "hhd.plugins.overlay.get_normal_users",
+                return_value=["alice", "deck"],
+            ),
+            patch("hhd.plugins.overlay.update_autologin") as update,
+        ):
             self.plugin._update_autologin(conf)
             conf["gamemode.gamescope.autologin.enabled.user"] = "deck"
             self.plugin._update_autologin(conf)
@@ -259,7 +269,10 @@ class AutologinPluginTest(unittest.TestCase):
             }
         )
 
-        with patch("hhd.plugins.overlay.update_autologin") as update:
+        with (
+            patch("hhd.plugins.overlay.get_normal_users", return_value=["alice"]),
+            patch("hhd.plugins.overlay.update_autologin") as update,
+        ):
             self.plugin._update_autologin(conf)
 
         update.assert_called_once_with(True, "alice")
@@ -279,8 +292,12 @@ class AutologinPluginTest(unittest.TestCase):
             }
         )
 
-        with patch(
-            "hhd.plugins.overlay.update_autologin", side_effect=OSError("read-only")
+        with (
+            patch("hhd.plugins.overlay.get_normal_users", return_value=["alice"]),
+            patch(
+                "hhd.plugins.overlay.update_autologin",
+                side_effect=OSError("read-only"),
+            ),
         ):
             self.plugin._update_autologin(conf)
 
@@ -288,6 +305,41 @@ class AutologinPluginTest(unittest.TestCase):
         self.assertEqual(
             conf.get("gamemode.gamescope.autologin.enabled.user", ""), "alice"
         )
+
+    def test_enable_refreshes_users_after_settings_found_none(self):
+        self.plugin.autologin_users = []
+        self.plugin.autologin_initialized = True
+        self.plugin.old_autologin_mode = "disabled"
+        self.plugin.old_autologin_user = ""
+        conf = Config({"gamemode.gamescope.autologin.mode": "enabled"})
+
+        with (
+            patch("hhd.plugins.overlay.get_normal_users", return_value=["alice"]),
+            patch("hhd.plugins.overlay.update_autologin") as update,
+        ):
+            self.plugin._update_autologin(conf)
+
+        update.assert_called_once_with(True, "alice")
+        self.assertEqual(conf.get("gamemode.gamescope.autologin.mode", ""), "enabled")
+        self.assertEqual(self.plugin.old_autologin_user, "alice")
+
+    def test_enable_without_users_logs_error_and_stays_disabled(self):
+        self.plugin.autologin_users = []
+        self.plugin.autologin_initialized = True
+        self.plugin.old_autologin_mode = "disabled"
+        self.plugin.old_autologin_user = ""
+        conf = Config({"gamemode.gamescope.autologin.mode": "enabled"})
+
+        with (
+            patch("hhd.plugins.overlay.get_normal_users", return_value=[]),
+            patch("hhd.plugins.overlay.update_autologin") as update,
+            self.assertLogs("hhd.plugins.overlay", level="ERROR") as logs,
+        ):
+            self.plugin._update_autologin(conf)
+
+        update.assert_not_called()
+        self.assertEqual(conf.get("gamemode.gamescope.autologin.mode", ""), "disabled")
+        self.assertIn("no normal login users were found", "\n".join(logs.output))
 
 
 if __name__ == "__main__":

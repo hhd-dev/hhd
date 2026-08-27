@@ -140,23 +140,20 @@ class OverlayPlugin(HHDPlugin):
             del set["gamemode"]["gamescope"]["children"]["autologin"]
         else:
             self.autologin_users = get_normal_users()
-            if not self.autologin_users:
-                del set["gamemode"]["gamescope"]["children"]["autologin"]
-            else:
-                enabled, user = read_autologin()
-                if user not in self.autologin_users:
-                    user = self.autologin_users[0]
+            enabled, user = read_autologin()
+            if self.autologin_users and user not in self.autologin_users:
+                user = self.autologin_users[0]
 
-                autologin = set["gamemode"]["gamescope"]["children"]["autologin"]
-                autologin["default"] = "enabled" if enabled else "disabled"
-                user_setting = autologin["modes"]["enabled"]["children"]["user"]
-                if len(self.autologin_users) == 1:
-                    del autologin["modes"]["enabled"]["children"]["user"]
-                else:
-                    user_setting["options"] = {
-                        user: user for user in self.autologin_users
-                    }
-                    user_setting["default"] = user
+            autologin = set["gamemode"]["gamescope"]["children"]["autologin"]
+            autologin["default"] = "enabled" if enabled else "disabled"
+            user_setting = autologin["modes"]["enabled"]["children"]["user"]
+            if len(self.autologin_users) <= 1:
+                del autologin["modes"]["enabled"]["children"]["user"]
+            else:
+                user_setting["options"] = {
+                    user: user for user in self.autologin_users
+                }
+                user_setting["default"] = user
 
         # Enable Armoury button only on ASUS laptops
         try:
@@ -230,7 +227,7 @@ class OverlayPlugin(HHDPlugin):
             )
         if SUPPORTS_DPMS and self.ovf:
             self.ovf.gsconf["dpms"] = True
-        if SUPPORTS_AUTOLOGIN and self.autologin_users:
+        if SUPPORTS_AUTOLOGIN:
             self._update_autologin(conf)
 
         disable_touch = conf.get("gamemode.display.touchscreen_disable", False)
@@ -331,29 +328,54 @@ class OverlayPlugin(HHDPlugin):
     def _update_autologin(self, conf: Config):
         if not self.autologin_initialized:
             enabled, user = read_autologin()
-            if user not in self.autologin_users:
+            if self.autologin_users and user not in self.autologin_users:
                 user = self.autologin_users[0]
             current_mode = "enabled" if enabled else "disabled"
             conf["gamemode.gamescope.autologin.mode"] = current_mode
             if len(self.autologin_users) > 1:
                 conf["gamemode.gamescope.autologin.enabled.user"] = user
             self.old_autologin_mode = current_mode
-            self.old_autologin_user = user
+            self.old_autologin_user = user or ""
             self.autologin_initialized = True
             return
 
         requested_mode = conf.get(
             "gamemode.gamescope.autologin.mode", self.old_autologin_mode
         )
+
+        if requested_mode == "enabled" and self.old_autologin_mode != "enabled":
+            try:
+                self.autologin_users = get_normal_users()
+            except Exception as e:
+                logger.error(
+                    f"Failed to find a user for PlasmaLogin autologin: {e}"
+                )
+                conf["gamemode.gamescope.autologin.mode"] = self.old_autologin_mode
+                return
+
+            if not self.autologin_users:
+                logger.error(
+                    "Failed to enable PlasmaLogin autologin: no normal login "
+                    "users were found."
+                )
+                conf["gamemode.gamescope.autologin.mode"] = self.old_autologin_mode
+                return
+
         if len(self.autologin_users) == 1:
             requested_user = self.autologin_users[0]
-        else:
+        elif self.autologin_users:
             requested_user = conf.get(
                 "gamemode.gamescope.autologin.enabled.user", self.old_autologin_user
             )
             if requested_user not in self.autologin_users:
-                requested_user = self.old_autologin_user
+                requested_user = (
+                    self.old_autologin_user
+                    if self.old_autologin_user in self.autologin_users
+                    else self.autologin_users[0]
+                )
                 conf["gamemode.gamescope.autologin.enabled.user"] = requested_user
+        else:
+            requested_user = self.old_autologin_user
 
         changed = requested_mode != self.old_autologin_mode or (
             requested_mode == "enabled"
