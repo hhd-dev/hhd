@@ -473,6 +473,74 @@ class BootcFlatpakTest(unittest.TestCase):
                 run_bootc.assert_not_called()
                 self.assertFalse(self.plugin.update_all_pending)
 
+    def test_available_bootc_update_without_version_uses_generic_label(self):
+        status = {
+            "apiVersion": "org.containers.bootc/v1",
+            "spec": {
+                "image": {"image": "registry.example/os:stable"},
+                "bootOrder": "default",
+            },
+            "status": {
+                "booted": {
+                    "image": {"version": "1", "imageDigest": "sha256:1"},
+                    "cachedUpdate": {
+                        "version": None,
+                        "imageDigest": "sha256:2",
+                        "image": {"image": "registry.example/os:stable"},
+                    },
+                },
+                "staged": None,
+                "rollback": None,
+            },
+        }
+
+        with patch("hhd.plugins.bootc.get_bootc_status", return_value=status):
+            self.plugin._init(self.conf)
+
+        self.assertEqual(self.plugin.state, "ready")
+        self.assertEqual(
+            self.conf["updates.bootc.update"].conf,
+            "Update available",
+        )
+
+    def test_positive_check_without_cached_metadata_uses_generic_label(self):
+        status = {
+            "apiVersion": "org.containers.bootc/v1",
+            "spec": {
+                "image": {"image": "registry.example/os:stable"},
+                "bootOrder": "default",
+            },
+            "status": {
+                "booted": {
+                    "image": {"version": "1", "imageDigest": "sha256:1"},
+                    "cachedUpdate": None,
+                },
+                "staged": None,
+                "rollback": None,
+            },
+        }
+        proc = MagicMock()
+        proc.poll.return_value = 0
+        proc.stdout = io.BytesIO(
+            b"Update available for "
+            b"ostree-image-signed:docker://registry.example/os:stable\n"
+        )
+        self.plugin.checked_update = True
+        self.plugin.state = "loading"
+        self.plugin.proc = proc
+        self.conf["updates.bootc.stage.mode"] = "loading"
+
+        with patch("hhd.plugins.bootc.get_bootc_status", return_value=status):
+            self.plugin.update(self.conf)
+
+        self.assertEqual(self.plugin.state, "ready")
+        self.assertIsNone(self.plugin.proc)
+        self.assertIs(self.plugin.check_update_available, True)
+        self.assertEqual(
+            self.conf["updates.bootc.update"].conf,
+            "Update available",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

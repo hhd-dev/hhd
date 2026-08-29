@@ -291,6 +291,7 @@ class BootcPlugin(HHDPlugin):
         self.branch_name = None
         self.branch_ref = None
         self.checked_update = False
+        self.check_update_available: bool | None = None
         self.t = None
         self.t_data = None
         self.progress_lock = Lock()
@@ -430,26 +431,34 @@ class BootcPlugin(HHDPlugin):
         self.updated = True
 
         cached = self.status.get("status", {}).get("booted", {}).get("cachedUpdate", {})
-        cached_version = cached.get("version", "") if cached else ""
+        cached_version = (cached.get("version") or "") if cached else ""
         cached_img = cached.get("image", {}).get("image", "") if cached else ""
         if "/" in cached_img:
             cached_img = cached_img[cached_img.rfind("/") + 1 :]
-        self.cached_version = cached_version
 
-        if self.checked_update:
+        if self.checked_update and self.check_update_available is False:
             conf[f"updates.bootc.update"] = _("No update available")
         else:
             conf[f"updates.bootc.update"] = None
 
-        if (
-            cached_version
+        staged_version = self.get_version("staged")
+        cached_update_available = (
+            bool(cached)
             and cached_img == img
-            and cached_version != self.get_version("staged")
-        ):
+            and (not staged_version or cached_version != staged_version)
+        )
+        self.cached_version = cached_version if cached_update_available else ""
+        checked_update_available = (
+            self.checked_update and self.check_update_available is True
+        )
+
+        if cached_update_available or checked_update_available:
             conf["updates.bootc.stage.mode"] = "ready"
             self.state = "ready"
-            conf[f"updates.bootc.update"] = cached_version
-        elif self.get_version("staged"):
+            conf[f"updates.bootc.update"] = self.cached_version or _(
+                "Update available"
+            )
+        elif staged_version:
             conf["updates.bootc.stage.mode"] = "ready_updated"
             self.state = "ready_updated"
         elif has_rebased:
@@ -710,6 +719,7 @@ class BootcPlugin(HHDPlugin):
                         self.state = "loading"
                         self.proc = run_command_threaded(BOOTC_CHECK_CMD)
                         self.checked_update = True
+                        self.check_update_available = None
                         conf["updates.bootc.stage.mode"] = "loading"
                         conf["updates.bootc.stage.loading.progress"] = {
                             "text": _("Checking for updates..."),
@@ -914,7 +924,14 @@ class BootcPlugin(HHDPlugin):
             case "loading":
                 if self.proc is None:
                     self._init(conf)
-                elif self.proc.poll() is not None:
+                elif (exit_code := self.proc.poll()) is not None:
+                    if self.checked_update:
+                        output = self.proc.stdout.read() if self.proc.stdout else b""
+                        if isinstance(output, bytes):
+                            output = output.decode("utf-8", errors="replace")
+                        self.check_update_available = (
+                            "Update available for " in output if exit_code == 0 else None
+                        )
                     self._init(conf)
                     self.proc = None
 
