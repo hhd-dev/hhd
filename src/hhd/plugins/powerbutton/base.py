@@ -28,12 +28,51 @@ LOGIN1_BUS = "org.freedesktop.login1"
 LOGIN1_PATH = "/org/freedesktop/login1"
 LOGIN1_INTERFACE = "org.freedesktop.login1.Manager"
 INHIBIT_WHAT = "handle-power-key:handle-lid-switch"
+DRM_CLASS_PATH = "/sys/class/drm"
 
 PowerAction = Literal["short", "long"]
 
 
 def B(b: str) -> int:
     return cast(int, getattr(evdev.ecodes, b))
+
+
+def is_lid_close_event(event: evdev.InputEvent) -> bool:
+    return (
+        event.type == B("EV_SW")
+        and event.code == B("SW_LID")
+        and event.value == 1
+    )
+
+
+def external_display_connected(drm_path: str = DRM_CLASS_PATH) -> bool:
+    """Return whether any GPU has a connected DisplayPort or HDMI output."""
+    try:
+        connectors = os.scandir(drm_path)
+    except OSError as e:
+        logger.debug(f"Could not inspect DRM connectors in '{drm_path}': {e}")
+        return False
+
+    with connectors:
+        for connector in connectors:
+            card, separator, connector_name = connector.name.partition("-")
+            if (
+                not separator
+                or not card.startswith("card")
+                or not card[4:].isdigit()
+                or not connector_name.casefold().startswith(("dp-", "hdmi-"))
+            ):
+                continue
+
+            status_path = os.path.join(connector.path, "status")
+            try:
+                with open(status_path, encoding="utf-8") as status_file:
+                    if status_file.read().strip().casefold() == "connected":
+                        return True
+            except OSError as e:
+                logger.debug(f"Could not read DRM connector '{status_path}': {e}")
+
+    return False
 
 
 class LogindInhibitor:
@@ -244,7 +283,7 @@ class PowerEventState:
                 return self._action(action, now)
             return None
 
-        if event.type == B("EV_SW") and event.code == B("SW_LID") and event.value == 1:
+        if is_lid_close_event(event):
             return self._action("short", now)
 
         return None
@@ -353,6 +392,11 @@ def power_button_run(should_exit: Event, emit) -> None:
                 path, device = fds[fd]
                 try:
                     for event in device.read():
+                        if is_lid_close_event(event) and external_display_connected():
+                            logger.info(
+                                "Ignoring lid close with an external display connected."
+                            )
+                            continue
                         if action := state.handle(event, now):
                             actions.append(action)
                 except (OSError, BlockingIOError) as e:

@@ -1,6 +1,8 @@
 import ctypes
+import os
 import struct
 import sys
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -18,6 +20,7 @@ from hhd.plugins.powerbutton.base import (
     LogindInhibitor,
     PowerEventState,
     close_power_devices,
+    external_display_connected,
     is_power_device,
     mask_power_events,
     power_button_run,
@@ -250,6 +253,37 @@ class PowerEventStateTest(unittest.TestCase):
         self.assertEqual(state.poll_timeout(12.1), 0.0)
 
 
+class ExternalDisplayTest(unittest.TestCase):
+    @staticmethod
+    def add_connector(drm_path, name, status):
+        connector_path = os.path.join(drm_path, name)
+        os.makedirs(connector_path)
+        with open(os.path.join(connector_path, "status"), "w") as status_file:
+            status_file.write(status)
+
+    def test_finds_displayport_or_hdmi_on_any_gpu(self):
+        with tempfile.TemporaryDirectory() as drm_path:
+            self.add_connector(drm_path, "card0-eDP-1", "connected\n")
+            self.add_connector(drm_path, "card0-DP-1", "disconnected\n")
+            self.add_connector(drm_path, "card1-HDMI-A-1", "connected\n")
+
+            self.assertTrue(external_display_connected(drm_path))
+
+    def test_ignores_internal_and_disconnected_displays(self):
+        with tempfile.TemporaryDirectory() as drm_path:
+            self.add_connector(drm_path, "card0-eDP-1", "connected\n")
+            self.add_connector(drm_path, "card0-DPI-1", "connected\n")
+            self.add_connector(drm_path, "card1-DP-2", "disconnected\n")
+
+            self.assertFalse(external_display_connected(drm_path))
+
+    def test_missing_drm_class_has_no_external_display(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertFalse(
+                external_display_connected(os.path.join(tmp, "does-not-exist"))
+            )
+
+
 class EvdevMaskTest(unittest.TestCase):
     def test_set_evdev_mask_builds_expected_bitmap(self):
         captured = None
@@ -356,6 +390,48 @@ class LogindInhibitorTest(unittest.TestCase):
 
 
 class HandlerLifecycleTest(unittest.TestCase):
+    def test_lid_close_is_skipped_with_external_display(self):
+        should_exit = MagicMock()
+        should_exit.is_set.side_effect = [False, True]
+        device = FakeDevice("/dev/input/event1", name="Lid Switch")
+        device.read = MagicMock(
+            return_value=[input_event(B("EV_SW"), B("SW_LID"), 1)]
+        )
+        inhibitor = MagicMock()
+        inhibitor.active = True
+
+        def reconcile(devices, ignored_paths):
+            devices[device.path] = device
+            return devices
+
+        with (
+            patch(
+                "hhd.plugins.powerbutton.base.is_steam_gamepad_running",
+                return_value=True,
+            ),
+            patch(
+                "hhd.plugins.powerbutton.base.reconcile_power_devices",
+                side_effect=reconcile,
+            ),
+            patch(
+                "hhd.plugins.powerbutton.base.LogindInhibitor",
+                return_value=inhibitor,
+            ),
+            patch(
+                "hhd.plugins.powerbutton.base.select.select",
+                return_value=([device.fd], [], []),
+            ),
+            patch(
+                "hhd.plugins.powerbutton.base.external_display_connected",
+                return_value=True,
+            ) as external_display,
+            patch("hhd.plugins.powerbutton.base.execute_power_action") as execute,
+        ):
+            power_button_run(should_exit, MagicMock())
+
+        external_display.assert_called_once_with()
+        execute.assert_not_called()
+
     def test_inhibitor_failure_does_not_process_events(self):
         should_exit = MagicMock()
         should_exit.is_set.side_effect = [False, True]
