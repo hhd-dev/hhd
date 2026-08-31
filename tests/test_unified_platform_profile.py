@@ -1,4 +1,6 @@
+import os
 import select
+import tempfile
 import unittest
 from threading import Event
 from unittest.mock import MagicMock, patch
@@ -6,6 +8,7 @@ from unittest.mock import MagicMock, patch
 from adjustor.drivers.unified import (
     PPData,
     UnifiedDriverPlugin,
+    get_profiles,
     profile_worker,
     setup_mode_units,
 )
@@ -77,6 +80,28 @@ class PlatformProfileUnitsTest(unittest.TestCase):
         self.assertEqual(settings["modes"]["balanced"]["unit"], "12W")
         self.assertEqual(settings["modes"]["custom"]["unit"], "kernel")
         self.assertNotIn("unit", settings["modes"]["cool"])
+
+
+class AsusPlatformProfileTest(unittest.TestCase):
+    def test_asus_platform_profile_only_exposes_presets(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = os.path.join(root, "platform-profile-0")
+            os.mkdir(path)
+            with open(os.path.join(path, "name"), "w") as f:
+                f.write("asus-wmi\n")
+            with open(os.path.join(path, "choices"), "w") as f:
+                f.write("quiet balanced performance\n")
+
+            with patch("adjustor.drivers.unified.PP_PATH", root):
+                profiles = get_profiles()
+
+        self.assertIsNotNone(profiles)
+        assert profiles
+        self.assertFalse(profiles.has_custom)
+        self.assertEqual(
+            tuple(mode for mode, _ in profiles.profiles),
+            ("quiet", "balanced", "performance"),
+        )
 
 
 class UnifiedProfileNotificationTest(unittest.TestCase):

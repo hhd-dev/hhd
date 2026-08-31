@@ -42,6 +42,11 @@ PP_KNOWN = {
         "performance": _("Performance"),
         "custom": _("Custom"),
     },
+    "asus-wmi": {
+        "quiet": _("Silent"),
+        "balanced": _("Performance"),
+        "performance": _("Turbo"),
+    },
 }
 
 
