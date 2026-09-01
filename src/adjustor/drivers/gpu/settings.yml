@@ -79,9 +79,9 @@ enabled:
               default: disabled
     gpu_freq:
       type: mode
-      title: GPU Frequency
+      title: iGPU Frequency
       hint: >-
-        Pins the GPU to a certain frequency.
+        Pins the iGPU to a certain frequency.
         Helps in certain games that are CPU or GPU heavy
         by shifting power to or from the GPU.
         Has a minor effect.
