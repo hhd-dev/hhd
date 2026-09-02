@@ -18,6 +18,7 @@ TEMP_CHECK_INTERVAL = 10
 # Chill for a bit to bricking installs if a device
 # has e.g., a battery bug that trips the condition incorrectly
 TEMP_CHECK_INITIALIZE = 120
+MIN_HOT_TEMPERATURE = 103_000
 BATTERY_LOW_THRESHOLD = 5
 LAST_ATTEMPT_WAIT = 5
 LAST_ATTEMPT_BAIL = 30
@@ -144,7 +145,9 @@ class PowerPlugin(HHDPlugin):
                     with open(
                         f"/sys/class/thermal/{therm}/{trip.replace("_type", "_temp")}"
                     ) as f:
-                        self.therm[f"/sys/class/thermal/{therm}/temp"] = int(f.read())
+                        self.therm[f"/sys/class/thermal/{therm}/temp"] = max(
+                            int(f.read()), MIN_HOT_TEMPERATURE
+                        )
                         break
 
             for bat in os.listdir("/sys/class/power_supply"):
