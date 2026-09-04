@@ -515,6 +515,83 @@ class GenericGamepadEvdev(Producer, Consumer):
         return out
 
 
+class ChordGamepadEvdev(GenericGamepadEvdev):
+    """A key-only ``GenericGamepadEvdev`` where a single physical key resolves
+    to one of two actions depending on whether a modifier key is held when it
+    is pressed.
+
+    Used by the AYANEO Konkr, whose right-top and konkr (right-bottom-left)
+    buttons both emit ``KEY_F23`` -- the right-top button just also holds Ctrl.
+    The resolved action is latched on press so the release matches even if the
+    modifier is released first. Pass ``mod_btn``/``plain_btn`` as ``None`` to
+    leave that combination unmapped. Every other key uses the normal btn_map.
+    """
+
+    def __init__(
+        self,
+        *args,
+        mod_code: int,
+        plain_code: int,
+        mod_btn: Button | None,
+        plain_btn: Button | None,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.mod_code = mod_code
+        self.plain_code = plain_code
+        self.mod_btn = mod_btn
+        self.plain_btn = plain_btn
+        self.mod_held = False
+        self.chord_active: Button | None = None
+
+    def produce(self, fds: Sequence[int]) -> Sequence[Event]:
+        if not self.dev or self.fd not in fds:
+            return []
+
+        out: list[Event] = []
+        while can_read(self.fd):
+            for e in self.dev.read():
+                if e.type != B("EV_KEY"):
+                    continue
+                if e.code == self.mod_code:
+                    # Track the modifier but never emit it directly.
+                    self.mod_held = e.value != 0
+                    continue
+                if e.code == self.plain_code:
+                    if e.value == 1:
+                        self.chord_active = (
+                            self.mod_btn if self.mod_held else self.plain_btn
+                        )
+                        if self.chord_active is not None:
+                            out.append(
+                                {
+                                    "type": "button",
+                                    "code": self.chord_active,
+                                    "value": True,
+                                }
+                            )
+                    elif e.value == 0:
+                        if self.chord_active is not None:
+                            out.append(
+                                {
+                                    "type": "button",
+                                    "code": self.chord_active,
+                                    "value": False,
+                                }
+                            )
+                        self.chord_active = None
+                    continue
+                if e.code in self.btn_map and e.value in (0, 1):
+                    out.append(
+                        {
+                            "type": "button",
+                            "code": self.btn_map[e.code],
+                            "value": bool(e.value),
+                        }
+                    )
+        return out
+
+
 _kbd_raw: dict[KeyboardButton, Sequence[int]] = {
     "key_esc": [B("KEY_ESC")],  # 1
     "key_enter": [B("KEY_ENTER")],  # 28
@@ -687,4 +764,11 @@ KEYBOARD_MAP_REV: dict[KeyboardButton, int] = {k: v[0] for k, v in _kbd_raw.item
 
 KEYBOARD_MAP: dict[int, KeyboardButton] = to_map(_kbd_raw)
 
-__all__ = ["GenericGamepadEvdev", "XBOX_BUTTON_MAP", "XBOX_AXIS_MAP", "B", "to_map"]
+__all__ = [
+    "GenericGamepadEvdev",
+    "ChordGamepadEvdev",
+    "XBOX_BUTTON_MAP",
+    "XBOX_AXIS_MAP",
+    "B",
+    "to_map",
+]
