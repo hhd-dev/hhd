@@ -38,6 +38,7 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - Win Max 2
   - Win Max 5
 - OneXPlayer
+  - 3 (Intel, TDP)
   - G1 (AMD, Intel w/o TDP)
   - X1, X1Pro (AMD, Intel w/o TDP), X1z, X1Pro EVA-01, X1 Air (Intel-no TDP)
   - X1 Mini, X1 Mini Pro
