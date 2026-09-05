@@ -899,7 +899,7 @@ def main():
 
     if switch_root:
         os.environ["HHD_SWITCH_ROOT"] = "1"
-        o = subprocess.run([HHD_DEV_DIR + "/bin/hhd", *sys.argv], check=False)
+        o = subprocess.run([HHD_DEV_DIR + "/bin/hhd", *sys.argv[1:]], check=False)
         sys.exit(o.returncode)
 
 
