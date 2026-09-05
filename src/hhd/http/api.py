@@ -527,17 +527,21 @@ class HHDHTTPServer:
             logger.error(f"Error starting server at '/run/hhd/api':\n{e}")
 
     def close(self):
-        if self.https and self.t:
-            with self.cond:
-                self.cond.notify_all()
-            self.https.shutdown()
-            self.t.join()
+        if self.https:
+            if self.t:
+                with self.cond:
+                    self.cond.notify_all()
+                self.https.shutdown()
+                self.t.join()
+            self.https.server_close()
             self.https = None
             self.t = None
-        if self.unix and self.tu:
-            with self.cond:
-                self.cond.notify_all()
-            self.unix.shutdown()
-            self.tu.join()
+        if self.unix:
+            if self.tu:
+                with self.cond:
+                    self.cond.notify_all()
+                self.unix.shutdown()
+                self.tu.join()
+            self.unix.server_close()
             self.unix = None
             self.tu = None
