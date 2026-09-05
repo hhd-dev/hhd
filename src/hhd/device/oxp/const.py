@@ -105,6 +105,12 @@ CONFS = {
     "ONEXPLAYER F1 OLED": OXP_F1_CONF,
     "ONEXPLAYER F1Pro": OXP_F1_CONF,
     "ONEXPLAYER F1 EVA-02": OXP_F1_CONF,  # F1Pro variant
+    "ONEXPLAYER APEX": {
+        "name": "ONEXPLAYER APEX",
+        **ONEX_DEFAULT_CONF,
+        "protocol": "hid_dual",
+        "vibration": True,
+    },
     # OXP 2
     "ONEXPLAYER 2": OXP_2_CONF,
     "ONEXPLAYER 2 ARP23": OXP_2_CONF,
