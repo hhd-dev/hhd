@@ -41,12 +41,14 @@ BTN_MAPPINGS_NONTURBO: dict[int, Button] = {
 
 BTN_MAPPINGS_X2: dict[int, Button] = {
     **BTN_MAPPINGS,
+    B("KEY_G"): "mode",
     B("KEY_F15"): "extra_l1",
     B("KEY_F16"): "extra_r1",
 }
 
 BTN_MAPPINGS_NONTURBO_X2: dict[int, Button] = {
     **BTN_MAPPINGS_NONTURBO,
+    B("KEY_G"): "mode",
     B("KEY_F15"): "extra_l1",
     B("KEY_F16"): "extra_r1",
 }
@@ -108,6 +110,7 @@ CONFS = {
     "ONEXPLAYER APEX": {
         "name": "ONEXPLAYER APEX",
         **ONEX_DEFAULT_CONF,
+        "apex_kbd": True,
         "protocol": "hid_dual",
         "vibration": True,
     },

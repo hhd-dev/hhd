@@ -208,6 +208,8 @@ class OxpX2HidTest(unittest.TestCase):
         self.assertEqual(INITIALIZE[1][56:62], bytes.fromhex("230200000000"))
 
     def test_x2_keyboard_maps_f_keys(self):
+        self.assertEqual(BTN_MAPPINGS_X2[B("KEY_G")], "mode")
+        self.assertEqual(BTN_MAPPINGS_NONTURBO_X2[B("KEY_G")], "mode")
         self.assertEqual(BTN_MAPPINGS_X2[B("KEY_F15")], "extra_l1")
         self.assertEqual(BTN_MAPPINGS_X2[B("KEY_F16")], "extra_r1")
 

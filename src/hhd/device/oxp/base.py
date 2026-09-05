@@ -428,7 +428,7 @@ def turbo_loop(
             btn_map=BTN_MAPPINGS,
         )
     ]
-    if dconf.get("protocol", None) == "hid_v2_x2":
+    if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("apex_kbd"):
         d_kbds.append(
             OxpAtKbd(
                 vid=[X1_MINI_VID],
@@ -659,7 +659,7 @@ def controller_loop(
             btn_map=mappings,
         )
     ]
-    if dconf.get("protocol", None) == "hid_v2_x2":
+    if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("apex_kbd"):
         d_kbds.append(
             OxpAtKbd(
                 vid=[X1_MINI_VID],
