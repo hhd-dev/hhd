@@ -51,28 +51,6 @@ def set_lpmd(lpmd, mode: str):
     except Exception as e:
         logger.error(f"Failed to set Intel Low Power Mode to '{mode}':\n{e}")
 
-
-def get_lpmd_mode(cpu_mode: str, setting: str, target: str) -> str:
-    if cpu_mode == "auto":
-        if target in (
-            "power",
-            "power-saver",
-            "powersave",
-            "low-power",
-            "quiet",
-        ):
-            return "LPM_AUTO"
-        return "LPM_FORCE_OFF"
-
-    match setting:
-        case "on":
-            return "LPM_FORCE_ON"
-        case "auto":
-            return "LPM_AUTO"
-        case _:
-            return "LPM_FORCE_OFF"
-
-
 def _ppd_client(emit, proc):
     os.set_blocking(proc.stdin.fileno(), False)
 
@@ -383,14 +361,6 @@ class GpuPlugin(HHDPlugin):
         if queue:
             self.queue = None
 
-        if self.lpmd:
-            cpu_mode = conf["tdp.amd_energy.mode.mode"].to(str)
-            lpmd_setting = conf["tdp.amd_energy.mode.manual.lpmd"].to(str)
-            lpmd_mode = get_lpmd_mode(cpu_mode, lpmd_setting, self.target)
-            if lpmd_mode != self.old_lpmd_mode or queue:
-                self.old_lpmd_mode = lpmd_mode
-                set_lpmd(self.lpmd, lpmd_mode)
-
         if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
             if self.target != self.old_target:
                 self.old_target = self.target
@@ -409,6 +379,8 @@ class GpuPlugin(HHDPlugin):
                             if self.supports_boost:
                                 set_cpu_boost(True)
                             set_frequency_scaling(nonlinear=False)
+                            if self.lpmd:
+                                set_lpmd(self.lpmd, "LPM_FORCE_OFF")
                         case "performance":
                             if self.supports_epp:
                                 set_powersave_governor()
@@ -416,6 +388,8 @@ class GpuPlugin(HHDPlugin):
                             if self.supports_boost:
                                 set_cpu_boost(True)
                             set_frequency_scaling(nonlinear=False)
+                            if self.lpmd:
+                                set_lpmd(self.lpmd, "LPM_FORCE_OFF")
                         case _:  # power
                             if self.supports_epp:
                                 set_powersave_governor()
@@ -423,6 +397,10 @@ class GpuPlugin(HHDPlugin):
                             if self.supports_boost:
                                 set_cpu_boost(False)
                             set_frequency_scaling(nonlinear=False)
+                            if self.lpmd:
+                                set_lpmd(self.lpmd, "LPM_AUTO")
+
+                                
                 except Exception as e:
                     logger.error(f"Failed to set energy mode:\n{e}")
 
@@ -490,6 +468,19 @@ class GpuPlugin(HHDPlugin):
                             stderr=subprocess.DEVNULL,
                             stdout=subprocess.DEVNULL,
                         )
+            
+            if self.lpmd:
+                match conf.get("tdp.amd_energy.mode.manual.lpmd", "off"):
+                    case "on":
+                        lpmd_mode = "LPM_FORCE_ON"
+                    case "auto":
+                        lpmd_mode = "LPM_AUTO"
+                    case _:
+                        lpmd_mode = "LPM_FORCE_OFF"
+
+                if lpmd_mode != self.old_lpmd_mode:
+                    self.old_lpmd_mode = lpmd_mode
+                    set_lpmd(self.lpmd, lpmd_mode)
 
         if self.supports_freq:
             # Apply GPU settings
