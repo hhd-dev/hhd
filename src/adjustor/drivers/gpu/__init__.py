@@ -104,7 +104,7 @@ class GpuPlugin(HHDPlugin):
         try:
             status = get_igpu_status()
         except Exception as e:
-            logger.error(f"Failed to get AMD GPU status:\n{e}")
+            logger.error(f"Failed to get GPU status:\n{e}")
 
             import traceback
 
@@ -115,7 +115,7 @@ class GpuPlugin(HHDPlugin):
             self.core_available = False
             if not self.logged_error:
                 logger.error(
-                    "Could not get frequency status. Disabling AMD GPU plugin."
+                    "Could not get frequency status. Disabling GPU plugin."
                 )
                 self.logged_error = True
             return {}
