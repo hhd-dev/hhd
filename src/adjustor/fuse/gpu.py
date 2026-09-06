@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 GPU_FREQUENCY_PATH = "device/pp_od_clk_voltage"
 GPU_LEVEL_PATH = "device/power_dpm_force_performance_level"
 
-INTEL_GPU_I915_MIN_FREQ_PATH = "device/gt_RPn_freq_mhz"
-INTEL_GPU_I915_MAX_FREQ_PATH = "device/gt_RP0_freq_mhz"
-INTEL_GPU_I915_MIN_FREQ_PATH_SET = "device/gt_min_freq_mhz"
-INTEL_GPU_I915_MAX_FREQ_PATH_SET = "device/gt_max_freq_mhz"
+INTEL_GPU_I915_MIN_FREQ_PATH = "gt_RPn_freq_mhz"
+INTEL_GPU_I915_MAX_FREQ_PATH = "gt_RP0_freq_mhz"
+INTEL_GPU_I915_MIN_FREQ_PATH_SET = "gt_min_freq_mhz"
+INTEL_GPU_I915_MAX_FREQ_PATH_SET = "gt_max_freq_mhz"
 
 INTEL_GPU_XE_MIN_FREQ_PATH = "device/tile0/gt0/freq0/rpe_freq"
 INTEL_GPU_XE_MAX_FREQ_PATH = "device/tile0/gt0/freq0/rpa_freq"
@@ -53,11 +53,10 @@ def find_intel_igpu():
     for hw in os.listdir("/sys/class/drm"):
         if not hw.startswith("card"):
             continue
-        if not os.path.exists(f"/sys/class/drm/{hw}/device/subsystem_vendor"):
+        if not os.path.exists(f"/sys/class/drm/{hw}/device/vendor"):
             continue
-        with open(f"/sys/class/drm/{hw}/device/subsystem_vendor", "r") as f:
-            # intel
-            if "1462" not in f.read():
+        with open(f"/sys/class/drm/{hw}/device/vendor", "r") as f:
+            if f.read().strip().lower() != "0x8086":
                 continue
 
         if not os.path.exists(f"/sys/class/drm/{hw}/device/local_cpulist"):
