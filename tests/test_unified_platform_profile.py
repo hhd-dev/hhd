@@ -104,6 +104,29 @@ class AsusPlatformProfileTest(unittest.TestCase):
         )
 
 
+class ThinkPadPlatformProfileTest(unittest.TestCase):
+    def test_thinkpad_platform_profile_only_exposes_presets(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = os.path.join(root, "platform-profile-0")
+            os.mkdir(path)
+            with open(os.path.join(path, "name"), "w") as f:
+                f.write("thinkpad-acpi-profile\n")
+            with open(os.path.join(path, "choices"), "w") as f:
+                f.write("low-power balanced performance\n")
+
+            with patch("adjustor.drivers.unified.PP_PATH", root):
+                profiles = get_profiles()
+
+        self.assertIsNotNone(profiles)
+        assert profiles
+        self.assertEqual(profiles.provider, "thinkpad-acpi-profile")
+        self.assertFalse(profiles.has_custom)
+        self.assertEqual(
+            tuple(mode for mode, _ in profiles.profiles),
+            ("low-power", "balanced", "performance"),
+        )
+
+
 class UnifiedProfileNotificationTest(unittest.TestCase):
     def setUp(self):
         self.plugin = UnifiedDriverPlugin.__new__(UnifiedDriverPlugin)

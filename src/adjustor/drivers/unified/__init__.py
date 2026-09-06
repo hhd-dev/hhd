@@ -47,6 +47,11 @@ PP_KNOWN = {
         "balanced": _("Performance"),
         "performance": _("Turbo"),
     },
+    "thinkpad-acpi-profile": {
+        "low-power": _("Low Power"),
+        "balanced": _("Balanced"),
+        "performance": _("Performance"),
+    },
 }
 
 
