@@ -27,6 +27,51 @@ logger = logging.getLogger(__name__)
 APPLY_DELAY = 0.25
 SLEEP_DELAY = 4.5
 
+LPMD_BUS = "org.freedesktop.intel_lpmd"
+LPMD_PATH = "/org/freedesktop/intel_lpmd"
+LPMD_INTERFACE = "org.freedesktop.intel_lpmd"
+
+
+def get_lpmd():
+    try:
+        import dbus
+
+        bus = dbus.SystemBus()
+        if not bus.name_has_owner(LPMD_BUS):
+            return None
+        return bus.get_object(LPMD_BUS, LPMD_PATH)
+    except Exception:
+        return None
+
+
+def set_lpmd(lpmd, mode: str):
+    try:
+        logger.info(f"Setting Intel Low Power Mode to '{mode}'.")
+        lpmd.get_dbus_method(mode, LPMD_INTERFACE)()
+    except Exception as e:
+        logger.error(f"Failed to set Intel Low Power Mode to '{mode}':\n{e}")
+
+
+def get_lpmd_mode(cpu_mode: str, setting: str, target: str) -> str:
+    if cpu_mode == "auto":
+        if target in (
+            "power",
+            "power-saver",
+            "powersave",
+            "low-power",
+            "quiet",
+        ):
+            return "LPM_AUTO"
+        return "LPM_FORCE_OFF"
+
+    match setting:
+        case "on":
+            return "LPM_FORCE_ON"
+        case "auto":
+            return "LPM_AUTO"
+        case _:
+            return "LPM_FORCE_OFF"
+
 
 def _ppd_client(emit, proc):
     os.set_blocking(proc.stdin.fileno(), False)
@@ -87,10 +132,12 @@ class GpuPlugin(HHDPlugin):
         self.old_epp = None
         self.old_target = None
         self.old_min_freq = None
+        self.old_lpmd_mode = None
         self.gpu_freq_min = None
         self.gpu_freq_max = None
         self.gpu_freq_next = None
         self.target: Literal["power", "balanced", "performance"] = "balanced"
+        self.lpmd = get_lpmd()
 
         self.logged_boost = False
         self.logged_error = False
@@ -121,6 +168,10 @@ class GpuPlugin(HHDPlugin):
             return {}
 
         sets = load_relative_yaml("./settings.yml")
+        if not self.lpmd:
+            del sets["enabled"]["children"]["mode"]["modes"]["manual"][
+                "children"
+            ]["lpmd"]
         self.core_available = True
         if not self.enabled:
             self.initialized = False
@@ -331,6 +382,14 @@ class GpuPlugin(HHDPlugin):
         queue = self.queue is not None and curr >= self.queue
         if queue:
             self.queue = None
+
+        if self.lpmd:
+            cpu_mode = conf["tdp.amd_energy.mode.mode"].to(str)
+            lpmd_setting = conf["tdp.amd_energy.mode.manual.lpmd"].to(str)
+            lpmd_mode = get_lpmd_mode(cpu_mode, lpmd_setting, self.target)
+            if lpmd_mode != self.old_lpmd_mode or queue:
+                self.old_lpmd_mode = lpmd_mode
+                set_lpmd(self.lpmd, lpmd_mode)
 
         if conf["tdp.amd_energy.mode.mode"].to(str) == "auto":
             if self.target != self.old_target:

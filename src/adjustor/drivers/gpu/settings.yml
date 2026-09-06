@@ -63,6 +63,17 @@ enabled:
               options:
                 disabled: Disabled
                 enabled: Enabled
+            lpmd:
+              type: multiple
+              title: Intel Low Power Mode
+              tags: [ordinal]
+              default: "off"
+              options:
+                "off": "Off"
+                auto: Auto
+                "on": "On"
+              hint: >-
+                Controls Intel's Low Power Mode Daemon policy.
             sched:
               type: multiple
               title: Custom Scheduler
