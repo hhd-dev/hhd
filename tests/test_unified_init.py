@@ -39,6 +39,8 @@ def make_plugin(tdp=AC_TDP):
         patch("adjustor.drivers.unified.get_fan", return_value=None),
     ):
         plugin = UnifiedDriverPlugin()
+    plugin.startup_deadline = None
+    plugin.tdp = tdp
     plugin.emit = MagicMock()
     return plugin
 
@@ -51,6 +53,50 @@ def initial_config(plugin: UnifiedDriverPlugin, enabled: bool):
 
 
 class UnifiedInitTest(unittest.TestCase):
+    def test_interim_tdp_is_published_before_startup_delay(self):
+        with (
+            patch(
+                "adjustor.drivers.unified.get_profiles", return_value=PROFILES
+            ) as get_profiles,
+            patch(
+                "adjustor.drivers.unified.get_tdp_values",
+                side_effect=[AC_TDP, DC_TDP],
+            ) as get_tdp,
+            patch("adjustor.drivers.unified.get_fwattr") as get_fwattr,
+            patch("adjustor.drivers.unified.get_fan") as get_fan,
+            patch(
+                "adjustor.drivers.unified.find_decky_plugins", return_value=[]
+            ) as find_decky,
+            patch(
+                "adjustor.drivers.unified.time.perf_counter",
+                side_effect=[100.0, 109.9, 110.0],
+            ),
+        ):
+            plugin = UnifiedDriverPlugin()
+            plugin.emit = MagicMock()
+            conf = initial_config(plugin, enabled=True)
+
+            plugin.update(conf)
+            get_profiles.assert_called_once_with()
+            get_tdp.assert_called_once_with(PROFILES.fn)
+            get_fwattr.assert_not_called()
+            get_fan.assert_not_called()
+            find_decky.assert_called_once_with()
+            self.assertTrue(conf["hhd.settings.tdp_ready"].to(bool))
+            self.assertEqual(conf["hhd.steamos.tdp_status"].to(str), "enabled")
+            self.assertEqual(conf["hhd.steamos.tdp_max"].to(int), 30)
+
+            plugin.update(conf)
+            self.assertEqual(get_profiles.call_count, 2)
+            get_profiles.assert_called_with()
+            self.assertEqual(get_tdp.call_count, 2)
+            get_tdp.assert_called_with(PROFILES.fn)
+            get_fwattr.assert_called_once_with("fan_full_speed")
+            get_fan.assert_called_once_with()
+            find_decky.assert_called_once_with()
+            self.assertTrue(conf["hhd.settings.tdp_ready"].to(bool))
+            self.assertEqual(conf["hhd.steamos.tdp_max"].to(int), 20)
+
     def test_disabled_state_exposes_init_settings(self):
         plugin = make_plugin()
         settings = plugin.settings()

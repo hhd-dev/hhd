@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
 SLEEP_DELAY = 4
+STARTUP_DELAY = 10
 PP_POLL_DELAY = 500
 
 #
@@ -582,8 +583,9 @@ class UnifiedDriverPlugin(HHDPlugin):
             self.tdp = get_tdp_values(self.profiles.fn)
         else:
             self.tdp = None
-        self.full_fan = get_fwattr(FAN_FULL_SPEED_FN)
-        self.fan = get_fan()
+        self.full_fan = None
+        self.fan = None
+        self.startup_deadline = time.perf_counter() + STARTUP_DELAY
 
         self.mode = None
         self.new_mode = None
@@ -755,7 +757,24 @@ class UnifiedDriverPlugin(HHDPlugin):
             self.startup = True
             return
 
+        # Publish the interim TDP limits while hardware discovery is delayed.
         self._publish_steamos(conf)
+
+        if self.startup_deadline is not None:
+            if time.perf_counter() < self.startup_deadline:
+                return
+
+            self.startup_deadline = None
+            if profiles := get_profiles():
+                self.profiles = profiles
+            if self.profiles and self.profiles.has_custom:
+                self.tdp = get_tdp_values(self.profiles.fn)
+            self.full_fan = get_fwattr(FAN_FULL_SPEED_FN)
+            self.fan = get_fan()
+            self.initialized = False
+            self.emit({"type": "settings"})
+            # Republish in case the delayed query found different TDP limits.
+            self._publish_steamos(conf)
 
         if not self.initialized:
             self.old_conf = None

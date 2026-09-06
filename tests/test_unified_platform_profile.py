@@ -196,6 +196,7 @@ class UnifiedProfileNotificationTest(unittest.TestCase):
         self.plugin.queue_fan = None
         self.plugin.old_target = None
         self.plugin.sys_tdp = False
+        self.plugin.startup_deadline = None
 
         with patch("adjustor.drivers.unified.set_mode") as set_mode:
             self.plugin.update(conf)
