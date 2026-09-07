@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 from typing import NamedTuple
 
+from .const import INTEL_TDP_PRESETS
+
 logger = logging.getLogger(__name__)
 POWERCAP = Path("/sys/class/powercap")
 UW_PER_W = 1_000_000
@@ -23,12 +25,13 @@ class RaplData(NamedTuple):
     pl4: tuple[RaplLimit, ...] = ()
 
 
-def get_rapl() -> RaplData | None:
+def get_rapl(board: str = "") -> RaplData | None:
     """Discover one package, including its independently enforced MMIO cap.
 
     Never use core, uncore, DRAM or whole-system (psys) domains as TDP.
     Discovery is read-only; firmware locks can still reject a later write.
     """
+    preset = INTEL_TDP_PRESETS.get(board, None)
     limits = []
     maxima = []
     packages = set()
@@ -56,8 +59,15 @@ def get_rapl() -> RaplData | None:
                         maximum = int((zone / f"{prefix}max_power_uw").read_text())
                     except (OSError, ValueError):
                         maximum = 0
-                    # Without a reported ceiling, never exceed the startup cap.
+                    # Without a reported ceiling, use the startup cap as fallback.
                     maximum = (maximum if maximum > 0 else current) // UW_PER_W
+                    if preset:
+                        if kind == "long_term":
+                            maximum = preset["pl1"]
+                        elif kind == "short_term":
+                            maximum = preset["pl2"]
+                        else:
+                            maximum = max(preset["pl2"], maximum)
                     if maximum > 0:
                         zone_limits[kind] = (limit, maximum)
                 except (OSError, ValueError):

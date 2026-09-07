@@ -107,6 +107,95 @@ class RaplTest(unittest.TestCase):
             self.assertFalse(set_rapl(data, 20, True))
         self.assertEqual(int(path.read_text()), 17_000_000)
 
+    def test_presets_override_discovered_limits_and_drive_boost(self):
+        for dirname, reported in (("intel-rapl:0", 20), ("intel-rapl-mmio:0", 100)):
+            zone = self.zone(dirname, maximum=reported).parent
+            (zone / "constraint_7_max_power_uw").write_text(str(reported * 1_000_000))
+            (zone / "constraint_9_name").write_text("peak_power")
+            (zone / "constraint_9_power_limit_uw").write_text(str(reported * 1_000_000))
+            (zone / "constraint_9_max_power_uw").write_text("0")
+
+        for model, pl1, pl2 in (("ONEXPLAYER X1 i", 30, 32), ("ONEXPLAYER 3", 35, 37)):
+            for reported_pl4 in (None, 0, 20, 100):
+                for zone in self.root.iterdir():
+                    maximum = zone / "constraint_9_max_power_uw"
+                    # Reset startup values after writes from the previous case.
+                    (zone / "constraint_9_power_limit_uw").write_text("60000000")
+                    if reported_pl4 is None:
+                        maximum.unlink(missing_ok=True)
+                    else:
+                        maximum.write_text(str(reported_pl4 * 1_000_000))
+                data = get_rapl(model)
+                ceiling = max(pl2, reported_pl4 or 60)
+                self.assertEqual(data[1:4], (5, 15, pl1))
+                self.assertEqual([v.max_tdp for v in data.pl2], [pl2, pl2])
+                self.assertEqual([v.max_tdp for v in data.pl4], [ceiling, ceiling])
+                for watts, boost in ((15, True), (pl1, True), (15, False)):
+                    self.assertTrue(set_rapl(data, watts, boost))
+                    for path in data.limits:
+                        self.assertEqual(int(path.read_text()), watts * 1_000_000)
+                    for limit in data.pl2:
+                        expected = min(watts + 2, pl2) if boost else watts
+                        self.assertEqual(int(limit.path.read_text()), expected * 1_000_000)
+                    for limit in data.pl4:
+                        expected = watts * ceiling // pl1 if boost else watts
+                        self.assertEqual(int(limit.path.read_text()), expected * 1_000_000)
+
+    def test_preset_does_not_create_missing_endpoints(self):
+        board = "ONEXPLAYER X1 i"
+        self.assertIsNone(get_rapl(board))
+        path = self.zone()
+        (path.parent / "constraint_7_power_limit_uw").unlink()
+        data = get_rapl(board)
+        self.assertEqual((data.pl2, data.pl4), ((), ()))
+        self.assertTrue(set_rapl(data, 30))
+        self.assertEqual(int(path.read_text()), 30_000_000)
+
+    def test_preset_dmi_matches(self):
+        from unittest.mock import mock_open
+
+        self.zone()
+        models = ("ONEXPLAYER X1 i", "ONEXPLAYER X1Air", "ONEXPLAYER G1 i",
+                  "ONEXPLAYER X1Pro EVA-02")
+        cases = [("unknown", "unrelated", model, "ONE-NETBOOK", 30) for model in models]
+        cases += [(model, "ONE-NETBOOK", "unknown", "ONE-NETBOOK", 28) for model in models]
+        cases += [
+            ("unknown", "", "ONEXPLAYER 3", "ONE-NETBOOK TECHNOLOGY", 35),
+            ("unknown", None, "ONEXPLAYER 3", "ONE-NETBOOK", 35),
+            ("ONEXPLAYER 3", "ONE-NETBOOK", "other", "ONE-NETBOOK", 28),
+            ("unknown", "", "ONEXPLAYER 3", "other", None),
+            ("unknown", "", "ONEXPLAYER 3 extra", "ONE-NETBOOK", 28),
+            ("unknown", "", "ONEXPLAYER X1 i extra", "ONE-NETBOOK", 28),
+            ("unknown", "", "ONEXPLAYER X1 i", "GPD", 30),
+            ("ONEXPLAYER X1 i", "ONE-NETBOOK", "unknown", "LENOVO", None),
+            ("ONEXPLAYER X1 i", "ONE-NETBOOK", "unknown", None, None),
+        ]
+        for product, vendor, board, board_vendor, expected in cases:
+            with self.subTest(product=product, vendor=vendor, board=board, board_vendor=board_vendor):
+                def read(path):
+                    values = {"product_name": product, "sys_vendor": vendor,
+                              "board_name": board, "board_vendor": board_vendor,
+                              "cpuinfo": "GenuineIntel"}
+                    value = values.get(Path(path).name, "")
+                    if value is None:
+                        raise FileNotFoundError(path)
+                    return mock_open(read_data=value)()
+
+                with (
+                    patch("builtins.open", side_effect=read),
+                    patch("adjustor.hhd.USE_UNIFIED", False),
+                    patch("adjustor.hhd.ASUS_DATA", {}),
+                    patch("adjustor.hhd.MSI_DATA", {}),
+                ):
+                    plugins = autodetect([])
+                intel = next((p for p in plugins if isinstance(p, IntelDriverPlugin)), None)
+                if expected is None:
+                    self.assertIsNone(intel)
+                else:
+                    self.assertEqual(intel.data.max_tdp, expected)
+                    init = next(p for p in plugins if isinstance(p, AdjustorInitPlugin))
+                    self.assertEqual((init.min_tdp, init.default_tdp, init.max_tdp), (5, 15, expected))
+
     def test_missing_or_zero_maximum_uses_current_limit(self):
         limit = self.zone(maximum=0)
         self.assertEqual(get_rapl().max_tdp, 17)
@@ -145,7 +234,7 @@ class RaplTest(unittest.TestCase):
         for vendor in ("GPD", "ONE-NETBOOK TECHNOLOGY CO., LTD.", "LENOVO", ""):
             for unified in (False, True):
                 def read(path):
-                    value = vendor if str(path).endswith("sys_vendor") else "GenuineIntel"
+                    value = vendor if str(path).endswith("board_vendor") else "GenuineIntel"
                     return mock_open(read_data=value)()
 
                 with (

@@ -260,7 +260,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     if not drivers_matched and "GenuineIntel" in cpuinfo:
         try:
-            with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
+            with open("/sys/devices/virtual/dmi/id/board_vendor") as f:
                 vendor = f.read().strip().lower()
         except OSError:
             vendor = ""
@@ -269,7 +269,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
             from .core.rapl import get_rapl
             from .drivers.intel import IntelDriverPlugin
 
-            if rapl := get_rapl():
+            if rapl := get_rapl(board):
                 drivers.append(IntelDriverPlugin(rapl))
                 drivers_matched = True
                 min_tdp = rapl.min_tdp
