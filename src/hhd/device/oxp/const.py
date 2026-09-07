@@ -167,7 +167,6 @@ CONFS = {
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
         "protocol": "serial",
-        "turbo": True,  # disable turbo takeover so that it can be used for TDP
     },
     "ONEXPLAYER X1 i": {
         **ONEX_DEFAULT_CONF,
@@ -176,7 +175,6 @@ CONFS = {
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
         "protocol": "serial",
-        "turbo": False,  # disable turbo takeover so that it can be used for TDP
     },
     "ONEXPLAYER X1Air": {
         **ONEX_DEFAULT_CONF,
@@ -185,7 +183,6 @@ CONFS = {
         "rgb_secondary": True,
         "mapping": X1_MAPPING,
         "protocol": "hid_v1",
-        "turbo": False,  # disable turbo takeover so that it can be used for TDP
     },
     # X2 Line
     "ONEXPLAYER X2Mini PRO": {
@@ -202,14 +199,12 @@ CONFS = {
         "name": "ONEXPLAYER G1 (Intel)",
         "g1": True,
         "protocol": "hid_v1_g1",
-        "turbo": False,  # disable turbo takeover so that it can be used for TDP
     },
     "ONEXPLAYER G1 A": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER G1 (AMD)",
         "g1": True,
         "protocol": "hid_v1_g1",
-        "turbo": True,  # disable turbo takeover so that it can be used for TDP
     },
 }
 

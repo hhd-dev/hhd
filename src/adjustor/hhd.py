@@ -258,6 +258,24 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         if driver.is_supported():
             return [driver, GpuPlugin(), BatteryPlugin()]
 
+    if not drivers_matched and "GenuineIntel" in cpuinfo:
+        try:
+            with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
+                vendor = f.read().strip().lower()
+        except OSError:
+            vendor = ""
+
+        if vendor == "gpd" or "one-netbook" in vendor:
+            from .core.rapl import get_rapl
+            from .drivers.intel import IntelDriverPlugin
+
+            if rapl := get_rapl():
+                drivers.append(IntelDriverPlugin(rapl))
+                drivers_matched = True
+                min_tdp = rapl.min_tdp
+                default_tdp = rapl.default_tdp
+                max_tdp = rapl.max_tdp
+
     # Unified should take over Go TDP handling, even if partial
     go_model = None
     if prod in LEGION_GO_S_DMIS:

@@ -1,0 +1,20 @@
+title: TDP Settings
+type: container
+tags: [hide-title]
+children:
+  tdp:
+    title: TDP
+    type: int
+    min: 5
+    max: 28
+    default: 15
+    step: 1
+    unit: W
+  boost:
+    title: TDP Boost
+    type: bool
+    default: True
+  error:
+    title: Error
+    type: display
+    tags: [error, non-essential]
