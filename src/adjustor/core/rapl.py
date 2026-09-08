@@ -84,12 +84,19 @@ def get_rapl(board: str = "") -> RaplData | None:
         except (OSError, ValueError):
             continue
 
+    minimum = 5
+    default = 15
+    if preset:
+        if "minTdp" in preset:
+            minimum = preset["minTdp"]
+        if "defaultTdp" in preset:
+            default = preset["defaultTdp"]
     # A single slider has no per-socket semantics.
     if len(packages) != 1 or not limits or min(maxima) < 5:
         return None
     maximum = min(maxima)
     return RaplData(
-        tuple(limits), 5, 15, maximum,
+        tuple(limits), minimum, default, maximum,
         tuple(boost_limits["short_term"]), tuple(boost_limits["peak_power"]),
     )
 

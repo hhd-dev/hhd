@@ -6,6 +6,8 @@ from .alib import A, D, DeviceParams, AlibParams
 class IntelTdpPreset(TypedDict):
     pl1: int
     pl2: int
+    minTdp: NotRequired[int]
+    defaultTdp: NotRequired[int]
 
 
 # Keyed by DMI board name.
@@ -14,7 +16,7 @@ INTEL_TDP_PRESETS: dict[str, IntelTdpPreset] = {
     "ONEXPLAYER X1Air": {"pl1": 30, "pl2": 32},
     "ONEXPLAYER G1 i": {"pl1": 30, "pl2": 32},
     "ONEXPLAYER X1Pro EVA-02": {"pl1": 30, "pl2": 32},
-    "ONEXPLAYER 3": {"pl1": 35, "pl2": 37},
+    "ONEXPLAYER 3": {"minTdp": 3, "defaultTdp": 25, "pl1": 35, "pl2": 37},
 }
 
 
