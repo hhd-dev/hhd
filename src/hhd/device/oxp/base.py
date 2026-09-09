@@ -271,6 +271,7 @@ def find_vendor(
     secondary: bool,
     secondary_breathing: bool,
     vibration: str | None,
+    quirk: str | None = None,
 ):
     vibration_val = None
     if vibration is not None:
@@ -291,6 +292,7 @@ def find_vendor(
         secondary=secondary,
         secondary_breathing=secondary_breathing,
         x2=(protocol == "hid_v2_x2"),
+        quirk=quirk,
         vibration=vibration_val,
     )
     d_hidraw_v2 = OxpHidrawV2(
@@ -533,6 +535,7 @@ def turbo_loop(
             prepare,
             True,
             protocol=dconf.get("protocol", None),
+            quirk=dconf.get("quirk"),
             secondary=dconf.get("rgb_secondary", False),
             secondary_breathing=dconf.get("rgb_secondary_breathing", False),
             vibration=conf.get("vibration_strength", None),
@@ -785,6 +788,7 @@ def controller_loop(
             prepare,
             turbo,
             protocol=dconf.get("protocol", None),
+            quirk=dconf.get("quirk"),
             secondary=dconf.get("rgb_secondary", False),
             secondary_breathing=dconf.get("rgb_secondary_breathing", False),
             vibration=conf.get("vibration_strength", None),

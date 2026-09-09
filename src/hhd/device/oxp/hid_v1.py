@@ -93,6 +93,12 @@ OXP_BUTTONS = {
     0x23: "extra_r1",
 }
 
+OXP_BUTTONS_OXP3 = {
+    **OXP_BUTTONS,
+    # Home button, with real press/release events.
+    0x24: "mode",
+}
+
 
 INITIALIZE = [
     gen_cmd(
@@ -138,6 +144,7 @@ class OxpHidraw(GenericGamepadHidraw):
         turbo: bool = True,
         g1: bool = False,
         x2: bool = False,
+        quirk: str | None = None,
         led_control: bool = True,
         secondary: bool = False,
         secondary_breathing: bool = False,
@@ -157,6 +164,7 @@ class OxpHidraw(GenericGamepadHidraw):
 
         self.g1 = g1
         self.x2 = x2
+        self.btn_map = OXP_BUTTONS_OXP3 if quirk == "oxp3" else OXP_BUTTONS
         self.rgb_sides = (0x01, 0x02, 0x07) if x2 else (0x00,)
         self.secondary_sides = (0x05, 0x06) if x2 else (0x03, 0x04)
         self.secondary = secondary and not g1
@@ -383,14 +391,14 @@ class OxpHidraw(GenericGamepadHidraw):
 
             btn = cmd[6]
 
-            if btn not in OXP_BUTTONS:
+            if btn not in self.btn_map:
                 if btn != 0x00:
                     logger.warning(
                         f"OXP HID unknown button: {btn:x} from cmd:\n{cmd.hex()}"
                     )
                 continue
 
-            btn = OXP_BUTTONS[btn]
+            btn = self.btn_map[btn]
             pressed = cmd[12] == 1
 
             if btn == KBD_NAME:

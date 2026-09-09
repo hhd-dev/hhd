@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from hhd.controller.physical.evdev import B
 from hhd.device.oxp.base import (
@@ -18,6 +18,27 @@ from hhd.device.oxp.hid_v1 import INITIALIZE, INITIALIZE_X2
 
 
 class OxpX2HidTest(unittest.TestCase):
+    def test_oxp3_home_reports_mode_press_and_release(self):
+        press = bytes.fromhex(
+            "b23f01011f8024020205000001000000000000000000000000000000000000000000"
+            "0000000000000000000000000000000000000000000000000000000000003fb2"
+        )
+        release = bytearray(press)
+        release[12] = 2
+        for turbo in (False, True):
+            with self.subTest(turbo=turbo):
+                device = hid_v1.OxpHidraw(quirk="oxp3", turbo=turbo, vibration=None)
+                device.fd = 42
+                device.dev = Mock()
+                device.dev.read.side_effect = [press, press, bytes(release)]
+                with patch.object(hid_v1, "can_read", side_effect=[True, True, True, False]):
+                    self.assertEqual(device.produce([42]), [
+                        {"type": "button", "code": "mode", "value": True},
+                        {"type": "button", "code": "mode", "value": False},
+                    ])
+                self.assertIsNone(device.queue_kbd)
+                self.assertEqual(device.produce([]), [])
+
     def setUp(self):
         self.init_done = hid_v1._init_done
         self.init_vibration = hid_v1._init_vibration
