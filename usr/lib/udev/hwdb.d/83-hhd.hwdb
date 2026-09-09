@@ -37,6 +37,6 @@ evdev:name:AT*:dmi:*:svnMicro-StarInternationalCo.,Ltd.:*:rnMS-1T*:*
   KEYBOARD_KEY_b9=f15     # Right Face Button
   KEYBOARD_KEY_ba=f16     # Left Face Button
 
-# ONEXPLAYER 3 turbo button (Ctrl + Meta + Alt)
+# ONEXPLAYER 3 keyboard button (Ctrl + Meta + Alt)
 evdev:name:HID 1a86:fe00:dmi:*:pnONEXPLAYER3:*
   KEYBOARD_KEY_700e2=f17

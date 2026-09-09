@@ -67,8 +67,8 @@ BTN_MAPPINGS_NONTURBO_APEX: dict[int, Button] = {
 
 BTN_MAPPINGS_OXP3: dict[int, Button] = {
     **BTN_MAPPINGS_X2,
-    B("KEY_O"): "keyboard",  # Button 2: Keyboard
-    B("KEY_F17"): "share",  # Button 3: Turbo (hwdb)
+    B("KEY_O"): "share",  # Button 3: Turbo
+    B("KEY_F17"): "keyboard",  # Button 2: Keyboard (hwdb)
 }
 
 ONEX_DEFAULT_CONF = {
