@@ -16,6 +16,7 @@ from .alg import (
 from .utils import (
     find_edge_temp,
     find_fans,
+    find_intel_temp,
     find_tctl_temp,
     read_fan_speed,
     read_temp,
@@ -59,7 +60,7 @@ def get_fan_info() -> FanInfo | None:
     if tctl is None:
         logger.warning("Could not find tctl junction temperature.")
 
-    edge = find_edge_temp()
+    edge = find_edge_temp() or find_intel_temp()
     if edge is None:
         logger.error("Could not find edge temperature.")
         return None

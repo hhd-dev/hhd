@@ -1,8 +1,9 @@
 import os
 
 FAN_HWMONS_LEGACY = ["oxpec"]
-FAN_HWMONS = ["oxp_ec", "gpdfan", "ayaneo_ec"]
+FAN_HWMONS = ["oxp_ec", "gpdfan", "ayaneo_ec", "thinkpad"]
 HWMON_DIR = "/sys/class/hwmon"
+THINKPAD_FAN_CONTROL = "/sys/module/thinkpad_acpi/parameters/fan_control"
 
 
 def get_hwmon():
@@ -47,6 +48,45 @@ def find_tctl_temp():
         return f"{HWMON_DIR}/{hwmon}/temp1_input"
 
 
+def find_intel_temp():
+    """Find an Intel CPU package sensor without relying on hwmon numbering."""
+    for hwmon in sorted(get_hwmon()):
+        path = f"{HWMON_DIR}/{hwmon}"
+        try:
+            with open(f"{path}/name") as f:
+                if f.read().strip() != "coretemp":
+                    continue
+            labels = sorted(os.listdir(path))
+        except OSError:
+            continue
+
+        for label in labels:
+            if not (
+                label.startswith("temp")
+                and label.endswith("_label")
+                and label[4:-6].isdigit()
+            ):
+                continue
+            try:
+                with open(f"{path}/{label}") as f:
+                    name = f.read().strip()
+                if not name.startswith(("Package id ", "Physical id ")):
+                    continue
+                sensor = f"{path}/{label[:-6]}_input"
+                read_temp(sensor)
+            except (OSError, ValueError):
+                continue
+            return sensor
+
+
+def thinkpad_fan_control_enabled() -> bool:
+    try:
+        with open(THINKPAD_FAN_CONTROL) as f:
+            return f.read().strip().lower() in ("y", "1")
+    except OSError:
+        return False
+
+
 def find_fans():
     """Finds tunable fans with endpoints pwmX and pwmX_enable."""
     fans = []
@@ -55,6 +95,10 @@ def find_fans():
             name = f.read().strip()
 
         if name not in FAN_HWMONS and name not in FAN_HWMONS_LEGACY:
+            continue
+
+        # PWM attributes also exist when thinkpad_acpi rejects fan writes.
+        if name == "thinkpad" and not thinkpad_fan_control_enabled():
             continue
 
         for fn in os.listdir(f"{HWMON_DIR}/{hwmon}"):
