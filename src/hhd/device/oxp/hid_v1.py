@@ -164,9 +164,18 @@ class OxpHidraw(GenericGamepadHidraw):
 
         self.g1 = g1
         self.x2 = x2
-        self.btn_map = OXP_BUTTONS_OXP3 if quirk == "oxp3" else OXP_BUTTONS
-        self.rgb_sides = (0x01, 0x02, 0x07) if x2 else (0x00,)
-        self.secondary_sides = (0x05, 0x06) if x2 else (0x03, 0x04)
+        if quirk == "oxp3":
+            self.btn_map = OXP_BUTTONS_OXP3
+            self.rgb_sides = (0x01, 0x02, 0x07)
+            self.secondary_sides = (0x04, 0x05)
+        elif x2:
+            self.btn_map = OXP_BUTTONS
+            self.rgb_sides = (0x01, 0x02, 0x07)
+            self.secondary_sides = (0x05, 0x06)
+        else:
+            self.btn_map = OXP_BUTTONS
+            self.rgb_sides = (0x00,)
+            self.secondary_sides = (0x03, 0x04)
         self.secondary = secondary and not g1
         self.secondary_breathing = secondary_breathing and x2
         self.send_init = not g1  # g1 has no extra buttons
