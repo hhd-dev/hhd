@@ -53,6 +53,25 @@ BTN_MAPPINGS_NONTURBO_X2: dict[int, Button] = {
     B("KEY_F16"): "extra_r1",
 }
 
+BTN_MAPPINGS_APEX: dict[int, Button] = {
+    **BTN_MAPPINGS_X2,
+    B("KEY_F15"): "extra_r1",
+    B("KEY_F16"): "extra_l1",
+}
+
+BTN_MAPPINGS_NONTURBO_APEX: dict[int, Button] = {
+    **BTN_MAPPINGS_NONTURBO_X2,
+    B("KEY_F15"): "extra_r1",
+    B("KEY_F16"): "extra_l1",
+}
+
+BTN_MAPPINGS_OXP3: dict[int, Button] = {
+    **BTN_MAPPINGS_X2,
+    B("KEY_G"): "mode",  # Button 1: Home
+    B("KEY_O"): "keyboard",  # Button 2: Keyboard
+    B("KEY_F17"): "share",  # Button 3: Turbo (hwdb)
+}
+
 ONEX_DEFAULT_CONF = {
     "hrtimer": True,
 }
@@ -124,6 +143,7 @@ CONFS = {
     # OXP 3
     "ONEXPLAYER 3": {
         "name": "ONEXPLAYER 3",
+        "quirk": "oxp3",
         **ONEX_DEFAULT_CONF,
         "rgb_secondary": True,
         "protocol": "hid_v2_x2",

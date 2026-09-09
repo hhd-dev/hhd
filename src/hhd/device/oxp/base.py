@@ -15,8 +15,11 @@ from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
 from .const import (
     BTN_MAPPINGS,
+    BTN_MAPPINGS_APEX,
     BTN_MAPPINGS_NONTURBO,
+    BTN_MAPPINGS_NONTURBO_APEX,
     BTN_MAPPINGS_NONTURBO_X2,
+    BTN_MAPPINGS_OXP3,
     BTN_MAPPINGS_X2,
     DEFAULT_MAPPINGS,
 )
@@ -425,17 +428,19 @@ def turbo_loop(
             pid=[KBD_PID],
             required=False,
             grab=True,
-            btn_map=BTN_MAPPINGS,
+            btn_map=(
+                BTN_MAPPINGS_OXP3 if dconf.get("quirk") == "oxp3" else BTN_MAPPINGS
+            ),
         )
     ]
     if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
-        mappings_x2 = BTN_MAPPINGS_X2
-        if dconf.get("quirk") == "apex":
-            mappings_x2 = {
-                **mappings_x2,
-                EC("KEY_F15"): "extra_r1",
-                EC("KEY_F16"): "extra_l1",
-            }
+        match dconf.get("quirk"):
+            case "apex":
+                mappings_x2 = BTN_MAPPINGS_APEX
+            case "oxp3":
+                mappings_x2 = BTN_MAPPINGS_OXP3
+            case _:
+                mappings_x2 = BTN_MAPPINGS_X2
         d_kbds.append(
             OxpAtKbd(
                 vid=[X1_MINI_VID],
@@ -655,6 +660,8 @@ def controller_loop(
     # Switch buttons if turbo is enabled. This only affects AOKZOE and
     # OneXPlayer devices whose default mapping leaves the turbo button alone.
     mappings = BTN_MAPPINGS if turbo else BTN_MAPPINGS_NONTURBO
+    if dconf.get("quirk") == "oxp3":
+        mappings = BTN_MAPPINGS_OXP3
     # X2 keeps volume keys on the AT keyboard and exposes its controller
     # shortcuts on a second keyboard interface, so both must be grabbed.
     d_kbds = [
@@ -667,13 +674,13 @@ def controller_loop(
         )
     ]
     if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
-        mappings_x2 = BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2
-        if dconf.get("quirk") == "apex":
-            mappings_x2 = {
-                **mappings_x2,
-                EC("KEY_F15"): "extra_r1",
-                EC("KEY_F16"): "extra_l1",
-            }
+        match dconf.get("quirk"):
+            case "apex":
+                mappings_x2 = BTN_MAPPINGS_APEX if turbo else BTN_MAPPINGS_NONTURBO_APEX
+            case "oxp3":
+                mappings_x2 = BTN_MAPPINGS_OXP3
+            case _:
+                mappings_x2 = BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2
         d_kbds.append(
             OxpAtKbd(
                 vid=[X1_MINI_VID],
