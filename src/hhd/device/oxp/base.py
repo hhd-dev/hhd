@@ -428,7 +428,14 @@ def turbo_loop(
             btn_map=BTN_MAPPINGS,
         )
     ]
-    if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("apex_kbd"):
+    if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
+        mappings_x2 = BTN_MAPPINGS_X2
+        if dconf.get("quirk") == "apex":
+            mappings_x2 = {
+                **mappings_x2,
+                EC("KEY_F15"): "extra_r1",
+                EC("KEY_F16"): "extra_l1",
+            }
         d_kbds.append(
             OxpAtKbd(
                 vid=[X1_MINI_VID],
@@ -436,7 +443,7 @@ def turbo_loop(
                 capabilities={EC("EV_KEY"): [EC("KEY_O")]},
                 required=True,
                 grab=True,
-                btn_map=BTN_MAPPINGS_X2,
+                btn_map=mappings_x2,
             )
         )
 
@@ -659,7 +666,14 @@ def controller_loop(
             btn_map=mappings,
         )
     ]
-    if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("apex_kbd"):
+    if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
+        mappings_x2 = BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2
+        if dconf.get("quirk") == "apex":
+            mappings_x2 = {
+                **mappings_x2,
+                EC("KEY_F15"): "extra_r1",
+                EC("KEY_F16"): "extra_l1",
+            }
         d_kbds.append(
             OxpAtKbd(
                 vid=[X1_MINI_VID],
@@ -667,7 +681,7 @@ def controller_loop(
                 capabilities={EC("EV_KEY"): [EC("KEY_O")]},
                 required=True,
                 grab=True,
-                btn_map=BTN_MAPPINGS_X2 if turbo else BTN_MAPPINGS_NONTURBO_X2,
+                btn_map=mappings_x2,
             )
         )
     # Touchpad keyboard

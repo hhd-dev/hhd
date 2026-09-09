@@ -110,7 +110,7 @@ CONFS = {
     "ONEXPLAYER APEX": {
         "name": "ONEXPLAYER APEX",
         **ONEX_DEFAULT_CONF,
-        "apex_kbd": True,
+        "quirk": "apex",
         "protocol": "hid_dual",
         "vibration": True,
     },
