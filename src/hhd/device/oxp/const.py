@@ -125,7 +125,8 @@ CONFS = {
     "ONEXPLAYER 3": {
         "name": "ONEXPLAYER 3",
         **ONEX_DEFAULT_CONF,
-        "protocol": "hid_v1",
+        "rgb_secondary": True,
+        "protocol": "hid_v2_x2",
     },
     # X1 Line
     "ONEXPLAYER X1 mini": {
