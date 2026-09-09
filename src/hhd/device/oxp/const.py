@@ -121,6 +121,12 @@ CONFS = {
     # Pro is a bit different
     "ONEXPLAYER 2 PRO ARP23": OXP_2_CONF,
     "ONEXPLAYER 2 PRO ARP23 EVA-01": OXP_2_CONF,
+    # OXP 3
+    "ONEXPLAYER 3": {
+        "name": "ONEXPLAYER 3",
+        **ONEX_DEFAULT_CONF,
+        "protocol": "hid_v1",
+    },
     # X1 Line
     "ONEXPLAYER X1 mini": {
         **ONEX_DEFAULT_CONF,
