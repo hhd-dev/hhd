@@ -6,7 +6,7 @@ hint: >-
 children:
   tdp:
     type: mode
-    title: TDP Mode
+    title: Power Mode
     default: balanced
     modes: {}
   sys_tdp:

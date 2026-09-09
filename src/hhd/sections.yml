@@ -1,5 +1,5 @@
 sections:
-  tdp: TDP
+  tdp: Power
   rgb: RGB
   controllers: Controller
   magic_modules: Modules
