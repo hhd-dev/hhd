@@ -53,18 +53,6 @@ BTN_MAPPINGS_NONTURBO_X2: dict[int, Button] = {
     B("KEY_F16"): "extra_r1",
 }
 
-BTN_MAPPINGS_APEX: dict[int, Button] = {
-    **BTN_MAPPINGS_X2,
-    B("KEY_F15"): "extra_r1",
-    B("KEY_F16"): "extra_l1",
-}
-
-BTN_MAPPINGS_NONTURBO_APEX: dict[int, Button] = {
-    **BTN_MAPPINGS_NONTURBO_X2,
-    B("KEY_F15"): "extra_r1",
-    B("KEY_F16"): "extra_l1",
-}
-
 BTN_MAPPINGS_OXP3: dict[int, Button] = {
     **BTN_MAPPINGS_X2,
     B("KEY_O"): "share",  # Button 3: Turbo

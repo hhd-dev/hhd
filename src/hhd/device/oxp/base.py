@@ -15,9 +15,7 @@ from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
 from .const import (
     BTN_MAPPINGS,
-    BTN_MAPPINGS_APEX,
     BTN_MAPPINGS_NONTURBO,
-    BTN_MAPPINGS_NONTURBO_APEX,
     BTN_MAPPINGS_NONTURBO_X2,
     BTN_MAPPINGS_OXP3,
     BTN_MAPPINGS_X2,
@@ -437,8 +435,6 @@ def turbo_loop(
     ]
     if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
         match dconf.get("quirk"):
-            case "apex":
-                mappings_x2 = BTN_MAPPINGS_APEX
             case "oxp3":
                 mappings_x2 = BTN_MAPPINGS_OXP3
             case _:
@@ -678,8 +674,6 @@ def controller_loop(
     ]
     if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
         match dconf.get("quirk"):
-            case "apex":
-                mappings_x2 = BTN_MAPPINGS_APEX if turbo else BTN_MAPPINGS_NONTURBO_APEX
             case "oxp3":
                 mappings_x2 = BTN_MAPPINGS_OXP3
             case _:

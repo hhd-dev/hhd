@@ -18,6 +18,28 @@ from hhd.device.oxp.hid_v1 import INITIALIZE, INITIALIZE_X2
 
 
 class OxpX2HidTest(unittest.TestCase):
+    def test_apex_swaps_hid_back_buttons(self):
+        for quirk in (None, "apex"):
+            with self.subTest(quirk=quirk):
+                device = hid_v1.OxpHidraw(quirk=quirk, vibration=None)
+                device.fd = 42
+                device.dev = Mock()
+                reports = []
+                expected = []
+                codes = ("extra_r1", "extra_l1") if quirk == "apex" else ("extra_l1", "extra_r1")
+                for button, code in zip((0x22, 0x23), codes):
+                    for state in (1, 2):
+                        report = bytearray(64)
+                        report[0:2] = b"\xb2\x3f"
+                        report[-2:] = b"\x3f\xb2"
+                        report[6] = button
+                        report[12] = state
+                        reports.append(bytes(report))
+                        expected.append({"type": "button", "code": code, "value": state == 1})
+                device.dev.read.side_effect = reports
+                with patch.object(hid_v1, "can_read", side_effect=[True] * 4 + [False]):
+                    self.assertEqual(device.produce([42]), expected)
+
     def test_oxp3_home_reports_mode_press_and_release(self):
         press = bytes.fromhex(
             "b23f01011f8024020205000001000000000000000000000000000000000000000000"

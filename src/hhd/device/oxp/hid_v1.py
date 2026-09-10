@@ -93,6 +93,12 @@ OXP_BUTTONS = {
     0x23: "extra_r1",
 }
 
+OXP_BUTTONS_APEX = {
+    **OXP_BUTTONS,
+    0x22: "extra_r1",
+    0x23: "extra_l1",
+}
+
 OXP_BUTTONS_OXP3 = {
     **OXP_BUTTONS,
     # Home button, with real press/release events.
@@ -168,6 +174,10 @@ class OxpHidraw(GenericGamepadHidraw):
             self.btn_map = OXP_BUTTONS_OXP3
             self.rgb_sides = (0x01, 0x02, 0x07)
             self.secondary_sides = (0x04, 0x05)
+        elif quirk == "apex":
+            self.btn_map = OXP_BUTTONS_APEX
+            self.rgb_sides = (0x00,)
+            self.secondary_sides = (0x03, 0x04)
         elif x2:
             self.btn_map = OXP_BUTTONS
             self.rgb_sides = (0x01, 0x02, 0x07)
