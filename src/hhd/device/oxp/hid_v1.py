@@ -173,7 +173,7 @@ class OxpHidraw(GenericGamepadHidraw):
         if quirk == "oxp3":
             self.btn_map = OXP_BUTTONS_OXP3
             self.rgb_sides = (0x01, 0x02, 0x07)
-            self.secondary_sides = (0x04, 0x05)
+            self.secondary_sides = (0x05, 0x06)
         elif quirk == "apex":
             self.btn_map = OXP_BUTTONS_APEX
             self.rgb_sides = (0x00,)
