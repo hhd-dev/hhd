@@ -42,3 +42,10 @@ ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e310", RUN+="/sbin/modprobe xpad" RU
 # Banish Ally HID devices to oblivion since they crash SDL/Proton controller handlers
 SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="1b4c", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/%k"
 SUBSYSTEMS=="usb|hidraw", ATTRS{idVendor}=="0b05", ATTRS{idProduct}=="1abe", MODE="000", GROUP="root", TAG-="uaccess", RUN+="/bin/chmod 000 /dev/%k"
+
+# Mute spurious Volume Down events from ONEXPLAYER Cooling Dock (Only on SUPER X or APEX)
+SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="CoolingSystem*", PROGRAM="/bin/grep -Eiq 'ONEXPLAYER (SUPER X|APEX)' /sys/class/dmi/id/product_name", ATTR{inhibited}="1", ENV{ID_INPUT}="", MODE="000"
+
+# Block dock hidraw to prevent desktop BT managers from prompting for pairing.
+# We only use the GATT service, matching Windows behavior.
+KERNEL=="hidraw*", ATTRS{name}=="CoolingSystem*", PROGRAM="/bin/grep -Eiq 'ONEXPLAYER (SUPER X|APEX)' /sys/class/dmi/id/product_name", MODE="000", GROUP="root", TAG-="uaccess"
