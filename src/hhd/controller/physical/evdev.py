@@ -248,6 +248,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         msc_delay: float = 0.1,
         postprocess: dict[str, dict] = AXIS_CALIBRATION,
         requires_start: bool = False,
+        log_not_found: bool = True,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -271,6 +272,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.start_pressed = None
         self.start_held = False
         self.requires_start = requires_start
+        self.log_not_found = log_not_found
 
     def open(self) -> Sequence[int]:
         for d, info in list_evs(filter_valid=True).items():
@@ -346,7 +348,8 @@ class GenericGamepadEvdev(Producer, Consumer):
             err += f"Name: {self.name}\n"
         if self.capabilities:
             err += f"Capabilities: {self.capabilities}\n"
-        logger.error(err)
+        if self.log_not_found:
+            logger.error(err)
         if self.required:
             raise RuntimeError()
         return []

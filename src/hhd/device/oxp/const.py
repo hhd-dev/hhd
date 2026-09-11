@@ -202,6 +202,7 @@ CONFS = {
     "ONEXPLAYER X2Mini PRO": {
         **ONEX_DEFAULT_CONF,
         "name": "ONEXPLAYER X2 Mini Pro",
+        "quirk": "x2mini_pro",
         "x1": True,
         "rgb_secondary": True,
         "rgb_secondary_breathing": True,

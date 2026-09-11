@@ -688,6 +688,20 @@ def controller_loop(
                 btn_map=mappings_x2,
             )
         )
+    if dconf.get("quirk") in ("x2mini_pro", "oxp3"):
+        # Detached controller shortcuts arrive on the dongle's keyboard.
+        d_kbds.append(
+            OxpAtKbd(
+                vid=[X1_MINI_VID],
+                pid=[0xFE02],
+                capabilities={EC("EV_KEY"): [EC("KEY_O")]},
+                required=False,
+                log_not_found=False,
+                grab=True,
+                btn_map=mappings_x2,
+            )
+        )
+
     # Touchpad keyboard
     d_kbd_2 = GenericGamepadEvdev(
         vid=[0x6080],
