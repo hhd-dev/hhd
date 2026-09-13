@@ -184,14 +184,6 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     dconf = CONFS.get(dmi, None)
     if dconf:
-        if dmi == "ONEXPLAYER APEX":
-            try:
-                with open("/sys/devices/virtual/dmi/id/bios_version") as f:
-                    bios = tuple(map(int, f.read().strip().split(".")))
-                if bios < (2, 17):
-                    dconf = {**dconf, "quirk": None}
-            except (OSError, ValueError):
-                pass
         return [GenericControllersPlugin(dmi, dconf)]
 
     # Begin hw agnostic dmi match
