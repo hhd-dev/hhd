@@ -21,7 +21,9 @@ def get_windows_bootnum() -> int | None:
 
         for line in s.split("\n"):
             if "Windows Boot Manager" in line:
-                return int(line[: line.index(" ")].replace("*", "").replace("Boot", ""))
+                return int(
+                    line[: line.index(" ")].replace("*", "").replace("Boot", ""), 16
+                )
 
         return None
     except Exception as e:
@@ -36,8 +38,8 @@ def boot_windows():
         return
 
     try:
-        subprocess.run(["efibootmgr", "-n", str(bootnum)])
-        logger.info(f"Booting Windows with bootnum {bootnum}")
+        subprocess.run(["efibootmgr", "-n", f"{bootnum:04X}"])
+        logger.info(f"Booting Windows with bootnum {bootnum:04X}")
         subprocess.run(["reboot"])
     except Exception as e:
         logger.error(f"Failed to boot Windows: {e}")
