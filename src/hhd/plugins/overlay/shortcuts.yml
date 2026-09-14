@@ -125,18 +125,6 @@ keyboard:
   tags: [non-essential]
   title: "Keyboard (Gaming Only)"
   children:
-    meta_press:
-      type: multiple
-      title: "Start (Meta) Press"
-      options: *shortcuts
-      # default: steam_qam
-      default: disabled
-    meta_hold:
-      type: multiple
-      title: "Start (Meta) Hold"
-      options: *shortcuts
-      # default: steam_expanded
-      default: disabled
     ctrl_3:
       type: multiple
       title: "Ctrl + 3"

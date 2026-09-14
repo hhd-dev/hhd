@@ -71,11 +71,9 @@ TOUCH_WAKE_AXIS: dict[int, str] = to_map(
 
 KEYBOARD_WAKE_KEY: dict[int, str] = to_map(
     {
-        "meta": [B("KEY_LEFTMETA")],
         "ctrl": [B("KEY_LEFTCTRL")],
         "3": [B("KEY_3")],
         "4": [B("KEY_4")],
-        "armoury": [B("KEY_PROG3")],
     }
 )
 CUSTOM_WAKE_KEY: dict[int, str] = to_map(
@@ -96,7 +94,6 @@ GESTURE_START = 0.02
 GESTURE_TOP_RATIO = 0.33
 
 XBOX_B_MAX_PRESS = 0.3
-KBD_HOLD_DELAY = 0.5
 
 # Cached vars
 EV_ABS = B("EV_ABS")
@@ -314,9 +311,7 @@ def find_devices(
         else:
             sdl_info = {}
 
-        # Avoid laptop keyboards, as they emit left meta on power button hold
-        # FIXME: will prevent using laptop keyboards to bring up the menu
-        is_keyboard = keyboard and not dev.get("name", "").startswith("AT Translated")
+        is_keyboard = keyboard
         for cap in KEYBOARD_WAKE_KEY:
             major = cap >> 3
             minor = cap & 0x07
@@ -484,37 +479,6 @@ def process_kbd(emit, state, ev, val):
         if emit:
             emit({"type": "special", "event": "kbd_ctrl_4"})
 
-    # Skip repeats
-    if val == 2:
-        return
-
-    if not ev == "meta":
-        return
-
-    pressed_n = state.get("pressed_n", 0)
-
-    curr = time.time()
-    if val:
-        state["pressed_n"] = pressed_n + 1
-        state["last_pressed"] = curr
-    else:
-        if pressed_n:
-            emit({"type": "special", "event": "kbd_meta_press"})
-        state["last_pressed"] = 0
-
-
-def refresh_kbd(emit, state):
-    pressed_n = state.get("pressed_n", 0)
-    last_pressed = state.get("last_pressed", 0)
-    # last_release = state.get("last_release", 0)
-    curr = time.time()
-
-    if pressed_n and last_pressed and curr - last_pressed > KBD_HOLD_DELAY:
-        if emit:
-            emit({"type": "special", "event": "kbd_meta_hold"})
-        state["pressed_n"] = 0
-        state["last_pressed"] = 0
-
 
 def process_ctrl(emit, state, ev, val, allow_select=True):
     # Here, we capture the shortcut xbox+b
@@ -631,15 +595,6 @@ def process_events(emit, dev, evs, allow_select=True):
 
         if dev["is_custom"] and ev.type == EV_KEY and ev.code in CUSTOM_WAKE_KEY:
             process_custom(emit, CUSTOM_WAKE_KEY[ev.code], ev.value)
-
-
-def refresh_events(emit, dev):
-    # if dev["is_touchscreen"]:
-    #     refresh_touch(emit, dev["state_touch"])
-    # if dev["is_controller"]:
-    #     refresh_ctrl(emit, dev["state_ctrl"])
-    if dev["is_keyboard"]:
-        refresh_kbd(emit, dev["state_kbd"])
 
 
 def intercept_devices(devs, activate: bool):
@@ -857,7 +812,6 @@ def device_shortcut_loop(
 
         for name, dev in list(devs.items()):
             d = dev["dev"]
-            refresh_events(emit, dev)
             if not d.fd in r:
                 # Run interception so that holding button repeats work
                 if should_intercept and (dev["is_controller"] or dev["sdl_info"]):
