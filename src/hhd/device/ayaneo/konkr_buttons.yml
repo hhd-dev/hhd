@@ -1,0 +1,54 @@
+type: container
+tags: [non-essential]
+title: Konkr Button Map
+hint: >-
+  Remap the six system/face buttons unique to the Konkr Fit. The sticks,
+  triggers and rear paddles stay remappable through Steam Input as usual.
+
+children:
+  btn_left_top:
+    type: multiple
+    title: Left Top
+    # Action values/labels mirror src/hhd/plugins/overlay/shortcuts.yml so the
+    # Konkr map uses HHD's official vocabulary. `mode`/`select`/`start` are the
+    # plain gamepad buttons; the rest are overlay/Steam shortcut actions.
+    options: &konkr_btn_options
+      disabled: Disabled
+      mode: Steam / Guide
+      select: Select (View)
+      start: Start (Menu)
+      steam_qam: Steam Side Menu
+      steam_expanded: Steam Overlay
+      hhd_qam: HHD Side Menu
+      hhd_expanded: HHD Overlay
+    default: mode
+
+  btn_left_select:
+    type: multiple
+    title: Left Bottom-Left
+    options: *konkr_btn_options
+    default: select
+
+  btn_left_start:
+    type: multiple
+    title: Left Bottom-Right
+    options: *konkr_btn_options
+    default: start
+
+  btn_right_top:
+    type: multiple
+    title: Right Top
+    options: *konkr_btn_options
+    default: disabled
+
+  btn_konkr:
+    type: multiple
+    title: Konkr (Right Bottom-Left)
+    options: *konkr_btn_options
+    default: disabled
+
+  btn_right_bottom:
+    type: multiple
+    title: Right Bottom-Right
+    options: *konkr_btn_options
+    default: hhd_qam
