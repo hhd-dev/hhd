@@ -1,4 +1,7 @@
 import logging
+import os
+import stat
+import tempfile
 from functools import reduce
 from typing import (
     Any,
@@ -555,10 +558,37 @@ def save_state_yaml(fn: str, set: HHDSettings, conf: Config, shash=None):
         return False
 
     conf["version"] = shash
-    with open(fn, "w") as f:
-        yaml.safe_dump(dump_settings(set, conf, "default"), f, sort_keys=False)
-        f.write("\n")
-        f.write(dump_comment(set, STATE_HEADER))
+    try:
+        previous = os.stat(fn)
+    except FileNotFoundError:
+        previous = None
+
+    fd, tmp_fn = tempfile.mkstemp(
+        prefix=f".{os.path.basename(fn)}.", dir=os.path.dirname(fn) or "."
+    )
+    try:
+        if previous:
+            if os.geteuid() == 0:
+                os.fchown(fd, previous.st_uid, previous.st_gid)
+            os.fchmod(fd, stat.S_IMODE(previous.st_mode))
+
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            yaml.safe_dump(dump_settings(set, conf, "default"), f, sort_keys=False)
+            f.write("\n")
+            f.write(dump_comment(set, STATE_HEADER))
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_fn, fn)
+    except Exception:
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+        try:
+            os.unlink(tmp_fn)
+        except FileNotFoundError:
+            pass
+        raise
 
     return True
 
@@ -643,13 +673,13 @@ def load_state_yaml(fn: str, set: HHDSettings):
 
     defaults = parse_defaults(set)
     try:
-        with open(fn, "r") as f:
+        with open(fn, "r", encoding="utf-8") as f:
             state = cast(Mapping, strip_defaults(yaml.safe_load(f)) or {})
     except FileNotFoundError:
         logger.warning(f"State file not found. Searched location:\n{fn}")
         return None
-    except yaml.YAMLError:
-        logger.warning(f"State file is invalid. Searched location:\n{fn}")
+    except (yaml.YAMLError, UnicodeDecodeError) as e:
+        logger.warning(f"State file is invalid. Searched location:\n{fn}\nError:\n{e}")
         return None
 
     return Config([defaults, state])
