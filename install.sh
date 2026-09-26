@@ -23,6 +23,14 @@ if [[ -n "${is_steamos}" && -z "${BYPASS_STEAMOS_CHECK}" ]]; then
   exit
 fi
 
+is_anatase=$(cat /etc/os-release  | sed -e 's/\(.*\)/\L\1/' | grep anatase)
+if [ "${is_anatase}" ]; then
+  echo "Installing Handheld Daemon is preinstalled on Anatase."
+  echo
+  echo " Do not try to install it again."
+  exit
+fi
+
 set -e
 
 # Install Handheld Daemon to ~/.local/share/hhd
