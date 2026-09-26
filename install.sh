@@ -27,7 +27,7 @@ is_anatase=$(cat /etc/os-release  | sed -e 's/\(.*\)/\L\1/' | grep anatase)
 if [ "${is_anatase}" ]; then
   echo "Installing Handheld Daemon is preinstalled on Anatase."
   echo
-  echo " Do not try to install it again."
+  echo "Do not try to install it again. For issues, please head to Discord or the Issue tracker"
   exit
 fi
 
