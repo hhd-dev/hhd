@@ -509,13 +509,19 @@ def controller_loop(
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
     # Inputs
+    # By default the gamepad's BTN_MODE is repurposed as the QAM/overlay
+    # button (share). On devices where it is the main "guide" button (e.g.
+    # Konkr Fit), keep it as the XBOX default (mode) so it opens Steam.
+    xinput_btn_map = {**XBOX_BUTTON_MAP}
+    if not dconf.get("mode_is_guide", False):
+        xinput_btn_map[EC("BTN_MODE")] = "share"
     d_xinput = GenericGamepadEvdev(
         vid=[GAMEPAD_VID],
         pid=[GAMEPAD_PID],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
         hide=True,
-        btn_map={**XBOX_BUTTON_MAP, EC("BTN_MODE"): "share"},
+        btn_map=xinput_btn_map,
     )
 
     d_kbd_1 = GenericGamepadEvdev(
