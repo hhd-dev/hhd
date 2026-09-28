@@ -27,6 +27,22 @@ CONFS = {
         "rgb": True,
         **AYA_DEFAULT_CONF,
     },
+    # Konkr (Ayaneo sub-brand). Same controller hw as AYANEO 3
+    # (1c4f:0002 composite + 045e:028e gamepad) but no detachable
+    # modules (no ayaneo-ec EC interface). Four extra buttons (two rear
+    # paddles + LC/RC) and BTN_MODE is the main button, so it acts as the
+    # guide/Steam button rather than the QAM/overlay button.
+    "KONKR FIT": {
+        "name": "KONKR FIT",
+        "extra_buttons": "quad",
+        "mode_is_guide": True,
+        # Expose per-button remap dropdowns for the six system/face buttons
+        # (handled in base.py + konkr_buttons.yml). Gated so it never touches
+        # the gamepad BTN_MODE/SELECT/START on other AYANEO devices.
+        "face_remap": True,
+        "rgb": True,
+        **AYA_DEFAULT_CONF,
+    },
 }
 
 AYA3_INIT = [
