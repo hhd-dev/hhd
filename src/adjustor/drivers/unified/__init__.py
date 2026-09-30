@@ -53,6 +53,11 @@ PP_KNOWN = {
         "balanced": _("Balanced"),
         "performance": _("Performance"),
     },
+    "samsung-galaxybook": {
+        "quiet": _("Silent"),
+        "balanced": _("Optimized"),
+        "performance": _("High Performance"),
+    },
 }
 
 
