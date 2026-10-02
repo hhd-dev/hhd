@@ -1137,26 +1137,24 @@ class UnifiedDriverPlugin(HHDPlugin):
                 if not self.queue_tdp:
                     self.queue_tdp = time.perf_counter() + APPLY_DELAY
             elif ev["type"] == "special" and ev["event"] == "tdp_cycle":
-                match self.mode:
-                    case "quiet":
-                        self.new_mode = "balanced"
-                        event = "tdp_cycle_balanced"
-                    case "balanced":
-                        self.new_mode = "performance"
-                        event = "tdp_cycle_performance"
-                    case "performance":
-                        self.new_mode = "custom"
-                        event = "tdp_cycle_custom"
-                    case "custom":
-                        self.new_mode = "quiet"
-                        event = "tdp_cycle_quiet"
-                    case _:
-                        self.new_mode = "balanced"
-                        event = "tdp_cycle_balanced"
+                assert self.profiles
+                # Cycle through what the device actually has, some use
+                # low-power instead of quiet. Custom only exists with TDP.
+                modes = [
+                    p for p, _ in self.profiles.profiles if p != "custom" or self.tdp
+                ]
+                if self.mode in modes:
+                    new_mode = modes[(modes.index(self.mode) + 1) % len(modes)]
+                elif "balanced" in modes:
+                    new_mode = "balanced"
+                else:
+                    new_mode = modes[0]
+                self.new_mode = new_mode
 
-                logger.info(f"Cycling TDP to '{self.new_mode}'")
+                logger.info(f"Cycling TDP to '{new_mode}'")
+                notify_mode = "quiet" if new_mode == "low-power" else new_mode
                 if self.emit:
-                    self.emit({"type": "special", "event": event})
+                    self.emit({"type": "special", "event": f"tdp_cycle_{notify_mode}"})
 
     def close(self):
         if self.profile_t:
