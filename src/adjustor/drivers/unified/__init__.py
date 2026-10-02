@@ -600,6 +600,7 @@ class UnifiedDriverPlugin(HHDPlugin):
         self.queue_fan = None
         self.old_target = None
         self.sys_tdp = False
+        self.cycle_tdp = False
 
         # Platform profile listener
         self.profile_t = None
@@ -844,6 +845,8 @@ class UnifiedDriverPlugin(HHDPlugin):
             conf["tdp.unified.sys_tdp"] = _("Steam is controlling TDP")
         else:
             conf["tdp.unified.sys_tdp"] = ""
+
+        self.cycle_tdp = conf.get("tdp.unified.cycle_tdp", False)
 
         #
         # TDP Management
@@ -1136,7 +1139,10 @@ class UnifiedDriverPlugin(HHDPlugin):
 
                 if not self.queue_tdp:
                     self.queue_tdp = time.perf_counter() + APPLY_DELAY
-            elif ev["type"] == "special" and ev["event"] == "tdp_cycle":
+            elif ev["type"] == "special" and (
+                ev["event"] == "tdp_cycle"
+                or (self.cycle_tdp and ev["event"] == "xbox_y_internal")
+            ):
                 assert self.profiles
                 # Cycle through what the device actually has, some use
                 # low-power instead of quiet. Custom only exists with TDP.

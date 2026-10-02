@@ -37,6 +37,7 @@ class UnifiedTdpCycleTest(unittest.TestCase):
         plugin.tdp = object() if tdp else None
         plugin.mode = None
         plugin.new_mode = None
+        plugin.cycle_tdp = False
         plugin.emit = MagicMock()
         return plugin
 
@@ -73,6 +74,17 @@ class UnifiedTdpCycleTest(unittest.TestCase):
         plugin = self.make_plugin(DPTC)
 
         self.assertEqual(self.cycle(plugin, None), "balanced")
+
+    def test_xbox_y_needs_setting(self):
+        plugin = self.make_plugin(DPTC)
+
+        self.assertIsNone(self.cycle(plugin, "balanced", "xbox_y_internal"))
+        plugin.emit.assert_not_called()
+
+        plugin.cycle_tdp = True
+        self.assertEqual(
+            self.cycle(plugin, "balanced", "xbox_y_internal"), "performance"
+        )
 
 
 if __name__ == "__main__":
