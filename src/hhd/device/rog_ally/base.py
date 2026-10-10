@@ -150,7 +150,7 @@ class AllyHidraw(GenericGamepadHidraw):
             return
         switch_mode(self.dev, "default" if self.mouse_mode else "mouse", self.kconf)
         self.mouse_mode = not self.mouse_mode
-        if not self.mouse_mode:
+        if self.mouse_mode:
             # Xbox Ally firmware supplies the first vibration on a right hold.
             curr = time.perf_counter()
             self.queue.append((VIBRATION_ON, curr + 2 * VIBRATION_DELAY))
