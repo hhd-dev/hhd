@@ -1,7 +1,39 @@
 from typing import Literal
 
 from hhd.controller import Axis
+from hhd.controller.physical.evdev import B, XBOX_BUTTON_MAP
 from hhd.utils import hsb_to_rgb, rgb_to_hsb
+
+AYA_GAMEPAD_BTN_MAPPINGS = {**XBOX_BUTTON_MAP, B("BTN_MODE"): "share"}
+
+AYA3_AT_BTN_MAPPINGS = {B("KEY_F23"): "mode"}
+AYA_NEXT2_AT_BTN_MAPPINGS = {}
+KONKR_FIT_AT_BTN_MAPPINGS = {}
+
+AYA3_BTN_MAPPINGS = {
+    B("KEY_F24"): "keyboard",
+    B("KEY_D"): "keyboard",
+    B("KEY_F21"): "extra_l2",
+    B("KEY_F22"): "extra_r2",
+    B("KEY_L"): "extra_l1",
+    B("KEY_R"): "extra_r1",
+    B("KEY_F23"): "mode",  # KONKR FIT guide button on the USB keyboard
+}
+
+# Physical button assignments reported for NEXT 2; the device log has no key trace.
+AYA_NEXT2_BTN_MAPPINGS = {
+    B("KEY_F20"): "extra_r1",
+    B("KEY_F19"): "extra_l1",
+    B("KEY_F18"): "extra_r2",
+    B("KEY_F17"): "extra_l2",
+    B("KEY_F21"): "extra_l3",
+    B("KEY_F22"): "extra_r3",
+    B("KEY_F23"): "mode",
+    B("KEY_D"): "share",
+    B("KEY_F16"): "keyboard",
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
+}
 
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
@@ -25,6 +57,26 @@ CONFS = {
         "extra_buttons": "quad",
         "magic_modules": True,
         "rgb": True,
+        "btn_mapping": AYA3_BTN_MAPPINGS,
+        "at_btn_mapping": AYA3_AT_BTN_MAPPINGS,
+        **AYA_DEFAULT_CONF,
+    },
+    "AB09": {
+        "name": "AYANEO NEXT 2",
+        "extra_buttons": "quad",
+        "magic_modules": False,
+        "rgb": True,
+        "btn_mapping": AYA_NEXT2_BTN_MAPPINGS,
+        "at_btn_mapping": AYA_NEXT2_AT_BTN_MAPPINGS,
+        **AYA_DEFAULT_CONF,
+    },
+    "KONKR FIT": {
+        "name": "KONKR FIT",
+        "extra_buttons": "quad",
+        "magic_modules": False,
+        "rgb": True,
+        "btn_mapping": AYA3_BTN_MAPPINGS,
+        "at_btn_mapping": KONKR_FIT_AT_BTN_MAPPINGS,
         **AYA_DEFAULT_CONF,
     },
 }
