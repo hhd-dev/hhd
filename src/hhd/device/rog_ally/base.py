@@ -145,6 +145,17 @@ class AllyHidraw(GenericGamepadHidraw):
         self.late_init = time.perf_counter()
         return a
 
+    def toggle_mouse_mode(self):
+        if not self.dev:
+            return
+        switch_mode(self.dev, "default" if self.mouse_mode else "mouse", self.kconf)
+        self.mouse_mode = not self.mouse_mode
+        if not self.mouse_mode:
+            # Xbox Ally firmware supplies the first vibration on a right hold.
+            curr = time.perf_counter()
+            self.queue.append((VIBRATION_ON, curr + 2 * VIBRATION_DELAY))
+            self.queue.append((VIBRATION_OFF, curr + 3 * VIBRATION_DELAY))
+
     def produce(self, fds: Sequence[int]) -> Sequence[Event]:
         # If we can not read return
         if not self.fd or not self.dev:
@@ -399,7 +410,11 @@ def controller_loop(
         capabilities={EC("EV_KEY"): [EC("KEY_F23")]},
         required=True,
         grab=False,
-        btn_map={EC("KEY_F17"): "extra_l1", EC("KEY_F18"): "extra_r1"},
+        btn_map={
+            EC("KEY_F17"): "extra_l1",
+            EC("KEY_F18"): "extra_r1",
+            **({EC("KEY_F22"): "mouse_mode"} if xbox else {}),  # type: ignore
+        },
     )
     d_kbd_grabbed = False
 
@@ -473,6 +488,14 @@ def controller_loop(
                 if id(d) in to_run:
                     evs.extend(d.produce(r))
             evs.extend(d_vend.produce(r))
+
+            # Xbox Ally X units (only) map the right button hold to F22
+            if xbox:
+                for ev in evs:
+                    if ev["type"] == "button" and ev["code"] == "mouse_mode":
+                        if ev["value"]:
+                            d_vend.toggle_mouse_mode()
+                        ev["code"] = ""  # type: ignore
 
             evs = multiplexer.process(evs)
             if evs:
