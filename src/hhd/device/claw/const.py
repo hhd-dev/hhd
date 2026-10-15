@@ -25,6 +25,11 @@ CONFS = {
         "extra_buttons": "dual",
         "btn_mapping": MSI_CLAW_MAPPINGS,
     },
+    "MS-1T91": {
+        "name": "MSI Claw 8 EX AI+",
+        "extra_buttons": "dual",
+        "btn_mapping": MSI_CLAW_MAPPINGS,
+    },
     "MS-1T8K": {
         "name": "MSI Claw A8",
         "extra_buttons": "dual",
