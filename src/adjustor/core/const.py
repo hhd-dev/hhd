@@ -1,5 +1,10 @@
 from typing import TypedDict
 
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing import Optional as NotRequired
+
 from .alib import A, D, DeviceParams, AlibParams
 
 
@@ -68,12 +73,15 @@ class DeviceTDPv2(TypedDict):
     performance: tuple[int, int, int | None]
     performance_dc: int | None
     min_tdp: int
+    min_tdp_sppt: int
+    min_tdp_fppt: int | None
     max_tdp_dc: int | None
     max_tdp: int
     max_tdp_oc: int
     max_tdp_sppt: int | None
     max_tdp_fppt: int | None
     supports_cycle: bool | None
+    custom_profile: bool
 
 
 # internal name for ppd, platform_profile choices, min TDP for
@@ -343,19 +351,22 @@ ASUS_DATA: dict[str, DeviceTDP] = {
 }
 
 CLAW_DATA: DeviceTDPv2 = {
-    "quiet": (20, 20, None),
+    "quiet": (20, 21, None),
     "balanced_min": 21,
-    "balanced": (30, 30, None),
+    "balanced": (30, 31, None),
     "performance_min": 36,
     "performance_dc": 35,
-    "performance": (35, 35, None),
-    "min_tdp": 20,
+    "performance": (35, 36, None),
+    "min_tdp": 8,
+    "min_tdp_sppt": 9,
+    "min_tdp_fppt": None,
     "max_tdp_dc": 35,
     "max_tdp": 43,
-    "max_tdp_oc": 45,
+    "max_tdp_oc": 43,
     "max_tdp_sppt": 45,
     "max_tdp_fppt": None,
     "supports_cycle": True,
+    "custom_profile": False,
 }
 
 CLAW_AI_DATA: DeviceTDPv2 = {
@@ -366,12 +377,15 @@ CLAW_AI_DATA: DeviceTDPv2 = {
     "performance_dc": 30,
     "performance": (30, 37, None),
     "min_tdp": 8,
+    "min_tdp_sppt": 9,
+    "min_tdp_fppt": None,
     "max_tdp_dc": 30,
     "max_tdp": 30,
     "max_tdp_oc": 30,
     "max_tdp_sppt": 37,
     "max_tdp_fppt": None,
     "supports_cycle": True,
+    "custom_profile": False,
 }
 
 CLAW_8A_DATA: DeviceTDPv2 = {
@@ -380,14 +394,27 @@ CLAW_8A_DATA: DeviceTDPv2 = {
     "balanced": (20, 33, 43),
     "performance_min": 23,
     "performance_dc": 28,
-    "performance": (28, 45, 55),
-    "min_tdp": 8,
+    "performance": (28, 40, 48),
+    "min_tdp": 7,
+    "min_tdp_sppt": 9,
+    "min_tdp_fppt": 10,
     "max_tdp_dc": 35,
     "max_tdp": 35,
     "max_tdp_oc": 35,
-    "max_tdp_sppt": 37,
-    "max_tdp_fppt": 55,
+    "max_tdp_sppt": 40,
+    "max_tdp_fppt": 48,
     "supports_cycle": True,
+    "custom_profile": False,
+}
+
+# EX presets use firmware wattages; inherit AI+ thresholds for custom TDP.
+CLAW_EX_DATA: DeviceTDPv2 = {
+    **CLAW_AI_DATA,
+    "max_tdp_dc": 35,
+    "max_tdp": 35,
+    "max_tdp_oc": 35,
+    "max_tdp_sppt": 45,
+    "custom_profile": True,
 }
 
 MSI_DATA: dict[str, DeviceTDPv2] = {
@@ -395,4 +422,5 @@ MSI_DATA: dict[str, DeviceTDPv2] = {
     "MS-1T42": CLAW_AI_DATA,
     "MS-1T52": CLAW_AI_DATA,
     "MS-1T8K": CLAW_8A_DATA,
+    "MS-1T91": CLAW_EX_DATA,
 }

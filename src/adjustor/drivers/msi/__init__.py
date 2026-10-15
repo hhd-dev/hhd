@@ -57,7 +57,7 @@ FAN_CURVE_NAME = "msi_wmi_platform"
 # Claw 8A
 # Both AC/DC values
 #       SPL SPPT FPPT
-# perf   28   45   55
+# perf   28   40   48
 # bal    20   33   43
 # power  15   28   33
 
@@ -158,6 +158,25 @@ class MsiDriverPlugin(HHDPlugin):
         self.sys_tdp = False
         self.tdp_data = tdp_data
 
+    def set_power_limits(self, spl: int, sppt: int, fppt: int | None):
+        # Kernel limits apply even when the UI's limit enforcement is disabled.
+        spl = min(max(spl, self.tdp_data["min_tdp"]), self.tdp_data["max_tdp"])
+        sppt = min(
+            max(sppt, spl + 1, self.tdp_data["min_tdp_sppt"]),
+            self.tdp_data["max_tdp_sppt"] or self.tdp_data["max_tdp"] + 1,
+        )
+        if fppt is not None and self.tdp_data["max_tdp_fppt"] is not None:
+            fppt = min(
+                max(fppt, sppt, self.tdp_data["min_tdp_fppt"] or 0),
+                self.tdp_data["max_tdp_fppt"],
+            )
+            time.sleep(TDP_DELAY)
+            set_tdp("pl3_fppt", TDP_PL3_FN, fppt)
+        time.sleep(TDP_DELAY)
+        set_tdp("pl2_sppt", TDP_PL2_FN, sppt)
+        time.sleep(TDP_DELAY)
+        set_tdp("pl1_spl", TDP_PL1_FN, spl)
+
     def settings(self):
         if not self.enabled:
             self.initialized = False
@@ -193,6 +212,11 @@ class MsiDriverPlugin(HHDPlugin):
         else:
             perf_tdp = f"{self.tdp_data['performance'][0]}W"
         out["tdp"]["msi"]["children"]["tdp"]["modes"]["performance"]["unit"] = perf_tdp
+
+        # Firmware chooses the preset wattages on devices with a custom profile.
+        if self.tdp_data["custom_profile"]:
+            for mode in ("quiet", "balanced", "performance"):
+                out["tdp"]["msi"]["children"]["tdp"]["modes"][mode].pop("unit", None)
 
         # Set custom pretty print
         if (
@@ -284,27 +308,18 @@ class MsiDriverPlugin(HHDPlugin):
             match mode:
                 case "quiet":
                     set_platform_profile("low-power")
-                    spl, sppt, fppt = self.tdp_data["quiet"]
-                    set_tdp("pl1_spl", TDP_PL1_FN, spl)
-                    set_tdp("pl2_sppt", TDP_PL2_FN, sppt)
-                    if fppt is not None:
-                        set_tdp("pl3_fppt", TDP_PL3_FN, fppt)
+                    if not self.tdp_data["custom_profile"]:
+                        self.set_power_limits(*self.tdp_data["quiet"])
                     new_target = "power"
                 case "balanced":
                     set_platform_profile("balanced")
-                    spl, sppt, fppt = self.tdp_data["balanced"]
-                    set_tdp("pl1_spl", TDP_PL1_FN, spl)
-                    set_tdp("pl2_sppt", TDP_PL2_FN, sppt)
-                    if fppt is not None:
-                        set_tdp("pl3_fppt", TDP_PL3_FN, fppt)
+                    if not self.tdp_data["custom_profile"]:
+                        self.set_power_limits(*self.tdp_data["balanced"])
                     new_target = "balanced"
                 case _:  # "performance":
                     set_platform_profile("performance")
-                    spl, sppt, fppt = self.tdp_data["performance"]
-                    set_tdp("pl1_spl", TDP_PL1_FN, spl)
-                    set_tdp("pl2_sppt", TDP_PL2_FN, sppt)
-                    if fppt is not None:
-                        set_tdp("pl3_fppt", TDP_PL3_FN, fppt)
+                    if not self.tdp_data["custom_profile"]:
+                        self.set_power_limits(*self.tdp_data["performance"])
                     new_target = "performance"
 
         # In custom mode, re-apply settings with debounce
@@ -355,73 +370,33 @@ class MsiDriverPlugin(HHDPlugin):
 
             tdp_set = self.queue_tdp and self.queue_tdp < curr
             if tdp_set:
-                if steady < self.tdp_data["min_tdp"]:
-                    steady = 5
                 if steady < self.tdp_data["balanced_min"]:
-                    set_platform_profile("low-power")
+                    profile = "low-power"
                     new_target = "power"
                 elif steady < self.tdp_data["performance_min"]:
-                    set_platform_profile("balanced")
+                    profile = "balanced"
                     new_target = "balanced"
                 else:
-                    set_platform_profile("performance")
+                    profile = "performance"
                     new_target = "performance"
+                set_platform_profile(
+                    "custom" if self.tdp_data["custom_profile"] else profile
+                )
 
                 self.queue_tdp = None
+                sppt = steady
+                fppt = steady if self.tdp_data["max_tdp_fppt"] is not None else None
                 if boost:
-                    if os.path.exists(TDP_PL3_FN):
-                        time.sleep(TDP_DELAY)
-                        set_tdp(
-                            "fast",
-                            TDP_PL3_FN,
-                            min(
-                                max(
-                                    steady,
-                                    self.tdp_data["max_tdp_fppt"]
-                                    or self.tdp_data["max_tdp"],
-                                ),
-                                (
-                                    int(
-                                        steady
-                                        * self.tdp_data["max_tdp_fppt"]
-                                        / self.tdp_data["max_tdp"]
-                                    )
-                                    if self.tdp_data["max_tdp_fppt"]
-                                    else steady
-                                ),
-                            ),
-                        )
-                    time.sleep(TDP_DELAY)
-                    set_tdp(
-                        "slow",
-                        TDP_PL2_FN,
-                        min(
-                            max(
-                                steady,
-                                self.tdp_data["max_tdp_sppt"]
-                                or self.tdp_data["max_tdp"],
-                            ),
-                            (
-                                int(
-                                    steady
-                                    * self.tdp_data["max_tdp_sppt"]
-                                    / self.tdp_data["max_tdp"]
-                                )
-                                if self.tdp_data["max_tdp_sppt"]
-                                else steady
-                            ),
-                        ),
+                    sppt = int(
+                        steady * (self.tdp_data["max_tdp_sppt"] or self.tdp_data["max_tdp"])
+                        / self.tdp_data["max_tdp"]
                     )
-                    time.sleep(TDP_DELAY)
-                    set_tdp("steady", TDP_PL1_FN, steady)
-                else:
-                    if os.path.exists(TDP_PL3_FN):
-                        time.sleep(TDP_DELAY)
-                        set_tdp("fast", TDP_PL3_FN, steady)
-                    time.sleep(TDP_DELAY)
-                    set_tdp("slow", TDP_PL2_FN, steady)
-                    time.sleep(TDP_DELAY)
-                    set_tdp("steady", TDP_PL1_FN, steady)
+                    if fppt is not None:
+                        fppt = int(
+                            steady * self.tdp_data["max_tdp_fppt"]
+                            / self.tdp_data["max_tdp"]
+                        )
+                self.set_power_limits(steady, sppt, fppt)
 
         if new_target and new_target != self.old_target:
             self.old_target = new_target
