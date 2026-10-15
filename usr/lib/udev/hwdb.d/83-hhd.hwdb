@@ -36,6 +36,7 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
 evdev:name:AT*:dmi:*:svnMicro-StarInternationalCo.,Ltd.:*:rnMS-1T*:*
   KEYBOARD_KEY_b9=f15     # Right Face Button
   KEYBOARD_KEY_ba=f16     # Left Face Button
+  KEYBOARD_KEY_db=reserved # Left Face Button (Claw 8 EX)
 
 # ONEXPLAYER 3 keyboard button (Ctrl + Meta + Alt)
 evdev:name:HID 1a86:fe00:dmi:*:pnONEXPLAYER3:*
