@@ -13,7 +13,6 @@ from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_outputs
 from hhd.controller.physical.evdev import DINPUT_AXIS_POSTPROCESS, AbsAxis
 from hhd.controller.physical.evdev import (
-    XBOX_BUTTON_MAP,
     GamepadButton,
     GenericGamepadEvdev,
     enumerate_evs,
@@ -439,11 +438,9 @@ def controller_loop(
     # Inputs
     ex = dconf.get("ex", False)
     btn_mapping = dconf.get("btn_mapping", MSI_CLAW_MAPPINGS)
-    # F15 duplicates the gamepad Guide button in XInput mode on the EX.
-    if ex and use_dinput:
-        btn_mapping = {**btn_mapping, EC("KEY_F15"): "share"}
 
     extra_args = {
+        "btn_map": DINPUT_BUTTON_MAP,
         "axis_map": DINPUT_AXIS_MAP,
         "postprocess": DINPUT_AXIS_POSTPROCESS,
     }
@@ -454,14 +451,6 @@ def controller_loop(
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
         hide=True,
-        btn_map=(
-            DINPUT_BUTTON_MAP
-            if use_dinput
-            else {
-                **XBOX_BUTTON_MAP,
-                **({EC("BTN_MODE"): "share"} if ex else {}),
-            }
-        ),
         **(extra_args if use_dinput else {}),
     )
 
@@ -474,7 +463,6 @@ def controller_loop(
         capabilities={EC("EV_KEY"): [EC("KEY_F15")]},
         btn_map=btn_mapping,
     )
-
 
     d_kbd_1 = MsiAtKbd(
         vid=[KBD_VID],
@@ -566,7 +554,8 @@ def controller_loop(
         prepare(d_xinput)
         prepare(d_volume_btn)
         prepare(d_kbd_1)
-        prepare(d_msi_wmi)
+        if not ex:
+            prepare(d_msi_wmi)
         if not test_mode:
             prepare(d_kbd_2)
             prepare(d_mouse)
@@ -608,7 +597,8 @@ def controller_loop(
 
             # Read delayed events
             evs.extend(d_kbd_1.produce([]))
-            evs.extend(d_msi_wmi.produce([]))
+            if not ex:
+                evs.extend(d_msi_wmi.produce([]))
 
             evs = multiplexer.process(evs)
             if evs:

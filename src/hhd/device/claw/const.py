@@ -11,6 +11,7 @@ MSI_CLAW_MAPPINGS = {
 MSI_CLAW_EX_MAPPINGS = {
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
+    B("KEY_F15"): "share",
     B("KEY_F16"): "mode",
     B("KEY_G"): "mode",
 }
