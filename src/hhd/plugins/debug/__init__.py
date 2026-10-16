@@ -30,6 +30,9 @@ def prepare_hhd_dev(ev):
                 f"{HHD_DEV_DIR}/bin/pip",
                 "install",
                 "--upgrade",
+                # Beta commits share a version; reinstall HHD, not system dependencies.
+                "--force-reinstall",
+                "--no-deps",
                 "--cache-dir",
                 "/tmp/__hhd_update_cache",
                 GIT_HHD,
