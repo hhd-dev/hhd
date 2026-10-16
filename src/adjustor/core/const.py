@@ -81,7 +81,6 @@ class DeviceTDPv2(TypedDict):
     max_tdp_sppt: int | None
     max_tdp_fppt: int | None
     supports_cycle: bool | None
-    custom_profile: bool
 
 
 # internal name for ppd, platform_profile choices, min TDP for
@@ -366,7 +365,6 @@ CLAW_DATA: DeviceTDPv2 = {
     "max_tdp_sppt": 45,
     "max_tdp_fppt": None,
     "supports_cycle": True,
-    "custom_profile": False,
 }
 
 CLAW_AI_DATA: DeviceTDPv2 = {
@@ -385,7 +383,6 @@ CLAW_AI_DATA: DeviceTDPv2 = {
     "max_tdp_sppt": 37,
     "max_tdp_fppt": None,
     "supports_cycle": True,
-    "custom_profile": False,
 }
 
 CLAW_8A_DATA: DeviceTDPv2 = {
@@ -404,17 +401,15 @@ CLAW_8A_DATA: DeviceTDPv2 = {
     "max_tdp_sppt": 40,
     "max_tdp_fppt": 48,
     "supports_cycle": True,
-    "custom_profile": False,
 }
 
-# EX presets use firmware wattages; inherit AI+ thresholds for custom TDP.
+# EX uses the AI+ presets with higher custom TDP limits.
 CLAW_EX_DATA: DeviceTDPv2 = {
     **CLAW_AI_DATA,
     "max_tdp_dc": 35,
     "max_tdp": 35,
     "max_tdp_oc": 35,
     "max_tdp_sppt": 45,
-    "custom_profile": True,
 }
 
 MSI_DATA: dict[str, DeviceTDPv2] = {

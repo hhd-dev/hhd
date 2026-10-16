@@ -82,10 +82,13 @@ class MsiPowerTest(unittest.TestCase):
                         plugin, conf = self.configure(board, watts=watts, boost=boost)
                         self.apply(plugin, conf)
                         self.assertEqual(self.assert_kernel_limits(board)[0], watts)
-                        if board == "MS-1T91":
-                            profile.assert_called_with("custom")
-                        else:
-                            self.assertNotEqual(profile.call_args.args[0], "custom")
+                        data = MSI_DATA[board]
+                        expected_profile = (
+                            "low-power" if watts < data["balanced_min"] else
+                            "balanced" if watts < data["performance_min"] else
+                            "performance"
+                        )
+                        profile.assert_called_with(expected_profile)
 
     @patch.object(msi, "set_platform_profile", return_value=True)
     def test_presets_remain_in_kernel_ranges(self, profile):
@@ -96,22 +99,21 @@ class MsiPowerTest(unittest.TestCase):
             ):
                 with self.subTest(board=board, mode=mode):
                     plugin, conf = self.configure(board, mode=mode)
-                    with patch.object(msi, "set_tdp", wraps=msi.set_tdp) as write:
-                        self.apply(plugin, conf)
-                    if board == "MS-1T91":
-                        write.assert_not_called()
-                        modes = plugin.settings()["tdp"]["msi"]["children"]["tdp"]["modes"]
-                        self.assertNotIn("unit", modes[mode])
-                    else:
-                        self.assert_kernel_limits(board)
+                    self.apply(plugin, conf)
+                    self.assertEqual(
+                        self.assert_kernel_limits(board),
+                        [value for value in MSI_DATA[board][mode] if value is not None],
+                    )
+                    modes = plugin.settings()["tdp"]["msi"]["children"]["tdp"]["modes"]
+                    self.assertEqual(modes[mode]["unit"], f"{MSI_DATA[board][mode][0]}W")
                     profile.assert_called_with(expected_profile)
 
     @patch.object(msi, "set_platform_profile", return_value=True)
-    def test_ex_steam_request_enters_custom_and_boosts_to_45w(self, profile):
+    def test_ex_steam_request_uses_performance_and_boosts_to_45w(self, profile):
         plugin, conf = self.configure("MS-1T91", mode="balanced")
         plugin.notify([{"type": "tdp", "tdp": 35}])
         self.apply(plugin, conf)
-        profile.assert_called_with("custom")
+        profile.assert_called_with("performance")
         self.assertEqual(conf["tdp.msi.tdp.mode"].to(str), "custom")
         self.assertEqual(self.assert_kernel_limits("MS-1T91"), [35, 45])
 

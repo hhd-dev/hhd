@@ -213,11 +213,6 @@ class MsiDriverPlugin(HHDPlugin):
             perf_tdp = f"{self.tdp_data['performance'][0]}W"
         out["tdp"]["msi"]["children"]["tdp"]["modes"]["performance"]["unit"] = perf_tdp
 
-        # Firmware chooses the preset wattages on devices with a custom profile.
-        if self.tdp_data["custom_profile"]:
-            for mode in ("quiet", "balanced", "performance"):
-                out["tdp"]["msi"]["children"]["tdp"]["modes"][mode].pop("unit", None)
-
         # Set custom pretty print
         if (
             self.tdp_data.get("max_tdp_dc", None)
@@ -308,18 +303,15 @@ class MsiDriverPlugin(HHDPlugin):
             match mode:
                 case "quiet":
                     set_platform_profile("low-power")
-                    if not self.tdp_data["custom_profile"]:
-                        self.set_power_limits(*self.tdp_data["quiet"])
+                    self.set_power_limits(*self.tdp_data["quiet"])
                     new_target = "power"
                 case "balanced":
                     set_platform_profile("balanced")
-                    if not self.tdp_data["custom_profile"]:
-                        self.set_power_limits(*self.tdp_data["balanced"])
+                    self.set_power_limits(*self.tdp_data["balanced"])
                     new_target = "balanced"
                 case _:  # "performance":
                     set_platform_profile("performance")
-                    if not self.tdp_data["custom_profile"]:
-                        self.set_power_limits(*self.tdp_data["performance"])
+                    self.set_power_limits(*self.tdp_data["performance"])
                     new_target = "performance"
 
         # In custom mode, re-apply settings with debounce
@@ -379,9 +371,7 @@ class MsiDriverPlugin(HHDPlugin):
                 else:
                     profile = "performance"
                     new_target = "performance"
-                set_platform_profile(
-                    "custom" if self.tdp_data["custom_profile"] else profile
-                )
+                set_platform_profile(profile)
 
                 self.queue_tdp = None
                 sppt = steady
