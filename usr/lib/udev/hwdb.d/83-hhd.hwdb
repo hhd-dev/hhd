@@ -32,11 +32,6 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:svnOrangePi:pnNEO-01:*
   KEYBOARD_KEY_67=f16
 
 # From systemd
-# Default to the Claw 8 EX mapping for MSI Claw models.
-# Keep older-model overrides below this fallback where later records take priority.
-evdev:name:AT Translated Set 2 keyboard:dmi:*:rvnMicro-StarInternationalCo.,Ltd.:rnMS-1T*:*
-  KEYBOARD_KEY_db=f15     # Left Face Button
-  KEYBOARD_KEY_b9=f16     # Right Face Button
 
 # MSI Claw A1M, MSI Claw 7 AI+ A2VM, MSI Claw 8 AI+ A2VM, MSI Claw A8 BZ2EM
 evdev:name:AT Translated Set 2 keyboard:dmi:*:rvnMicro-StarInternationalCo.,Ltd.:rnMS-1T41:*
@@ -45,6 +40,13 @@ evdev:name:AT Translated Set 2 keyboard:dmi:*:rvnMicro-StarInternationalCo.,Ltd.
 evdev:name:AT Translated Set 2 keyboard:dmi:*:rvnMicro-StarInternationalCo.,Ltd.:rnMS-1T8K:*
   KEYBOARD_KEY_b9=f15     # Right Face Button
   KEYBOARD_KEY_ba=f16     # Left Face Button
+
+# MSI Claw 8 EX AI+ CG3EM
+# Suppress the extra db event while retaining the legacy face-button mappings.
+evdev:name:AT Translated Set 2 keyboard:dmi:*:rvnMicro-StarInternationalCo.,Ltd.:rnMS-1T91:*
+  KEYBOARD_KEY_b9=f15     # Right Face Button
+  KEYBOARD_KEY_ba=f16     # Left Face Button
+  KEYBOARD_KEY_db=reserved
 
 # ONEXPLAYER 3 keyboard button (Ctrl + Meta + Alt)
 evdev:name:HID 1a86:fe00:dmi:*:pnONEXPLAYER3:*
