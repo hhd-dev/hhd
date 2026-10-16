@@ -8,6 +8,7 @@ from hhd.plugins import Config, Context, Emitter, HHDPlugin, load_relative_yaml
 logger = logging.getLogger(__name__)
 
 SUPPORTS_CEC = os.environ.get("HHD_GS_CEC", "0") == "1"
+SUPPORTS_FRAMEGEN = os.environ.get("HHD_GS_FRAMEGEN", "0") == "1"
 
 
 class CecPlugin(HHDPlugin):
@@ -23,10 +24,14 @@ class CecPlugin(HHDPlugin):
         self.emit = emit
 
     def settings(self):
-        return {
+        settings = {
             "hhd": load_relative_yaml("settings.yml"),
             "shortcuts": load_relative_yaml("shortcuts.yml"),
         }
+        if not SUPPORTS_FRAMEGEN:
+            for shortcut in settings["shortcuts"]["cec"]["children"].values():
+                shortcut["options"].pop("framegen_toggle", None)
+        return settings
 
     def start(self):
         if self.thread and self.thread.is_alive():

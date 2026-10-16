@@ -69,6 +69,7 @@ class OverlayPlugin(HHDPlugin):
         self.ovf = None
         self.initialized = False
         self.old_shortcuts = None
+        self.toggle_framegen = False
         self.short_should_exit = None
         self.has_correction = True
         self.old_touch = False
@@ -136,6 +137,9 @@ class OverlayPlugin(HHDPlugin):
             del set["gamemode"]["gamescope"]["children"]["steamui_halfhz"]
         if not SUPPORTS_FRAMEGEN:
             del set["gamemode"]["gamescope"]["children"]["framegen"]
+            for section in set["shortcuts"].values():
+                for shortcut in section["children"].values():
+                    shortcut.get("options", {}).pop("framegen_toggle", None)
         if not SUPPORTS_AUTOLOGIN:
             del set["gamemode"]["gamescope"]["children"]["autologin"]
         else:
@@ -219,6 +223,14 @@ class OverlayPlugin(HHDPlugin):
                 "gamemode.gamescope.steamui_halfhz", False
             )
         if SUPPORTS_FRAMEGEN and self.ovf:
+            if self.toggle_framegen:
+                conf["gamemode.gamescope.framegen.mode"] = (
+                    "disabled"
+                    if conf.get("gamemode.gamescope.framegen.mode", "disabled")
+                    == "enabled"
+                    else "enabled"
+                )
+                self.toggle_framegen = False
             self.ovf.gsconf["framegen"] = conf.get(
                 "gamemode.gamescope.framegen.mode", "disabled"
             )
@@ -442,8 +454,8 @@ class OverlayPlugin(HHDPlugin):
                 case "xbox_a":
                     side = "xbox_a"
                     section = "controller"
-                case "xbox_b":
-                    side = "xbox_b"
+                case "xbox_x":
+                    side = "xbox_x"
                     section = "controller"
                 case "qam_hold":
                     # Open QAM with hold for accessibility
@@ -515,6 +527,9 @@ class OverlayPlugin(HHDPlugin):
                     case "tdp_cycle":
                         logger.info("Cycling TDP.")
                         self.emit({"type": "special", "event": "tdp_cycle"})
+                    case "framegen_toggle":
+                        if SUPPORTS_FRAMEGEN and self.ovf:
+                            self.toggle_framegen = not self.toggle_framegen
 
             if self.ovf and cmd:
                 init = "close" not in cmd

@@ -14,6 +14,7 @@ custom:
         hhd_qam: "HHD Side Menu"
         hhd_expanded: "HHD Overlay"
         tdp_cycle: "Cycle TDP"
+        framegen_toggle: "Toggle Frame Generation"
         # screenshot: "Screenshot"
       default: hhd_expanded
     fan:
