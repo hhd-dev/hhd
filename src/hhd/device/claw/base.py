@@ -437,6 +437,12 @@ def controller_loop(
     )
 
     # Inputs
+    ex = dconf.get("ex", False)
+    btn_mapping = dconf.get("btn_mapping", MSI_CLAW_MAPPINGS)
+    # F15 duplicates the gamepad Guide button in XInput mode on the EX.
+    if ex and use_dinput:
+        btn_mapping = {**btn_mapping, EC("KEY_F15"): "share"}
+
     extra_args = {
         "axis_map": DINPUT_AXIS_MAP,
         "postprocess": DINPUT_AXIS_POSTPROCESS,
@@ -453,7 +459,7 @@ def controller_loop(
             if use_dinput
             else {
                 **XBOX_BUTTON_MAP,
-                **({EC("BTN_MODE"): "share"} if dconf.get("mode_is_share", False) else {}),
+                **({EC("BTN_MODE"): "share"} if ex else {}),
             }
         ),
         **(extra_args if use_dinput else {}),
@@ -466,7 +472,7 @@ def controller_loop(
         required=False,
         grab=True,
         capabilities={EC("EV_KEY"): [EC("KEY_F15")]},
-        btn_map=dconf.get("btn_mapping", MSI_CLAW_MAPPINGS),
+        btn_map=btn_mapping,
     )
 
 
@@ -475,7 +481,7 @@ def controller_loop(
         pid=[KBD_PID],
         required=False,
         grab=True,
-        btn_map=dconf.get("btn_mapping", MSI_CLAW_MAPPINGS),
+        btn_map=btn_mapping,
     )
 
     # Mute these so after suspend we do not get stray keypresses

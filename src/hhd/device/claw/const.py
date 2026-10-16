@@ -9,8 +9,8 @@ MSI_CLAW_MAPPINGS = {
 }
 
 MSI_CLAW_EX_MAPPINGS = {
-    **MSI_CLAW_MAPPINGS,
-    B("KEY_F15"): "share",
+    B("KEY_VOLUMEUP"): "key_volumeup",
+    B("KEY_VOLUMEDOWN"): "key_volumedown",
     B("KEY_F16"): "mode",
     B("KEY_G"): "mode",
 }
@@ -36,7 +36,7 @@ CONFS = {
         "name": "MSI Claw 8 EX AI+ CG3EM",
         "extra_buttons": "dual",
         "btn_mapping": MSI_CLAW_EX_MAPPINGS,
-        "mode_is_share": True,
+        "ex": True,
     },
     "MS-1T8K": {
         "name": "MSI Claw A8 BZ2EM",
