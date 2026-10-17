@@ -197,7 +197,7 @@ class AllyHidraw(GenericGamepadHidraw):
                             curr + MODE_DELAY,
                         )
                     )
-                case 0x38 | 0x93 | 0xa0:
+                case 0x38 | 0x93 | 0xA0:
                     # action = "right"
                     out.append({"type": "button", "code": "keyboard", "value": True})
                     self.queue.append(
@@ -206,7 +206,7 @@ class AllyHidraw(GenericGamepadHidraw):
                             curr + MODE_DELAY,
                         )
                     )
-                case 0xA7:
+                case 0xA7 | 0xA4:
                     # right hold
                     # Mode switch
                     if self.mouse_mode:
