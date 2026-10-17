@@ -197,7 +197,7 @@ class AllyHidraw(GenericGamepadHidraw):
                             curr + MODE_DELAY,
                         )
                     )
-                case 0x38 | 0x93:
+                case 0x38 | 0x93 | 0xa0:
                     # action = "right"
                     out.append({"type": "button", "code": "keyboard", "value": True})
                     self.queue.append(
