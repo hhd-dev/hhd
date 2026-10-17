@@ -346,6 +346,7 @@ ASUS_DATA: dict[str, DeviceTDP] = {
     "ROG Ally X RC72L": ALLYX_DATA,
     "ROG Xbox Ally RC73Y": XBOX_ALLY_DATA,
     "ROG Xbox Ally X RC73X": XBOX_ALLYX_DATA,
+    "ROG XBOX Ally X RC74X": XBOX_ALLYX_DATA,
     "ROG Flow Z13 GZ302": Z1_DATA,
 }
 

@@ -136,7 +136,13 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     # ROG Xbox Ally RC73YA_RC73YA
     # Xbox Ally X
     # ROG Xbox Ally X RC73XA_RC73XA
-    if "ROG Xbox Ally X RC73X" in dmi or "ROG Xbox Ally RC73Y" in dmi:
+    # Ally X20
+    # ROG XBOX Ally X RC74XA RC74XA
+    if (
+        "ROG Xbox Ally X RC73X" in dmi
+        or "ROG Xbox Ally RC73Y" in dmi
+        or "ROG XBOX Ally X RC74X" in dmi
+    ):
         return [RogAllyControllersPlugin(ally_x=True, xbox=True)]
 
     return []
