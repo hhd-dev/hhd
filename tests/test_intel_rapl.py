@@ -115,7 +115,10 @@ class RaplTest(unittest.TestCase):
             (zone / "constraint_9_power_limit_uw").write_text(str(reported * 1_000_000))
             (zone / "constraint_9_max_power_uw").write_text("0")
 
-        for model, pl1, pl2 in (("ONEXPLAYER X1 i", 30, 32), ("ONEXPLAYER 3", 35, 37)):
+        for model, minimum, default, pl1, pl2 in (
+            ("ONEXPLAYER X1 i", 5, 15, 30, 32),
+            ("ONEXPLAYER 3", 3, 25, 40, 42),
+        ):
             for reported_pl4 in (None, 0, 20, 100):
                 for zone in self.root.iterdir():
                     maximum = zone / "constraint_9_max_power_uw"
@@ -127,7 +130,7 @@ class RaplTest(unittest.TestCase):
                         maximum.write_text(str(reported_pl4 * 1_000_000))
                 data = get_rapl(model)
                 ceiling = max(pl2, reported_pl4 or 60)
-                self.assertEqual(data[1:4], (5, 15, pl1))
+                self.assertEqual(data[1:4], (minimum, default, pl1))
                 self.assertEqual([v.max_tdp for v in data.pl2], [pl2, pl2])
                 self.assertEqual([v.max_tdp for v in data.pl4], [ceiling, ceiling])
                 for watts, boost in ((15, True), (pl1, True), (15, False)):
@@ -157,16 +160,16 @@ class RaplTest(unittest.TestCase):
         self.zone()
         models = ("ONEXPLAYER X1 i", "ONEXPLAYER X1Air", "ONEXPLAYER G1 i",
                   "ONEXPLAYER X1Pro EVA-02")
-        cases = [("unknown", "unrelated", model, "ONE-NETBOOK", 30) for model in models]
-        cases += [(model, "ONE-NETBOOK", "unknown", "ONE-NETBOOK", 28) for model in models]
+        cases = [("unknown", "unrelated", model, "ONE-NETBOOK", (5, 15, 30)) for model in models]
+        cases += [(model, "ONE-NETBOOK", "unknown", "ONE-NETBOOK", (5, 15, 28)) for model in models]
         cases += [
-            ("unknown", "", "ONEXPLAYER 3", "ONE-NETBOOK TECHNOLOGY", 35),
-            ("unknown", None, "ONEXPLAYER 3", "ONE-NETBOOK", 35),
-            ("ONEXPLAYER 3", "ONE-NETBOOK", "other", "ONE-NETBOOK", 28),
+            ("unknown", "", "ONEXPLAYER 3", "ONE-NETBOOK TECHNOLOGY", (3, 25, 40)),
+            ("unknown", None, "ONEXPLAYER 3", "ONE-NETBOOK", (3, 25, 40)),
+            ("ONEXPLAYER 3", "ONE-NETBOOK", "other", "ONE-NETBOOK", (5, 15, 28)),
             ("unknown", "", "ONEXPLAYER 3", "other", None),
-            ("unknown", "", "ONEXPLAYER 3 extra", "ONE-NETBOOK", 28),
-            ("unknown", "", "ONEXPLAYER X1 i extra", "ONE-NETBOOK", 28),
-            ("unknown", "", "ONEXPLAYER X1 i", "GPD", 30),
+            ("unknown", "", "ONEXPLAYER 3 extra", "ONE-NETBOOK", (5, 15, 28)),
+            ("unknown", "", "ONEXPLAYER X1 i extra", "ONE-NETBOOK", (5, 15, 28)),
+            ("unknown", "", "ONEXPLAYER X1 i", "GPD", (5, 15, 30)),
             ("ONEXPLAYER X1 i", "ONE-NETBOOK", "unknown", "LENOVO", None),
             ("ONEXPLAYER X1 i", "ONE-NETBOOK", "unknown", None, None),
         ]
@@ -192,9 +195,9 @@ class RaplTest(unittest.TestCase):
                 if expected is None:
                     self.assertIsNone(intel)
                 else:
-                    self.assertEqual(intel.data.max_tdp, expected)
+                    self.assertEqual(intel.data.max_tdp, expected[2])
                     init = next(p for p in plugins if isinstance(p, AdjustorInitPlugin))
-                    self.assertEqual((init.min_tdp, init.default_tdp, init.max_tdp), (5, 15, expected))
+                    self.assertEqual((init.min_tdp, init.default_tdp, init.max_tdp), expected)
 
     def test_missing_or_zero_maximum_uses_current_limit(self):
         limit = self.zone(maximum=0)

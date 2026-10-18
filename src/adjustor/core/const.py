@@ -21,7 +21,7 @@ INTEL_TDP_PRESETS: dict[str, IntelTdpPreset] = {
     "ONEXPLAYER X1Air": {"pl1": 30, "pl2": 32},
     "ONEXPLAYER G1 i": {"pl1": 30, "pl2": 32},
     "ONEXPLAYER X1Pro EVA-02": {"pl1": 30, "pl2": 32},
-    "ONEXPLAYER 3": {"minTdp": 3, "defaultTdp": 25, "pl1": 35, "pl2": 37},
+    "ONEXPLAYER 3": {"minTdp": 3, "defaultTdp": 25, "pl1": 40, "pl2": 42},
 }
 
 
