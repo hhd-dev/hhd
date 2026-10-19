@@ -135,6 +135,10 @@ class AllyHidraw(GenericGamepadHidraw):
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
+        self.initialize()
+        return a
+
+    def initialize(self):
         if self.dev:
             logger.info(f"Switching Ally Controller to gamepad mode.")
             # Setup leds so they dont interfere after this
@@ -143,7 +147,6 @@ class AllyHidraw(GenericGamepadHidraw):
 
         self.mouse_mode = False
         self.late_init = time.perf_counter()
-        return a
 
     def toggle_mouse_mode(self):
         if not self.dev:
@@ -274,6 +277,7 @@ def plugin_run(
     ally_x: bool,
     xbox: bool,
     woke_up: TEvent,
+    x20: bool = False,
 ):
     init = time.perf_counter()
     repeated_fail = False
@@ -294,7 +298,9 @@ def plugin_run(
             logger.info("Launching emulated controller.")
             updated.clear()
             init = time.perf_counter()
-            controller_loop(conf.copy(), should_exit, updated, emit, ally_x, xbox, woke_up)
+            controller_loop(
+                conf.copy(), should_exit, updated, emit, ally_x, xbox, woke_up, x20
+            )
             repeated_fail = False
         except Exception as e:
             first = True
@@ -325,6 +331,7 @@ def controller_loop(
     ally_x: bool,
     xbox: bool,
     woke_up: TEvent,
+    x20: bool = False,
 ):
     debug = DEBUG_MODE
 
@@ -502,29 +509,34 @@ def controller_loop(
                 if debug:
                     logger.info(evs)
 
-            # Handle dynamic lighting quirk
+            # Restore controller state after wakeup.
             if ally_x and xbox and woke_up.is_set():
                 woke_up.clear()
                 multiplexer.refresh()  # make rgb be sent again
-                d_dynled = GenericGamepadHidraw(
-                    vid=[ASUS_VID],
-                    pid=[ALLY_X_PID],
-                    application=[0x00590001],
-                )
-                try:
-                    d_dynled.open()
-                    logger.info("Disabling dynamic lighting.")
-                    assert d_dynled.dev is not None
-                    d_dynled.dev.write(bytes([0x06, 0x01]))
-                except Exception as e:
-                    logger.error(
-                        f"Error while disabling dynamic lighting with exception:\n{e}"
+                if x20:
+                    # X20 has no dynamic lighting interface and loses its
+                    # controller configuration during sleep some times.
+                    d_vend.initialize()
+                else:
+                    d_dynled = GenericGamepadHidraw(
+                        vid=[ASUS_VID],
+                        pid=[ALLY_X_PID],
+                        application=[0x00590001],
                     )
-                finally:
                     try:
-                        d_dynled.close(False)
-                    except Exception:
-                        pass
+                        d_dynled.open()
+                        logger.info("Disabling dynamic lighting.")
+                        assert d_dynled.dev is not None
+                        d_dynled.dev.write(bytes([0x06, 0x01]))
+                    except Exception as e:
+                        logger.error(
+                            f"Error while disabling dynamic lighting with exception:\n{e}"
+                        )
+                    finally:
+                        try:
+                            d_dynled.close(False)
+                        except Exception:
+                            pass
 
             d_vend.consume(evs)
             d_xinput.consume(evs)

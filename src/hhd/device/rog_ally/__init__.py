@@ -20,7 +20,9 @@ class RogAllyControllersPlugin(HHDPlugin):
     priority = 18
     log = "ally"
 
-    def __init__(self, ally_x: bool = False, xbox: bool = False) -> None:
+    def __init__(
+        self, ally_x: bool = False, xbox: bool = False, x20: bool = False
+    ) -> None:
         self.t = None
         self.should_exit = None
         self.updated = TEvent()
@@ -29,6 +31,7 @@ class RogAllyControllersPlugin(HHDPlugin):
         self.t = None
         self.ally_x = ally_x
         self.xbox = xbox
+        self.x20 = x20
 
     def open(
         self,
@@ -94,6 +97,7 @@ class RogAllyControllersPlugin(HHDPlugin):
                 self.ally_x,
                 self.xbox,
                 self.woke_up,
+                self.x20,
             ),
         )
         self.t.start()
@@ -136,13 +140,15 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     # ROG Xbox Ally RC73YA_RC73YA
     # Xbox Ally X
     # ROG Xbox Ally X RC73XA_RC73XA
-    # Ally X20
-    # ROG XBOX Ally X RC74XA RC74XA
     if (
         "ROG Xbox Ally X RC73X" in dmi
         or "ROG Xbox Ally RC73Y" in dmi
-        or "ROG XBOX Ally X RC74X" in dmi
     ):
         return [RogAllyControllersPlugin(ally_x=True, xbox=True)]
+
+    # Ally X20
+    # ROG XBOX Ally X RC74XA RC74XA
+    if "ROG XBOX Ally X RC74X" in dmi:
+        return [RogAllyControllersPlugin(ally_x=True, xbox=True, x20=True)]
 
     return []
