@@ -135,18 +135,19 @@ class AllyHidraw(GenericGamepadHidraw):
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
+        if self.dev:
+            # Setup leds so they dont interfere after this
+            self.dev.write(config_rgb(self.rgb_boot, self.rgb_charging))
         self.initialize()
+        self.late_init = time.perf_counter()
         return a
 
     def initialize(self):
         if self.dev:
             logger.info(f"Switching Ally Controller to gamepad mode.")
-            # Setup leds so they dont interfere after this
-            self.dev.write(config_rgb(self.rgb_boot, self.rgb_charging))
             switch_mode(self.dev, "default", self.kconf, first=True)
 
         self.mouse_mode = False
-        self.late_init = time.perf_counter()
 
     def toggle_mouse_mode(self):
         if not self.dev:
