@@ -123,41 +123,45 @@ class AdjustorInitPlugin(HHDPlugin):
         if self.tdp_set is not None:
             conf["hhd.steamos.tdp_set"] = self.tdp_set
 
-        if self.init or not enabled or self.failed:
+        if self.failed:
             return
 
-        decky_plugins = find_decky_plugins()
-        if decky_plugins:
-            plugin = decky_plugins[0]
-            err = f'Found "{plugin.name}" at:\n{plugin.path}\n' + _(
-                "Disable Decky TDP plugins using the button below to continue."
-            )
-            self.emit({"type": "settings"})
-            self.has_decky = True
-            conf["tdp.tdp.tdp_error"] = err
-            conf["hhd.settings.tdp_ready"] = False
-            conf["hhd.steamos.tdp_status"] = "conflict"
-            logger.error(err)
-            self.failed = True
-            self.enabled = False
-            self._stop()
-            return
-
-        if self.use_acpi_call:
-            initialize()
-            if not check_perms():
-                conf["hhd.settings.tdp_ready"] = False
-                conf["tdp.tdp.tdp_error"] = (
-                    "Can not write to 'acpi_call'. It is required for TDP."
+        if not self.init:
+            decky_plugins = find_decky_plugins()
+            if decky_plugins:
+                plugin = decky_plugins[0]
+                err = f'Found "{plugin.name}" at:\n{plugin.path}\n' + _(
+                    "Disable Decky TDP plugins using the button below to continue."
                 )
+                self.emit({"type": "settings"})
+                self.has_decky = True
+                conf["tdp.tdp.tdp_error"] = err
+                conf["hhd.settings.tdp_ready"] = False
+                conf["hhd.steamos.tdp_status"] = "conflict"
+                logger.error(err)
                 self.failed = True
                 self.enabled = False
                 self._stop()
                 return
-        
-        self._start()
-        self.failed = False
-        self.init = True
+
+            if self.use_acpi_call:
+                initialize()
+                if not check_perms():
+                    conf["hhd.settings.tdp_ready"] = False
+                    conf["tdp.tdp.tdp_error"] = (
+                        "Can not write to 'acpi_call'. It is required for TDP."
+                    )
+                    self.failed = True
+                    self.enabled = False
+                    self._stop()
+                    return
+
+            self._start()
+            self.failed = False
+            self.init = True
+
+        # Configuration reloads discard runtime values while self.init survives.
+        # Publish readiness and SteamOS limits even when already initialized.
         conf["hhd.steamos.tdp_status"] = "enabled"
         conf["hhd.steamos.tdp_min"] = self.min_tdp
         conf["hhd.steamos.tdp_default"] = self.default_tdp
