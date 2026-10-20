@@ -124,6 +124,11 @@ class AdjustorInitPlugin(HHDPlugin):
             conf["hhd.steamos.tdp_set"] = self.tdp_set
 
         if self.init or not enabled or self.failed:
+            # tdp_ready has no default, so a settings rebuild resets it and
+            # the assignment below only runs once (init latches). Re-assert it
+            # or the drivers that gate on it drop out until hhd restarts.
+            if self.init and not self.failed:
+                conf["hhd.settings.tdp_ready"] = True
             return
 
         decky_plugins = find_decky_plugins()
