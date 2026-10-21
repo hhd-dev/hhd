@@ -929,8 +929,11 @@ class BootcPlugin(HHDPlugin):
                         output = self.proc.stdout.read() if self.proc.stdout else b""
                         if isinstance(output, bytes):
                             output = output.decode("utf-8", errors="replace")
+                        output = output.lower()
                         self.check_update_available = (
-                            "Update available for " in output if exit_code == 0 else None
+                            ("update available" in output and "no update" not in output)
+                            if exit_code == 0
+                            else None
                         )
                     self._init(conf)
                     self.proc = None

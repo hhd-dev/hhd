@@ -503,7 +503,7 @@ class BootcFlatpakTest(unittest.TestCase):
             "Update available",
         )
 
-    def test_positive_check_without_cached_metadata_uses_generic_label(self):
+    def test_check_without_cached_metadata_sets_update_state(self):
         status = {
             "apiVersion": "org.containers.bootc/v1",
             "spec": {
@@ -519,27 +519,44 @@ class BootcFlatpakTest(unittest.TestCase):
                 "rollback": None,
             },
         }
-        proc = MagicMock()
-        proc.poll.return_value = 0
-        proc.stdout = io.BytesIO(
-            b"Update available for "
+        available_output = (
+            b"Update available for: "
             b"ostree-image-signed:docker://registry.example/os:stable\n"
+            b" Version: 2\n"
         )
-        self.plugin.checked_update = True
-        self.plugin.state = "loading"
-        self.plugin.proc = proc
-        self.conf["updates.bootc.stage.mode"] = "loading"
-
-        with patch("hhd.plugins.bootc.get_bootc_status", return_value=status):
-            self.plugin.update(self.conf)
-
-        self.assertEqual(self.plugin.state, "ready")
-        self.assertIsNone(self.plugin.proc)
-        self.assertIs(self.plugin.check_update_available, True)
-        self.assertEqual(
-            self.conf["updates.bootc.update"].conf,
-            "Update available",
+        cases = (
+            (available_output, 0, True),
+            (available_output.upper(), 0, True),
+            (b"No changes in: registry.example/os:stable\n", 0, False),
+            (b"No update available\n", 0, False),
+            (b"", 1, None),
+            (available_output, 1, None),
         )
+        for output, exit_code, expected in cases:
+            with self.subTest(output=output, exit_code=exit_code):
+                proc = MagicMock()
+                proc.poll.return_value = exit_code
+                proc.stdout = io.BytesIO(output)
+                self.plugin.checked_update = True
+                self.plugin.check_update_available = True
+                self.plugin.state = "loading"
+                self.plugin.proc = proc
+                self.conf["updates.bootc.stage.mode"] = "loading"
+
+                with patch("hhd.plugins.bootc.get_bootc_status", return_value=status):
+                    self.plugin.update(self.conf)
+
+                self.assertEqual(
+                    self.plugin.state, "ready" if expected is True else "ready_check"
+                )
+                self.assertIsNone(self.plugin.proc)
+                self.assertIs(self.plugin.check_update_available, expected)
+                label = (
+                    "Update available" if expected is True
+                    else "No update available" if expected is False
+                    else None
+                )
+                self.assertEqual(self.conf["updates.bootc.update"].conf, label)
 
 
 if __name__ == "__main__":
