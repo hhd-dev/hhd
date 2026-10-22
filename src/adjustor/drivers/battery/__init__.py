@@ -169,7 +169,9 @@ class BatteryPlugin(HHDPlugin):
                     logger.error(
                         "Failed to read charge types file, assuming it is not supported."
                     )
-            if os.path.exists(f"{base}/charge_type"):
+            # Keep the selected interface and its advertised modes together.
+            # In particular, charge_behaviour cannot apply Long_Life (p80).
+            if not self.charge_bypass_fn and os.path.exists(f"{base}/charge_type"):
                 try:
                     with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
                         supports = "ONE-NETBOOK" in f.read()
@@ -179,17 +181,29 @@ class BatteryPlugin(HHDPlugin):
                 if supports:
                     self.charge_bypass_fn = f"{base}/charge_type"
                     self.bypass_awake = True
+                    self.bypass_always = True
+                    self.bypass_longlife = False
                 else:
                     logger.warning(
                         "Found charge type, but charge bypass is only supported on OneXPlayer currently."
                     )
                     self.charge_bypass_fn = None
                     self.bypass_awake = False
-            if os.path.exists(f"{base}/charge_behaviour"):
+            if (
+                self.charge_bypass_fn != f"{base}/charge_types"
+                and os.path.exists(f"{base}/charge_behaviour")
+            ):
                 self.charge_bypass_fn = f"{base}/charge_behaviour"
                 try:
                     with open(self.charge_bypass_fn) as f:
-                        self.bypass_awake = "inhibit-charge-awake" in f.read()
+                        behaviours = set(
+                            f.read().replace("[", "").replace("]", "").split()
+                        )
+                    self.bypass_awake = "inhibit-charge-awake" in behaviours
+                    self.bypass_always = "inhibit-charge" in behaviours
+                    self.bypass_longlife = False
+                    if not (self.bypass_awake or self.bypass_always):
+                        self.charge_bypass_fn = None
                 except Exception:
                     logger.error(
                         "Failed to read charge behaviour file, assuming it is not supported."
