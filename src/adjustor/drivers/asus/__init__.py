@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 APPLY_DELAY = 0.7
 TDP_DELAY = 0.1
-THERMAL_PROFILE_DELAY = 0.4
 SLEEP_DELAY = 4
 
 FTDP_FN = "/sys/devices/platform/asus-nb-wmi/ppt_fppt"
@@ -365,9 +364,9 @@ class AsusDriverPlugin(HHDPlugin):
                     new_target = "performance"
 
                 self.queue_tdp = None
-                time.sleep(THERMAL_PROFILE_DELAY)
                 if boost:
                     # TODO: Use different boost values depending on whether plugged in
+                    time.sleep(TDP_DELAY)
                     set_tdp(
                         "fast",
                         FTDP_FN,
@@ -382,6 +381,7 @@ class AsusDriverPlugin(HHDPlugin):
                     time.sleep(TDP_DELAY)
                     set_tdp("steady", CTDP_FN, steady)
                 else:
+                    time.sleep(TDP_DELAY)
                     set_tdp("fast", FTDP_FN, steady)
                     time.sleep(TDP_DELAY)
                     set_tdp("slow", STDP_FN, steady)
