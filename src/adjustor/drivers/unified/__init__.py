@@ -51,6 +51,12 @@ PP_KNOWN = {
         "balanced-performance": _("Performance"),
         "performance": _("Turbo"),
     },
+    "bitland-mifs-wmi": {
+        "low-power": _("Quiet"),
+        "balanced": _("Balanced"),
+        "balanced-performance": _("Performance"),
+        "performance": _("Full Speed"),
+    },
     "asus-wmi": {
         "quiet": _("Silent"),
         "balanced": _("Performance"),

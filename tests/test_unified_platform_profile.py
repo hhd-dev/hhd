@@ -194,12 +194,13 @@ class AcerPpdProfileTest(unittest.TestCase):
                 )
 
     def test_all_drivers_discover_and_prefer_balanced_performance(self):
-        for provider in (
-            "amd-dptc",
-            "lenovo-wmi-gamezone",
-            "asus-wmi",
-            "thinkpad-acpi-profile",
-            "samsung-galaxybook",
+        for provider, title in (
+            ("amd-dptc", "Balanced Performance"),
+            ("lenovo-wmi-gamezone", "Balanced Performance"),
+            ("asus-wmi", "Balanced Performance"),
+            ("thinkpad-acpi-profile", "Balanced Performance"),
+            ("samsung-galaxybook", "Balanced Performance"),
+            ("bitland-mifs-wmi", "Performance"),
         ):
             with self.subTest(provider=provider):
                 with open(os.path.join(self.path, "name"), "w") as f:
@@ -207,7 +208,7 @@ class AcerPpdProfileTest(unittest.TestCase):
                 self.plugin.profiles = get_profiles()
                 assert self.plugin.profiles
                 self.assertIn(
-                    ("balanced-performance", "Balanced Performance"),
+                    ("balanced-performance", title),
                     self.plugin.profiles.profiles,
                 )
                 self.plugin.notify([{"type": "ppd", "status": "performance"}])
