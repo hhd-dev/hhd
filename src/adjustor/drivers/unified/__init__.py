@@ -34,28 +34,39 @@ PP_KNOWN = {
         "low-power": _("Low Power"),
         "quiet": _("Quiet"),
         "balanced": _("Balanced"),
+        "balanced-performance": _("Balanced Performance"),
         "performance": _("Performance"),
         "custom": _("Custom"),
     },
     "lenovo-wmi-gamezone": {
         "low-power": _("Quiet"),
         "balanced": _("Balanced"),
+        "balanced-performance": _("Balanced Performance"),
         "performance": _("Performance"),
         "custom": _("Custom"),
+    },
+    "acer-wmi": {
+        "low-power": _("Eco"),
+        "balanced": _("Balanced"),
+        "balanced-performance": _("Performance"),
+        "performance": _("Turbo"),
     },
     "asus-wmi": {
         "quiet": _("Silent"),
         "balanced": _("Performance"),
+        "balanced-performance": _("Balanced Performance"),
         "performance": _("Turbo"),
     },
     "thinkpad-acpi-profile": {
         "low-power": _("Low Power"),
         "balanced": _("Balanced"),
+        "balanced-performance": _("Balanced Performance"),
         "performance": _("Performance"),
     },
     "samsung-galaxybook": {
         "quiet": _("Silent"),
         "balanced": _("Optimized"),
+        "balanced-performance": _("Balanced Performance"),
         "performance": _("High Performance"),
     },
 }
@@ -1098,7 +1109,12 @@ class UnifiedDriverPlugin(HHDPlugin):
                     case "balanced":
                         self.new_mode = "balanced"
                     case "performance":
-                        self.new_mode = "performance"
+                        if any(
+                            p == "balanced-performance" for p, _ in self.profiles.profiles
+                        ):
+                            self.new_mode = "balanced-performance"
+                        else:
+                            self.new_mode = "performance"
             elif ev["type"] == "platform_profile":
                 assert self.profiles
                 mode = ev["profile"]
@@ -1113,7 +1129,10 @@ class UnifiedDriverPlugin(HHDPlugin):
 
                 self.system_mode = mode
                 if self.mode is not None:
-                    notify_mode = "quiet" if mode == "low-power" else mode
+                    notify_mode = {
+                        "low-power": "quiet",
+                        "balanced-performance": "performance",
+                    }.get(mode, mode)
                     self.emit(
                         {"type": "special", "event": f"tdp_cycle_{notify_mode}"}
                     )

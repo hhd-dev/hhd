@@ -13,6 +13,7 @@ from adjustor.drivers.unified import (
     setup_mode_units,
 )
 from hhd.plugins import Config
+from hhd.plugins.settings import parse_defaults
 
 
 PROFILES = PPData(
@@ -127,6 +128,125 @@ class ThinkPadPlatformProfileTest(unittest.TestCase):
         )
 
 
+class AcerPpdProfileTest(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = tmp.name
+        self.path = os.path.join(root, "platform-profile-0")
+        os.mkdir(self.path)
+        for name, value in (
+            ("name", "acer-wmi"),
+            (
+                "choices",
+                "low-power quiet balanced balanced-performance performance",
+            ),
+            ("profile", "balanced"),
+        ):
+            with open(os.path.join(self.path, name), "w") as f:
+                f.write(value + "\n")
+        pp_path = patch("adjustor.drivers.unified.PP_PATH", root)
+        pp_path.start()
+        self.addCleanup(pp_path.stop)
+        self.plugin = UnifiedDriverPlugin()
+        self.plugin.enabled = True
+        self.plugin.init = True
+        self.plugin.startup = False
+        self.plugin.startup_deadline = None
+        self.plugin.mode = "balanced"
+        self.plugin.emit = MagicMock()
+        self.conf = Config(parse_defaults(self.plugin.settings()))
+        self.conf["hhd.settings.tdp_enable"] = True
+        self.plugin.old_conf = self.conf["tdp.unified"]
+
+    def test_uses_windows_names_and_keeps_eco_instead_of_quiet(self):
+        assert self.plugin.profiles
+        self.assertFalse(self.plugin.profiles.has_custom)
+        self.assertEqual(
+            self.plugin.profiles.profiles,
+            (
+                ("low-power", "Eco"),
+                ("balanced", "Balanced"),
+                ("balanced-performance", "Performance"),
+                ("performance", "Turbo"),
+            ),
+        )
+        settings = self.plugin.settings()["tdp"]["unified"]["children"]["tdp"]
+        self.assertNotIn("quiet", settings["modes"])
+        self.assertEqual(settings["default"], "balanced")
+
+    def test_ppd_changes_select_eco_balanced_and_performance(self):
+        for status, profile in (
+            ("power", "low-power"),
+            ("balanced", "balanced"),
+            ("performance", "balanced-performance"),
+        ):
+            with self.subTest(status=status):
+                self.plugin.emit.reset_mock()
+                self.plugin.notify([{"type": "ppd", "status": status}])
+                self.plugin.update(self.conf)
+
+                self.assertEqual(self.conf["tdp.unified.tdp.mode"].to(str), profile)
+                with open(os.path.join(self.path, "profile")) as f:
+                    self.assertEqual(f.read(), profile)
+                self.plugin.emit.assert_called_once_with(
+                    {"type": "energy", "status": status}
+                )
+
+    def test_all_drivers_discover_and_prefer_balanced_performance(self):
+        for provider in (
+            "amd-dptc",
+            "lenovo-wmi-gamezone",
+            "asus-wmi",
+            "thinkpad-acpi-profile",
+            "samsung-galaxybook",
+        ):
+            with self.subTest(provider=provider):
+                with open(os.path.join(self.path, "name"), "w") as f:
+                    f.write(provider + "\n")
+                self.plugin.profiles = get_profiles()
+                assert self.plugin.profiles
+                self.assertIn(
+                    ("balanced-performance", "Balanced Performance"),
+                    self.plugin.profiles.profiles,
+                )
+                self.plugin.notify([{"type": "ppd", "status": "performance"}])
+                self.assertEqual(self.plugin.new_mode, "balanced-performance")
+
+    def test_manual_profiles_publish_the_corresponding_ppd_category(self):
+        for profile, status in (
+            ("low-power", "power"),
+            ("balanced", "balanced"),
+            ("balanced-performance", "performance"),
+            ("performance", "performance"),
+        ):
+            with self.subTest(profile=profile):
+                self.plugin.old_target = None
+                self.plugin.emit.reset_mock()
+                self.conf["tdp.unified.tdp.mode"] = profile
+                self.plugin.update(self.conf)
+
+                self.plugin.emit.assert_called_once_with(
+                    {"type": "energy", "status": status}
+                )
+
+    def test_external_performance_profile_uses_supported_notification(self):
+        self.plugin.notify(
+            [{"type": "platform_profile", "profile": "balanced-performance"}]
+        )
+        with patch("adjustor.drivers.unified.set_mode") as set_mode:
+            self.plugin.update(self.conf)
+
+        self.assertEqual(
+            self.conf["tdp.unified.tdp.mode"].to(str), "balanced-performance"
+        )
+        set_mode.assert_not_called()
+        self.plugin.emit.assert_any_call(
+            {"type": "special", "event": "tdp_cycle_performance"}
+        )
+        self.plugin.emit.assert_any_call({"type": "energy", "status": "performance"})
+
+
 class UnifiedProfileNotificationTest(unittest.TestCase):
     def setUp(self):
         self.plugin = UnifiedDriverPlugin.__new__(UnifiedDriverPlugin)
@@ -134,6 +254,16 @@ class UnifiedProfileNotificationTest(unittest.TestCase):
         self.plugin.mode = "balanced"
         self.plugin.system_mode = None
         self.plugin.emit = MagicMock()
+
+    def test_ppd_changes_fall_back_when_balanced_performance_is_unavailable(self):
+        for status, profile in (
+            ("power", "low-power"),
+            ("balanced", "balanced"),
+            ("performance", "performance"),
+        ):
+            with self.subTest(status=status):
+                self.plugin.notify([{"type": "ppd", "status": status}])
+                self.assertEqual(self.plugin.new_mode, profile)
 
     def test_external_profile_change_updates_pending_mode_and_notifies(self):
         self.plugin.notify(
