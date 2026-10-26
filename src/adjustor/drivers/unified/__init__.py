@@ -274,7 +274,12 @@ def set_fwattr(data: Fwattr, val: int):
 
 
 def get_tdp_values(mode_provider: str | None = None):
-    for fn in os.listdir(SYS_ATTR_PATH):
+    try:
+        providers = os.listdir(SYS_ATTR_PATH)
+    except FileNotFoundError:
+        return None
+
+    for fn in providers:
         # WMI convention means we have cruft -N suffix
         provider = None
         for s in SYS_ATTR_KNOWN:
@@ -1155,7 +1160,11 @@ class UnifiedDriverPlugin(HHDPlugin):
                     f"Power adapter status switched to '{ev['event']}', resetting TDP."
                 )
                 assert self.profiles
-                self.tdp = get_tdp_values(self.profiles.fn)
+                self.tdp = (
+                    get_tdp_values(self.profiles.fn)
+                    if self.profiles.has_custom
+                    else None
+                )
                 self.emit({"type": "settings"})
                 self.initialized = False
 

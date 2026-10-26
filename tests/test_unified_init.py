@@ -1,8 +1,15 @@
+import os
+import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
 
 from adjustor.decky import DeckyPlugin
-from adjustor.drivers.unified import FwattrData, PPData, UnifiedDriverPlugin
+from adjustor.drivers.unified import (
+    FwattrData,
+    PPData,
+    UnifiedDriverPlugin,
+    get_tdp_values,
+)
 from hhd.http.steamos import _tdp as steamos_tdp
 from hhd.plugins import Config
 from hhd.plugins.settings import parse_defaults
@@ -240,6 +247,55 @@ class UnifiedInitTest(unittest.TestCase):
         self.assertEqual(conf["hhd.steamos.tdp_max"].to(int), 20)
         self.assertTrue(conf["hhd.steamos.tdp_set"].to(bool))
         set_tdp.assert_any_call("ppt_pl1_spl", DC_TDP, 20)
+
+    def test_profile_only_ac_changes_without_firmware_attributes(self):
+        profiles = PPData(
+            fn="bitland-mifs-wmi",
+            pp="platform-profile-0",
+            provider="bitland-mifs-wmi",
+            has_custom=False,
+            profiles=(
+                ("low-power", "Quiet"),
+                ("balanced", "Balanced"),
+                ("balanced-performance", "Performance"),
+                ("performance", "Full Speed"),
+            ),
+        )
+        with (
+            tempfile.TemporaryDirectory() as root,
+            patch("adjustor.drivers.unified.SYS_ATTR_PATH", os.path.join(root, "missing")),
+            patch("adjustor.drivers.unified.get_profiles", return_value=profiles),
+            patch("adjustor.drivers.unified.get_tdp_values", wraps=get_tdp_values) as get_tdp,
+            patch("adjustor.drivers.unified.find_decky_plugins", return_value=[]),
+            patch("adjustor.drivers.unified.set_mode"),
+        ):
+            plugin = UnifiedDriverPlugin()
+            plugin.startup_deadline = None
+            plugin.emit = MagicMock()
+            conf = initial_config(plugin, enabled=True)
+            plugin.update(conf)
+            conf = Config([parse_defaults(plugin.settings()), conf.conf])
+            plugin.update(conf)
+
+            for event in ("dc", "ac"):
+                with self.subTest(event=event):
+                    plugin.notify([{"type": "acpi", "event": event}])
+                    settings = plugin.settings()
+                    plugin.update(conf)
+
+                    self.assertTrue(conf["hhd.settings.tdp_ready"].to(bool))
+                    self.assertFalse(plugin.failed)
+                    self.assertIsNone(plugin.tdp)
+                    modes = settings["tdp"]["unified"]["children"]["tdp"]["modes"]
+                    self.assertEqual(tuple(modes), tuple(p for p, _ in profiles.profiles))
+            get_tdp.assert_not_called()
+
+    def test_tdp_discovery_without_firmware_attributes_returns_none(self):
+        with (
+            tempfile.TemporaryDirectory() as root,
+            patch("adjustor.drivers.unified.SYS_ATTR_PATH", os.path.join(root, "missing")),
+        ):
+            self.assertIsNone(get_tdp_values())
 
     def test_disable_clears_steamos_limits(self):
         plugin = make_plugin()
