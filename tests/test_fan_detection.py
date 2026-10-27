@@ -1,11 +1,13 @@
 import tempfile
 import unittest
 from pathlib import Path
+from threading import Event, Lock
 from unittest.mock import patch
 
 from adjustor.core.fan import get_fan_info
 from adjustor.core.fan import utils
-from adjustor.core.fan.core import set_fans_to_pwm, update_fan_speed
+from adjustor.core.fan.core import fan_worker, set_fans_to_pwm, update_fan_speed
+from adjustor.drivers.unified import ManagedFan, get_fan, setup_fan
 
 
 class FanDetectionTest(unittest.TestCase):
@@ -87,6 +89,57 @@ class FanDetectionTest(unittest.TestCase):
     def test_existing_fans_do_not_require_thinkpad_parameter(self):
         self.hwmon(0, "gpdfan", {"pwm1": "128", "pwm1_enable": "2"})
         self.assertEqual(len(utils.find_fans()), 1)
+
+    def test_acer_requires_pwm_pair_and_supports_gpu_only_channel(self):
+        path = self.hwmon(3, "acer", {
+            "temp1_input": "65000", "fan1_input": "3000",
+            "fan2_input": "3100",
+        })
+        # acer-wmi hides PWM attributes on models without ACER_CAP_PWM.
+        self.assertEqual(utils.find_fans(), [])
+        (path / "pwm2").write_text("128")
+        self.assertEqual(utils.find_fans(), [])
+        (path / "pwm2_enable").write_text("2")
+        self.assertEqual(utils.find_fans(), [(
+            str(path / "pwm2"), str(path / "pwm2_enable"),
+            str(path / "fan2_input"), False,
+        )])
+        self.assertEqual((path / "pwm2_enable").read_text(), "2")
+
+    def test_unified_acer_curve_controls_both_fans_and_restores_auto(self):
+        self.hwmon(5, "coretemp", {
+            "temp1_label": "Package id 0", "temp1_input": "65000",
+        })
+        path = self.hwmon(8, "acer", {
+            "pwm1": "0", "pwm1_enable": "2", "fan1_input": "3000",
+            "pwm2": "0", "pwm2_enable": "2", "fan2_input": "3100",
+        })
+        with patch("adjustor.drivers.unified.HWMON", str(self.root)):
+            fan = get_fan()
+        self.assertIsInstance(fan, ManagedFan)
+        self.assertEqual(len(fan.info["fans"]), 2)
+        settings = {}
+        setup_fan(fan, settings)
+        self.assertEqual(set(settings["modes"]), {"disabled", "manual_edge"})
+
+        should_exit = Event()
+        state = {}
+
+        def stop_after_update(_):
+            for channel in (1, 2):
+                self.assertEqual((path / f"pwm{channel}_enable").read_text(), "1")
+            should_exit.set()
+
+        # Exercise one real worker iteration against the Acer sysfs layout.
+        with patch("adjustor.core.fan.core.time.sleep", side_effect=stop_after_update):
+            fan_worker(fan.info, should_exit, Lock(), {50: 0.8, 90: 1.0}, state, Event())
+
+        self.assertTrue(should_exit.is_set())
+        self.assertEqual(state["t_edge"], 65.0)
+        self.assertCountEqual(state["v_rpm"], [3000, 3100])
+        for channel in (1, 2):
+            self.assertEqual((path / f"pwm{channel}").read_text(), "204")
+            self.assertEqual((path / f"pwm{channel}_enable").read_text(), "2")
 
 
 if __name__ == "__main__":
