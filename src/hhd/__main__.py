@@ -62,7 +62,7 @@ PLUGIN_WHITELIST = os.environ.get("HHD_PLUGINS", "")
 ERROR_DELAY = 5
 INIT_DELAY = 0.4
 POLL_DELAY = 2
-SLEEP_MIN_T = 8
+SLEEP_MIN_T = 3.5
 
 
 class EmitHolder(Emitter):
