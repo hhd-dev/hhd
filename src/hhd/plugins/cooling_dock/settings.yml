@@ -1,0 +1,135 @@
+type: container
+title: Cooling Dock
+tags: [non-essential]
+children:
+  enabled:
+    type: bool
+    title: "Enable Cooling Dock Sync"
+    hint: |
+      Automatically connect to the OneXPlayer Cooling Dock over Bluetooth
+      and sync the fan speed based on CPU temperature. Requires bleak
+      to be installed and the dock to be paired via bluetoothctl.
+    default: true
+  
+  scan_dock:
+    type: action
+    title: "Scan for Devices"
+    hint: "Click to scan for Bluetooth devices. Will update the list below."
+
+  mac_address:
+    type: multiple
+    title: "Dock Device"
+    hint: "Select your dock from the list."
+    options:
+      "": "None"
+    default: ""
+
+  forget_dock:
+    type: action
+    title: "Forget Paired Dock"
+    hint: "Clears the saved MAC address and forces a new scan."
+
+  status:
+    type: display
+    title: "Status"
+    tags: [slim]
+
+  fan_progress:
+    type: custom
+    title: "Dock Fan"
+    tags: [progress, slim]
+
+  mode:
+    type: multiple
+    title: "Fan Mode"
+    hint: "Select the dock fan operating mode."
+    options:
+      "auto": "Auto (CPU temperature curve)"
+      "1": "Level 1 (25%)"
+      "2": "Level 2 (50%)"
+      "3": "Level 3 (75%)"
+      "4": "Level 4 (100%)"
+      "0": "Stopped"
+    default: "auto"
+
+  fan_curve:
+    type: container
+    title: "Auto Fan Curve"
+    hint: "Fan speed percentage at each temperature threshold (Celsius)."
+    tags: [advanced]
+    children:
+      t1:
+        type: discrete
+        title: "Temp point 1 (C)"
+        options: [30, 35, 40, 45]
+        default: 40
+      f1:
+        type: discrete
+        title: "Fan % at point 1"
+        options: [0, 10, 20, 25, 30]
+        default: 0
+      t2:
+        type: discrete
+        title: "Temp point 2 (C)"
+        options: [45, 50, 55, 60]
+        default: 50
+      f2:
+        type: discrete
+        title: "Fan % at point 2"
+        options: [20, 30, 40, 50]
+        default: 30
+      t3:
+        type: discrete
+        title: "Temp point 3 (C)"
+        options: [55, 60, 65, 70]
+        default: 60
+      f3:
+        type: discrete
+        title: "Fan % at point 3"
+        options: [40, 50, 60, 70]
+        default: 50
+      t4:
+        type: discrete
+        title: "Temp point 4 (C)"
+        options: [65, 70, 75, 80]
+        default: 70
+      f4:
+        type: discrete
+        title: "Fan % at point 4"
+        options: [60, 70, 80, 85]
+        default: 70
+      t5:
+        type: discrete
+        title: "Temp point 5 (C)"
+        options: [75, 80, 85, 90]
+        default: 80
+      f5:
+        type: discrete
+        title: "Fan % at point 5"
+        options: [80, 85, 90, 100]
+        default: 85
+
+  rgb:
+    type: container
+    title: "RGB Lighting"
+    hint: "Control the dock's RGB lighting."
+    children:
+      enable:
+        type: bool
+        title: "Enable RGB"
+        default: true
+      mode:
+        type: multiple
+        title: "RGB Mode"
+        options:
+          "0": "Static"
+          "1": "Breathing"
+          "2": "Rainbow"
+          "3": "Wave"
+          "4": "Pulse"
+        default: "1"
+      level:
+        type: discrete
+        title: "Brightness"
+        options: [0, 1, 2, 3, 4, 5]
+        default: 3
