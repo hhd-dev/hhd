@@ -512,13 +512,18 @@ def controller_loop(
     d_timer = HrtimerTrigger(conf["imu_hz"].to(int), [HrtimerTrigger.IMU_NAMES])
 
     # Inputs
+    xinput_btn_map = AYA_GAMEPAD_BTN_MAPPINGS
+    if dconf.get("mode_is_guide", False):
+        # On the Konkr Fit, BTN_MODE is the main button, so it stays the
+        # guide/Steam button rather than the QAM/overlay button.
+        xinput_btn_map = {**AYA_GAMEPAD_BTN_MAPPINGS, EC("BTN_MODE"): "mode"}
     d_xinput = GenericGamepadEvdev(
         vid=[GAMEPAD_VID],
         pid=[GAMEPAD_PID],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
         hide=True,
-        btn_map=AYA_GAMEPAD_BTN_MAPPINGS,
+        btn_map=xinput_btn_map,
     )
 
     d_kbd_1 = GenericGamepadEvdev(
