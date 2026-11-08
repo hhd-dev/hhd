@@ -47,8 +47,10 @@ children:
           revert:
             type: action
             title: Revert to Previous
+            tags: [verify]
             hint: >-
-              Rollback to the previous image.
+              Rollback to the previous image, which will boot after the
+              next restart. Are you sure?
           
           rebase:
             type: action
@@ -64,8 +66,10 @@ children:
           revert:
             type: action
             title: Revert to Previous
+            tags: [verify]
             hint: >-
-              Rollback to the previous image.
+              Rollback to the previous image, which will boot after the
+              next restart. Are you sure?
           
           rebase:
             type: action
@@ -81,8 +85,10 @@ children:
           revert:
             type: action
             title: Revert to Previous
+            tags: [verify]
             hint: >-
-              Rollback to the previous image.
+              Rollback to the previous image, which will boot after the
+              next restart. Are you sure?
           
           rebase:
             type: action
@@ -101,7 +107,10 @@ children:
           revert:
             type: action
             title: Undo Update
-            
+            tags: [verify]
+            hint: >-
+              Remove the staged update and stay on the current image.
+              Are you sure?
           update:
             type: action
             title: Check for Updates
@@ -123,7 +132,10 @@ children:
           revert:
             type: action
             title: Undo Revert
-            
+            tags: [verify]
+            hint: >-
+              Return to the image in use before the revert.
+              Are you sure?
           update:
             type: action
             title: Check for Updates
@@ -146,10 +158,10 @@ children:
           reset:
             type: action
             title: Run rpm-ostree reset
-            tag: [verify]
+            tags: [verify]
             hint: >-
               Disable the custom initramfs and remove layers. Your personal
-              data will not be affected.
+              data will not be affected. Are you sure?
 
       unknown:
         type: container
@@ -165,7 +177,9 @@ children:
           update:
             type: action
             title: Update to Stable
-            tag: [verify]
+            tags: [verify]
+            hint: >-
+              Switch to the latest stable image. Are you sure?
               
       loading_cancellable:
         type: container
