@@ -104,6 +104,10 @@ SUI_BUTTONS = {
     B("KEY_F18"): "share",  # Small Button
     B("KEY_F15"): "extra_l1",  # LC Button
     B("KEY_F16"): "extra_r1",  # RC Button
+    B("KEY_F24"): "mode",  # Sui Button
+    B("KEY_F23"): "share",  # = Button
+    B("KEY_F21"): "extra_l1",  # LC Button
+    B("KEY_F22"): "extra_r1",  # RC Button
 }
 
 AYA_DEFAULT_CONF = {
