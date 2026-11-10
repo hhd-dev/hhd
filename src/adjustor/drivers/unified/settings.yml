@@ -14,6 +14,14 @@ children:
     title: " "
     tags: []
 
+  cycle_tdp:
+    type: bool
+    title: Change Power Mode with View+Y
+    tags: [ non-essential ]
+    hint: >-
+      Allows you to cycle through power modes with the View+Y or Xbox+Y key combination.
+    default: False
+
   fan_full_speed:
     type: bool
     title: Set Fan to Full Speed
