@@ -97,6 +97,11 @@ AYANEO_BTN_MAPPINGS: dict[int, str] = {
     B("KEY_F10"): "extra_r1",  # Rc Button [68, 97, 125] F10 + LCTRL + LMETA
     # Ayaneo 3 mappings
     B("KEY_F23"): "share",
+    # Ayaneo 2S BIOS installed on Suiplay
+    B("KEY_F24"): "mode",  # Sui Button
+    # B("KEY_F23"): "share",  # = Button
+    B("KEY_F21"): "extra_l1",  # LC Button
+    B("KEY_F22"): "extra_r1",  # RC Button
 }
 
 SUI_BUTTONS = {
