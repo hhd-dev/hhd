@@ -68,14 +68,21 @@ class ClawControllerPlugin(HHDPlugin):
         return base
 
     def update(self, conf: Config):
+        # One-shot action: run the MCU stick/trigger calibration flow
+        # (previously MSI Center M-only) on the next controller loop pass.
+        # get_action reads and resets the key, so the action fires exactly once.
+        recal = conf.get_action("controllers.claw.recalibrate_sticks")
         new_conf = conf["controllers.claw"]
-        if new_conf == self.prev:
+
+        if new_conf == self.prev and not recal:
             return
         if self.prev is None:
             self.prev = new_conf
         else:
             self.prev.update(new_conf.conf)
 
+        if recal:
+            self.prev["recalibrate_sticks"] = True
         self.updated.set()
         self.start(self.prev)
 
