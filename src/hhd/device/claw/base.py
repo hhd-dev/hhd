@@ -18,7 +18,7 @@ from hhd.controller.physical.evdev import (
     enumerate_evs,
     to_map,
 )
-from typing import Sequence
+from typing import Callable, Sequence
 from hhd.controller import DEBUG_MODE, Event, Multiplexer
 
 from .const import MSI_CLAW_MAPPINGS
@@ -39,6 +39,23 @@ CLAW_SET_XINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x01, 0x00])
 CLAW_SET_DINPUT = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x02, 0x00])
 CLAW_SET_MSI = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x03, 0x00])
 CLAW_SET_DESKTOP = bytes([0x0F, 0x00, 0x00, 0x3C, 0x24, 0x04, 0x00])
+
+# MCU command IDs (reverse engineered from MSI Center M's API_ControlMode.dll
+# and confirmed on-device with a Claw 8 AI+ A2VM, firmware bcdDevice 2.30).
+# The MCU acks most commands with `10 00 00 3C 06`; calibration polls are
+# acked with `10 00 00 3C FE <in_cal> <mask>`.
+CLAW_CALIB = bytes([0x0F, 0x00, 0x00, 0x3C, 0xFD])
+CLAW_CALIB_STATUS = bytes([0x0F, 0x00, 0x00, 0x3C, 0xFD, 0x03])
+CLAW_CALIB_COMPLETE = bytes([0x0F, 0x00, 0x00, 0x3C, 0xFD, 0x01])
+CLAW_CALIB_CANCEL = bytes([0x0F, 0x00, 0x00, 0x3C, 0xFD, 0x02])
+
+# Status mask bits reported in the 0xFE calibration ack (data[6]).
+CLAW_CAL_LT = 1 << 0
+CLAW_CAL_RT = 1 << 1
+CLAW_CAL_LS = 1 << 2
+CLAW_CAL_RS = 1 << 3
+CLAW_CAL_MOTION = 1 << 4
+CLAW_CAL_ALL = CLAW_CAL_LT | CLAW_CAL_RT | CLAW_CAL_LS | CLAW_CAL_RS
 
 MSI_CLAW_VID = 0x0DB0
 MSI_CLAW_XINPUT_PID = 0x1901
@@ -254,6 +271,112 @@ class ClawDInputHidraw(GenericGamepadHidraw):
         else:
             self.write(CLAW_SET_XINPUT)
 
+    def send_calib(self, mode: int) -> None:
+        """Send a 0xFD calibration control command (CalibrationMode value)."""
+        if not self.dev:
+            return
+        self.write(CLAW_CALIB + bytes([mode]))
+
+    def read_calib_status(self, timeout: float = 0.3) -> tuple[bool, int] | None:
+        """Poll calibration status.
+
+        Returns (in_cal_mode, mask) parsed from the 0xFE ack, or None if the
+        MCU did not answer in time. The mask carries one bit per component
+        (LT/RT/LS/RS/Motion); see CLAW_CAL_*.
+        """
+        if not self.dev:
+            return None
+
+        self.write(CLAW_CALIB_STATUS)
+        end = time.perf_counter() + timeout
+        while time.perf_counter() < end:
+            try:
+                rep = self.dev.read(64, timeout=50)
+            except Exception:
+                return None
+            if not rep:
+                continue
+            if (
+                len(rep) > 6
+                and rep[0] == 0x10
+                and rep[4] == 0xFE
+            ):
+                return bool(rep[5] == 1), rep[6]
+        return None
+
+    def calibrate(
+        self,
+        should_abort: Callable[[], bool] | None = None,
+        poll_interval: float = 0.1,
+        timeout: float = 120.0,
+    ) -> bool:
+        """Run the MSI Center M stick/trigger calibration flow.
+
+        Enters calibration mode, polls the status mask until every component
+        reports calibrated (the user wiggles sticks and squeezes triggers
+        meanwhile), then completes and syncs the profile to ROM.
+
+        Never sends CAL_COMPLETE unsupervised: if the flow is interrupted
+        (abort, timeout), calibration mode is cancelled instead, since
+        completing with missing components can persist a broken table to the
+        MCU ROM.
+
+        Returns True if calibration completed, False if it was cancelled.
+        """
+        if not self.dev:
+            return False
+
+        logger.info("Entering calibration mode.")
+        self.send_calib(0x00)  # ENTER_CAL_MODE
+
+        start = time.perf_counter()
+        mask = 0
+        while True:
+            if should_abort is not None and should_abort():
+                logger.warning("Calibration aborted, cancelling.")
+                self.send_calib(0x02)  # CAL_CANCEL
+                return False
+            if time.perf_counter() - start > timeout:
+                logger.error(
+                    "Calibration timed out with mask %#04x, cancelling.", mask
+                )
+                self.send_calib(0x02)  # CAL_CANCEL
+                return False
+
+            status = self.read_calib_status(poll_interval)
+            if status is None:
+                continue
+            in_cal, mask = status
+            if not in_cal:
+                # MCU left calibration mode on its own (e.g. timeout).
+                logger.warning("MCU left calibration mode (mask %#04x).", mask)
+                return False
+            if (mask & CLAW_CAL_ALL) == CLAW_CAL_ALL:
+                break
+
+            if mask and not getattr(self, "_cal_logged", 0) & mask:
+                self._cal_logged = getattr(self, "_cal_logged", 0) | mask
+                names = []
+                if mask & CLAW_CAL_LT:
+                    names.append("LT")
+                if mask & CLAW_CAL_RT:
+                    names.append("RT")
+                if mask & CLAW_CAL_LS:
+                    names.append("LS")
+                if mask & CLAW_CAL_RS:
+                    names.append("RS")
+                if mask & CLAW_CAL_MOTION:
+                    names.append("Motion")
+                logger.info(f"Calibration progress: {', '.join(names)}")
+
+        logger.info("All components calibrated, completing.")
+        self.send_calib(0x01)  # CAL_COMPLETE
+        time.sleep(0.5)
+        # Persist the refreshed table (Center M: SaveProfile = SyncToROM).
+        self.write(CLAW_SYNC_ROM)
+        time.sleep(0.5)
+        return True
+
 
 DINPUT_BUTTON_MAP: dict[int, GamepadButton] = to_map(
     {
@@ -294,6 +417,33 @@ DINPUT_AXIS_MAP: dict[int, AbsAxis] = to_map(
     }
 )
 
+def run_calibration(conf: Config, should_exit: TEvent) -> None:
+    """Run the stick/trigger calibration flow on the MCU.
+
+    Opens the vendor cmd interface, enters calibration and waits for the
+    user to move the sticks / squeeze the triggers, then completes and
+    persists the refreshed table to ROM. Never sends CAL_COMPLETE
+    unsupervised: on abort/timeout the flow is cancelled instead, since
+    completing with missing components can persist a broken table to the
+    MCU ROM.
+    """
+    d_vend = ClawDInputHidraw(
+        vid=[MSI_CLAW_VID],
+        pid=[MSI_CLAW_XINPUT_PID, MSI_CLAW_DINPUT_PID],
+        application=MSI_VENDOR_APPLICATIONS,
+        required=True,
+    )
+    try:
+        d_vend.open()
+        d_vend.set_controller_mode(conf.get("dinput_mode", False), init=False)
+        logger.info("Running stick/trigger calibration (Center M-free).")
+        d_vend.calibrate(should_abort=should_exit.is_set, timeout=120.0)
+    except Exception as e:
+        logger.error(f"Calibration failed:\n{type(e)}: {e}")
+    finally:
+        d_vend.close(True)
+        time.sleep(2)
+
 
 def plugin_run(
     conf: Config,
@@ -309,7 +459,17 @@ def plugin_run(
     initialized = False
     init = time.perf_counter()
     repeated_fail = False
+
     while not should_exit.is_set():
+        # One-shot MCU stick/trigger calibration, requested through the
+        # settings action. get_action resets the key, so this fires once per
+        # request. Checked at the top of the loop (not only before it) so it
+        # also fires while the emulated controller is running: update() sets
+        # `updated`, controller_loop exits, and we land here before
+        # relaunching it.
+        if conf.get_action("recalibrate_sticks"):
+            run_calibration(conf, should_exit)
+
         if conf["controller_mode.mode"].to(str) == "disabled":
             time.sleep(ERROR_DELAY)
             if first_disabled:

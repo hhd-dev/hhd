@@ -53,3 +53,17 @@ children:
     tags: [non-essential]
     title: Hold View to Reboot
     default: False
+
+  recalibrate_sticks:
+    type: action
+    title: Recalibrate Sticks/Triggers
+    tags: [non-essential, verify]
+    hint: >-
+      Runs the MCU stick & trigger calibration without MSI Center M.
+      Start, then move both sticks to their extremes in circles several
+      times and squeeze both triggers fully until the flow finishes
+      (about 10 seconds). The refreshed calibration is only persisted
+      to the MCU ROM on successful completion, so an interrupted run
+      (timeout, abort, or power loss) simply leaves the previous table
+      in place — just run it again.
+    default: False
