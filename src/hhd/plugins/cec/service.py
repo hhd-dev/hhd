@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 SCAN_INTERVAL = 2.0
 LOOP_INTERVAL = 0.05
+DISCONNECTED_ERRORS = (errno.ENODEV, errno.ENONET, errno.ENOENT)
+RETRY_ERRORS = (*DISCONNECTED_ERRORS, errno.EACCES, errno.EPERM)
 
 
 class CecService:
@@ -27,6 +29,7 @@ class CecService:
         self.should_exit = should_exit
         self.adapters: dict[str, CecState] = {}
         self.failed: set[str] = set()
+        self.scan_errors: dict[str, tuple[int | None, str]] = {}
         self.powered_by_hhd: set[str] = set()
         self.suspended = False
         self.next_scan = 0.0
@@ -51,6 +54,8 @@ class CecService:
     def scan(self):
         paths = set(glob.glob("/dev/cec*"))
         self.failed.intersection_update(paths)
+        for path in set(self.scan_errors) - paths:
+            del self.scan_errors[path]
         for path in set(self.adapters) - paths:
             logger.info(f"CEC adapter '{path}' disappeared.")
             self._close_adapter(path)
@@ -62,6 +67,7 @@ class CecService:
                     state.powered_by_hhd = True
                     self.powered_by_hhd.remove(path)
                 self.adapters[path] = state
+                self.scan_errors.pop(path, None)
                 try:
                     self.remote.open()
                 except Exception as e:
@@ -74,15 +80,20 @@ class CecService:
                     f"{state.phys_addr & 0xf:x}."
                 )
             except Exception as e:
-                logger.warning(f"Could not activate CEC adapter '{path}': {e}")
+                error = (getattr(e, "errno", None), str(e))
+                if self.scan_errors.get(path) != error:
+                    # Unplugged HDMI ports are normal. Keep probing them so
+                    # connecting a display works without restarting HHD.
+                    log = (
+                        logger.debug
+                        if isinstance(e, OSError) and e.errno in DISCONNECTED_ERRORS
+                        else logger.warning
+                    )
+                    log(f"Could not activate CEC adapter '{path}': {e}")
+                    self.scan_errors[path] = error
                 if getattr(e, "powered_by_hhd", False):
                     self.powered_by_hhd.add(path)
-                transient_error = isinstance(e, OSError) and e.errno in (
-                    errno.EACCES,
-                    errno.ENODEV,
-                    errno.ENONET,
-                    errno.EPERM,
-                )
+                transient_error = isinstance(e, OSError) and e.errno in RETRY_ERRORS
                 if not transient_error and path not in self.powered_by_hhd:
                     self.failed.add(path)
 
@@ -99,9 +110,11 @@ class CecService:
                     if int(msg.msg[0]) & 0xF == state.logical_addr:
                         self.remote.handle(msg)
             except OSError as e:
-                logger.warning(f"Could not receive from CEC adapter '{path}': {e}")
+                log = logger.debug if e.errno in DISCONNECTED_ERRORS else logger.warning
+                log(f"Could not receive from CEC adapter '{path}': {e}")
                 self._close_adapter(path)
-                self.failed.add(path)
+                if e.errno not in RETRY_ERRORS:
+                    self.failed.add(path)
 
     def _sleep_transition(self):
         transition = self.sleep()

@@ -513,6 +513,90 @@ class TvRemoteTest(unittest.TestCase):
 
 
 class CecServiceTest(unittest.TestCase):
+    def test_disconnected_adapter_retries_without_warning_spam(self):
+        service = CecService(MagicMock())
+        service.remote = MagicMock()
+        state = CecState("/dev/cec1", 11, 0x2000, 4, b"HHD")
+        with (
+            patch("hhd.plugins.cec.service.glob.glob", return_value=["/dev/cec1"]),
+            patch(
+                "hhd.plugins.cec.service.initialize_cec",
+                side_effect=[OSError(errno.ENONET, "not connected")] * 3 + [state],
+            ) as initialize,
+            patch("hhd.plugins.cec.service.logger") as logger,
+        ):
+            for _ in range(4):
+                service.scan()
+
+        self.assertEqual(initialize.call_count, 4)
+        self.assertEqual(service.adapters, {"/dev/cec1": state})
+        self.assertEqual(service.scan_errors, {})
+        self.assertEqual(service.failed, set())
+        logger.warning.assert_not_called()
+        logger.debug.assert_called_once()
+
+    def test_repeated_permission_failure_warns_once_and_retries(self):
+        service = CecService(MagicMock())
+        with (
+            patch("hhd.plugins.cec.service.glob.glob", return_value=["/dev/cec0"]),
+            patch(
+                "hhd.plugins.cec.service.initialize_cec",
+                side_effect=PermissionError(errno.EACCES, "permission denied"),
+            ) as initialize,
+            patch("hhd.plugins.cec.service.logger.warning") as warning,
+        ):
+            for _ in range(3):
+                service.scan()
+
+        self.assertEqual(initialize.call_count, 3)
+        warning.assert_called_once()
+        self.assertEqual(service.failed, set())
+
+    def test_hotplug_race_is_retried(self):
+        service = CecService(MagicMock())
+        with (
+            patch("hhd.plugins.cec.service.glob.glob", return_value=["/dev/cec0"]),
+            patch(
+                "hhd.plugins.cec.service.initialize_cec",
+                side_effect=FileNotFoundError(errno.ENOENT, "device disappeared"),
+            ) as initialize,
+        ):
+            service.scan()
+            service.scan()
+        self.assertEqual(initialize.call_count, 2)
+        self.assertEqual(service.failed, set())
+
+    def test_receive_disconnect_allows_reconnecting_same_device_node(self):
+        for err in (errno.ENODEV, errno.ENONET, errno.EIO):
+            with self.subTest(errno=err):
+                service = CecService(MagicMock())
+                service.remote = MagicMock()
+                state = CecState("/dev/cec0", 10, 0x1000, 4, b"HHD")
+                service.adapters[state.dev] = state
+                with (
+                    patch(
+                        "hhd.plugins.cec.service.receive_cec",
+                        side_effect=OSError(err, "receive failed"),
+                    ),
+                    patch("hhd.plugins.cec.service.uninitialize") as close,
+                    patch("hhd.plugins.cec.service.logger") as logger,
+                ):
+                    service.receive()
+                close.assert_called_once_with(state)
+                self.assertEqual(service.adapters, {})
+                if err == errno.EIO:
+                    self.assertEqual(service.failed, {state.dev})
+                    logger.warning.assert_called_once()
+                else:
+                    self.assertEqual(service.failed, set())
+                    logger.warning.assert_not_called()
+                    with (
+                        patch("hhd.plugins.cec.service.glob.glob", return_value=[state.dev]),
+                        patch("hhd.plugins.cec.service.initialize_cec", return_value=state),
+                    ):
+                        service.scan()
+                    self.assertEqual(service.adapters, {state.dev: state})
+
     def test_scans_for_adapters_after_worker_start(self):
         service = CecService(MagicMock())
         service.remote = MagicMock()
