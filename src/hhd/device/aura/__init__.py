@@ -18,6 +18,7 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.plugins.utils import read_dmi
 from hhd.utils import get_distro_color, hsb_to_rgb
 
 logger = logging.getLogger(__name__)
@@ -853,15 +854,13 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match just product name
     # if a device exists here its officially supported
-    with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:
-        vendor = f.read().strip()
+    vendor = read_dmi("sys_vendor")
 
     # Match just product number, should be enough for now
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        # Different variants of the ally can have an additional _RC71L or not
-        dmi = f.read().strip()
+    # Different variants of the ally can have an additional _RC71L or not
+    dmi = read_dmi("product_name")
 
-    if vendor == "ASUSTeK COMPUTER INC." and "ROG Ally" not in dmi:
+    if dmi and vendor == "ASUSTeK COMPUTER INC." and "ROG Ally" not in dmi:
         return [AuraPlugin()]
 
     if any(d["product_id"] == XGM_PID for d in enumerate_unique(vid=ASUS_VID)):

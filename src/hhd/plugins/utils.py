@@ -1,3 +1,12 @@
+def read_dmi(name: str) -> str:
+    """Read an optional SMBIOS identity field, if firmware exposes it."""
+    try:
+        with open(f"/sys/devices/virtual/dmi/id/{name}") as f:
+            return f.read().strip()
+    except OSError:
+        return ""
+
+
 def get_relative_fn(fn: str):
     """Returns the directory of a file relative to the script calling this function."""
     import inspect

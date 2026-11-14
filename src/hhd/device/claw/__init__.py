@@ -13,6 +13,7 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.plugins.utils import read_dmi
 import logging
 
 from .const import CONFS
@@ -122,14 +123,13 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match just product name
     # if a device exists here its officially supported
-    with open("/sys/devices/virtual/dmi/id/board_name") as f:
-        dmi = f.read().strip()
+    dmi = read_dmi("board_name")
 
     dconf = CONFS.get(dmi, None)
     if dconf:
         return [ClawControllerPlugin(dmi, dconf)]
 
     if os.environ.get("HHD_FORCE_CLAW", "0") == "1":
-        return [ClawControllerPlugin("forced", CONFS["MS"])]
+        return [ClawControllerPlugin("forced", CONFS["MS-1T41"])]
 
     return []

@@ -15,6 +15,7 @@ from hhd.plugins.plugin import (
     run_steam_command,
     switch_priviledge,
 )
+from hhd.plugins.utils import read_dmi
 
 logger = logging.getLogger(__name__)
 
@@ -109,19 +110,12 @@ def get_os() -> str:
     distro = name.lower()
     logger.info(f"Running under Linux distro '{distro}'.")
 
-    try:
-        # Match just product name
-        # if a device exists here its officially supported
-        with open("/sys/devices/virtual/dmi/id/product_name") as f:
-            dmi = f.read().strip()
-
-        if "ONEXPLAYER F1 EVA-02" in dmi:
-            if distro == "anatase":
-                distro = "red_gold_an"
-            else:
-                distro = "red_gold"
-    except Exception as e:
-        logger.error(f"Could not read product name, error:\n{e}")
+    # SMBIOS is optional, e.g. on device-tree based ARM systems.
+    if "ONEXPLAYER F1 EVA-02" in read_dmi("product_name"):
+        if distro == "anatase":
+            distro = "red_gold_an"
+        else:
+            distro = "red_gold"
 
     return distro
 

@@ -7,6 +7,7 @@ from typing import Sequence
 from hhd.plugins import Context, HHDPlugin, HHDSettings, load_relative_yaml
 from hhd.plugins.conf import Config
 from hhd.plugins.plugin import Emitter
+from hhd.plugins.utils import read_dmi
 
 from adjustor.core.acpi import check_perms, initialize
 from adjustor.core.const import CPU_DATA, DEV_DATA, ASUS_DATA, MSI_DATA
@@ -224,10 +225,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     from .drivers.unified import UnifiedDriverPlugin
 
     drivers = []
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        prod = f.read().strip()
-    with open("/sys/devices/virtual/dmi/id/board_name") as f:
-        board = f.read().strip()
+    prod = read_dmi("product_name")
+    board = read_dmi("board_name")
     with open("/proc/cpuinfo") as f:
         cpuinfo = f.read().strip()
 

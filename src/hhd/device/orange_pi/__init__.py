@@ -12,6 +12,7 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.plugins.utils import read_dmi
 
 from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
 
@@ -115,7 +116,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     except Exception:
         return []
 
-    with open("/sys/devices/virtual/dmi/id/product_name", "r") as f:
-        dmi = f.read().strip()
+    dmi = read_dmi("product_name")
+    if not dmi:
+        return []
 
     return [GenericControllersPlugin(dmi, CONFS.get(dmi, get_default_config(dmi)))]

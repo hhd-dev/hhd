@@ -13,6 +13,7 @@ from hhd.plugins import (
     load_relative_yaml,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.plugins.utils import read_dmi
 from hhd.i18n import _
 
 from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
@@ -179,8 +180,7 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
 
     # Match just product name
     # if a device exists here its officially supported
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        dmi = f.read().strip()
+    dmi = read_dmi("product_name")
 
     dconf = CONFS.get(dmi, None)
     if dconf:

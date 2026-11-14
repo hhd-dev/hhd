@@ -13,6 +13,7 @@ from hhd.plugins import (
     fix_limits,
 )
 from hhd.plugins.settings import HHDSettings
+from hhd.plugins.utils import read_dmi
 
 
 class RogAllyControllersPlugin(HHDPlugin):
@@ -122,9 +123,8 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
         return existing
 
     # Match just product number, should be enough for now
-    with open("/sys/devices/virtual/dmi/id/product_name") as f:
-        # Different variants of the ally can have an additional _RC71L or not
-        dmi = f.read().strip()
+    # Different variants of the ally can have an additional _RC71L or not
+    dmi = read_dmi("product_name")
 
     # First gen ally
     # ROG Ally RC71L_Action or something else
