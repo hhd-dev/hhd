@@ -431,6 +431,11 @@ def turbo_loop(
             btn_map=(
                 BTN_MAPPINGS_OXP3 if dconf.get("quirk") == "oxp3" else BTN_MAPPINGS
             ),
+            pulse_keys=(
+                [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]
+                if dconf.get("volume_quirk", False)
+                else []
+            ),
         )
     ]
     if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
@@ -670,6 +675,11 @@ def controller_loop(
             required=False,
             grab=True,
             btn_map=mappings,
+            pulse_keys=(
+                [EC("KEY_VOLUMEUP"), EC("KEY_VOLUMEDOWN")]
+                if dconf.get("volume_quirk", False)
+                else []
+            ),
         )
     ]
     if dconf.get("protocol", None) == "hid_v2_x2" or dconf.get("quirk") == "apex":
