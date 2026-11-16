@@ -591,15 +591,12 @@ msgstr "Start+Select"
 msgid "Handheld"
 msgstr "Handheld"
 
-#, fuzzy
 msgid "GPD (LB/RB are L/R Clicks)"
 msgstr "GPD (LB/RB to kliknięcia L/R)"
 
-#, fuzzy
 msgid "SteamOS (LB/RB are R/L Clicks)"
 msgstr "SteamOS (LB/RB to kliknięcia R/L)"
 
-#, fuzzy
 msgid "For HHD (F15/F14)"
 msgstr "Dla HHD (F15/F14)"
 
@@ -1086,7 +1083,6 @@ msgstr "Odwraca przyciski głośności w urządzeniach w stylu X1, aby pasowały
 
 #. Setting: Vibration Strength
 #. Field: hint
-#, fuzzy
 msgid "Adjusts the vibration strength of the controller"
 msgstr "Reguluje siłę wibracji kontrolera"
 
