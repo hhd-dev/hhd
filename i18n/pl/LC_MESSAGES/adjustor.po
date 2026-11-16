@@ -1,0 +1,844 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-10 15:11+0200\n"
+"PO-Revision-Date: 2026-11-16 14:20+0100\n"
+"Last-Translator: Kamil Maciąg <kmaciag93@users.noreply.github.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/hhd/adjustor/pl/>\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Generated-By: Weblate 5.13.1-rc\n"
+
+msgid "Disable Decky TDP plugins using the button below to continue."
+msgstr "Wyłącz wtyczki TDP Decky przyciskiem poniżej, aby kontynuować."
+
+#. Setting: TDP Controls
+#. Field: title
+msgid "TDP Controls"
+msgstr "Sterowanie TDP"
+
+#. Setting: Enable TDP Controls
+#. Field: title
+msgid "Enable TDP Controls"
+msgstr "Włącz sterowanie TDP"
+
+#. Setting: Enable TDP Controls
+#. Field: hint
+msgid "Enables TDP management by Handheld Daemon. While enabled, Handheld Daemon will set and maintain the TDP limits set on start-up and during other device changes (ac/dc)."
+msgstr "Włącza zarządzanie TDP przez Handheld Daemon. Gdy jest włączone, Handheld Daemon ustawi i będzie utrzymywał limity TDP podczas uruchamiania i przy innych zmianach urządzenia (zasilacz/bateria)."
+
+#. Setting: Error
+#. Field: title
+msgid "Error"
+msgstr "Błąd"
+
+#. Setting: Error
+#. Option: nowrite
+msgid "Can not write to ACPI Call file. ACPI Call is required for TDP."
+msgstr "Nie można zapisywać do pliku ACPI Call. ACPI Call jest wymagany dla TDP."
+
+#. Setting: TDP Capabilities
+#. Field: title
+msgid "TDP Capabilities"
+msgstr "Możliwości TDP"
+
+#. Setting: Disable Decky TDP Plugins
+#. Field: title
+msgid "Disable Decky TDP Plugins"
+msgstr "Wyłącz wtyczki TDP Decky"
+
+#. Setting: Disable Decky TDP Plugins
+#. Field: hint
+msgid "Disables Decky TDP plugins (Powercontrol, SimpleDeckyTDP) by moving them from ~/homebrew/plugins to ~/homebrew/plugins/hhd-disabled. Then, restarts Decky. This might cause Steam to restart. Move them back and reboot to re-enable."
+msgstr "Wyłącza wtyczki TDP Decky (Powercontrol, SimpleDeckyTDP), przenosząc je z ~/homebrew/plugins do ~/homebrew/plugins/hhd-disabled. Następnie restartuje Decky. Może to spowodować restart Steam. Przenieś je z powrotem i uruchom ponownie komputer, aby je ponownie włączyć."
+
+#. Setting: Enable TDP Controls
+#. Field: hint
+msgid ""
+"Enables TDP management by the Handheld Daemon. While enabled, Handheld Daemon will set and maintain the TDP limits set on start-up and during other device changes (ac/dc).\n"
+"If the device crashes, TDP setting will be disabled on next startup."
+msgstr ""
+"Włącza zarządzanie TDP przez Handheld Daemon. Gdy jest włączone, Handheld Daemon ustawi i będzie utrzymywał limity TDP podczas uruchamiania i przy innych zmianach urządzenia (zasilacz/bateria).\n"
+"Jeśli urządzenie ulegnie awarii, ustawienie TDP zostanie wyłączone przy następnym uruchomieniu."
+
+#. Setting: Enforce Device TDP Limits
+#. Field: title
+msgid "Enforce Device TDP Limits"
+msgstr "Respektuj limity TDP urządzenia"
+
+#. Setting: Enforce Device TDP Limits
+#. Field: hint
+msgid ""
+"When this option is on, the settings will adhere to the limits set out by the device manufacturer, subject to their availability.\n"
+"With it off, the TDP settings ranges will expand to what is logically possible for the current device (regardless of manufacturer specifications).\n"
+"All settings outside specifications will be set to system specifications after rebooting."
+msgstr ""
+"Gdy ta opcja jest włączona, ustawienia będą przestrzegać limitów określonych przez producenta urządzenia, w zależności od ich dostępności.\n"
+"Po wyłączeniu zakresy ustawień TDP rozszerzą się do tego, co logicznie możliwe dla danego urządzenia (niezależnie od specyfikacji producenta).\n"
+"Wszystkie ustawienia spoza specyfikacji zostaną przywrócone do specyfikacji systemowej po restarcie."
+
+msgid "Steam is controlling TDP"
+msgstr "TDP steruje Steam"
+
+#. Setting: Asus TDP
+#. Field: title
+msgid "Asus TDP"
+msgstr "TDP ASUS"
+
+#. Setting: Asus TDP
+#. Field: hint
+#. Setting: MSI TDP
+msgid "Uses the interface of Armory Crate to set the TDP of the device."
+msgstr "Używa interfejsu Armoury Crate do ustawiania TDP urządzenia."
+
+#. Setting: TDP Mode
+#. Field: title
+msgid "TDP Mode"
+msgstr "Tryb TDP"
+
+#. Setting: Silent
+#. Field: title
+msgid "Silent"
+msgstr "Cichy"
+
+#. Setting: Performance
+#. Field: title
+#. Setting: Power Profile
+#. Option: performance
+#. Setting: Platform Profile
+#. Setting: Energy Policy
+msgid "Performance"
+msgstr "Wydajność"
+
+#. Setting: Turbo
+#. Field: title
+msgid "Turbo"
+msgstr "Turbo"
+
+#. Setting: Custom
+#. Field: title
+msgid "Custom"
+msgstr "Własny"
+
+#. Setting: TDP
+#. Field: title
+msgid "TDP"
+msgstr "TDP"
+
+#. Setting: TDP
+#. Field: hint
+msgid "Average TDP Target. TDP Boost is recommended for desktop use and does not affect gaming."
+msgstr "Docelowe średnie TDP. Wzmocnienie TDP (boost) jest zalecane do użytku na pulpicie i nie wpływa na gry."
+
+#. Setting: TDP Boost
+#. Field: title
+msgid "TDP Boost"
+msgstr "Wzmocnienie TDP"
+
+#. Setting: TDP Boost
+#. Field: hint
+msgid "Allows the device to temporarily boost by setting appropriate slow and fast TDPs."
+msgstr "Pozwala urządzeniu chwilowo wzmocnić wydajność przez ustawienie odpowiednich wolnych i szybkich limitów TDP."
+
+#. Setting:
+#. Field: title
+msgid " "
+msgstr " "
+
+#. Setting: Change TDP with View+Y
+#. Field: title
+msgid "Change TDP with View+Y"
+msgstr "Zmiana TDP przyciskami View+Y"
+
+#. Setting: Change TDP with View+Y
+#. Field: hint
+msgid "Allows you to cycle through TDP modes with the View+Y key combination. Recommended to use with ROG Swap, as the View button will be muted to games."
+msgstr "Pozwala przełączać tryby TDP kombinacją klawiszy View+Y. Zalecane użycie z ROG Swap, ponieważ przycisk View będzie niewidoczny dla gier."
+
+#. Setting: Custom Fan Curve
+#. Field: title
+msgid "Custom Fan Curve"
+msgstr "Własna krzywa wentylatora"
+
+#. Setting: Custom Fan Curve
+#. Field: hint
+msgid "Allows you to set a custom fan curve."
+msgstr "Pozwala ustawić własną krzywą wentylatora."
+
+#. Setting: Disabled
+#. Field: title
+#. Setting: Extreme Standby Mode
+#. Option: disabled
+#. Setting: Custom Scheduler
+#. Setting: CPU Boost
+msgid "Disabled"
+msgstr "Wyłączona"
+
+#. Setting: Disabled
+#. Field: hint
+msgid "Lets the device manage the fan curve on its own."
+msgstr "Pozwala urządzeniu samodzielnie zarządzać krzywą wentylatora."
+
+#. Setting: Manual
+#. Field: title
+msgid "Manual"
+msgstr "Ręczna"
+
+#. Setting: 30C
+#. Field: title
+msgid "30C"
+msgstr "30C"
+
+#. Setting: 30C
+#. Field: hint
+#. Setting: 40C
+#. Setting: 50C
+#. Setting: 60C
+#. Setting: 70C
+#. Setting: 80C
+#. Setting: 90C
+#. Setting: 100C
+#. Setting: 10C
+#. Setting: 20C
+msgid "Sets the speed at the named temperature."
+msgstr "Ustawia prędkość przy podanej temperaturze."
+
+#. Setting: 40C
+#. Field: title
+msgid "40C"
+msgstr "40C"
+
+#. Setting: 50C
+#. Field: title
+msgid "50C"
+msgstr "50C"
+
+#. Setting: 60C
+#. Field: title
+msgid "60C"
+msgstr "60C"
+
+#. Setting: 70C
+#. Field: title
+msgid "70C"
+msgstr "70C"
+
+#. Setting: 80C
+#. Field: title
+msgid "80C"
+msgstr "80C"
+
+#. Setting: 90C
+#. Field: title
+msgid "90C"
+msgstr "90C"
+
+#. Setting: 100C
+#. Field: title
+msgid "100C"
+msgstr "100C"
+
+#. Setting: Restore Default
+#. Field: title
+msgid "Restore Default"
+msgstr "Przywróć domyślną"
+
+#. Setting: Restore Default
+#. Field: hint
+msgid "Restore a default sane fan curve."
+msgstr "Przywraca domyślną, rozsądną krzywą wentylatora."
+
+#. Setting: Fan Curve Limitation
+#. Field: title
+msgid "Fan Curve Limitation"
+msgstr "Ograniczenie krzywej wentylatora"
+
+#. Setting: Extreme Standby Mode
+#. Field: title
+msgid "Extreme Standby Mode"
+msgstr "Skrajny tryb czuwania"
+
+#. Setting: Extreme Standby Mode
+#. Field: hint
+#, python-format
+msgid "Lowers the power consumption of the device from 4% to 1% overnight. Active only on battery. Turns off the power light and the controller  requires longer to wake up."
+msgstr "Obniża zużycie energii urządzenia z 4% do 1% w ciągu nocy. Aktywne tylko na baterii. Wyłącza diodę zasilania, a wybudzenie kontrolera wymaga więcej czasu."
+
+#. Setting: Extreme Standby Mode
+#. Option: enabled
+#. Setting: CPU Boost
+msgid "Enabled"
+msgstr "Włączony"
+
+#. Setting: Battery Settings
+#. Field: title
+msgid "Battery Settings"
+msgstr "Ustawienia baterii"
+
+#. Setting: Charge Limit (%)
+#. Field: title
+msgid "Charge Limit (%)"
+msgstr "Limit ładowania (%)"
+
+#. Setting: Charge Limit (%)
+#. Field: hint
+msgid "Applies a charge limit to the battery, 75% and up."
+msgstr "Ustawia limit ładowania baterii, 75% i więcej."
+
+#. Setting: Charge Limit (%)
+#. Option: p70
+msgid "70%"
+msgstr "70%"
+
+#. Setting: Charge Limit (%)
+#. Option: p80
+msgid "80%"
+msgstr "80%"
+
+#. Setting: Charge Limit (%)
+#. Option: p85
+msgid "85%"
+msgstr "85%"
+
+#. Setting: Charge Limit (%)
+#. Option: p90
+msgid "90%"
+msgstr "90%"
+
+#. Setting: Charge Limit (%)
+#. Option: p95
+msgid "95%"
+msgstr "95%"
+
+#. Setting: Charge Limit (%)
+#. Option: disabled
+#. Setting: Charge Bypass
+msgid "Unset"
+msgstr "Brak"
+
+#. Setting: Charge Bypass
+#. Field: title
+msgid "Charge Bypass"
+msgstr "Ładowanie z pominięciem baterii"
+
+#. Setting: Charge Bypass
+#. Option: awake
+msgid "While On"
+msgstr "Gdy włączony"
+
+#. Setting: Charge Bypass
+#. Option: always
+msgid "Always"
+msgstr "Zawsze"
+
+#. Setting: Power
+#. Field: title
+#. Setting: Energy Policy
+#. Option: power
+msgid "Power"
+msgstr "Zasilanie"
+
+#. Setting: Power Profile
+#. Field: title
+msgid "Power Profile"
+msgstr "Profil zasilania"
+
+#. Setting: Power Profile
+#. Field: hint
+msgid "Allows setting the power profile of the system using Power Profiles Daemon."
+msgstr "Pozwala ustawić profil zasilania systemu za pomocą Power Profiles Daemon."
+
+#. Setting: Power Profile
+#. Option: power-saver
+#. Setting: Powersave
+#. Field: title
+msgid "Powersave"
+msgstr "Oszczędzanie energii"
+
+#. Setting: Power Profile
+#. Option: balanced
+#. Setting: CPU Power (EPP)
+#. Option: balance_power
+#. Setting: Balanced
+#. Field: title
+#. Setting: Platform Profile
+#. Setting: Energy Policy
+msgid "Balanced"
+msgstr "Zrównoważony"
+
+#. Setting: Custom Scheduler
+#. Field: title
+msgid "Custom Scheduler"
+msgstr "Własny scheduler"
+
+#. Setting: Custom Scheduler
+#. Field: hint
+msgid "Allows attaching a scheduler to the kernel sched_ext. Schedulers need to be installed and kernel needs to support sched_ext."
+msgstr "Pozwala podpiąć scheduler do jądra sched_ext. Schedulery muszą być zainstalowane, a jądro musi obsługiwać sched_ext."
+
+#. Setting: Custom Scheduler
+#. Option: scx_lavd
+msgid "LAVD"
+msgstr "LAVD"
+
+#. Setting: Custom Scheduler
+#. Option: scx_bpfland
+msgid "bpfland"
+msgstr "bpfland"
+
+#. Setting: Custom Scheduler
+#. Option: scx_rusty
+msgid "rusty"
+msgstr "rusty"
+
+#. Setting: Processor Settings
+#. Field: title
+msgid "Processor Settings"
+msgstr "Ustawienia procesora"
+
+#. Setting: CPU Settings
+#. Field: title
+msgid "CPU Settings"
+msgstr "Ustawienia CPU"
+
+#. Setting: Auto
+#. Field: title
+msgid "Auto"
+msgstr "Automatycznie"
+
+#. Setting: Auto
+#. Field: hint
+msgid "Handheld Daemon will manage the energy management settings. This includes CPU governor, CPU boost, GPU frequency, and CPU power preferences. At low TDPs, the CPU will be tuned down and at other TDPs, it will use balanced settings."
+msgstr "Handheld Daemon będzie zarządzał ustawieniami energii. Obejmuje to governor CPU, boost CPU, częstotliwość GPU i preferencje energii CPU. Przy niskich TDP procesor zostanie przycięty, a przy pozostałych TDP używane będą zrównoważone ustawienia."
+
+#. Setting: Manual
+#. Field: hint
+msgid "Allows you to set the energy management settings manually."
+msgstr "Pozwala ręcznie ustawić ustawienia zarządzania energią."
+
+#. Setting: CPU Power (EPP)
+#. Field: title
+msgid "CPU Power (EPP)"
+msgstr "Moc CPU (EPP)"
+
+#. Setting: CPU Power (EPP)
+#. Field: hint
+msgid "Sets the energy performance preference for the CPU. Keep on balanced for good performance on all TDPs. Options map to `power`, `balance_power`, `balance_performance`. Performance is not recommended and is not included."
+msgstr "Ustawia preferencję wydajności energetycznej CPU. Utrzymuj opcję zrównoważoną dla dobrej wydajności przy wszystkich TDP. Opcje odpowiadają `power`, `balance_power`, `balance_performance`. Wydajność nie jest zalecana i nie jest uwzględniona."
+
+#. Setting: CPU Power (EPP)
+#. Option: power
+msgid "Low"
+msgstr "Niska"
+
+#. Setting: CPU Power (EPP)
+#. Option: balance_performance
+msgid "High"
+msgstr "Wysoka"
+
+#. Setting: CPU Minimum Frequency
+#. Field: title
+msgid "CPU Minimum Frequency"
+msgstr "Minimalna częstotliwość CPU"
+
+#. Setting: CPU Minimum Frequency
+#. Field: hint
+msgid "Sets the minimum frequency for the CPU. Using 400MHz will save battery in light games. However, the delay of increasing the frequency may cause minor stutters, especially in VRR displays."
+msgstr "Ustawia minimalną częstotliwość CPU. Użycie 400MHz oszczędza baterię w mało wymagających grach. Opóźnienie podnoszenia częstotliwości może jednak powodować drobne przycięcia, szczególnie na ekranach VRR."
+
+#. Setting: CPU Minimum Frequency
+#. Option: min
+msgid "400MHz"
+msgstr "400MHz"
+
+#. Setting: CPU Minimum Frequency
+#. Option: nonlinear
+msgid "1GHz"
+msgstr "1GHz"
+
+#. Setting: CPU Boost
+#. Field: title
+msgid "CPU Boost"
+msgstr "Boost CPU"
+
+#. Setting: CPU Boost
+#. Field: hint
+msgid "Enables or disables the CPU boost frequencies. Disabling lowers total consumption by 2W with  minimal performance impact."
+msgstr "Włącza lub wyłącza częstotliwości boost procesora. Wyłączenie obniża całkowite zużycie o 2W przy minimalnym wpływie na wydajność."
+
+#. Setting: Custom Scheduler
+#. Option: scx_p2dq
+msgid "P2DQ"
+msgstr "P2DQ"
+
+#. Setting: Custom Scheduler
+#. Option: scx_flash
+msgid "Flash"
+msgstr "Flash"
+
+#. Setting: GPU Frequency
+#. Field: title
+msgid "GPU Frequency"
+msgstr "Częstotliwość GPU"
+
+#. Setting: GPU Frequency
+#. Field: hint
+msgid "Pins the GPU to a certain frequency. Helps in certain games that are CPU or GPU heavy by shifting power to or from the GPU. Has a minor effect."
+msgstr "Przypina GPU do określonej częstotliwości. Pomaga w niektórych grach obciążających CPU lub GPU, przesuwając moc na GPU lub z GPU. Ma drobny wpływ."
+
+#. Setting: Auto
+#. Field: hint
+msgid "Lets the GPU manage its own frequency."
+msgstr "Pozwala GPU samodzielnie zarządzać własną częstotliwością."
+
+#. Setting: Max Limit
+#. Field: title
+msgid "Max Limit"
+msgstr "Limit maksimum"
+
+#. Setting: Max Limit
+#. Field: hint
+msgid "Limits the maximum frequency of the GPU."
+msgstr "Ogranicza maksymalną częstotliwość GPU."
+
+#. Setting: Maximum Frequency
+#. Field: title
+msgid "Maximum Frequency"
+msgstr "Częstotliwość maksymalna"
+
+#. Setting: Range
+#. Field: title
+msgid "Range"
+msgstr "Zakres"
+
+#. Setting: Range
+#. Field: hint
+msgid "Sets the GPU frequency to a range."
+msgstr "Ustawia częstotliwość GPU jako zakres."
+
+#. Setting: Minimum Frequency
+#. Field: title
+msgid "Minimum Frequency"
+msgstr "Częstotliwość minimalna"
+
+#. Setting: Fixed
+#. Field: title
+msgid "Fixed"
+msgstr "Stała"
+
+#. Setting: Fixed
+#. Field: hint
+msgid "Pins the GPU to a certain frequency (not recommended)."
+msgstr "Przypina GPU do określonej częstotliwości (niezalecane)."
+
+#. Setting: Frequency
+#. Field: title
+msgid "Frequency"
+msgstr "Częstotliwość"
+
+#. Setting: Conflict Detected
+#. Field: title
+msgid "Conflict Detected"
+msgstr "Wykryto konflikt"
+
+#. Setting: Enable Processor Settings
+#. Field: title
+msgid "Enable Processor Settings"
+msgstr "Włącz ustawienia procesora"
+
+#. Setting: Enable energy management
+#. Field: title
+msgid "Enable energy management"
+msgstr "Włącz zarządzanie energią"
+
+#. Setting: Enable energy management
+#. Field: hint
+msgid "Handheld daemon will manage the power preferences for the system, including Governor, Boost, GPU frequency, and EPP. In addition, Handheld daemon will launch a PPD service to replace PPD's role in the system. "
+msgstr "Handheld Daemon będzie zarządzał preferencjami zasilania systemu, w tym governor, boost, częstotliwością GPU i EPP. Dodatkowo Handheld Daemon uruchomi usługę PPD, która zastąpi rolę PPD w systemie."
+
+#. Setting: Enable PPD Emulation (KDE/Gnome Power)
+#. Field: title
+msgid "Enable PPD Emulation (KDE/Gnome Power)"
+msgstr "Włącz emulację PPD (zasilanie KDE/GNOME)"
+
+#. Setting: Enable PPD Emulation (KDE/Gnome Power)
+#. Field: hint
+msgid "Enable PPD service to manage the power preferences for the system."
+msgstr "Włącz usługę PPD do zarządzania preferencjami zasilania systemu."
+
+msgid "Power Light"
+msgstr "Dioda zasilania"
+
+msgid "Legion Button + Y changes TDP Mode"
+msgstr "Przycisk Legion + Y zmienia tryb TDP"
+
+#. Setting: Lenovo TDP
+#. Field: title
+msgid "Lenovo TDP"
+msgstr "TDP Lenovo"
+
+#. Setting: Lenovo TDP
+#. Field: hint
+msgid "Uses the interface of Legion Space to set the TDP of the device."
+msgstr "Używa interfejsu Legion Space do ustawiania TDP urządzenia."
+
+#. Setting: Quiet
+#. Field: title
+#. Setting: Platform Profile
+#. Option: quiet
+msgid "Quiet"
+msgstr "Cichy"
+
+#. Setting: TDP
+#. Field: hint
+msgid "Maximum average TDP. Boost goes a bit higher and is recommended for desktop use."
+msgstr "Maksymalne średnie TDP. Boost jest nieco wyższy i jest zalecany do użytku na pulpicie."
+
+#. Setting: TDP Boost
+#. Field: hint
+msgid "Allows the device to boost by setting appropriate slow and fast TDPs."
+msgstr "Pozwala urządzeniu wzmocnić wydajność przez ustawienie odpowiednich wolnych i szybkich limitów TDP."
+
+#. Setting: Set Fan to Full Speed
+#. Field: title
+msgid "Set Fan to Full Speed"
+msgstr "Ustaw wentylator na pełną prędkość"
+
+#. Setting: Disabled
+#. Field: hint
+msgid "Lets Legion GO manage the curve on its own. Setting this option will cause a mode change to reset the fan curve."
+msgstr "Pozwala Legion Go samodzielnie zarządzać krzywą. Ustawienie tej opcji spowoduje zmianę trybu i zresetowanie krzywej wentylatora."
+
+#. Setting: 10C
+#. Field: title
+msgid "10C"
+msgstr "10C"
+
+#. Setting: 20C
+#. Field: title
+msgid "20C"
+msgstr "20C"
+
+#. Setting: Enforce Windows Minimums
+#. Field: title
+msgid "Enforce Windows Minimums"
+msgstr "Wymuszaj minimum z Windows"
+
+#. Setting: Enforce Windows Minimums
+#. Field: hint
+msgid "Enforce the minimum fan curve from Legion Space."
+msgstr "Wymusza minimalną krzywą wentylatora z Legion Space."
+
+#. Setting: Restore Default
+#. Field: hint
+msgid "Reset to the original fan curve for custom mode."
+msgstr "Przywraca oryginalną krzywą wentylatora w trybie własnym."
+
+#. Setting: Show TDP changes with RGB
+#. Field: title
+msgid "Show TDP changes with RGB"
+msgstr "Pokazuj zmiany TDP przez RGB"
+
+#. Setting: Charge Limit (80%)
+#. Field: title
+msgid "Charge Limit (80%)"
+msgstr "Limit ładowania (80%)"
+
+#. Setting: Charge Limit (80%)
+#. Field: hint
+msgid "Limits device charging to 80%."
+msgstr "Ogranicza ładowanie urządzenia do 80%."
+
+#. Setting: Power Light (Awake)
+#. Field: title
+msgid "Power Light (Awake)"
+msgstr "Dioda zasilania (czuwanie)"
+
+#. Setting: Power Light (Sleep)
+#. Field: title
+msgid "Power Light (Sleep)"
+msgstr "Dioda zasilania (sen)"
+
+#. Setting: MSI TDP
+#. Field: title
+msgid "MSI TDP"
+msgstr "TDP MSI"
+
+#. Setting: Missing Driver
+#. Field: title
+msgid "Missing Driver"
+msgstr "Brak sterownika"
+
+#. Setting: Sport
+#. Field: title
+msgid "Sport"
+msgstr "Sport"
+
+#. Setting: Change TDP with View+Y
+#. Field: hint
+msgid "Allows you to cycle through TDP modes with the View+Y key combination. Recommended to use with button swap, as the View button will be muted to games."
+msgstr "Pozwala przełączać tryby TDP kombinacją klawiszy View+Y. Zalecane użycie ze zmianą przycisków, ponieważ przycisk View będzie niewidoczny dla gier."
+
+#. Setting: TDP Settings
+#. Field: title
+msgid "TDP Settings"
+msgstr "Ustawienia TDP"
+
+#. Setting: TDP
+#. Field: hint
+msgid "Controls all Ryzen SMU settings through preset curves."
+msgstr "Steruje wszystkimi ustawieniami Ryzen SMU przez gotowe krzywe."
+
+#. Setting: Custom Fan Curve
+#. Field: hint
+msgid "Allows you to set a custom fan curve and to choose the temperature probe (Edge or Junction). Junction is the peak temperature of the chip: responds faster and prevents throttling. Edge is the temperature of the chip: responds slower and prevents overheating."
+msgstr "Pozwala ustawić własną krzywą wentylatora i wybrać czujnik temperatury (Edge lub Junction). Junction to temperatura szczytowa chipu: reaguje szybciej i zapobiega throttlingowi. Edge to temperatura chipu: reaguje wolniej i zapobiega przegrzaniu."
+
+#. Setting: Manual (Edge, Smooth)
+#. Field: title
+msgid "Manual (Edge, Smooth)"
+msgstr "Ręczna (Edge, łagodna)"
+
+#. Setting: Reset to Default
+#. Field: title
+msgid "Reset to Default"
+msgstr "Przywróć domyślne"
+
+#. Setting: Manual (Tctl, Fast)
+#. Field: title
+msgid "Manual (Tctl, Fast)"
+msgstr "Ręczna (Tctl, szybka)"
+
+#. Setting: Advanced Configurator
+#. Field: title
+msgid "Advanced Configurator"
+msgstr "Konfigurator zaawansowany"
+
+#. Setting: Apply Settings
+#. Field: title
+msgid "Apply Settings"
+msgstr "Zastosuj ustawienia"
+
+#. Setting: TDP Status
+#. Field: title
+msgid "TDP Status"
+msgstr "Status TDP"
+
+#. Setting: Platform Profile
+#. Field: title
+msgid "Platform Profile"
+msgstr "Profil platformy"
+
+#. Setting: Platform Profile
+#. Option: disabled
+msgid "Not Set"
+msgstr "Nieustawiony"
+
+#. Setting: Platform Profile
+#. Option: low-power
+msgid "Low Power"
+msgstr "Oszczędny"
+
+#. Setting: Platform Profile
+#. Option: cool
+msgid "Cool"
+msgstr "Chłodny"
+
+#. Setting: Platform Profile
+#. Option: balanced-performance
+msgid "Balanced Performance"
+msgstr "Zrównoważona wydajność"
+
+#. Setting: Energy Policy
+#. Field: title
+msgid "Energy Policy"
+msgstr "Polityka energetyczna"
+
+#. Setting: Standard Parameters
+#. Field: title
+msgid "Standard Parameters"
+msgstr "Parametry standardowe"
+
+#. Setting: Standard Parameters
+#. Field: hint
+msgid ""
+"Standard TDP parameters for Ryzen processors. All need to be set to properly control the TDP of the device.\n"
+"Ryzen processors have 2 modes: STTv2 and STAPM (legacy). AMD suggests to  manufacturers to use STTv2, which makes the Legion Go the only device to  offer the STAPM alternative through a BIOS setting.\n"
+"In STTv2, the device will keep boosting until the \"skin\" of the device (hottest user accessible spot) reaches a manufacturer set temperature. Then, the device will use the Skin Temp TDP limit. In STAPM, the device averages the TDP values from the 1-3 previous minutes and keeps that value under the STAPM TDP limit. Either mode ignores the other mode's limit (STAPM limit does nothing on STT and Skin Temp Limit does nothing on STAPM), so both should be set.\n"
+"The Fast and Slow limits control boosting behavior. The Fast TDP limit is the actual max TDP value of the device. Then,the Slow TDP limit averages the last 10-20s of TDP values and keeps the value below it."
+msgstr ""
+"Standardowe parametry TDP dla procesorów Ryzen. Wszystkie muszą być ustawione, aby poprawnie sterować TDP urządzenia.\n"
+"Procesory Ryzen mają 2 tryby: STTv2 i STAPM (starszy). AMD zaleca producentom używanie STTv2, dzięki czemu Legion Go jest jedynym urządzeniem oferującym alternatywę STAPM przez ustawienie BIOS.\n"
+"W trybie STTv2 urządzenie będzie podnosić wydajność, aż „skóra\" urządzenia (najgorętszy punkt dostępny dla użytkownika) osiągnie ustawioną przez producenta temperaturę. Wtedy urządzenie zacznie używać limitu TDP Skin Temp. W trybie STAPM urządzenie uśrednia wartości TDP z poprzednich 1-3 minut i utrzymuje tę wartość poniżej limitu TDP STAPM. Każdy tryb ignoruje limit drugiego (limit STAPM nic nie robi w STT, a limit Skin Temp nic nie robi w STAPM), więc oba powinny być ustawione.\n"
+"Limity Fast i Slow sterują zachowaniem boostu. Limit Fast TDP to faktyczna maksymalna wartość TDP urządzenia. Limit Slow TDP uśrednia ostatnie 10-20 s wartości TDP i utrzymuje wartość poniżej niego."
+
+#. Setting: Fast TDP Limit
+#. Field: title
+msgid "Fast TDP Limit"
+msgstr "Limit Fast TDP"
+
+#. Setting: Slow TDP Limit
+#. Field: title
+msgid "Slow TDP Limit"
+msgstr "Limit Slow TDP"
+
+#. Setting: Skin Temp TDP Limit
+#. Field: title
+msgid "Skin Temp TDP Limit"
+msgstr "Limit TDP Skin Temp"
+
+#. Setting: STAPM TDP Limit
+#. Field: title
+msgid "STAPM TDP Limit"
+msgstr "Limit TDP STAPM"
+
+#. Setting: Advanced Parameters
+#. Field: title
+msgid "Advanced Parameters"
+msgstr "Parametry zaawansowane"
+
+#. Setting: Advanced Parameters
+#. Field: hint
+msgid ""
+"The Advanced Parameters below control boosting behavior and need to be adjusted per device depending on its cooling system. They mostly affect boosting behavior, which is important for desktop use.\n"
+"The exception is the Temp Target (TCTL), which controls the max temperature of the CPU die. On most devices, it can safely be raised up to 100C.  However, if a temperature spike makes the chip reach 105C, it will enter a thermal protection mode, which is 5W, for a couple of minutes.\n"
+"The integration times for Slow TDP and STAPM influence how many previous TDP values the CPU will average to calculate its current Slow and STAPM  TDP values."
+msgstr ""
+"Poniższe parametry zaawansowane sterują zachowaniem boostu i wymagają dostosowania do danego urządzenia, w zależności od jego układu chłodzenia. Wpływają głównie na zachowanie boostu, co jest ważne przy użytkowaniu na pulpicie.\n"
+"Wyjątkiem jest Temp Target (TCTL), który steruje maksymalną temperaturą płytki CPU. Na większości urządzeń można go bezpiecznie podnieść do 100C. Jeśli jednak skok temperatury sprawi, że chip osiągnie 105C, wejdzie w tryb ochrony termicznej, 5W, na kilka minut.\n"
+"Czasy integracji dla Slow TDP i STAPM wpływają na to, ile poprzednich wartości TDP procesor uśredni, aby obliczyć bieżące wartości Slow i STAPM."
+
+#. Setting: Temp Target (TCTL)
+#. Field: title
+msgid "Temp Target (TCTL)"
+msgstr "Cel temperatury (TCTL)"
+
+#. Setting: Slow Limit Integration Time
+#. Field: title
+msgid "Slow Limit Integration Time"
+msgstr "Czas integracji limitu Slow"
+
+#. Setting: STAPM Limit Integration Time
+#. Field: title
+msgid "STAPM Limit Integration Time"
+msgstr "Czas integracji limitu STAPM"
+
+#. Setting: Enable Advanced Parameters
+#. Field: title
+msgid "Enable Advanced Parameters"
+msgstr "Włącz parametry zaawansowane"
+
+#~ msgid "Add TDP to /sys for Steam (Requires Restart)"
+#~ msgstr "Add TDP to /sys for Steam (Requires Restart)"
+
+#~ msgid "Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the TDP slider in Steam."
+#~ msgstr "Uses a FUSE mount to add TDP attributes to /sys/class/drm. This fixes the TDP slider in Steam."
