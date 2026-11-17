@@ -132,17 +132,61 @@ def find_x11_auth(uid: int):
             return os.path.join(LOCATION, fn)
 
 
+def get_active_seat_user() -> int | None:
+    try:
+        session = subprocess.run(
+            ["loginctl", "show-seat", "seat0", "-p", "ActiveSession", "--value"],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=2,
+        ).stdout.strip()
+        if not session:
+            return None
+        return int(
+            subprocess.run(
+                ["loginctl", "show-session", session, "-p", "User", "--value"],
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=2,
+            ).stdout.strip()
+        )
+    except (OSError, subprocess.SubprocessError, ValueError) as e:
+        logger.debug(f"Could not find the active desktop user: {e}")
+        return None
+
+
 def find_x11_display():
-    # First, try to find an X11 display owned by the current user
-    # If not found, try to find one owned by root
-    for skip_root in (True, False):
-        for fn in sorted(os.listdir(X11_DIR)):
-            if not fn.startswith(b"X"):
-                continue
+    # Display managers can leave a greeter socket (e.g. COSMIC's :0) next to
+    # the user's desktop. Socket order alone does not identify the desktop.
+    active_uid = get_active_seat_user()
+    try:
+        files = sorted(os.listdir(X11_DIR))
+    except FileNotFoundError:
+        return None, 0
+
+    displays = []
+    for fn in files:
+        if not fn.startswith(b"X") or not fn[1:].isdigit():
+            continue
+        try:
             uid = os.stat(X11_DIR + fn).st_uid
-            if skip_root and uid == 0:
-                continue
-            return ":" + fn[1:].decode(), uid
+        except FileNotFoundError:
+            continue
+        displays.append((":" + fn[1:].decode(), uid))
+
+    if active_uid is not None:
+        # Do not fall back to another user's display when this session has
+        # no Xwayland socket yet.
+        return next((d for d in displays if d[1] == active_uid), (None, 0))
+
+    # Preserve discovery on systems without logind, preferring non-root X11.
+    for disp, uid in displays:
+        if uid:
+            return disp, uid
+    if displays:
+        return displays[0]
 
     return None, 0
 

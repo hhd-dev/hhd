@@ -1,3 +1,4 @@
+import subprocess
 import unittest
 from types import SimpleNamespace
 from unittest.mock import MagicMock, mock_open, patch
@@ -6,6 +7,71 @@ from hhd.plugins import Config
 from hhd.plugins.cec import CecPlugin
 from hhd.plugins.overlay import OverlayPlugin
 from hhd.plugins.overlay.controllers import B, find_devices, process_events
+from hhd.plugins.overlay.x11 import find_x11_display, get_active_seat_user
+
+
+class OverlayDesktopDisplayTest(unittest.TestCase):
+    def find_display(self, active_uid, owners):
+        with (
+            patch("hhd.plugins.overlay.x11.get_active_seat_user", return_value=active_uid),
+            patch("hhd.plugins.overlay.x11.os.listdir", return_value=list(owners)),
+            patch(
+                "hhd.plugins.overlay.x11.os.stat",
+                side_effect=lambda path: SimpleNamespace(
+                    st_uid=owners[path.rsplit(b"/", 1)[-1]]
+                ),
+            ),
+        ):
+            return find_x11_display()
+
+    def test_cosmic_desktop_is_selected_instead_of_greeter(self):
+        self.assertEqual(
+            self.find_display(1000, {b"X0": 978, b"X1": 1000}), (":1", 1000)
+        )
+
+    def test_other_users_display_is_not_used_for_active_session(self):
+        self.assertEqual(self.find_display(1000, {b"X0": 978}), (None, 0))
+
+    def test_discovery_without_logind_preserves_non_root_preference(self):
+        self.assertEqual(
+            self.find_display(None, {b"X0": 0, b"X1": 1000}), (":1", 1000)
+        )
+        self.assertEqual(self.find_display(None, {b"X0": 0}), (":0", 0))
+
+    def test_missing_x11_directory(self):
+        with (
+            patch("hhd.plugins.overlay.x11.get_active_seat_user", return_value=1000),
+            patch("hhd.plugins.overlay.x11.os.listdir", side_effect=FileNotFoundError),
+        ):
+            self.assertEqual(find_x11_display(), (None, 0))
+
+    def test_active_user_is_read_from_seat_session(self):
+        with patch(
+            "hhd.plugins.overlay.x11.subprocess.run",
+            side_effect=[SimpleNamespace(stdout="2\n"), SimpleNamespace(stdout="1000\n")],
+        ) as run:
+            self.assertEqual(get_active_seat_user(), 1000)
+        self.assertEqual(
+            run.call_args_list[1].args[0],
+            ["loginctl", "show-session", "2", "-p", "User", "--value"],
+        )
+
+    def test_logind_unavailable_or_session_missing(self):
+        for error in (
+            FileNotFoundError(),
+            subprocess.CalledProcessError(1, "loginctl"),
+            subprocess.TimeoutExpired("loginctl", 2),
+        ):
+            with (
+                self.subTest(error=error),
+                patch("hhd.plugins.overlay.x11.subprocess.run", side_effect=error),
+            ):
+                self.assertIsNone(get_active_seat_user())
+        with patch(
+            "hhd.plugins.overlay.x11.subprocess.run", return_value=SimpleNamespace(stdout="")
+        ) as run:
+            self.assertIsNone(get_active_seat_user())
+            run.assert_called_once()
 
 
 class OverlayKeyboardTest(unittest.TestCase):
