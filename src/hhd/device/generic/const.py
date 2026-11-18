@@ -51,6 +51,15 @@ TECNO_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
     }
 }
 
+ADVAN_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
+    # Report 0x02 omits rear-button state, so only decode report 0x03.
+    0x03: {
+        "share": BM((9 << 3) + 7),  # Game Assistant
+        "extra_l1": BM((9 << 3) + 3),  # M1
+        "extra_r1": BM((9 << 3) + 4),  # M2
+    }
+}
+
 
 AYANEO_DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
@@ -118,6 +127,19 @@ AYA_DEFAULT_CONF = {
 }
 ONEX_DEFAULT_CONF = {
     "hrtimer": True,
+}
+
+BOARD_CONFS = {
+    # sys_vendor: "ADVAN"
+    # product_name: "1301"
+    # product_family: "X-PLAY"
+    # board_name: "ARP31B-070P2-XCL"
+    "ARP31B-070P2-XCL": {
+        "name": "ADVAN X-PLAY",
+        "type": "advan",
+        "extra_buttons": "dual",
+        "hrtimer": True,
+    },
 }
 
 CONFS = {

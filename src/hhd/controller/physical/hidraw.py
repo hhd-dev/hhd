@@ -50,6 +50,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         report_size: int = MAX_REPORT_SIZE,
         required: bool = True,
         lossless: bool = True,
+        report_id_offset: int = 2,
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -68,6 +69,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         self.callback = callback
         self.required = required
         self.lossless = lossless
+        self.report_id_offset = report_id_offset
 
         self.path = None
         self.dev: Device | None = None
@@ -154,7 +156,7 @@ class GenericGamepadHidraw(Producer, Consumer):
         if self.report and self.report == rep:
             return []
         self.report = rep
-        rep_id = rep[2] if len(rep) > 2 else None
+        rep_id = rep[self.report_id_offset] if len(rep) > self.report_id_offset else None
 
         # Allow for devices with NULL reports
         if None in self.btn_map or None in self.axis_map:

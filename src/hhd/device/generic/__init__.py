@@ -14,7 +14,7 @@ from hhd.plugins import (
 from hhd.plugins.settings import HHDSettings
 from hhd.plugins.utils import read_dmi
 
-from .const import CONFS, DEFAULT_MAPPINGS, get_default_config
+from .const import BOARD_CONFS, CONFS, DEFAULT_MAPPINGS, get_default_config
 
 
 class GenericControllersPlugin(HHDPlugin):
@@ -110,15 +110,19 @@ def autodetect(existing: Sequence[HHDPlugin]) -> Sequence[HHDPlugin]:
     if len(existing):
         return existing
 
-    # Match just product name
-    # if a device exists here its officially supported
+    # Known product and board names are officially supported.
     dmi = read_dmi("product_name")
-    if not dmi:
-        return []
-
     dconf = CONFS.get(dmi, None)
     if dconf:
         return [GenericControllersPlugin(dmi, dconf)]
+
+    board = read_dmi("board_name")
+    dconf = BOARD_CONFS.get(board, None)
+    if dconf:
+        return [GenericControllersPlugin(dmi or board, dconf)]
+
+    if not dmi:
+        return []
 
     try:
         with open("/sys/devices/virtual/dmi/id/sys_vendor") as f:

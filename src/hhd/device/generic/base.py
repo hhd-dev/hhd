@@ -14,7 +14,12 @@ from hhd.controller.physical.rgb import LedDevice, is_led_supported
 from hhd.controller.virtual.uinput import UInputDevice
 from hhd.plugins import Config, Context, Emitter, get_gyro_state, get_outputs
 
-from .const import BTN_MAPPINGS, DEFAULT_MAPPINGS, TECNO_RAW_INTERFACE_BTN_MAP
+from .const import (
+    ADVAN_RAW_INTERFACE_BTN_MAP,
+    BTN_MAPPINGS,
+    DEFAULT_MAPPINGS,
+    TECNO_RAW_INTERFACE_BTN_MAP,
+)
 
 FIND_DELAY = 0.1
 ERROR_DELAY = 0.3
@@ -26,6 +31,9 @@ logger = logging.getLogger(__name__)
 
 GAMEPAD_VID = 0x045E
 GAMEPAD_PID = 0x028E
+
+ADVAN_VID = 0x2F24
+ADVAN_PID = 0x0135
 
 TECNO_VID = 0x2993
 TECNO_PID = 0x2001
@@ -68,6 +76,8 @@ def plugin_run(
                     vid = TECNO_VID
                 case "zotac":
                     vid = ZOTAC_VID
+                case "advan":
+                    vid = ADVAN_VID
                 case _:
                     vid = GAMEPAD_VID
             found_device = bool(enumerate_evs(vid=vid))
@@ -141,8 +151,8 @@ def controller_loop(
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        vid=[GAMEPAD_VID, TECNO_VID, ZOTAC_VID],
-        pid=[GAMEPAD_PID, TECNO_PID, ZOTAC_PID],
+        vid=[ADVAN_VID] if dtype == "advan" else [GAMEPAD_VID, TECNO_VID, ZOTAC_VID],
+        pid=[ADVAN_PID] if dtype == "advan" else [GAMEPAD_PID, TECNO_PID, ZOTAC_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
@@ -217,6 +227,17 @@ def controller_loop(
             fd_to_dev[f] = m
 
     try:
+        if dtype == "advan":
+            d_kbd_2 = GenericGamepadHidraw(
+                vid=[ADVAN_VID],
+                pid=[ADVAN_PID],
+                usage_page=[0xFF00],
+                usage=[0x0001],
+                interface=3,
+                report_size=32,
+                report_id_offset=0,
+                btn_map=ADVAN_RAW_INTERFACE_BTN_MAP,
+            )
         if dtype == "tecno":
             d_kbd_2 = GenericGamepadHidraw(
                 vid=[TECNO_VID],
