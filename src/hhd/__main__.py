@@ -727,10 +727,13 @@ def main():
 
             has_new = should_initialize.is_set()
             saved = False
-            # Save existing profiles if open
-            if save_state_yaml(state_fn, settings, conf, shash):
-                saved = True
-                conf.updated = False
+            if conf.updated and not getattr(conf, "yaml_save_queued", 0):
+                conf.yaml_save_queued = curr + 0.3
+
+            if conf.updated and curr >= getattr(conf, "yaml_save_queued", 0):
+                if save_state_yaml(state_fn, settings, conf, shash):
+                    saved = True
+                conf.yaml_save_queued = 0
             for name, prof in profiles.items():
                 fn = join(profile_dir, name + ".yml")
                 if save_profile_yaml(fn, settings, prof, shash):
