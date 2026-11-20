@@ -134,6 +134,8 @@ CONFS = {
         **ONEX_DEFAULT_CONF,
         "rgb_secondary": True,
         "protocol": "hid_v2_x2",
+        # EC drops the AT keyboard volume key releases
+        "volume_quirk": True,
     },
     # X1 Line
     "ONEXPLAYER X1 mini": {

@@ -249,6 +249,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         postprocess: dict[str, dict] = AXIS_CALIBRATION,
         requires_start: bool = False,
         log_not_found: bool = True,
+        pulse_keys: Sequence[int] = [],
     ) -> None:
         self.vid = vid
         self.pid = pid
@@ -273,6 +274,7 @@ class GenericGamepadEvdev(Producer, Consumer):
         self.start_held = False
         self.requires_start = requires_start
         self.log_not_found = log_not_found
+        self.pulse_keys = pulse_keys
 
     def open(self) -> Sequence[int]:
         for d, info in list_evs(filter_valid=True).items():
@@ -448,7 +450,9 @@ class GenericGamepadEvdev(Producer, Consumer):
                             # So we have to wait a bit to see if it is
                             # a standalone press
                             self.start_pressed = curr
-                        elif e.value == 0 or e.value == 1:
+                        elif e.value == 1 or (
+                            e.value == 0 and e.code not in self.pulse_keys
+                        ):
                             out.append(
                                 {
                                     "type": "button",
@@ -456,6 +460,10 @@ class GenericGamepadEvdev(Producer, Consumer):
                                     "value": bool(e.value),
                                 }
                             )
+                            if e.code in self.pulse_keys:
+                                self.queue.append(
+                                    ({**out[-1], "value": False}, curr + 0.05)
+                                )
                             self.start_pressed = None
                 elif e.type == B("EV_ABS"):
                     if e.code in self.axis_map:
