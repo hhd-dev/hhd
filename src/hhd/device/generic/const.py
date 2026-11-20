@@ -55,8 +55,8 @@ ADVAN_RAW_INTERFACE_BTN_MAP: dict[int | None, dict[Button, BM]] = {
     # Report 0x02 omits rear-button state, so only decode report 0x03.
     0x03: {
         "share": BM((9 << 3) + 7),  # Game Assistant
-        "extra_l1": BM((9 << 3) + 3),  # M1
-        "extra_r1": BM((9 << 3) + 4),  # M2
+        "extra_r1": BM((9 << 3) + 3),  # M1
+        "extra_l1": BM((9 << 3) + 4),  # M2
     }
 }
 
