@@ -35,6 +35,18 @@ AYA_NEXT2_BTN_MAPPINGS = {
     B("KEY_VOLUMEDOWN"): "key_volumedown",
 }
 
+# Konkr Fit (Ayaneo sub-brand). Same composite keyboard as AYANEO 3
+# (1c4f:0002) but a different physical button layout. F23 is the Konkr logo
+# button; KEY_D is the right-bottom button.
+KONKR_FIT_BTN_MAPPINGS = {
+    B("KEY_F23"): "mode",
+    B("KEY_D"): "share",
+    B("KEY_F21"): "extra_l2",
+    B("KEY_F22"): "extra_r2",
+    B("KEY_L"): "extra_l1",
+    B("KEY_R"): "extra_r1",
+}
+
 DEFAULT_MAPPINGS: dict[str, tuple[Axis, str | None, float, float | None]] = {
     "accel_x": ("accel_z", "accel", 1, None),
     "accel_y": ("accel_x", "accel", -1, None),
@@ -75,7 +87,10 @@ CONFS = {
         "extra_buttons": "quad",
         "magic_modules": False,
         "rgb": True,
-        "btn_mapping": AYA3_BTN_MAPPINGS,
+        # BTN_MODE is the main button on the Konkr Fit, so it acts as the
+        # guide/Steam button rather than the QAM/overlay button.
+        "mode_is_guide": True,
+        "btn_mapping": KONKR_FIT_BTN_MAPPINGS,
         "at_btn_mapping": KONKR_FIT_AT_BTN_MAPPINGS,
         **AYA_DEFAULT_CONF,
     },

@@ -110,6 +110,29 @@ class AyaneoTest(unittest.TestCase):
         for name in ("check", "init", "reset", "save"):
             getattr(vendor, name).assert_called_once()
 
+    def test_konkr_fit_detected_without_magic_modules(self):
+        with patch("builtins.open", mock_open(read_data="KONKR FIT\n")):
+            plugins = autodetect([])
+        self.assertEqual(len(plugins), 1)
+        self.assertIsInstance(plugins[0], AyaneoControllersPlugin)
+        self.assertEqual(plugins[0].dconf["name"], "KONKR FIT")
+        self.assertNotIn("magic_modules", plugins[0].settings())
+
+    def test_konkr_fit_uses_standard_button_maps(self):
+        inputs, vendor, _, _ = self.run_controller("KONKR FIT")
+        gamepad = inputs.call_args_list[0].kwargs["btn_map"]
+        self.assertEqual(gamepad[B("BTN_MODE")], "mode")
+        keyboard = inputs.call_args_list[2].kwargs["btn_map"]
+        self.assertEqual(keyboard[B("KEY_F23")], "mode")
+        self.assertEqual(keyboard[B("KEY_D")], "share")
+        self.assertEqual(keyboard[B("KEY_F21")], "extra_l2")
+        self.assertEqual(keyboard[B("KEY_F22")], "extra_r2")
+        self.assertEqual(keyboard[B("KEY_L")], "extra_l1")
+        self.assertEqual(keyboard[B("KEY_R")], "extra_r1")
+        for name in ("check", "init", "reset", "save"):
+            getattr(vendor, name).assert_not_called()
+        vendor.cfg.assert_called_once()
+
     def test_shared_rgb_report_and_resume_reapply(self):
         for mode, expected_mode in (
             ("disabled", 0xFF), ("solid", 1), ("pulse", 2), ("rainbow", 3)
