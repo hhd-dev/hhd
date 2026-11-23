@@ -11,6 +11,7 @@ from hhd.plugins import (
     get_outputs_config,
     load_relative_yaml,
 )
+from hhd.plugins.inputs import get_touchpad_config
 from hhd.plugins.settings import HHDSettings
 from hhd.plugins.utils import read_dmi
 
@@ -52,6 +53,13 @@ class GenericControllersPlugin(HHDPlugin):
                 default_device="uinput",
             )
         )
+
+        if self.dconf.get("touchpad", False):
+            base["controllers"]["handheld"]["children"][
+                "touchpad"
+            ] = get_touchpad_config(dual_touchpad=True)
+        else:
+            del base["controllers"]["handheld"]["children"]["touchpad"]
 
         base["controllers"]["handheld"]["children"]["imu_axis"] = get_gyro_config(
             self.dconf.get("mapping", DEFAULT_MAPPINGS)
