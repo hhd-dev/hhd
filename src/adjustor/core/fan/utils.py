@@ -1,7 +1,7 @@
 import os
 
 FAN_HWMONS_LEGACY = ["oxpec"]
-FAN_HWMONS = ["oxp_ec", "gpdfan", "ayaneo_ec", "thinkpad", "acer"]
+FAN_HWMONS = ["oxp_ec", "gpdfan", "ayaneo_ec", "thinkpad", "acer", "zotac_zone_ec"]
 HWMON_DIR = "/sys/class/hwmon"
 THINKPAD_FAN_CONTROL = "/sys/module/thinkpad_acpi/parameters/fan_control"
 
