@@ -119,11 +119,15 @@ class SteamdeckController(Producer, Consumer):
         return [self.fd]
 
     def close(self, exit: bool, in_cache: bool = False) -> bool:
-        if not in_cache and time.perf_counter() - self.start:
+        # A device whose open() failed has no fd. Caching it would make every
+        # following open() reuse it and fail.
+        opened = bool(self.dev and self.dev.fd)
+        if not in_cache and opened and time.perf_counter() - self.start:
             logger.warning(f"Caching Steam Controller to avoid reconnection.")
             _cache.add(self)
         elif self.dev:
-            self.dev.send_destroy()
+            if opened:
+                self.dev.send_destroy()
             self.dev.close()
             self.dev = None
             self.fd = None
