@@ -1,0 +1,157 @@
+type: container
+tags: [lgc]
+title: Zotac Controller
+hint: >-
+  Allows for configuring your handheld's controller to a unified output.
+
+children:
+  controller_mode:
+    type: mode
+    tags: [controller_mode]
+    title: Controller Emulation
+    hint: >-
+      Emulate different controller types to fuse your device's features.
+
+  dial_left: &dial
+    type: multiple
+    title: Left Dial
+    hint: >-
+      Action of the radial dial. Brightness sends the brightness keys, which
+      work on the desktop but not in Game Mode.
+    options:
+      disabled: "Disabled"
+      volume: "Volume"
+      brightness: "Brightness"
+    default: disabled
+
+  dial_right:
+    <<: *dial
+    title: Right Dial
+    default: volume
+
+  vibration_strength:
+    type: multiple
+    title: Vibration Strength
+    tags: [ non-essential, ordinal, vibration ]
+    hint: >-
+      Scales the vibration of the trigger motors, which handle all rumble on
+      this device.
+    options:
+      "0": "Off"
+      "25": "25%"
+      "50": "50%"
+      "75": "75%"
+      "100": "100%"
+    default: "100"
+
+  touchpad_clicks:
+    type: container
+    tags: [non-essential]
+    title: Touchpad Clicks
+    hint: >-
+      Action for clicking each edge of the touchpads. Touchpad clicks are sent
+      as clicks of the emulated controller touchpad (Dualsense).
+    children:
+      left_up: &zone
+        type: multiple
+        title: Left Touchpad Top
+        tags: [non-essential]
+        options:
+          disabled: "Disabled"
+          mouse_left: "Mouse Left Click"
+          mouse_right: "Mouse Right Click"
+          touchpad_click: "Touchpad Click"
+          touchpad_right: "Touchpad Right Click"
+          a: "A"
+          b: "B"
+          x: "X"
+          y: "Y"
+          dpad_up: "D-Pad Up"
+          dpad_down: "D-Pad Down"
+          dpad_left: "D-Pad Left"
+          dpad_right: "D-Pad Right"
+          lb: "LB"
+          rb: "RB"
+          ls: "LS"
+          rs: "RS"
+        default: disabled
+      left_down:
+        <<: *zone
+        title: Left Touchpad Bottom
+      left_left:
+        <<: *zone
+        title: Left Touchpad Left
+      left_right:
+        <<: *zone
+        title: Left Touchpad Right
+      right_up:
+        <<: *zone
+        title: Right Touchpad Top
+      right_down:
+        <<: *zone
+        title: Right Touchpad Bottom
+      right_left:
+        <<: *zone
+        title: Right Touchpad Left
+        default: mouse_left
+      right_right:
+        <<: *zone
+        title: Right Touchpad Right
+        default: mouse_right
+
+  main_chords:
+    type: multiple
+    tags: [ non-essential ]
+    title: Start/Select do SteamOS Combos
+    hint: >-
+      When holding Select or Start, if another button is pressed, they become
+      the Xbox button, which allows doing SteamOS combos (Select+RT is
+      screenshot).
+    options:
+      disabled: "Disabled"
+      select: "Select Only"
+      start_select: "Start+Select"
+    default: select
+
+  swap_guide:
+    type: bool
+    title: Swap Guide and Menu/View
+    tags: [non-essential]
+    hint: >-
+      Swaps the Guide and QAM buttons with start and select.
+    default: False
+
+  #
+  # Common settings
+  #
+  imu:
+    type: bool
+    title: Motion Support
+    hint: >-
+      Enable gyroscope/accelerometer (IMU) support (.3% background CPU use)
+    default: True
+
+  imu_hz:
+    type: discrete
+    title: Motion Hz
+    tags: [ non-essential ]
+    hint: >-
+      Sets the sampling frequency for the IMU.
+    options: [100, 200, 400, 800]
+    default: 400
+
+  imu_axis:
+
+  nintendo_mode:
+    type: bool
+    title: Nintendo Mode (A-B Swap)
+    tags: [ non-essential ]
+    hint: >-
+      Swaps A with B and X with Y.
+    default: False
+
+  select_reboots:
+    type: bool
+    tags: [non-essential]
+    title: Hold View to Reboot
+    default: False

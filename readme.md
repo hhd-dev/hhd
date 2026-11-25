@@ -53,7 +53,7 @@ Handheld Daemon features great support for Lenovo, Asus, GPD, OneXPlayer, and Ay
   - Claw 7/8 AI+ (no gyro)
   - Claw A8 (minor TDP issues, no gyro)
 - Zotac
-  - Zotac Gaming Zone (1st gen; only front buttons; be in gamepad mode before installing Linux)
+  - Zotac Gaming Zone (1st gen; TDP and fan curve need the amd_dptc DMI entry; be in gamepad mode before installing Linux)
 - Ayn
   - Loki MiniPro/Zero/Max
 - TECTOY

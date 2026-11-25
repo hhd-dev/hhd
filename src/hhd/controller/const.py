@@ -265,6 +265,8 @@ KeyboardButton = Literal[
     "key_previoussong",  # 165
     "key_volumedown",  # 114
     "key_volumeup",  # 115
+    "key_brightnessdown",  # 224
+    "key_brightnessup",  # 225
     # Language specific
     "key_katakana",  # 90
     "key_hiragana",  # 91

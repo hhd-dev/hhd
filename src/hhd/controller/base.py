@@ -80,7 +80,9 @@ class RumbleEvent(TypedDict):
     weak_magnitude: float
 
 
-RgbMode = Literal["disabled", "solid", "pulse", "rainbow", "spiral", "duality", "oxp"]
+RgbMode = Literal[
+    "disabled", "solid", "pulse", "rainbow", "spiral", "duality", "oxp", "zotac"
+]
 RgbSettings = Literal[
     "color",
     "brightness",
@@ -92,6 +94,7 @@ RgbSettings = Literal[
     "oxp",
     "oxp-secondary",
     "oxp-secondary-breathing",
+    "zotac",
 ]
 
 # Mono is a single zone (main only)
@@ -111,6 +114,7 @@ OxpModes = Literal[
     "sun",
     "classic",
 ]
+ZotacModes = Literal["stars", "random", "flash"]
 
 
 class RgbLedEvent(TypedDict):
@@ -165,6 +169,7 @@ class RgbLedEvent(TypedDict):
 
     oxp: None | OxpModes
     secondary_breathing: NotRequired[bool]
+    zotac: NotRequired[None | ZotacModes]
 
 
 class ButtonEvent(TypedDict):

@@ -38,9 +38,6 @@ ADVAN_PID = 0x0135
 TECNO_VID = 0x2993
 TECNO_PID = 0x2001
 
-ZOTAC_VID = 0x1EE9
-ZOTAC_PID = 0x1590
-
 KBD_VID = 0x0001
 KBD_PID = 0x0001
 
@@ -74,8 +71,6 @@ def plugin_run(
             match dconf.get("type", None):
                 case "tecno":
                     vid = TECNO_VID
-                case "zotac":
-                    vid = ZOTAC_VID
                 case "advan":
                     vid = ADVAN_VID
                 case _:
@@ -151,8 +146,8 @@ def controller_loop(
 
     # Inputs
     d_xinput = GenericGamepadEvdev(
-        vid=[ADVAN_VID] if dtype == "advan" else [GAMEPAD_VID, TECNO_VID, ZOTAC_VID],
-        pid=[ADVAN_PID] if dtype == "advan" else [GAMEPAD_PID, TECNO_PID, ZOTAC_PID],
+        vid=[ADVAN_VID] if dtype == "advan" else [GAMEPAD_VID, TECNO_VID],
+        pid=[ADVAN_PID] if dtype == "advan" else [GAMEPAD_PID, TECNO_PID],
         # name=["Generic X-Box pad"],
         capabilities={EC("EV_KEY"): [EC("BTN_A")]},
         required=True,
@@ -247,15 +242,6 @@ def controller_loop(
                 required=True,
                 btn_map=TECNO_RAW_INTERFACE_BTN_MAP,
             )
-        if dtype == "zotac":
-            d_kbd_1 = GenericGamepadEvdev(
-                vid=[ZOTAC_VID],
-                pid=[ZOTAC_PID],
-                required=True,
-                btn_map=dconf.get("btn_mapping", BTN_MAPPINGS),
-                capabilities={EC("EV_KEY"): [EC("KEY_F17"), EC("KEY_F18")]},
-            )
-
         prepare(d_xinput)
         if motion and d_imu:
             start_imu = True

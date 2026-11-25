@@ -30,12 +30,6 @@ ANBERNIC_MAPPINGS: dict[int, str] = {
     B("KEY_G"): "mode",
 }
 
-ZOTAC_ZONE_MAPPINGS = {
-    # ctrl start f17/f18
-    B("KEY_F17"): "mode",
-    B("KEY_F18"): "share",
-}
-
 TECNO_BTN_MAPPINGS = {
     B("KEY_VOLUMEUP"): "key_volumeup",
     B("KEY_VOLUMEDOWN"): "key_volumedown",
@@ -225,15 +219,6 @@ CONFS = {
         "extra_buttons": "none",
         "btn_mapping": TECNO_BTN_MAPPINGS,
         "type": "tecno",
-        "display_gyro": False,
-    },
-    # Zotac Zone 1st Gen
-    # board name: G0A1W
-    "ZOTAC GAMING ZONE": {
-        "name": "Zotac Gaming Zone (1st gen)",
-        "extra_buttons": "none",  # not yet
-        "btn_mapping": ZOTAC_ZONE_MAPPINGS,
-        "type": "zotac",
         "display_gyro": False,
     },
 }
