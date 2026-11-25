@@ -15,6 +15,42 @@ rgb:
         default: >-
           Dualsense controls the LEDs.
           Switch to Xbox or disable Dualsense LEDs.
+      xbox_led:
+        type: mode
+        title: Xbox Button LED
+        default: steady
+        modes:
+          disabled:
+            type: container
+            title: Disabled
+            tags: [ disabled ]
+            children: {}
+          steady:
+            type: container
+            title: Steady
+            children:
+              brightnessd:
+                type: multiple
+                title: Brightness
+                tags: [ non-essential, ordinal ]
+                options:
+                  low: "Low"
+                  medium: "Medium"
+                  high: "High"
+                default: high
+          breathe:
+            type: container
+            title: Breathing
+            children:
+              brightnessd:
+                type: multiple
+                title: Brightness
+                tags: [ non-essential, ordinal ]
+                options:
+                  low: "Low"
+                  medium: "Medium"
+                  high: "High"
+                default: high
 
 hhd:
   settings:

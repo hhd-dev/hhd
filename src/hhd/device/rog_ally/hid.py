@@ -16,6 +16,9 @@ from .const import (
     FEATURE_KBD_DRIVER,
     FEATURE_KBD_ID,
     buf,
+    config_rgb,
+    xbox_led_breathe,
+    xbox_led_brightness,
 )
 
 Zone = Literal["all", "left_left", "left_right", "right_left", "right_right"]
@@ -224,7 +227,7 @@ def process_events(
     br_cmd = None
     init = False
     for ev in events:
-        if ev["type"] == "led":
+        if ev["type"] == "led" and ev.get("code") != "xbox_button":
             if ev["initialize"]:
                 init = True
             if ev["mode"] == "disabled":
@@ -310,11 +313,51 @@ def process_events(
 
 
 class RgbCallback:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        rgb_boot: bool = False,
+        rgb_charging: bool = False,
+        x20: bool = False,
+    ) -> None:
         self.prev_mode = None
         self.global_init = True
+        self.rgb_boot = rgb_boot
+        self.rgb_charging = rgb_charging
+        self.x20 = x20
+        self.last_xbox_ev: Event | None = None
+
+    def apply_xbox_led(self, dev: Device, ev: Event) -> None:
+        if not self.x20:
+            return
+        self.last_xbox_ev = ev
+        try:
+            if ev["mode"] == "disabled":
+                dev.send_feature_report(
+                    config_rgb(
+                        self.rgb_boot, self.rgb_charging, xbox_led=False
+                    )
+                )
+                dev.write(xbox_led_brightness(0))
+            else:
+                br_map = {"low": 1, "medium": 2, "high": 3}
+                level = br_map.get(ev.get("brightnessd", "high"), 3)
+                dev.send_feature_report(
+                    config_rgb(
+                        self.rgb_boot, self.rgb_charging, xbox_led=True
+                    )
+                )
+                dev.send_feature_report(
+                    xbox_led_breathe(ev["mode"] == "pulse")
+                )
+                dev.write(xbox_led_brightness(level))
+        except Exception as e:
+            logger.error(f"Error applying Xbox button LED: {e}")
 
     def __call__(self, dev: Device, events: Sequence[Event]):
+        if self.x20:
+            for ev in events:
+                if ev["type"] == "led" and ev.get("code") == "xbox_button":
+                    self.apply_xbox_led(dev, ev)
         cmds, mode = process_events(
             events, self.prev_mode, self.global_init
         )

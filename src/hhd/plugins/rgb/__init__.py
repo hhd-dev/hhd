@@ -37,6 +37,11 @@ class RgbPlugin(HHDPlugin):
 
         self.init_times = RGB_SET_TIMES
         self.prev = None
+        self.xbox_led = False
+        self.prev_xbox = None
+        self.xbox_init = True
+        self.xbox_init_count = 0
+        self.xbox_init_last = 0
 
     def open(
         self,
@@ -141,6 +146,9 @@ class RgbPlugin(HHDPlugin):
             del base["rgb"]
             return base
 
+        if not self.xbox_led:
+            del base["rgb"]["handheld"]["children"]["xbox_led"]
+
         if self.controller:
             # Remove RGB settings because the controller has control
             del base["rgb"]["handheld"]["children"]["mode"]
@@ -216,6 +224,10 @@ class RgbPlugin(HHDPlugin):
         ccap = cap[uniq]
         if uniq != self.uniq:
             self.prev = None
+            self.prev_xbox = None
+            self.xbox_init = True
+            self.xbox_init_count = 0
+            self.xbox_init_last = 0
             self.uniq = uniq
 
         rgb = ccap["rgb"]
@@ -233,6 +245,10 @@ class RgbPlugin(HHDPlugin):
             if self.controller != new_controller:
                 refresh_settings = True
 
+            new_xbox_led = bool(rgb.get("xbox_led", False))
+            if self.xbox_led != new_xbox_led:
+                refresh_settings = True
+            self.xbox_led = new_xbox_led
             self.controller = new_controller
             self.modes = rgb["modes"]
 
@@ -248,13 +264,73 @@ class RgbPlugin(HHDPlugin):
             self.emit({"type": "settings"})
             return
 
-        # All checks were ran and settings were updated
-        # if the controller has control of the LEDs
-        # or they are not enabled, exit.
-        if not self.enabled or self.controller:
+        if not self.enabled:
             return
 
         curr = time.perf_counter()
+
+        # Handle independent Xbox button LED (e.g. ROG Xbox Ally X20)
+        if self.xbox_led and "xbox_led" in conf["rgb"]["handheld"]:
+            xbox_conf = conf["rgb"]["handheld"]["xbox_led"]
+            send_xbox = False
+            if self.prev_xbox is not None and self.prev_xbox != xbox_conf:
+                self.xbox_init = False
+                send_xbox = True
+            elif self.xbox_init:
+                if self.xbox_init_count >= self.init_times:
+                    self.xbox_init = False
+                elif self.xbox_init_count == 0 or (
+                    curr - self.xbox_init_last >= RGB_SET_INTERVAL
+                ):
+                    self.xbox_init_count += 1
+                    self.xbox_init_last = curr
+                    send_xbox = True
+            elif self.prev_xbox is None:
+                send_xbox = True
+            if send_xbox:
+                self.prev_xbox = xbox_conf.copy()
+                xmode = xbox_conf["mode"].to(str)
+                xinfo = (
+                    cast(dict, xbox_conf[xmode].conf)
+                    if xmode in xbox_conf
+                    else {}
+                )
+                xbr = cast(
+                    Literal["low", "medium", "high"],
+                    xinfo.get("brightnessd", "high"),
+                )
+                mapped_mode: RgbMode = "disabled"
+                if xmode == "steady":
+                    mapped_mode = "solid"
+                elif xmode == "breathe":
+                    mapped_mode = "pulse"
+                logger.info(
+                    f"Setting Xbox Button LED to '{xmode}' (brightness: {xbr})."
+                )
+                self.emit.inject(
+                    {
+                        "type": "led",
+                        "initialize": True,
+                        "code": "xbox_button",
+                        "mode": mapped_mode,
+                        "direction": "left",
+                        "brightness": 0.0 if mapped_mode == "disabled" else 1.0,
+                        "brightnessd": xbr,
+                        "speed": 0,
+                        "speedd": "low",
+                        "red": 0,
+                        "green": 0 if mapped_mode == "disabled" else 255,
+                        "blue": 0,
+                        "red2": 0,
+                        "green2": 0,
+                        "blue2": 0,
+                        "oxp": None,
+                    }
+                )
+
+        # If the emulated controller has control of the ring LEDs, exit.
+        if self.controller:
+            return
         init = self.init
 
         rgb_conf = conf["rgb"]["handheld"]["mode"]
