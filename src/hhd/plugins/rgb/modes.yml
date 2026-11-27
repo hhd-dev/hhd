@@ -63,3 +63,10 @@ aok:
   type: container
   title: AOKZOE
   tags: [ non-essential, rainbow ]
+
+zotac:
+  type: container
+  title: Zotac
+  tags: [ non-essential, rgb ]
+  hint: >-
+    Effects of the Zotac controller firmware.

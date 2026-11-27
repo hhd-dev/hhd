@@ -79,6 +79,19 @@ aok:
 
   brightnessd: *brightnessd
 
+zotac:
+  mode:
+    type: multiple
+    title: Style
+    tags: [non-essential]
+    hint: >-
+      Flash alternates between red and blue and ignores the color.
+    default: stars
+    options:
+      stars: "Stars"
+      random: "Random"
+      flash: "Flash"
+
 oxp-secondary:
   hue:
     <<: *hue

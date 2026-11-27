@@ -312,6 +312,7 @@ class RgbPlugin(HHDPlugin):
         secondary_breathing = False
         always_init = True
         oxp = None
+        zotac = None
 
         log = f"Setting RGB to mode '{mode}'"
         for cap in self.modes[cast(RgbMode, mode)]:
@@ -377,6 +378,9 @@ class RgbPlugin(HHDPlugin):
                 case "oxp-secondary-breathing":
                     secondary_breathing = info["secondary_breathing"]
                     log += f", breathing: {secondary_breathing}"
+                case "zotac":
+                    log += f", style: '{info['mode']}'"
+                    zotac = info["mode"]
 
         log += "."
 
@@ -404,6 +408,7 @@ class RgbPlugin(HHDPlugin):
             "blue2": blue2,
             "oxp": oxp,
             "secondary_breathing": secondary_breathing,
+            "zotac": zotac,
         }
         if not always_init and not init:
             self.queue_leds = curr + RGB_QUEUE_RGB

@@ -672,6 +672,8 @@ _kbd_raw: dict[KeyboardButton, Sequence[int]] = {
     "key_previoussong": [B("KEY_PREVIOUSSONG")],  # 165
     "key_volumedown": [B("KEY_VOLUMEDOWN")],  # 114
     "key_volumeup": [B("KEY_VOLUMEUP")],  # 115
+    "key_brightnessdown": [B("KEY_BRIGHTNESSDOWN")],  # 224
+    "key_brightnessup": [B("KEY_BRIGHTNESSUP")],  # 225
     "key_katakana": [B("KEY_KATAKANA")],  # 90
     "key_hiragana": [B("KEY_HIRAGANA")],  # 91
     "key_henkan": [B("KEY_HENKAN")],  # 92

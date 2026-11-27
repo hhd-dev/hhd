@@ -35,7 +35,7 @@ class DmiTest(unittest.TestCase):
             importlib.import_module(f"hhd.device.{name}")
             for name in (
                 "aura", "ayaneo", "claw", "generic", "gpd.win", "legion_go",
-                "orange_pi", "oxp", "rog_ally",
+                "orange_pi", "oxp", "rog_ally", "zotac",
             )
         ]
         for provider in providers:
