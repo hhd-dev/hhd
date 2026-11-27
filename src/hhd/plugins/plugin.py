@@ -2,6 +2,7 @@ import configparser
 import getpass
 import logging
 import os
+import signal
 import subprocess
 from typing import Any, Literal, Mapping, NamedTuple, Protocol, Sequence, TypedDict
 
@@ -316,7 +317,7 @@ def expanduser(path: str, user: int | str | Context | None = None):
     return (userhome + path[i:]) or root
 
 
-def get_steam_location(gamepadui: bool = True):
+def _steam_locations(gamepadui: bool):
     for p in os.listdir("/proc"):
         try:
             if not p.isdigit():
@@ -334,13 +335,15 @@ def get_steam_location(gamepadui: bool = True):
             if gamepadui and b"-gamepadui" not in cmd:
                 continue
 
-            # We need the executable for shortpress to work, if it ends in .sh
-            # it will not. Moreover, flatpak resolving requires the ps path.
+            # Use the installed executable for Steam commands.
             uid = os.stat(f"/proc/{p}/").st_uid
-            return expanduser(STEAM_EXE, uid), int(p), uid
+            yield expanduser(STEAM_EXE, uid), int(p), uid
         except Exception:
             pass
-    return None, None, None
+
+
+def get_steam_location(gamepadui: bool = True):
+    return next(_steam_locations(gamepadui), (None, None, None))
 
 
 def get_flatpak_id(pid: int) -> str | None:
@@ -453,23 +456,36 @@ def open_steam_kbd(open: bool = True):
     return run_steam_command(f"steam://{'open' if open else 'close'}/keyboard")
 
 
-def freeze_steam(freeze: bool):
-    pid = None
-    try:
-        import signal
+def freeze_steam(freeze: bool, pidfds: Sequence[int] = ()) -> list[int]:
+    if not freeze:
+        for pidfd in pidfds:
+            try:
+                signal.pidfd_send_signal(pidfd, signal.SIGCONT)
+            except OSError as e:
+                logger.debug(f"Could not resume Steam: {e}")
+            finally:
+                os.close(pidfd)
+        return []
 
-        _, pid, _ = get_steam_location(False)
+    if not hasattr(os, "pidfd_open") or not hasattr(signal, "pidfd_send_signal"):
+        return []
 
-        if pid is None:
-            return False
+    stopped = []
+    steam_uid = None
+    for _, pid, uid in _steam_locations(False):
+        if steam_uid is None:
+            steam_uid = uid
+        if uid != steam_uid:
+            continue
 
-        os.kill(
-            int(pid),
-            signal.SIGSTOP if freeze else signal.SIGCONT,
-        )
-        return True
-    except Exception:
-        import traceback
-
-        traceback.print_exc()
-        return False
+        pidfd = None
+        try:
+            pidfd = os.pidfd_open(pid)
+            signal.pidfd_send_signal(pidfd, signal.SIGSTOP)
+        except OSError as e:
+            logger.debug(f"Could not stop Steam PID {pid}: {e}")
+            if pidfd is not None:
+                os.close(pidfd)
+        else:
+            stopped.append(pidfd)
+    return stopped

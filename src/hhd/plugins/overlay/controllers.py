@@ -760,7 +760,7 @@ def device_shortcut_loop(
     last_check = 0
     intercept = False
     intercept_num = 0
-    steam_frozen = False
+    steam_frozen: list[int] = []
     devs = {}
     while not should_exit or not should_exit.is_set():
         if devs:
@@ -807,8 +807,7 @@ def device_shortcut_loop(
             # Give time for the B event to be lost
             time.sleep(0.25)
             logger.info("Unfreezing Steam")
-            freeze_steam(False)
-            steam_frozen = False
+            steam_frozen = freeze_steam(False, steam_frozen)
 
         for name, dev in list(devs.items()):
             d = dev["dev"]
@@ -999,6 +998,9 @@ def device_shortcut_loop(
 
         if log:
             logger.info(f"Found new shortcut devices:{log}")
+
+    if steam_frozen:
+        freeze_steam(False, steam_frozen)
 
 
 AXIS_LIMIT = 0.5
