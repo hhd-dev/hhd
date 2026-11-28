@@ -45,6 +45,7 @@ def get_outputs(
     controller_disabled: bool = False,
     touchpad_enable: Literal["disabled", "gamemode", "always"] | None = None,
     rgb_init_times: int | None = None,
+    rgb_xbox_led: bool = False,
     extra_buttons: Literal["none", "dual", "quad"] = "dual",
 ) -> tuple[Sequence[Producer], Sequence[Consumer], Mapping[str, Any]]:
     producers = []
@@ -288,6 +289,7 @@ def get_outputs(
             "supports_qam": not controller_disabled and controller != "hidden",
             "rgb_resets_on_ac": rgb_resets_on_ac,
             "rgb_init_times": rgb_init_times,
+            "rgb_xbox_led": rgb_xbox_led,
         },
     )
 

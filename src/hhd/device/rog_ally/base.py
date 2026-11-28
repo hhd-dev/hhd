@@ -124,18 +124,27 @@ ALLY_X_AXIS_MAP: dict[int, AbsAxis] = to_map(
 
 
 class AllyHidraw(GenericGamepadHidraw):
-    def __init__(self, *args, kconf={}, rgb_boot, rgb_charging, **kwargs) -> None:
+    def __init__(
+        self,
+        *args,
+        kconf={},
+        rgb_boot,
+        rgb_charging,
+        x20: bool = False,
+        **kwargs,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.kconf = kconf
         self.mouse_mode = False
         self.rgb_boot = rgb_boot
         self.rgb_charging = rgb_charging
+        self.x20 = x20
         self.late_init = None
 
     def open(self) -> Sequence[int]:
         self.queue: list[tuple[Event, float]] = []
         a = super().open()
-        if self.dev:
+        if self.dev and not self.x20:
             # Setup leds so they dont interfere after this
             self.dev.write(config_rgb(self.rgb_boot, self.rgb_charging))
         self.initialize()
@@ -183,6 +192,14 @@ class AllyHidraw(GenericGamepadHidraw):
             self.late_init = None
             if not self.mouse_mode:
                 switch_mode(self.dev, "default", self.kconf, first=True)
+            if (
+                self.x20
+                and isinstance(self.callback, RgbCallback)
+                and self.callback.last_xbox_ev is not None
+            ):
+                self.callback.apply_xbox_led(
+                    self.dev, self.callback.last_xbox_ev
+                )
 
         # Read new events
         while can_read(self.fd):
@@ -351,6 +368,7 @@ def controller_loop(
             "spiral": ["brightnessd", "speedd", "direction"],
         },
         rgb_zones="quad",
+        rgb_xbox_led=x20,
         extra_buttons="dual",
     )
     motion = d_params.get("uses_motion", True)
@@ -407,7 +425,12 @@ def controller_loop(
         required=True,
         rgb_boot=conf.get("rgb_boot", False),
         rgb_charging=conf.get("rgb_charging", False),
-        callback=RgbCallback(),
+        x20=x20,
+        callback=RgbCallback(
+            rgb_boot=conf.get("rgb_boot", False),
+            rgb_charging=conf.get("rgb_charging", False),
+            x20=x20,
+        ),
         kconf=kconf,
     )
 

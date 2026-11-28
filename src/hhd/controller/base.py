@@ -134,6 +134,7 @@ class RgbLedEvent(TypedDict):
         "left_right",
         "right_left",
         "right_right",
+        "xbox_button",
     ]
 
     # Various lighting modes supported by the led.
@@ -191,6 +192,7 @@ class RgbCapabilities(TypedDict):
     resets_on_ac: bool
     init_times: NotRequired[int | None]
     zones: RgbZones
+    xbox_led: NotRequired[bool]
 
 
 class ControllerCapabilities(TypedDict):
@@ -685,6 +687,7 @@ class Multiplexer:
                 "zones": rgb_zones,
                 "resets_on_ac": params.get("rgb_resets_on_ac", False),
                 "init_times": params.get("rgb_init_times", None),
+                "xbox_led": params.get("rgb_xbox_led", False),
             }
         self.rgb = rgb
         self.supports_qam = params.get("supports_qam", True)

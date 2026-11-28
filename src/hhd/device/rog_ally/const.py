@@ -1184,13 +1184,15 @@ RGB_INIT = RGB_PKEY_INIT(FEATURE_KBD_ID)
 # 09 (08 + 01): boot/shutdown
 # 02: awake
 # 04: charging sleep
-def config_rgb(boot: bool, charging: bool) -> bytes:
+def config_rgb(boot: bool, charging: bool, xbox_led: bool = False) -> bytes:
     # Always while awake, users can toggle RGB settings for that
     val = 0x02
     if boot:
         val += 0x09
     if charging:
         val += 0x04
+    if xbox_led:
+        val |= 0x10
     return buf(
         [
             FEATURE_KBD_ID,
@@ -1199,6 +1201,18 @@ def config_rgb(boot: bool, charging: bool) -> bytes:
             0x01,
             val,
         ]
+    )
+
+
+def xbox_led_brightness(level: int) -> bytes:
+    # Interrupt OUT 0x04 report: 5d d1 20 01 <0..3>
+    return buf([FEATURE_KBD_APP, 0xD1, 0x20, 0x01, max(0, min(3, level))])
+
+
+def xbox_led_breathe(breathe: bool) -> bytes:
+    # Feature report: 5a d1 21 02 <01|00> 08
+    return buf(
+        [FEATURE_KBD_ID, 0xD1, 0x21, 0x02, 0x01 if breathe else 0x00, 0x08]
     )
 
 
